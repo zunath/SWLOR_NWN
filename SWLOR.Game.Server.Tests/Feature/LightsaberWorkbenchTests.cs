@@ -240,13 +240,13 @@ public class LightsaberWorkbenchTests
                 .Should().BeTrue($"preview texture {color.PreviewResref}.tga must exist in sw_ui");
         }
 
-        // The workbench exposes three model slots (top/middle/bottom). The haks ship a
-        // single middle grip model per weapon type, so the middle slot is present but fixed.
-        foreach (var weaponType in new[] { BaseItem.Lightsaber, BaseItem.Saberstaff })
+        // Saberstaff hilts use dedicated wiki renders shipped in sw_ui.
+        foreach (var hilt in LightsaberWorkbench.GetHilts(BaseItem.Saberstaff))
         {
-            var middles = LightsaberWorkbench.GetMiddles(weaponType);
-            middles.Should().ContainSingle("only one middle grip model ships per weapon type");
-            middles[0].PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
+            hilt.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
+            hilt.PreviewResref.Should().StartWith("ui_ssh_");
+            File.Exists(Path.Combine(uiRoot, $"{hilt.PreviewResref}.tga"))
+                .Should().BeTrue($"preview texture {hilt.PreviewResref}.tga must exist in sw_ui");
         }
     }
 

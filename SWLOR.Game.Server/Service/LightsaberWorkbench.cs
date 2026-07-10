@@ -22,15 +22,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public const int EnhancementRecipeLevel = 48;
 
-        private static readonly List<SaberHiltPart> _lightsaberMiddles = new()
-        {
-            new SaberHiltPart(11, "Grip 1.1", "iwswglsbr_m_011"),
-        };
-
-        private static readonly List<SaberHiltPart> _saberstaffMiddles = new()
-        {
-            new SaberHiltPart(11, "Grip 1.1", "iwdblsbr_m_011"),
-        };
+        /// <summary>
+        /// The haks ship a single middle grip model per weapon type, so the middle
+        /// slot is not player-selectable and always uses this value.
+        /// </summary>
+        public const int MiddlePartValue = 11;
 
         private static readonly List<SaberHiltPart> _lightsaberHilts = new()
         {
@@ -81,18 +77,18 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly List<SaberHiltPart> _saberstaffHilts = new()
         {
-            new SaberHiltPart(11, "Hilt 1.1", "iwdblsbr_b_011"),
-            new SaberHiltPart(12, "Hilt 1.2", "iwdblsbr_b_012"),
-            new SaberHiltPart(13, "Hilt 1.3", "iwdblsbr_b_013"),
-            new SaberHiltPart(14, "Hilt 1.4", "iwdblsbr_b_014"),
-            new SaberHiltPart(21, "Hilt 2.1", "iwdblsbr_b_021"),
-            new SaberHiltPart(22, "Hilt 2.2", "iwdblsbr_b_022"),
-            new SaberHiltPart(23, "Hilt 2.3", "iwdblsbr_b_023"),
-            new SaberHiltPart(31, "Hilt 3.1", "iwdblsbr_b_031"),
-            new SaberHiltPart(41, "Hilt 4.1", "iwdblsbr_b_041"),
-            new SaberHiltPart(51, "Hilt 5.1", "iwdblsbr_b_051"),
-            new SaberHiltPart(61, "Hilt 6.1", "iwdblsbr_b_061"),
-            new SaberHiltPart(71, "Hilt 7.1", "iwdblsbr_b_071"),
+            new SaberHiltPart(11, "Hilt 1.1", "ui_ssh_011"),
+            new SaberHiltPart(12, "Hilt 1.2", "ui_ssh_012"),
+            new SaberHiltPart(13, "Hilt 1.3", "ui_ssh_013"),
+            new SaberHiltPart(14, "Hilt 1.4", "ui_ssh_014"),
+            new SaberHiltPart(21, "Hilt 2.1", "ui_ssh_021"),
+            new SaberHiltPart(22, "Hilt 2.2", "ui_ssh_022"),
+            new SaberHiltPart(23, "Hilt 2.3", "ui_ssh_023"),
+            new SaberHiltPart(31, "Hilt 3.1", "ui_ssh_031"),
+            new SaberHiltPart(41, "Hilt 4.1", "ui_ssh_041"),
+            new SaberHiltPart(51, "Hilt 5.1", "ui_ssh_051"),
+            new SaberHiltPart(61, "Hilt 6.1", "ui_ssh_061"),
+            new SaberHiltPart(71, "Hilt 7.1 (Training Staff)", "ui_ssh_071"),
         };
 
         private static readonly List<SaberBladeColor> _bladeColors = new()
@@ -121,17 +117,6 @@ namespace SWLOR.Game.Server.Service
             return weaponType == BaseItem.Saberstaff
                 ? _saberstaffHilts
                 : _lightsaberHilts;
-        }
-
-        /// <summary>
-        /// Retrieves the middle grip models available for a given saber weapon type.
-        /// The haks currently ship a single grip model per weapon type.
-        /// </summary>
-        public static IReadOnlyList<SaberHiltPart> GetMiddles(BaseItem weaponType)
-        {
-            return weaponType == BaseItem.Saberstaff
-                ? _saberstaffMiddles
-                : _lightsaberMiddles;
         }
 
         /// <summary>

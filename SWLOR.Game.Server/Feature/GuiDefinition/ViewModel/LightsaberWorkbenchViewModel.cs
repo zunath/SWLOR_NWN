@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private BaseItem _weaponType;
         private int _topIndex;
-        private int _middleIndex;
         private int _bottomIndex;
 
         private readonly string[] _enhancementSerialized = new string[EnhancementSlotCount];
@@ -60,24 +59,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string TopCountText
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string MiddleName
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string MiddlePreview
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
-        public string MiddleCountText
         {
             get => Get<string>();
             set => Set(value);
@@ -141,10 +122,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private SaberHiltPart SelectedBottom => Bottoms[_bottomIndex];
 
-        private IReadOnlyList<SaberHiltPart> Middles => LightsaberWorkbench.GetMiddles(_weaponType);
-
-        private SaberHiltPart SelectedMiddle => Middles[_middleIndex];
-
         // The top (emitter) model carries the blade color; curved bottom hilts
         // require the curved emitter set, so the available tops depend on the bottom.
         private IReadOnlyList<SaberBladeColor> AvailableTops =>
@@ -157,7 +134,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isConstructing = false;
             _weaponType = BaseItem.Lightsaber;
             _topIndex = 0;
-            _middleIndex = 0;
             _bottomIndex = 0;
 
             for (var slot = 0; slot < EnhancementSlotCount; slot++)
@@ -183,7 +159,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsSaberstaffSelected = _weaponType == BaseItem.Saberstaff;
 
             RefreshBottom();
-            RefreshMiddle();
         }
 
         private void RefreshBottom()
@@ -197,17 +172,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BottomCountText = $"{_bottomIndex + 1} / {bottoms.Count}";
 
             RefreshTop();
-        }
-
-        private void RefreshMiddle()
-        {
-            var middles = Middles;
-            if (_middleIndex >= middles.Count)
-                _middleIndex = 0;
-
-            MiddleName = SelectedMiddle.Name;
-            MiddlePreview = SelectedMiddle.PreviewResref;
-            MiddleCountText = $"{_middleIndex + 1} / {middles.Count}";
         }
 
         private void RefreshTop()
@@ -232,7 +196,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var topKey = SelectedTop.PreviewResref;
             _weaponType = weaponType;
             _bottomIndex = 0;
-            _middleIndex = 0;
             RetainTopByKey(topKey);
             RefreshWeaponType();
         }
@@ -247,16 +210,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _bottomIndex = (_bottomIndex + direction + count) % count;
             RetainTopByKey(topKey);
             RefreshBottom();
-        }
-
-        private void ChangeMiddle(int direction)
-        {
-            if (_isConstructing)
-                return;
-
-            var count = Middles.Count;
-            _middleIndex = (_middleIndex + direction + count) % count;
-            RefreshMiddle();
         }
 
         private void ChangeTop(int direction)
@@ -294,10 +247,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickPreviousTop() => () => ChangeTop(-1);
 
         public Action OnClickNextTop() => () => ChangeTop(1);
-
-        public Action OnClickPreviousMiddle() => () => ChangeMiddle(-1);
-
-        public Action OnClickNextMiddle() => () => ChangeMiddle(1);
 
         public Action OnClickPreviousBottom() => () => ChangeBottom(-1);
 
@@ -454,7 +403,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var bottom = SelectedBottom;
-            var middle = SelectedMiddle;
             var top = SelectedTop;
             var topValue = LightsaberWorkbench.GetTopValue(top, _weaponType, bottom.IsCurved);
             if (topValue <= -1)
@@ -472,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetLocalBool(item, Item.PlayerProducedItemVariable, true);
 
             item = ModifyWeaponPart(item, AppearanceWeapon.Bottom, bottom.PartValue);
-            item = ModifyWeaponPart(item, AppearanceWeapon.Middle, middle.PartValue);
+            item = ModifyWeaponPart(item, AppearanceWeapon.Middle, LightsaberWorkbench.MiddlePartValue);
             item = ModifyWeaponPart(item, AppearanceWeapon.Top, topValue);
 
             foreach (var property in _enhancementProperties.SelectMany(x => x))
@@ -489,7 +437,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
 
             var playerId = GetObjectUUID(Player);
-            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({playerId}) constructed '{GetName(item)}' (bottom: {bottom.Name}, middle: {middle.Name}, top: {top.Name}) at a lightsaber workbench.");
+            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({playerId}) constructed '{GetName(item)}' (bottom: {bottom.Name}, top: {top.Name}) at a lightsaber workbench.");
             FloatingTextStringOnCreature($"You have constructed your {GetName(item)}!", Player, false);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.LightsaberWorkbench);

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.LightsaberWorkbench)
-                .SetInitialGeometry(0, 0, 545f, 820f)
+                .SetInitialGeometry(0, 0, 545f, 660f)
                 .SetTitle("Lightsaber Workbench")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -95,63 +95,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                         row.AddLabel()
                             .BindText(model => model.TopCountText)
-                            .SetHeight(16f)
-                            .SetWidth(200f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .SetText("Middle (Grip)")
-                            .SetHeight(20f)
-                            .SetWidth(220f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddImage()
-                            .BindResref(model => model.MiddlePreview)
-                            .SetAspect(NuiAspect.Fit)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle)
-                            .SetHeight(90f)
-                            .SetWidth(90f);
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddButton()
-                            .SetText("<")
-                            .SetHeight(32f)
-                            .SetWidth(32f)
-                            .BindOnClicked(model => model.OnClickPreviousMiddle());
-                        row.AddLabel()
-                            .BindText(model => model.MiddleName)
-                            .SetHeight(32f)
-                            .SetWidth(220f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
-                        row.AddButton()
-                            .SetText(">")
-                            .SetHeight(32f)
-                            .SetWidth(32f)
-                            .BindOnClicked(model => model.OnClickNextMiddle());
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .BindText(model => model.MiddleCountText)
                             .SetHeight(16f)
                             .SetWidth(200f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center);

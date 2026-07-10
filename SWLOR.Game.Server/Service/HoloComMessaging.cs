@@ -1,19 +1,23 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class HoloComMessaging
     {
         public const int MaxMessageLength = 1000;
+
+        private const string MessageLastSubmission = "HOLOCOM_MESSAGE_LAST_SUBMISSION";
+        private const int MessageCooldownSeconds = 10;
 
         public static string SendMessage(uint sender, string recipientPlayerId, string rawText, bool allowSelfMessage = false)
         {
@@ -29,10 +33,19 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(validationError))
                 return validationError;
 
+            if (IsOnMessageCooldown(sender))
+                return "You are sending messages too quickly. Try again in a few seconds.";
+
+            // Everything an offline sender can no longer provide is captured now:
+            // appearance snapshot, the identity as observers currently perceive it
+            // (disguise-aware), its descriptor, and the active language.
             var message = new HoloComMessage
             {
                 SenderPlayerId = senderId,
                 SenderFallbackName = GetName(sender),
+                SenderIdentityKey = Disguise.GetIdentityKey(sender),
+                SenderDescriptor = Disguise.GetDisplayDescriptor(sender),
+                SenderLanguage = (int)Language.GetActiveLanguage(sender),
                 RecipientPlayerId = recipientPlayerId,
                 Text = SanitizeMessageText(rawText),
                 IsRead = false,
@@ -40,6 +53,7 @@ namespace SWLOR.Game.Server.Service
             };
 
             DB.Set(message);
+            SetLocalString(sender, MessageLastSubmission, DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
 
             var recipientObject = HoloCom.FindOnlinePlayerByPlayerId(recipientPlayerId);
             if (GetIsObjectValid(recipientObject))
@@ -118,58 +132,73 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Recreates a hologram of the message's sender at the recipient's location and has it
-        /// speak the stored message text, mirroring the old two-way call system's hologram
-        /// behavior. The sender's appearance was snapshotted to JSON at send time (while they
-        /// were online), so this works even if the sender is offline or no longer exists.
+        /// speak the stored message text sentence by sentence, mirroring the live call system's
+        /// hologram behavior. Everything needed was captured at send time (appearance snapshot,
+        /// disguise identity, active language), so playback works with the sender offline.
+        /// Returns an empty string on success or a user-facing error message.
         /// </summary>
-        public static bool PlayMessage(uint recipient, string messageId)
+        public static string PlayMessage(uint recipient, string messageId)
         {
+            if (GetIsObjectValid(HoloCom.GetActivePlaybackHologram(recipient)))
+                return "A recording is already playing. Wait for it to finish.";
+
             var message = DB.Get<HoloComMessage>(messageId);
             if (message == null || string.IsNullOrWhiteSpace(message.SenderSnapshotJson))
-                return false;
+                return "This message's recording is no longer available.";
 
             var location = BiowareVector.MoveLocation(GetLocation(recipient), GetFacing(recipient), 2.0f, 180);
             var hologram = JsonToObject(JsonParse(message.SenderSnapshotJson), location, bLoadObjectState: false);
 
             if (!GetIsObjectValid(hologram))
-                return false;
+                return "This message's recording is no longer available.";
 
-            SetName(hologram, "HoloCom Recording");
-            SetPlotFlag(hologram, true);
-            DisableHologramAI(hologram);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(hologram)), hologram);
-            ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), hologram);
+            HoloCom.ConfigureHologram(hologram);
+            HoloCom.SetActivePlaybackHologram(recipient, hologram);
+
+            // Recordings speak the language the sender had active when the message was
+            // composed. Non-player speakers are treated as fluent by the chat pipeline,
+            // so listeners translate strictly by their own comprehension skill.
+            Language.SetActiveLanguage(hologram, (SkillType)message.SenderLanguage);
 
             AssignCommand(recipient, () => PlaySound("hologram_on"));
-
-            var animation = Animation.LoopingTalkNormal;
-            if (message.Text.Contains("!"))
-                animation = Animation.LoopingTalkForceful;
-            if (message.Text.Contains("?"))
-                animation = Animation.LoopingTalkPleading;
 
             // Deserialized player copies are not reliably commandable, and actions
             // assigned to a non-commandable creature are silently dropped - the live
             // call relay forces commandable before every line for the same reason.
-            // The short delay lets the fresh copy finish initializing before actions
+            // The initial delay lets the fresh copy finish initializing before actions
             // are queued; same-frame assignments get flushed by creature spawn-in.
-            DelayCommand(0.5f, () =>
+            var offset = 0.5f;
+            foreach (var sentence in SplitIntoSentences(message.Text))
             {
-                if (!GetIsObjectValid(hologram))
-                    return;
+                var spokenSentence = sentence;
+                var animation = Animation.LoopingTalkNormal;
+                if (spokenSentence.Contains("!"))
+                    animation = Animation.LoopingTalkForceful;
+                if (spokenSentence.Contains("?"))
+                    animation = Animation.LoopingTalkPleading;
 
-                SetCommandable(true, hologram);
-                AssignCommand(hologram, () => ClearAllActions());
-                AssignCommand(hologram, () => ActionPlayAnimation(animation));
-                AssignCommand(hologram, () => ActionSpeakString(message.Text, TalkVolume.Talk));
-            });
+                var sentenceSeconds = EstimatePlaybackSeconds(spokenSentence);
 
-            var speakSeconds = 0.5f + EstimatePlaybackSeconds(message.Text);
-            DelayCommand(speakSeconds, () =>
+                DelayCommand(offset, () =>
+                {
+                    if (!GetIsObjectValid(hologram))
+                        return;
+
+                    SetCommandable(true, hologram);
+                    AssignCommand(hologram, () => ClearAllActions());
+                    AssignCommand(hologram, () => ActionPlayAnimation(animation, 1f, sentenceSeconds));
+                    AssignCommand(hologram, () => ActionSpeakString(spokenSentence, TalkVolume.Talk));
+                });
+
+                offset += sentenceSeconds;
+            }
+
+            DelayCommand(offset + 0.5f, () =>
             {
                 if (GetIsObjectValid(hologram))
                     DestroyObject(hologram);
 
+                HoloCom.ClearActivePlaybackHologram(recipient);
                 AssignCommand(recipient, () => PlaySound("hologram_off"));
             });
 
@@ -179,36 +208,62 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(message);
             }
 
-            return true;
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Splits message text into sentences on runs of '.', '!' and '?', keeping the
+        /// terminator with its sentence. Text without terminators is a single sentence.
+        /// </summary>
+        public static List<string> SplitIntoSentences(string text)
+        {
+            var sentences = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(text))
+                return sentences;
+
+            var builder = new StringBuilder();
+
+            for (var i = 0; i < text.Length; i++)
+            {
+                var character = text[i];
+                builder.Append(character);
+
+                var isTerminator = character == '.' || character == '!' || character == '?';
+                var nextIsTerminator = i + 1 < text.Length &&
+                                       (text[i + 1] == '.' || text[i + 1] == '!' || text[i + 1] == '?');
+
+                if (isTerminator && !nextIsTerminator)
+                {
+                    var sentence = builder.ToString().Trim();
+                    if (sentence.Length > 0)
+                        sentences.Add(sentence);
+
+                    builder.Clear();
+                }
+            }
+
+            var remainder = builder.ToString().Trim();
+            if (remainder.Length > 0)
+                sentences.Add(remainder);
+
+            return sentences;
         }
 
         private static float EstimatePlaybackSeconds(string text)
         {
             var wordCount = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
-            return Math.Clamp(wordCount / 2.5f + 1.5f, 3f, 30f);
+            return Math.Clamp(wordCount / 2.5f + 1.5f, 2f, 30f);
         }
 
-        /// <summary>
-        /// Strips every creature event script from the hologram so no AI, perception,
-        /// or combat handler ever runs on it. The hologram is a prop: its only job is
-        /// to stand still and play the queued speak/animation actions, and any AI
-        /// handler firing on it could flush or contest that action queue.
-        /// </summary>
-        private static void DisableHologramAI(uint hologram)
+        private static bool IsOnMessageCooldown(uint sender)
         {
-            SetEventScript(hologram, EventScript.Creature_OnBlockedByDoor, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnEndCombatRound, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnDialogue, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnDamaged, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnDeath, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnDisturbed, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnHeartbeat, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnNotice, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnMeleeAttacked, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnRested, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnSpawnIn, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnSpellCastAt, string.Empty);
-            SetEventScript(hologram, EventScript.Creature_OnUserDefined, string.Empty);
+            var lastSubmission = GetLocalString(sender, MessageLastSubmission);
+            if (string.IsNullOrWhiteSpace(lastSubmission))
+                return false;
+
+            var lastSend = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+            return DateTime.UtcNow <= lastSend.AddSeconds(MessageCooldownSeconds);
         }
 
         public static string ValidateMessageText(string text)

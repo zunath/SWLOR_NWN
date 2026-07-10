@@ -391,8 +391,17 @@ public class PlayerFacingNameBroadcastTests
             "HoloCom.cs"));
         holoComSource.Should().Contain("var holoSender = CopyObject(sender");
         holoComSource.Should().Contain("var holoReceiver = CopyObject(receiver");
-        holoComSource.Should().Contain("SetName(holoSender, \"HoloCom Hologram\");");
-        holoComSource.Should().Contain("SetName(holoReceiver, \"HoloCom Hologram\");");
+        holoComSource.Should().Contain("ConfigureHologram(holoSender);");
+        holoComSource.Should().Contain("ConfigureHologram(holoReceiver);");
+        holoComSource.Should().Contain("SetName(hologram, \"Hologram\");");
+
+        var holoComMessagingSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "HoloComMessaging.cs"));
+        holoComMessagingSource.Should().Contain("HoloCom.ConfigureHologram(hologram);");
+        holoComMessagingSource.Should().NotContain("SetName(hologram,");
 
         var spaceSource = File.ReadAllText(Path.Combine(
             root.FullName,

@@ -133,6 +133,44 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Resolves a display name for an identity captured at a moment in time (e.g. the
+        /// sender of a stored HoloCom message), keyed strictly by identity key - the
+        /// disguise identity when the subject was disguised, otherwise their player id
+        /// (see Disguise.GetIdentityKey). This never resolves through the real player id,
+        /// so a disguised identity stays disguised. Staff observers see the canonical
+        /// name plus the descriptor.
+        /// </summary>
+        /// <param name="observer">The player viewing the name.</param>
+        /// <param name="identityKey">The identity key captured when the identity was recorded.</param>
+        /// <param name="descriptor">The unknown-display descriptor captured when the identity was recorded.</param>
+        /// <param name="canonicalFallbackName">The canonical character name, shown only to staff or the subject themselves.</param>
+        public static string GetDisplayNameByIdentity(uint observer, string identityKey, string descriptor, string canonicalFallbackName)
+        {
+            var canonicalDisplayName = string.IsNullOrWhiteSpace(canonicalFallbackName)
+                ? UnknownName
+                : canonicalFallbackName;
+            var descriptorDisplayName = string.IsNullOrWhiteSpace(descriptor)
+                ? UnknownName
+                : descriptor;
+
+            if (!GetIsObjectValid(observer) || !GetIsPC(observer))
+                return descriptorDisplayName;
+
+            if (GetIsDM(observer) || GetIsDMPossessed(observer))
+                return BuildDisplayNameWithDescriptor(canonicalDisplayName, descriptorDisplayName);
+
+            if (!string.IsNullOrWhiteSpace(identityKey) && GetObjectUUID(observer) == identityKey)
+                return canonicalDisplayName;
+
+            if (!string.IsNullOrWhiteSpace(identityKey) && TryGetKnownName(observer, identityKey, out var knownName))
+                return ShouldShowDescriptorForNamedPlayers(observer)
+                    ? BuildDisplayNameWithDescriptor(knownName, descriptorDisplayName)
+                    : knownName;
+
+            return descriptorDisplayName;
+        }
+
+        /// <summary>
         /// Returns the observer's known name when present, otherwise the fallback name.
         /// Use for operational permission management surfaces that target persisted character records.
         /// </summary>

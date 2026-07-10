@@ -108,6 +108,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<uint> _onlinePlayerObjects = new();
         private IList<FavoriteRow> _favoriteRows = new List<FavoriteRow>();
         private string _composeRecipientId;
+        private string _composeRecipientName;
+
+        // ShowModal swaps the whole window to the modal view and returns to the main
+        // view on close, which resets the nested content slot. Track what the content
+        // slot currently shows so modal confirm/cancel can restore it - the same
+        // pattern CharacterSheetViewModel uses for its tabs.
+        private string _currentPartial = MessagesTabPartial;
+        private Action _currentPartialRefresh;
+
+        private void RestoreContentPartial()
+        {
+            SwapNestedPartialView(TabContentPartialElement, _currentPartial, _currentPartialRefresh);
+        }
 
         public int SelectedTabId
         {
@@ -116,6 +129,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(value);
                 TabToggle.SyncTo(value, v => TabToggleValue = v);
+                _currentPartial = Tabs.GetPartialName(value);
+                _currentPartialRefresh = value == ContactsTabId
+                    ? RefreshContacts
+                    : (Action)RefreshMessages;
                 Tabs.Select(this, TabContentPartialElement, value);
             }
         }
@@ -192,7 +209,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var messages = HoloComMessaging.GetInboxPage(recipientId, ShowUnreadOnly, _inboxPageIndex, InboxPageSize);
             var rows = messages.Select(message => new MessageRow(
                     message.Id,
-                    PlayerName.GetDisplayNameByPlayerId(Player, message.SenderPlayerId, message.SenderFallbackName),
+                    // Strictly identity-key based: a message sent while disguised keeps
+                    // the disguise identity forever, regardless of the sender's current
+                    // state. Only staff (and the sender themselves) see the canonical name.
+                    PlayerName.GetDisplayNameByIdentity(Player, message.SenderIdentityKey, message.SenderDescriptor, message.SenderFallbackName),
                     message.IsRead ? GuiColor.Grey : GuiColor.White,
                     new DateTime(message.SentDateTicks, DateTimeKind.Utc).ToLocalTime().ToString("MMM d, h:mm tt"),
                     BuildPreview(message.Text),
@@ -219,8 +239,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             var row = _messageRows[index];
 
-            if (!HoloComMessaging.PlayMessage(Player, row.Id))
-                SendMessageToPC(Player, "This message's recording is no longer available.");
+            var error = HoloComMessaging.PlayMessage(Player, row.Id);
+            if (!string.IsNullOrWhiteSpace(error))
+                SendMessageToPC(Player, ColorToken.Red(error));
 
             RefreshMessages();
         };
@@ -234,8 +255,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickDeleteRead() => () =>
         {
-            HoloComMessaging.DeleteAllRead(GetObjectUUID(Player));
-            RefreshMessages();
+            ShowModal("Delete all read messages? This cannot be undone.",
+                () =>
+                {
+                    HoloComMessaging.DeleteAllRead(GetObjectUUID(Player));
+                    RefreshMessages();
+                    RestoreContentPartial();
+                },
+                RestoreContentPartial);
         };
 
         public Action OnClickPrevPage() => () =>
@@ -385,8 +412,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var target = _onlinePlayerObjects[index];
-            HoloCom.InitiateCall(Player, target);
-            RefreshContacts();
+            var displayName = PlayerName.GetDisplayName(Player, target);
+
+            ShowModal($"Call {displayName}?",
+                () =>
+                {
+                    HoloCom.InitiateCall(Player, target);
+                    RefreshContacts();
+                    RestoreContentPartial();
+                },
+                RestoreContentPartial);
         };
 
         public Action OnClickMessageOnline() => () =>
@@ -418,8 +453,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            HoloCom.InitiateCall(Player, target);
-            RefreshContacts();
+            ShowModal($"Call {row.DisplayName}?",
+                () =>
+                {
+                    HoloCom.InitiateCall(Player, target);
+                    RefreshContacts();
+                    RestoreContentPartial();
+                },
+                RestoreContentPartial);
         };
 
         public Action OnClickMessageFavorite() => () =>
@@ -433,36 +474,57 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var row = _favoriteRows[index];
-            HoloCom.RemoveFavorite(Player, row.PlayerId);
-            RefreshFavorites();
+
+            ShowModal($"Remove {row.DisplayName} from your favorites?",
+                () =>
+                {
+                    HoloCom.RemoveFavorite(Player, row.PlayerId);
+                    RefreshFavorites();
+                    RestoreContentPartial();
+                },
+                RestoreContentPartial);
         };
 
         private void SetComposeTarget(string playerId, string displayName)
         {
             _composeRecipientId = playerId;
+            _composeRecipientName = displayName;
             ComposeRecipientLabel = $"To: {displayName}";
             ComposeText = string.Empty;
+            _currentPartial = ComposePartial;
+            _currentPartialRefresh = null;
             SwapNestedPartialView(TabContentPartialElement, ComposePartial, null);
         }
 
         public Action OnClickSend() => () =>
         {
-            var error = HoloComMessaging.SendMessage(Player, _composeRecipientId, ComposeText, IsTestingModeEnabled);
-            if (!string.IsNullOrWhiteSpace(error))
-            {
-                SendMessageToPC(Player, ColorToken.Red(error));
-                return;
-            }
+            ShowModal($"Send this message to {_composeRecipientName}?",
+                () =>
+                {
+                    var error = HoloComMessaging.SendMessage(Player, _composeRecipientId, ComposeText, IsTestingModeEnabled);
+                    if (!string.IsNullOrWhiteSpace(error))
+                    {
+                        SendMessageToPC(Player, ColorToken.Red(error));
+                        // Stay on the Compose screen with the typed text intact.
+                        RestoreContentPartial();
+                        return;
+                    }
 
-            SendMessageToPC(Player, "Message sent.");
-            ReturnToContacts();
+                    SendMessageToPC(Player, "Message sent.");
+                    ReturnToContacts();
+                },
+                RestoreContentPartial);
         };
 
         public Action OnClickClearCompose() => () => { ComposeText = string.Empty; };
 
         public Action OnClickComposeBack() => () => ReturnToContacts();
 
-        private void ReturnToContacts() =>
+        private void ReturnToContacts()
+        {
+            _currentPartial = ContactsTabPartial;
+            _currentPartialRefresh = RefreshContacts;
             SwapNestedPartialView(TabContentPartialElement, ContactsTabPartial, () => RefreshContacts());
+        }
     }
 }

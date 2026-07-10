@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -23,6 +24,10 @@ namespace SWLOR.Game.Server.Service
         private const string HolocomHologram = "HOLOCOM_HOLOGRAM";
         private const string HologramOwner = "HOLOGRAM_OWNER";
         private const string HolocomCallImmobilize = "HOLOCOM_CALL_IMMOBILIZE";
+        private const string HolocomPlaybackHologram = "HOLOCOM_PLAYBACK_HOLOGRAM";
+        private const string HolocomCallLastSubmission = "HOLOCOM_CALL_LAST_SUBMISSION";
+
+        private const int CallCooldownSeconds = 10;
 
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnModuleDeath()
@@ -117,16 +122,8 @@ namespace SWLOR.Game.Server.Service
                 var senderLocation = GetLocation(sender);
                 var holoSender = CopyObject(sender, BiowareVector.MoveLocation(receiverLocation, GetFacing(receiver), 2.0f, 180));
                 var holoReceiver = CopyObject(receiver, BiowareVector.MoveLocation(senderLocation, GetFacing(sender), 2.0f, 180));
-                SetName(holoSender, "HoloCom Hologram");
-                SetName(holoReceiver, "HoloCom Hologram");
-
-                ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoSender)), holoSender);
-                ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoReceiver)), holoReceiver);
-
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoSender);
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoReceiver);
-                SetPlotFlag(holoReceiver, true);
-                SetPlotFlag(holoSender, true);
+                ConfigureHologram(holoSender);
+                ConfigureHologram(holoReceiver);
                 SetLocalObject(sender, HolocomHologram, holoSender);
                 SetLocalObject(receiver, HolocomHologram, holoReceiver);
 
@@ -234,6 +231,63 @@ namespace SWLOR.Game.Server.Service
             if (GetIsObjectValid(receiver) && receiver != sender)
                 Gui.PublishRefreshEvent(receiver, refreshEvent);
         }
+        /// <summary>
+        /// Applies the shared hologram treatment used by both live calls and message
+        /// playback: generic display-safe name, plot flag, stripped AI, full heal, and
+        /// the ghostly hologram visual.
+        /// </summary>
+        public static void ConfigureHologram(uint hologram)
+        {
+            SetName(hologram, "Hologram");
+            SetPlotFlag(hologram, true);
+            DisableHologramAI(hologram);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(hologram)), hologram);
+            ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), hologram);
+        }
+
+        /// <summary>
+        /// Strips every creature event script from the hologram so no AI, perception,
+        /// or combat handler ever runs on it. Holograms are props: their only job is to
+        /// stand still and play queued speak/animation actions, and any AI handler
+        /// firing on them could flush or contest that action queue.
+        /// </summary>
+        private static void DisableHologramAI(uint hologram)
+        {
+            SetEventScript(hologram, EventScript.Creature_OnBlockedByDoor, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnEndCombatRound, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnDialogue, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnDamaged, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnDeath, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnDisturbed, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnHeartbeat, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnNotice, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnMeleeAttacked, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnRested, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnSpawnIn, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnSpellCastAt, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnUserDefined, string.Empty);
+        }
+
+        /// <summary>
+        /// The message-playback hologram currently active near this player, if any.
+        /// Tracked so playbacks cannot overlap and so logouts clean up in-flight
+        /// recordings.
+        /// </summary>
+        public static uint GetActivePlaybackHologram(uint player)
+        {
+            return GetLocalObject(player, HolocomPlaybackHologram);
+        }
+
+        public static void SetActivePlaybackHologram(uint player, uint hologram)
+        {
+            SetLocalObject(player, HolocomPlaybackHologram, hologram);
+        }
+
+        public static void ClearActivePlaybackHologram(uint player)
+        {
+            DeleteLocalObject(player, HolocomPlaybackHologram);
+        }
+
         public static uint GetHoloGram(uint player)
         {
             return GetLocalObject(player, HolocomHologram);
@@ -385,6 +439,15 @@ namespace SWLOR.Game.Server.Service
                     DeleteLocalObject(player, HolocomHologram);
                 }
             }
+
+            // Clean up any in-flight message playback so a logout doesn't strand
+            // its hologram until the playback timer happens to fire.
+            var playbackHologram = GetActivePlaybackHologram(player);
+            if (GetIsObjectValid(playbackHologram))
+            {
+                DestroyObject(playbackHologram);
+            }
+            ClearActivePlaybackHologram(player);
         }
 
         public const int MaxFavorites = 50;
@@ -510,8 +573,25 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (IsOnCallCooldown(sender))
+            {
+                SendMessageToPC(sender, "You are placing calls too quickly. Try again in a few seconds.");
+                return;
+            }
+
+            SetLocalString(sender, HolocomCallLastSubmission, DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             SetIsCallSender(sender);
             DelayCommand(1.0f, () => CallPlayer(sender, receiver));
+        }
+
+        private static bool IsOnCallCooldown(uint sender)
+        {
+            var lastSubmission = GetLocalString(sender, HolocomCallLastSubmission);
+            if (string.IsNullOrWhiteSpace(lastSubmission))
+                return false;
+
+            var lastCall = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+            return DateTime.UtcNow <= lastCall.AddSeconds(CallCooldownSeconds);
         }
 
         /// <summary>

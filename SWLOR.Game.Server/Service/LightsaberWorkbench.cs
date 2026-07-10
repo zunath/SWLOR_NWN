@@ -106,9 +106,9 @@ namespace SWLOR.Game.Server.Service
             new SaberBladeColor("Purple", 22, -1, 22, "ui_lsc_purple"),
             new SaberBladeColor("Teal", 23, -1, 23, "ui_lsc_teal"),
             new SaberBladeColor("Pink", 24, -1, 24, "ui_lsc_pink"),
-            new SaberBladeColor("Bnar Brown", 51, 61, 51, "ui_lsc_brown"),
-            new SaberBladeColor("ROTJ Green", 52, 62, 52, "ui_lsc_rotjgrn"),
-            new SaberBladeColor("Windu Purple", 53, 63, 53, "ui_lsc_windu"),
+            new SaberBladeColor("Brown", 51, 61, 51, "ui_lsc_brown"),
+            new SaberBladeColor("Green", 52, 62, 52, "ui_lsc_rotjgrn"),
+            new SaberBladeColor("Purple", 53, 63, 53, "ui_lsc_windu"),
             new SaberBladeColor("Lavender", 54, 64, 54, "ui_lsc_lavendr"),
             new SaberBladeColor("Cyan", 55, 65, 55, "ui_lsc_cyan"),
         };

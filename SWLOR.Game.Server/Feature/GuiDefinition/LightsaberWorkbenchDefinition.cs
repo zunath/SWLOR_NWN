@@ -17,7 +17,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnWindowClosed())
 
-                .AddColumn(col =>
+                // Wrap all content in a scrollable group so the window stays usable
+                // (scrolls instead of clipping) when resized smaller than its content.
+                .AddRow(wrapperRow =>
+                {
+                    wrapperRow.AddGroup(wrapper =>
+                    {
+                    wrapper.SetShowBorder(false);
+                    wrapper.AddColumn(col =>
                 {
                     col.AddRow(row =>
                     {
@@ -258,6 +265,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(200f)
                             .BindOnClicked(model => model.OnClickConstruct());
                         row.AddSpacer();
+                    });
+                    });
                     });
                 });
 

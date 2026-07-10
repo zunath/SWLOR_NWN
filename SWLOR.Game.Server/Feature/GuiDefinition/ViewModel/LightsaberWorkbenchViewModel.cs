@@ -229,11 +229,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var topName = SelectedTop.Name;
+            var topKey = SelectedTop.PreviewResref;
             _weaponType = weaponType;
             _bottomIndex = 0;
             _middleIndex = 0;
-            RetainTopByName(topName);
+            RetainTopByKey(topKey);
             RefreshWeaponType();
         }
 
@@ -242,10 +242,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_isConstructing)
                 return;
 
-            var topName = SelectedTop.Name;
+            var topKey = SelectedTop.PreviewResref;
             var count = Bottoms.Count;
             _bottomIndex = (_bottomIndex + direction + count) % count;
-            RetainTopByName(topName);
+            RetainTopByKey(topKey);
             RefreshBottom();
         }
 
@@ -269,13 +269,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshTop();
         }
 
-        private void RetainTopByName(string topName)
+        // Retains the selected top across bottom/weapon changes by its unique preview
+        // resref rather than its display name, since some colors share a display name.
+        private void RetainTopByKey(string topKey)
         {
             var tops = AvailableTops;
             var index = -1;
             for (var i = 0; i < tops.Count; i++)
             {
-                if (tops[i].Name == topName)
+                if (tops[i].PreviewResref == topKey)
                 {
                     index = i;
                     break;

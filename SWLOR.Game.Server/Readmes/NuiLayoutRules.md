@@ -33,7 +33,12 @@ Verified against `Core/Beamdog/Nui.cs` and the engine's layout source:
    behavior — and hard sizes that cannot coexist fail the whole layout update.
 4. **List template cells** are `[element, width, variable]` triplets. `width > 0` +
    `variable: false` = hard fixed column; `width: 0` + `variable: true` = fill column.
-   Every shipping table uses one of those two combinations.
+   A fixed cell (`variable: false`) with no width of its own is also solvable when its
+   inner element declares a positive width (e.g. a button with `SetWidth(32f)`) — the
+   solver sizes the cell from that element. `GuiLayoutValidator` treats this
+   element-sized-cell shape as exempt from the "fixed cell, no width" warning;
+   `CharacterFullRebuildDefinition`'s skill-point rows ship this shape in four cells.
+   Any other fixed cell with no width anywhere still gets flagged.
 
 ## Authoring rules
 
@@ -56,10 +61,16 @@ geometry-bound. `HoloComDefinition`'s Messages tab wraps its table in a scrollab
 group so a pagination row can follow it.
 
 Known counterexamples that ship and work (`DMPlayerExamine` NotesView,
-`AppearanceEditor`'s part/color lists) have unbounded non-terminal lists in partials —
-so this rule is a **warning, not a hard error**, until the engine's exact failure
-condition is pinned down. When a window hits a client-side layout error, check its
-`[NUI layout warning]` lines first.
+`AppearanceEditor`'s part/color lists, `Settings`' Chat view) have unbounded
+non-terminal lists in partials — so this rule is a **warning, not a hard error**, until
+the engine's exact failure condition is pinned down. When a window hits a client-side
+layout error, check its `[NUI layout warning]` lines first.
+
+These specific findings are suppressed via the `AcknowledgedFindingPaths` list in
+`GuiLayoutValidator.cs` so boot output stays clean for windows already verified
+in-game. Do not add a new path to that list without verifying the specific window
+in-game first — it exists to keep the warning channel trustworthy for real defects,
+not to silence warnings that are merely inconvenient.
 
 ### R2b — Keep a partial's fixed-height content below any plausible host viewport
 A named partial lands in a `scrollbars: None` host group whose viewport is whatever

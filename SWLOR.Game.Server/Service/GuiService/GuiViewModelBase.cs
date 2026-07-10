@@ -250,7 +250,23 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             WatchOnClient(model => model.Geometry);
 
+            // The input modal's text box only reports typed text back to the server
+            // while this bind is watched. Set before watching (layout rule R3).
+            ModalInputText = string.Empty;
+            WatchOnClient(model => model.ModalInputText);
+
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+
+            // The client can drop the Geometry watch while the initial root layout is
+            // applied; until a relayout re-arms it, window moves never reach the server
+            // and the stale open position is what gets persisted at close. Re-issue the
+            // watch once the root layout has settled so the first move is captured.
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    WatchOnClient(model => model.Geometry);
+            });
+
             var convertedPayload = payload == null ? default : (TPayload)payload;
             Initialize(convertedPayload);
         }
@@ -331,6 +347,35 @@ namespace SWLOR.Game.Server.Service.GuiService
             ChangePartialView("_window_", "%%WINDOW_MODAL%%");
         }
 
+        /// <summary>
+        /// Displays an input modal on top of the active window. Unlike ShowModal's
+        /// yes/no prompt, this presents a multiline text box the player can type into.
+        /// The confirm action reads the submitted text from <see cref="ModalInputText"/>.
+        /// </summary>
+        /// <param name="prompt">The text to display above the text box.</param>
+        /// <param name="initialText">The text pre-filled into the text box.</param>
+        /// <param name="confirmAction">The action to run when the player confirms.</param>
+        /// <param name="cancelAction">The action to run when the player cancels.</param>
+        /// <param name="confirmText">The confirmation text to display.</param>
+        /// <param name="cancelText">The cancel text to display.</param>
+        protected void ShowInputModal(
+            string prompt,
+            string initialText,
+            Action confirmAction,
+            Action cancelAction = null,
+            string confirmText = "Send",
+            string cancelText = "Cancel")
+        {
+            ModalPromptText = prompt;
+            ModalConfirmButtonText = confirmText;
+            ModalCancelButtonText = cancelText;
+            ModalInputText = initialText ?? string.Empty;
+            _callerConfirmAction = confirmAction;
+            _callerCancelAction = cancelAction;
+
+            ChangePartialView("_window_", "%%WINDOW_INPUT_MODAL%%");
+        }
+
         /// <inheritdoc />
         public void ChangePartialView(string elementId, string partialName)
         {
@@ -402,6 +447,14 @@ namespace SWLOR.Game.Server.Service.GuiService
             private set => Set(value);
         }
 
+        // Public setter (unlike the other modal properties): the client pushes typed
+        // text back through the watch pipeline, which sets this via reflection.
+        public string ModalInputText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         private Action _callerConfirmAction;
         private Action _callerCancelAction;
 
@@ -412,6 +465,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             ModalConfirmButtonText = "Yes";
             ModalCancelButtonText = "No";
+            ModalInputText = string.Empty;
 
             _callerConfirmAction = null;
             _callerCancelAction = null;
@@ -426,6 +480,22 @@ namespace SWLOR.Game.Server.Service.GuiService
         };
 
         public Action OnModalCancelClick() => () =>
+        {
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+
+            if (_callerCancelAction != null)
+                _callerCancelAction();
+        };
+
+        public Action OnInputModalConfirmClick() => () =>
+        {
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+
+            if (_callerConfirmAction != null)
+                _callerConfirmAction();
+        };
+
+        public Action OnInputModalCancelClick() => () =>
         {
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
 

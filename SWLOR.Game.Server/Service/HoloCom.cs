@@ -347,6 +347,76 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Ends whatever call state the player currently has: disconnects an active call,
+        /// declines an incoming call attempt, or cancels an outgoing one. Shared by the
+        /// HoloCom window's Decline/End button and the /endcall chat command so every
+        /// path notifies the other party and cleans up the same way. Safe to invoke with
+        /// no call state at all.
+        /// </summary>
+        public static void EndOrDeclineCall(uint player)
+        {
+            if (IsInCall(player))
+            {
+                var target = GetTargetForActiveCall(player);
+                if (GetIsObjectValid(target))
+                    SetIsInCall(player, target, false);
+                else
+                    CleanupOrphanedActiveCall(player);
+
+                SendMessageToPC(player, "You end your HoloCom call.");
+            }
+            else if (IsCallReceiver(player))
+            {
+                var callSender = GetCallSender(player);
+                if (GetIsObjectValid(callSender))
+                    SendMessageToPC(callSender, "Your HoloCom call was declined.");
+
+                CleanupCallAttempt(callSender, player);
+                SendMessageToPC(player, "You decline the HoloCom call.");
+            }
+            else if (IsCallSender(player))
+            {
+                var callReceiver = GetCallReceiver(player);
+                if (GetIsObjectValid(callReceiver))
+                    SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
+
+                CleanupCallAttempt(player, callReceiver);
+                SendMessageToPC(player, "You cancel your HoloCom call.");
+            }
+            else
+            {
+                SendMessageToPC(player, "You don't have any active calls or outgoing call attempts to end.");
+            }
+        }
+
+        /// <summary>
+        /// Cleans up one side of an active call whose partner object is no longer valid
+        /// (logout, crash, server transition). SetIsInCall's end path assumes both
+        /// participants exist, so this covers the pieces that would otherwise leak:
+        /// the immobilize effect, the hologram, and every call-state local.
+        /// </summary>
+        private static void CleanupOrphanedActiveCall(uint player)
+        {
+            RemoveEffectByTag(player, HolocomCallImmobilize);
+
+            var hologram = GetHoloGram(player);
+            if (GetIsObjectValid(hologram))
+                DestroyObject(hologram);
+
+            DeleteLocalInt(player, HolocomCallConnected);
+            DeleteLocalInt(player, HolocomCallSender);
+            DeleteLocalInt(player, HolocomCallReceiver);
+            DeleteLocalInt(player, HolocomCallAttempt);
+            DeleteLocalObject(player, HolocomCallConnectedWith);
+            DeleteLocalObject(player, HolocomHologram);
+            DeleteLocalObject(player, HolocomCallSenderObject);
+            DeleteLocalObject(player, HolocomCallReceiverObject);
+
+            AssignCommand(player, () => PlaySound("hologram_off"));
+            NotifyCallStateChanged(player, OBJECT_INVALID);
+        }
+
+        /// <summary>
         /// Cleans up call attempt state for both sender and receiver
         /// </summary>
         /// <param name="sender">The player who initiated the call</param>
@@ -433,10 +503,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    // If target is no longer valid, just clean up this player's state
-                    DeleteLocalInt(player, HolocomCallConnected);
-                    DeleteLocalObject(player, HolocomCallConnectedWith);
-                    DeleteLocalObject(player, HolocomHologram);
+                    CleanupOrphanedActiveCall(player);
                 }
             }
 

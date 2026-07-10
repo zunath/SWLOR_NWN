@@ -33,11 +33,25 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public bool IsRead { get; set; }
 
+        /// <summary>
+        /// Whether the recipient has saved this message, exempting it from the
+        /// retention cleanup that otherwise deletes expired messages.
+        /// </summary>
+        [Indexed]
+        public bool IsSaved { get; set; }
+
         public string Text { get; set; }
         public string SenderSnapshotJson { get; set; }
 
         [Indexed]
         public long SentDateTicks { get; set; }
+
+        /// <summary>
+        /// When this message becomes eligible for retention cleanup. Deliberately not
+        /// indexed - the DB layer only supports exact-match field searches, not numeric
+        /// ranges, so cleanup queries by IsRead/IsSaved and filters expiration in memory.
+        /// </summary>
+        public long ExpirationDateTicks { get; set; }
 
         public HoloComMessage()
         {
@@ -48,9 +62,11 @@ namespace SWLOR.Game.Server.Entity
             SenderLanguage = 0;
             RecipientPlayerId = string.Empty;
             IsRead = false;
+            IsSaved = false;
             Text = string.Empty;
             SenderSnapshotJson = string.Empty;
             SentDateTicks = DateTime.UtcNow.Ticks;
+            ExpirationDateTicks = 0;
         }
     }
 }

@@ -22,10 +22,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string TabContentPartialElement = "holocom_tab_content";
         public const string MessagesTabPartial = "HOLOCOM_MESSAGES_TAB";
         public const string ContactsTabPartial = "HOLOCOM_CONTACTS_TAB";
-        public const string ComposePartial = "HOLOCOM_COMPOSE";
 
         private const int InboxPageSize = 15;
-        private const int PreviewLength = 80;
 
         private static readonly GuiTabGroup<HoloComViewModel, GuiPayloadBase> Tabs =
             new GuiTabGroup<HoloComViewModel, GuiPayloadBase>()
@@ -40,17 +38,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             public string SenderName { get; }
             public GuiColor RowColor { get; }
             public string Timestamp { get; }
-            public string Preview { get; }
             public bool IsRead { get; }
+            public bool IsSaved { get; }
 
-            public MessageRow(string id, string senderName, GuiColor rowColor, string timestamp, string preview, bool isRead)
+            public MessageRow(string id, string senderName, GuiColor rowColor, string timestamp, bool isRead, bool isSaved)
             {
                 Id = id;
                 SenderName = senderName;
                 RowColor = rowColor;
                 Timestamp = timestamp;
-                Preview = preview;
                 IsRead = isRead;
+                IsSaved = isSaved;
             }
         }
 
@@ -89,8 +87,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Column((m, v) => m.MessageSenderNames = v, r => r.SenderName)
                 .Column((m, v) => m.MessageRowColors = v, r => r.RowColor)
                 .Column((m, v) => m.MessageTimestamps = v, r => r.Timestamp)
-                .Column((m, v) => m.MessagePreviews = v, r => r.Preview)
-                .Column((m, v) => m.MessageIsUnread = v, r => !r.IsRead);
+                .Column((m, v) => m.MessageSaveLabels = v, r => r.IsSaved ? "Unsave" : "Save")
+                .Column((m, v) => m.MessageCanDelete = v, r => !r.IsSaved);
 
         private static readonly GuiTableSource<HoloComViewModel, OnlinePlayerRow> OnlinePlayersTable =
             new GuiTableSource<HoloComViewModel, OnlinePlayerRow>()
@@ -150,8 +148,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> MessageSenderNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<GuiColor> MessageRowColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
         public GuiBindingList<string> MessageTimestamps { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> MessagePreviews { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<bool> MessageIsUnread { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<string> MessageSaveLabels { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<bool> MessageCanDelete { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
         public bool ShowUnreadOnly
         {
@@ -168,13 +166,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsPrevPageEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsNextPageEnabled { get => Get<bool>(); set => Set(value); }
 
-        public bool IsInActiveCall { get => Get<bool>(); set => Set(value); }
-        public string ActiveCallLabel { get => Get<string>(); set => Set(value); }
-        public bool HasIncomingCall { get => Get<bool>(); set => Set(value); }
-        public string IncomingCallLabel { get => Get<string>(); set => Set(value); }
-        public bool HasOutgoingCall { get => Get<bool>(); set => Set(value); }
-        public string OutgoingCallLabel { get => Get<string>(); set => Set(value); }
-        public bool IsContactsListVisible { get => Get<bool>(); set => Set(value); }
+        public string CallStatusLabel { get => Get<string>(); set => Set(value); }
+        public bool IsAnswerEnabled { get => Get<bool>(); set => Set(value); }
+        public bool IsDeclineEndEnabled { get => Get<bool>(); set => Set(value); }
 
         public GuiBindingList<string> OnlinePlayerNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<GuiColor> OnlinePlayerColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
@@ -182,18 +176,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<GuiColor> FavoriteStatusColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
         public GuiBindingList<bool> FavoriteIsOnline { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
-        public string ComposeRecipientLabel { get => Get<string>(); set => Set(value); }
-        public string ComposeText { get => Get<string>(); set => Set(value); }
-
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             ShowUnreadOnly = false;
             WatchOnClient(model => model.ShowUnreadOnly);
             _inboxPageIndex = 0;
-            ComposeText = string.Empty;
-            ComposeRecipientLabel = "Select a contact to message.";
-
-            WatchOnClient(model => model.ComposeText);
 
             SelectedTabId = MessagesTabId;
             WatchOnClient(model => model.TabToggleValue);
@@ -216,8 +203,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     PlayerName.GetDisplayNameByIdentity(Player, message.SenderIdentityKey, message.SenderDescriptor, message.SenderFallbackName),
                     message.IsRead ? GuiColor.Grey : GuiColor.White,
                     new DateTime(message.SentDateTicks, DateTimeKind.Utc).ToLocalTime().ToString("MMM d, h:mm tt"),
-                    BuildPreview(message.Text),
-                    message.IsRead))
+                    message.IsRead,
+                    message.IsSaved))
                 .ToList();
 
             _messageRows = MessagesTable.Refresh(this, rows);
@@ -225,12 +212,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             InboxPageLabel = $"Page {_inboxPageIndex + 1} of {totalPages}";
             IsPrevPageEnabled = _inboxPageIndex > 0;
             IsNextPageEnabled = _inboxPageIndex < totalPages - 1;
-        }
-
-        private static string BuildPreview(string text)
-        {
-            var singleLine = text.Replace("\n", " ").Replace("\r", "");
-            return singleLine.Length > PreviewLength ? singleLine.Substring(0, PreviewLength) + "..." : singleLine;
         }
 
         public Action OnClickRefreshMessages() => () => RefreshMessages();
@@ -247,16 +228,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshMessages();
         };
 
-        public Action OnClickMarkReadRow() => () =>
+        public Action OnClickDeleteRow() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            HoloComMessaging.MarkRead(_messageRows[index].Id);
+            var row = _messageRows[index];
+
+            ShowModal($"Delete this message from {row.SenderName}? This cannot be undone.",
+                () =>
+                {
+                    var error = HoloComMessaging.DeleteMessage(GetObjectUUID(Player), row.Id);
+                    if (!string.IsNullOrWhiteSpace(error))
+                        SendMessageToPC(Player, ColorToken.Red(error));
+
+                    RefreshMessages();
+                    RestoreContentPartial();
+                },
+                RestoreContentPartial);
+        };
+
+        public Action OnClickToggleSaveRow() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            var error = HoloComMessaging.ToggleSaved(GetObjectUUID(Player), _messageRows[index].Id);
+            if (!string.IsNullOrWhiteSpace(error))
+                SendMessageToPC(Player, ColorToken.Red(error));
+
             RefreshMessages();
         };
 
         public Action OnClickDeleteRead() => () =>
         {
-            ShowModal("Delete all read messages? This cannot be undone.",
+            ShowModal("Delete all read messages? Saved messages are kept. This cannot be undone.",
                 () =>
                 {
                     HoloComMessaging.DeleteAllRead(GetObjectUUID(Player));
@@ -295,48 +297,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshContacts()
         {
-            if (HoloCom.IsInCall(Player))
+            var isInCall = HoloCom.IsInCall(Player);
+            var hasIncomingCall = !isInCall && HoloCom.IsCallReceiver(Player);
+            var hasOutgoingCall = !isInCall && !hasIncomingCall && HoloCom.IsCallSender(Player);
+
+            if (isInCall)
             {
                 var target = HoloCom.GetTargetForActiveCall(Player);
-                IsInActiveCall = true;
-                ActiveCallLabel = $"In a call with {PlayerName.GetDisplayName(Player, target)}";
+                CallStatusLabel = GetIsObjectValid(target)
+                    ? $"In a call with {PlayerName.GetDisplayName(Player, target)}"
+                    : "In a call";
             }
-            else
-            {
-                IsInActiveCall = false;
-            }
-
-            if (HoloCom.IsCallReceiver(Player) && !HoloCom.IsInCall(Player))
+            else if (hasIncomingCall)
             {
                 var callSender = HoloCom.GetCallSender(Player);
-                HasIncomingCall = true;
-                IncomingCallLabel = $"Incoming call from {PlayerName.GetDisplayName(Player, callSender)}";
+                CallStatusLabel = GetIsObjectValid(callSender)
+                    ? $"Incoming call from {PlayerName.GetDisplayName(Player, callSender)}"
+                    : "Incoming call";
             }
-            else
-            {
-                HasIncomingCall = false;
-            }
-
-            if (HoloCom.IsCallSender(Player) && !HoloCom.IsInCall(Player))
+            else if (hasOutgoingCall)
             {
                 var callReceiver = HoloCom.GetCallReceiver(Player);
-                HasOutgoingCall = true;
-                OutgoingCallLabel = GetIsObjectValid(callReceiver)
+                CallStatusLabel = GetIsObjectValid(callReceiver)
                     ? $"Calling {PlayerName.GetDisplayName(Player, callReceiver)}..."
                     : "Calling...";
             }
             else
             {
-                HasOutgoingCall = false;
+                CallStatusLabel = "No active call.";
             }
 
-            IsContactsListVisible = !IsInActiveCall && !HasIncomingCall && !HasOutgoingCall;
+            IsAnswerEnabled = hasIncomingCall;
+            IsDeclineEndEnabled = isInCall || hasIncomingCall || hasOutgoingCall;
 
-            if (IsContactsListVisible)
-            {
-                RefreshOnlinePlayers();
-                RefreshFavorites();
-            }
+            RefreshOnlinePlayers();
+            RefreshFavorites();
         }
 
         private void RefreshOnlinePlayers()
@@ -376,41 +371,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRefreshContacts() => () => RefreshContacts();
 
-        public Action OnClickEndCall() => () =>
-        {
-            var target = HoloCom.GetTargetForActiveCall(Player);
-            HoloCom.SetIsInCall(Player, target, false);
-            RefreshContacts();
-        };
-
         public Action OnClickAnswerCall() => () =>
         {
             var callSender = HoloCom.GetCallSender(Player);
+
+            // Guard against stale UI state: only connect when a live incoming call
+            // attempt actually exists, otherwise answering would wedge the player
+            // in a phantom call with an invalid partner.
+            if (!HoloCom.IsCallReceiver(Player) || HoloCom.IsInCall(Player) || !GetIsObjectValid(callSender))
+            {
+                SendMessageToPC(Player, "You don't have an incoming call to answer.");
+                RefreshContacts();
+                return;
+            }
+
             HoloCom.SetIsInCall(Player, callSender, true);
             RefreshContacts();
         };
 
-        public Action OnClickDeclineCall() => () =>
+        public Action OnClickDeclineEndCall() => () =>
         {
-            var callSender = HoloCom.GetCallSender(Player);
-            SendMessageToPC(callSender, "Your HoloCom call was declined.");
-            HoloCom.CleanupCallAttempt(callSender, Player);
+            HoloCom.EndOrDeclineCall(Player);
             RefreshContacts();
         };
 
-        public Action OnClickCancelOutgoingCall() => () =>
+        /// <summary>
+        /// The contact lists stay interactive during calls, so call attempts need a
+        /// pre-modal guard. HoloCom.InitiateCall enforces the same rule server-side;
+        /// this just rejects before the confirm modal instead of after it.
+        /// </summary>
+        private bool IsBusyWithCall()
         {
-            var callReceiver = HoloCom.GetCallReceiver(Player);
-            if (GetIsObjectValid(callReceiver))
-                SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
+            if (HoloCom.IsInCall(Player) || HoloCom.IsCallSender(Player) || HoloCom.IsCallReceiver(Player))
+            {
+                SendMessageToPC(Player, "You are already in a call.");
+                return true;
+            }
 
-            HoloCom.CleanupCallAttempt(Player, callReceiver);
-            SendMessageToPC(Player, "You cancel your HoloCom call.");
-            RefreshContacts();
-        };
+            return false;
+        }
 
         public Action OnClickCallOnline() => () =>
         {
+            if (IsBusyWithCall())
+                return;
+
             var index = NuiGetEventArrayIndex();
             var target = _onlinePlayerObjects[index];
             var displayName = PlayerName.GetDisplayName(Player, target);
@@ -429,7 +434,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var target = _onlinePlayerObjects[index];
-            SetComposeTarget(GetObjectUUID(target), PlayerName.GetDisplayName(Player, target));
+            OpenComposeModal(GetObjectUUID(target), PlayerName.GetDisplayName(Player, target), string.Empty);
         };
 
         public Action OnClickFavoriteOnline() => () =>
@@ -445,6 +450,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCallFavorite() => () =>
         {
+            if (IsBusyWithCall())
+                return;
+
             var index = NuiGetEventArrayIndex();
             var row = _favoriteRows[index];
             var target = HoloCom.FindOnlinePlayerByPlayerId(row.PlayerId);
@@ -468,7 +476,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var row = _favoriteRows[index];
-            SetComposeTarget(row.PlayerId, row.DisplayName);
+            OpenComposeModal(row.PlayerId, row.DisplayName, string.Empty);
         };
 
         public Action OnClickRemoveFavorite() => () =>
@@ -486,46 +494,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 RestoreContentPartial);
         };
 
-        private void SetComposeTarget(string playerId, string displayName)
+        private void OpenComposeModal(string recipientId, string recipientName, string initialText)
         {
-            _composeRecipientId = playerId;
-            _composeRecipientName = displayName;
-            ComposeRecipientLabel = $"To: {displayName}";
-            ComposeText = string.Empty;
-            _currentPartial = ComposePartial;
-            _currentPartialRefresh = null;
-            SwapNestedPartialView(TabContentPartialElement, ComposePartial, null);
+            _composeRecipientId = recipientId;
+            _composeRecipientName = recipientName;
+            ShowInputModal($"Message to {recipientName}:", initialText, SendComposedMessage, RestoreContentPartial);
         }
 
-        public Action OnClickSend() => () =>
+        private void SendComposedMessage()
         {
-            ShowModal($"Send this message to {_composeRecipientName}?",
-                () =>
-                {
-                    var error = HoloComMessaging.SendMessage(Player, _composeRecipientId, ComposeText, IsTestingModeEnabled);
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        SendMessageToPC(Player, ColorToken.Red(error));
-                        // Stay on the Compose screen with the typed text intact.
-                        RestoreContentPartial();
-                        return;
-                    }
+            var error = HoloComMessaging.SendMessage(Player, _composeRecipientId, ModalInputText, IsTestingModeEnabled);
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                SendMessageToPC(Player, ColorToken.Red(error));
+                // Re-open the composer with the typed text intact so nothing is lost.
+                OpenComposeModal(_composeRecipientId, _composeRecipientName, ModalInputText);
+                return;
+            }
 
-                    SendMessageToPC(Player, "Message sent.");
-                    DelayCommand(0.0f, ReturnToContacts);
-                },
-                RestoreContentPartial);
-        };
-
-        public Action OnClickClearCompose() => () => { ComposeText = string.Empty; };
-
-        public Action OnClickComposeBack() => () => ReturnToContacts();
-
-        private void ReturnToContacts()
-        {
-            _currentPartial = ContactsTabPartial;
-            _currentPartialRefresh = RefreshContacts;
-            SwapNestedPartialView(TabContentPartialElement, ContactsTabPartial, () => RefreshContacts());
+            SendMessageToPC(Player, "Message sent.");
+            RestoreContentPartial();
         }
     }
 }

@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,10 +16,18 @@ namespace SWLOR.Game.Server.Service
 {
     public static class HoloComMessaging
     {
-        public const int MaxMessageLength = 1000;
+        public const int MaxMessageLength = 4000;
 
         private const string MessageLastSubmission = "HOLOCOM_MESSAGE_LAST_SUBMISSION";
         private const int MessageCooldownSeconds = 10;
+
+        // Messages expire this many days after being sent unless the recipient has
+        // saved them. Read messages are removed before unread ones so a player who
+        // never checks their inbox loses new mail last.
+        private const int MessageRetentionDays = 30;
+
+        // A recipient may keep at most this many saved messages exempt from cleanup.
+        public const int MaxSavedMessages = 20;
 
         public static string SendMessage(uint sender, string recipientPlayerId, string rawText, bool allowSelfMessage = false)
         {
@@ -49,10 +59,11 @@ namespace SWLOR.Game.Server.Service
                 RecipientPlayerId = recipientPlayerId,
                 Text = SanitizeMessageText(rawText),
                 IsRead = false,
-                SenderSnapshotJson = JsonDump(ObjectToJson(sender, false))
+                ExpirationDateTicks = DateTime.UtcNow.AddDays(MessageRetentionDays).Ticks
             };
 
             DB.Set(message);
+            CaptureSenderSnapshot(sender, message.Id);
             SetLocalString(sender, MessageLastSubmission, DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
 
             var recipientObject = HoloCom.FindOnlinePlayerByPlayerId(recipientPlayerId);
@@ -63,6 +74,46 @@ namespace SWLOR.Game.Server.Service
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Serializes a purged copy of the sender into the message's snapshot. Backpack
+        /// items and gold only bloat the recording, so they are stripped from a temporary
+        /// copy first; equipped gear is deliberately kept so the playback hologram keeps
+        /// the sender's look. DestroyObject is deferred by the engine until the current
+        /// script finishes, so serialization runs one tick later, after the purge has
+        /// actually applied. The copy is destroyed only after the snapshot is persisted.
+        /// </summary>
+        private static void CaptureSenderSnapshot(uint sender, string messageId)
+        {
+            var copy = CopyObject(sender, GetLocation(sender));
+            SetPlotFlag(copy, true);
+            // Effects aren't serialized (bSaveObjectState: false), so hiding the copy
+            // during its brief life doesn't leak into the snapshot.
+            ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), copy, 6f);
+
+            TakeGoldFromCreature(GetGold(copy), copy, true);
+
+            for (var item = GetFirstItemInInventory(copy); GetIsObjectValid(item); item = GetNextItemInInventory(copy))
+            {
+                SetDroppableFlag(item, false);
+                DestroyObject(item);
+            }
+
+            DelayCommand(0.1f, () =>
+            {
+                if (!GetIsObjectValid(copy))
+                    return;
+
+                var message = DB.Get<HoloComMessage>(messageId);
+                if (message != null)
+                {
+                    message.SenderSnapshotJson = JsonDump(ObjectToJson(copy, false));
+                    DB.Set(message);
+                }
+
+                DestroyObject(copy);
+            });
         }
 
         public static long GetInboxCount(string recipientPlayerId, bool unreadOnly)
@@ -90,44 +141,154 @@ namespace SWLOR.Game.Server.Service
             return DB.Search(query).ToList();
         }
 
-        public static void MarkRead(string messageId)
+        /// <summary>
+        /// Deletes a single message belonging to this recipient. Saved messages are
+        /// protected - they must be unsaved before deletion. Read status is tracked
+        /// automatically (playback marks a message read), so deletion is the only
+        /// per-message action besides play and save.
+        /// Returns an empty string on success or a user-facing error message.
+        /// </summary>
+        public static string DeleteMessage(string recipientPlayerId, string messageId)
         {
             var message = DB.Get<HoloComMessage>(messageId);
-            if (message == null || message.IsRead)
-                return;
+            if (message == null || message.RecipientPlayerId != recipientPlayerId)
+                return "That message is no longer available.";
 
-            message.IsRead = true;
-            DB.Set(message);
+            if (message.IsSaved)
+                return "Unsave the message before deleting it.";
+
+            DB.Delete<HoloComMessage>(message.Id);
+            return string.Empty;
         }
 
         /// <summary>
-        /// Deletes every read message belonging to this recipient. Unlike a mutate-in-place
-        /// scan, deleting shrinks the underlying result set, so re-querying at offset 0 each
-        /// pass is what correctly walks the whole remaining set instead of skipping rows.
+        /// Toggles whether the recipient has saved this message, exempting it from
+        /// retention cleanup while saved. Saving is capped at <see cref="MaxSavedMessages"/>
+        /// so a player cannot exempt their entire inbox from cleanup.
+        /// Returns an empty string on success or a user-facing error message.
+        /// </summary>
+        public static string ToggleSaved(string recipientPlayerId, string messageId)
+        {
+            var message = DB.Get<HoloComMessage>(messageId);
+            if (message == null || message.RecipientPlayerId != recipientPlayerId)
+                return "That message is no longer available.";
+
+            if (!message.IsSaved)
+            {
+                var savedCount = DB.SearchCount(new DBQuery<HoloComMessage>()
+                    .AddFieldSearch(nameof(HoloComMessage.RecipientPlayerId), recipientPlayerId, false)
+                    .AddFieldSearch(nameof(HoloComMessage.IsSaved), true));
+
+                if (savedCount >= MaxSavedMessages)
+                    return $"You may only save up to {MaxSavedMessages} messages.";
+            }
+
+            message.IsSaved = !message.IsSaved;
+            DB.Set(message);
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Deletes every read message belonging to this recipient, except messages the
+        /// recipient has saved. Deletions shrink the underlying result set while skipped
+        /// (saved) messages stay in it, so each re-query offsets past the survivors
+        /// counted so far instead of restarting at 0 or advancing a full page.
         /// </summary>
         public static int DeleteAllRead(string recipientPlayerId)
         {
             const int PageSize = 50;
             var removed = 0;
+            var kept = 0;
 
             while (true)
             {
                 var page = DB.Search(new DBQuery<HoloComMessage>()
                         .AddFieldSearch(nameof(HoloComMessage.RecipientPlayerId), recipientPlayerId, false)
                         .AddFieldSearch(nameof(HoloComMessage.IsRead), true)
-                        .AddPaging(PageSize, 0))
+                        .AddPaging(PageSize, kept))
                     .ToList();
 
                 foreach (var message in page)
-                    DB.Delete<HoloComMessage>(message.Id);
+                {
+                    if (message.IsSaved)
+                    {
+                        kept++;
+                        continue;
+                    }
 
-                removed += page.Count;
+                    DB.Delete<HoloComMessage>(message.Id);
+                    removed++;
+                }
 
                 if (page.Count < PageSize)
                     break;
             }
 
             return removed;
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void OnModuleLoad()
+        {
+            CleanUpExpiredMessages();
+        }
+
+        /// <summary>
+        /// Deletes messages older than <see cref="MessageRetentionDays"/> days, skipping any
+        /// message the recipient has saved. Read messages are queried and deleted before
+        /// unread ones, so if a player has been away long enough that both are expiring,
+        /// their still-unread mail is the last thing lost.
+        /// The query itself can only filter by IsRead - the DB layer supports exact-match
+        /// field searches, not numeric ranges, so IsSaved and the expiration date are both
+        /// checked in memory once the candidates are loaded.
+        /// </summary>
+        private static void CleanUpExpiredMessages()
+        {
+            var now = DateTime.UtcNow.Ticks;
+            var expiredRead = 0;
+            var expiredUnread = 0;
+
+            foreach (var isRead in new[] { true, false })
+            {
+                var query = new DBQuery<HoloComMessage>()
+                    .AddFieldSearch(nameof(HoloComMessage.IsRead), isRead);
+                var count = (int)DB.SearchCount(query);
+                var messages = DB.Search(query.OrderBy(nameof(HoloComMessage.SentDateTicks), true).AddPaging(count, 0));
+
+                foreach (var message in messages)
+                {
+                    if (message.IsSaved)
+                        continue;
+
+                    if (GetEffectiveExpirationTicks(message) > now)
+                        continue;
+
+                    DB.Delete<HoloComMessage>(message.Id);
+
+                    if (isRead)
+                        expiredRead++;
+                    else
+                        expiredUnread++;
+                }
+            }
+
+            if (expiredRead > 0 || expiredUnread > 0)
+            {
+                Log.Write(LogGroup.Server, $"HoloCom retention cleanup removed {expiredRead} expired read message(s) and {expiredUnread} expired unread message(s).");
+            }
+        }
+
+        /// <summary>
+        /// Rows written before ExpirationDateTicks existed have it as 0, which must not be
+        /// treated as "already expired". For those, the expiration is derived from the send
+        /// date plus the retention window instead.
+        /// </summary>
+        private static long GetEffectiveExpirationTicks(HoloComMessage message)
+        {
+            return message.ExpirationDateTicks > 0
+                ? message.ExpirationDateTicks
+                : new DateTime(message.SentDateTicks, DateTimeKind.Utc).AddDays(MessageRetentionDays).Ticks;
         }
 
         /// <summary>

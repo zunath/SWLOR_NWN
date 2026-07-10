@@ -22,7 +22,7 @@ public class GuiLayoutValidationTests
 
         var act = () => col.AddTable<HoloComViewModel>(t => t
             // Width 0 and not the last column and no isVariable => resolves to fixed zero-width.
-            .AddColumn("BROKEN", 0f, model => model.MessagePreviews)
+            .AddColumn("BROKEN", 0f, model => model.MessageSenderNames)
             .AddColumn("TRAILING", 100f, model => model.MessageTimestamps));
 
         act.Should().Throw<InvalidOperationException>()
@@ -35,7 +35,7 @@ public class GuiLayoutValidationTests
         var col = new GuiColumn<HoloComViewModel>();
 
         var act = () => col.AddTable<HoloComViewModel>(t => t
-            .AddColumn("FLEX", 0f, model => model.MessagePreviews, isVariable: true)
+            .AddColumn("FLEX", 0f, model => model.MessageSenderNames, isVariable: true)
             .AddColumn("FIXED", 100f, model => model.MessageTimestamps, isVariable: false));
 
         act.Should().NotThrow();
@@ -89,9 +89,9 @@ public class GuiLayoutValidationTests
                         {
                             innerRow.AddList(template =>
                             {
-                                template.AddCell(cell => cell.AddLabel().BindText(model => model.MessagePreviews));
+                                template.AddCell(cell => cell.AddLabel().BindText(model => model.MessageSenderNames));
                             })
-                                .BindRowCount(model => model.MessagePreviews);
+                                .BindRowCount(model => model.MessageSenderNames);
                         });
                     });
                 });
@@ -145,9 +145,9 @@ public class GuiLayoutValidationTests
             {
                 row.AddList(template =>
                 {
-                    template.AddCell(cell => cell.AddLabel().BindText(model => model.MessagePreviews));
+                    template.AddCell(cell => cell.AddLabel().BindText(model => model.MessageSenderNames));
                 })
-                    .BindRowCount(model => model.MessagePreviews);
+                    .BindRowCount(model => model.MessageSenderNames);
             });
         });
 
@@ -169,10 +169,10 @@ public class GuiLayoutValidationTests
                     template.AddCell(cell =>
                     {
                         cell.SetIsVariable(false);
-                        cell.AddLabel().BindText(model => model.MessagePreviews);
+                        cell.AddLabel().BindText(model => model.MessageSenderNames);
                     });
                 })
-                    .BindRowCount(model => model.MessagePreviews);
+                    .BindRowCount(model => model.MessageSenderNames);
             });
         });
 
@@ -206,9 +206,9 @@ public class GuiLayoutValidationTests
 
                 row.AddList(template =>
                 {
-                    template.AddCell(cell => cell.AddLabel().BindText(model => model.MessagePreviews));
+                    template.AddCell(cell => cell.AddLabel().BindText(model => model.MessageSenderNames));
                 })
-                    .BindRowCount(model => model.MessagePreviews);
+                    .BindRowCount(model => model.MessageSenderNames);
             });
 
             // Trailing pagination-style row after the list (height derived from children).

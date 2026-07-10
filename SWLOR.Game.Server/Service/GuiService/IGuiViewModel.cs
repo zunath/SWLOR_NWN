@@ -63,6 +63,11 @@ namespace SWLOR.Game.Server.Service.GuiService
         string ModalCancelButtonText { get; }
 
         /// <summary>
+        /// Retrieves the text typed into the input modal partial view's text box.
+        /// </summary>
+        string ModalInputText { get; }
+
+        /// <summary>
         /// Runs when the modal closes.
         /// </summary>
         Action OnModalClose();
@@ -76,6 +81,16 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// Runs when the modal cancel button is clicked.
         /// </summary>
         Action OnModalCancelClick();
+
+        /// <summary>
+        /// Runs when the input modal confirmation button is clicked.
+        /// </summary>
+        Action OnInputModalConfirmClick();
+
+        /// <summary>
+        /// Runs when the input modal cancel button is clicked.
+        /// </summary>
+        Action OnInputModalCancelClick();
 
         /// <summary>
         /// Runs when the window is closed.

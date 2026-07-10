@@ -115,6 +115,67 @@ namespace SWLOR.Game.Server.Service.GuiService
                             });
                         });
                     });
+                })
+                .DefinePartialView("%%WINDOW_INPUT_MODAL%%", group =>
+                {
+                    // Like %%WINDOW_MODAL%%, but with a multiline text box the player
+                    // can type into. The typed text flows back to the server through
+                    // the always-watched ModalInputText bind (see GuiViewModelBase.Bind).
+                    group.AddColumn(mainCol =>
+                    {
+                        mainCol.AddRow(mainRow =>
+                        {
+                            mainRow.AddColumn(col =>
+                            {
+                                col.AddRow(row =>
+                                {
+                                    row.AddText()
+                                        .BindText(model => model.ModalPromptText)
+                                        .SetScrollbars(NuiScrollbars.None)
+                                        .SetShowBorder(false)
+                                        .SetHeight(64f);
+                                });
+
+                                // Unsized scrollable wrapper so the fixed-height editor
+                                // can never make the layout's required height exceed the
+                                // window viewport (layout rule R2b).
+                                col.AddRow(row =>
+                                {
+                                    row.AddGroup(editorGroup =>
+                                    {
+                                        editorGroup.SetShowBorder(false);
+                                        editorGroup.SetScrollbars(NuiScrollbars.Auto);
+                                        editorGroup.AddColumn(editorCol =>
+                                        {
+                                            editorCol.AddRow(editorRow =>
+                                            {
+                                                editorRow.AddTextEdit()
+                                                    .SetIsMultiline(true)
+                                                    .SetMaxLength(4000)
+                                                    .BindValue(model => model.ModalInputText)
+                                                    .SetHeight(450f);
+                                            });
+                                        });
+                                    });
+                                });
+
+                                col.AddRow(row =>
+                                {
+                                    row.AddSpacer();
+                                    row.AddButton()
+                                        .BindText(model => model.ModalConfirmButtonText)
+                                        .BindOnClicked(model => model.OnInputModalConfirmClick())
+                                        .SetHeight(35f);
+
+                                    row.AddButton()
+                                        .BindText(model => model.ModalCancelButtonText)
+                                        .BindOnClicked(model => model.OnInputModalCancelClick())
+                                        .SetHeight(35f);
+                                    row.AddSpacer();
+                                });
+                            });
+                        });
+                    });
                 });
 
             _activeWindow.Elements.Clear();

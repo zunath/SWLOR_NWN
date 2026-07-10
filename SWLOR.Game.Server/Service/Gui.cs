@@ -188,6 +188,29 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
         }
 
+        private const float GeometrySaveDebounceSeconds = 2f;
+        private static readonly HashSet<string> _pendingGeometrySaves = new();
+
+        /// <summary>
+        /// Persists window geometry shortly after the client reports a move/resize.
+        /// Dragging fires a stream of watch events and each save is a full player
+        /// document write, so writes are coalesced to at most one per window per
+        /// debounce interval. The delayed save reads the view model's geometry at
+        /// fire time, so it always persists the latest reported rect.
+        /// </summary>
+        private static void QueueWindowGeometrySave(string playerId, GuiWindowType windowType, GuiPlayerWindow playerWindow)
+        {
+            var key = $"{playerId}:{windowType}";
+            if (!_pendingGeometrySaves.Add(key))
+                return;
+
+            DelayCommand(GeometrySaveDebounceSeconds, () =>
+            {
+                _pendingGeometrySaves.Remove(key);
+                SaveWindowGeometry(playerId, windowType, playerWindow.ViewModel.Geometry);
+            });
+        }
+
         /// <summary>
         /// When a NUI event is fired, look for an associated event on the specified element
         /// and execute the cached action.
@@ -282,6 +305,11 @@ namespace SWLOR.Game.Server.Service
             var playerWindow = playerWindows[windowType];
 
             playerWindow.ViewModel.UpdatePropertyFromClient(propertyName);
+
+            // Geometry changes are persisted as they happen (debounced) so window
+            // positions survive crashes and close paths that skip the close-time save.
+            if (propertyName == nameof(IGuiViewModel.Geometry))
+                QueueWindowGeometrySave(playerId, windowType, playerWindow);
         }
 
         /// <summary>

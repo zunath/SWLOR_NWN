@@ -66,6 +66,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         HoloCom = 61,
 
         DebugEnmity = 900,
+        DebugNuiGallery = 901,
         ChangePortrait = 9999
     }
 }

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.WardenWallTechnique,
-                "Warden Wall Technique",
+                "Warden Wall",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

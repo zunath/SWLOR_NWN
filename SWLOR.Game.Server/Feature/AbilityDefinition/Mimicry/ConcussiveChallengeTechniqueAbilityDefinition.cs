@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.ConcussiveChallengeTechnique,
-                "Concussive Challenge Technique",
+                "Concussive Challenge",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ConcussiveChallenge,

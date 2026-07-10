@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.MercilessAngleTechnique,
-                "Merciless Angle Technique",
+                "Merciless Angle",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

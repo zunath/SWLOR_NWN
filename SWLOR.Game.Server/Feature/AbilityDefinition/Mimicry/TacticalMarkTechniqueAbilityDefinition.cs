@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.TacticalMarkTechnique,
-                "Tactical Mark Technique",
+                "Tactical Mark",
                 Animation.PointForward,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TacticalMark,

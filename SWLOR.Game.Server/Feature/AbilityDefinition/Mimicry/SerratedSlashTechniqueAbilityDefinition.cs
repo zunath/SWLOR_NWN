@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.SerratedSlashTechnique,
-                "Serrated Slash Technique",
+                "Serrated Slash",
                 Animation.CrossCut,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.SerratedSlash,

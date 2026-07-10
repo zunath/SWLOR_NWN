@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.BonecrusherBiteTechnique,
-                "Bonecrusher Bite Technique",
+                "Bonecrusher Bite",
                 Animation.DoubleStrike,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.BonecrusherBite,

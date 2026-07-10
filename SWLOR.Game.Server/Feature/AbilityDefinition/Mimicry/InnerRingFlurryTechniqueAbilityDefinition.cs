@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.InnerRingFlurryTechnique,
-                "Inner Ring Flurry Technique",
+                "Inner Ring Flurry",
                 Animation.CrossCut,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

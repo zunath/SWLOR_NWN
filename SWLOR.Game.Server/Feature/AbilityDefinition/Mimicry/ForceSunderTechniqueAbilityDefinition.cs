@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.ForceSunderTechnique,
-                "Force Sunder Technique",
+                "Force Sunder",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ForceSunder,

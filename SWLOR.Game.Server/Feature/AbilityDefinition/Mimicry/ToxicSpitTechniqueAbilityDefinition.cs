@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.ToxicSpitTechnique,
-                "Toxic Spit Technique",
+                "Toxic Spit",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ToxicSpit,

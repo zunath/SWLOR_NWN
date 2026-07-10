@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.TerrifyingBellowTechnique,
-                "Terrifying Bellow Technique",
+                "Terrifying Bellow",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TerrifyingBellow,

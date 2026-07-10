@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.GoringChargeTechnique,
-                "Goring Charge Technique",
+                "Goring Charge",
                 Animation.ForceLeap,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.GoringCharge,

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.ArcPulseTechnique,
-                "Arc Pulse Technique",
+                "Arc Pulse",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ArcPulse,

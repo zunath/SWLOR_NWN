@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.IonBurstTechnique,
-                "Ion Burst Technique",
+                "Ion Burst",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.IonBurst,

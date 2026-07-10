@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.LastBastionTechnique,
-                "Last Bastion Technique",
+                "Last Bastion",
                 Animation.ShieldWall,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

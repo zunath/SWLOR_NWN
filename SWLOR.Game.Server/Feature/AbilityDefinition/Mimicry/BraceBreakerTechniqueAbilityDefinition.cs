@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.BraceBreakerTechnique,
-                "Brace Breaker Technique",
+                "Brace Breaker",
                 Animation.ShieldWall,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

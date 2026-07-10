@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.ForceRendTechnique,
-                "Force Rend Technique",
+                "Force Rend",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ForceRend,

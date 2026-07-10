@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.ApexCollapseTechnique,
-                "Apex Collapse Technique",
+                "Apex Collapse",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

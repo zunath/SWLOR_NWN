@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.OverloadShotTechnique,
-                "Overload Shot Technique",
+                "Overload Shot",
                 Animation.PointPistol,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.OverloadShot,

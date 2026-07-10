@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.BrutalBashTechnique,
-                "Brutal Bash Technique",
+                "Brutal Bash",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.BrutalBash,

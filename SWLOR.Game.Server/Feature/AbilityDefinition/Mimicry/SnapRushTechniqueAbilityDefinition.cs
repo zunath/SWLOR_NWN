@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.SnapRushTechnique,
-                "Snap Rush Technique",
+                "Snap Rush",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

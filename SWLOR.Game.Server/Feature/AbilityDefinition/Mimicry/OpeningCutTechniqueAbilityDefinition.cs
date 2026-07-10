@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.OpeningCutTechnique,
-                "Opening Cut Technique",
+                "Opening Cut",
                 Animation.CrossCut,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

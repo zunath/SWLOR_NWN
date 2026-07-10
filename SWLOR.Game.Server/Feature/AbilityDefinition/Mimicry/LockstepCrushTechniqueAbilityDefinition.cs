@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.LockstepCrushTechnique,
-                "Lockstep Crush Technique",
+                "Lockstep Crush",
                 Animation.ShieldWall,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

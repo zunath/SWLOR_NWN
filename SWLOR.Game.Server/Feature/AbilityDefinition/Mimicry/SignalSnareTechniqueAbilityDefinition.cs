@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.SignalSnareTechnique,
-                "Signal Snare Technique",
+                "Signal Snare",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

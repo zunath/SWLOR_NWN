@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.PrecisionShotTechnique,
-                "Precision Shot Technique",
+                "Precision Shot",
                 Animation.PointPistol,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.PrecisionShot,

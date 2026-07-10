@@ -950,7 +950,11 @@ public class CombatUpgradeBibleSyncTests
             if (!definitionName.EndsWith(suffix, StringComparison.Ordinal))
                 continue;
 
-            var expected = NormalizeName(GetBaseName(ability.Detail.Name));
+            // Mimicry technique classes keep a "Technique" suffix (their FeatType would otherwise
+            // collide with the source NPC feat, e.g. ToxicSpitTechnique vs ToxicSpit), while their
+            // player-facing name deliberately drops it. Compare against the suffixed form for those.
+            var baseName = GetBaseName(ability.Detail.Name);
+            var expected = NormalizeName(ability.Detail.MimicryTier > 0 ? baseName + "Technique" : baseName);
             var actual = NormalizeName(definitionName[..^suffix.Length]);
             if (!actual.Equals(expected, StringComparison.Ordinal))
             {

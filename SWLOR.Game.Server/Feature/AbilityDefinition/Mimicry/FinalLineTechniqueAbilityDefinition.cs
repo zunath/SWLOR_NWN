@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.FinalLineTechnique,
-                "Final Line Technique",
+                "Final Line",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

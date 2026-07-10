@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.WardenOrderTechnique,
-                "Warden Order Technique",
+                "Warden Order",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

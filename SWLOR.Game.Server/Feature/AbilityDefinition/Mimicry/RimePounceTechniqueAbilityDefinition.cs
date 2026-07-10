@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.RimePounceTechnique,
-                "Rime Pounce Technique",
+                "Rime Pounce",
                 Animation.ForceLeap,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.RimePounce,

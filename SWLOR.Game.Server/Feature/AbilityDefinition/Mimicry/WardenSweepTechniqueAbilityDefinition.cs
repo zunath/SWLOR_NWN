@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.WardenSweepTechnique,
-                "Warden Sweep Technique",
+                "Warden Sweep",
                 Animation.Whirlwind,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

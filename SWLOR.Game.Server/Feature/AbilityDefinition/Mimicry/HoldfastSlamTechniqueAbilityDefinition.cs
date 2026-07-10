@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.HoldfastSlamTechnique,
-                "Holdfast Slam Technique",
+                "Holdfast Slam",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

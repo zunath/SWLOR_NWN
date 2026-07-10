@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.FinishingDriveTechnique,
-                "Finishing Drive Technique",
+                "Finishing Drive",
                 Animation.Whirlwind,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

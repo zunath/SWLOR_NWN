@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.TargetLockTechnique,
-                "Target Lock Technique",
+                "Target Lock",
                 Animation.PointForward,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TargetLock,

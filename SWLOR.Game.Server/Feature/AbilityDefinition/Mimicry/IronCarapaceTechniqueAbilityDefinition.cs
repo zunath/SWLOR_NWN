@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
             _builder
                 .Create(FeatType.IronCarapaceTechnique, profile.PlayerPerkType)
-                .Name("Iron Carapace Technique")
+                .Name("Iron Carapace")
                 .HasActivationDelay(1.0f)
                 .HasRecastDelay(RecastGroup.IronCarapace, 15f)
                 .UsesAnimation(Animation.ShieldWall)

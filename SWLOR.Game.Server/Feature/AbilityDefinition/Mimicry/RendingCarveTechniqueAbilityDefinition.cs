@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.RendingCarveTechnique,
-                "Rending Carve Technique",
+                "Rending Carve",
                 Animation.CrossCut,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.RendingCarve,

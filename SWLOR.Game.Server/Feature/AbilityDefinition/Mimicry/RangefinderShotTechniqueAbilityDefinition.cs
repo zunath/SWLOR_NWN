@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.RangefinderShotTechnique,
-                "Rangefinder Shot Technique",
+                "Rangefinder Shot",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

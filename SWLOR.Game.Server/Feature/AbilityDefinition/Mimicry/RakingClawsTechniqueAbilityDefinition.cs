@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.RakingClawsTechnique,
-                "Raking Claws Technique",
+                "Raking Claws",
                 Animation.CrossCut,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.RakingClaws,

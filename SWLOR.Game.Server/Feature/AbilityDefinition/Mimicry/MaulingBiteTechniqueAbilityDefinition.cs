@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.MaulingBiteTechnique,
-                "Mauling Bite Technique",
+                "Mauling Bite",
                 Animation.DoubleStrike,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.MaulingBite,

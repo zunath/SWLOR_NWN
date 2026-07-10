@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.GrenadeBurstTechnique,
-                "Grenade Burst Technique",
+                "Grenade Burst",
                 Animation.ThrowGrenade,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.GrenadeBurst,

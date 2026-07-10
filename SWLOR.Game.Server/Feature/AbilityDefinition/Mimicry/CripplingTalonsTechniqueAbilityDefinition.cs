@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
             _builder
                 .Create(FeatType.CripplingTalonsTechnique, profile.PlayerPerkType)
-                .Name("Crippling Talons Technique")
+                .Name("Crippling Talons")
                 .HasActivationDelay(1.0f)
                 .IsCastedAbility()
                 .RequirementStamina(3)

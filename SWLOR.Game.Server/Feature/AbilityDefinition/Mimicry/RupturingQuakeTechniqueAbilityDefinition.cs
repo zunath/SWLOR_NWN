@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
             _builder
                 .Create(FeatType.RupturingQuakeTechnique, profile.PlayerPerkType)
-                .Name("Rupturing Quake Technique")
+                .Name("Rupturing Quake")
                 .HasActivationDelay(3.0f)
                 .HasRecastDelay(RecastGroup.RupturingQuake, 30f)
                 .UsesAnimation(Animation.DoubleThrust)

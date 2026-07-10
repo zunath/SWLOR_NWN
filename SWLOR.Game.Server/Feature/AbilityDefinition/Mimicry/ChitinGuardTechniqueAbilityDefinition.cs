@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSelfBuff(
                 _builder,
                 FeatType.ChitinGuardTechnique,
-                "Chitin Guard Technique",
+                "Chitin Guard",
                 Animation.ShieldWall,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ChitinGuard,

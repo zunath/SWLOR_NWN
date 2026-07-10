@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.BloodFrenzyFlurryTechnique,
-                "Blood Frenzy Flurry Technique",
+                "Blood Frenzy Flurry",
                 Animation.Whirlwind,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.BloodFrenzyFlurry,

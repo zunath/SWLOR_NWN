@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.CrossfireDrillTechnique,
-                "Crossfire Drill Technique",
+                "Crossfire Drill",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

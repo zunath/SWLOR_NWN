@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.PermafrostRuptureTechnique,
-                "Permafrost Rupture Technique",
+                "Permafrost Rupture",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.PermafrostRupture,

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.RendingBiteTechnique,
-                "Rending Bite Technique",
+                "Rending Bite",
                 Animation.DoubleStrike,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.RendingBite,

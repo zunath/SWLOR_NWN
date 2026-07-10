@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.TailSweepTechnique,
-                "Tail Sweep Technique",
+                "Tail Sweep",
                 Animation.Whirlwind,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TailSweep,

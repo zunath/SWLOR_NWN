@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.SuppressingShotTechnique,
-                "Suppressing Shot Technique",
+                "Suppressing Shot",
                 Animation.PointPistol,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.SuppressingShot,

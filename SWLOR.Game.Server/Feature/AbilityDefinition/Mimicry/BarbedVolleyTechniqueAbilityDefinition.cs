@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.BarbedVolleyTechnique,
-                "Barbed Volley Technique",
+                "Barbed Volley",
                 Animation.ThrowGrenade,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.BarbedVolley,

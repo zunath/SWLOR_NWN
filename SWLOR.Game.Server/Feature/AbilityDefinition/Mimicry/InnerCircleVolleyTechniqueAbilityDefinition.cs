@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.InnerCircleVolleyTechnique,
-                "Inner Circle Volley Technique",
+                "Inner Circle Volley",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

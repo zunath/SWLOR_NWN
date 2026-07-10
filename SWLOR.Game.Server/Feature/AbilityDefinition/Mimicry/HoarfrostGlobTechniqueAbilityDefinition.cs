@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.HoarfrostGlobTechnique,
-                "Hoarfrost Glob Technique",
+                "Hoarfrost Glob",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.HoarfrostGlob,

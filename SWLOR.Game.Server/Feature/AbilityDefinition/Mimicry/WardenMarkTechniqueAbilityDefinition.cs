@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.WardenMarkTechnique,
-                "Warden Mark Technique",
+                "Warden Mark",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,

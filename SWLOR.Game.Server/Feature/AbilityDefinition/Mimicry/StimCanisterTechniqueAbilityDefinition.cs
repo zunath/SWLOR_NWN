@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildArea(
                 _builder,
                 FeatType.StimCanisterTechnique,
-                "Stim Canister Technique",
+                "Stim Canister",
                 Animation.ThrowGrenade,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.StimCanister,

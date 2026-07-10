@@ -26,16 +26,16 @@ public class MimicryTests
     // full-pool coverage is asserted separately by the reflection-driven tests below.
     private static readonly (FeatType Technique, string Name, int Tier, int SlotCost, FeatType SourceFeat)[] TechniqueTable =
     {
-        (FeatType.ToxicSpitTechnique, "Toxic Spit Technique", 1, 1, FeatType.ToxicSpit),
-        (FeatType.FrostSpitTechnique, "Frost Spit Technique", 1, 1, FeatType.FrostSpit),
-        (FeatType.RakingClawsTechnique, "Raking Claws Technique", 1, 1, FeatType.RakingClaws),
-        (FeatType.SonicShriekTechnique, "Sonic Shriek Technique", 2, 2, FeatType.SonicShriek),
-        (FeatType.TailSweepTechnique, "Tail Sweep Technique", 2, 2, FeatType.TailSweep),
-        (FeatType.StaticWebTechnique, "Static Web Technique", 2, 2, FeatType.StaticWeb),
-        (FeatType.GoringChargeTechnique, "Goring Charge Technique", 3, 2, FeatType.GoringCharge),
-        (FeatType.ToxicCloudTechnique, "Toxic Cloud Technique", 3, 3, FeatType.ToxicCloud),
-        (FeatType.ScorchingBreathTechnique, "Scorching Breath Technique", 4, 3, FeatType.ScorchingBreath),
-        (FeatType.TerrifyingBellowTechnique, "Terrifying Bellow Technique", 4, 3, FeatType.TerrifyingBellow),
+        (FeatType.ToxicSpitTechnique, "Toxic Spit", 1, 1, FeatType.ToxicSpit),
+        (FeatType.FrostSpitTechnique, "Frost Spit", 1, 1, FeatType.FrostSpit),
+        (FeatType.RakingClawsTechnique, "Raking Claws", 1, 1, FeatType.RakingClaws),
+        (FeatType.SonicShriekTechnique, "Sonic Shriek", 2, 2, FeatType.SonicShriek),
+        (FeatType.TailSweepTechnique, "Tail Sweep", 2, 2, FeatType.TailSweep),
+        (FeatType.StaticWebTechnique, "Static Web", 2, 2, FeatType.StaticWeb),
+        (FeatType.GoringChargeTechnique, "Goring Charge", 3, 2, FeatType.GoringCharge),
+        (FeatType.ToxicCloudTechnique, "Toxic Cloud", 3, 3, FeatType.ToxicCloud),
+        (FeatType.ScorchingBreathTechnique, "Scorching Breath", 4, 3, FeatType.ScorchingBreath),
+        (FeatType.TerrifyingBellowTechnique, "Terrifying Bellow", 4, 3, FeatType.TerrifyingBellow),
     };
 
     [Test]
@@ -104,7 +104,7 @@ public class MimicryTests
             var ability = technique.Detail;
 
             ability.Name.Should().NotBeNullOrWhiteSpace($"{feat} should have a display name");
-            ability.Name.Should().EndWith(" Technique", $"{feat}'s display name should end in ' Technique'");
+            ability.Name.Should().NotContain("Technique", $"{feat}'s player-facing name should not carry the 'Technique' label");
             ability.MimicryTier.Should().BeInRange(1, 4, $"{feat}'s MimicryTier should be between 1 and 4");
             ability.MimicrySlotCost.Should().BeInRange(1, 3, $"{feat}'s MimicrySlotCost should be between 1 and 3");
             ability.EffectiveLevelPerkType.Should().Be(PerkType.TechniquePotency, $"{feat} should scale with Technique Potency");
@@ -115,6 +115,8 @@ public class MimicryTests
                 $"{feat}'s MimicrySourceFeat ({ability.MimicrySourceFeat}) should be a registered NPC ability");
 
             var sourceAbility = npcAbilitiesByFeat[ability.MimicrySourceFeat];
+            ability.Name.Should().Be(sourceAbility.Name,
+                $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat})");
             ability.IsHostileAbility.Should().Be(sourceAbility.IsHostileAbility,
                 $"{feat}'s IsHostileAbility should mirror its source NPC ability {ability.MimicrySourceFeat}'s hostility " +
                 "(self-buff sources are not hostile, so techniques copied from them shouldn't be either)");

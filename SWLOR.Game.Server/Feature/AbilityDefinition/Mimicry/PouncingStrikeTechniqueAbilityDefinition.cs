@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
             InnateAbility.BuildSingleTarget(
                 _builder,
                 FeatType.PouncingStrikeTechnique,
-                "Pouncing Strike Technique",
+                "Pouncing Strike",
                 Animation.ForceLeap,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.PouncingStrike,

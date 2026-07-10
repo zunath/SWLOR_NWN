@@ -145,7 +145,10 @@ public class EconomyObtainabilityCoverageTests
         var serverDir = Path.Combine(root, "SWLOR.Game.Server");
         foreach (var file in Directory.EnumerateFiles(serverDir, "*.cs", SearchOption.AllDirectories))
         {
-            if (file.Contains(Path.Combine(".claude", "worktrees"))) continue;
+            // Skip nested worktree copies, but compare relative to the repository root so this
+            // guard does not skip every file when the test itself runs from inside a worktree
+            // (whose own path contains ".claude/worktrees").
+            if (Path.GetRelativePath(root, file).Contains(Path.Combine(".claude", "worktrees"))) continue;
             var text = File.ReadAllText(file);
             foreach (var rx in compiled)
                 foreach (Match m in rx.Matches(text))

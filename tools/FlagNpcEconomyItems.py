@@ -64,8 +64,11 @@ def collect():
         r'\.AddItem\(\s*"([^"]+)"', r'\.Resref\(\s*"([^"]+)"', r'\.Component\(\s*"([^"]+)"',
         r'CreateItemOnObject\(\s*"([^"]+)"', r'CopyItemAndModify\(\s*"([^"]+)"',
         r'new\s+ItemReward\(\s*"([^"]+)"', r'\.RewardItem\(\s*"([^"]+)"',
+        r'\.AddItemReward\(\s*"([^"]+)"',
         r'RefinedItemResref\s*=\s*"([^"]+)"', r'new\s+TerminalItem\([^,]+,\s*"([^"]+)"',
     ]
+    # Files whose bare string literals are all item resrefs (attribute-decorated registries).
+    literal_registries = ("FishType.cs", "FishingRodType.cs", "FishingBaitType.cs")
     for f in glob.glob(os.path.join(ROOT, "SWLOR.Game.Server", "**", "*.cs"), recursive=True):
         if os.path.join(".claude", "worktrees") in f:
             continue
@@ -76,7 +79,7 @@ def collect():
         for pat in patterns:
             for m in re.findall(pat, s):
                 add(obtainable, m)
-        if f.endswith("FishType.cs"):
+        if f.endswith(literal_registries):
             for m in re.findall(r'"([a-z0-9_]{2,16})"', s):
                 add(obtainable, m)
 

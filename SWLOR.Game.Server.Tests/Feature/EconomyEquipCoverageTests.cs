@@ -157,10 +157,14 @@ public class EconomyEquipCoverageTests
             @"CopyItemAndModify\(\s*""([^""]+)""",
             @"new\s+ItemReward\(\s*""([^""]+)""",
             @"\.RewardItem\(\s*""([^""]+)""",
+            @"\.AddItemReward\(\s*""([^""]+)""",
             @"RefinedItemResref\s*=\s*""([^""]+)""",
             @"new\s+TerminalItem\([^,]+,\s*""([^""]+)""",
         };
         var compiled = literalPatterns.Select(p => new Regex(p)).ToArray();
+
+        // Files whose bare string literals are all item resrefs (attribute-decorated registries).
+        var literalRegistries = new[] { "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs" };
         var serverDir = Path.Combine(root, "SWLOR.Game.Server");
         foreach (var file in Directory.EnumerateFiles(serverDir, "*.cs", SearchOption.AllDirectories))
         {
@@ -170,8 +174,7 @@ public class EconomyEquipCoverageTests
                 foreach (Match m in rx.Matches(text))
                     Add(m.Groups[1].Value);
 
-            // Fishing resrefs are declared as bare string literals in the FishType attribute enum.
-            if (file.EndsWith("FishType.cs"))
+            if (literalRegistries.Any(reg => file.EndsWith(reg)))
                 foreach (Match m in Regex.Matches(text, @"""([a-z0-9_]{2,16})"""))
                     Add(m.Groups[1].Value);
         }

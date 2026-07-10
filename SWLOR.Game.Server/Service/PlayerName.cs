@@ -148,9 +148,10 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(targetPlayerId))
                 return UnknownName;
 
+            // Strip color tokens: persisted names can contain them and this surface renders tokens literally.
             var fallbackDisplayName = string.IsNullOrWhiteSpace(fallbackName)
                 ? UnknownName
-                : fallbackName;
+                : UtilPlugin.StripColors(fallbackName);
 
             if (!GetIsObjectValid(observer) || !GetIsPC(observer))
                 return fallbackDisplayName;

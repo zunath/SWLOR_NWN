@@ -208,6 +208,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Quest definition no longer exists (e.g. an expired quest contract). Treat as nothing selected.
             if (task == null)
             {
+                if (_selectedQuestIndex >= 0 && _selectedQuestIndex < TaskToggles.Count)
+                    TaskToggles[_selectedQuestIndex] = false;
+
                 _selectedQuestIndex = -1;
                 TaskDetails = "Select a task to view details.";
                 return;

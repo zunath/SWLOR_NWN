@@ -9,36 +9,33 @@ using NUnit.Framework;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// Self-enforcing guard for the economy exclusion of NPC-only gear: every item blueprint that is
-/// equipped on an NPC and is not obtainable by players through any source must be excluded from
-/// player-facing economy surfaces. Items with a creature base type or an [NPC]/(NPC name are
-/// excluded automatically by the runtime classifier; everything else in that set must carry the
-/// NO_ECONOMY blueprint flag. If a new NPC item is added without being obtainable or flagged, this
-/// test fails and names it — flag it with NO_ECONOMY (see tools/FlagNpcEconomyItems.py) or make it
-/// obtainable.
+/// Self-enforcing guard for the economy exclusion of non-obtainable items: every item blueprint that
+/// players cannot obtain through any source must be excluded from player-facing economy surfaces.
+/// Items with a creature base type or an [NPC]/(NPC name are excluded automatically by the runtime
+/// classifier; every other non-obtainable blueprint must carry the NO_ECONOMY flag. If a new item is
+/// added without being obtainable or flagged, this test fails and names it — flag it with NO_ECONOMY
+/// (see tools/FlagNpcEconomyItems.py) or make it obtainable through a real source.
 /// </summary>
-public class EconomyEquipCoverageTests
+public class EconomyObtainabilityCoverageTests
 {
     private static readonly HashSet<int> CreatureBaseItems = new() { 69, 70, 71, 72, 73 };
 
     [Test]
-    public void NpcEquippedNonObtainableItems_AreFlaggedNoEconomy()
+    public void NonObtainableItems_AreFlaggedNoEconomy()
     {
         var root = FindRepositoryRoot().FullName;
         var moduleUti = Path.Combine(root, "Module", "uti");
 
-        var equipped = ReadEquippedResrefs(root);
         var obtainable = ReadObtainableResrefs(root);
 
         var offenders = new List<string>();
 
-        foreach (var resref in equipped)
+        foreach (var utiPath in Directory.EnumerateFiles(moduleUti, "*.uti.json"))
         {
-            if (obtainable.Contains(resref))
-                continue;
+            var resref = Path.GetFileName(utiPath);
+            resref = resref.Substring(0, resref.Length - ".uti.json".Length).ToLowerInvariant();
 
-            var utiPath = Path.Combine(moduleUti, resref + ".uti.json");
-            if (!File.Exists(utiPath))
+            if (obtainable.Contains(resref))
                 continue;
 
             using var uti = JsonDocument.Parse(File.ReadAllText(utiPath));
@@ -56,7 +53,7 @@ public class EconomyEquipCoverageTests
         }
 
         offenders.Should().BeEmpty(
-            "every NPC-equipped, non-obtainable item must carry NO_ECONOMY (or be made obtainable). " +
+            "every non-obtainable item must carry NO_ECONOMY (or be made obtainable). " +
             "Offenders:\n" + string.Join("\n", offenders.OrderBy(x => x)));
     }
 
@@ -87,26 +84,6 @@ public class EconomyEquipCoverageTests
         }
 
         return false;
-    }
-
-    private static HashSet<string> ReadEquippedResrefs(string root)
-    {
-        var equipped = new HashSet<string>();
-        foreach (var file in Directory.EnumerateFiles(Path.Combine(root, "Module", "utc"), "*.utc.json"))
-        {
-            var text = File.ReadAllText(file);
-            if (!text.Contains("Equip_ItemList")) continue;
-
-            using var doc = JsonDocument.Parse(text);
-            if (!TryGetArray(doc.RootElement, "Equip_ItemList", out var equip)) continue;
-
-            foreach (var e in equip.EnumerateArray())
-            {
-                var r = GetString(e, "EquippedRes");
-                if (!string.IsNullOrWhiteSpace(r)) equipped.Add(r.ToLowerInvariant());
-            }
-        }
-        return equipped;
     }
 
     private static HashSet<string> ReadObtainableResrefs(string root)

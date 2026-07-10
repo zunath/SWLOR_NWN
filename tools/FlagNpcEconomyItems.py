@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Flag NPC-equipped, non-obtainable item blueprints with NO_ECONOMY=1.
+"""Flag non-obtainable item blueprints with NO_ECONOMY=1.
 
-An item that is equipped on an NPC (utc Equip_ItemList) but is not obtainable by
-players through any source, and is not already excluded by the runtime classifier
-(creature base type / [NPC] name), would otherwise leak into player-facing item
-search. This stamps such blueprints with the NO_ECONOMY local variable.
+An item that is not obtainable by players through any source, and is not already
+excluded by the runtime classifier (creature base type / [NPC] name), would
+otherwise leak into player-facing item search. This stamps such blueprints with
+the NO_ECONOMY local variable. Obtainability is drawn from every player source
+(loot, stores, placed containers, recipe outputs/components, refining, fishing,
+quest rewards, training store, starting gear, and CreateItemOnObject literals);
+verified that no computed-resref or data-driven item source exists beyond these.
 
 Usage:
     python tools/FlagNpcEconomyItems.py            # stamp any missing flags
@@ -163,31 +166,32 @@ def stamp(resref):
 
 def main():
     check = "--check" in sys.argv
-    equipped, obtainable = collect()
+    _, obtainable = collect()
     unflagged = []
-    for r in sorted(equipped - obtainable):
+    for f in sorted(glob.glob(os.path.join(ROOT, "Module", "uti", "*.uti.json"))):
+        r = os.path.basename(f)[:-len(".uti.json")].lower()
+        if r in obtainable:
+            continue
         a = uti_attrs(r)
         if a is None:
             continue
         base, name = a
         if already_restricted(base, name):
             continue
-        p = os.path.join(ROOT, "Module", "uti", r + ".uti.json")
-        if not has_flag(load(p)):
+        if not has_flag(load(f)):
             unflagged.append(r)
 
     if check:
         if unflagged:
-            print(f"{len(unflagged)} NPC-equipped item(s) missing NO_ECONOMY:")
+            print(f"{len(unflagged)} non-obtainable item(s) missing NO_ECONOMY:")
             for r in unflagged:
                 print(" ", r)
             sys.exit(1)
-        print("All NPC-equipped, non-obtainable items are flagged.")
+        print("All non-obtainable items are flagged.")
         return
 
     stamped = sum(1 for r in unflagged if stamp(r))
-    print(f"stamped {stamped} blueprint(s) with NO_ECONOMY "
-          f"(equipped={len(equipped)}, obtainable={len(obtainable)}).")
+    print(f"stamped {stamped} blueprint(s) with NO_ECONOMY (obtainable set = {len(obtainable)}).")
 
 
 if __name__ == "__main__":

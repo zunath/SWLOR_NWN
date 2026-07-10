@@ -259,6 +259,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnQuestPlaceable = "quest_placeable";
         public const string OnQuestTrigger = "quest_trigger";
         public const string OnQuestEncounter = "quest_enc";
+        public const string OnQuestContractBoard = "qcontract_board";
 
         // Trash events
         public const string OnTrashOpened = "trash_opened";

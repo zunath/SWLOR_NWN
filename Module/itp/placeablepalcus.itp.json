@@ -68122,6 +68122,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Contract Board"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qcontract_board"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Corpse"
                     },
                     "RESREF": {

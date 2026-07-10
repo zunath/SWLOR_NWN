@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Killzone Beacon is no longer a lesson on my ledger. You proved it in Viscara Republic Engineering Bunker; keep proving it when nobody is keeping score."
+            "0": "Killzone Beacon, designation closed, file complete. You're released from this briefing and from my ledger. Carry the doctrine correctly; the Republic does not reissue this clearance twice."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Killzone Beacon is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Viscara Republic Engineering Bunker."
+            "0": "Negative. This briefing requires full command of Devices doctrine, and your file doesn't clear that bar yet. Return when it does."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The bunker consoles can paint a battlefield, but only a steady operator can make the paint mean danger. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Killzone Beacon adepts, and bring back the Killzone Beacon field report."
+            "0": "Grid reference Viscara, Republic Engineering Bunker, designation contested. An engineering cell has repurposed bunker fire-control hardware for unsanctioned live testing, six adepts confirmed on site. Your objective: neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back. Briefing's already running; catch up."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Confirmed. Grid reference logged, six hostiles expected, docket is the extraction priority. Report on return."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Killzone Beacon is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "It marks a kill zone before the enemy occupies it, so fire converges the instant they do. Effective doctrine in the right hands. In the wrong hands it paints friendly positions just as easily, which is why it cannot leak."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "That docket is the Republic's own filing on bunker fire-control assets. If it's in that cell's hands, someone with clearance handed it to them, and I need a name before I need a court-martial."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Six adepts, standard live-fire discipline, nothing you haven't handled. Treat every marker in that bunker as active. This is not a drill and I will not pretend it is one to make you comfortable."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your first proof for Killzone Beacon. Finish the target there before you bring me anything else."
+            "0": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Report when both are in hand."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Killzone Beacon lesson clean."
+            "0": "Confirm the docket is intact and hand it over for verification."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Killzone Beacon is one step closer to belonging to you."
+            "0": "Verified. Six hostiles down, docket intact, and a name I'll be following up on privately. Payment's logged. Good first briefing."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Killzone Beacon proof is waiting in Viscara Republic Engineering Bunker. This one is about second proof, not repetition. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Killzone Beacon specialists, and bring back the Killzone Beacon calibration core."
+            "0": "Second objective: their specialists have a Republic shield grid relay wired into the same bunker hardware, feeding targeting data outward instead of holding it. Five specialists, same bunker, recover the relay before it broadcasts anything further."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Delay noted, but keep it short. Every hour that relay stays live is an hour more data leaves that bunker."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Killzone Beacon is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "It keeps broadcasting kill-zone geometry to whoever's listening. Eventually that's every hostile force on Viscara with a receiver. I want it silent before that happens."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Shield grids and targeting grids share the same backbone in bunker installations. Whoever repurposed it knew that. That's not a lucky guess, that's someone with Republic training."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Five, dug in around the relay itself. They'll defend it like it's worth more than their own lives. To them, right now, it is."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your second proof for Killzone Beacon. Finish the target there before you bring me anything else."
+            "0": "Relay's still broadcasting from Viscara Republic Engineering Bunker. Five specialists standing between you and silence. Move."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Killzone Beacon lesson clean."
+            "0": "Confirm relay status and hand it over."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Killzone Beacon is one step closer to belonging to you."
+            "0": "Confirmed silent. That's two objectives clean. You're proving reliable enough that I'm considering trusting you with the part of this briefing I haven't said out loud yet."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Killzone Beacon proof is waiting in Viscara Republic Engineering Bunker. This one is about breach proof, not repetition. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Killzone Beacon warden, and bring back the Killzone Beacon broken seal."
+            "0": "Third objective, and this one I will not authorize solo. Their warden holds a Cracked Command Crest, which tells me he's commanding actual fire teams now, not just adepts. Republic doctrine deploys fire teams of three against a command target. I am not making an exception for you. Bring two."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Granted. Take the time you need. I would rather delay this briefing than close it with your name on a casualty report."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Killzone Beacon is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "One holds forward position, one flanks, one commands the engagement. Republic doctrine didn't invent that number for tradition. It's the minimum that survives a command target with return fire discipline."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Cracked like that, under load, which means he's been running live command scenarios longer than any bunker range should allow. I want to know exactly how long."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Textbook, which is what makes him dangerous. He's not improvising. He's running Republic tactics against Republic-trained targets, which means he's had exactly the kind of teacher I'm afraid he's had."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your breach proof for Killzone Beacon. Finish the target there before you bring me anything else."
+            "0": "Fire team of three, Viscara Republic Engineering Bunker, warden objective. Do not deploy short-handed."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Killzone Beacon lesson clean."
+            "0": "Confirm the warden is neutralized and the crest is secured."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Killzone Beacon is one step closer to belonging to you."
+            "0": "Confirmed and logged. Three of you where one of you would have failed. That's not a compliment, that's doctrine working exactly as designed. Proceed to the fourth objective."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Killzone Beacon proof is waiting in Viscara Republic Engineering Bunker. This one is about circle proof, not repetition. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Killzone Beacon inner circle, and bring back the Killzone Beacon command mark."
+            "0": "Fourth objective: the inner circle holds a Quartermaster Override Chip, the authorization trail for every requisition that armed this cell. Four hostiles. Recover the chip; I need to know who signed for this hardware."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Delay logged. Return when ready. This objective isn't going anywhere; unfortunately, neither is the chain of command I'm about to expose."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Killzone Beacon is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Every requisition override, timestamped, cross-referenced against a quartermaster's signature. It's the paper trail that turns a rogue cell into a court-martial."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Someone with enough rank to move bunker hardware without a second signature. That's a short list. I've narrowed it further than I'm comfortable admitting."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Recommended. Four hostiles is worse odds than one warden in some respects. Keep your fire team intact; I don't reissue clearances for replacements mid-briefing."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your circle proof for Killzone Beacon. Finish the target there before you bring me anything else."
+            "0": "Inner circle, four hostiles, chip objective, Viscara Republic Engineering Bunker. Report on completion."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Killzone Beacon lesson clean."
+            "0": "Confirm the chip and hand it over for cross-reference."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Killzone Beacon is one step closer to belonging to you."
+            "0": "Cross-referenced. The signature is one I recognize, and I don't like what that means for the fifth objective. Command's been compromised further up than I want to say out loud yet."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Killzone Beacon proof is waiting in Viscara Republic Engineering Bunker. This one is about mastery proof, not repetition. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Killzone Beacon master, and return with the final proof."
+            "0": "Final objective, and I'll say this plainly instead of by the book: the bunker's master holds killzone beacon doctrine at a level the Republic never cleared for field use, and he intends to paint a live position as the target, not a range marker. Fire team of three, minimum, non-negotiable. I've watched this doctrine used correctly exactly once. I'd like to watch it again."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Take it. I would rather you go in ready than go in on my schedule. This briefing ends when the objective is actually secure, not before."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Killzone Beacon is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Command's own staging ground, if his projections hold. He's not testing anymore. He's rehearsing a strike against people who trust that ground is safe."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "From this briefing room, originally, back when I still thought doctrine couldn't be misused by someone who understood it well enough. I was wrong. I've stopped pretending otherwise."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Then the doctrine gets reissued, correctly, to someone who reads a grid reference and sees people worth protecting, not targets worth painting. That would be you, assuming this goes the way I need it to."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your mastery proof for Killzone Beacon. Finish the target there before you bring me anything else."
+            "0": "Final objective unchanged. Team of three, Viscara Republic Engineering Bunker, master designation. Report only on completion."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Killzone Beacon lesson clean."
+            "0": "Confirm status. Is the objective secure?"
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Killzone Beacon is one step closer to belonging to you."
+            "0": "Then this briefing is closed, properly, for the first time since I opened this file. Killzone Beacon is yours. Carry it like the Republic I still believe it can be, not the one that let this happen."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the briefing."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Understood. Moving on the objective."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Killzone Beacon demand?"
+            "0": "What does a killzone beacon actually do?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why does this docket matter to the Republic?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What's the risk profile on site?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not cleared for this yet. Standing by."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Docket recovered, here it is."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the briefing."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Copy. Moving to intercept the relay."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Killzone Beacon demand?"
+            "0": "What happens if that relay stays active?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why is a shield grid relay tied to targeting?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How many specialists am I looking at?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Requesting delay before deployment."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Relay's down, here it is."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the briefing."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "Understood. Assembling a fire team."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Killzone Beacon demand?"
+            "0": "Why fire teams of three specifically?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What does the crest tell you?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What's the warden's command style?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Requesting time to assemble a team."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Crest secured, warden down."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the briefing."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "Copy. Moving on the inner circle."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Killzone Beacon demand?"
+            "0": "What's on a quartermaster override chip?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Who signs off on requisitions like this?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Should I deploy with the same team?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Requesting a briefing delay."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Chip secured, here it is."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the briefing."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "Team of three, and we finish this properly."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Killzone Beacon demand?"
+            "0": "What position is he planning to paint?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where did he learn this doctrine?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What happens to the doctrine after this?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Requesting more time before final deployment."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Objective secure. He's down."
           }
         }
       }

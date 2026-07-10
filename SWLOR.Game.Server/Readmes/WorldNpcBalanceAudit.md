@@ -73,3 +73,11 @@ Regression coverage lives in `NPCEnemyBalanceAuditTests`,
 - Seven preset-built alternate/variant enemies (`man_ranger_2`,
   `man_warrior_2`, `v_raivor2`, `v_flesheater2`, `s_app_m`, `ecoterr_2`,
   `byysk_guard002`) had no Bible rows; rows added.
+- Capstone quest-line boss review: `cp_untinst_wd` (50 Boss Swarm, Hard to
+  Hit, 2075 HP) and `cp_untinst_ms` (50 Boss Swarm, Glass Cannon, 1587 HP)
+  were the only capstone wardens/masters below the group-boss bar — a final
+  capstone boss weaker than its own line's Tough adepts. Both retuned to the
+  50 Boss Melee preset with the Hard to Hit modifier (4611 HP, DMG 92,
+  Evasion 19), preserving the line's evasive identity while matching the
+  other capstone bosses; Bible rows, UTCs, skins, and claw weapons updated
+  together. Trash ranks (`_ad`/`_sp`/`_ic`) intentionally stay Swarm-role.

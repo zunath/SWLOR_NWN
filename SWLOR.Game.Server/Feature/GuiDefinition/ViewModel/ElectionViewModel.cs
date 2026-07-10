@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var candidate in candidates)
             {
                 _candidatePlayerIds.Add(candidate.Id);
-                candidateNames.Add(PlayerName.GetDisplayNameByPlayerId(Player, candidate.Id, candidate.Name));
+                candidateNames.Add(PlayerName.GetPlainDisplayNameByPlayerId(Player, candidate.Id, candidate.Name));
                 if (selectedCandidateId == candidate.Id)
                 {
                     candidateToggles.Add(true);

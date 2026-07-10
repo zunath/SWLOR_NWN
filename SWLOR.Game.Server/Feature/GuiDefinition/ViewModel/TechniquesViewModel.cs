@@ -149,20 +149,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ClearSelections()
         {
-            if (UnequippedSelections != null &&
-                _selectedUnequippedIndex > -1 &&
-                _selectedUnequippedIndex < UnequippedSelections.Count)
-            {
-                UnequippedSelections[_selectedUnequippedIndex] = false;
-            }
-
-            if (EquippedSelections != null &&
-                _selectedEquippedIndex > -1 &&
-                _selectedEquippedIndex < EquippedSelections.Count)
-            {
-                EquippedSelections[_selectedEquippedIndex] = false;
-            }
-
+            // The bound selection lists are replaced wholesale by LoadLists (the only caller),
+            // so only the index and UI state resets matter here.
             _selectedUnequippedIndex = -1;
             _selectedEquippedIndex = -1;
             IsEquipEnabled = false;
@@ -250,15 +238,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var feat = _unequippedFeats[_selectedUnequippedIndex];
 
-            if (!Mimicry.CanEquip(Player, feat, out var error))
+            // EquipTechnique validates and reports failures to the player itself.
+            if (Mimicry.EquipTechnique(Player, feat))
             {
-                SendMessageToPC(Player, ColorToken.Red(error));
-                return;
+                LoadLists();
             }
-
-            Mimicry.EquipTechnique(Player, feat);
-
-            LoadLists();
         };
 
         public Action OnClickUnequip() => () =>

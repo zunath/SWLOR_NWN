@@ -760,6 +760,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder MimicryTechnique(FeatType sourceCreatureFeat, int tier, int slotCost)
         {
+            if (sourceCreatureFeat == FeatType.Invalid)
+                throw new ArgumentException($"{nameof(sourceCreatureFeat)} must be a real creature ability feat.");
+            if (tier < 1)
+                throw new ArgumentException($"{nameof(tier)} must be at least 1.");
+            if (slotCost < 1)
+                throw new ArgumentException($"{nameof(slotCost)} must be at least 1.");
+
             _activeAbility.MimicrySourceFeat = sourceCreatureFeat;
             _activeAbility.MimicryTier = tier;
             _activeAbility.MimicrySlotCost = slotCost;

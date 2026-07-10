@@ -343,9 +343,19 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool CanEquip(uint player, FeatType feat, out string error)
         {
+            var playerId = GetObjectUUID(player);
+            return CanEquip(player, DB.Get<Player>(playerId), feat, out error);
+        }
+
+        /// <summary>
+        /// Determines whether a player can equip a given technique right now, using an
+        /// already-fetched player database record to avoid duplicate round trips.
+        /// </summary>
+        public static bool CanEquip(uint player, Player dbPlayer, FeatType feat, out string error)
+        {
             error = string.Empty;
 
-            if (!GetIsPC(player) || GetIsDM(player))
+            if (!GetIsPC(player) || GetIsDM(player) || dbPlayer == null)
             {
                 error = "Only players may equip techniques.";
                 return false;
@@ -356,9 +366,6 @@ namespace SWLOR.Game.Server.Service
                 error = "That is not a valid technique.";
                 return false;
             }
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
 
             if (!dbPlayer.LearnedTechniques.ContainsKey(feat))
             {
@@ -392,14 +399,14 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool EquipTechnique(uint player, FeatType feat)
         {
-            if (!CanEquip(player, feat, out var error))
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!CanEquip(player, dbPlayer, feat, out var error))
             {
                 SendMessageToPC(player, ColorToken.Red(error));
                 return false;
             }
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.EquippedTechniques.Add(feat);
             DB.Set(dbPlayer);
@@ -445,7 +452,19 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            EnforceSlotBudget(player, DB.Get<Player>(playerId));
+        }
+
+        /// <summary>
+        /// Enforces the slot budget against an already-fetched player database record,
+        /// avoiding a duplicate round trip when the caller has one in hand.
+        /// </summary>
+        public static void EnforceSlotBudget(uint player, Player dbPlayer)
+        {
+            if (!GetIsPC(player) || dbPlayer == null)
+                return;
+
+            var playerId = GetObjectUUID(player);
             var maxSlots = GetMaxSlots(dbPlayer);
 
             if (GetUsedSlots(dbPlayer) <= maxSlots)
@@ -516,10 +535,10 @@ namespace SWLOR.Game.Server.Service
             if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
                 return;
 
-            EnforceSlotBudget(player);
-
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+
+            EnforceSlotBudget(player, dbPlayer);
 
             foreach (var feat in dbPlayer.EquippedTechniques)
             {

@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.ScorchingBreath,
                 1.5f,
                 22f,
-                5,
-                14,
+                10,
+                28,
                 18,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.ScorchingBreath, 4, 3)
                 .HasTargetingCone(
                     Spell.ScorchingBreathTechnique,

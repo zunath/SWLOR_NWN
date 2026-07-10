@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.GoringCharge,
                 1.5f,
                 22f,
-                6,
-                22,
+                8,
+                20,
                 10,
                 typeof(BleedStatusEffect),
                 CombatImpactAreaShape.Line,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.GoringCharge, 3, 2)
                 .HasTargetingLine(
                     Spell.GoringChargeTechnique,

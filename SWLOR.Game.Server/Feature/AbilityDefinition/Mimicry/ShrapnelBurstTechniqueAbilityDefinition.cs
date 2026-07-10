@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.ShrapnelBurst,
                 1.4f,
                 20f,
-                6,
-                18,
+                8,
+                20,
                 12,
                 typeof(SunderStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.ShrapnelBurst, 3, 3)
                 .HasTargetingCone(
                     Spell.ShrapnelBurstTechnique,

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.2f,
                 17f,
                 5,
-                20,
+                16,
                 12,
                 typeof(ShockStatusEffect),
                 CombatDamageType.Electrical,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 12f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.OverloadShot, 2, 2);
 
             return _builder.Build();

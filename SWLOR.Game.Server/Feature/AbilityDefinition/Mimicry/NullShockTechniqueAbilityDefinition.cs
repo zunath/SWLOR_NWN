@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.NullShock,
                 1.5f,
                 24f,
-                7,
-                18,
+                8,
+                20,
                 12,
                 typeof(ForceSuppressionStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.NullShock, 3, 3)
                 .HasTargetingSphere(
                     Spell.NullShockTechnique,

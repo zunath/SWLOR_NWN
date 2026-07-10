@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .HasRecastDelay(RecastGroup.IronCarapace, 32f)
                 .UsesAnimation(Animation.ShieldWall)
                 .IsCastedAbility()
-                .RequirementStamina(4)
+                .RequirementStamina(5)
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, new IronCarapaceStatusEffect(), 30f);
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Vitality)
                 .MimicryTechnique(FeatType.IronCarapace, 2, 2);
 
             return _builder.Build();

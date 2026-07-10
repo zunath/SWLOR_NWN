@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.ToxicCloud,
                 1.6f,
                 24f,
-                7,
-                10,
+                8,
+                20,
                 15,
                 typeof(ToxinStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 10f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.ToxicCloud, 3, 3)
                 .HasTargetingSphere(
                     Spell.ToxicCloudTechnique,

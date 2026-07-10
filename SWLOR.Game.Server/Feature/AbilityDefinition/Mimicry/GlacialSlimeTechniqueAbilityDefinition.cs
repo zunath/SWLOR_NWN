@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.GlacialSlime,
                 1.2f,
                 17f,
-                4,
-                12,
+                5,
+                16,
                 10,
                 typeof(FreezingStatusEffect),
                 CombatDamageType.Ice,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.GlacialSlime, 2, 2);
 
             return _builder.Build();

@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.BrutalBash,
                 1.0f,
                 16f,
-                4,
-                12,
+                5,
+                16,
                 3,
                 typeof(KnockdownStatusEffect),
                 CombatDamageType.Physical,
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Screen_Bump)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.BrutalBash, 2, 2);
 
             return _builder.Build();

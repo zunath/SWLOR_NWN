@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.4f,
                 17f,
                 5,
-                15,
+                13,
                 12,
                 typeof(BleedStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.BarbedVolley, 2, 2)
                 .HasTargetingCone(
                     Spell.BarbedVolleyTechnique,

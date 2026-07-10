@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        22,
+                        28,
                         5,
                         typeof(KnockdownStatusEffect),
                         CombatImpactAreaShape.Sphere,
@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.RupturingQuake, 4, 3)
                 .HasTargetingSphere(
                     Spell.RupturingQuakeTechnique,

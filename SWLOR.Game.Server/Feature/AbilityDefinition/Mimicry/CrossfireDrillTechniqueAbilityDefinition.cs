@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 1.0f,
                 26f,
-                6,
-                22,
+                10,
+                28,
                 8,
                 typeof(SuppressionStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 5f)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Agility)
                 .MimicryTechnique(FeatType.CrossfireDrill, 4, 3)
                 .HasTargetingCone(
                     Spell.CrossfireDrillTechnique,

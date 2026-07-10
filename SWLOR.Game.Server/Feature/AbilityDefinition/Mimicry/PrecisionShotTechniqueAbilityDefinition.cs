@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.PrecisionShot,
                 1.1f,
                 15f,
-                4,
-                18,
+                5,
+                16,
                 12,
                 typeof(MarkedForDeathStatusEffect),
                 CombatDamageType.Physical,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 12f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.PrecisionShot, 2, 2);
 
             return _builder.Build();

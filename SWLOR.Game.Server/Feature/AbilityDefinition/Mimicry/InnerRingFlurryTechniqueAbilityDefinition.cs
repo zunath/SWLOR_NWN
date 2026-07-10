@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 1.3f,
                 34f,
-                8,
-                26,
+                9,
+                32,
                 12,
                 typeof(ExposedStatusEffect),
                 CombatDamageType.Physical,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 3f)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Agility)
                 .MimicryTechnique(FeatType.InnerRingFlurry, 4, 3);
 
             return _builder.Build();

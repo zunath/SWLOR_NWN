@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.BloodFrenzyFlurry,
                 0.8f,
                 20f,
-                6,
+                8,
                 20,
                 12,
                 typeof(BleedStatusEffect),
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 5f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Agility)
                 .MimicryTechnique(FeatType.BloodFrenzyFlurry, 3, 3)
                 .HasTargetingCone(
                     Spell.BloodFrenzyFlurryTechnique,

@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 1.0f,
                 26f,
-                6,
-                20,
+                10,
+                28,
                 8,
                 typeof(WeakenedStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 5f)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.SustainBurn, 4, 3)
                 .HasTargetingCone(
                     Spell.SustainBurnTechnique,

@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.StaticBurst,
                 1.4f,
                 20f,
-                6,
-                14,
+                8,
+                20,
                 12,
                 typeof(ShockStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.StaticBurst, 3, 3)
                 .HasTargetingSphere(
                     Spell.StaticBurstTechnique,

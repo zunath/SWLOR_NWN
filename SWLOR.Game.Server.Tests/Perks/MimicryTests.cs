@@ -121,6 +121,34 @@ public class MimicryTests
         }
     }
 
+    // Every damaging technique must declare a scaling attribute so its damage tracks player stats
+    // like native abilities (a technique with no CombatImpactDamageAbility gets zero stat scaling).
+    // Assignment is spread across all six attributes rather than defaulting everything to one stat.
+    [Test]
+    public void MimicryTechniques_DeclareScalingStatsSpanningAllSixAttributes()
+    {
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
+        var usedStats = new HashSet<AbilityType>();
+
+        foreach (var technique in techniques)
+        {
+            technique.Detail.CombatImpactDamageAbility.Should().NotBe(AbilityType.Invalid,
+                $"{technique.Feat} should declare a scaling attribute via CombatImpactDamageAbility");
+            usedStats.Add(technique.Detail.CombatImpactDamageAbility);
+        }
+
+        var allAttributes = new[]
+        {
+            AbilityType.Might, AbilityType.Perception, AbilityType.Vitality,
+            AbilityType.Agility, AbilityType.Willpower, AbilityType.Social
+        };
+        foreach (var attribute in allAttributes)
+        {
+            usedStats.Should().Contain(attribute,
+                $"at least one technique should scale off {attribute} so no attribute is unused");
+        }
+    }
+
     // The core completeness requirement: every NPC ability the game registers must be learnable
     // through Mimicry, and every technique must copy a real NPC ability. Asserted bidirectionally
     // and 1:1 so the pool can never drift out of sync with the NPC ability roster.

@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.StaticWeb,
                 1.4f,
                 22f,
-                6,
-                14,
+                5,
+                13,
                 10,
                 typeof(ShockStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.StaticWeb, 2, 2)
                 .HasTargetingSphere(
                     Spell.StaticWebTechnique,

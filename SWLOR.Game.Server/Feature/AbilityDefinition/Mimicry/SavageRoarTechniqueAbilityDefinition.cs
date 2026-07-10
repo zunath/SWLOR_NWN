@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.SavageRoar,
                 1.0f,
                 21f,
-                4,
+                5,
                 0,
                 14,
                 typeof(WeakenedStatusEffect),
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.SavageRoar, 2, 2)
                 .HasTargetingSphere(
                     Spell.SavageRoarTechnique,

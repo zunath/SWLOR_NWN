@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 0.8f,
                 22f,
-                5,
-                16,
+                7,
+                24,
                 6,
                 typeof(MarkedStatusEffect),
                 CombatDamageType.Sonic,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 12f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.RallyBreaker, 3, 2);
 
             return _builder.Build();

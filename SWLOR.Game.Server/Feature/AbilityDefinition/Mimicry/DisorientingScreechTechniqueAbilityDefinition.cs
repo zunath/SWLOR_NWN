@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .IsAreaAbility()
                 .RequiresTarget()
                 .IsHostileAbility()
-                .RequirementStamina(7)
+                .RequirementStamina(8)
                 .HasActivationTargetingSphere(
                     9f,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        8,
+                        20,
                         24,
                         typeof(DisorientedStatusEffect),
                         CombatImpactAreaShape.Sphere,
@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.DisorientingScreech, 3, 3)
                 .HasTargetingSphere(
                     Spell.DisorientingScreechTechnique,

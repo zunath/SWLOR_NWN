@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Ac_Bonus)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Vitality)
                 .MimicryTechnique(FeatType.ChitinGuard, 2, 2);
 
             return _builder.Build();

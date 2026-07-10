@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 1.1f,
                 30f,
-                7,
-                26,
+                10,
+                28,
                 10,
                 typeof(MarkedStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.WardenMark, 4, 3)
                 .HasTargetingSphere(
                     Spell.WardenMarkTechnique,

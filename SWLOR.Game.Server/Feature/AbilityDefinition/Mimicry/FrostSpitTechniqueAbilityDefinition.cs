@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.FrostSpit,
                 1.2f,
                 24f,
-                2,
-                8,
+                3,
+                10,
                 6,
                 typeof(FreezingStatusEffect),
                 CombatDamageType.Ice,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.FrostSpit, 1, 1);
 
             return _builder.Build();

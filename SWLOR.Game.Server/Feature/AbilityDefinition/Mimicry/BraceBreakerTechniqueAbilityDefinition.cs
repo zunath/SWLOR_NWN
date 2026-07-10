@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 0.8f,
                 22f,
-                5,
-                17,
+                7,
+                24,
                 6,
                 typeof(DazedStatusEffect),
                 CombatDamageType.Physical,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 3f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Vitality)
                 .MimicryTechnique(FeatType.BraceBreaker, 3, 2);
 
             return _builder.Build();

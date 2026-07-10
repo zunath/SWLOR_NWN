@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.2f,
                 14f,
                 3,
-                14,
+                10,
                 24,
                 typeof(BleedStatusEffect),
                 CombatDamageType.Physical,
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Chunk_Red_Small)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.RendingBite, 1, 1);
 
             return _builder.Build();

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 1.4f,
                 38f,
-                9,
+                10,
                 28,
                 14,
                 typeof(SuppressionStatusEffect),
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.FinalMandate, 4, 3)
                 .HasTargetingLine(
                     Spell.FinalMandateTechnique,

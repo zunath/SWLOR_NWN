@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.PermafrostRupture,
                 2.0f,
                 26f,
-                7,
-                16,
+                8,
+                20,
                 8,
                 typeof(FreezingStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.PermafrostRupture, 3, 3)
                 .HasTargetingSphere(
                     Spell.PermafrostRuptureTechnique,

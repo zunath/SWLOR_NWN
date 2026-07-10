@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        12,
+                        10,
                         18,
                         null,
                         false,
@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.CripplingTalons, 1, 1);
 
             return _builder.Build();

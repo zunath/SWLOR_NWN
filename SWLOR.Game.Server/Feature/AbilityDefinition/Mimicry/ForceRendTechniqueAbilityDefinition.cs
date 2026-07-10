@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.2f,
                 16f,
                 5,
-                18,
+                16,
                 15,
                 typeof(ForceErosionStatusEffect),
                 CombatDamageType.Force,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.ForceRend, 2, 2);
 
             return _builder.Build();

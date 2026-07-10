@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        16,
+                        13,
                         18,
                         typeof(BleedStatusEffect),
                         CombatImpactAreaShape.Cone,
@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.PiercingQuills, 2, 2)
                 .HasTargetingCone(
                     Spell.PiercingQuillsTechnique,

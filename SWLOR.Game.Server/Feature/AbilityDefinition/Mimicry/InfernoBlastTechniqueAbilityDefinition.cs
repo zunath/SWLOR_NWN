@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .IsAreaAbility()
                 .RequiresTarget()
                 .IsHostileAbility()
-                .RequirementStamina(8)
+                .RequirementStamina(10)
                 .HasActivationTargetingCone(
                     10f,
                     7f,
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        26,
+                        28,
                         24,
                         typeof(BurnStatusEffect),
                         CombatImpactAreaShape.Cone,
@@ -58,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.InfernoBlast, 4, 3)
                 .HasTargetingCone(
                     Spell.InfernoBlastTechnique,

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1f,
                 11f,
                 3,
-                14,
+                10,
                 12,
                 typeof(HamstringStatusEffect),
                 CombatDamageType.Physical,
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Chunk_Red_Small)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
+                .CombatImpactDamageAbility(AbilityType.Agility)
                 .MimicryTechnique(FeatType.RakingClaws, 1, 1);
 
             return _builder.Build();

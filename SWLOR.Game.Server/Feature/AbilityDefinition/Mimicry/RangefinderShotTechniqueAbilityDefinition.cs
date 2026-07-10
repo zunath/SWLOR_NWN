@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 0.8f,
                 22f,
-                5,
-                18,
+                7,
+                24,
                 6,
                 typeof(ExposedStatusEffect),
                 CombatDamageType.Physical,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 12f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.RangefinderShot, 3, 2);
 
             return _builder.Build();

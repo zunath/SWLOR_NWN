@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.ForceSunder,
                 1.3f,
                 18f,
-                6,
-                16,
+                7,
+                24,
                 14,
                 typeof(ForceErosionStatusEffect),
                 CombatDamageType.Force,
@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 afterSuccessfulHit: ApplyForceSunderBeam)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.ForceSunder, 3, 2);
 
             return _builder.Build();

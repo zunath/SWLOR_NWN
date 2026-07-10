@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.MaulingBite,
                 1.1f,
                 13f,
-                4,
-                18,
+                5,
+                16,
                 12,
                 typeof(BleedStatusEffect),
                 CombatDamageType.Physical,
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Chunk_Red_Medium)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.MaulingBite, 2, 2);
 
             return _builder.Build();

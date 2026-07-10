@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.MindSpike,
                 1.1f,
                 18f,
-                4,
-                12,
+                5,
+                16,
                 12,
                 typeof(TerrifiedStatusEffect),
                 CombatDamageType.Force,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.MindSpike, 2, 2);
 
             return _builder.Build();

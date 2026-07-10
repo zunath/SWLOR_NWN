@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 24f,
                 5,
-                30,
+                13,
                 6,
                 typeof(DazedStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.ConcussiveChallenge, 2, 2)
                 .HasTargetingSphere(
                     Spell.ConcussiveChallengeTechnique,

@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.HoarfrostGlob,
                 1.3f,
                 16f,
-                4,
-                13,
+                5,
+                16,
                 11,
                 typeof(FreezingStatusEffect),
                 CombatDamageType.Ice,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.HoarfrostGlob, 2, 2);
 
             return _builder.Build();

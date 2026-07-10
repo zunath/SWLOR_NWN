@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.SerratedSlash,
                 1.1f,
                 15f,
-                4,
-                20,
+                5,
+                16,
                 12,
                 typeof(HemorrhageStatusEffect),
                 CombatDamageType.Physical,
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Chunk_Red_Medium)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Agility)
                 .MimicryTechnique(FeatType.SerratedSlash, 2, 2);
 
             return _builder.Build();

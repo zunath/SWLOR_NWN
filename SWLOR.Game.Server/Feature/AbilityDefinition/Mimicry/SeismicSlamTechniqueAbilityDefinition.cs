@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .IsAreaAbility()
                 .RequiresTarget()
                 .IsHostileAbility()
-                .RequirementStamina(6)
+                .RequirementStamina(8)
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     Ability.ApplyTelegraphedCombatImpact(
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        10,
+                        20,
                         3,
                         typeof(KnockdownStatusEffect),
                         CombatImpactAreaShape.Sphere,
@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.SeismicSlam, 3, 3)
                 .HasTargetingSphere(
                     Spell.SeismicSlamTechnique,

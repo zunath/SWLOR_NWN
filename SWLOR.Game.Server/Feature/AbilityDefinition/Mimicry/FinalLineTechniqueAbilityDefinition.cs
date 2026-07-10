@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.Capstone,
                 1.4f,
                 38f,
-                9,
-                30,
+                10,
+                28,
                 14,
                 typeof(ExposedStatusEffect),
                 CombatImpactAreaShape.Line,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.FinalLine, 4, 3)
                 .HasTargetingLine(
                     Spell.FinalLineTechnique,

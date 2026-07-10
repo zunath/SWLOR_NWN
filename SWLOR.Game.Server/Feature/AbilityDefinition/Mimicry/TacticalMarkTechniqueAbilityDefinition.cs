@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.TacticalMark,
                 0.9f,
                 20f,
-                4,
-                10,
+                5,
+                16,
                 15,
                 typeof(ExposeWeakPointStatusEffect),
                 CombatDamageType.Physical,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 12f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.TacticalMark, 2, 2);
 
             return _builder.Build();

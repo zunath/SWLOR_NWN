@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.TerrifyingBellow,
                 1.0f,
                 20f,
-                4,
+                10,
                 0,
                 18,
                 typeof(TerrifiedStatusEffect),
@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 enmityBonus: 8)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.TerrifyingBellow, 4, 3)
                 .HasTargetingSphere(
                     Spell.TerrifyingBellowTechnique,

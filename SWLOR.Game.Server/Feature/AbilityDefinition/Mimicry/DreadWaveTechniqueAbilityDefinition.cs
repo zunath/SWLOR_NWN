@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.DreadWave,
                 1.2f,
                 24f,
-                6,
-                12,
+                8,
+                20,
                 12,
                 typeof(TerrifiedStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.DreadWave, 3, 3)
                 .HasTargetingSphere(
                     Spell.DreadWaveTechnique,

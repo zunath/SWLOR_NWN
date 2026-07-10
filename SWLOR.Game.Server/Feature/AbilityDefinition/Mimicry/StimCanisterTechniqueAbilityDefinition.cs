@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.StimCanister,
                 1.2f,
                 24f,
-                6,
-                14,
+                8,
+                20,
                 10,
                 typeof(PoisonStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.StimCanister, 3, 3)
                 .HasTargetingSphere(
                     Spell.StimCanisterTechnique,

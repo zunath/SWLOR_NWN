@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.ArcPulse,
                 1.3f,
                 20f,
-                6,
-                16,
+                8,
+                20,
                 12,
                 typeof(ShockStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.ArcPulse, 3, 3)
                 .HasTargetingSphere(
                     Spell.ArcPulseTechnique,

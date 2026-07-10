@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 15f,
                 5,
-                15,
+                16,
                 8,
                 typeof(FreezingStatusEffect),
                 CombatDamageType.Ice,
@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 enmityBonus: 75)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Agility)
                 .MimicryTechnique(FeatType.RimePounce, 2, 2);
 
             return _builder.Build();

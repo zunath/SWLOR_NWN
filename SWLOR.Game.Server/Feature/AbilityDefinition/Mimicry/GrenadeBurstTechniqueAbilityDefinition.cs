@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.GrenadeBurst,
                 1.5f,
                 22f,
-                6,
-                18,
+                8,
+                20,
                 12,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 10f)
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.GrenadeBurst, 3, 3)
                 .HasTargetingSphere(
                     Spell.GrenadeBurstTechnique,

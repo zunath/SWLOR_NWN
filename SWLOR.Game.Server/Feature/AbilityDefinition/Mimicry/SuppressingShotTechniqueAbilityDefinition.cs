@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.SuppressingShot,
                 1.2f,
                 17f,
-                4,
-                12,
+                5,
+                13,
                 4,
                 typeof(DazedStatusEffect),
                 CombatImpactAreaShape.Line,
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 10f)
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.SuppressingShot, 2, 2)
                 .HasTargetingLine(
                     Spell.SuppressingShotTechnique,

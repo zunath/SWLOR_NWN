@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 0.8f,
                 20f,
                 3,
-                8,
+                10,
                 15,
                 typeof(VulnerableStatusEffect),
                 CombatDamageType.Physical,
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 12f)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
+                .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.TargetLock, 1, 1);
 
             return _builder.Build();

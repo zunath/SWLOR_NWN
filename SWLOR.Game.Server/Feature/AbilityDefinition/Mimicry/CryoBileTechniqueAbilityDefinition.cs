@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 RecastGroup.CryoBile,
                 1.6f,
                 24f,
-                8,
-                18,
+                10,
+                28,
                 12,
                 typeof(FreezingStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 enmityBonus: 100)
                 .SkillType(SkillType.Mimicry)
                 .Level(4)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.CryoBile, 4, 3)
                 .HasTargetingCone(
                     Spell.CryoBileTechnique,

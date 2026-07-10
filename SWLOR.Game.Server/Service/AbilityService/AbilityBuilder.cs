@@ -775,6 +775,29 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Marks the active ability as a Mimicry trait: a passive technique learned from an enemy
+        /// that, while equipped, applies <paramref name="traitStatusEffect"/> instead of granting a
+        /// hotbar action. Otherwise identical to a technique for learning, slot budgeting, and tier gating.
+        /// </summary>
+        /// <param name="sourceCreatureFeat">The NPC feat this trait is copied from.</param>
+        /// <param name="tier">The Mimicry tier of this trait, used to gate learning by skill rank.</param>
+        /// <param name="slotCost">The number of technique slots this trait consumes when equipped.</param>
+        /// <param name="traitStatusEffect">The status effect applied to the wielder while this trait is equipped.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTrait(FeatType sourceCreatureFeat, int tier, int slotCost, Type traitStatusEffect)
+        {
+            MimicryTechnique(sourceCreatureFeat, tier, slotCost);
+
+            if (traitStatusEffect == null)
+                throw new ArgumentException($"{nameof(traitStatusEffect)} must be a real status effect type.");
+
+            _activeAbility.IsMimicryTrait = true;
+            _activeAbility.MimicryTraitStatusEffect = traitStatusEffect;
+
+            return this;
+        }
+
+        /// <summary>
         /// Returns a built list of abilities.
         /// </summary>
         /// <returns>A list of built abilities.</returns>

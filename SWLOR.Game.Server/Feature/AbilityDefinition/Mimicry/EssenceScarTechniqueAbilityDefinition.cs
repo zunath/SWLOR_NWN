@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,27 +13,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildSingleTarget(
-                _builder,
-                FeatType.EssenceScarTechnique,
-                "Essence Scar",
-                Animation.CastOutAnimation,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
-                0.8f,
-                18f,
-                7,
-                24,
-                6,
-                typeof(ForceDisruptionStatusEffect),
-                CombatDamageType.Force,
-                ResistanceType.Disruption,
-                VisualEffect.Vfx_Imp_Negative_Energy,
-                maxRange: 12f)
+            var profile = InnateAbilityProfile.Mimicry;
+
+            _builder
+                .Create(FeatType.EssenceScarTechnique, profile.PlayerPerkType)
+                .Name("Essence Scar")
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
-                .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.EssenceScar, 3, 2);
+                .MimicryTrait(FeatType.EssenceScar, 3, 2, typeof(ForceScarStatusEffect));
 
             return _builder.Build();
         }

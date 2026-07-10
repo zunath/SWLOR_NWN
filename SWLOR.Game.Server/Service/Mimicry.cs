@@ -549,6 +549,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Grants the technique's feat (if missing) and adds it to the player's hotbar.
         /// Mirrors the minimal grant + hotbar logic used by the perk system's active ability feats.
+        /// Trait techniques instead apply their passive status effect for as long as they stay
+        /// equipped; <see cref="AddFeatToHotBar"/> no-ops for them since they have no impact action.
         /// </summary>
         private static void GrantTechniqueFeat(uint player, FeatType feat)
         {
@@ -559,18 +561,44 @@ namespace SWLOR.Game.Server.Service
                 CreaturePlugin.AddFeat(player, feat);
 
             AddFeatToHotBar(player, feat);
+            ApplyTraitStatusEffect(player, feat);
         }
 
         /// <summary>
-        /// Removes the technique's feat and any hotbar slot referencing it.
+        /// Removes the technique's feat and any hotbar slot referencing it, and clears the passive
+        /// status effect if the technique is a trait.
         /// </summary>
         private static void RevokeTechniqueFeat(uint player, FeatType feat)
         {
             if (!GetIsObjectValid(player))
                 return;
 
+            RemoveTraitStatusEffect(player, feat);
             CreaturePlugin.RemoveFeat(player, feat);
             RemoveFeatFromHotBar(player, feat);
+        }
+
+        /// <summary>
+        /// Applies a trait technique's passive status effect to the wielder for as long as it stays
+        /// equipped (permanent duration; removed on unequip or slot-budget enforcement). No-ops for
+        /// active techniques, which are driven from the hotbar instead.
+        /// </summary>
+        private static void ApplyTraitStatusEffect(uint player, FeatType feat)
+        {
+            var detail = GetTechniqueDetail(feat);
+            if (detail == null || !detail.IsMimicryTrait || detail.MimicryTraitStatusEffect == null)
+                return;
+
+            StatusEffect.ApplyStatusEffect(player, player, detail.MimicryTraitStatusEffect, 0f);
+        }
+
+        private static void RemoveTraitStatusEffect(uint player, FeatType feat)
+        {
+            var detail = GetTechniqueDetail(feat);
+            if (detail == null || !detail.IsMimicryTrait || detail.MimicryTraitStatusEffect == null)
+                return;
+
+            StatusEffect.RemoveStatusEffect(player, detail.MimicryTraitStatusEffect, player, false);
         }
 
         private static bool IsFeatOnHotBar(uint player, FeatType feat)

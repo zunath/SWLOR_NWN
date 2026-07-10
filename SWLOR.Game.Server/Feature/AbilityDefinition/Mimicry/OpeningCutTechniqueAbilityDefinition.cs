@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,27 +13,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildSingleTarget(
-                _builder,
-                FeatType.OpeningCutTechnique,
-                "Opening Cut",
-                Animation.CrossCut,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
-                0.8f,
-                18f,
-                7,
-                24,
-                6,
-                typeof(BleedStatusEffect),
-                CombatDamageType.Physical,
-                ResistanceType.Trauma,
-                VisualEffect.Vfx_Com_Blood_Spark_Medium,
-                maxRange: 3f)
+            var profile = InnateAbilityProfile.Mimicry;
+
+            _builder
+                .Create(FeatType.OpeningCutTechnique, profile.PlayerPerkType)
+                .Name("Opening Cut")
                 .SkillType(SkillType.Mimicry)
                 .Level(3)
-                .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.OpeningCut, 3, 2);
+                .MimicryTrait(FeatType.OpeningCut, 3, 2, typeof(RendingInstinctStatusEffect));
 
             return _builder.Build();
         }

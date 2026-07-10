@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,26 +13,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildSingleTarget(
-                _builder,
-                FeatType.RendingBiteTechnique,
-                "Rending Bite",
-                Animation.DoubleStrike,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.RendingBite,
-                1.2f,
-                12f,
-                3,
-                10,
-                24,
-                typeof(BleedStatusEffect),
-                CombatDamageType.Physical,
-                ResistanceType.Trauma,
-                VisualEffect.Vfx_Com_Chunk_Red_Small)
+            var profile = InnateAbilityProfile.Mimicry;
+
+            _builder
+                .Create(FeatType.RendingBiteTechnique, profile.PlayerPerkType)
+                .Name("Rending Bite")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.RendingBite, 1, 1);
+                .MimicryTrait(FeatType.RendingBite, 1, 1, typeof(RendingInstinctStatusEffect));
 
             return _builder.Build();
         }

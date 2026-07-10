@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,28 +13,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildSingleTarget(
-                _builder,
-                FeatType.RimePounceTechnique,
-                "Rime Pounce",
-                Animation.ForceLeap,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.RimePounce,
-                1.0f,
-                15f,
-                5,
-                16,
-                8,
-                typeof(FreezingStatusEffect),
-                CombatDamageType.Ice,
-                ResistanceType.Ice,
-                VisualEffect.Vfx_Com_Hit_Frost,
-                maxRange: 8f,
-                enmityBonus: 75)
+            var profile = InnateAbilityProfile.Mimicry;
+
+            _builder
+                .Create(FeatType.RimePounceTechnique, profile.PlayerPerkType)
+                .Name("Rime Pounce")
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
-                .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.RimePounce, 2, 2);
+                .MimicryTrait(FeatType.RimePounce, 2, 2, typeof(RimedStrikesStatusEffect));
 
             return _builder.Build();
         }

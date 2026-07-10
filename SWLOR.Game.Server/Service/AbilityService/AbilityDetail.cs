@@ -60,6 +60,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public int MimicryTier { get; set; }
         public int MimicrySlotCost { get; set; }
 
+        /// <summary>
+        /// When true this mimicked technique is a passive trait rather than an activated ability:
+        /// equipping it applies <see cref="MimicryTraitStatusEffect"/> for as long as it is slotted
+        /// (granting flat stats, a self-buff, or an on-hit proc chance) and it has no hotbar action.
+        /// </summary>
+        public bool IsMimicryTrait { get; set; }
+        public Type MimicryTraitStatusEffect { get; set; }
+
         public AbilityDetail()
         {
             ActivationVisualEffect = VisualEffect.None;

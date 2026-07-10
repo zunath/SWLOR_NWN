@@ -117,22 +117,30 @@ public class MimicryTests
             var sourceAbility = npcAbilitiesByFeat[ability.MimicrySourceFeat];
             ability.Name.Should().Be(sourceAbility.Name,
                 $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat})");
-            ability.IsHostileAbility.Should().Be(sourceAbility.IsHostileAbility,
-                $"{feat}'s IsHostileAbility should mirror its source NPC ability {ability.MimicrySourceFeat}'s hostility " +
-                "(self-buff sources are not hostile, so techniques copied from them shouldn't be either)");
+
+            // Passive traits have no activation, so hostility (an activation concept) does not apply
+            // to them; it is only meaningful for active techniques, which must mirror their source.
+            if (!ability.IsMimicryTrait)
+            {
+                ability.IsHostileAbility.Should().Be(sourceAbility.IsHostileAbility,
+                    $"{feat}'s IsHostileAbility should mirror its source NPC ability {ability.MimicrySourceFeat}'s hostility " +
+                    "(self-buff sources are not hostile, so techniques copied from them shouldn't be either)");
+            }
         }
     }
 
-    // Every damaging technique must declare a scaling attribute so its damage tracks player stats
-    // like native abilities (a technique with no CombatImpactDamageAbility gets zero stat scaling).
-    // Assignment is spread across all six attributes rather than defaulting everything to one stat.
+    // Every damaging (active) technique must declare a scaling attribute so its damage tracks player
+    // stats like native abilities (a technique with no CombatImpactDamageAbility gets zero stat
+    // scaling). Assignment is spread across all six attributes rather than defaulting to one stat.
+    // Trait techniques are passive (no activated damage), so they are exempt and validated separately.
     [Test]
     public void MimicryTechniques_DeclareScalingStatsSpanningAllSixAttributes()
     {
         var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
+        var activeTechniques = techniques.Where(t => !t.Detail.IsMimicryTrait).ToList();
         var usedStats = new HashSet<AbilityType>();
 
-        foreach (var technique in techniques)
+        foreach (var technique in activeTechniques)
         {
             technique.Detail.CombatImpactDamageAbility.Should().NotBe(AbilityType.Invalid,
                 $"{technique.Feat} should declare a scaling attribute via CombatImpactDamageAbility");
@@ -147,7 +155,30 @@ public class MimicryTests
         foreach (var attribute in allAttributes)
         {
             usedStats.Should().Contain(attribute,
-                $"at least one technique should scale off {attribute} so no attribute is unused");
+                $"at least one active technique should scale off {attribute} so no attribute is unused");
+        }
+    }
+
+    // Trait techniques are passive: equipping them applies a status effect instead of granting a
+    // hotbar action. They must declare that status effect, have no impact action, and (being
+    // non-damaging) must not declare a combat scaling attribute.
+    [Test]
+    public void MimicryTraits_ArePassiveAndDeclareAStatusEffect()
+    {
+        var traits = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(t => t.Detail.IsMimicryTrait)
+            .ToList();
+
+        traits.Should().NotBeEmpty("some techniques are converted to passive traits");
+
+        foreach (var trait in traits)
+        {
+            trait.Detail.MimicryTraitStatusEffect.Should().NotBeNull(
+                $"{trait.Feat} is a trait and should declare the status effect applied while equipped");
+            trait.Detail.ImpactAction.Should().BeNull(
+                $"{trait.Feat} is a passive trait and should not have an activated impact action");
+            trait.Detail.CombatImpactDamageAbility.Should().Be(AbilityType.Invalid,
+                $"{trait.Feat} is a passive trait and should not declare a combat scaling attribute");
         }
     }
 
@@ -297,13 +328,23 @@ public class MimicryTests
             featRow["ICON"].Should().NotBeNullOrWhiteSpace($"{feat} should have a feat.2da ICON");
 
             featRow.TryGetValue("SPELLID", out var spellIdText).Should().BeTrue($"{feat}'s feat.2da row should have a SPELLID column");
-            int.TryParse(spellIdText, out var spellId).Should().BeTrue($"{feat}'s SPELLID should be numeric, was '{spellIdText}'");
 
-            spellRows.Should().ContainKey(spellId, $"spells.2da should have a row for {feat} (spell id {spellId})");
-            var spellRow = spellRows[spellId];
-            spellRow.TryGetValue("FeatID", out var featIdText).Should().BeTrue($"{feat}'s spells.2da row should have a FeatID column");
-            int.TryParse(featIdText, out var linkedFeatId).Should().BeTrue($"{feat}'s spells.2da FeatID should be numeric, was '{featIdText}'");
-            linkedFeatId.Should().Be(featId, $"{feat}'s spells.2da row should point back at its feat.2da row");
+            if (technique.Detail.IsMimicryTrait)
+            {
+                // Passive traits are not cast: their feat.2da row must not link to a castable spell.
+                int.TryParse(spellIdText, out _).Should().BeFalse(
+                    $"{feat} is a passive trait and should have a blank SPELLID (****), was '{spellIdText}'");
+            }
+            else
+            {
+                int.TryParse(spellIdText, out var spellId).Should().BeTrue($"{feat}'s SPELLID should be numeric, was '{spellIdText}'");
+
+                spellRows.Should().ContainKey(spellId, $"spells.2da should have a row for {feat} (spell id {spellId})");
+                var spellRow = spellRows[spellId];
+                spellRow.TryGetValue("FeatID", out var featIdText).Should().BeTrue($"{feat}'s spells.2da row should have a FeatID column");
+                int.TryParse(featIdText, out var linkedFeatId).Should().BeTrue($"{feat}'s spells.2da FeatID should be numeric, was '{featIdText}'");
+                linkedFeatId.Should().Be(featId, $"{feat}'s spells.2da row should point back at its feat.2da row");
+            }
 
             var classFeatRow = classFeatRows.Values.FirstOrDefault(row =>
                 row.TryGetValue("FeatIndex", out var featIndexText) &&

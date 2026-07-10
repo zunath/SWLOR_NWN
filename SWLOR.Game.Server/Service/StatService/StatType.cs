@@ -5106,7 +5106,37 @@ namespace SWLOR.Game.Server.Service.StatService
         /// StatusEffectCategory value for DirectDamageToStatusCategoryOrStealthBonus.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        DirectDamageToStatusCategoryOrStealthBonusCategory = 885
+        DirectDamageToStatusCategoryOrStealthBonusCategory = 885,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Bleed on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtBleedChance = 887,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Freezing on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtFreezingChance = 888,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Shock on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtShockChance = 889,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Sunder on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtSunderChance = 890,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Hemorrhage on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtHemorrhageChance = 891
     }
 
     public class StatTypeAttribute : Attribute

@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,27 +13,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildSingleTarget(
-                _builder,
-                FeatType.TargetLockTechnique,
-                "Target Lock",
-                Animation.PointForward,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.TargetLock,
-                0.8f,
-                12f,
-                3,
-                10,
-                15,
-                typeof(VulnerableStatusEffect),
-                CombatDamageType.Physical,
-                ResistanceType.Trauma,
-                VisualEffect.Vfx_Imp_Magical_Vision,
-                maxRange: 12f)
+            var profile = InnateAbilityProfile.Mimicry;
+
+            _builder
+                .Create(FeatType.TargetLockTechnique, profile.PlayerPerkType)
+                .Name("Target Lock")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.TargetLock, 1, 1);
+                .MimicryTrait(FeatType.TargetLock, 1, 1, typeof(KeenSightStatusEffect));
 
             return _builder.Build();
         }

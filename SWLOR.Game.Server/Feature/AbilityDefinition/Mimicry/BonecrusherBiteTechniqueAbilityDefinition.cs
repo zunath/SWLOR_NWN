@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,26 +13,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildSingleTarget(
-                _builder,
-                FeatType.BonecrusherBiteTechnique,
-                "Bonecrusher Bite",
-                Animation.DoubleStrike,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.BonecrusherBite,
-                1.3f,
-                15f,
-                5,
-                16,
-                14,
-                typeof(SunderStatusEffect),
-                CombatDamageType.Physical,
-                ResistanceType.Trauma,
-                VisualEffect.Vfx_Com_Chunk_Red_Medium)
+            var profile = InnateAbilityProfile.Mimicry;
+
+            _builder
+                .Create(FeatType.BonecrusherBiteTechnique, profile.PlayerPerkType)
+                .Name("Bonecrusher Bite")
                 .SkillType(SkillType.Mimicry)
                 .Level(2)
-                .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.BonecrusherBite, 2, 2);
+                .MimicryTrait(FeatType.BonecrusherBite, 2, 2, typeof(BonebreakerInstinctStatusEffect));
 
             return _builder.Build();
         }

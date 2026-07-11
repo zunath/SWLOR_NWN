@@ -69,6 +69,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = GetPC();
             var terminal = GetDialogTarget();
             var origin = (PlanetType)GetLocalInt(terminal, "CURRENT_LOCATION");
+
+            // Travel is locked until the player earns a CZ-220 Shuttle Pass by completing their
+            // orientation on CZ-220. This keeps new arrivals on the tutorial station.
+            if (!KeyItem.HasKeyItem(player, KeyItemType.CZ220ShuttlePass) && !GetIsDM(player))
+            {
+                page.Header = "The terminal rejects your credentials. You'll need a CZ-220 Shuttle Pass before you can book a flight - complete your orientation here on CZ-220 to earn one.";
+                return;
+            }
+
             var ride = Shuttle.GetRide(GetObjectUUID(player));
 
             if (ride == null)

@@ -5136,7 +5136,15 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent chance for a mimicked trait to inflict Hemorrhage on damage dealt.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DamageDealtHemorrhageChance = 891
+        DamageDealtHemorrhageChance = 891,
+
+        /// <summary>
+        /// Percent bonus to the direct damage of mimicked techniques (combat analyzer potency).
+        /// Granted by Combat Analyzer ranks, the Overclocked Analyzer capstone's Overload, and
+        /// damage-type loadout set bonuses; read by the Mimicry technique impact as a damage-percent adjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MimicryPotencyPercent = 892
     }
 
     public class StatTypeAttribute : Attribute

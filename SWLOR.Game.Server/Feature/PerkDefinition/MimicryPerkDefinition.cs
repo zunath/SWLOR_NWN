@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -36,16 +37,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Upgrades the combat analyzer, improving equipped technique potency and letting you replicate tier 2 techniques.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 15)
+                .IncreasesStat(StatType.MimicryPotencyPercent, 5)
 
                 .AddPerkLevel()
                 .Description("Further upgrades the combat analyzer, improving equipped technique potency and letting you replicate tier 3 techniques.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 30)
+                .IncreasesStat(StatType.MimicryPotencyPercent, 10)
 
                 .AddPerkLevel()
                 .Description("Maximizes the combat analyzer, improving equipped technique potency and letting you replicate tier 4 techniques.")
                 .Price(3)
-                .RequirementSkill(SkillType.Mimicry, 45);
+                .RequirementSkill(SkillType.Mimicry, 45)
+                .IncreasesStat(StatType.MimicryPotencyPercent, 15);
         }
 
 

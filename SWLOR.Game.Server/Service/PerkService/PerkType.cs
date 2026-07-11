@@ -708,6 +708,25 @@ namespace SWLOR.Game.Server.Service.PerkService
         VenaticRecovery = 760,
         Hobbled = 761,
         EscapeArtist = 762,
-        // IDs 649-650 and 763+ are free.
+        ForceSheath = 763,
+        Overpower = 764,
+        FastStrikes = 765,
+        ShatteringStrike = 766,
+        SunderingSweep = 781,
+        WeakPoints = 768,
+        ImbuementStance = 769,
+        HighGround = 770,
+        FocusShift = 771,
+        Epicenter = 772,
+        SaberWard = 773,
+        MentalFortress = 774,
+        DeflectingReturn = 775,
+        SurroundedNotOutmatched = 776,
+        ImmovableStance = 777,
+        Reprisal = 778,
+        CenterOfTheStorm = 779,
+        AegisEternal = 782,
+        SaberForceLink = 649,
+        // IDs 650, 767, 780, and 783+ are free.
     }
 }

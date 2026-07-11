@@ -30,12 +30,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnWindowClosed())
                 // TEMPLATE: one DefinePartialView per tab in the wireframe.
+                // TEMPLATE(no-tabs): if the wireframe has NO tab strip, keep exactly
+                // ONE DefinePartialView (e.g. MainContentPartial) whose builder holds
+                // the ENTIRE body - stacked sections all go inside it as rows.
                 .DefinePartialView(TemplateWindowViewModel.FirstTabPartial, AddFirstTab)
                 .DefinePartialView(TemplateWindowViewModel.SecondTabPartial, AddSecondTab);
 
-            // Rule R5: never hand-roll the root layout.
+            // Rule R5: never hand-roll the root layout - not even as stacked rows in
+            // a root column. AddStandardLayout is mandatory with OR without tabs.
             window.AddStandardLayout(layout =>
             {
+                // TEMPLATE(no-tabs): delete SetTabPanelHeight and the AddTabRow block
+                // entirely; keep SetContentPartialElement.
                 layout.SetTabPanelHeight(TabPanelHeight);
                 layout.AddTabRow(row =>
                 {

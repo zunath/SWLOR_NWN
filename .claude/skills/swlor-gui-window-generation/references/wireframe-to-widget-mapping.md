@@ -40,6 +40,12 @@ column names the method to copy from. Every `Add*/Set*/Bind*` call below exists 
 | Show/hide | `.BindIsVisible(m => m.ShowX)` | `bool` | `AddBindingsTab` |
 
 Notes:
+- **Every `Bind*` expression must be a BARE property reference: `m => m.Prop`.**
+  String interpolation, concatenation, arithmetic, or method calls inside a bind
+  expression (e.g. `m => $"{m.Count} / {m.Max}"`) COMPILE but throw
+  `ArgumentException: refers to a method, not a property` at boot, killing window
+  template loading. Computed display text gets its own `string` property (e.g.
+  `SetCountText`) that the ViewModel updates whenever its inputs change.
 - "watched" = the client edits the value, so `Initialize` must assign it FIRST and then
   call `WatchOnClient(m => m.Prop)` (rule R3 — the framework throws if you forget).
 - Widget heights: buttons/inputs 32f, labels 20-24f, checkboxes 24f. Never set a

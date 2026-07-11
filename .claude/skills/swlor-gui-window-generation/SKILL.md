@@ -9,9 +9,12 @@ description: Build a new SWLOR NUI GUI window from a wireframe image or written 
 
 Build with the framework's proven components — never hand-roll their equivalents:
 
-- `GuiStandardLayout.AddStandardLayout` for the window root. NEVER hand-roll the root
-  layout: deviating from the standard shape freezes the content region at a constant
-  width regardless of window resizing (layout rule R5).
+- `GuiStandardLayout.AddStandardLayout` for the window root — **even when the
+  wireframe has no tabs** (then: zero `AddTabRow` calls, no `SetTabPanelHeight`, and
+  ONE partial holding the entire body, applied in `Initialize`). NEVER hand-roll the
+  root layout — not even as stacked rows in a root column: deviating from the
+  standard shape freezes the content region at a constant width regardless of window
+  resizing (layout rule R5).
 - `GuiTabGroup` + `GuiToggleGroupSync` for tabs (rule R4).
 - `OnModalClosedRestore` override for any tabbed window that shows modals (rule R6).
 - Copy widget patterns from `SWLOR.Game.Server/Feature/GuiDefinition/DebugNuiGalleryDefinition.cs`
@@ -45,6 +48,10 @@ placeholder value — window structure first, data wiring is a separate task.
    static text or bound (bound = anything that changes at runtime).
 2. Read `references/layout-rules-digest.md`. Decide the layout split: which regions
    are tab partials, which are side rails, and the fixed panel width (250-560f).
+   **If the wireframe has no tab strip:** the standard layout is still mandatory —
+   plan ONE partial containing the entire body (stacked sections all live inside that
+   single partial), zero tab rows, and follow the `TEMPLATE(no-tabs)` markers in the
+   asset templates.
 3. Copy `assets/WindowDefinitionTemplate.cs` and `assets/WindowViewModelTemplate.cs`
    into `SWLOR.Game.Server/Feature/GuiDefinition/` and `.../ViewModel/`. Rename the
    files and classes for your window. Add the `GuiWindowType` enum entry. Fill every

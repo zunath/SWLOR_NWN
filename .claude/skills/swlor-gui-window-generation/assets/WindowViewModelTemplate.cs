@@ -9,6 +9,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class TemplateWindowViewModel : GuiViewModelBase<TemplateWindowViewModel, GuiPayloadBase>
     {
+        // TEMPLATE(no-tabs): if the wireframe has NO tab strip, delete FirstTabId/
+        // SecondTabId, the Tabs/TabToggles statics, TabToggleValue, and SelectTab.
+        // Keep TabContentElement, rename the single partial const to
+        // MainContentPartial, and in Initialize (after assignments and watches) call:
+        //     ChangePartialView(TabContentElement, MainContentPartial);
+        // If the window shows modals, override OnModalClosedRestore with that same
+        // ChangePartialView call (rule R6).
         private const int FirstTabId = 0;
         private const int SecondTabId = 1;
         public const string TabContentElement = "templatewindow_tab_content"; // TEMPLATE: unique element id

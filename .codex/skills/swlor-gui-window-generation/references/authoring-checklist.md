@@ -9,7 +9,11 @@ Run every sweep; each must answer YES before building.
 - [ ] ViewModel derives `GuiViewModelBase<TDerived, GuiPayloadBase>` and lives in
       `.../GuiDefinition/ViewModel/`.
 - [ ] The root layout is ONE `window.AddStandardLayout(...)` call — no hand-rolled
-      `window.AddColumn` root (rule R5).
+      `window.AddColumn` root (rule R5). This holds even for windows WITHOUT tabs:
+      grep your definition for `AddStandardLayout` — zero matches is an automatic fail.
+- [ ] No-tab windows: exactly one body partial, applied in `Initialize` via
+      `ChangePartialView(TabContentElement, MainContentPartial)` (and re-applied in
+      `OnModalClosedRestore` if the window shows modals).
 - [ ] Every tab partial is a fixed-width borderless `Scrollbars(None)` panel.
 - [ ] Partial names and element ids are `const string`s on the ViewModel, referenced
       from the definition (never string literals in two places).
@@ -34,6 +38,10 @@ Run every sweep; each must answer YES before building.
       wholesale, never mutated in place.
 
 ## API honesty
+- [ ] Every `Bind*` expression is a BARE property reference (`m => m.Prop`) — no
+      string interpolation, concatenation, arithmetic, or method calls inside the
+      lambda (those compile but throw at boot). Computed display text lives in its
+      own string property updated by the ViewModel.
 - [ ] Every `Add*/Set*/Bind*` call used exists in
       `SWLOR.Game.Server/Service/GuiService/Component/` — verified by grep, not memory.
 - [ ] Event handlers are `public Action Name() => () => { ... };` (they RETURN the action).

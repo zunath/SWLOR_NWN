@@ -292,7 +292,7 @@ public class LightsaberWorkbenchTests
         staffColors.Should().HaveCount(13, "White has no saberstaff blade model");
         curvedColors.Should().HaveCount(10, "the 02x color group has no curved blade models");
 
-        foreach (var color in straightColors)
+        foreach (var color in straightColors.Concat(curvedColors).Concat(staffColors))
         {
             color.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
             File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.tga"))

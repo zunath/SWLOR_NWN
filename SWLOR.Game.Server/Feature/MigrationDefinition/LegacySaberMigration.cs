@@ -16,11 +16,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     /// <summary>
     /// Normalizes DM-built lightsabers and saberstaffs (any Lightsaber/Saberstaff
     /// base item that is not part of the craftable training saber lines or the
-    /// workbench-built sabers) to the tier 5 baseline: the damage profile (DMG,
-    /// weapon damage type, attack delay), attack/damage modifiers, and skill
-    /// requirement are replaced with the tier 5 values and the weapon is stamped
-    /// with the saber tier variable so the tiered upgrade kits recognize it.
-    /// Owners keep their weapons; nothing is removed.
+    /// workbench-built sabers) to the tier 5 baseline: DMG, attack delay, and the
+    /// skill requirement are set to the tier 5 values, while off-tier modifiers
+    /// (weapon damage type, enhancement/damage/accuracy bonuses) are deliberately
+    /// removed because the tier baseline carries none - that removal is the point
+    /// of normalization. The weapon is stamped with the saber tier variable so the
+    /// tiered upgrade kits recognize it. Owners keep their weapons; nothing is
+    /// removed from their inventories.
     /// </summary>
     internal static class LegacySaberMigration
     {
@@ -38,8 +40,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         /// <summary>
         /// Property types that make up a saber's damage profile and attack math.
-        /// These are stripped during normalization and replaced with the tier 5
-        /// baseline; everything else on the weapon (VFX, cast spell, etc.) is kept.
+        /// All of these are stripped during normalization; only DMG, Delay, and
+        /// RequiresSkill get tier 5 replacements - the tier baseline intentionally
+        /// has no damage type, enhancement, damage, or accuracy bonuses. Everything
+        /// else on the weapon (VFX, cast spell, etc.) is kept.
         /// </summary>
         private static readonly HashSet<ItemPropertyType> NormalizedPropertyTypes = new()
         {

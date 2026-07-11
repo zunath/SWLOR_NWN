@@ -417,11 +417,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : LightsaberWorkbench.LightsaberResref;
 
             var item = CreateItemOnObject(resref, Player);
-            SetLocalBool(item, Item.PlayerProducedItemVariable, true);
 
-            item = ModifyWeaponPart(item, AppearanceWeapon.Bottom, bottom.PartValue);
-            item = ModifyWeaponPart(item, AppearanceWeapon.Middle, LightsaberWorkbench.MiddlePartValue);
-            item = ModifyWeaponPart(item, AppearanceWeapon.Top, topValue);
+            // Set the weapon model parts in place. CopyItemAndModify is unreliable for
+            // saberstaff/lightsaber base items (it returns OBJECT_INVALID and would delete
+            // the weapon), so use NWNX to write the appearance directly.
+            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom, bottom.PartValue);
+            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle, LightsaberWorkbench.MiddlePartValue);
+            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top, topValue);
+
+            // Copy the item so the NWNX appearance change is baked into its persistent
+            // data (survives serialization/relog) and renders on equip.
+            var baked = CopyItem(item, Player, true);
+            if (GetIsObjectValid(baked))
+            {
+                DestroyObject(item);
+                item = baked;
+            }
 
             if (!GetIsObjectValid(item))
             {
@@ -429,6 +440,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 StatusColor = GuiColor.Red;
                 return;
             }
+
+            SetLocalBool(item, Item.PlayerProducedItemVariable, true);
 
             foreach (var property in _enhancementProperties.SelectMany(x => x))
             {
@@ -448,23 +461,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             FloatingTextStringOnCreature($"You have constructed your {GetName(item)}!", Player, false);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.LightsaberWorkbench);
-        }
-
-        private static uint ModifyWeaponPart(uint item, AppearanceWeapon partSlot, int partValue)
-        {
-            // Skip parts that already have the desired value. CopyItemAndModify returns
-            // OBJECT_INVALID for a no-op change, and destroying the original in that case
-            // would delete the whole weapon (e.g. a saberstaff whose default hilt model
-            // already matches the selected hilt).
-            if (GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)partSlot) == partValue)
-                return item;
-
-            var copy = CopyItemAndModify(item, ItemAppearanceType.WeaponModel, (int)partSlot, partValue, true);
-            if (!GetIsObjectValid(copy))
-                return item;
-
-            DestroyObject(item);
-            return copy;
         }
 
         public override Action OnWindowClosed() => () =>

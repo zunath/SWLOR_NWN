@@ -2392,5 +2392,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         WardenSweepTechnique = 2862,
         WardenWallTechnique = 2863,
         WillFractureTechnique = 2864,
+        Overload = 2865,
 }
 }

@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service
 
         private const int BaseSlotsWithAnalyzer = 2;
         private const int SlotsPerAnalyzerMemoryLevel = 1;
+        private const int OverclockedAnalyzerSlotBonus = 2;
         private const int SkillRanksPerTier = 15;
 
         private const int BaseLearnChancePercent = 20;
@@ -308,8 +309,11 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var memoryLevel = dbPlayer.Perks.TryGetValue(PerkType.AnalyzerMemory, out var memoryPerkLevel) ? memoryPerkLevel : 0;
+            var capstoneBonus = dbPlayer.Perks.TryGetValue(PerkType.OverclockedAnalyzer, out var capstoneLevel) && capstoneLevel >= 1
+                ? OverclockedAnalyzerSlotBonus
+                : 0;
 
-            return BaseSlotsWithAnalyzer + memoryLevel * SlotsPerAnalyzerMemoryLevel;
+            return BaseSlotsWithAnalyzer + memoryLevel * SlotsPerAnalyzerMemoryLevel + capstoneBonus;
         }
 
         /// <summary>

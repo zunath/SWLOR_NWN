@@ -228,9 +228,9 @@ public class MimicryTests
     public void MimicryPerkDefinition_BuildsExpectedPerksAndLevels()
     {
         var perks = BuildPerksWithout2daLookup(new MimicryPerkDefinition(),
-            "CombatAnalyzer", "AnalyzerMemory", "PatternRecognition");
+            "CombatAnalyzer", "AnalyzerMemory", "PatternRecognition", "OverclockedAnalyzer");
 
-        perks.Should().HaveCount(3);
+        perks.Should().HaveCount(4);
         perks.Values.Should().OnlyContain(perk => perk.Category == PerkCategoryType.Mimicry);
 
         // Combat Analyzer is the unlock AND the technique-potency / tier-gate progression:
@@ -276,13 +276,23 @@ public class MimicryTests
             AssertMustHavePerkRequirement(pattern.PerkLevels[level], PerkType.CombatAnalyzer);
         }
 
-        // Each perk grants exactly its passive icon feat at level 1 (perk-window icon resolution);
-        // technique feats (2773-2782) are granted only by the equip system, never by perks.
+        var overclocked = perks[PerkType.OverclockedAnalyzer];
+        overclocked.Name.Should().Be("Overclocked Analyzer");
+        overclocked.PerkLevels.Should().HaveCount(1);
+        overclocked.RefundedTriggers.Should().ContainSingle();
+        overclocked.PerkLevels[1].Price.Should().Be(6);
+        AssertSkillRequirement(overclocked.PerkLevels[1], SkillType.Mimicry, 50);
+        AssertMustHavePerkRequirement(overclocked.PerkLevels[1], PerkType.CombatAnalyzer);
+
+        // Each perk grants exactly its icon feat at level 1 (perk-window icon resolution): the trait
+        // perks grant a passive marker feat, the capstone grants the Overload active ability feat.
+        // Technique feats are granted only by the equip system, never by perks.
         var expectedIconFeats = new Dictionary<PerkType, FeatType>
         {
             [PerkType.CombatAnalyzer] = FeatType.CombatAnalyzerTrait,
             [PerkType.AnalyzerMemory] = FeatType.AnalyzerMemoryTrait,
             [PerkType.PatternRecognition] = FeatType.PatternRecognitionTrait,
+            [PerkType.OverclockedAnalyzer] = FeatType.Overload,
         };
         var techniqueFeats = TechniqueTable.Select(x => x.Technique).ToHashSet();
 
@@ -426,6 +436,12 @@ public class MimicryTests
         memoryLevel3.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel3.Perks[PerkType.AnalyzerMemory] = 3;
         Mimicry.GetMaxSlots(memoryLevel3).Should().Be(5);
+
+        var overclocked = new Player();
+        overclocked.Perks[PerkType.CombatAnalyzer] = 1;
+        overclocked.Perks[PerkType.AnalyzerMemory] = 3;
+        overclocked.Perks[PerkType.OverclockedAnalyzer] = 1;
+        Mimicry.GetMaxSlots(overclocked).Should().Be(7, "the Overclocked Analyzer capstone grants +2 slots");
     }
 
     [Test]

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CombatAnalyzer();
             AnalyzerMemory();
             PatternRecognition();
+            OverclockedAnalyzer();
 
             return _builder.Build();
         }
@@ -97,6 +98,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 30)
                 .RequirementMustHavePerk(PerkType.CombatAnalyzer);
+        }
+
+
+        private void OverclockedAnalyzer()
+        {
+            _builder.Create(PerkCategoryType.Mimicry, PerkType.OverclockedAnalyzer)
+                .Name("Overclocked Analyzer")
+                .TriggerRefund(player => Mimicry.EnforceSlotBudget(player))
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Overload)
+                .Description("Overclocks the combat analyzer, granting 2 additional technique slots and an activated ability that briefly boosts your equipped techniques' potency and on-hit effect chance.")
+                .Price(6)
+                .RequirementSkill(SkillType.Mimicry, 50)
+                .RequirementMustHavePerk(PerkType.CombatAnalyzer, 4);
         }
 
     }

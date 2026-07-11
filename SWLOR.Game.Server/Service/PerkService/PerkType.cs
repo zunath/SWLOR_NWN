@@ -711,6 +711,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         CombatAnalyzer = 763,
         AnalyzerMemory = 765,
         PatternRecognition = 766,
-        // IDs 649-650, 764, and 767+ are free.
+        OverclockedAnalyzer = 767,
+        // IDs 649-650, 764, and 768+ are free.
     }
 }

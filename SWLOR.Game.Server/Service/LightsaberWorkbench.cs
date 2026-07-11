@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LightsaberWorkbenchService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -111,8 +112,8 @@ namespace SWLOR.Game.Server.Service
         public static IReadOnlyList<SaberHiltPart> GetHilts(BaseItem weaponType)
         {
             return weaponType == BaseItem.Saberstaff
-                ? _saberstaffHilts
-                : _lightsaberHilts;
+                ? _saberstaffHilts.AsReadOnly()
+                : _lightsaberHilts.AsReadOnly();
         }
 
         /// <summary>
@@ -189,10 +190,12 @@ namespace SWLOR.Game.Server.Service
             var error = ValidateAccess(player);
             if (!string.IsNullOrWhiteSpace(error))
             {
+                Log.Write(LogGroup.Crafting, $"{GetName(player)} ({GetObjectUUID(player)}) was denied access to a lightsaber workbench: {error}");
                 FloatingTextStringOnCreature(error, player, false);
                 return;
             }
 
+            Log.Write(LogGroup.Crafting, $"{GetName(player)} ({GetObjectUUID(player)}) opened a lightsaber workbench.");
             Gui.TogglePlayerWindow(player, GuiWindowType.LightsaberWorkbench, null, OBJECT_SELF);
         }
     }

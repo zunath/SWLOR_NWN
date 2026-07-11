@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Service.CurrencyService
         PerkRefundToken = 2,
         [Currency("Stat Refund Tokens")]
         StatRefundToken = 3,
+        [Currency("Kyber Tokens")]
+        KyberToken = 4,
     }
 
     public class CurrencyAttribute : Attribute

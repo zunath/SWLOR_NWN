@@ -416,12 +416,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? LightsaberWorkbench.SaberstaffResref
                 : LightsaberWorkbench.LightsaberResref;
 
-            var item = CreateItemOnObject(resref, Player);
+            // CopyItemAndModify is unreliable on items held in a creature's inventory
+            // (it returns OBJECT_INVALID), which is why the appearance never applied.
+            // Build the weapon inside a neutral storage placeable - the same approach the
+            // outfit and ship-stat systems use - then hand the finished weapon to the player.
+            var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
+            if (!GetIsObjectValid(storage))
+            {
+                StatusText = "The workbench is missing its assembly module. Please notify staff.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
 
-            // CopyItemAndModify (the reliable way to bake a weapon's model parts into its
-            // persistent appearance) returns OBJECT_INVALID on plot items, so build the
-            // appearance while the weapon is non-plot, then restore the plot flag.
-            SetPlotFlag(item, false);
+            var item = CreateItemOnObject(resref, storage);
             item = ModifyWeaponPart(item, AppearanceWeapon.Bottom, bottom.PartValue);
             item = ModifyWeaponPart(item, AppearanceWeapon.Middle, LightsaberWorkbench.MiddlePartValue);
             item = ModifyWeaponPart(item, AppearanceWeapon.Top, topValue);
@@ -433,7 +440,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            SetPlotFlag(item, true);
             SetLocalBool(item, Item.PlayerProducedItemVariable, true);
 
             foreach (var property in _enhancementProperties.SelectMany(x => x))
@@ -446,6 +452,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _enhancementSerialized[slot] = string.Empty;
                 _enhancementProperties[slot].Clear();
             }
+
+            // Move the finished weapon from the storage placeable to the player.
+            ObjectPlugin.AcquireItem(Player, item);
 
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
 

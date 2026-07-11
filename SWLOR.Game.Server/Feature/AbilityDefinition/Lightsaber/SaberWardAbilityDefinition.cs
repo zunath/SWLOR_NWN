@@ -10,14 +10,16 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class GuardiansChallengeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class SaberWardAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
-            Build(builder, FeatType.GuardiansChallenge1, "Guardian's Challenge I", 1, 12, 4, 1, 20);
-            Build(builder, FeatType.GuardiansChallenge2, "Guardian's Challenge II", 2, 24, 8, 2, 30);
+            Build(builder, FeatType.SaberWard1, "Saber Ward I", 1, 8, 3, 2, 15, 3, 4);
+            Build(builder, FeatType.SaberWard2, "Saber Ward II", 2, 18, 5, 3, 20, 4, 5);
+            Build(builder, FeatType.SaberWard3, "Saber Ward III", 3, 28, 8, 4, 25, 5, 7);
+            Build(builder, FeatType.SaberWard4, "Saber Ward IV", 4, 38, 12, 5, 30, 6, 9);
 
             return builder.Build();
         }
@@ -27,18 +29,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             FeatType feat,
             string name,
             int level,
-            int baseDamage,
+            int skillRequirement,
             int stamina,
             int fp,
-            int enmityPercent)
+            int conversionPercent,
+            int defensePercent,
+            int forceDefensePercent)
         {
             ConfigureGeneratedWeaponAbility(
-                builder.Create(feat, PerkType.GuardiansChallenge)
+                builder.Create(feat, PerkType.SaberWard)
                     .Name(name)
                     .Level(level)
-                    .HasRecastDelay(RecastGroup.GuardiansChallenge, 24.0f),
+                    .HasRecastDelay(RecastGroup.SaberWard, 18.0f),
                 SkillType.Lightsaber,
-                baseDamage,
+                skillRequirement,
                 30,
                 null,
                 null,
@@ -46,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 fp,
                 0.0f,
                 false,
-                true,
+                false,
                 false,
                 Spell.Invalid,
                 AbilityTargetingShapeType.None,
@@ -58,10 +62,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ProtectedTargetHitWindowSeconds = 30,
-                    TargetRecentlyDamagedActivatorWindowSeconds = 30f,
-                    SelfEnmityPercentIfTargetRecentlyDamagedActivator = enmityPercent,
-                    SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator = 30
+                    SelfStatusEffectFactory = () => new SaberWardStatusEffect(conversionPercent, defensePercent, forceDefensePercent),
+                    SelfStatusEffectsToReplace = new[] { typeof(PerfectSoresuStatusEffect) }
                 });
         }
     }

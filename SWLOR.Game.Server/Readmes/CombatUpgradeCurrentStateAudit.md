@@ -1,6 +1,6 @@
 # Combat Upgrade Current-State Balance Audit
 
-Last reviewed: 2026-07-01
+Last reviewed: 2026-07-01 (Lightsaber Ward/Severance redesign addendum added 2026-07-11 below)
 
 ## Scope
 
@@ -23,7 +23,7 @@ The audit includes weapons, Force, Devices, Leadership, First Aid, Beast Mastery
 Permanent Attack Deflection sources were reduced so the all-in permanent weapon stack stays below the 50 percent default cap:
 
 - Staff Sentinel `Staff Parry`: +12 Attack Deflection at max rank.
-- Lightsaber Defense `Deflection Training`: +14 Attack Deflection at max rank.
+- Lightsaber Defense `Deflection Training`: +14 Attack Deflection at max rank. (Superseded 2026-07-11: `Deflection Training` no longer exists — Lightsaber Defense was redesigned into the Severance tree. See the 2026-07-11 addendum below for current Attack Deflection sourcing.)
 - Saberstaff Tempest `Spinning Deflection`: +10 Attack Deflection at max rank.
 - Twin Blade Duelist `Centerline Guard`: +5 Attack Deflection.
 - Heavy Vibroblade Defense `Unbreakable Will`: +4 to +8 Attack Deflection, scaling from MGT.
@@ -83,6 +83,8 @@ Lightsaber Offense riders were moved from mostly area-only payoff to the actual 
 - `Arc Strike` keeps its area secondary-target bonus and adds single-target bonus damage against debuffed targets.
 - Generic Sunder riders do not downgrade stronger existing Sunder effects.
 
+(Superseded 2026-07-11: Lightsaber Offense was fully redesigned into the Ward tree, and none of `Overwhelming Strike`, `Purify`, `Ripple Slash`, or `Arc Strike` remain in it. See the 2026-07-11 addendum below.)
+
 ## High-Risk Warnings
 
 ### W-000 Release Validation Matrix - Automated Coverage Added
@@ -123,7 +125,7 @@ The removed behavior-specific hooks are no longer active in shared combat/stat c
 6. Spear/Vibroknife low-positional-uptime solo baseline.
 7. Spear/Vibroknife high-positional-uptime ceiling.
 8. Spear Disabler against non-Force enemies.
-9. Lightsaber Offense before and after Saber Storm availability.
+9. Lightsaber Offense before and after Saber Storm availability. (Superseded 2026-07-11: Lightsaber Offense is now the Ward tree and the "Saber Storm" mastery quest gates the Severance capstone Epicenter, not a Lightsaber Offense unlock. See the 2026-07-11 addendum below for the current pre/post-capstone playtest pairing.)
 10. Shield Deflection tank using Vibroblade Defense and shield item properties.
 11. Katar Guard tank with and without support buffs.
 12. Weapon plus Beast Mastery companion-pressure baseline.
@@ -140,6 +142,19 @@ The removed behavior-specific hooks are no longer active in shared combat/stat c
 8. Curated archetype and 400 SP package-frontier audit coverage: complete.
 9. Staff Sentinel `Sentinel Stance` text/stat mismatch: complete.
 10. Weapon capstone/SP cost normalization: complete for every weapon style; all weapon styles now use the 18-row/60 SP progression shape.
+
+## 2026-07-11 Addendum: Lightsaber Ward/Severance Redesign
+
+Both Lightsaber perk trees were fully replaced on 2026-07-11, superseding B-001's Lightsaber Defense line, B-006 in its entirety, and playtest priority 9 above.
+
+- Ward (`PerkCategoryType.LightsaberOffense`) dropped its old perk set (Ward Bond, Guardian's Oath, Reactive Ward, Guardian's Challenge, Deflective Presence, Punishing Guard, Impenetrable Guard, Guardian's Influence, Overwhelming Defense, Guardian Master) for Saber Ward, Mental Fortress, Deflecting Return, a retained/reworked 2-rank Guardian's Challenge ("damaged you" trigger), Surrounded Not Outmatched, Force Link (reuses the old Ward Bond ally damage-redirect), Immovable Stance, Reprisal, Center of the Storm, and the capstone Master of Soresu.
+- Severance (`PerkCategoryType.LightsaberDefense`) dropped its old perk set (Severing Strike, Deflection Training, Severance Riposte, Leg Slash, Severance Flow, Surge Strike, Focused Stance, Blade Blitz, Purify, Saber Storm) for Force Sheath, Overpower, Fast Strikes, Shattering Strike, Sarlacc Sweep, Weak Points, Imbuement Stance, High Ground, Focus Shift, and the capstone Epicenter.
+- Attack Deflection on the old Lightsaber Defense `Deflection Training` line no longer exists; Deflecting Return instead reflects a bounded amount of weapon damage back at the attacker specifically off an Attack Deflect outcome, rather than adding another raw deflection-chance source. The B-001 permanent-stack accounting for the other four weapon lines (Staff Sentinel, Saberstaff Tempest, Twin Blade Duelist, Heavy Vibroblade Defense) is unaffected.
+- Three net-new shared engine systems back the redesign: physical-to-Force damage conversion (Saber Ward), Soresu Pressure stacking (Surrounded Not Outmatched / Master of Soresu), and bounded Deflecting-Return weapon reflection triggered off Attack Deflect.
+- The existing capstone mastery quests were reused, not renamed: the "Saber Storm" mastery quest now gates Epicenter, and the "Guardian Master" mastery quest now gates Master of Soresu. Quest IDs and definitions are unchanged.
+- Updated playtest priority 9: test Ward/Severance baseline play before Epicenter/Master of Soresu unlock, then again after, rather than the retired "before/after Saber Storm" framing.
+
+The Bible workbook and `CombatUpgradeBiblePerkManifest.csv` are the source of truth for the new Ward/Severance rows; this addendum is qualitative and does not restate specific numeric tuning values.
 
 ## Not Recommended
 

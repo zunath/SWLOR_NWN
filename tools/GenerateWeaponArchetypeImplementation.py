@@ -22,6 +22,10 @@ EXPLICIT_RECAST_SHORT_NAMES = {
     "Debilitating Stance": "Debil. Stance",
     "Systemic Shutdown": "Sys. Shutdown",
     "Severing Strike": "Sever. Strike",
+    "Shattering Strike": "Shatter Str.",
+    "Imbuement Stance": "Imbue Stance",
+    "Immovable Stance": "Immov. Stance",
+    "Master of Soresu": "Master Soresu",
     "Guardian's Challenge": "Guard. Chall.",
     "Punishing Guard": "Punis. Guard",
     "Impenetrable Guard": "Impen. Guard",
@@ -140,8 +144,8 @@ PERK_DEFINITION_BY_TAB = {
 CAPSTONE_QUEST_REQUIREMENTS = {
     ("Vibroknife", "Viral Cascade"): ("VibroknifeCapstoneQuestDefinition", "VitalRuptureMasteryQuestId"),
     ("Vibroknife", "Escape Artist"): ("VibroknifeCapstoneQuestDefinition", "SystemicShutdownMasteryQuestId"),
-    ("Lightsaber", "Saber Storm"): ("LightsaberCapstoneQuestDefinition", "SaberStormMasteryQuestId"),
-    ("Lightsaber", "Guardian Master"): ("LightsaberCapstoneQuestDefinition", "GuardianMasterMasteryQuestId"),
+    ("Lightsaber", "Epicenter"): ("LightsaberCapstoneQuestDefinition", "SaberStormMasteryQuestId"),
+    ("Lightsaber", "Master of Soresu"): ("LightsaberCapstoneQuestDefinition", "GuardianMasterMasteryQuestId"),
     ("Spear", "Forcebane"): ("SpearCapstoneQuestDefinition", "ForcebaneMasteryQuestId"),
     ("Spear", "Crippling Defense"): ("SpearCapstoneQuestDefinition", "CripplingDefenseMasteryQuestId"),
     ("Twin Blade", "Tempest Bloom"): ("TwinBladeCapstoneQuestDefinition", "TempestBloomMasteryQuestId"),
@@ -246,6 +250,7 @@ RANGED_COMBAT_IMPACT_SKILLS = {"Pistol", "Rifle", "Throwing"}
 PERK_BASE_ID_ALIASES = {
     ("Katar", "Steel Shoulder"): "TwinGuardStance",
     ("Katar", "Tag In"): "TwinIntercept",
+    ("Lightsaber", "Force Link"): "SaberForceLink",
 }
 
 IMPACT_ANIMATION_BY_SKILL = {

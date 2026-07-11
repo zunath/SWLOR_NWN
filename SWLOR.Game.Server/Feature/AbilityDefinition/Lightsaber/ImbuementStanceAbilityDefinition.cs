@@ -11,21 +11,21 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class ImpenetrableGuardAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class ImbuementStanceAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.ImpenetrableGuard1, PerkType.ImpenetrableGuard)
-                    .Name("Impenetrable Guard")
+                builder.Create(FeatType.ImbuementStance1, PerkType.ImbuementStance)
+                    .Name("Imbuement Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.ImpenetrableGuard, 30.0f),
+                    .HasRecastDelay(RecastGroup.ImbuementStance, 30.0f),
                 SkillType.Lightsaber,
                 8,
                 0,
-                typeof(ImpenetrableGuardStatusEffect),
+                typeof(ImbuementStanceStatusEffect),
                 null,
                 0,
                 0,

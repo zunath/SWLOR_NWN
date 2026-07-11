@@ -1870,6 +1870,9 @@ namespace SWLOR.Game.Server.Service
             ApplyReversalCutReady(defender);
             TrackRecentDamageTaken(defender);
             ApplyRecentDamageTargetHitEffects(defender, attacker);
+
+            if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))
+                SoresuPressureStatusEffect.Refresh(defender, attacker);
         }
 
         private static void ApplyDamageTakenNextSkillAbilityDamage(uint defender)

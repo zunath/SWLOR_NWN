@@ -11,43 +11,39 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class SaberStormAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class ForceLinkAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SaberStorm1, PerkType.SaberStorm)
-                    .Name("Saber Storm")
+                builder.Create(FeatType.ForceLink1, PerkType.SaberForceLink)
+                    .Name("Force Link")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
+                    .HasRecastDelay(RecastGroup.ForceLink, 24.0f),
                 SkillType.Lightsaber,
-                45,
-                45,
-                null,
-                null,
-                15,
                 8,
-                2.0f,
+                45,
+                null,
+                null,
+                4,
+                3,
+                0.0f,
+                false,
                 false,
                 true,
-                false,
                 Spell.Invalid,
                 AbilityTargetingShapeType.None,
                 0.0f,
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies,
                 Animation.DoubleStrike,
-                0.0f,
+                20.0f,
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ExtraDamageTargetStatusEffect = typeof(SunderStatusEffect),
-                    ExtraDamageIfTargetStatusEffect = 30,
-                    RequiredTargetStatusEffectForConditionalStatus = typeof(SunderStatusEffect),
-                    ConditionalTargetStatusEffect = typeof(SunderStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 45
+                    FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(45, 0, 0, 0, 20.0f)
                 });
 
             return builder.Build();

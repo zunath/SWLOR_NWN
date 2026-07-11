@@ -11,26 +11,26 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class FocusedStanceAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class MasterOfSoresuAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.FocusedStance1, PerkType.FocusedStance)
-                    .Name("Focused Stance")
+                builder.Create(FeatType.MasterOfSoresu1, PerkType.MasterOfSoresu)
+                    .Name("Master of Soresu")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.FocusedStance, 30.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Lightsaber,
                 8,
-                0,
-                typeof(FocusedStanceStatusEffect),
+                30,
                 null,
-                0,
-                0,
+                null,
+                15,
+                8,
                 2.0f,
-                true,
+                false,
                 false,
                 false,
                 Spell.Invalid,
@@ -41,7 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    SelfStatusEffectFactory = () => new PerfectSoresuStatusEffect(),
+                    SelfStatusEffectsToReplace = new[] { typeof(SaberWardStatusEffect) }
+                });
 
             return builder.Build();
         }

@@ -1,6 +1,6 @@
 # Combat Upgrade Active Perk Budget Review
 
-Last reviewed: 2026-07-04
+Last reviewed: 2026-07-04 (Lightsaber Ward/Severance redesign entry added 2026-07-11 below)
 
 ## Recommended Rule
 
@@ -57,8 +57,8 @@ The table below records the historical active-to-trait conversion pass. Treat we
 | Katar | Venom Current | 9 | 6 | Venom Splash; Twin Fang Flurry; Toxic Rush |
 | Leadership | Field Steward | 7 | 6 | Bolster Resolve |
 | Leadership | Vanguard Command | 7 | 6 | Mark Target |
-| Lightsaber | Defense | 7 | 5 | Guardian's Influence; Thunderous Challenge folded into Guardian's Challenge II |
-| Lightsaber | Offense | 13 | 6 | Arc Strike; Centering; Overwhelming Strike; Purify; Ripple Slash; Second Wind; Surge Strike |
+| Lightsaber | Defense | 7 | 5 | Guardian's Influence; Thunderous Challenge folded into Guardian's Challenge II. (Superseded 2026-07-11: Lightsaber Defense was redesigned into the Severance tree — see redesign entry below.) |
+| Lightsaber | Offense | 13 | 6 | Arc Strike; Centering; Overwhelming Strike; Purify; Ripple Slash; Second Wind; Surge Strike. (Superseded 2026-07-11: Lightsaber Offense was redesigned into the Ward tree — see redesign entry below.) |
 | Pistol | Gunslinger | 6 | 6 | None |
 | Pistol | Skirmisher | 9 | 6 | Low Shot; Ricochet Shot; Snap Roll |
 | Rifle | Marksman | 9 | 6 | Breach Round; Expose Weak Point; Kill Zone |
@@ -127,3 +127,12 @@ As of 2026-06-14, the implementation follow-up is largely closed in code:
 3. Field Support Rayshield and Dampening mitigation riders have code and test coverage; final confidence still needs live support-playtest coverage because the behavior is group-buff math rather than just static row sync.
 4. The legacy combat Bible review gate has been retired. Use the C# sync tests plus `tools\UpdateCombatUpgradeAudit.ps1` as the current static gates.
 5. Remaining work from this review is release validation: run the focused audit/sync tests, the full server test project, and live-module smoke tests before handoff.
+
+## 2026-07-11 Lightsaber Ward/Severance Redesign
+
+The Lightsaber Defense and Lightsaber Offense rows in the Active Count Plan table above are superseded. Both trees were fully replaced with new perk lines, renamed Severance (`PerkCategoryType.LightsaberDefense`) and Ward (`PerkCategoryType.LightsaberOffense`):
+
+- Ward: Saber Ward, Mental Fortress, Deflecting Return, a retained/reworked 2-rank Guardian's Challenge, Surrounded Not Outmatched, Force Link, Immovable Stance, Reprisal, Center of the Storm, and the capstone Master of Soresu.
+- Severance: Force Sheath, Overpower, Fast Strikes, Shattering Strike, Sarlacc Sweep, Weak Points, Imbuement Stance, High Ground, Focus Shift, and the capstone Epicenter.
+
+The new trees were designed against the same 4-6 distinct active button rule and the 60 SP per-style/6 SP capstone structural constraints documented above; this entry does not restate specific active-button counts or SP prices because the local Bible workbook and `CombatUpgradeBiblePerkManifest.csv` are the source of truth for those numbers going forward. The old B-001 Attack Deflection accounting for `Deflection Training` no longer applies — Deflecting Return instead reflects a bounded amount of weapon damage back at the attacker off an Attack Deflect outcome rather than adding another raw deflection-chance source. The redesign also introduced Soresu Pressure stacking (Surrounded Not Outmatched / Master of Soresu) and physical-to-Force damage conversion (Saber Ward) as net-new shared engine systems. The capstone mastery quests were reused unchanged: "Saber Storm" now gates Epicenter, and "Guardian Master" now gates Master of Soresu.

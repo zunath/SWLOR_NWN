@@ -10,14 +10,14 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class GuardiansChallengeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class ReprisalAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
-            Build(builder, FeatType.GuardiansChallenge1, "Guardian's Challenge I", 1, 12, 4, 1, 20);
-            Build(builder, FeatType.GuardiansChallenge2, "Guardian's Challenge II", 2, 24, 8, 2, 30);
+            Build(builder, FeatType.Reprisal1, "Reprisal I", 1, 16, 6, 2);
+            Build(builder, FeatType.Reprisal2, "Reprisal II", 2, 30, 9, 3);
 
             return builder.Build();
         }
@@ -29,17 +29,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             int level,
             int baseDamage,
             int stamina,
-            int fp,
-            int enmityPercent)
+            int fp)
         {
             ConfigureGeneratedWeaponAbility(
-                builder.Create(feat, PerkType.GuardiansChallenge)
+                builder.Create(feat, PerkType.Reprisal)
                     .Name(name)
                     .Level(level)
-                    .HasRecastDelay(RecastGroup.GuardiansChallenge, 24.0f),
+                    .HasRecastDelay(RecastGroup.Reprisal, 30.0f),
                 SkillType.Lightsaber,
                 baseDamage,
-                30,
+                0,
                 null,
                 null,
                 stamina,
@@ -58,10 +57,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
+                    ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
+                    ConditionalTargetStatusDurationSeconds = 15,
                     ProtectedTargetHitWindowSeconds = 30,
                     TargetRecentlyDamagedActivatorWindowSeconds = 30f,
-                    SelfEnmityPercentIfTargetRecentlyDamagedActivator = enmityPercent,
-                    SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator = 30
+                    RequireTargetRecentlyDamagedActivatorForConditionalStatus = true
                 });
         }
     }

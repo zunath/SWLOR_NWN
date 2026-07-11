@@ -11,24 +11,24 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class SurgeStrikeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class ShatteringStrikeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SurgeStrike1, PerkType.SurgeStrike)
-                    .Name("Surge Strike I")
+                builder.Create(FeatType.ShatteringStrike1, PerkType.ShatteringStrike)
+                    .Name("Shattering Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SurgeStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.ShatteringStrike, 24.0f),
                 SkillType.Lightsaber,
-                16,
+                18,
                 30,
+                typeof(SunderStatusEffect),
                 null,
-                null,
+                4,
                 6,
-                2,
                 0.0f,
                 false,
                 true,
@@ -43,23 +43,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ConditionalStatusEffect = typeof(ForceDisruptionStatusEffect),
-                    ConditionalStatusDurationSeconds = 30,
-                    ConditionalStatusAfterDeflectionWindowSeconds = 30
+                    StatusEffectFactory = () => new SunderStatusEffect(10)
                 });
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SurgeStrike2, PerkType.SurgeStrike)
-                    .Name("Surge Strike II")
+                builder.Create(FeatType.ShatteringStrike2, PerkType.ShatteringStrike)
+                    .Name("Shattering Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SurgeStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.ShatteringStrike, 24.0f),
                 SkillType.Lightsaber,
+                28,
                 30,
-                30,
+                typeof(SunderStatusEffect),
                 null,
-                null,
-                9,
-                3,
+                6,
+                8,
                 0.0f,
                 false,
                 true,
@@ -74,9 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ConditionalStatusEffect = typeof(ForceDisruptionStatusEffect),
-                    ConditionalStatusDurationSeconds = 30,
-                    ConditionalStatusAfterDeflectionWindowSeconds = 30
+                    StatusEffectFactory = () => new SunderStatusEffect(12)
                 });
 
             return builder.Build();

@@ -140,6 +140,8 @@ Each content package below requires one dungeon area and one attached boss arena
 | Dathomir Tarn Jungle Preserve | Dathomir | Apex Bite; Unbreakable Beast; Alpha Rhythm | Controlled high-risk jungle preserve with beast pens, elevated paths, and wild clearings. | Alpha-beast arena pocket attached to the preserve. |
 | Dathomir Grotto Apex Den | Dathomir | Primal Overrun; Untouchable Instinct; Force-Bonded Beast | Grotto cavern den beneath Dathomir wilds with cave nests, ritual beast tracks, and vertical chambers. | Sealed apex-den boss room attached to the grotto. |
 
+(2026-07-11: the Lightsaber Ward/Severance perk trees were redesigned. The Dantooine Jedi Enclave Trial Halls "Saber Storm" and "Guardian Master" mastery quests listed above are unchanged/reused — their quest IDs and definitions did not change — but they now gate the new capstones Epicenter (Severance tree) and Master of Soresu (Ward tree) respectively, instead of the old Lightsaber Defense/Offense capstones.)
+
 ### Generated Dungeon Spawn Tables
 
 These spawn tables are for the dungeon/lesson areas only. Do not place these waypoint blueprints in the attached boss arena.

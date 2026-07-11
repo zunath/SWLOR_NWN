@@ -662,6 +662,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         BloodFrenzyFlurry = 432,
         [RecastGroup("Concussive Challenge", "Conc. Chall.", true)]
         ConcussiveChallenge = 433,
+        [RecastGroup("Force Sheath", "Force Sheath", true)]
+        ForceSheath = 474,
+        [RecastGroup("Shattering Strike", "Shatter Str.", true)]
+        ShatteringStrike = 475,
+        [RecastGroup("Sarlacc Sweep", "Sarlacc Sweep", true)]
+        SarlaccSweep = 476,
+        [RecastGroup("Imbuement Stance", "Imbue Stance", true)]
+        ImbuementStance = 477,
+        [RecastGroup("Saber Ward", "Saber Ward", true)]
+        SaberWard = 478,
+        [RecastGroup("Force Link", "Force Link", true)]
+        ForceLink = 479,
+        [RecastGroup("Immovable Stance", "Immov. Stance", true)]
+        ImmovableStance = 480,
+        [RecastGroup("Reprisal", "Reprisal", true)]
+        Reprisal = 481,
         [RecastGroup("Pathogen Strike", "Path. Strike", true)]
         PathogenStrike = 468,
         [RecastGroup("Virulent Blade", "Virulent Blade", true)]

@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Status
 
-Last updated: 2026-06-14
+Last updated: 2026-07-11
 
 ## Source Of Truth
 
@@ -90,6 +90,7 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Added conservative enemy resistance vulnerabilities capped at -20, synchronized the Bible enemy resistance packages and World NPC skin properties, and introduced Coolant-Scarred Mynock, Byysk Cryo Adept, and Sith Frostbinder as spawned Ice-pressure variants.
 - Confirmed logged-out status-effect state is process-local runtime cache and does not survive the fresh boot migration path.
 - Routed Marked for Death bonus damage through the shared triggered-damage path so it applies resistance, damage-dealt hooks, and status-effect damage notifications while preserving recursion protection.
+- **2026-07-11: Completed a full redesign of the two Lightsaber perk trees.** Ward (`PerkCategoryType.LightsaberOffense`) replaced its old perk set (Ward Bond, Guardian's Oath, Reactive Ward, Guardian's Challenge, Deflective Presence, Punishing Guard, Impenetrable Guard, Guardian's Influence, Overwhelming Defense, Guardian Master) with Saber Ward, Mental Fortress, Deflecting Return, a retained/reworked Guardian's Challenge (2 ranks, "damaged you" trigger), Surrounded Not Outmatched, Force Link (reuses the old Ward Bond ally damage-redirect behavior), Immovable Stance, Reprisal, Center of the Storm, and the capstone Master of Soresu. Severance (`PerkCategoryType.LightsaberDefense`) replaced its old perk set (Severing Strike, Deflection Training, Severance Riposte, Leg Slash, Severance Flow, Surge Strike, Focused Stance, Blade Blitz, Purify, Saber Storm) with Force Sheath, Overpower, Fast Strikes, Shattering Strike, Sarlacc Sweep, Weak Points, Imbuement Stance, High Ground, Focus Shift, and the capstone Epicenter. Three net-new shared engine systems were added to support the redesign: physical-to-Force damage conversion, Soresu Pressure stacking, and bounded Deflecting-Return weapon reflection triggered off Attack Deflect. The existing capstone mastery quests were reused rather than renamed: the "Saber Storm" mastery quest now gates Epicenter, and the "Guardian Master" mastery quest now gates Master of Soresu (quest IDs/definitions unchanged). 29 new gameplay icons were produced through Claude's illustrated-SVG icon pipeline, and `IconStandards.md` gained an agent-specific icon rule (GPT Image 2 for Codex, illustrated SVG for Claude). This redesign supersedes every prior Lightsaber Offense/Defense entry in this file, in `CombatUpgradeCurrentStateAudit.md`, and in the Lightsaber rows of `CombatUpgradeActivePerkBudgetReview.md`; the Bible workbook and `CombatUpgradeBiblePerkManifest.csv` are the source of truth for the new rows.
 
 The latest checked-in local-workbook audit currently reports no scoped findings. After refreshing from the checked-in workbook, `CombatUpgradeBiblePerkManifest.csv` contains 895 manifest rows, 810 scoped implemented rows, and `CombatUpgradePerkAudit.csv` contains only its header row. Current Bible General rows that use Armor requirements are in scope, but Armor rows should not be counted as weapon-tree active-button work.
 
@@ -125,3 +126,4 @@ The `experimental/combat-upgrade-status-effects` branch was checked as a referen
 4. Refine generated spell target metadata only after any ability-specific target shape/range adjustments are confirmed in play.
 5. Keep Espionage out of scope until a separate scope decision brings it into the combat-upgrade work.
 6. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the C# sync tests, the build/tests, and this status file aligned when the Bible changes.
+7. Playtest the redesigned Ward and Severance Lightsaber trees added 2026-07-11: physical-to-Force conversion feel, Soresu Pressure stacking pacing, Deflecting Return's bounded reflection uptime, and the reused Saber Storm/Guardian Master mastery-quest gates against Epicenter and Master of Soresu.

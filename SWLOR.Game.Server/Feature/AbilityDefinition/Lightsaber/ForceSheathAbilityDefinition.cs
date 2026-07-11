@@ -11,110 +11,23 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class SeveringStrikeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class ForceSheathAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SeveringStrike1, PerkType.SeveringStrike)
-                    .Name("Severing Strike I")
+                builder.Create(FeatType.ForceSheath1, PerkType.ForceSheath)
+                    .Name("Force Sheath I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SeveringStrike, 18.0f),
+                    .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
                 SkillType.Lightsaber,
                 8,
-                30,
-                typeof(SunderStatusEffect),
+                0,
                 null,
-                3,
-                1,
-                0.0f,
-                false,
-                true,
-                false,
-                Spell.Invalid,
-                AbilityTargetingShapeType.None,
-                0.0f,
-                0.0f,
-                AbilityTargetingFlags.HarmsEnemies,
-                Animation.DoubleStrike,
-                0.0f,
-                AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
-                {
-                    StatusEffectFactory = () => new SunderStatusEffect(10)
-                });
-
-            ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SeveringStrike2, PerkType.SeveringStrike)
-                    .Name("Severing Strike II")
-                    .Level(2)
-                    .HasRecastDelay(RecastGroup.SeveringStrike, 18.0f),
-                SkillType.Lightsaber,
-                18,
-                30,
-                typeof(SunderStatusEffect),
                 null,
-                5,
                 2,
-                0.0f,
-                false,
-                true,
-                false,
-                Spell.Invalid,
-                AbilityTargetingShapeType.None,
-                0.0f,
-                0.0f,
-                AbilityTargetingFlags.HarmsEnemies,
-                Animation.DoubleStrike,
-                0.0f,
-                AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
-                {
-                    StatusEffectFactory = () => new SunderStatusEffect(12)
-                });
-
-            ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SeveringStrike3, PerkType.SeveringStrike)
-                    .Name("Severing Strike III")
-                    .Level(3)
-                    .HasRecastDelay(RecastGroup.SeveringStrike, 18.0f),
-                SkillType.Lightsaber,
-                28,
-                30,
-                typeof(SunderStatusEffect),
-                null,
-                8,
-                3,
-                0.0f,
-                false,
-                true,
-                false,
-                Spell.Invalid,
-                AbilityTargetingShapeType.None,
-                0.0f,
-                0.0f,
-                AbilityTargetingFlags.HarmsEnemies,
-                Animation.DoubleStrike,
-                0.0f,
-                AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
-                {
-                    StatusEffectFactory = () => new SunderStatusEffect(15)
-                });
-
-            ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SeveringStrike4, PerkType.SeveringStrike)
-                    .Name("Severing Strike IV")
-                    .Level(4)
-                    .HasRecastDelay(RecastGroup.SeveringStrike, 18.0f),
-                SkillType.Lightsaber,
-                38,
-                30,
-                typeof(SunderStatusEffect),
-                null,
-                12,
                 4,
                 0.0f,
                 false,
@@ -130,7 +43,94 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    StatusEffectFactory = () => new SunderStatusEffect(18)
+                    IsQueuedWeaponAbility = true
+                });
+
+            ConfigureGeneratedWeaponAbility(
+                builder.Create(FeatType.ForceSheath2, PerkType.ForceSheath)
+                    .Name("Force Sheath II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
+                SkillType.Lightsaber,
+                18,
+                0,
+                null,
+                null,
+                3,
+                5,
+                0.0f,
+                false,
+                true,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
+                0.0f,
+                AbilityTargetingFlags.HarmsEnemies,
+                Animation.DoubleStrike,
+                0.0f,
+                AbilityType.Invalid,
+                new GeneratedWeaponAbilityProfile
+                {
+                    IsQueuedWeaponAbility = true
+                });
+
+            ConfigureGeneratedWeaponAbility(
+                builder.Create(FeatType.ForceSheath3, PerkType.ForceSheath)
+                    .Name("Force Sheath III")
+                    .Level(3)
+                    .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
+                SkillType.Lightsaber,
+                28,
+                0,
+                null,
+                null,
+                4,
+                6,
+                0.0f,
+                false,
+                true,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
+                0.0f,
+                AbilityTargetingFlags.HarmsEnemies,
+                Animation.DoubleStrike,
+                0.0f,
+                AbilityType.Invalid,
+                new GeneratedWeaponAbilityProfile
+                {
+                    IsQueuedWeaponAbility = true
+                });
+
+            ConfigureGeneratedWeaponAbility(
+                builder.Create(FeatType.ForceSheath4, PerkType.ForceSheath)
+                    .Name("Force Sheath IV")
+                    .Level(4)
+                    .HasRecastDelay(RecastGroup.ForceSheath, 18.0f),
+                SkillType.Lightsaber,
+                38,
+                0,
+                null,
+                null,
+                5,
+                7,
+                0.0f,
+                false,
+                true,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
+                0.0f,
+                AbilityTargetingFlags.HarmsEnemies,
+                Animation.DoubleStrike,
+                0.0f,
+                AbilityType.Invalid,
+                new GeneratedWeaponAbilityProfile
+                {
+                    IsQueuedWeaponAbility = true
                 });
 
             return builder.Build();

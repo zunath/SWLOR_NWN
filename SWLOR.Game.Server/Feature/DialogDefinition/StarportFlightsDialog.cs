@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var confirmedCountdown = Time.GetTimeShortIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
                     SendMessageToPC(player, ColorToken.Green($"Ticket purchased! Your shuttle to {destinationName} departs in {confirmedCountdown}."));
 
-                    ChangePage(MainPageId, false);
+                    EndConversation();
                 });
             }
         }

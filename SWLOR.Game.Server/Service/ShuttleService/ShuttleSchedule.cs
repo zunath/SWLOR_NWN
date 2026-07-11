@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.ShuttleService
     {
         private const uint FnvOffsetBasis = 2166136261;
         private const uint FnvPrime = 16777619;
+        private const int OrbitalHopPeriodSeconds = 60;
 
         /// <summary>
         /// Computes a deterministic 32-bit FNV-1a hash of a directional route between two
@@ -45,6 +46,10 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         /// <returns>The departure period, in seconds.</returns>
         public static int GetPeriodSeconds(PlanetType origin, PlanetType destination)
         {
+            // Orbital hops run frequently so a short trip isn't gated by a long wait.
+            if (GalaxyMap.IsOrbitalHop(origin, destination))
+                return OrbitalHopPeriodSeconds;
+
             return 240 + 30 * (int)(GetRouteHash(origin, destination) % 5);
         }
 

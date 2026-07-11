@@ -9,6 +9,27 @@ namespace SWLOR.Game.Server.Service.ShuttleService
     /// </summary>
     public static class GalaxyMap
     {
+        // An orbital station sits just off its parent planet, so travel between the two is a quick,
+        // cheap shuttle hop rather than a full interplanetary flight.
+        private const int OrbitalHopSeconds = 60;
+        private const int OrbitalHopFare = 25;
+
+        /// <summary>
+        /// Determines whether the route between two planets is a short orbital hop between a station
+        /// and its parent planet, rather than a full interplanetary flight.
+        /// </summary>
+        public static bool IsOrbitalHop(PlanetType origin, PlanetType destination)
+        {
+            return IsStationPair(origin, destination, PlanetType.Viscara, PlanetType.CZ220) ||
+                   IsStationPair(origin, destination, PlanetType.SmugglersMoon, PlanetType.SmugglersMoonStation);
+        }
+
+        private static bool IsStationPair(PlanetType origin, PlanetType destination, PlanetType planet, PlanetType station)
+        {
+            return (origin == planet && destination == station) ||
+                   (origin == station && destination == planet);
+        }
+
         /// <summary>
         /// Calculates the Euclidean distance between the galaxy map coordinates of two planets.
         /// </summary>
@@ -36,6 +57,9 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         /// <returns>The transit time, in seconds.</returns>
         public static int GetTransitSeconds(PlanetType origin, PlanetType destination)
         {
+            if (IsOrbitalHop(origin, destination))
+                return OrbitalHopSeconds;
+
             var distance = GetDistance(origin, destination);
             var raw = 600.0 + 600.0 * (distance - 5.0) / 77.2;
             var rounded = (int)(Math.Round(raw / 30.0, MidpointRounding.AwayFromZero) * 30.0);
@@ -55,6 +79,9 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         /// <returns>The fare, in credits.</returns>
         public static int GetFare(PlanetType origin, PlanetType destination)
         {
+            if (IsOrbitalHop(origin, destination))
+                return OrbitalHopFare;
+
             var distance = GetDistance(origin, destination);
             var raw = 12.0 * distance;
             var rounded = (int)(Math.Round(raw / 5.0, MidpointRounding.AwayFromZero) * 5.0);

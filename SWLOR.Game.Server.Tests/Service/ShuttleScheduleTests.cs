@@ -42,7 +42,11 @@ public class ShuttleScheduleTests
         {
             var transit = GalaxyMap.GetTransitSeconds(origin, destination);
 
-            transit.Should().BeInRange(600, 1200, $"{origin}->{destination}");
+            if (GalaxyMap.IsOrbitalHop(origin, destination))
+                transit.Should().BeInRange(1, 60, $"{origin}->{destination}");
+            else
+                transit.Should().BeInRange(600, 1200, $"{origin}->{destination}");
+
             (transit % 30).Should().Be(0, $"{origin}->{destination}");
         }
     }
@@ -54,7 +58,11 @@ public class ShuttleScheduleTests
         {
             var fare = GalaxyMap.GetFare(origin, destination);
 
-            fare.Should().BeInRange(100, 1000, $"{origin}->{destination}");
+            if (GalaxyMap.IsOrbitalHop(origin, destination))
+                fare.Should().BeInRange(1, 50, $"{origin}->{destination}");
+            else
+                fare.Should().BeInRange(100, 1000, $"{origin}->{destination}");
+
             (fare % 5).Should().Be(0, $"{origin}->{destination}");
         }
     }
@@ -97,11 +105,15 @@ public class ShuttleScheduleTests
     }
 
     [Test]
-    public void ViscaraToCZ220_MatchesKnownAnchorValues()
+    public void ViscaraToCZ220_IsACheapFastOrbitalHop()
     {
         GalaxyMap.GetDistance(PlanetType.Viscara, PlanetType.CZ220).Should().BeApproximately(5.0f, 0.001f);
-        GalaxyMap.GetTransitSeconds(PlanetType.Viscara, PlanetType.CZ220).Should().Be(600);
-        GalaxyMap.GetFare(PlanetType.Viscara, PlanetType.CZ220).Should().Be(100);
+        GalaxyMap.IsOrbitalHop(PlanetType.Viscara, PlanetType.CZ220).Should().BeTrue();
+        GalaxyMap.GetTransitSeconds(PlanetType.Viscara, PlanetType.CZ220).Should().Be(60);
+        GalaxyMap.GetFare(PlanetType.Viscara, PlanetType.CZ220).Should().Be(25);
+        // Symmetric.
+        GalaxyMap.GetTransitSeconds(PlanetType.CZ220, PlanetType.Viscara).Should().Be(60);
+        GalaxyMap.GetFare(PlanetType.CZ220, PlanetType.Viscara).Should().Be(25);
     }
 
     [Test]
@@ -141,7 +153,11 @@ public class ShuttleScheduleTests
             var period = ShuttleSchedule.GetPeriodSeconds(origin, destination);
             var offset = ShuttleSchedule.GetOffsetSeconds(origin, destination);
 
-            validPeriods.Should().Contain(period, $"{origin}->{destination}");
+            if (GalaxyMap.IsOrbitalHop(origin, destination))
+                period.Should().Be(60, $"{origin}->{destination}");
+            else
+                validPeriods.Should().Contain(period, $"{origin}->{destination}");
+
             offset.Should().BeInRange(0, period - 1, $"{origin}->{destination}");
         }
     }

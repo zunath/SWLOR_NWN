@@ -40,7 +40,8 @@ namespace SWLOR.Game.Server.Service
         private const string ExitPlaceableTag = "building_exit";
         private const string ShipComputerTag = "ShipComputer";
         private const string PilotChairTag = "pilot_chair";
-        private const string PilotDroidResref = "receptiondroid";
+        // A droid using the parts-based "(Dynamic) Droid" appearance, which supports the sit animation.
+        private const string PilotDroidResref = "maledroid";
         private const float BoardingRangeMeters = 15f;
         private const int BoardingCallSeconds = 60;
 

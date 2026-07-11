@@ -64,6 +64,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddSpacer()
                                 .SetWidth(28f);
 
+                            row.AddCheckBox()
+                                .SetText("Mini-Vitals")
+                                .SetTooltip("If enabled, your Stamina and FP show as compact bars on your character portrait. If disabled, they appear in the full HP/STM/FP window docked in the lower-right corner.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.PortraitVitals);
+                        })
+                            .SetHeight(30f);
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
                             row.AddButton()
                                 .SetText("Change Description")
                                 .SetTooltip("Modify your publicly-viewable description which displays when you are examined.")

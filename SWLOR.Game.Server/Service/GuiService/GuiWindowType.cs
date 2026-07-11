@@ -66,6 +66,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         QuestContractBoard = 61,
         QuestContractEditor = 62,
         LightsaberWorkbench = 63,
+        PlayerStatusPortrait = 64,
+        PlayerStatusPortraitSpace = 65,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

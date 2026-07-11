@@ -681,6 +681,38 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a passenger leaves the shuttle interior before it lands - by any means other than
+        /// arrival, such as a DM port, a death respawn, or a recall - they forfeit the trip.
+        /// The ride record is deleted so they are not re-boarded on login or delivered to the
+        /// destination while offline. A normal logout does not fire this event, so passengers who
+        /// stay aboard and disconnect still resume or arrive as intended.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void HandleShuttleAreaExit()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var area = OBJECT_SELF;
+            var flightId = GetLocalString(area, ShuttleFlightIdVariable);
+            if (string.IsNullOrWhiteSpace(flightId))
+                return;
+
+            var ride = GetRide(GetObjectUUID(player));
+            if (ride == null || ride.Status != ShuttleRideStatus.InTransit || ride.FlightId != flightId)
+                return;
+
+            // Arrival also moves passengers out of the interior, but only once the flight has
+            // landed. An exit before that is a forced removal, not a normal disembarkation.
+            if (ride.ArrivalUtc <= DateTime.UtcNow)
+                return;
+
+            DB.Delete<ShuttleRide>(ride.Id);
+            Log.Write(LogGroup.Server, $"Shuttle passenger {ride.PlayerId} left flight {flightId} before arrival; ticket forfeited.");
+        }
+
+        /// <summary>
         /// Retrieves the next scheduled departure for a route.
         /// </summary>
         /// <param name="origin">The origin planet.</param>

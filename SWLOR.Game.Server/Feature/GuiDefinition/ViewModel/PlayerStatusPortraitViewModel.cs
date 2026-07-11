@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // clear of the HP bar on the portrait's left edge and the button row beneath it.
                 // Note: SWLOR's GetPlayerDeviceProperty returns physical pixels, so the anchor is
                 // (edge - offset*scale) here, matching PlayerStatusViewModel/TargetStatusViewModel.
-                const float XOffset = 88f;
+                const float XOffset = 64f;
                 const float YOffset = 58f;
 
                 var scale = screenScale / 100f;

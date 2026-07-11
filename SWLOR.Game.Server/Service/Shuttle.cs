@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Service
             public DateTime DepartureUtc { get; set; }
             public DateTime ArrivalUtc { get; set; }
             public uint Area { get; set; } = OBJECT_INVALID;
+            public uint Console { get; set; } = OBJECT_INVALID;
             public Location EntranceLocation { get; set; }
             public DateTime LastBroadcastUtc { get; set; }
         }
@@ -365,7 +366,7 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var flight in _activeFlights.Values)
             {
-                if (!GetIsObjectValid(flight.Area))
+                if (!GetIsObjectValid(flight.Console))
                     continue;
 
                 if ((now - flight.LastBroadcastUtc).TotalSeconds < 60)
@@ -375,10 +376,10 @@ namespace SWLOR.Game.Server.Service
 
                 var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
                 var remaining = Time.GetTimeShortIntervals(flight.ArrivalUtc - now, false);
-                foreach (var player in Area.GetPlayersInArea(flight.Area))
-                {
-                    SendMessageToPC(player, $"Arriving at {destinationName} in {remaining}.");
-                }
+
+                // The status console announces the ETA to nearby passengers at talk volume.
+                var console = flight.Console;
+                AssignCommand(console, () => SpeakString($"Now arriving at {destinationName} in {remaining}."));
             }
         }
 
@@ -450,6 +451,7 @@ namespace SWLOR.Game.Server.Service
             SetLocalString(console, "CONVERSATION", "ShuttleStatusDialog");
             SetLocalString(console, ShuttleFlightIdVariable, flight.FlightId);
             DeleteLocalInt(console, TerminalPlanetVariable);
+            flight.Console = console;
 
             SpawnPilotDroid(pilotChair);
         }

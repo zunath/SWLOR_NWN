@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.LightsaberWorkbench)
-                .SetInitialGeometry(0, 0, 545f, 660f)
+                .SetInitialGeometry(0, 0, 545f, 740f)
                 .SetTitle("Lightsaber Workbench")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -182,6 +182,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindImageResref(model => model.Enhancement2Resref)
                             .BindOnClicked(model => model.OnClickEnhancement2())
                             .BindTooltip(model => model.Enhancement2Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("Weapon Submission Token (optional)")
+                            .SetHeight(20f)
+                            .SetWidth(260f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.SubmissionResref)
+                            .BindOnClicked(model => model.OnClickSubmissionToken())
+                            .BindTooltip(model => model.SubmissionTooltip)
                             .SetHeight(32f)
                             .SetWidth(32f);
                         row.AddSpacer();

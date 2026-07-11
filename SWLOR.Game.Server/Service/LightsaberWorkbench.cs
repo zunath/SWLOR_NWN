@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service
     public static class LightsaberWorkbench
     {
         public const string KyberTokenTag = "kyber_token";
+        public const string WeaponSubmissionTokenTag = "wpn_sub_token";
         public const string LightsaberResref = "ls_custom";
         public const string SaberstaffResref = "ss_custom";
 

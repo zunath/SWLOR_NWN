@@ -157,6 +157,35 @@ public class LightsaberWorkbenchTests
     }
 
     [Test]
+    public void SubmissionToken_TransfersStatsExcludingDamageProfile()
+    {
+        var root = FindRepositoryRoot();
+        var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
+
+        var workbench = File.ReadAllText(Path.Combine(serverRoot, "Service", "LightsaberWorkbench.cs"));
+        workbench.Should().Contain("WeaponSubmissionTokenTag = \"wpn_sub_token\";");
+
+        // The submission token blueprint must exist and stay a weapon submission token.
+        var token = JObject.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", "wpn_sub_token.uti.json")));
+        token["Tag"]!["value"]!.Value<string>().Should().Be("wpn_sub_token");
+
+        // The workbench transfers the token's stats but never its damage profile or
+        // the token blueprint's own skill requirement.
+        var viewModel = File.ReadAllText(Path.Combine(serverRoot, "Feature", "GuiDefinition", "ViewModel", "LightsaberWorkbenchViewModel.cs"));
+        viewModel.Should().Contain("LightsaberWorkbench.WeaponSubmissionTokenTag");
+        foreach (var excluded in new[]
+                 {
+                     "ItemPropertyType.DMG",
+                     "ItemPropertyType.Delay",
+                     "ItemPropertyType.WeaponDamageType",
+                     "ItemPropertyType.RequiresSkill",
+                 })
+        {
+            viewModel.Should().Contain(excluded, $"the submission token transfer must skip {excluded}");
+        }
+    }
+
+    [Test]
     public void StoredItemDataMigration_ReplacesRootAndNestedSabersAcrossSurfaces()
     {
         var root = FindRepositoryRoot();

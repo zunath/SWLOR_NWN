@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             new List<ItemProperty>()
         };
 
+        private string _submissionSerialized;
         private bool _isConstructing;
 
         public bool IsLightsaberSelected
@@ -106,6 +107,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string SubmissionTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SubmissionResref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string StatusText
         {
             get => Get<string>();
@@ -146,6 +159,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Enhancement1Resref = BlankTexture;
             Enhancement2Tooltip = "Select Enhancement #2";
             Enhancement2Resref = BlankTexture;
+
+            _submissionSerialized = string.Empty;
+            SubmissionTooltip = "Select Weapon Submission Token";
+            SubmissionResref = BlankTexture;
 
             StatusText = string.Empty;
             StatusColor = GuiColor.Green;
@@ -371,6 +388,56 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ToggleEnhancementSlot(1, tooltip => Enhancement2Tooltip = tooltip, resref => Enhancement2Resref = resref);
         };
 
+        public Action OnClickSubmissionToken() => () =>
+        {
+            if (_isConstructing)
+                return;
+
+            if (string.IsNullOrWhiteSpace(_submissionSerialized))
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a Weapon Submission Token within your inventory.",
+                    item =>
+                    {
+                        if (GetItemPossessor(item) != Player)
+                        {
+                            FloatingTextStringOnCreature("Item must be in your inventory.", Player, false);
+                            return;
+                        }
+
+                        if (GetTag(item) != LightsaberWorkbench.WeaponSubmissionTokenTag)
+                        {
+                            FloatingTextStringOnCreature("Item must be a Weapon Submission Token.", Player, false);
+                            return;
+                        }
+
+                        _submissionSerialized = ObjectPlugin.Serialize(item);
+                        SubmissionTooltip = GetName(item);
+                        SubmissionResref = Item.GetIconResref(item);
+
+                        DestroyObject(item);
+                    });
+            }
+            else
+            {
+                ShowModal("Will you remove the Weapon Submission Token?", () =>
+                {
+                    ReturnSubmissionToken();
+                    SubmissionTooltip = "Select Weapon Submission Token";
+                    SubmissionResref = BlankTexture;
+                });
+            }
+        };
+
+        private void ReturnSubmissionToken()
+        {
+            if (string.IsNullOrWhiteSpace(_submissionSerialized))
+                return;
+
+            var item = ObjectPlugin.Deserialize(_submissionSerialized);
+            ObjectPlugin.AcquireItem(Player, item);
+            _submissionSerialized = string.Empty;
+        }
+
         public Action OnClickConstruct() => () =>
         {
             if (_isConstructing)
@@ -385,7 +452,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var weaponName = _weaponType == BaseItem.Saberstaff ? "saberstaff" : "lightsaber";
-            ShowModal($"Construct this {weaponName}? The Kyber Token and socketed enhancements will be consumed.", () =>
+            var consumed = string.IsNullOrWhiteSpace(_submissionSerialized)
+                ? "The Kyber Token and socketed enhancements will be consumed."
+                : "The Kyber Token, socketed enhancements, and Weapon Submission Token will be consumed.";
+            ShowModal($"Construct this {weaponName}? {consumed}", () =>
             {
                 _isConstructing = true;
                 ConstructSaber();
@@ -453,6 +523,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _enhancementProperties[slot].Clear();
             }
 
+            // Transfer the Weapon Submission Token's crafted stats onto the saber. The
+            // saber's damage profile stays fixed at tier 5, so DMG, weapon damage type,
+            // and attack delay are skipped, as is the token blueprint's own skill
+            // requirement scaffolding.
+            if (!string.IsNullOrWhiteSpace(_submissionSerialized))
+            {
+                var submissionToken = ObjectPlugin.Deserialize(_submissionSerialized);
+                if (GetIsObjectValid(submissionToken))
+                {
+                    for (var ip = GetFirstItemProperty(submissionToken); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(submissionToken))
+                    {
+                        var type = GetItemPropertyType(ip);
+                        if (type == ItemPropertyType.DMG ||
+                            type == ItemPropertyType.Delay ||
+                            type == ItemPropertyType.WeaponDamageType ||
+                            type == ItemPropertyType.RequiresSkill)
+                            continue;
+
+                        Craft.ApplyCraftedItemProperty(item, ip);
+                    }
+
+                    DestroyObject(submissionToken);
+                }
+
+                _submissionSerialized = string.Empty;
+            }
+
             // Copy the finished weapon into the player's inventory, then destroy the
             // original left behind in the storage placeable.
             var finishedItem = CopyItem(item, Player, true);
@@ -515,6 +612,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 ReturnEnhancement(slot);
             }
+
+            ReturnSubmissionToken();
         };
     }
 }

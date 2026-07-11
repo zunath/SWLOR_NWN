@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 250
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 520
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This kit upgrades a saberstaff from tier 3 to tier 4. The saberstaff must be unequipped."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,20 +43,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Saberstaff Upgrade I"
+      "0": "Saberstaff Upgrade Kit IV"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 52
+    "value": 116
   },
   "PaletteID": {
     "type": "byte",
-    "value": 26
+    "value": 20
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
@@ -87,7 +89,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 335
+          "value": 329
         }
       }
     ]
@@ -102,49 +104,14 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "RECIPE"
+    "value": "staff_upg4"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "recipe_staffupg1"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "NO_ECONOMY"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "RECIPES"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "368"
-        }
-      }
-    ]
+    "value": "staff_upg4"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 52
+    "value": 116
   }
 }

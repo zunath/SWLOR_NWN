@@ -1350,41 +1350,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ApplyProperty(uint item, ItemProperty ip)
         {
-            var type = GetItemPropertyType(ip);
-            var subType = GetItemPropertySubType(ip);
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (type == ItemPropertyType.WeaponDamageType)
-            {
-                for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
-                {
-                    if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
-                    {
-                        RemoveItemProperty(item, property);
-                    }
-                }
-
-                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
-                return;
-            }
-
-            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
-            {
-                if (GetItemPropertyType(property) == type &&
-                    (type == ItemPropertyType.DMG ||
-                     GetItemPropertySubType(property) == -1 ||
-                     GetItemPropertySubType(property) == subType))
-                {
-                    amount += GetItemPropertyCostTableValue(property);
-                    RemoveItemProperty(item, property);
-                }
-            }
-
-            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
-            unpacked.CostTableValue = amount;
-            ip = ItemPropertyPlugin.PackIP(unpacked);
-
-            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+            Craft.ApplyCraftedItemProperty(item, ip);
         }
 
         private void ProcessSuccess()

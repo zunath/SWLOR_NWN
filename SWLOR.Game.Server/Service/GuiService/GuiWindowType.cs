@@ -65,7 +65,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         Disguises = 60,
         QuestContractBoard = 61,
         QuestContractEditor = 62,
-        Techniques = 63,
+        LightsaberWorkbench = 63,
+        Techniques = 64,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

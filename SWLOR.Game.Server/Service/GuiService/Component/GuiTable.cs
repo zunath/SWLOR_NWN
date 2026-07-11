@@ -381,14 +381,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         /// </summary>
         public void RemoveRowAt(TViewModel viewModel, IList<TRow> rows, int index)
         {
+            // Validate all columns have getters before any mutation.
+            for (var i = 0; i < _columns.Count; i++)
+            {
+                if (_columns[i].Remove == null)
+                    throw new InvalidOperationException($"Column {i} has no getter registered; cannot RemoveRowAt without leaving it out of sync. Pass a getter to Column(...) for every bound column before calling RemoveRowAt.");
+            }
             rows.RemoveAt(index);
-
             for (var i = 0; i < _columns.Count; i++)
             {
                 var column = _columns[i];
-                if (column.Remove == null)
-                    throw new InvalidOperationException($"Column {i} has no getter registered; cannot RemoveRowAt without leaving it out of sync. Pass a getter to Column(...) for every bound column before calling RemoveRowAt.");
-
                 column.Remove(viewModel, index);
             }
         }

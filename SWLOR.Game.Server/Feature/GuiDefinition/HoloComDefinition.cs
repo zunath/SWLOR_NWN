@@ -141,7 +141,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .BindOnClicked(model => model.OnClickDeleteRow())
                                         .BindIsEnabled(model => model.MessageCanDelete);
                                 }, isVariable: false)
-                                .SetRowHeight(28f));
+                                .SetRowHeight(28f)
+                                .BindRowCount(model => model.MessageSenderNames));
                         });
                     });
                 });

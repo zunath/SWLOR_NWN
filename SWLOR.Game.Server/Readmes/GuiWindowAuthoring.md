@@ -251,6 +251,12 @@ Methods bound to events (`BindOnClicked`, `BindOnMouseDown/Up`, `BindOnOpened/Cl
 must be `public Action MethodName() => () => { ... };` — they return the action the
 event pipeline invokes.
 
+**Bind expressions must be bare property references** (`m => m.Prop`). Interpolation,
+concatenation, or method calls inside the lambda (e.g. `m => $"{m.Count} / {m.Max}"`)
+compile but throw `ArgumentException` in `GuiHelper.GetPropertyName` at boot, aborting
+window template loading. Computed display text gets its own string property that the
+ViewModel recomputes when its inputs change.
+
 ## 5. Lists and tables
 
 **Row-templated lists** (`AddList`): each cell's widget binds a
@@ -298,6 +304,11 @@ the VM side to refresh all column lists from one row-DTO list.
 - Tabs: register in a static `GuiTabGroup`, sync toggle rows with
   `GuiToggleGroupSync`, drive swaps from `SelectTab` — exactly as in §3. Never bind
   the swap-driving property to the widget (R4).
+- **Windows without tabs still use `AddStandardLayout`** (R5 applies regardless):
+  zero `AddTabRow` calls, ONE partial holding the entire body (stacked sections as
+  rows inside it), applied at the end of `Initialize` via
+  `ChangePartialView(TabContentElement, MainContentPartial)` — and re-applied in
+  `OnModalClosedRestore` if the window shows modals (R6).
 - Element ids are NOT validated server-side; a typo produces a client-only error and
   the window must be reopened (R7). Keep ids as ViewModel consts.
 - Maximum nesting: window root → partial → one nested slot. Three-deep content gets

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         // TESTING ONLY - lets you message/favorite yourself for one-client proof-of-concept testing.
         // Flip to false (or delete this and its call sites) before this ships.
-        private const bool IsTestingModeEnabled = true;
+        private const bool IsTestingModeEnabled = false;
 
         private const int MessagesTabId = 0;
         private const int ContactsTabId = 1;

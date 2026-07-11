@@ -40,21 +40,31 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             // A row with an explicit height must leave room for its children's default
             // margins: the engine's REQUIRED constraint is row_height >= child_height
-            // + margins, and buttons carry a nonzero default margin. A fixed row whose
-            // buttons are the same height (or taller) is therefore unsolvable. This is
-            // the confirmed root cause of the HoloCom window's layout failures; no
-            // shipping window uses this shape. (The tabbar widget has no margin, which
-            // is why CharacterSheet's equal-height toggle rows are fine.)
+            // + margins, and most widget families carry a nonzero default margin. A
+            // fixed row whose margined children are the same height (or taller) is
+            // therefore unsolvable. Buttons were the confirmed root cause of the
+            // HoloCom window's layout failures; the DebugNuiGallery margin-map probes
+            // (2026-07, P1-P4/P6) confirmed checkbox, textedit, combo, slider, and
+            // progress fail identically. Only options and toggles (tabbar) are
+            // margin-free - which is why CharacterSheet's equal-height toggle rows
+            // are fine. GuiSliderFloat is included by inference: it is the same
+            // engine slider widget as the confirmed GuiSliderInt.
             if (IsWidgetOfType(widget, typeof(GuiRow<>)) && widget.DeclaredHeight > 0f)
             {
                 foreach (var child in widget.Elements)
                 {
-                    var isButtonFamily =
+                    var hasDefaultMargin =
                         IsWidgetOfType(child, typeof(GuiButton<>)) ||
                         IsWidgetOfType(child, typeof(GuiButtonImage<>)) ||
-                        IsWidgetOfType(child, typeof(GuiToggleButton<>));
+                        IsWidgetOfType(child, typeof(GuiToggleButton<>)) ||
+                        IsWidgetOfType(child, typeof(GuiCheckBox<>)) ||
+                        IsWidgetOfType(child, typeof(GuiTextEdit<>)) ||
+                        IsWidgetOfType(child, typeof(GuiComboBox<>)) ||
+                        IsWidgetOfType(child, typeof(GuiSliderInt<>)) ||
+                        IsWidgetOfType(child, typeof(GuiSliderFloat<>)) ||
+                        IsWidgetOfType(child, typeof(GuiProgressBar<>));
 
-                    if (isButtonFamily && child.DeclaredHeight >= widget.DeclaredHeight)
+                    if (hasDefaultMargin && child.DeclaredHeight >= widget.DeclaredHeight)
                     {
                         findings.Add(
                             $"{path}: row has explicit height {widget.DeclaredHeight} but contains a " +

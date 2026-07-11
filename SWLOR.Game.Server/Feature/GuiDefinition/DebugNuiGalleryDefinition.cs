@@ -11,15 +11,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     // combinations between them, so wrapper or layout-validator regressions are
     // visible in one place. Opened with /nuigallery (admin; everyone on test).
     //
-    // The GALLERY_HAZARD_* partials fall into three categories:
-    // - CONFIRMED failures (H1: row-height-equals-button-height, blanks the window;
-    //   H6: watch on a never-Set property, server-side exception)
-    // - VERIFIED-WORKING exhibits (H2-H5: shapes previously suspected to fail,
-    //   confirmed rendering correctly in-game 2026-07, kept loadable as regression exhibits)
-    // - PROBES (unknown outcomes, to be added)
+    // The GALLERY_HAZARD_* / GALLERY_PROBE_* partials fall into two categories
+    // (all outcomes verified in-game 2026-07):
+    // - CONFIRMED failures: H1 + P1-P4/P6 (fixed-height row containing a same-height
+    //   margined widget - button, checkbox, textedit, combo, slider, progress - blanks
+    //   the window, rule R2c); H6 (watch on a never-Set property - descriptive R3
+    //   exception); P13a (partial applied to a nonexistent element id - client-side
+    //   error, no server validation exists).
+    // - VERIFIED-WORKING exhibits: W1-W4, P5 (options is margin-free), P7-P12, and
+    //   P13b (3-deep nesting renders but the innermost content is dropped by parent
+    //   re-applies - do not nest partials more than 2 deep).
     // They are only defined off production. Expected boot warnings on dev/test:
-    // EXACTLY ONE [NUI layout warning] line, from partial GALLERY_HAZARD_BUTTON_ROW (H1) —
-    // that line is the validator's R2c regression canary.
+    // EXACTLY SIX [NUI layout warning] lines, all from this window - the R2c
+    // regression canaries: GALLERY_HAZARD_BUTTON_ROW, GALLERY_PROBE_ROW_CHECKBOX,
+    // GALLERY_PROBE_ROW_TEXTEDIT, GALLERY_PROBE_ROW_COMBO, GALLERY_PROBE_ROW_SLIDER,
+    // GALLERY_PROBE_ROW_PROGRESS. Any other warning, anywhere, is a real defect.
     public class DebugNuiGalleryDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<DebugNuiGalleryViewModel> _builder = new();
@@ -1082,7 +1088,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                 });
 
-                AddSectionLabel(col, "Confirmed failures (will blank the window / throw)");
+                AddSectionLabel(col, "Confirmed failures (verified in-game 2026-07)");
                 col.AddRow(row =>
                 {
                     row.AddButton()
@@ -1093,14 +1099,62 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnClickHazardButtonRow());
                     row.AddButton()
                         .SetText("H6: Watch Unset Prop")
-                        .SetTooltip("WatchOnClient on a never-Set property: server-side exception (R3), window stays up")
+                        .SetTooltip("WatchOnClient on a never-Set property: descriptive InvalidOperationException (R3); window unaffected and reopenable.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickHazardWatchUnset());
                     row.AddSpacer();
                 });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P1: Row+Checkbox (FAILS)")
+                        .SetTooltip("row.SetHeight(32)+checkbox.SetHeight(32). CONFIRMED: checkbox has default margins - blanks the window (R2c).")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowCheckbox());
+                    row.AddButton()
+                        .SetText("P2: Row+TextEdit (FAILS)")
+                        .SetTooltip("row.SetHeight(32)+textedit.SetHeight(32). CONFIRMED: textedit has default margins - blanks the window (R2c).")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowTextEdit());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P3: Row+Combo (FAILS)")
+                        .SetTooltip("row.SetHeight(32)+combo.SetHeight(32). CONFIRMED: combo has default margins - blanks the window (R2c).")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowCombo());
+                    row.AddButton()
+                        .SetText("P4: Row+SliderInt (FAILS)")
+                        .SetTooltip("row.SetHeight(32)+slider.SetHeight(32). CONFIRMED: slider has default margins - blanks the window (R2c).")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowSlider());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P6: Row+Progress (FAILS)")
+                        .SetTooltip("row.SetHeight(32)+progress.SetHeight(32). CONFIRMED: progress has default margins - blanks the window (R2c).")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowProgress());
+                    row.AddButton()
+                        .SetText("P13a: Bad Element Id")
+                        .SetTooltip("ChangePartialView onto a nonexistent element id. CONFIRMED: client-side 'element id not found' error, no server exception; close/reopen recovers. There is no server-side element-id validation.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeBadElementId());
+                    row.AddSpacer();
+                });
 
-                AddSectionLabel(col, "Verified working (previously suspected, confirmed OK in-game)");
+                AddSectionLabel(col, "Verified working (previously suspected, confirmed OK in-game 2026-07)");
                 col.AddRow(row =>
                 {
                     row.AddButton()
@@ -1133,117 +1187,65 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnClickHazardWidthConflict());
                     row.AddSpacer();
                 });
-
-                AddSectionLabel(col, "Probes - fixed-row margin map (outcome UNKNOWN)");
                 col.AddRow(row =>
                 {
                     row.AddButton()
-                        .SetText("P1: Row+Checkbox")
-                        .SetTooltip("PROBE: row.SetHeight(32)+checkbox.SetHeight(32). Blanks the window if this family has default margins.")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickProbeRowCheckbox());
-                    row.AddButton()
-                        .SetText("P2: Row+TextEdit")
-                        .SetTooltip("PROBE: row.SetHeight(32)+textedit.SetHeight(32). Blanks the window if this family has default margins.")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickProbeRowTextEdit());
-                    row.AddSpacer();
-                });
-                col.AddRow(row =>
-                {
-                    row.AddButton()
-                        .SetText("P3: Row+Combo")
-                        .SetTooltip("PROBE: row.SetHeight(32)+combo.SetHeight(32). Blanks the window if this family has default margins.")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickProbeRowCombo());
-                    row.AddButton()
-                        .SetText("P4: Row+SliderInt")
-                        .SetTooltip("PROBE: row.SetHeight(32)+slider.SetHeight(32). Blanks the window if this family has default margins.")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickProbeRowSlider());
-                    row.AddSpacer();
-                });
-                col.AddRow(row =>
-                {
-                    row.AddButton()
-                        .SetText("P5: Row+Options")
-                        .SetTooltip("PROBE: row.SetHeight(32)+options.SetHeight(32). Blanks the window if this family has default margins.")
+                        .SetText("P5: Row+Options (OK)")
+                        .SetTooltip("row.SetHeight(32)+options.SetHeight(32). VERIFIED: options is margin-free (like toggles/tabbar) - renders correctly.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeRowOptions());
                     row.AddButton()
-                        .SetText("P6: Row+Progress")
-                        .SetTooltip("PROBE: row.SetHeight(32)+progress.SetHeight(32). Blanks the window if this family has default margins.")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickProbeRowProgress());
-                    row.AddSpacer();
-                });
-
-                AddSectionLabel(col, "Probes - structural & data (outcome UNKNOWN)");
-                col.AddRow(row =>
-                {
-                    row.AddButton()
-                        .SetText("P7: Narrow Group")
-                        .SetTooltip("PROBE: 100f-wide fixed group containing a 150f-wide fixed button.")
+                        .SetText("P7: Narrow Group (OK)")
+                        .SetTooltip("100f-wide fixed group containing a 150f-wide fixed button. VERIFIED: renders correctly.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeColWidth());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
                     row.AddButton()
-                        .SetText("P8: Aspect+Dims")
-                        .SetTooltip("PROBE: image with aspect Exact plus explicit width AND height; second image with invalid resref.")
+                        .SetText("P8: Aspect+Dims (OK)")
+                        .SetTooltip("Image with aspect Exact plus explicit width AND height; second image with invalid resref. VERIFIED: renders correctly.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeAspect());
-                    row.AddSpacer();
-                });
-                col.AddRow(row =>
-                {
                     row.AddButton()
-                        .SetText("P9: Zero Dims")
-                        .SetTooltip("PROBE: button with SetWidth(0)/SetHeight(0).")
+                        .SetText("P9: Zero Dims (OK)")
+                        .SetTooltip("Button with SetWidth(0)/SetHeight(0). VERIFIED: renders correctly.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeZeroDim());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
                     row.AddButton()
-                        .SetText("P10: Negative Dims")
-                        .SetTooltip("PROBE: button with SetWidth(-10)/SetHeight(-10).")
+                        .SetText("P10: Negative Dims (OK)")
+                        .SetTooltip("Button with SetWidth(-10)/SetHeight(-10). VERIFIED: renders correctly.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeNegDim());
-                    row.AddSpacer();
-                });
-                col.AddRow(row =>
-                {
                     row.AddButton()
-                        .SetText("P11: List Mismatch")
-                        .SetTooltip("PROBE: one list's cells bound to 5-row and 2-row lists. Check Lists & Tables tab; recover via Replace Lists.")
+                        .SetText("P11: List Mismatch (OK)")
+                        .SetTooltip("One list's cells bound to 5-row and 2-row lists. VERIFIED: renders without failure. Check Lists & Tables tab; recover via Replace Lists.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeListMismatch());
-                    row.AddButton()
-                        .SetText("P12: Empty Data")
-                        .SetTooltip("PROBE: empty chart data + empty combo options. Check Charts/Selection tabs; recover via Randomize Data / Replace Options.")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickProbeEmptyData());
                     row.AddSpacer();
                 });
                 col.AddRow(row =>
                 {
                     row.AddButton()
-                        .SetText("P13a: Bad Element Id")
-                        .SetTooltip("PROBE: ChangePartialView onto a nonexistent element id.")
+                        .SetText("P12: Empty Data (OK)")
+                        .SetTooltip("Empty chart data + empty combo options. VERIFIED: renders without failure. Check Charts/Selection tabs; recover via Randomize Data / Replace Options.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickProbeBadElementId());
+                        .BindOnClicked(model => model.OnClickProbeEmptyData());
                     row.AddButton()
-                        .SetText("P13b: Nested x3")
-                        .SetTooltip("PROBE: partial inside a partial inside a partial (3 deep).")
+                        .SetText("P13b: Nested x3 (OK*)")
+                        .SetTooltip("Partial inside a partial inside a partial (3 deep). VERIFIED with caveat: renders, but the innermost content is dropped by the parent's re-apply after a moment - do not nest partials more than 2 deep in real windows.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeNestedPartial());

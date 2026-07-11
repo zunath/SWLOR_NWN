@@ -244,6 +244,13 @@ namespace SWLOR.Game.Server.Service.GuiService
             // Rebind any existing properties (in the event the window was closed and reopened)
             foreach (var (name, propertyDetail) in _propertyValues)
             {
+                // A null value means the property was never assigned. Serializing it
+                // would throw and permanently prevent this window from ever reopening
+                // for this player - confirmed via the DebugNuiGallery hazard harness
+                // (H6), where recovery required a full server restart. Skip instead.
+                if (propertyDetail.Value == null)
+                    continue;
+
                 var json = _converter.ToJson(propertyDetail.Value);
                 NuiSetBind(Player, WindowToken, name, json);
             }
@@ -313,8 +320,19 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected void WatchOnClient<TProperty>(Expression<Func<TDerived, TProperty>> expression)
         {
             var propertyName = GuiHelper<TDerived>.GetPropertyName(expression);
-            if (!_propertyValues.ContainsKey(propertyName))
-                _propertyValues[propertyName] = new PropertyDetail();
+
+            // Watching serializes the property's CURRENT value, so the property must
+            // have been assigned first (layout rule R3). Fail fast with a clear
+            // message instead of an NRE - and without creating a null-valued entry,
+            // which would poison every subsequent Bind/reopen of this window
+            // (confirmed via the DebugNuiGallery hazard harness, H6).
+            if (!_propertyValues.ContainsKey(propertyName) ||
+                _propertyValues[propertyName].Value == null)
+            {
+                throw new InvalidOperationException(
+                    $"Property '{propertyName}' must be assigned a value before WatchOnClient is called " +
+                    "(layout rule R3 - see Readmes/NuiLayoutRules.md). Assign it in Initialize first, then watch.");
+            }
 
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);

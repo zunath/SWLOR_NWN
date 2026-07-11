@@ -745,12 +745,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickHazardWatchUnset() => () =>
         {
-            LogEvent("LOADING HAZARD watch-unset-property (expect: server-side exception in the click handler, window stays up)");
-            WatchOnClient(model => model.NeverSetProperty);
+            LogEvent("LOADING HAZARD watch-unset-property (expect: descriptive InvalidOperationException; window unaffected)");
 
-            // Unreachable when the R3 failure reproduces - reaching it means the
-            // converter has started tolerating null property values.
-            LogEvent("UNEXPECTED: watching a never-Set property did not throw");
+            // WatchOnClient fails fast on never-Set properties (rule R3). Before
+            // that guard existed this silently created a null-valued property entry
+            // that made every later reopen of the window throw, requiring a server
+            // restart - the exact failure this exhibit originally uncovered.
+            try
+            {
+                WatchOnClient(model => model.NeverSetProperty);
+                LogEvent("UNEXPECTED: watching a never-Set property did not throw");
+            }
+            catch (InvalidOperationException ex)
+            {
+                LogEvent($"Confirmed R3 guard: {ex.Message}");
+            }
         };
 
         public Action OnClickHazardReset() => () =>
@@ -764,52 +773,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickProbeRowCheckbox() => () =>
         {
-            LoadHazard(ProbeRowCheckboxPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+            LoadHazard(ProbeRowCheckboxPartial, "confirmed - checkbox has default margins; blanks the window (R2c)");
         };
 
         public Action OnClickProbeRowTextEdit() => () =>
         {
-            LoadHazard(ProbeRowTextEditPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+            LoadHazard(ProbeRowTextEditPartial, "confirmed - textedit has default margins; blanks the window (R2c)");
         };
 
         public Action OnClickProbeRowCombo() => () =>
         {
-            LoadHazard(ProbeRowComboPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+            LoadHazard(ProbeRowComboPartial, "confirmed - combo has default margins; blanks the window (R2c)");
         };
 
         public Action OnClickProbeRowSlider() => () =>
         {
-            LoadHazard(ProbeRowSliderPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+            LoadHazard(ProbeRowSliderPartial, "confirmed - slider has default margins; blanks the window (R2c)");
         };
 
         public Action OnClickProbeRowOptions() => () =>
         {
-            LoadHazard(ProbeRowOptionsPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+            LoadHazard(ProbeRowOptionsPartial, "verified working - options is margin-free like toggles");
         };
 
         public Action OnClickProbeRowProgress() => () =>
         {
-            LoadHazard(ProbeRowProgressPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+            LoadHazard(ProbeRowProgressPartial, "confirmed - progress has default margins; blanks the window (R2c)");
         };
 
         public Action OnClickProbeColWidth() => () =>
         {
-            LoadHazard(ProbeColWidthPartial, "PROBE - unknown outcome (fixed 100f-wide group with 150f-wide fixed child)");
+            LoadHazard(ProbeColWidthPartial, "verified working - expect it to render");
         };
 
         public Action OnClickProbeAspect() => () =>
         {
-            LoadHazard(ProbeAspectPartial, "PROBE - unknown outcome (aspect + both dimensions; plus invalid image resref)");
+            LoadHazard(ProbeAspectPartial, "verified working - expect it to render");
         };
 
         public Action OnClickProbeZeroDim() => () =>
         {
-            LoadHazard(ProbeZeroDimPartial, "PROBE - unknown outcome (button with zero width and height)");
+            LoadHazard(ProbeZeroDimPartial, "verified working - expect it to render");
         };
 
         public Action OnClickProbeNegDim() => () =>
         {
-            LoadHazard(ProbeNegDimPartial, "PROBE - unknown outcome (button with negative width and height)");
+            LoadHazard(ProbeNegDimPartial, "verified working - expect it to render");
         };
 
         public Action OnClickProbeListMismatch() => () =>
@@ -845,7 +854,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickProbeNestedPartial() => () =>
         {
-            LoadHazard(ProbeNestedHostPartial, "PROBE - unknown outcome (partial-in-partial-in-partial, 3 deep)");
+            LoadHazard(ProbeNestedHostPartial, "verified with caveat - renders, but the inner slot content is dropped by the parent re-apply");
             DelayCommand(0.1f, () =>
             {
                 if (Gui.IsWindowOpen(Player, WindowType))

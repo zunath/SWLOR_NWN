@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                var ride = DB.Get<ShuttleRide>(playerId);
+                var ride = GetRide(playerId);
                 if (ride == null || ride.Status != ShuttleRideStatus.Ticketed)
                 {
                     _ticketHolders.Remove(playerId);
@@ -487,7 +487,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The player's shuttle ride, or null.</returns>
         public static ShuttleRide GetRide(string playerId)
         {
-            return DB.Get<ShuttleRide>(playerId);
+            var query = new DBQuery<ShuttleRide>()
+                .AddFieldSearch(nameof(ShuttleRide.PlayerId), playerId, false);
+            return DB.Search(query).FirstOrDefault();
         }
 
         /// <summary>
@@ -511,7 +513,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var playerId = GetObjectUUID(player);
-            var existingRide = DB.Get<ShuttleRide>(playerId);
+            var existingRide = GetRide(playerId);
             if (existingRide != null)
             {
                 SendMessageToPC(player, ColorToken.Red("You already have a shuttle ticket."));
@@ -564,7 +566,7 @@ namespace SWLOR.Game.Server.Service
         public static bool RefundTicket(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var ride = DB.Get<ShuttleRide>(playerId);
+            var ride = GetRide(playerId);
             if (ride == null || ride.Status != ShuttleRideStatus.Ticketed)
                 return false;
 
@@ -592,7 +594,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var playerId = GetObjectUUID(player);
-            var ride = DB.Get<ShuttleRide>(playerId);
+            var ride = GetRide(playerId);
             if (ride == null || ride.Status != ShuttleRideStatus.InTransit)
                 return false;
 
@@ -629,7 +631,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(current))
                     return;
 
-                var ride = DB.Get<ShuttleRide>(playerId);
+                var ride = GetRide(playerId);
                 if (ride == null || ride.Status != ShuttleRideStatus.InTransit)
                     return;
 

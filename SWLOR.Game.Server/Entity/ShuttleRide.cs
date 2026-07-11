@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Entity
 
         public ShuttleRide(string playerId)
         {
-            Id = playerId;
             PlayerId = playerId;
             FlightId = string.Empty;
         }

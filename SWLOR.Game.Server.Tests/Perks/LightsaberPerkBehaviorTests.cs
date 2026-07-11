@@ -105,7 +105,7 @@ public class LightsaberPerkBehaviorTests
     {
         var source = AbilitySource("GuardiansChallengeAbilityDefinition.cs");
         source.Should().Contain("SelfEnmityPercentIfTargetRecentlyDamagedActivator = enmityPercent");
-        source.Should().Contain("TargetRecentlyDamagedActivatorWindowSeconds = 30f");
+        source.Should().Contain("ProtectedTargetHitWindowSeconds = 30");
         source.Should().Contain("Build(builder, FeatType.GuardiansChallenge1, \"Guardian's Challenge I\", 1, 12, 4, 1, 20)");
         source.Should().Contain("Build(builder, FeatType.GuardiansChallenge2, \"Guardian's Challenge II\", 2, 24, 8, 2, 30)");
         source.Should().NotContain("RequiresRecentWardHitTarget");

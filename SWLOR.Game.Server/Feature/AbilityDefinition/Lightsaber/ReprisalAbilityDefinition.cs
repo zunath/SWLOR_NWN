@@ -60,7 +60,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 15,
                     ProtectedTargetHitWindowSeconds = 30,
-                    TargetRecentlyDamagedActivatorWindowSeconds = 30f,
                     RequireTargetRecentlyDamagedActivatorForConditionalStatus = true
                 });
         }

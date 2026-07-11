@@ -59,7 +59,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 new GeneratedWeaponAbilityProfile
                 {
                     ProtectedTargetHitWindowSeconds = 30,
-                    TargetRecentlyDamagedActivatorWindowSeconds = 30f,
                     SelfEnmityPercentIfTargetRecentlyDamagedActivator = enmityPercent,
                     SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator = 30
                 });

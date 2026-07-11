@@ -168,7 +168,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public Type[] SelfStatusEffectsToReplace { get; init; }
             public int SelfEnmityPercentIfTargetRecentlyDamagedActivator { get; init; }
             public int SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator { get; init; }
-            public float TargetRecentlyDamagedActivatorWindowSeconds { get; init; }
             public bool RequireTargetRecentlyDamagedActivatorForConditionalStatus { get; init; }
             public Func<IStatusEffect> FriendlyTargetStatusEffectFactory { get; init; }
             public bool FriendlyTargetStatusPersistsUntilBroken { get; init; }
@@ -819,7 +818,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (RequireTargetRecentlyDamagedActivatorForConditionalStatus &&
-                    !Combat.HasRecentDamageTarget(target, activator, TargetRecentlyDamagedActivatorWindowSeconds))
+                    !Combat.HasRecentDamageTarget(target, activator, window))
                 {
                     return;
                 }
@@ -854,7 +853,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (SelfEnmityPercentIfTargetRecentlyDamagedActivator != 0 &&
-                    Combat.HasRecentDamageTarget(target, activator, TargetRecentlyDamagedActivatorWindowSeconds))
+                    Combat.HasRecentDamageTarget(target, activator, window))
                 {
                     ReplaceTemporary(
                         activator,

@@ -453,8 +453,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _enhancementProperties[slot].Clear();
             }
 
-            // Move the finished weapon from the storage placeable to the player.
-            ObjectPlugin.AcquireItem(Player, item);
+            // Copy the finished weapon into the player's inventory, then destroy the
+            // original left behind in the storage placeable.
+            var finishedItem = CopyItem(item, Player, true);
+            DestroyObject(item);
+            item = finishedItem;
+
+            if (!GetIsObjectValid(item))
+            {
+                StatusText = "Something went wrong constructing that weapon. Your Kyber Token was not consumed.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
 
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
 

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
         private const string TerminalPlanetVariable = "CURRENT_LOCATION";
         private const string EntranceWaypointTag = "PROPERTY_ENTRANCE";
         private const string ExitPlaceableTag = "building_exit";
-        private const string ShipComputerTag = "ship_computer";
+        private const string ShipComputerTag = "ShipComputer";
         private const string PilotChairTag = "pilot_chair";
         private const string PilotDroidResref = "receptiondroid";
         private const float BoardingRangeMeters = 15f;
@@ -254,43 +254,37 @@ namespace SWLOR.Game.Server.Service
             var landingLocation = GetLandingLocation(flight.Destination);
             var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
 
-            // Deliver everyone still aboard the shuttle.
-            if (GetIsObjectValid(flight.Area))
-            {
-                foreach (var player in Area.GetPlayersInArea(flight.Area))
-                {
-                    DeliverPassenger(player, landingLocation);
-                    SendMessageToPC(player, $"The shuttle touches down at {destinationName}.");
-                }
-            }
-
-            // Resolve every ride record on this flight.
+            // Resolve every ride record on this flight. Delivery is decided from the passenger's
+            // actual current area (engine truth), not the area's cached player list, which is not
+            // reliably populated for runtime instances.
             foreach (var ride in SearchRidesByFlightId(flight.FlightId))
             {
                 var player = GetOnlinePlayerById(ride.PlayerId);
                 if (!GetIsObjectValid(player))
                 {
                     DeliverOfflinePassenger(ride);
+                    continue;
+                }
+
+                if (!GetIsObjectValid(flight.Area) || GetArea(player) == flight.Area)
+                {
+                    // Still aboard the shuttle (or the instance is gone after a restart) - deliver them.
+                    DeliverPassenger(player, landingLocation);
+                    SendMessageToPC(player, $"The shuttle touches down at {destinationName}.");
                 }
                 else
                 {
-                    if (!GetIsObjectValid(flight.Area))
-                    {
-                        // The instance was never recreated after a restart but the passenger is
-                        // online (e.g. they logged in during the arrival tick). Deliver them directly.
-                        DeliverPassenger(player, landingLocation);
-                        SendMessageToPC(player, $"The shuttle touches down at {destinationName}.");
-                    }
-                    else if (GetArea(player) != flight.Area)
-                    {
-                        // The player left the flight some other way (death respawn, DM port).
-                        // They forfeit the trip - do not teleport them.
-                        Log.Write(LogGroup.Server, $"Shuttle passenger {ride.PlayerId} abandoned flight {flight.FlightId} before arrival.");
-                    }
-
-                    DB.Delete<ShuttleRide>(ride.Id);
+                    // The player left the flight some other way (death respawn, DM port).
+                    // They forfeit the trip - do not teleport them.
+                    Log.Write(LogGroup.Server, $"Shuttle passenger {ride.PlayerId} abandoned flight {flight.FlightId} before arrival.");
                 }
+
+                DB.Delete<ShuttleRide>(ride.Id);
             }
+
+            // Safety net: deliver anyone physically aboard without a ride record, so no player is
+            // trapped when the instance is torn down.
+            DeliverPlayersInArea(flight.Area, landingLocation);
 
             _activeFlights.Remove(flight.FlightId);
 
@@ -309,15 +303,29 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             // Deliver any stragglers before tearing the area down.
-            foreach (var player in Area.GetPlayersInArea(area))
-            {
-                DeliverPassenger(player, landingLocation);
-            }
+            DeliverPlayersInArea(area, landingLocation);
 
             var result = DestroyArea(area);
             if (result != 1)
             {
                 Scheduler.Schedule(() => DestroyFlightInstance(area, landingLocation), TimeSpan.FromSeconds(30));
+            }
+        }
+
+        /// <summary>
+        /// Delivers every player physically present in the given area to the landing location.
+        /// Iterates the area's objects directly rather than relying on the cached player list,
+        /// which is not reliably populated for runtime instances.
+        /// </summary>
+        private static void DeliverPlayersInArea(uint area, Location landingLocation)
+        {
+            if (!GetIsObjectValid(area))
+                return;
+
+            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+            {
+                if (GetIsPC(obj))
+                    DeliverPassenger(obj, landingLocation);
             }
         }
 

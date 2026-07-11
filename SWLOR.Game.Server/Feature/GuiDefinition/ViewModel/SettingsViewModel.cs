@@ -42,6 +42,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool PortraitVitals
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool ShowDescriptorsForNamedPlayers
         {
             get => Get<bool>();
@@ -146,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.DisplayServerResetReminders);
+            WatchOnClient(model => model.PortraitVitals);
             WatchOnClient(model => model.ShowDescriptorsForNamedPlayers);
             WatchOnClient(model => model.ShowOwnDescriptor);
             WatchOnClient(model => model.ScrambleAccountName);
@@ -162,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
+            PortraitVitals = dbPlayer.Settings.PortraitVitals ?? true;
         }
 
         private void LoadIdentityView()
@@ -277,6 +285,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
+            dbPlayer.Settings.PortraitVitals = PortraitVitals;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
                 dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;
@@ -306,6 +315,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DB.Set(dbPlayer);
+
+            // Apply the vitals display preference immediately (portrait overlay vs. docked window).
+            PlayerStatusWindow.ApplyStatusDisplay(Player);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
 

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BonebreakerInstinctStatusEffect : StatusEffectBase
     {
         public override string Name => "Bonebreaker Instinct";
-        public override EffectIconType Icon => EffectIconType.SunderStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public BonebreakerInstinctStatusEffect()
         {

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class OverchargedStrikesStatusEffect : StatusEffectBase
     {
         public override string Name => "Overcharged Strikes";
-        public override EffectIconType Icon => EffectIconType.ShockStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public OverchargedStrikesStatusEffect()
         {

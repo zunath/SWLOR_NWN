@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class KeenSightStatusEffect : StatusEffectBase
     {
         public override string Name => "Keen Sight";
-        public override EffectIconType Icon => EffectIconType.DeadlyPrecisionStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public KeenSightStatusEffect()
         {

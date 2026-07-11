@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class TechniqueResonanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Technique Resonance";
-        public override EffectIconType Icon => EffectIconType.FocusedStanceStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         // Parameterless constructor is required by the reflection-driven status-effect registry.
         public TechniqueResonanceStatusEffect()

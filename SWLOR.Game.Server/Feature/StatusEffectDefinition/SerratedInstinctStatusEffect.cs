@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SerratedInstinctStatusEffect : StatusEffectBase
     {
         public override string Name => "Serrated Instinct";
-        public override EffectIconType Icon => EffectIconType.HemorrhageStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public SerratedInstinctStatusEffect()
         {

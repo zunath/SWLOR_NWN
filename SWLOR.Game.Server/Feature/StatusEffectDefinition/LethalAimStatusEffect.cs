@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class LethalAimStatusEffect : StatusEffectBase
     {
         public override string Name => "Lethal Aim";
-        public override EffectIconType Icon => EffectIconType.DeadlyPrecisionStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public LethalAimStatusEffect()
         {

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class RimedStrikesStatusEffect : StatusEffectBase
     {
         public override string Name => "Rimed Strikes";
-        public override EffectIconType Icon => EffectIconType.FreezingStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public RimedStrikesStatusEffect()
         {

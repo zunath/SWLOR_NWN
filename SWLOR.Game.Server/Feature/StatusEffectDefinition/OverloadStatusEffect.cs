@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class OverloadStatusEffect : StatusEffectBase
     {
         public override string Name => "Overload";
-        public override EffectIconType Icon => EffectIconType.DeadlyPrecisionStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public OverloadStatusEffect()
         {

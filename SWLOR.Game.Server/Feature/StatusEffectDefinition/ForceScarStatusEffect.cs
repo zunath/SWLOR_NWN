@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceScarStatusEffect : StatusEffectBase
     {
         public override string Name => "Force Scar";
-        public override EffectIconType Icon => EffectIconType.ForceErosionStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public ForceScarStatusEffect()
         {

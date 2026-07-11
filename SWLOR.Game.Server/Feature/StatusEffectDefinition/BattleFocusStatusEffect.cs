@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BattleFocusStatusEffect : StatusEffectBase
     {
         public override string Name => "Battle Focus";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public BattleFocusStatusEffect()
         {

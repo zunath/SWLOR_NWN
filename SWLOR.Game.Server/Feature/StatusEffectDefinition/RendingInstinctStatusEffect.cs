@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class RendingInstinctStatusEffect : StatusEffectBase
     {
         public override string Name => "Rending Instinct";
-        public override EffectIconType Icon => EffectIconType.BleedStatusEffect;
+        public override EffectIconType Icon => EffectIconType.Invalid;
 
         public RendingInstinctStatusEffect()
         {

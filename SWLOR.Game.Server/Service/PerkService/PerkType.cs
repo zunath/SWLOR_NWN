@@ -712,7 +712,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         Overpower = 764,
         FastStrikes = 765,
         ShatteringStrike = 766,
-        SunderingSweep = 767,
+        SunderingSweep = 781,
         WeakPoints = 768,
         ImbuementStance = 769,
         HighGround = 770,
@@ -725,8 +725,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         ImmovableStance = 777,
         Reprisal = 778,
         CenterOfTheStorm = 779,
-        AegisEternal = 780,
+        AegisEternal = 782,
         SaberForceLink = 649,
-        // IDs 650 and 781+ are free.
+        // IDs 650, 767, 780, and 783+ are free.
     }
 }

@@ -667,7 +667,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Shattering Strike", "Shatter Str.", true)]
         ShatteringStrike = 475,
         [RecastGroup("Sundering Sweep", "Sunder Sweep", true)]
-        SunderingSweep = 476,
+        SunderingSweep = 482,
         [RecastGroup("Imbuement Stance", "Imbue Stance", true)]
         ImbuementStance = 477,
         [RecastGroup("Saber Ward", "Saber Ward", true)]

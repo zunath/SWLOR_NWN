@@ -5118,37 +5118,37 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Defense percent granted per Embattled stack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        EmbattledStackDefensePercent = 888,
+        EmbattledStackDefensePercent = 904,
 
         /// <summary>
         /// Force Defense percent granted per Embattled stack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        EmbattledStackForceDefensePercent = 889,
+        EmbattledStackForceDefensePercent = 905,
 
         /// <summary>
         /// Maximum number of Embattled stacks that may be held.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        EmbattledMaxStacks = 890,
+        EmbattledMaxStacks = 906,
 
         /// <summary>
         /// Embattled stack count at or above which high-stack bonuses apply.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        EmbattledHighStackThreshold = 891,
+        EmbattledHighStackThreshold = 907,
 
         /// <summary>
         /// Mobility Resistance granted while at or above the Embattled high-stack threshold.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        EmbattledHighStackMobilityResistance = 892,
+        EmbattledHighStackMobilityResistance = 908,
 
         /// <summary>
         /// Additional Deflecting Return reflection percent while at or above the Embattled high-stack threshold.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        EmbattledHighStackDeflectionReflectionBonusPercent = 893,
+        EmbattledHighStackDeflectionReflectionBonusPercent = 909,
 
         /// <summary>
         /// Percent of a deflected ranged attack's pre-mitigation damage reflected back to its source.

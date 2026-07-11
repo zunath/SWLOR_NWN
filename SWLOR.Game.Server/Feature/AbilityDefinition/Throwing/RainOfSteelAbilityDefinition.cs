@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Throwing,
-                8,
+                20,
                 45,
                 null,
                 null,
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 0,
                 2.0f,
                 true,
-                false,
+                true,
                 false,
                 Spell.RainOfSteel1,
                 AbilityTargetingShapeType.Sphere,

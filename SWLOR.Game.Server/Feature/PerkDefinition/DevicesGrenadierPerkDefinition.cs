@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Concussion Grenade")
 
                 .AddPerkLevel()
-                .Description("Deals 14 electrical DMG plus PER scaling in a 3m blast and knocks down for 30 seconds. Consumes explosives.")
+                .Description("Deals 14 electrical DMG plus PER scaling in a 3m blast and knocks down for 30 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ConcussionGrenade1)
 
                 .AddPerkLevel()
-                .Description("Deals 28 electrical DMG plus PER scaling in a 3m blast and knocks down for 30 seconds. Consumes explosives.")
+                .Description("Deals 28 electrical DMG plus PER scaling in a 3m blast and knocks down for 30 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flash Grenade")
 
                 .AddPerkLevel()
-                .Description("Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Consumes explosives.")
+                .Description("Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Affects up to 5 targets. Consumes explosives.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Adhesive Grenade")
 
                 .AddPerkLevel()
-                .Description("Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Consumes explosives.")
+                .Description("Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AdhesiveGrenade1)
 
                 .AddPerkLevel()
-                .Description("Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Consumes explosives.")
+                .Description("Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)

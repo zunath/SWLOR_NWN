@@ -599,6 +599,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 { "WeaponEnhancementIceDamage4", "WeaponEnhancementDMGIce4" },
                 { "WeaponEnhancementIceDamage5", "WeaponEnhancementDMGIce5" },
                 { "SardineBall", "CookedSardine" },
+                // The retired single-step saber upgrade kits are replaced by the
+                // recipe-unlocked Chiro kits found through the same loot drops, so
+                // existing unlocks carry over to the replacement recipes.
+                { "LightsaberUpgradeKit1", "ChiroLightsaberUpgradeKit" },
+                { "SaberstaffUpgradeKit1", "ChiroSaberstaffUpgradeKit" },
             };
 
         private const string SavingThrowPuritiesKey = "SavingThrowPurities";

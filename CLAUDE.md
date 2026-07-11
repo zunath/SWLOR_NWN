@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Response Style
+
+Keep responses terse and direct. Skip preamble, restatements of the request, and closing summaries. Answer in as few words as the task allows; lead with the result. Use prose only where it adds information the user doesn't already have.
+
 ## Agent Rules (Required Reading)
 
 The mandatory project rules — read-only areas, naming, stat-driven gameplay, player identity, Design Bible workflow, TLK entries, ability definitions/icons/VFX, and more — live in AGENTS.md and are imported here:

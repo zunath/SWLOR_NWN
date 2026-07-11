@@ -2044,6 +2044,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         IronHide3 = 2511,
         RailDart2 = 2512,
         Intercept2 = 2513,
+        RailDart3 = 2514,
         WristRocket3 = 2515,
         CreepingTerror3 = 2516,
         RampartHide1 = 2517,

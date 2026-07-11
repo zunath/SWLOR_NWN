@@ -332,7 +332,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "ElectionViewModel.cs"));
-        electionSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, candidate.Id, candidate.Name)");
+        electionSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, candidate.Id, candidate.Name)");
         electionSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, selectedCandidateId, dbCandidate.Name)");
         electionSource.Should().NotContain("Your vote for {dbCandidate.Name} has been cast.");
 
@@ -343,7 +343,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "ManageCityViewModel.cs"));
-        citySource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, citizen.Id, citizen.Name)");
+        citySource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, citizen.Id, citizen.Name)");
 
         var citizenshipSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -352,7 +352,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "ManageCitizenshipViewModel.cs"));
-        citizenshipSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name)");
+        citizenshipSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name)");
         citizenshipSource.Should().NotContain("Mayor: {dbMayorPlayer.Name}");
 
         var propertySource = File.ReadAllText(Path.Combine(

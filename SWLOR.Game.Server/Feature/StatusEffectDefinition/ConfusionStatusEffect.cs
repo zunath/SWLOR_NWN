@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
-            return Ability.HasTemporaryImmunity(creature, ImmunityType.Confused)
+            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)
                 ? "Target is temporarily immune to confusion."
                 : string.Empty;
         }

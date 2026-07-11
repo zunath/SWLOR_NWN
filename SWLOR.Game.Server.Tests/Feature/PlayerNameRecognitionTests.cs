@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
@@ -759,153 +759,131 @@ public class PlayerNameRecognitionTests
             "Feature",
             "GuiDefinition",
             "DisguiseDefinition.cs"));
-        disguiseDefinitionSource.Should().Contain("private const float ListRailWidth");
-        disguiseDefinitionSource.Should().Contain("private const float PortraitRailWidth");
-        disguiseDefinitionSource.Should().Contain("private const float DetailRailWidth");
-        disguiseDefinitionSource.Should().Contain("private const float DisguiseListHeight");
-        disguiseDefinitionSource.Should().Contain(".SetWidth(ListRailWidth)");
-        disguiseDefinitionSource.Should().Contain(".SetWidth(PortraitRailWidth)");
-        disguiseDefinitionSource.Should().Contain(".SetWidth(DetailRailWidth)");
-        disguiseDefinitionSource.Should().Contain(".SetWidth(FormFieldWidth)");
+        // Redesigned master-detail layout: one left rail (tabs, slot meter, list, New button)
+        // and a single content partial that swaps per state.
+        disguiseDefinitionSource.Should().Contain("private const float RailWidth");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(RailWidth)");
         disguiseDefinitionSource.Should().Contain(".SetWidth(PortraitWidth)");
         disguiseDefinitionSource.Should().Contain(".SetWidth(ActionButtonWidth)");
-        disguiseDefinitionSource.Should().Contain("Private Disguise Name");
-        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Disguise Name\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
-        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Descriptor\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
-        disguiseDefinitionSource.Should().NotContain("AddTextField(col, \"Private Disguise Name\", model => model.PrivateName, 32)");
-        disguiseDefinitionSource.Should().NotContain("AddTextField(col, \"Public Descriptor\", model => model.Descriptor, 64)");
-        disguiseDefinitionSource.Should().Contain(".SetText(\"Unretire\")");
+
+        // The content pane fills the space left of the rail so the header and action bar
+        // stretch to the window edges; form inputs keep explicit widths so labels never clip.
+        disguiseDefinitionSource.Should().Contain("row.AddPartialView(DisguiseViewModel.ContentPartialElement);");
+        disguiseDefinitionSource.Should().NotContain("private const float ContentWidth");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(FormFieldWidth)");
+
+        // Field labels spell out who sees each value; lengths come from constants, never magic numbers.
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Name  (only you see this)\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Descriptor  (shown to others)\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
+        disguiseDefinitionSource.Should().NotContain(", model => model.PrivateName, 32)");
+        disguiseDefinitionSource.Should().NotContain(", model => model.Descriptor, 64)");
+        disguiseDefinitionSource.Should().Contain("Hide Account Name");
+        disguiseDefinitionSource.Should().NotContain("Account ID");
+
+        // Slot usage renders as a colored meter, not a bare text line.
+        disguiseDefinitionSource.Should().Contain("BindValue(model => model.SlotUsageProgress)");
+        disguiseDefinitionSource.Should().Contain("BindColor(model => model.SlotUsageColor)");
+        disguiseDefinitionSource.Should().Contain("BindText(model => model.SlotBarLabel)");
+
+        // The active disguise is colored in the list and flagged by a status tag in the detail header.
+        disguiseDefinitionSource.Should().Contain("BindColor(model => model.DisguiseColors)");
+        disguiseDefinitionSource.Should().Contain("BindText(model => model.PrivateName)");
+        disguiseDefinitionSource.Should().Contain("BindText(model => model.StatusText)");
+        disguiseDefinitionSource.Should().Contain("BindColor(model => model.StatusColor)");
+
+        // New Disguise button lives in the rail and only shows on the Available tab.
+        disguiseDefinitionSource.Should().Contain(".SetText(\"New Disguise\")");
+        disguiseDefinitionSource.Should().Contain(".BindIsVisible(model => model.IsAvailableSelected)");
+
+        // A single consolidated content partial - no separate detail/portrait/action partials.
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentAvailablePartial, AddAvailableContentArea)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentRetiredPartial, AddRetiredContentArea)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentEditPartial, AddEditContentArea)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentEmptyPartial, AddEmptyContentArea)");
+        disguiseDefinitionSource.Should().Contain("row.AddPartialView(DisguiseViewModel.ContentPartialElement)");
+        disguiseDefinitionSource.Should().NotContain("DetailPartialElement");
+        disguiseDefinitionSource.Should().NotContain("PortraitPartialElement");
+        disguiseDefinitionSource.Should().NotContain("ActionPartialElement");
         disguiseDefinitionSource.Should().Contain("private static void AddAvailableContentArea");
         disguiseDefinitionSource.Should().Contain("private static void AddRetiredContentArea");
         disguiseDefinitionSource.Should().Contain("private static void AddEditContentArea");
         disguiseDefinitionSource.Should().Contain("private static void AddEmptyContentArea");
         disguiseDefinitionSource.Should().Contain("private static void AddSelectedContentArea");
-        disguiseDefinitionSource.Should().Contain("private static void AddSelectedContentDetails");
-        disguiseDefinitionSource.Should().Contain("private static void AddContentActionRow");
-        disguiseDefinitionSource.Should().Contain("private static void AddAvailableActionBand");
-        disguiseDefinitionSource.Should().Contain("private static void AddRetiredActionBand");
-        disguiseDefinitionSource.Should().Contain("private static void AddEditActionBand");
-        disguiseDefinitionSource.Should().Contain("private static void AddEmptyActionBand");
-        disguiseDefinitionSource.Should().Contain("private static void AddAvailableDetailActions");
-        disguiseDefinitionSource.Should().Contain("private static void AddRetiredDetailActions");
-        disguiseDefinitionSource.Should().Contain("private static void AddEditDetailActions");
-        disguiseDefinitionSource.Should().NotContain("private static void AddDetailActions");
-        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowDetailActionRow)");
-        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowActivateButton)");
-        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowUnretireButton)");
-        disguiseDefinitionSource.Should().Contain(".SetWidth(SoundSetFieldWidth)");
-        disguiseDefinitionSource.Should().Contain(".SetWidth(SoundSetPageButtonWidth)");
-        disguiseDefinitionSource.Should().Contain(".SetWidth(SoundSetPageComboWidth)");
-        disguiseDefinitionSource.Should().Contain("BindOptions(model => model.SoundSetPageNumbers)");
-        disguiseDefinitionSource.Should().Contain("BindSelectedIndex(model => model.SelectedSoundSetPageIndex)");
-        disguiseDefinitionSource.Should().NotContain("BindText(model => model.SoundSetPageText)");
-        disguiseDefinitionSource.Should().NotContain("BindIsEnabled(model => model.CanPreviousSoundSetPage)");
-        disguiseDefinitionSource.Should().NotContain("BindIsEnabled(model => model.CanNextSoundSetPage)");
-        disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickPreviousSoundSetPage())");
-        disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickNextSoundSetPage())");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentAvailablePartial, AddAvailableContentArea)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentRetiredPartial, AddRetiredContentArea)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentEditPartial, AddEditContentArea)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentEmptyPartial, AddEmptyContentArea)");
-        disguiseDefinitionSource.Should().Contain("private static void AddEmptyState");
+        disguiseDefinitionSource.Should().Contain("private static void AddDetailHeader");
+        disguiseDefinitionSource.Should().Contain("private static void AddPortraitRail");
+        disguiseDefinitionSource.Should().Contain("private static void AddFieldsArea");
         disguiseDefinitionSource.Should().Contain("BindText(model => model.EmptyStateTitle)");
         disguiseDefinitionSource.Should().Contain("BindText(model => model.EmptyStateText)");
-        disguiseDefinitionSource.Should().Contain("private static void AddEmptyPortraitRail");
-        disguiseDefinitionSource.Should().NotContain(".BindIsVisible(model => model.ShowEmptyState)");
-        disguiseDefinitionSource.Should().Contain("Hide Account Name");
-        disguiseDefinitionSource.Should().NotContain("Account ID");
+
+        // Visibility is driven by swapping partials, never per-button Show* flags.
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowActivateButton)");
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowEditButton)");
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowRetireButton)");
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowUnretireButton)");
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowEmptyState)");
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowDetailActionRow)");
+
+        // Sound set paging.
+        disguiseDefinitionSource.Should().Contain("BindOptions(model => model.SoundSetPageNumbers)");
+        disguiseDefinitionSource.Should().Contain("BindSelectedIndex(model => model.SelectedSoundSetPageIndex)");
+        disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickPreviousSoundSetPage())");
+        disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickNextSoundSetPage())");
+        disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickPreviewSoundSet())");
+
+        // No leftover verbose button captions or fixed list row heights.
         disguiseDefinitionSource.Should().NotContain(".SetText(\"Portrait\")");
-        disguiseDefinitionSource.Should().NotContain("MaxPortraitsText");
         disguiseDefinitionSource.Should().NotContain(".SetText(\"Previous\")");
         disguiseDefinitionSource.Should().NotContain(".SetText(\"Next\")");
         disguiseDefinitionSource.Should().NotContain(".SetRowHeight(");
 
-        var mainContentMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddMainContent");
-        var listRailIndex = mainContentMethod.IndexOf("row.AddColumn(AddListRail)", StringComparison.Ordinal);
-        var contentAreaIndex = mainContentMethod.IndexOf("row.AddPartialView(DisguiseViewModel.ContentPartialElement)", StringComparison.Ordinal);
-        var contentWidthIndex = mainContentMethod.IndexOf(".SetWidth(DetailRailWidth + PortraitRailWidth)", StringComparison.Ordinal);
-        listRailIndex.Should().BeGreaterThanOrEqualTo(0);
-        contentAreaIndex.Should().BeGreaterThan(listRailIndex);
-        contentWidthIndex.Should().BeGreaterThan(contentAreaIndex);
-        mainContentMethod.Should().NotContain("DetailPartialElement");
-        mainContentMethod.Should().NotContain("PortraitPartialElement");
-
         var buildWindowMethod = ExtractMethod(disguiseDefinitionSource, "public GuiConstructedWindow BuildWindow()");
-        var mainContentCallIndex = buildWindowMethod.IndexOf("AddMainContent(root);", StringComparison.Ordinal);
-        mainContentCallIndex.Should().BeGreaterThanOrEqualTo(0);
-        buildWindowMethod.Should().NotContain("AddActionBand(root);");
+        var railIndex = buildWindowMethod.IndexOf("row.AddColumn(AddRail)", StringComparison.Ordinal);
+        var contentAreaIndex = buildWindowMethod.IndexOf("row.AddPartialView(DisguiseViewModel.ContentPartialElement)", StringComparison.Ordinal);
+        railIndex.Should().BeGreaterThanOrEqualTo(0);
+        contentAreaIndex.Should().BeGreaterThan(railIndex);
 
-        var detailAreaMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddSelectedDetailArea");
-        detailAreaMethod.Should().NotContain("AddPortraitField");
-        detailAreaMethod.Should().NotContain("AddDetailActions");
+        // The rail holds the tab toggles, slot meter, disguise list and New button.
+        var railMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddRail");
+        railMethod.Should().Contain("BindIsToggled(model => model.IsAvailableSelected)");
+        railMethod.Should().Contain("BindIsToggled(model => model.IsRetiredSelected)");
+        railMethod.Should().Contain("BindValue(model => model.SlotUsageProgress)");
+        railMethod.Should().Contain("BindRowCount(model => model.DisguiseNames)");
+        railMethod.Should().Contain(".SetText(\"New Disguise\")");
 
-        var selectedContentDetailsMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddSelectedContentDetails");
-        var selectedDetailIndex = selectedContentDetailsMethod.IndexOf("row.AddGroup(AddSelectedDetailArea)", StringComparison.Ordinal);
-        var selectedPortraitIndex = selectedContentDetailsMethod.IndexOf("row.AddGroup(AddSelectedPortraitRail)", StringComparison.Ordinal);
-        selectedDetailIndex.Should().BeGreaterThanOrEqualTo(0);
-        selectedPortraitIndex.Should().BeGreaterThan(selectedDetailIndex);
-
-        var contentActionRowMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddContentActionRow");
-        contentActionRowMethod.Should().Contain("row.AddGroup(addActionBand)");
-        contentActionRowMethod.Should().Contain(".SetWidth(DetailRailWidth)");
-        contentActionRowMethod.Should().Contain(".SetWidth(PortraitRailWidth)");
-
+        // Each state's action band exposes exactly the right buttons.
         var availableActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddAvailableActionBand");
-        availableActionBandMethod.Should().Contain("group.AddColumn(AddAvailableDetailActions);");
+        availableActionBandMethod.Should().Contain("ActivateButtonText");
+        availableActionBandMethod.Should().Contain(".SetText(\"Edit\")");
+        availableActionBandMethod.Should().Contain(".SetText(\"Retire\")");
+        availableActionBandMethod.Should().NotContain(".SetText(\"Unretire\")");
+        availableActionBandMethod.Should().NotContain(".SetText(\"Save\")");
+        availableActionBandMethod.Should().NotContain(".SetText(\"Cancel\")");
 
         var retiredActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddRetiredActionBand");
-        retiredActionBandMethod.Should().Contain("group.AddColumn(AddRetiredDetailActions);");
+        retiredActionBandMethod.Should().Contain(".SetText(\"Unretire\")");
+        retiredActionBandMethod.Should().NotContain("ActivateButtonText");
+        retiredActionBandMethod.Should().NotContain(".SetText(\"Edit\")");
+        retiredActionBandMethod.Should().NotContain(".SetText(\"Save\")");
 
         var editActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddEditActionBand");
-        editActionBandMethod.Should().Contain("group.AddColumn(AddEditDetailActions);");
+        editActionBandMethod.Should().Contain(".SetText(\"Save\")");
+        editActionBandMethod.Should().Contain(".SetText(\"Cancel\")");
+        editActionBandMethod.Should().NotContain("ActivateButtonText");
+        editActionBandMethod.Should().NotContain(".SetText(\"Edit\")");
+        editActionBandMethod.Should().NotContain(".SetText(\"Unretire\")");
 
-        var emptyActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddEmptyActionBand");
-        emptyActionBandMethod.Should().Contain(".SetHeight(ButtonHeight)");
-
-        var availableActionsMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddAvailableDetailActions");
-        availableActionsMethod.Should().Contain("ActivateButtonText");
-        availableActionsMethod.Should().Contain(".SetText(\"Edit\")");
-        availableActionsMethod.Should().Contain(".SetText(\"Retire\")");
-        availableActionsMethod.Should().NotContain("BindIsVisible");
-        availableActionsMethod.Should().NotContain("BindIsVisible(model => model.ShowEditButton)");
-        availableActionsMethod.Should().NotContain("BindIsVisible(model => model.ShowRetireButton)");
-        availableActionsMethod.Should().NotContain(".SetText(\"Unretire\")");
-        availableActionsMethod.Should().NotContain(".SetText(\"Save\")");
-        availableActionsMethod.Should().NotContain(".SetText(\"Cancel\")");
-
-        var retiredActionsMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddRetiredDetailActions");
-        retiredActionsMethod.Should().Contain(".SetText(\"Unretire\")");
-        retiredActionsMethod.Should().NotContain("BindIsVisible");
-        retiredActionsMethod.Should().NotContain("ActivateButtonText");
-        retiredActionsMethod.Should().NotContain(".SetText(\"Edit\")");
-        retiredActionsMethod.Should().NotContain(".SetText(\"Retire\")");
-        retiredActionsMethod.Should().NotContain(".SetText(\"Save\")");
-        retiredActionsMethod.Should().NotContain(".SetText(\"Cancel\")");
-
-        var editActionsMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddEditDetailActions");
-        editActionsMethod.Should().Contain(".SetText(\"Save\")");
-        editActionsMethod.Should().Contain(".SetText(\"Cancel\")");
-        editActionsMethod.Should().NotContain("BindIsVisible");
-        editActionsMethod.Should().NotContain("ActivateButtonText");
-        editActionsMethod.Should().NotContain(".SetText(\"Edit\")");
-        editActionsMethod.Should().NotContain(".SetText(\"Retire\")");
-        editActionsMethod.Should().NotContain(".SetText(\"Unretire\")");
-
-        var portraitRailMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddSelectedPortraitRail");
+        // Portrait image precedes the edit-only arrow stepper (< [id] >), margin-collapsed and edit-gated.
+        var portraitRailMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddPortraitRail");
         var portraitImageIndex = portraitRailMethod.IndexOf(".BindResref(model => model.PortraitResref)", StringComparison.Ordinal);
-        var portraitFieldIndex = portraitRailMethod.IndexOf("AddPortraitField(col);", StringComparison.Ordinal);
+        var previousArrowIndex = portraitRailMethod.IndexOf(".SetText(\"<\")", StringComparison.Ordinal);
+        var portraitIdIndex = portraitRailMethod.IndexOf(".BindValue(model => model.PortraitInternalId)", StringComparison.Ordinal);
+        var nextArrowIndex = portraitRailMethod.IndexOf(".SetText(\">\")", StringComparison.Ordinal);
         portraitImageIndex.Should().BeGreaterThanOrEqualTo(0);
-        portraitFieldIndex.Should().BeGreaterThan(portraitImageIndex);
-
-        var portraitFieldMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddPortraitField");
-        var previousArrowIndex = portraitFieldMethod.IndexOf(".SetText(\"<\")", StringComparison.Ordinal);
-        var portraitIdIndex = portraitFieldMethod.IndexOf(".BindValue(model => model.PortraitInternalId)", StringComparison.Ordinal);
-        var nextArrowIndex = portraitFieldMethod.IndexOf(".SetText(\">\")", StringComparison.Ordinal);
-        previousArrowIndex.Should().BeGreaterThanOrEqualTo(0);
+        previousArrowIndex.Should().BeGreaterThan(portraitImageIndex);
         portraitIdIndex.Should().BeGreaterThan(previousArrowIndex);
         nextArrowIndex.Should().BeGreaterThan(portraitIdIndex);
-        portraitFieldMethod.Should().Contain(".BindIsVisible(model => model.IsEditMode)");
-        portraitFieldMethod.Should().Contain(".SetMargin(0f)");
+        portraitRailMethod.Should().Contain(".BindIsVisible(model => model.IsEditMode)");
+        portraitRailMethod.Should().Contain(".SetMargin(0f)");
     }
 
     private static string ExtractMethod(string source, string signature)

@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vital Rupture is no longer a lesson on my ledger. You proved it in Veles Militia Annex; keep proving it when nobody is keeping score."
+            "0": "Vital Rupture isn't a lesson between us anymore. You proved it in the Veles Militia Annex. Keep your hands steady when nobody's grading it."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Vital Rupture is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Veles Militia Annex."
+            "0": "Your grip's still learning what it's holding. I don't teach Vital Rupture to hands that haven't finished learning the knife itself. Come back when the vibroknife stops surprising you."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The annex has a lesson in soft targets and hard consequences. Cut only where the proof demands it. Go to Veles Militia Annex on Viscara, defeat the Vital Rupture adepts, and bring back the Vital Rupture field report."
+            "0": "Your grip rides high on the hilt - that's a throat angle, not mine. I want to see if it can be taught out of you. Adepts are drilling Vital Rupture wrong in the Veles Militia Annex on Viscara, six of them, sloppy work all of it. Kill them, bring me back their drill ledger, and we'll see what you have."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Then go. The annex key is already on you; it opens the sealed gate. Cut clean, or don't cut at all."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vital Rupture is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "I patched enough arterial wounds to know exactly where they open. Teaching someone to open them on purpose is the same knowledge, aimed the other direction. I'd rather you learn it from me than from a corpse's mistake."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The Veles Militia Annex sits off the main garrison road on Viscara. The gate is sealed; the key I gave you opens it. Follow the access route in and stay inside the annex proper."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The adepts in there are quick studies with dull technique. Six of them, practicing on each other and on anyone who wanders in. Don't get flattered by an easy first cut - the second one won't be."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your first proof for Vital Rupture. Finish the target there before you bring me anything else."
+            "0": "The adepts are still standing in the Veles Militia Annex. Come back when six of them aren't."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Vital Rupture lesson clean."
+            "0": "You found it. Hand over the drill ledger and let me see what state their handwriting is in."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Vital Rupture is one step closer to belonging to you."
+            "0": "Handwriting's shaky, technique worse. Six down is a start, not a proof. Word finds me when you're ready for the second lesson."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Vital Rupture proof is waiting in Veles Militia Annex. This one is about second proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Vital Rupture specialists, and bring back the Vital Rupture calibration core."
+            "0": "Pulse still even. Good, fear ruins the cut before the blade does. The annex has specialists now, five of them, refining what the adepts botched. Drop them, and bring me the range relay they've been logging kills on."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Go. The annex gate still knows your key. This time, don't stop at good enough."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vital Rupture is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A rupture cut opens the femoral or the brachial and lets pressure do the rest. Done right, it's over before they understand what happened. Done sloppy, and this annex is full of sloppy, you get someone who bleeds for ten minutes screaming instead of ten seconds quiet. That's cruelty pretending to be skill."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same annex, same gate, deeper in. The specialists have claimed the training floor past the first checkpoint. Your key still opens the way; it doesn't open sympathy."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Five specialists who've had the adepts' mistakes beaten out of them. They'll test your guard before your grip. Don't rush the count - dead is dead whether you took your time or not."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your second proof for Vital Rupture. Finish the target there before you bring me anything else."
+            "0": "Five specialists, still breathing, still in the annex. Go finish the count."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Vital Rupture lesson clean."
+            "0": "The relay's in your hand. Let's see what it logged."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Vital Rupture is one step closer to belonging to you."
+            "0": "Kill counts, mostly theirs, some inflated. You're past adept work now. The annex still has a warden who thinks rank protects him from you."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Vital Rupture proof is waiting in Veles Militia Annex. This one is about breach proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Vital Rupture warden, and bring back the Vital Rupture broken seal."
+            "0": "The warden runs live drills on students who can't say no. He's earned the title by outliving whoever the annex sent at him solo. I'm not sending you in solo either. Find two people whose blade you'd trust at your own throat, then take his scored challenge badge off him."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Then arrange your company and go. The gate still answers to your key."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vital Rupture is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Every one of these students learned the cut from someone who learned it from someone who never treated a wound in his life. It shows in how they hold the blade, like it's a threat and not a tool. The warden trained half of them personally. That should tell you what his lesson looks like."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Deeper still, past the specialists' floor, behind a locked partition the annex calls the arena. Your key clears the outer gate; the warden's door opens because you'll put it in."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "He has opened quicker hands than yours, and he did it alone against people who came alone. Don't. Bring the two you trust, or don't bring yourself."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your breach proof for Vital Rupture. Finish the target there before you bring me anything else."
+            "0": "The warden is still holding his floor. Bring your company and go end that."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Vital Rupture lesson clean."
+            "0": "You're still standing, and so's the badge. Hand it over."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Vital Rupture is one step closer to belonging to you."
+            "0": "Scored, cracked down the middle. He'll heal wrong and remember why. You've done what most of his students couldn't. There's an inner circle above him who won't like that."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Vital Rupture proof is waiting in Veles Militia Annex. This one is about circle proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Vital Rupture inner circle, and bring back the Vital Rupture command mark."
+            "0": "The inner circle runs what's left of the warden's operation, four instructors who liked their rank more than their students. Clean margins means nothing left ragged when you're done. Take their captain's challenge chit off whichever of them is still holding it when the others are down."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Go settle it. You've earned enough trust here that I won't ask twice."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vital Rupture is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "The ledger told me who was still sloppy. The relay told me who was logging kills to pad a report. The badge told me the warden finally lost to someone who deserved it. Bring me their chit and I'll tell you what it says about the four of them."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "They've sealed the command floor above the arena. The same key that got you this far still turns in that lock; they never thought anyone would get this far to use it."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Four of them, and they fight like people who've never had to fight alone. Neither should you. Bring backup, or count on being outnumbered the whole way through."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your circle proof for Vital Rupture. Finish the target there before you bring me anything else."
+            "0": "Four of the inner circle, still upright. Go make that untrue."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Vital Rupture lesson clean."
+            "0": "That's the chit. Let me read what they signed."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Vital Rupture is one step closer to belonging to you."
+            "0": "Four names, four confessions dressed as duty logs. The annex answers to me again below this floor. Only the master's left, and he taught the warden everything the warden got wrong trying to copy."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Vital Rupture proof is waiting in Veles Militia Annex. This one is about mastery proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Vital Rupture master, and return with the final proof."
+            "0": "The master doesn't drill students. He performs on them, once, and once is always enough. He's the reason Vital Rupture works at all, and the reason it can kill the person doing it. No one goes to him alone and walks back out to tell me about it. Take people you'd trust to close a wound of yours. When he's down, that's the only proof I need."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Then go end it properly. You won't need the key explained to you again."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vital Rupture is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "One rule, and it's the only one that's mattered from the first cut to this one: don't enjoy it. The moment the bleed stops being technique and starts being pleasure, you've become one of his students instead of mine."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Past everything you've already cleared, at the annex's deepest floor, the one the inner circle kept locked even from their own instructors. You've earned every door between here and there."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "He taught the rupture cut before the warden ever held a knife. No one who went in solo came out to correct that record. Bring the people you'd bleed for, because down there, you might."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your mastery proof for Vital Rupture. Finish the target there before you bring me anything else."
+            "0": "The master is still down there, still breathing on his own schedule. Go change that."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Vital Rupture lesson clean."
+            "0": "He's down, and you're upright. That's rarer than you'd think."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Vital Rupture is one step closer to belonging to you."
+            "0": "Terminal bleed, textbook placement, yours, not his, for once. Vital Rupture is yours now, the same way it was mine: earned, not performed. Don't let me hear that you're enjoying it."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the ledger."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "I'll take the first cut."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Vital Rupture demand?"
+            "0": "Why does a medic teach killing?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find the annex?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I expect from the adepts?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the drill ledger."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the relay."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "I'll map the second one."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Vital Rupture demand?"
+            "0": "What exactly is a rupture cut?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where are the specialists training?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I expect this time?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need more time."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the range relay."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the badge."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring my two and go."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Vital Rupture demand?"
+            "0": "What's wrong with how these students fight?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where's the warden's floor?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I know about him?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not with strangers at my back."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the badge - he's done."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the chit."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "I'll clean the circle out."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Vital Rupture demand?"
+            "0": "What do these proofs tell you?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where's the inner circle hiding?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What am I walking into?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Give me a day to find my two."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the chit."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to it."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "I'll bring who I trust. Let's finish this."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Vital Rupture demand?"
+            "0": "Is there a rule I should know?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find him?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I expect from the master?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to be sure of my company first."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. He's finished."
           }
         }
       }

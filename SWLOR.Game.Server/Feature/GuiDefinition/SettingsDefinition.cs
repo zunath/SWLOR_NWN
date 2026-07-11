@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(28f);
 
                             row.AddCheckBox()
-                                .SetText("Portrait Vitals")
-                                .SetTooltip("If enabled, your Stamina and FP are shown as thin bars overlaid on your character portrait. If disabled, they appear in the HP/STM/FP window docked in the lower-right corner.")
+                                .SetText("Mini-Vitals")
+                                .SetTooltip("If enabled, your Stamina and FP show as compact bars on your character portrait. If disabled, they appear in the full HP/STM/FP window docked in the lower-right corner.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.PortraitVitals);
                         })

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.PlayerStatusPortrait)
-                .SetInitialGeometry(0, 0, 72f, 48f)
+                .SetInitialGeometry(0, 0, 72f, 52f)
                 .SetTitle(null)
                 .SetIsClosable(false)
                 .SetIsResizable(false)

@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // inter-row margins or the second row is clipped (see PlayerStatusPortraitDefinition
                 // for the row/bar heights this is sized against).
                 const float WidgetWidth = 72f;
-                const float WidgetHeight = 48f;
+                const float WidgetHeight = 52f;
 
                 // Distance (at 100% scale) from the right/top screen edges to the overlay's top-left
                 // corner. Tuned so the two bars sit across the lower half of the native portrait,
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Note: SWLOR's GetPlayerDeviceProperty returns physical pixels, so the anchor is
                 // (edge - offset*scale) here, matching PlayerStatusViewModel/TargetStatusViewModel.
                 const float XOffset = 64f;
-                const float YOffset = 58f;
+                const float YOffset = 54f;
 
                 var scale = screenScale / 100f;
                 var x = screenWidth - XOffset * scale;

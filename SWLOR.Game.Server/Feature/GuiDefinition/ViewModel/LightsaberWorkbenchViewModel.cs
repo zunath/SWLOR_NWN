@@ -564,6 +564,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
+            SendMessageToPC(Player, $"You spend a Kyber Token constructing your {GetName(item)}. Total Kyber Tokens: {Currency.GetCurrency(Player, CurrencyType.KyberToken)}");
 
             var playerId = GetObjectUUID(Player);
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({playerId}) constructed '{GetName(item)}' (bottom: {bottom.Name}, top: {top.Name}) at a lightsaber workbench.");

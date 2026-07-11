@@ -103,7 +103,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hello there. I see you have a shuttle pass. Would you like to board the next available shuttle to CZ-220?"
+            "0": "Hello there. Shuttle bookings are all handled at the flights terminal now - just step up to one and choose your destination."
           }
         }
       }
@@ -209,7 +209,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "action"
+          "value": ""
         },
         "Sound": {
           "type": "resref",
@@ -218,7 +218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Yes, please let me on."
+            "0": "Thanks, I'll do that."
           }
         }
       }

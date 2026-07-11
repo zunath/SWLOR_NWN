@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -38,6 +41,8 @@ namespace SWLOR.Game.Server.Service
         private const int SlotsPerAnalyzerMemoryLevel = 1;
         private const int OverclockedAnalyzerSlotBonus = 2;
         private const int SkillRanksPerTier = 15;
+        private const int ResonancePotencyPerTechnique = 5;
+        private const int ResonancePotencyCap = 20;
 
         private const int BaseLearnChancePercent = 20;
         private const int LearnChancePerRankDelta = 2;
@@ -328,6 +333,51 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Damage-type loadout set bonus ("elemental resonance"): equipping multiple active
+        /// techniques sharing a damage type grants scaling technique potency. Each damage type with
+        /// at least two equipped techniques contributes (count - 1) * <see cref="ResonancePotencyPerTechnique"/>
+        /// percent, summed across types and capped at <see cref="ResonancePotencyCap"/>. Passive
+        /// traits have no damage element and do not contribute.
+        /// </summary>
+        public static int GetSetBonusPotency(Player dbPlayer)
+        {
+            if (dbPlayer == null)
+                return 0;
+
+            var countsByElement = new Dictionary<CombatDamageType, int>();
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                if (!_techniques.TryGetValue(feat, out var detail) || detail.MimicryElement == CombatDamageType.Invalid)
+                    continue;
+
+                countsByElement.TryGetValue(detail.MimicryElement, out var count);
+                countsByElement[detail.MimicryElement] = count + 1;
+            }
+
+            var potency = countsByElement.Values
+                .Where(count => count >= 2)
+                .Sum(count => (count - 1) * ResonancePotencyPerTechnique);
+
+            return potency > ResonancePotencyCap ? ResonancePotencyCap : potency;
+        }
+
+        /// <summary>
+        /// Recomputes the elemental-resonance set bonus from the current loadout and re-applies it,
+        /// replacing any prior resonance effect. Called whenever the equipped set changes.
+        /// </summary>
+        private static void RecomputeSetBonus(uint player, Player dbPlayer)
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            StatusEffect.RemoveStatusEffect(player, typeof(TechniqueResonanceStatusEffect), player, false);
+
+            var potency = GetSetBonusPotency(dbPlayer);
+            if (potency > 0)
+                StatusEffect.ApplyStatusEffect(player, player, new TechniqueResonanceStatusEffect(potency), 0f);
+        }
+
+        /// <summary>
         /// Returns the number of technique slots currently used by a player's equipped techniques.
         /// </summary>
         public static int GetUsedSlots(uint player)
@@ -436,6 +486,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             GrantTechniqueFeat(player, feat);
+            RecomputeSetBonus(player, dbPlayer);
 
             return true;
         }
@@ -462,6 +513,7 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
             RevokeTechniqueFeat(player, feat);
+            RecomputeSetBonus(player, dbPlayer);
 
             return true;
         }
@@ -513,7 +565,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (changed)
+            {
                 DB.Set(dbPlayer);
+                RecomputeSetBonus(player, dbPlayer);
+            }
         }
 
         /// <summary>
@@ -538,6 +593,7 @@ namespace SWLOR.Game.Server.Service
             var unequippedCount = dbPlayer.EquippedTechniques.Count;
             dbPlayer.EquippedTechniques.Clear();
             DB.Set(dbPlayer);
+            RecomputeSetBonus(player, dbPlayer);
 
             Log.WriteStructured(
                 LogGroup.Mimicry,
@@ -568,6 +624,8 @@ namespace SWLOR.Game.Server.Service
             {
                 GrantTechniqueFeat(player, feat);
             }
+
+            RecomputeSetBonus(player, dbPlayer);
         }
 
         /// <summary>

@@ -409,6 +409,25 @@ public class MimicryTests
     }
 
     [Test]
+    public void Mimicry_SetBonusPotencyRewardsSharedDamageTypes()
+    {
+        Ability.CacheData();
+        Mimicry.CacheData();
+
+        Mimicry.GetSetBonusPotency(new Player()).Should().Be(0, "an empty loadout has no resonance");
+
+        var singles = new Player();
+        singles.EquippedTechniques.Add(FeatType.ToxicSpitTechnique);  // Poison
+        singles.EquippedTechniques.Add(FeatType.FrostSpitTechnique);  // Ice
+        Mimicry.GetSetBonusPotency(singles).Should().Be(0, "no damage type has two equipped techniques");
+
+        var pair = new Player();
+        pair.EquippedTechniques.Add(FeatType.ToxicSpitTechnique);   // Poison
+        pair.EquippedTechniques.Add(FeatType.ToxicCloudTechnique);  // Poison
+        Mimicry.GetSetBonusPotency(pair).Should().Be(5, "two techniques share the Poison damage type");
+    }
+
+    [Test]
     public void Mimicry_MaxSlotsScalesWithCombatAnalyzerAndAnalyzerMemoryPerkLevels()
     {
         var noAnalyzer = new Player();

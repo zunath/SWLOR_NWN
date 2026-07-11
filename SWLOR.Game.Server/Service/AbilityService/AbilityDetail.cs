@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -68,6 +69,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsMimicryTrait { get; set; }
         public Type MimicryTraitStatusEffect { get; set; }
 
+        /// <summary>
+        /// The damage type this mimicked technique deals, used for damage-type loadout set bonuses
+        /// (elemental resonance). <see cref="CombatDamageType.Invalid"/> for techniques with no
+        /// damage element (passive flat/self-buff traits), which do not contribute to a set.
+        /// </summary>
+        public CombatDamageType MimicryElement { get; set; }
+
         public AbilityDetail()
         {
             ActivationVisualEffect = VisualEffect.None;
@@ -98,6 +106,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             AdditionalActivationTargeting = new List<AbilityTargetingDetail>();
             StatusEffectTypesRemovedOnPerkRefund = new List<Type>();
             MimicrySourceFeat = FeatType.Invalid;
+            MimicryElement = CombatDamageType.Invalid;
         }
     }
 }

@@ -146,6 +146,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
 
+            ability.MimicryElement(damageType);
+
             return ability;
         }
 
@@ -219,6 +221,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     enmityBonus: enmityBonus,
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
+
+            ability.MimicryElement(damageType);
 
             return ability;
         }

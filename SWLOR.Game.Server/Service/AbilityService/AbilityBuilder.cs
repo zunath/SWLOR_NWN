@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -794,6 +795,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
             _activeAbility.IsMimicryTrait = true;
             _activeAbility.MimicryTraitStatusEffect = traitStatusEffect;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the damage type a mimicked technique deals, used for damage-type loadout set
+        /// bonuses (elemental resonance).
+        /// </summary>
+        public AbilityBuilder MimicryElement(CombatDamageType element)
+        {
+            _activeAbility.MimicryElement = element;
             return this;
         }
 

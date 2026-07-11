@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 250
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 29
+    "value": 77
   },
   "Charges": {
     "type": "byte",
@@ -14,19 +14,21 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "DM-issued token consumed at a Lightsaber Workbench. Cursed + plot so it cannot be traded, stored, sold, or dropped."
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A rare kyber crystal attuned to its bearer, issued in recognition of their journey toward constructing a lightsaber.\n\nUse this item to attune the crystal, adding one Kyber Token to your currencies. Then visit a Lightsaber Workbench to construct a lightsaber or saberstaff. Workbenches are known to exist at the Sith Academy on Korriban, the Jedi Enclave on Dantooine, and - so the rumors say - somewhere within a hidden cave on Dathomir.\n\nOne Kyber Token is consumed when the weapon is constructed. This item cannot be traded, sold, stored, or dropped."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,20 +43,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Blueprint: Saberstaff Upgrade I"
+      "0": "Kyber Token"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 52
+    "value": 184
   },
   "PaletteID": {
     "type": "byte",
-    "value": 26
+    "value": 54
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
@@ -102,11 +104,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "RECIPE"
+    "value": "kyber_token"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "recipe_staffupg1"
+    "value": "kyber_token"
   },
   "VarTable": {
     "type": "list",
@@ -125,26 +127,11 @@
           "type": "int",
           "value": 1
         }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "RECIPES"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "368"
-        }
       }
     ]
   },
   "xModelPart1": {
     "type": "word",
-    "value": 52
+    "value": 184
   }
 }

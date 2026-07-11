@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             Food();
             PetFood();
             RebuildToken();
+            KyberToken();
 
             return _builder.Build();
         }
@@ -288,6 +289,27 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     Currency.GiveCurrency(user, CurrencyType.RebuildToken, 1);
                     Item.ReduceItemStack(item, 1);
                     SendMessageToPC(user, $"Total Rebuild Tokens: {Currency.GetCurrency(user, CurrencyType.RebuildToken)}");
+                });
+        }
+
+        private void KyberToken()
+        {
+            _builder.Create("kyber_token")
+                .PlaysAnimation(Animation.LoopingGetMid)
+                .ValidationAction((user, item, target, location, itemPropertyIndex) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user) || GetIsDMPossessed(user))
+                    {
+                        return "Only players may use this item.";
+                    }
+
+                    return string.Empty;
+                })
+                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
+                {
+                    Currency.GiveCurrency(user, CurrencyType.KyberToken, 1);
+                    Item.ReduceItemStack(item, 1);
+                    SendMessageToPC(user, $"Total Kyber Tokens: {Currency.GetCurrency(user, CurrencyType.KyberToken)}");
                 });
         }
     }

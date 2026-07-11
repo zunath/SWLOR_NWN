@@ -844,6 +844,50 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Applies an enhancement-provided item property onto a crafted item,
+        /// merging with any existing property of the same type. DMG amounts are
+        /// summed together; WeaponDamageType replaces the existing damage type.
+        /// </summary>
+        public static void ApplyCraftedItemProperty(uint item, ItemProperty ip)
+        {
+            var type = GetItemPropertyType(ip);
+            var subType = GetItemPropertySubType(ip);
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (type == ItemPropertyType.WeaponDamageType)
+            {
+                for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
+                    {
+                        RemoveItemProperty(item, property);
+                    }
+                }
+
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                return;
+            }
+
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == type &&
+                    (type == ItemPropertyType.DMG ||
+                     GetItemPropertySubType(property) == -1 ||
+                     GetItemPropertySubType(property) == subType))
+                {
+                    amount += GetItemPropertyCostTableValue(property);
+                    RemoveItemProperty(item, property);
+                }
+            }
+
+            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
+            unpacked.CostTableValue = amount;
+            ip = ItemPropertyPlugin.PackIP(unpacked);
+
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+        }
+
         [NWNEventHandler(ScriptName.OnRefineryUsed)]
         public static void UseRefinery()
         {

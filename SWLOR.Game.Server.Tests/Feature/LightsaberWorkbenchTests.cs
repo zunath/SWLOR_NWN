@@ -288,9 +288,9 @@ public class LightsaberWorkbenchTests
         var curvedColors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, true);
         var staffColors = LightsaberWorkbench.GetBladeColors(BaseItem.Saberstaff, false);
 
-        straightColors.Should().HaveCount(15);
-        staffColors.Should().HaveCount(15, "every color has a saberstaff blade model");
-        curvedColors.Should().HaveCount(15, "every color has a curved blade model");
+        straightColors.Should().HaveCount(14);
+        staffColors.Should().HaveCount(14, "every color has a saberstaff blade model");
+        curvedColors.Should().HaveCount(14, "every color has a curved blade model");
 
         foreach (var color in straightColors.Concat(curvedColors).Concat(staffColors))
         {

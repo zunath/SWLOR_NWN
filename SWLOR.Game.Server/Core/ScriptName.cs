@@ -160,6 +160,7 @@ namespace SWLOR.Game.Server.Core
 
         // Space events
         public const string OnSpaceEnter = "space_enter";
+        public const string OnSpaceExit = "space_exit";
         public const string OnShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
 
@@ -209,6 +210,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnCraftSuccess = "craft_success";
         public const string OnRefineryUsed = "refinery_used";
         public const string OnResearchTerminal = "research_term";
+        public const string OnLightsaberWorkbenchUsed = "lsaber_bench";
 
         // Fishing events
         public const string OnFishPoint = "fish_point";

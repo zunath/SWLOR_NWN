@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Special_Red_White,
                 maxRange: 3f)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.InnerCirclePounce, 4, 3);
 

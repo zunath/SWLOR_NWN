@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Storm,
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.WardenMark, 4, 3)
                 .HasTargetingSphere(

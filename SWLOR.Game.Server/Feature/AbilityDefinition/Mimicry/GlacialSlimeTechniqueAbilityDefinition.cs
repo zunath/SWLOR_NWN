@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.GlacialSlimeTechnique, profile.PlayerPerkType)
                 .Name("Glacial Slime")
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .MimicryTrait(FeatType.GlacialSlime, 2, 2, typeof(RimedStrikesStatusEffect));
 
             return _builder.Build();

@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Sound_Burst,
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.WardenOrder, 4, 3)
                 .HasTargetingSphere(

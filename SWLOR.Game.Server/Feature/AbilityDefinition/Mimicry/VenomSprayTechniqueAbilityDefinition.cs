@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Acid,
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.VenomSpray, 2, 2)
                 .HasTargetingCone(

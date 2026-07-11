@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         useNPCStatScaling: InnateAbility.ShouldUseNPCStatScaling(activator));
                 })
                 .SkillType(SkillType.Mimicry)
-                .Level(3)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.DisorientingScreech, 3, 3)
                 .HasTargetingSphere(

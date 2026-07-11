@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.ConcussiveChallenge, 2, 2)
                 .HasTargetingSphere(

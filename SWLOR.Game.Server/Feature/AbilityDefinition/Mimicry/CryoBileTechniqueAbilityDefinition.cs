@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 maxRange: 8f,
                 enmityBonus: 100)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.CryoBile, 4, 3)
                 .HasTargetingCone(

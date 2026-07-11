@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Sound_Burst,
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.SonicShriek, 2, 2)
                 .HasTargetingCone(

@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Magical_Vision,
                 maxRange: 12f)
                 .SkillType(SkillType.Mimicry)
-                .Level(3)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
                 .MimicryTechnique(FeatType.RallyBreaker, 3, 2);
 

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.SerratedSlashTechnique, profile.PlayerPerkType)
                 .Name("Serrated Slash")
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .MimicryTrait(FeatType.SerratedSlash, 2, 2, typeof(SerratedInstinctStatusEffect));
 
             return _builder.Build();

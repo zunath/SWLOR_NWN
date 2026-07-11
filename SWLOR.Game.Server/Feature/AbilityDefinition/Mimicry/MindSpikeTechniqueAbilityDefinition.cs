@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.MindSpikeTechnique, profile.PlayerPerkType)
                 .Name("Mind Spike")
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .MimicryTrait(FeatType.MindSpike, 2, 2, typeof(ForceEdgeStatusEffect));
 
             return _builder.Build();

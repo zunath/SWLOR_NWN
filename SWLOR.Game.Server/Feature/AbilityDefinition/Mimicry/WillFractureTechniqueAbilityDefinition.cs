@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
                 maxRange: 5f)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.WillFracture, 4, 3)
                 .HasTargetingCone(

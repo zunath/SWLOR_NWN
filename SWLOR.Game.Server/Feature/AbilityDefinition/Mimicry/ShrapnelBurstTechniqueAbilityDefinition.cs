@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Screen_Bump,
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
-                .Level(3)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.ShrapnelBurst, 3, 3)
                 .HasTargetingCone(

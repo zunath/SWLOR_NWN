@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.PrecisionShotTechnique, profile.PlayerPerkType)
                 .Name("Precision Shot")
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .MimicryTrait(FeatType.PrecisionShot, 2, 2, typeof(LethalAimStatusEffect));
 
             return _builder.Build();

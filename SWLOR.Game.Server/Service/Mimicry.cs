@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service
 
         private const int BaseSlotsWithAnalyzer = 2;
         private const int SlotsPerAnalyzerMemoryLevel = 1;
+        private const int SkillRanksPerTier = 15;
 
         private const int BaseLearnChancePercent = 20;
         private const int LearnChancePerRankDelta = 2;
@@ -312,6 +313,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Mimicry skill rank required to equip (and therefore use) a technique of the given tier.
+        /// Tier usability is gated by Mimicry skill rank rather than Combat Analyzer perk rank, so a
+        /// technique stays usable as long as the player retains the skill (e.g. after a perk refund).
+        /// Tiers unlock at Mimicry 0/15/30/45, matching the Combat Analyzer rank skill milestones.
+        /// </summary>
+        public static int GetTierSkillRequirement(int tier)
+        {
+            return tier <= 1 ? 0 : (tier - 1) * SkillRanksPerTier;
+        }
+
+        /// <summary>
         /// Returns the number of technique slots currently used by a player's equipped techniques.
         /// </summary>
         public static int GetUsedSlots(uint player)
@@ -370,6 +382,14 @@ namespace SWLOR.Game.Server.Service
             if (!dbPlayer.LearnedTechniques.ContainsKey(feat))
             {
                 error = "You have not learned that technique.";
+                return false;
+            }
+
+            var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
+            var requiredSkillRank = GetTierSkillRequirement(detail.MimicryTier);
+            if (skillRank < requiredSkillRank)
+            {
+                error = $"You need Mimicry skill rank {requiredSkillRank} to equip a tier {detail.MimicryTier} technique.";
                 return false;
             }
 

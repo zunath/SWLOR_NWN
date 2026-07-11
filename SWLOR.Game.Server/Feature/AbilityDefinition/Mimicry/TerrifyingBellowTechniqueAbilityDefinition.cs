@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 centerOnActivator: true,
                 enmityBonus: 8)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.TerrifyingBellow, 4, 3)
                 .HasTargetingSphere(

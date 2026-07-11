@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Evil,
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
-                .Level(3)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .MimicryTechnique(FeatType.DarkShock, 3, 3)
                 .HasTargetingSphere(

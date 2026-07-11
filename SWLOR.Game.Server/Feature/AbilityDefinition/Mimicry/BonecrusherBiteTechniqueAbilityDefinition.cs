@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.BonecrusherBiteTechnique, profile.PlayerPerkType)
                 .Name("Bonecrusher Bite")
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .MimicryTrait(FeatType.BonecrusherBite, 2, 2, typeof(BonebreakerInstinctStatusEffect));
 
             return _builder.Build();

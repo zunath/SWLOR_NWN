@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.MaulingBiteTechnique, profile.PlayerPerkType)
                 .Name("Mauling Bite")
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .MimicryTrait(FeatType.MaulingBite, 2, 2, typeof(RendingInstinctStatusEffect));
 
             return _builder.Build();

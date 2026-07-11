@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.OverloadShotTechnique, profile.PlayerPerkType)
                 .Name("Overload Shot")
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .MimicryTrait(FeatType.OverloadShot, 2, 2, typeof(OverchargedStrikesStatusEffect));
 
             return _builder.Build();

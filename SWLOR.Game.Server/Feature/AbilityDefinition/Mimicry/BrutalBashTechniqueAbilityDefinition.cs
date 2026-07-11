@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Fnf_Screen_Bump)
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.BrutalBash, 2, 2);
 

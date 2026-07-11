@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         useNPCStatScaling: InnateAbility.ShouldUseNPCStatScaling(activator));
                 })
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .MimicryTechnique(FeatType.PiercingQuills, 2, 2)
                 .HasTargetingCone(

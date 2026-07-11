@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Dur_Web,
                 maxRange: 5f)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.PressureLock, 4, 3)
                 .HasTargetingCone(

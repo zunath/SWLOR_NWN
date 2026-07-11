@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Howl_War_Cry,
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Vitality)
                 .MimicryTechnique(FeatType.WardenWall, 4, 3)
                 .HasTargetingSphere(

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.ForceRendTechnique, profile.PlayerPerkType)
                 .Name("Force Rend")
                 .SkillType(SkillType.Mimicry)
-                .Level(2)
+                .Level(1)
                 .MimicryTrait(FeatType.ForceRend, 2, 2, typeof(ForceEdgeStatusEffect));
 
             return _builder.Build();

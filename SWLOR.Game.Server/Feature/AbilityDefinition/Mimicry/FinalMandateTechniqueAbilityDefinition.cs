@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Howl_War_Cry,
                 maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
-                .Level(4)
+                .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.FinalMandate, 4, 3)
                 .HasTargetingLine(

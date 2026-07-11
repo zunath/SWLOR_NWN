@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.ForceSunderTechnique, profile.PlayerPerkType)
                 .Name("Force Sunder")
                 .SkillType(SkillType.Mimicry)
-                .Level(3)
+                .Level(1)
                 .MimicryTrait(FeatType.ForceSunder, 3, 2, typeof(ForceScarStatusEffect));
 
             return _builder.Build();

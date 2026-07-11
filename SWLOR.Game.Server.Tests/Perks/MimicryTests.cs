@@ -388,6 +388,17 @@ public class MimicryTests
     }
 
     [Test]
+    public void Mimicry_TierSkillRequirementUnlocksTiersAtSkillMilestones()
+    {
+        // Tier usability is gated by Mimicry skill rank (0/15/30/45), not Combat Analyzer perk rank,
+        // so techniques stay usable as long as the skill is retained.
+        Mimicry.GetTierSkillRequirement(1).Should().Be(0, "tier 1 techniques are usable from Mimicry 0");
+        Mimicry.GetTierSkillRequirement(2).Should().Be(15);
+        Mimicry.GetTierSkillRequirement(3).Should().Be(30);
+        Mimicry.GetTierSkillRequirement(4).Should().Be(45, "tier 4 techniques require Mimicry rank 45");
+    }
+
+    [Test]
     public void Mimicry_MaxSlotsScalesWithCombatAnalyzerAndAnalyzerMemoryPerkLevels()
     {
         var noAnalyzer = new Player();

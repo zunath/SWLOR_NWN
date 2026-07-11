@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.RangefinderShotTechnique, profile.PlayerPerkType)
                 .Name("Rangefinder Shot")
                 .SkillType(SkillType.Mimicry)
-                .Level(3)
+                .Level(1)
                 .MimicryTrait(FeatType.RangefinderShot, 3, 2, typeof(KeenSightStatusEffect));
 
             return _builder.Build();

@@ -127,28 +127,42 @@ namespace SWLOR.Game.Server.Feature
             ApplyStatusDisplay(OBJECT_SELF);
         }
 
+        private static readonly GuiWindowType[] _statusWindows =
+        {
+            GuiWindowType.PlayerStatus,
+            GuiWindowType.PlayerStatusPortrait,
+            GuiWindowType.PlayerStatusPortraitSpace,
+        };
+
         /// <summary>
-        /// Opens the appropriate vitals display for the player and closes the other one.
-        /// On foot, this honors the player's "Portrait Vitals" setting (portrait overlay vs. the
-        /// docked HP/STM/FP window). In space mode the docked window is always used because it is
-        /// the only display that shows shield/hull/capacitor.
+        /// Opens the appropriate vitals display for the player and closes the others. With the
+        /// Mini-Vitals setting enabled, the compact portrait overlay is used - the 2-bar STM/FP
+        /// version on foot, or the 3-bar shield/hull/capacitor version in space. Otherwise the
+        /// docked window is used, which already adapts to both on foot and in space.
         /// </summary>
         public static void ApplyStatusDisplay(uint player)
         {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            var usePortrait = !Space.IsPlayerInSpaceMode(player) && ShouldUsePortraitVitals(player);
-
-            if (usePortrait)
+            GuiWindowType target;
+            if (ShouldUsePortraitVitals(player))
             {
-                EnsureWindowClosed(player, GuiWindowType.PlayerStatus);
-                EnsureWindowOpen(player, GuiWindowType.PlayerStatusPortrait);
+                target = Space.IsPlayerInSpaceMode(player)
+                    ? GuiWindowType.PlayerStatusPortraitSpace
+                    : GuiWindowType.PlayerStatusPortrait;
             }
             else
             {
-                EnsureWindowClosed(player, GuiWindowType.PlayerStatusPortrait);
-                EnsureWindowOpen(player, GuiWindowType.PlayerStatus);
+                target = GuiWindowType.PlayerStatus;
+            }
+
+            foreach (var window in _statusWindows)
+            {
+                if (window == target)
+                    EnsureWindowOpen(player, window);
+                else
+                    EnsureWindowClosed(player, window);
             }
         }
 

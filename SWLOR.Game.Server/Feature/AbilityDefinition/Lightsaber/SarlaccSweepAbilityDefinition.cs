@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 SkillType.Lightsaber,
                 8,
                 0,
-                typeof(SunderStatusEffect),
+                null,
                 null,
                 4,
                 6,
@@ -40,7 +40,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    SpreadSunderFromTarget = true,
+                    SpreadSunderDurationSeconds = 30
+                });
 
             ConfigureGeneratedWeaponAbility(
                 builder.Create(FeatType.SarlaccSweep2, PerkType.SarlaccSweep)
@@ -50,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 SkillType.Lightsaber,
                 12,
                 0,
-                typeof(SunderStatusEffect),
+                null,
                 null,
                 5,
                 8,
@@ -66,7 +70,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    SpreadSunderFromTarget = true,
+                    SpreadSunderDurationSeconds = 30
+                });
 
             ConfigureGeneratedWeaponAbility(
                 builder.Create(FeatType.SarlaccSweep3, PerkType.SarlaccSweep)
@@ -76,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 SkillType.Lightsaber,
                 16,
                 0,
-                typeof(SunderStatusEffect),
+                null,
                 null,
                 6,
                 10,
@@ -92,7 +100,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    SpreadSunderFromTarget = true,
+                    SpreadSunderDurationSeconds = 30
+                });
 
             return builder.Build();
         }

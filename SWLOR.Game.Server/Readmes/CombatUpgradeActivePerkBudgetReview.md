@@ -1,6 +1,6 @@
 # Combat Upgrade Active Perk Budget Review
 
-Last reviewed: 2026-07-04 (Lightsaber Ward/Severance redesign entry added 2026-07-11 below)
+Last reviewed: 2026-07-11 (Lightsaber Ward/Severance redesign; see entry below)
 
 ## Recommended Rule
 

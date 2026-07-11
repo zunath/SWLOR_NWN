@@ -155,7 +155,9 @@ Icon tools and audits must fail when a gameplay icon violates these standards:
 - Duplicate generated icon pixels for two different gameplay meanings.
 - Duplicate status-effect icon enum.
 - Generated `effecticons.2da` label with underscores or non-identifier characters.
-- Final regenerated icon artwork produced outside the acting agent's sanctioned pipeline (GPT Image 2 for Codex requests, polished illustrated SVG for Claude requests).
+- Primitive, placeholder-quality, debug, or otherwise Artwork-Quality-failing central art, regardless of which pipeline produced it.
+
+The pipeline requirement itself (GPT Image 2 for Codex requests, polished illustrated SVG for Claude requests) is enforced at authoring and code review, not by the automated icon audit: source-model provenance is not recoverable from a final flattened TGA, so the audit validates the observable properties above (semantic frame color, resource presence, uniqueness, TGA origin/opacity, rank-badge rules, and artwork quality) rather than the generation tool.
 - Icon artwork extending outside the frame or overlapping the outer border.
 - Final TGA using top-left origin, which makes classic NWN gameplay icon paths display the icon upside down.
 - Final TGA with transparent or partially transparent pixels.

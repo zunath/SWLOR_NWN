@@ -65,7 +65,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public static void Refresh(uint defender, uint attacker)
         {
             if (!GetIsObjectValid(defender) || GetIsDead(defender))
+            {
+                Attackers.Remove(defender);
                 return;
+            }
 
             var perStackDefense = Stat.GetStatAdjustment(defender, StatType.SoresuPressureStackDefensePercent);
             if (perStackDefense <= 0)
@@ -123,6 +126,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             {
                 attackerTimes.Remove(stale);
             }
+
+            if (attackerTimes.Count == 0)
+                Attackers.Remove(defender);
 
             return Math.Clamp(attackerTimes.Count, 1, maxStacks);
         }

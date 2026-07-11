@@ -141,6 +141,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SpreadBleedDurationSeconds { get; init; }
             public bool SpreadHemorrhageFromTarget { get; init; }
             public int SpreadHemorrhageDurationSeconds { get; init; }
+            public bool SpreadSunderFromTarget { get; init; }
+            public int SpreadSunderDurationSeconds { get; init; }
             public bool ClearTargetActionsOnHit { get; init; }
             public Type ConditionalStatusEffect { get; init; }
             public int ConditionalStatusDurationSeconds { get; init; }
@@ -902,6 +904,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         target,
                         typeof(HemorrhageStatusEffect),
                         SpreadHemorrhageDurationSeconds > 0 ? SpreadHemorrhageDurationSeconds : 30f,
+                        damageType);
+                }
+
+                if (SpreadSunderFromTarget &&
+                    StatusEffect.HasStatusEffect(target, typeof(SunderStatusEffect)))
+                {
+                    SpreadStatusToNearbyHostile(
+                        activator,
+                        target,
+                        typeof(SunderStatusEffect),
+                        SpreadSunderDurationSeconds > 0 ? SpreadSunderDurationSeconds : 30f,
                         damageType);
                 }
             }

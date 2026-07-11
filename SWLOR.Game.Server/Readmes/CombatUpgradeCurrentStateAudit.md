@@ -1,6 +1,6 @@
 # Combat Upgrade Current-State Balance Audit
 
-Last reviewed: 2026-07-01 (Lightsaber Ward/Severance redesign addendum added 2026-07-11 below)
+Last reviewed: 2026-07-11 (Lightsaber Ward/Severance redesign; see addendum below)
 
 ## Scope
 
@@ -28,7 +28,7 @@ Permanent Attack Deflection sources were reduced so the all-in permanent weapon 
 - Twin Blade Duelist `Centerline Guard`: +5 Attack Deflection.
 - Heavy Vibroblade Defense `Unbreakable Will`: +4 to +8 Attack Deflection, scaling from MGT.
 
-The all-in permanent stack across those five weapon lines is now 49 Attack Deflection before temporary buffs or ally support. Cap access should come from temporary, active, support, or capstone windows.
+The all-in permanent stack across the remaining four weapon lines (Staff Sentinel, Saberstaff Tempest, Twin Blade Duelist, Heavy Vibroblade Defense) is now 35 Attack Deflection (12 + 10 + 5 + 8) before temporary buffs or ally support; Lightsaber Defense no longer contributes after the 2026-07-11 redesign. Cap access should come from temporary, active, support, or capstone windows.
 
 ### B-002 Staff Crusher Mandatory Cross-Tree Damage Risk - Implemented, Automated Coverage Added
 
@@ -117,7 +117,7 @@ The removed behavior-specific hooks are no longer active in shared combat/stat c
 
 ## Post-Fix Playtest Priorities
 
-1. Attack Deflection stack with Staff Parry, Lightsaber Defense, Saberstaff Tempest, Twin Blade, and Heavy Vibroblade Defense.
+1. Attack Deflection stack with Staff Parry, Saberstaff Tempest, Twin Blade, and Heavy Vibroblade Defense. (Lightsaber Defense removed 2026-07-11 — the redesigned Deflecting Return reflects bounded weapon damage instead of granting permanent Attack Deflection.)
 2. Staff Crusher with low-delay/high-hit-rate MGT builds.
 3. Heavy Vibroblade sustain tank after reduced sustain values.
 4. High-MGT damage stack with Leadership support.

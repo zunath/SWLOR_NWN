@@ -2,6 +2,7 @@ using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
@@ -20,7 +21,13 @@ namespace SWLOR.Game.Server.Feature
         {
             var area = Area.GetAreaByResref(HangarAreaResref);
             if (!GetIsObjectValid(area))
+            {
+                Log.WriteStructured(
+                    LogGroup.Server,
+                    "Unable to spawn CZ-220 flights terminal: hangar area not found. AreaResref={AreaResref}",
+                    HangarAreaResref);
                 return;
+            }
 
             // Open floor in the hangar between the transport attendant and the landing point.
             var location = Location(area, new Vector3(33.0f, 34.4f, 0f), 3.0f);

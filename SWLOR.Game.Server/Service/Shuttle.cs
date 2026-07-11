@@ -64,6 +64,9 @@ namespace SWLOR.Game.Server.Service
             Scheduler.ScheduleRepeating(ProcessFlightSchedule, TimeSpan.FromSeconds(2));
         }
 
+        /// <summary>
+        /// Restores ticketed and in-transit rides from the database after a server restart.
+        /// </summary>
         private static void RecoverRidesAfterRestart(DateTime now)
         {
             var rides = SearchRidesByStatus(ShuttleRideStatus.Ticketed);
@@ -98,6 +101,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Returns all shuttle rides currently in the given status.
+        /// </summary>
         private static List<ShuttleRide> SearchRidesByStatus(ShuttleRideStatus status)
         {
             var query = new DBQuery<ShuttleRide>()
@@ -106,6 +112,9 @@ namespace SWLOR.Game.Server.Service
             return DB.Search(query.AddPaging(count, 0)).ToList();
         }
 
+        /// <summary>
+        /// Returns all shuttle rides booked on the given flight.
+        /// </summary>
         private static List<ShuttleRide> SearchRidesByFlightId(string flightId)
         {
             var query = new DBQuery<ShuttleRide>()
@@ -114,6 +123,9 @@ namespace SWLOR.Game.Server.Service
             return DB.Search(query.AddPaging(count, 0)).ToList();
         }
 
+        /// <summary>
+        /// Runs one scheduler tick: departures, boarding calls, arrivals, and transit broadcasts.
+        /// </summary>
         private static void ProcessFlightSchedule()
         {
             var now = DateTime.UtcNow;
@@ -126,6 +138,9 @@ namespace SWLOR.Game.Server.Service
             _lastTickUtc = now;
         }
 
+        /// <summary>
+        /// Boards passengers for every scheduled departure that occurred since the last tick.
+        /// </summary>
         private static void ProcessDepartures(DateTime now)
         {
             var routes = _ticketHolders.Values.Distinct().ToList();
@@ -139,6 +154,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Boards eligible ticket holders onto a departing flight and messages those who missed it.
+        /// </summary>
         private static void BoardPassengers(PlanetType origin, PlanetType destination, DateTime departureUtc, DateTime now)
         {
             var ticketHolders = _ticketHolders
@@ -197,6 +215,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Tells a ticket holder they missed the shuttle and when the next one departs.
+        /// </summary>
         private static void NotifyMissedBoarding(uint player, PlanetType origin, PlanetType destination, DateTime now)
         {
             if (!GetIsObjectValid(player))
@@ -208,6 +229,9 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(player, ColorToken.Yellow($"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal."));
         }
 
+        /// <summary>
+        /// Announces the boarding call to ticket holders shortly before each departure.
+        /// </summary>
         private static void ProcessBoardingCalls(DateTime now)
         {
             var routes = _ticketHolders.Values.Distinct().ToList();
@@ -238,6 +262,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Processes every flight whose arrival time has passed.
+        /// </summary>
         private static void ProcessArrivals(DateTime now)
         {
             var arrived = _activeFlights.Values
@@ -250,6 +277,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Delivers a flight's passengers to the destination and tears down the shuttle instance.
+        /// </summary>
         private static void ProcessArrival(ActiveFlight flight)
         {
             var landingLocation = GetLandingLocation(flight.Destination);
@@ -298,6 +328,9 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Server, $"Shuttle flight {flight.FlightId} arrived at {flight.Destination}.");
         }
 
+        /// <summary>
+        /// Delivers any stragglers and destroys the shuttle instance, retrying until it succeeds.
+        /// </summary>
         private static void DestroyFlightInstance(uint area, Location landingLocation)
         {
             if (!GetIsObjectValid(area))
@@ -349,6 +382,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Records the destination landing location on an offline passenger's record and clears their ride.
+        /// </summary>
         private static void DeliverOfflinePassenger(ShuttleRide ride)
         {
             var dbPlayer = DB.Get<Player>(ride.PlayerId);
@@ -371,6 +407,9 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Server, $"Shuttle delivered offline passenger {ride.PlayerId} to {ride.Destination}.");
         }
 
+        /// <summary>
+        /// Has each in-flight shuttle console announce the remaining time to its passengers.
+        /// </summary>
         private static void ProcessTransitBroadcasts(DateTime now)
         {
             foreach (var flight in _activeFlights.Values)
@@ -392,6 +431,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Returns the tracked flight for the given id, creating it and its instance if needed.
+        /// </summary>
         private static ActiveFlight GetOrCreateFlight(string flightId, PlanetType origin, PlanetType destination, DateTime departureUtc, DateTime arrivalUtc)
         {
             if (!_activeFlights.TryGetValue(flightId, out var flight))
@@ -412,6 +454,10 @@ namespace SWLOR.Game.Server.Service
             return flight;
         }
 
+        /// <summary>
+        /// Creates the shuttle interior instance for a flight: removes the exit and ship computer,
+        /// adds the status console, and seats the pilot droid.
+        /// </summary>
         private static void EnsureFlightInstance(ActiveFlight flight)
         {
             if (GetIsObjectValid(flight.Area))
@@ -465,6 +511,9 @@ namespace SWLOR.Game.Server.Service
             SpawnPilotDroid(pilotChair);
         }
 
+        /// <summary>
+        /// Spawns the pilot droid and seats it in the shuttle's pilot chair.
+        /// </summary>
         private static void SpawnPilotDroid(uint pilotChair)
         {
             if (!GetIsObjectValid(pilotChair))
@@ -482,12 +531,18 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(droid, () => ActionSit(pilotChair));
         }
 
+        /// <summary>
+        /// Returns the landing waypoint location for a destination planet.
+        /// </summary>
         private static Location GetLandingLocation(PlanetType destination)
         {
             var waypoint = GetWaypointByTag(Planet.GetPlanetByType(destination).LandingWaypointTag);
             return GetLocation(waypoint);
         }
 
+        /// <summary>
+        /// Returns the online player with the given id, or OBJECT_INVALID if none is connected.
+        /// </summary>
         private static uint GetOnlinePlayerById(string playerId)
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
@@ -499,6 +554,9 @@ namespace SWLOR.Game.Server.Service
             return OBJECT_INVALID;
         }
 
+        /// <summary>
+        /// Determines whether the player is within boarding range of a flights terminal for the given origin planet.
+        /// </summary>
         private static bool IsAtBoardingTerminal(uint player, PlanetType origin)
         {
             var nth = 1;

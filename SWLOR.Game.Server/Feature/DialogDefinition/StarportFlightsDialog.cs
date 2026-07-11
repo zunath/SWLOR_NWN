@@ -32,6 +32,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             return builder.Build();
         }
 
+        /// <summary>
+        /// Resolves the city transportation tax rate for property-based starports.
+        /// </summary>
         private void Initialize()
         {
             var terminal = GetDialogTarget();
@@ -55,6 +58,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             model.CityPropertyId = dbCity.Id;
         }
 
+        /// <summary>
+        /// Formats a transit time in seconds as a minute count, trimming a trailing zero decimal.
+        /// </summary>
         private static string FormatMinutes(int seconds)
         {
             var minutes = seconds / 60m;
@@ -63,6 +69,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 : minutes.ToString("0.#");
         }
 
+        /// <summary>
+        /// Renders the main terminal page: pass gate, ticket purchase, or existing ticket status.
+        /// </summary>
         private void MainPageInit(DialogPage page)
         {
             var model = GetDataModel<Model>();
@@ -94,6 +103,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
         }
 
+        /// <summary>
+        /// Renders the list of destinations a passenger can book a ticket to.
+        /// </summary>
         private void BuildTicketPurchasePage(DialogPage page, Model model, uint player, PlanetType origin)
         {
             var hasSmugglerPass = KeyItem.HasKeyItem(player, KeyItemType.SmugglerPass);
@@ -128,6 +140,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
         }
 
+        /// <summary>
+        /// Renders the player's existing ticket status, with a refund option at the origin starport.
+        /// </summary>
         private void BuildTicketedPage(DialogPage page, uint player, PlanetType terminalPlanet, ShuttleRide ride)
         {
             var destinationName = Planet.GetPlanetByType(ride.Destination).Name;
@@ -153,6 +168,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
         }
 
+        /// <summary>
+        /// Renders the fare, tax, and time breakdown and confirms the ticket purchase.
+        /// </summary>
         private void ConfirmPageInit(DialogPage page)
         {
             var player = GetPC();

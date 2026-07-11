@@ -39,7 +39,8 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         /// <summary>
         /// Computes the deterministic departure period, in seconds, for a directional route.
-        /// Ranges from 240 to 360 seconds in steps of 30.
+        /// Orbital hops return a short 60-second period; all other routes range from 240 to
+        /// 360 seconds in steps of 30.
         /// </summary>
         /// <param name="origin">The origin planet.</param>
         /// <param name="destination">The destination planet.</param>
@@ -164,6 +165,11 @@ namespace SWLOR.Game.Server.Service.ShuttleService
                 return false;
 
             if (!long.TryParse(ticksPart, NumberStyles.Integer, CultureInfo.InvariantCulture, out var ticks))
+                return false;
+
+            // Guard the DateTime tick range so out-of-range values fail the Try-pattern
+            // rather than throwing from the DateTime constructor.
+            if (ticks < 0 || ticks > DateTime.MaxValue.Ticks)
                 return false;
 
             origin = (PlanetType)originValue;

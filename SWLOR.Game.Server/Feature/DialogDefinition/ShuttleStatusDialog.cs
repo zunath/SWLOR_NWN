@@ -15,6 +15,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             return builder.Build();
         }
 
+        /// <summary>
+        /// Renders the shuttle's destination and remaining arrival time from the console.
+        /// </summary>
         private void MainPageInit(DialogPage page)
         {
             var console = GetDialogTarget();

@@ -268,6 +268,8 @@ public class ShuttleScheduleTests
     [TestCase("1>2")]
     [TestCase("1@5")]
     [TestCase("x>y@z")]
+    [TestCase("1>2@-1")]                    // negative ticks
+    [TestCase("1>2@9223372036854775807")]   // long.MaxValue, past DateTime.MaxValue.Ticks
     public void TryParseFlightId_ReturnsFalseForMalformedInput(string flightId)
     {
         var result = ShuttleSchedule.TryParseFlightId(flightId, out var origin, out var destination, out var departureUtc);

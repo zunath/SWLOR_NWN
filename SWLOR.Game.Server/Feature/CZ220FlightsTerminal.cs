@@ -30,7 +30,8 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Open floor in the hangar between the transport attendant and the landing point.
-            var location = Location(area, new Vector3(33.0f, 34.4f, 0f), 3.0f);
+            // Orientation (in degrees) turns the console's face toward the walkway rather than the wall.
+            var location = Location(area, new Vector3(33.0f, 34.4f, 0f), 270.0f);
             var terminal = CreateObject(ObjectType.Placeable, "flights_terminal", location);
 
             SetName(terminal, "CZ-220 Starport Flights Terminal");

@@ -209,6 +209,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnCraftSuccess = "craft_success";
         public const string OnRefineryUsed = "refinery_used";
         public const string OnResearchTerminal = "research_term";
+        public const string OnLightsaberWorkbenchUsed = "lsaber_bench";
 
         // Fishing events
         public const string OnFishPoint = "fish_point";

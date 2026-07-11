@@ -3092,6 +3092,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         TidecallBeacon = 4997,
         FluxDiverter = 4998,
         InstructionRailDart3 = 4999,
+        LightsaberUpgradeKit2 = 5000,
+        LightsaberUpgradeKit3 = 5001,
+        LightsaberUpgradeKit4 = 5002,
+        LightsaberUpgradeKit5 = 5003,
+        ChiroLightsaberUpgradeKit = 5004,
+        SaberstaffUpgradeKit2 = 5005,
+        SaberstaffUpgradeKit3 = 5006,
+        SaberstaffUpgradeKit4 = 5007,
+        SaberstaffUpgradeKit5 = 5008,
+        ChiroSaberstaffUpgradeKit = 5009,
 
         #endregion
 

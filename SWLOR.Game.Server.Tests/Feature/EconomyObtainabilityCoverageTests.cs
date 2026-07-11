@@ -161,7 +161,8 @@ public class EconomyObtainabilityCoverageTests
 
         // Fixed resref constants that are granted directly.
         foreach (var r in new[] { "beast_dna", "beast_egg", "blueprint", "survival_knife",
-                                  "fresh_bread", "dlarproto", "travelers_clothes" })
+                                  "fresh_bread", "dlarproto", "travelers_clothes",
+                                  "ls_custom", "ss_custom" })
             Add(r);
 
         return obtainable;

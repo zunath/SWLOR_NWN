@@ -20,16 +20,31 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
         private void ActionTeleport()
         {
-            // This snippet was only ever used by the legacy Viscara/CZ-220 transport attendants to
-            // instantly teleport players between the two. Interplanetary travel now runs through the
-            // scheduled shuttle system, so the attendants no longer transport anyone directly - they
-            // simply point players at a flights terminal. Kept as a no-op redirect so the behavior is
-            // correct even before the updated attendant dialogue is repacked into the module.
             _builder.Create("action-teleport")
-                .Description("Directs a player to use a flights terminal instead of transporting them directly.")
+                .Description("Teleports a player to the waypoint with the specified tag.")
                 .ActionsTakenAction((player, args) =>
                 {
-                    SendMessageToPC(player, "Shuttle boarding is handled at the flights terminal now. Please use one to book your flight.");
+                    if (args.Length <= 0)
+                    {
+                        const string Error = "'action-teleport' requires a waypoint tag argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return;
+                    }
+
+                    var waypointTag = args[0];
+                    var waypoint = GetWaypointByTag(waypointTag);
+
+                    if (!GetIsObjectValid(waypoint))
+                    {
+                        var error = $"Could not locate waypoint with tag '{waypointTag}' for snippet 'action-teleport'";
+                        SendMessageToPC(player, error);
+                        Log.Write(LogGroup.Error, error);
+                        return;
+                    }
+
+                    var location = GetLocation(waypoint);
+                    AssignCommand(player, () => ActionJumpToLocation(location));
                 });
         }
     }

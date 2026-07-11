@@ -477,19 +477,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static uint ModifyWeaponPart(uint item, AppearanceWeapon partSlot, int partValue)
         {
-            // Skip parts already at the desired value: CopyItemAndModify returns
-            // OBJECT_INVALID for a no-op change, and destroying the original in that
-            // case would delete the whole weapon. Also keep the original if the copy
-            // fails for any other reason so the weapon is never lost.
-            if (GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)partSlot) == partValue)
-                return item;
+            // The engine stores weapon part appearance as two channels: a model number
+            // and a color number. The catalog values encode both, matching the model
+            // file names (e.g. hilt 25.4 -> wswglsbr_b_254 -> model 25, color 4), so
+            // split the value and set each channel separately - the same way the
+            // appearance editor does. Passing the combined value as the model number
+            // is invalid and makes CopyItemAndModify return OBJECT_INVALID.
+            var modelId = partValue / 10;
+            var colorId = partValue % 10;
 
-            var copy = CopyItemAndModify(item, ItemAppearanceType.WeaponModel, (int)partSlot, partValue, true);
-            if (!GetIsObjectValid(copy))
-                return item;
+            if (GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)partSlot) != colorId)
+            {
+                var copy = CopyItemAndModify(item, ItemAppearanceType.WeaponColor, (int)partSlot, colorId, true);
+                if (GetIsObjectValid(copy))
+                {
+                    DestroyObject(item);
+                    item = copy;
+                }
+            }
 
-            DestroyObject(item);
-            return copy;
+            if (GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)partSlot) != modelId)
+            {
+                var copy = CopyItemAndModify(item, ItemAppearanceType.WeaponModel, (int)partSlot, modelId, true);
+                if (GetIsObjectValid(copy))
+                {
+                    DestroyObject(item);
+                    item = copy;
+                }
+            }
+
+            return item;
         }
 
         public override Action OnWindowClosed() => () =>

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ImbuementStanceStatusEffect()
         {
-            StatGroup.Stats[StatType.StanceHostileAutoAttackForceDamage] = 8;
+            StatGroup.Stats[StatType.StanceHostileAutoAttackForceConversion] = 1;
             StatGroup.Stats[StatType.StanceHostileAutoAttackFPCost] = 2;
         }
     }

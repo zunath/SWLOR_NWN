@@ -71,7 +71,7 @@ public class LightsaberPerkBehaviorTests
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.LowFPAttackPercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.StanceHostileAutoAttackForceDamage)
+        Stat.GetStatTypeCategory(StatType.StanceHostileAutoAttackForceConversion)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
     }
 
@@ -169,7 +169,7 @@ public class LightsaberPerkBehaviorTests
     public void LightsaberStances_EmitRedesignedStatusStats()
     {
         var imbuement = new ImbuementStanceStatusEffect();
-        imbuement.StatGroup.Stats[StatType.StanceHostileAutoAttackForceDamage].Should().Be(8);
+        imbuement.StatGroup.Stats[StatType.StanceHostileAutoAttackForceConversion].Should().Be(1);
         imbuement.StatGroup.Stats[StatType.StanceHostileAutoAttackFPCost].Should().Be(2);
 
         var immovable = new ImmovableStanceStatusEffect();

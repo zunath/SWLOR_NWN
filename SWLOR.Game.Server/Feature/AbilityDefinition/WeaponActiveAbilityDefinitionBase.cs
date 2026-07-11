@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public int HitCount { get; init; } = 1;
             public bool IsQueuedWeaponAbility { get; init; }
+            public CombatDamageType DamageType { get; init; } = CombatDamageType.Physical;
             public int MaximumAreaTargets { get; init; }
             public int ExtraDamageIfRecentTarget { get; init; }
             public float RecentTargetWindowSeconds { get; init; }
@@ -1207,6 +1208,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             additionalStatusEffects,
                             CenterAreaOnActivator(targetingFlags),
                             profile.StatusEffectFactory,
+                            damageType: profile.DamageType,
                             combatImpactDamageAbility: combatImpactDamageAbility,
                             baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
@@ -1218,7 +1220,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             maxTargets: profile.MaximumAreaTargets,
                             enmityBonus: profile.EnmityBonus,
                             beforeImpact: _ => profile.BeforeHit(activator, skill),
-                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType),
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target),
@@ -1244,11 +1246,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             isArea,
                             additionalStatusEffects,
                             profile.StatusEffectFactory,
+                            damageType: profile.DamageType,
                             combatImpactDamageAbility: combatImpactDamageAbility,
                             baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                             enmityBonus: profile.EnmityBonus,
-                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType),
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target));

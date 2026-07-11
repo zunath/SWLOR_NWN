@@ -5205,10 +5205,10 @@ namespace SWLOR.Game.Server.Service.StatService
         LowFPAttackThresholdPercent = 902,
 
         /// <summary>
-        /// Bonus Force damage added to the wearer's hostile auto-attacks while Imbuement Stance is active.
+        /// While positive, the wearer's hostile weapon auto-attacks deal Force damage instead of their normal type (Imbuement Stance).
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        StanceHostileAutoAttackForceDamage = 903,
+        StanceHostileAutoAttackForceConversion = 903,
 
         /// <summary>
         /// FP cost consumed by each hostile auto-attack while Imbuement Stance is active.

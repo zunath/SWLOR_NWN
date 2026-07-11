@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
                 SkillType.Lightsaber,
-                8,
+                12,
                 0,
                 null,
                 null,
@@ -42,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    IsQueuedWeaponAbility = true
+                    IsQueuedWeaponAbility = true,
+                    DamageType = CombatDamageType.Force
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Level(2)
                     .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
                 SkillType.Lightsaber,
-                18,
+                15,
                 0,
                 null,
                 null,
@@ -71,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    IsQueuedWeaponAbility = true
+                    IsQueuedWeaponAbility = true,
+                    DamageType = CombatDamageType.Force
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -80,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Level(3)
                     .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
                 SkillType.Lightsaber,
-                28,
+                18,
                 0,
                 null,
                 null,
@@ -100,7 +103,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    IsQueuedWeaponAbility = true
+                    IsQueuedWeaponAbility = true,
+                    DamageType = CombatDamageType.Force
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -109,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Level(4)
                     .HasRecastDelay(RecastGroup.ForceSheath, 18.0f),
                 SkillType.Lightsaber,
-                38,
+                21,
                 0,
                 null,
                 null,
@@ -129,7 +133,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    IsQueuedWeaponAbility = true
+                    IsQueuedWeaponAbility = true,
+                    DamageType = CombatDamageType.Force
                 });
 
             return builder.Build();

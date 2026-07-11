@@ -47,28 +47,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceSheath1)
-                .Description("On your next hit, deal + 8 DMG and + 4 Force DMG.")
+                .Description("On your next hit, deal + 12 Force DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceSheath2)
-                .Description("On your next hit, deal + 10 DMG and + 5 Force DMG.")
+                .Description("On your next hit, deal + 15 Force DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceSheath3)
-                .Description("On your next hit, deal + 12 DMG and + 6 Force DMG.")
+                .Description("On your next hit, deal + 18 Force DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceSheath4)
-                .Description("On your next hit, deal + 14 DMG and + 7 Force DMG.")
+                .Description("On your next hit, deal + 21 Force DMG.")
                 .Price(5)
                 .RequirementSkill(SkillType.Lightsaber, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImbuementStance1)
-                .Description("While active, your hostile auto-attacks deal + 8 Force DMG but cost 2 FP each.")
+                .Description("While active, your hostile auto-attacks deal Force damage instead of physical and cost 2 FP each.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

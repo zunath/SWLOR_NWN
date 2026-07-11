@@ -11,11 +11,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     // combinations between them, so wrapper or layout-validator regressions are
     // visible in one place. Opened with /nuigallery (admin; everyone on test).
     //
-    // The GALLERY_HAZARD_* partials are DELIBERATELY broken layouts used to
-    // observe client-side solver failures. They are only defined off production,
-    // and on test/dev they are EXPECTED to print [NUI layout warning] lines at
-    // boot - that doubles as a regression check that the validator still detects
-    // those shapes. Do not add them to GuiLayoutValidator.AcknowledgedFindingPaths.
+    // The GALLERY_HAZARD_* partials fall into three categories:
+    // - CONFIRMED failures (H1: row-height-equals-button-height, blanks the window;
+    //   H6: watch on a never-Set property, server-side exception)
+    // - VERIFIED-WORKING exhibits (H2-H5: shapes previously suspected to fail,
+    //   confirmed rendering correctly in-game 2026-07, kept loadable as regression exhibits)
+    // - PROBES (unknown outcomes, to be added)
+    // They are only defined off production. Expected boot warnings on dev/test:
+    // EXACTLY ONE [NUI layout warning] line, from partial GALLERY_HAZARD_BUTTON_ROW (H1) —
+    // that line is the validator's R2c regression canary.
     public class DebugNuiGalleryDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<DebugNuiGalleryViewModel> _builder = new();
@@ -23,7 +27,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float TabRowHeight = 28f;
         private const float ButtonHeight = 32f;
         private const float LabelHeight = 20f;
-        private const float EventLogWidth = 280f;
         private const float ContentPanelWidth = 560f;
 
         // Three 28px tabbar rows + margins, same proportions as CharacterSheet's
@@ -59,119 +62,90 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 DefineHazardPartials(window);
             }
 
-            // Root layout mirrors CharacterSheet exactly: a single root row of
-            // columns (variable content column + fixed-width rail), with the tab
-            // bars inside a fixed-height group within the variable column.
-            window.AddColumn(root =>
+            // Root layout uses GuiStandardLayout - the only root shape proven
+            // to track window geometry (see Readmes/NuiLayoutRules.md R5).
+            window.AddStandardLayout(layout =>
             {
-                root.AddRow(mainRow =>
+                layout.SetTabPanelHeight(TabPanelHeight);
+
+                // Tabbar rows are the one legal fixed-height-row pairing: the
+                // toggles widget has no default margin (layout rule R2c exception).
+                layout.AddTabRow(row =>
                 {
-                    mainRow.AddColumn(contentCol =>
+                    row.SetHeight(TabRowHeight);
+                    row.AddToggles()
+                        .AddOption("Buttons")
+                        .AddOption("Text & Input")
+                        .AddOption("Selection")
+                        .AddOption("Sliders")
+                        .BindSelectedValue(model => model.RowATabValue)
+                        .SetWidth(464f)
+                        .SetHeight(TabRowHeight);
+                });
+
+                layout.AddTabRow(row =>
+                {
+                    row.SetHeight(TabRowHeight);
+                    row.AddToggles()
+                        .AddOption("Lists & Tables")
+                        .AddOption("Groups & Layout")
+                        .AddOption("Images & Drawing")
+                        .AddOption("Charts")
+                        .BindSelectedValue(model => model.RowBTabValue)
+                        .SetWidth(464f)
+                        .SetHeight(TabRowHeight);
+                });
+
+                layout.AddTabRow(row =>
+                {
+                    row.SetHeight(TabRowHeight);
+                    row.AddToggles()
+                        .AddOption("Bindings")
+                        .AddOption("Modals & Events")
+                        .AddOption("Hazards")
+                        .BindSelectedValue(model => model.RowCTabValue)
+                        .SetWidth(348f)
+                        .SetHeight(TabRowHeight);
+                });
+
+                layout.SetContentPartialElement(DebugNuiGalleryViewModel.TabContentElement);
+
+                // The event log lives in the window root (geometry-bound), so
+                // it is always layout-safe and survives tab partial swaps.
+                // Variable-width rail (no fixedWidth): under in-game verification.
+                // If the content region ever freezes at a constant width again,
+                // revert to a fixed width (280f) and record that side rails must
+                // be fixed-width in NuiLayoutRules R5.
+                layout.AddSideColumn(logCol =>
+                {
+                    logCol.AddRow(headerRow =>
                     {
-                        contentCol.AddRow(tabPanelRow =>
-                        {
-                            tabPanelRow.AddGroup(tabPanel =>
-                            {
-                                tabPanel.SetShowBorder(false);
-                                tabPanel.SetScrollbars(NuiScrollbars.Auto);
-                                tabPanel.AddColumn(tabCol =>
-                                {
-                                    // Tabbar rows are the one legal fixed-height-row
-                                    // pairing: the toggles widget has no default
-                                    // margin (layout rule R2c exception).
-                                    tabCol.AddRow(row =>
-                                    {
-                                        row.SetHeight(TabRowHeight);
-                                        row.AddToggles()
-                                            .AddOption("Buttons")
-                                            .AddOption("Text & Input")
-                                            .AddOption("Selection")
-                                            .AddOption("Sliders")
-                                            .BindSelectedValue(model => model.RowATabValue)
-                                            .SetWidth(464f)
-                                            .SetHeight(TabRowHeight);
-                                    });
-
-                                    tabCol.AddRow(row =>
-                                    {
-                                        row.SetHeight(TabRowHeight);
-                                        row.AddToggles()
-                                            .AddOption("Lists & Tables")
-                                            .AddOption("Groups & Layout")
-                                            .AddOption("Images & Drawing")
-                                            .AddOption("Charts")
-                                            .BindSelectedValue(model => model.RowBTabValue)
-                                            .SetWidth(464f)
-                                            .SetHeight(TabRowHeight);
-                                    });
-
-                                    tabCol.AddRow(row =>
-                                    {
-                                        row.SetHeight(TabRowHeight);
-                                        row.AddToggles()
-                                            .AddOption("Bindings")
-                                            .AddOption("Modals & Events")
-                                            .AddOption("Hazards")
-                                            .BindSelectedValue(model => model.RowCTabValue)
-                                            .SetWidth(348f)
-                                            .SetHeight(TabRowHeight);
-                                    });
-                                });
-                            })
-                                .SetHeight(TabPanelHeight);
-                        });
-
-                        contentCol.AddRow(contentRow =>
-                        {
-                            contentRow.AddGroup(group =>
-                            {
-                                group.SetShowBorder(false);
-                                group.SetScrollbars(NuiScrollbars.Auto);
-                                group.AddColumn(hostCol =>
-                                {
-                                    hostCol.AddRow(hostRow =>
-                                    {
-                                        hostRow.AddPartialView(DebugNuiGalleryViewModel.TabContentElement);
-                                    });
-                                });
-                            });
-                        });
+                        headerRow.AddLabel()
+                            .SetText("Event Log")
+                            .SetHeight(24f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        headerRow.AddButton()
+                            .SetText("Clear")
+                            .SetHeight(24f)
+                            .SetWidth(60f)
+                            .BindOnClicked(model => model.OnClickClearLog());
                     });
 
-                    // The event log lives in the window root (geometry-bound), so
-                    // it is always layout-safe and survives tab partial swaps.
-                    mainRow.AddColumn(logCol =>
+                    logCol.AddRow(listRow =>
                     {
-                        logCol.AddRow(headerRow =>
+                        listRow.AddList(template =>
                         {
-                            headerRow.AddLabel()
-                                .SetText("Event Log")
-                                .SetHeight(24f)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                            headerRow.AddButton()
-                                .SetText("Clear")
-                                .SetHeight(24f)
-                                .SetWidth(60f)
-                                .BindOnClicked(model => model.OnClickClearLog());
-                        });
-
-                        logCol.AddRow(listRow =>
-                        {
-                            listRow.AddList(template =>
+                            template.AddCell(cell =>
                             {
-                                template.AddCell(cell =>
-                                {
-                                    cell.AddLabel()
-                                        .BindText(model => model.EventLog)
-                                        .BindTooltip(model => model.EventLog)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                });
-                            })
-                                .BindRowCount(model => model.EventLog)
-                                .SetRowHeight(20f);
-                        });
-                    })
-                        .SetWidth(EventLogWidth);
+                                cell.AddLabel()
+                                    .BindText(model => model.EventLog)
+                                    .BindTooltip(model => model.EventLog)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            });
+                        })
+                            .BindRowCount(model => model.EventLog)
+                            .SetRowHeight(20f);
+                    });
                 });
             });
 
@@ -1095,7 +1069,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 col.AddRow(row =>
                 {
                     row.AddLabel()
-                        .SetText("Each button loads a deliberately broken layout into the slot below.")
+                        .SetText("Confirmed-failure buttons will blank the window or throw; verified-working buttons render their exhibit.")
                         .SetHeight(LabelHeight)
                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
                         .SetColor(GuiColor.Red);
@@ -1108,6 +1082,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                 });
 
+                AddSectionLabel(col, "Confirmed failures (will blank the window / throw)");
                 col.AddRow(row =>
                 {
                     row.AddButton()
@@ -1117,38 +1092,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickHazardButtonRow());
                     row.AddButton()
-                        .SetText("H2: Unbounded List")
-                        .SetTooltip("Unbounded list followed by another row (R2 gray zone; may render)")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickHazardListNonTerminal());
-                    row.AddSpacer();
-                });
-                col.AddRow(row =>
-                {
-                    row.AddButton()
-                        .SetText("H3: Tall Fixed Stack")
-                        .SetTooltip("12 x 120px fixed-height groups with no scroll wrapper (R2b); fails when taller than the viewport")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickHazardTallStack());
-                    row.AddButton()
-                        .SetText("H4: Zero-Width Cell")
-                        .SetTooltip("Fixed list cell with no width anywhere: client solve failure")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickHazardZeroCell());
-                    row.AddSpacer();
-                });
-                col.AddRow(row =>
-                {
-                    row.AddButton()
-                        .SetText("H5: Width Conflict")
-                        .SetTooltip("Two 150px-wide buttons inside a 200px-wide group: conflicting REQUIRED sizes")
-                        .SetHeight(ButtonHeight)
-                        .SetWidth(200f)
-                        .BindOnClicked(model => model.OnClickHazardWidthConflict());
-                    row.AddButton()
                         .SetText("H6: Watch Unset Prop")
                         .SetTooltip("WatchOnClient on a never-Set property: server-side exception (R3), window stays up")
                         .SetHeight(ButtonHeight)
@@ -1156,6 +1099,157 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnClickHazardWatchUnset());
                     row.AddSpacer();
                 });
+
+                AddSectionLabel(col, "Verified working (previously suspected, confirmed OK in-game)");
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("W1: Unbounded List (OK)")
+                        .SetTooltip("Unbounded list followed by another row in a partial. VERIFIED: renders correctly in-game; kept as a regression exhibit.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickHazardListNonTerminal());
+                    row.AddButton()
+                        .SetText("W2: Tall Fixed Stack (OK)")
+                        .SetTooltip("12 x 120px fixed-height groups with no scroll wrapper. VERIFIED: renders correctly in-game; kept as a regression exhibit.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickHazardTallStack());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("W3: Zero-Width Cell (OK)")
+                        .SetTooltip("Fixed list cell with no width anywhere. VERIFIED: renders correctly in-game; kept as a regression exhibit.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickHazardZeroCell());
+                    row.AddButton()
+                        .SetText("W4: Width Conflict (OK)")
+                        .SetTooltip("Two 150px-wide buttons inside a 200px-wide group. VERIFIED: renders correctly in-game; kept as a regression exhibit.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickHazardWidthConflict());
+                    row.AddSpacer();
+                });
+
+                AddSectionLabel(col, "Probes - fixed-row margin map (outcome UNKNOWN)");
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P1: Row+Checkbox")
+                        .SetTooltip("PROBE: row.SetHeight(32)+checkbox.SetHeight(32). Blanks the window if this family has default margins.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowCheckbox());
+                    row.AddButton()
+                        .SetText("P2: Row+TextEdit")
+                        .SetTooltip("PROBE: row.SetHeight(32)+textedit.SetHeight(32). Blanks the window if this family has default margins.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowTextEdit());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P3: Row+Combo")
+                        .SetTooltip("PROBE: row.SetHeight(32)+combo.SetHeight(32). Blanks the window if this family has default margins.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowCombo());
+                    row.AddButton()
+                        .SetText("P4: Row+SliderInt")
+                        .SetTooltip("PROBE: row.SetHeight(32)+slider.SetHeight(32). Blanks the window if this family has default margins.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowSlider());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P5: Row+Options")
+                        .SetTooltip("PROBE: row.SetHeight(32)+options.SetHeight(32). Blanks the window if this family has default margins.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowOptions());
+                    row.AddButton()
+                        .SetText("P6: Row+Progress")
+                        .SetTooltip("PROBE: row.SetHeight(32)+progress.SetHeight(32). Blanks the window if this family has default margins.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeRowProgress());
+                    row.AddSpacer();
+                });
+
+                AddSectionLabel(col, "Probes - structural & data (outcome UNKNOWN)");
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P7: Narrow Group")
+                        .SetTooltip("PROBE: 100f-wide fixed group containing a 150f-wide fixed button.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeColWidth());
+                    row.AddButton()
+                        .SetText("P8: Aspect+Dims")
+                        .SetTooltip("PROBE: image with aspect Exact plus explicit width AND height; second image with invalid resref.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeAspect());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P9: Zero Dims")
+                        .SetTooltip("PROBE: button with SetWidth(0)/SetHeight(0).")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeZeroDim());
+                    row.AddButton()
+                        .SetText("P10: Negative Dims")
+                        .SetTooltip("PROBE: button with SetWidth(-10)/SetHeight(-10).")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeNegDim());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P11: List Mismatch")
+                        .SetTooltip("PROBE: one list's cells bound to 5-row and 2-row lists. Check Lists & Tables tab; recover via Replace Lists.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeListMismatch());
+                    row.AddButton()
+                        .SetText("P12: Empty Data")
+                        .SetTooltip("PROBE: empty chart data + empty combo options. Check Charts/Selection tabs; recover via Randomize Data / Replace Options.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeEmptyData());
+                    row.AddSpacer();
+                });
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .SetText("P13a: Bad Element Id")
+                        .SetTooltip("PROBE: ChangePartialView onto a nonexistent element id.")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeBadElementId());
+                    row.AddButton()
+                        .SetText("P13b: Nested x3")
+                        .SetTooltip("PROBE: partial inside a partial inside a partial (3 deep).")
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(200f)
+                        .BindOnClicked(model => model.OnClickProbeNestedPartial());
+                    row.AddSpacer();
+                });
+
                 col.AddRow(row =>
                 {
                     row.AddButton()
@@ -1214,6 +1308,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
 
             // H2 - unbounded list that is not the terminal content of its column (R2).
+            // Previously suspected to fail, but verified rendering correctly in-game 2026-07.
             window.DefinePartialView(DebugNuiGalleryViewModel.HazardListNonTerminalPartial, hazard =>
             {
                 hazard.AddColumn(col =>
@@ -1241,6 +1336,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
 
             // H3 - fixed heights stacking past the host viewport with no scroll wrapper (R2b).
+            // Previously suspected to fail, but verified rendering correctly in-game 2026-07.
             window.DefinePartialView(DebugNuiGalleryViewModel.HazardTallStackPartial, hazard =>
             {
                 hazard.AddColumn(col =>
@@ -1262,6 +1358,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
 
             // H4 - fixed template cell with no width on the cell or its element.
+            // Previously suspected to fail, but verified rendering correctly in-game 2026-07.
             window.DefinePartialView(DebugNuiGalleryViewModel.HazardZeroCellPartial, hazard =>
             {
                 hazard.AddColumn(col =>
@@ -1284,6 +1381,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
 
             // H5 - fixed child widths that cannot fit inside a fixed parent width.
+            // Previously suspected to fail, but verified rendering correctly in-game 2026-07.
             window.DefinePartialView(DebugNuiGalleryViewModel.HazardWidthConflictPartial, hazard =>
             {
                 hazard.AddColumn(col =>
@@ -1300,6 +1398,168 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         })
                             .SetWidth(200f)
                             .SetHeight(60f);
+                    });
+                });
+            });
+
+            // Probes - generalizing R2c margin detection across widget families.
+            // Each probe uses a fixed row (32px) with SetHeight(32f) on its widget.
+            // Outcome unknown per family; a confirmed BLANK promotes that family
+            // into the validator's button-family list.
+            DefineFixedRowProbe(window, DebugNuiGalleryViewModel.ProbeRowCheckboxPartial, 32f, row =>
+            {
+                row.AddCheckBox()
+                    .SetText("Probe")
+                    .BindIsChecked(model => model.IsChecked)
+                    .SetHeight(32f)
+                    .SetWidth(150f);
+            });
+
+            DefineFixedRowProbe(window, DebugNuiGalleryViewModel.ProbeRowTextEditPartial, 32f, row =>
+            {
+                row.AddTextEdit()
+                    .SetPlaceholder("Probe")
+                    .BindValue(model => model.TextEditValue)
+                    .SetMaxLength(50)
+                    .SetHeight(32f);
+            });
+
+            DefineFixedRowProbe(window, DebugNuiGalleryViewModel.ProbeRowComboPartial, 32f, row =>
+            {
+                row.AddComboBox()
+                    .AddOption("Probe A", 0)
+                    .AddOption("Probe B", 1)
+                    .BindSelectedIndex(model => model.StaticComboSelection)
+                    .SetHeight(32f)
+                    .SetWidth(150f);
+            });
+
+            DefineFixedRowProbe(window, DebugNuiGalleryViewModel.ProbeRowSliderPartial, 32f, row =>
+            {
+                row.AddSliderInt()
+                    .BindValue(model => model.SliderIntValue)
+                    .SetMinimum(0)
+                    .SetMaximum(10)
+                    .SetStepSize(1)
+                    .SetHeight(32f);
+            });
+
+            DefineFixedRowProbe(window, DebugNuiGalleryViewModel.ProbeRowOptionsPartial, 32f, row =>
+            {
+                row.AddOptions()
+                    .SetDirection(NuiDirection.Horizontal)
+                    .AddOption("One")
+                    .AddOption("Two")
+                    .BindSelectedValue(model => model.OptionsHorizontalValue)
+                    .SetHeight(32f)
+                    .SetWidth(200f);
+            });
+
+            DefineFixedRowProbe(window, DebugNuiGalleryViewModel.ProbeRowProgressPartial, 32f, row =>
+            {
+                row.AddProgressBar()
+                    .BindValue(model => model.ProgressValue)
+                    .SetHeight(32f);
+            });
+
+            // Structural probes - outcome unknown, verified in-game via the probe buttons.
+            // P7: column-axis width conflict.
+            window.DefinePartialView(DebugNuiGalleryViewModel.ProbeColWidthPartial, hazard =>
+            {
+                hazard.AddColumn(col =>
+                {
+                    col.AddRow(row =>
+                    {
+                        row.AddGroup(group =>
+                        {
+                            group.AddColumn(inner => inner.AddRow(r => r.AddButton().SetText("150 wide").SetWidth(150f).SetHeight(32f)));
+                        })
+                            .SetWidth(100f)
+                            .SetHeight(60f);
+                    });
+                });
+            });
+
+            // P8: aspect + both dimensions on one image, plus an invalid resref image.
+            window.DefinePartialView(DebugNuiGalleryViewModel.ProbeAspectPartial, hazard =>
+            {
+                hazard.AddColumn(col =>
+                {
+                    col.AddRow(row =>
+                    {
+                        row.AddImage()
+                            .SetResref("arrow_up")
+                            .SetAspect(NuiAspect.Exact)
+                            .SetWidth(64f)
+                            .SetHeight(200f)
+                            .SetTooltip("Aspect Exact + width 64 + height 200");
+                    });
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel().SetText("Below: image with invalid resref 'zz_no_such_img'").SetHeight(20f);
+                    });
+                    col.AddRow(row =>
+                    {
+                        row.AddImage()
+                            .SetResref("zz_no_such_img")
+                            .SetAspect(NuiAspect.Fit)
+                            .SetWidth(48f)
+                            .SetHeight(48f);
+                    });
+                });
+            });
+
+            // P9 / P10: zero and negative dimensions.
+            window.DefinePartialView(DebugNuiGalleryViewModel.ProbeZeroDimPartial, hazard =>
+            {
+                hazard.AddColumn(col =>
+                {
+                    col.AddRow(row => row.AddButton().SetText("Zero-dim").SetWidth(0f).SetHeight(0f));
+                });
+            });
+            window.DefinePartialView(DebugNuiGalleryViewModel.ProbeNegDimPartial, hazard =>
+            {
+                hazard.AddColumn(col =>
+                {
+                    col.AddRow(row => row.AddButton().SetText("Neg-dim").SetWidth(-10f).SetHeight(-10f));
+                });
+            });
+
+            // P13b: 3-deep partial nesting host (a partial containing another partial slot).
+            window.DefinePartialView(DebugNuiGalleryViewModel.ProbeNestedHostPartial, hazard =>
+            {
+                hazard.AddColumn(col =>
+                {
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel().SetText("Nested host loaded; inner slot below.").SetHeight(20f);
+                    });
+                    col.AddRow(row =>
+                    {
+                        var slot = row.AddPartialView(DebugNuiGalleryViewModel.ProbeNestedSlotElement);
+                        slot.AddColumn(slotCol =>
+                        {
+                            slotCol.AddRow(r => r.AddLabel().SetText("Inner slot default content.").SetHeight(20f));
+                        });
+                    });
+                });
+            });
+        }
+
+        private static void DefineFixedRowProbe(
+            GuiWindow<DebugNuiGalleryViewModel> window,
+            string partialName,
+            float rowHeight,
+            Action<GuiRow<DebugNuiGalleryViewModel>> addWidget)
+        {
+            window.DefinePartialView(partialName, hazard =>
+            {
+                hazard.AddColumn(col =>
+                {
+                    col.AddRow(row =>
+                    {
+                        row.SetHeight(rowHeight);
+                        addWidget(row);
                     });
                 });
             });

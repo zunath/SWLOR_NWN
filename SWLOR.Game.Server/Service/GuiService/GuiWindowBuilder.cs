@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -191,9 +193,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             var windowId = Gui.BuildWindowId(_type);
 
-            // Surface layout shapes known/suspected to fail NUI's client-side constraint
+            // Surface layout shapes confirmed to fail NUI's client-side constraint
             // solver, with a widget path - the client error itself carries no context.
-            // Advisory only; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
+            // Every warning is a real defect; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
             foreach (var finding in GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews))
             {
                 Console.WriteLine($"[NUI layout warning] {finding}");
@@ -206,6 +208,19 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
 
             var json = _activeWindow.Build();
+
+            // Dump the exact wire JSON for layout debugging (see Readmes/NuiLayoutRules.md,
+            // "Diagnosing a client-side layout error"). Lands in the Server log group.
+            if (ApplicationSettings.Get().ServerEnvironment != ServerEnvironmentType.Production ||
+                Environment.GetEnvironmentVariable("SWLOR_NUI_DUMP_JSON") == "1")
+            {
+                Log.Write(LogGroup.Server, $"[NUI JSON] window={windowId} root={JsonDump(json)}");
+                foreach (var (partialName, partialJson) in partialViews)
+                {
+                    Log.Write(LogGroup.Server, $"[NUI JSON] window={windowId} partial={partialName} json={JsonDump(partialJson)}");
+                }
+            }
+
             RegisterAllElementEvents();
 
             var constructedWindow = new GuiConstructedWindow(

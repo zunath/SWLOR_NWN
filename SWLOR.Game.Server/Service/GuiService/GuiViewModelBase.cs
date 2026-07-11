@@ -471,12 +471,26 @@ namespace SWLOR.Game.Server.Service.GuiService
             _callerCancelAction = null;
         };
 
+        /// <summary>
+        /// Called after ANY modal (ShowModal / ShowInputModal) closes - confirm or
+        /// cancel - after the caller's confirm/cancel action has run. Closing a
+        /// modal swaps %%WINDOW_MAIN%% back into the root, which wipes any partial
+        /// currently applied to a nested element (e.g. the selected tab's content).
+        /// Tabbed windows should override this and re-apply their current tab
+        /// partial. Default: no-op.
+        /// </summary>
+        protected virtual void OnModalClosedRestore()
+        {
+        }
+
         public Action OnModalConfirmClick() => () =>
         {
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
 
             if (_callerConfirmAction != null)
                 _callerConfirmAction();
+
+            OnModalClosedRestore();
         };
 
         public Action OnModalCancelClick() => () =>
@@ -485,6 +499,8 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             if (_callerCancelAction != null)
                 _callerCancelAction();
+
+            OnModalClosedRestore();
         };
 
         public Action OnInputModalConfirmClick() => () =>
@@ -493,6 +509,8 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             if (_callerConfirmAction != null)
                 _callerConfirmAction();
+
+            OnModalClosedRestore();
         };
 
         public Action OnInputModalCancelClick() => () =>
@@ -501,6 +519,8 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             if (_callerCancelAction != null)
                 _callerCancelAction();
+
+            OnModalClosedRestore();
         };
 
         /// <summary>

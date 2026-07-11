@@ -43,6 +43,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string HazardZeroCellPartial = "GALLERY_HAZARD_ZERO_CELL";
         public const string HazardWidthConflictPartial = "GALLERY_HAZARD_WIDTH_CONFLICT";
 
+        public const string ProbeRowCheckboxPartial = "GALLERY_PROBE_ROW_CHECKBOX";
+        public const string ProbeRowTextEditPartial = "GALLERY_PROBE_ROW_TEXTEDIT";
+        public const string ProbeRowComboPartial = "GALLERY_PROBE_ROW_COMBO";
+        public const string ProbeRowSliderPartial = "GALLERY_PROBE_ROW_SLIDER";
+        public const string ProbeRowOptionsPartial = "GALLERY_PROBE_ROW_OPTIONS";
+        public const string ProbeRowProgressPartial = "GALLERY_PROBE_ROW_PROGRESS";
+
+        public const string ProbeColWidthPartial = "GALLERY_PROBE_COL_WIDTH";
+        public const string ProbeAspectPartial = "GALLERY_PROBE_ASPECT";
+        public const string ProbeZeroDimPartial = "GALLERY_PROBE_ZERO_DIM";
+        public const string ProbeNegDimPartial = "GALLERY_PROBE_NEG_DIM";
+        public const string ProbeNestedHostPartial = "GALLERY_PROBE_NESTED_HOST";
+        public const string ProbeNestedSlotElement = "gallery_probe_nested_slot";
+
         private const int MaxLogEntries = 100;
 
         private static readonly GuiTabGroup<DebugNuiGalleryViewModel, GuiPayloadBase> Tabs =
@@ -401,14 +415,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LogEvent($"Tab selected: {Tabs.GetPartialName(tabId)}");
         }
 
-        // Closing a modal swaps %%WINDOW_MAIN%% back in, which resets the tab
-        // content group to its empty template state - the current tab partial
-        // must be re-applied afterwards (same as CharacterSheet's modal flow).
-        private void RestoreCurrentTab()
-        {
-            Tabs.Select(this, TabContentElement, SelectedTabId);
-        }
-
         private void LogEvent(string message)
         {
             if (_isInitializing)
@@ -655,21 +661,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         // Modals & Events tab
+        // Closing a modal swaps %%WINDOW_MAIN%% back in, which resets the tab
+        // content group to its empty template state - the current tab partial
+        // must be re-applied afterwards (same as CharacterSheet's modal flow).
+        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
+
         public Action OnClickShowModal() => () =>
         {
             LogEvent("Opening yes/no modal");
             ShowModal(
                 "This is the stock confirmation modal. Choose either button.",
-                () =>
-                {
-                    LogEvent("Modal CONFIRMED");
-                    RestoreCurrentTab();
-                },
-                () =>
-                {
-                    LogEvent("Modal CANCELLED");
-                    RestoreCurrentTab();
-                });
+                () => LogEvent("Modal CONFIRMED"),
+                () => LogEvent("Modal CANCELLED"));
         };
 
         public Action OnClickShowInputModal() => () =>
@@ -678,16 +681,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowInputModal(
                 "Type something and submit it.",
                 "prefilled text",
-                () =>
-                {
-                    LogEvent($"Input modal submitted: '{ModalInputText}'");
-                    RestoreCurrentTab();
-                },
-                () =>
-                {
-                    LogEvent("Input modal cancelled");
-                    RestoreCurrentTab();
-                });
+                () => LogEvent($"Input modal submitted: '{ModalInputText}'"),
+                () => LogEvent("Input modal cancelled"));
         };
 
         public Action OnClickReapplyTab() => () =>
@@ -730,22 +725,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickHazardListNonTerminal() => () =>
         {
-            LoadHazard(HazardListNonTerminalPartial, "R2 gray zone - unbounded list followed by another row; may or may not render");
+            LoadHazard(HazardListNonTerminalPartial, "verified working - expect it to render");
         };
 
         public Action OnClickHazardTallStack() => () =>
         {
-            LoadHazard(HazardTallStackPartial, "unsolvable when fixed heights exceed the viewport (R2b); resize-dependent");
+            LoadHazard(HazardTallStackPartial, "verified working - expect it to render");
         };
 
         public Action OnClickHazardZeroCell() => () =>
         {
-            LoadHazard(HazardZeroCellPartial, "unsolvable layout - fixed list cell with no width anywhere");
+            LoadHazard(HazardZeroCellPartial, "verified working - expect it to render");
         };
 
         public Action OnClickHazardWidthConflict() => () =>
         {
-            LoadHazard(HazardWidthConflictPartial, "unsolvable layout - fixed child widths exceed fixed parent width");
+            LoadHazard(HazardWidthConflictPartial, "verified working - expect it to render");
         };
 
         public Action OnClickHazardWatchUnset() => () =>
@@ -765,6 +760,100 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             LogEvent("Hazard slot reset to safe content");
             ChangePartialView(HazardSlotElement, HazardSafePartial);
+        };
+
+        public Action OnClickProbeRowCheckbox() => () =>
+        {
+            LoadHazard(ProbeRowCheckboxPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+        };
+
+        public Action OnClickProbeRowTextEdit() => () =>
+        {
+            LoadHazard(ProbeRowTextEditPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+        };
+
+        public Action OnClickProbeRowCombo() => () =>
+        {
+            LoadHazard(ProbeRowComboPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+        };
+
+        public Action OnClickProbeRowSlider() => () =>
+        {
+            LoadHazard(ProbeRowSliderPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+        };
+
+        public Action OnClickProbeRowOptions() => () =>
+        {
+            LoadHazard(ProbeRowOptionsPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+        };
+
+        public Action OnClickProbeRowProgress() => () =>
+        {
+            LoadHazard(ProbeRowProgressPartial, "PROBE - unknown: does this family have a default margin like buttons (R2c)?");
+        };
+
+        public Action OnClickProbeColWidth() => () =>
+        {
+            LoadHazard(ProbeColWidthPartial, "PROBE - unknown outcome (fixed 100f-wide group with 150f-wide fixed child)");
+        };
+
+        public Action OnClickProbeAspect() => () =>
+        {
+            LoadHazard(ProbeAspectPartial, "PROBE - unknown outcome (aspect + both dimensions; plus invalid image resref)");
+        };
+
+        public Action OnClickProbeZeroDim() => () =>
+        {
+            LoadHazard(ProbeZeroDimPartial, "PROBE - unknown outcome (button with zero width and height)");
+        };
+
+        public Action OnClickProbeNegDim() => () =>
+        {
+            LoadHazard(ProbeNegDimPartial, "PROBE - unknown outcome (button with negative width and height)");
+        };
+
+        public Action OnClickProbeListMismatch() => () =>
+        {
+            LogEvent("PROBE: setting ListNames to 5 rows but ListDescriptions to 2 - check the Lists & Tables tab; recover via Replace Lists");
+            ListNames = new GuiBindingList<string> { "Mismatch 1", "Mismatch 2", "Mismatch 3", "Mismatch 4", "Mismatch 5" };
+            ListDescriptions = new GuiBindingList<string> { "Only two", "descriptions" };
+            ListProgress = new GuiBindingList<float> { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f };
+            ListResrefs = new GuiBindingList<string> { "arrow_up", "arrow_up", "arrow_up", "arrow_up", "arrow_up" };
+            _listRowIndex = 5;
+        };
+
+        public Action OnClickProbeEmptyData() => () =>
+        {
+            LogEvent("PROBE: emptying ChartData and DynamicComboOptions - check Charts and Selection tabs; recover via Randomize Data / Replace Options");
+            ChartData = new GuiBindingList<float>();
+            DynamicComboOptions = new GuiBindingList<GuiComboEntry>();
+        };
+
+        public Action OnClickProbeBadElementId() => () =>
+        {
+            LogEvent("PROBE: applying a partial to a nonexistent element id 'no_such_element_id'");
+            try
+            {
+                ChangePartialView("no_such_element_id", HazardSafePartial);
+                LogEvent("PROBE result: no server-side exception (check client for errors)");
+            }
+            catch (Exception ex)
+            {
+                LogEvent($"PROBE result: server-side {ex.GetType().Name}: {ex.Message}");
+            }
+        };
+
+        public Action OnClickProbeNestedPartial() => () =>
+        {
+            LoadHazard(ProbeNestedHostPartial, "PROBE - unknown outcome (partial-in-partial-in-partial, 3 deep)");
+            DelayCommand(0.1f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                {
+                    LogEvent("PROBE: applying safe partial into the 3rd-level nested slot");
+                    ChangePartialView(ProbeNestedSlotElement, HazardSafePartial);
+                }
+            });
         };
     }
 }

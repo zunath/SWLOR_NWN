@@ -87,8 +87,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Content dimensions of the overlay. These are logical units that the engine scales
                 // by the player's GUI scale; the anchor offsets below are multiplied by that same
                 // scale so the bars stay pinned over the portrait at any resolution or zoom.
+                // Content dimensions of the overlay. Height must fit BOTH bar rows plus NUI's
+                // inter-row margins or the second row is clipped (see PlayerStatusPortraitDefinition
+                // for the row/bar heights this is sized against).
                 const float WidgetWidth = 72f;
-                const float WidgetHeight = 34f;
+                const float WidgetHeight = 48f;
 
                 // Distance (at 100% scale) from the right/top screen edges to the overlay's top-left
                 // corner. Tuned so the two bars sit across the lower half of the native portrait,
@@ -96,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Note: SWLOR's GetPlayerDeviceProperty returns physical pixels, so the anchor is
                 // (edge - offset*scale) here, matching PlayerStatusViewModel/TargetStatusViewModel.
                 const float XOffset = 88f;
-                const float YOffset = 72f;
+                const float YOffset = 58f;
 
                 var scale = screenScale / 100f;
                 var x = screenWidth - XOffset * scale;

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.PlayerStatusPortrait)
-                .SetInitialGeometry(0, 0, 72f, 34f)
+                .SetInitialGeometry(0, 0, 72f, 48f)
                 .SetTitle(null)
                 .SetIsClosable(false)
                 .SetIsResizable(false)
@@ -21,12 +21,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .AddColumn(col =>
                 {
                     // FP (blue) on top, Stamina (green) below, matching the portrait bar ordering.
+                    // Rows carry explicit heights (~8px over the bar height, the project's safe
+                    // ratio) so both rows always fit; a too-short window clips the second bar.
                     col.AddRow(row =>
                     {
                         row.AddProgressBar()
                             .BindValue(model => model.FPProgress)
                             .BindColor(model => model.FPColor)
                             .SetHeight(15f)
+                            .SetPadding(0f)
                             .AddDrawList(drawList =>
                             {
                                 drawList.AddText(text =>
@@ -36,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     text.SetColor(255, 255, 255);
                                 });
                             });
-                    });
+                    })
+                        .SetHeight(23f);
 
                     col.AddRow(row =>
                     {
@@ -44,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindValue(model => model.StaminaProgress)
                             .BindColor(model => model.StaminaColor)
                             .SetHeight(15f)
+                            .SetPadding(0f)
                             .AddDrawList(drawList =>
                             {
                                 drawList.AddText(text =>
@@ -53,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     text.SetColor(255, 255, 255);
                                 });
                             });
-                    });
+                    })
+                        .SetHeight(23f);
                 });
 
             return _builder.Build();

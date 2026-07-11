@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 new GeneratedWeaponAbilityProfile
                 {
                     SelfStatusEffectFactory = () => new SaberWardStatusEffect(conversionPercent, defensePercent, forceDefensePercent),
-                    SelfStatusEffectsToReplace = new[] { typeof(PerfectSoresuStatusEffect) }
+                    SelfStatusEffectsToReplace = new[] { typeof(PerfectAegisStatusEffect) }
                 });
         }
     }

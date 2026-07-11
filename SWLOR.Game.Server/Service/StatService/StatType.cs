@@ -5109,46 +5109,46 @@ namespace SWLOR.Game.Server.Service.StatService
         DirectDamageToStatusCategoryOrStealthBonusCategory = 885,
 
         /// <summary>
-        /// Percent of incoming physical damage converted to Force damage before mitigation (Saber Ward / Perfect Soresu).
+        /// Percent of incoming physical damage converted to Force damage before mitigation (Saber Ward / Perfect Aegis).
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         IncomingPhysicalToForceConversionPercent = 887,
 
         /// <summary>
-        /// Defense percent granted per Soresu Pressure stack.
+        /// Defense percent granted per Embattled stack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SoresuPressureStackDefensePercent = 888,
+        EmbattledStackDefensePercent = 888,
 
         /// <summary>
-        /// Force Defense percent granted per Soresu Pressure stack.
+        /// Force Defense percent granted per Embattled stack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SoresuPressureStackForceDefensePercent = 889,
+        EmbattledStackForceDefensePercent = 889,
 
         /// <summary>
-        /// Maximum number of Soresu Pressure stacks that may be held.
+        /// Maximum number of Embattled stacks that may be held.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SoresuPressureMaxStacks = 890,
+        EmbattledMaxStacks = 890,
 
         /// <summary>
-        /// Soresu Pressure stack count at or above which high-stack bonuses apply.
+        /// Embattled stack count at or above which high-stack bonuses apply.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SoresuPressureHighStackThreshold = 891,
+        EmbattledHighStackThreshold = 891,
 
         /// <summary>
-        /// Mobility Resistance granted while at or above the Soresu Pressure high-stack threshold.
+        /// Mobility Resistance granted while at or above the Embattled high-stack threshold.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SoresuPressureHighStackMobilityResistance = 892,
+        EmbattledHighStackMobilityResistance = 892,
 
         /// <summary>
-        /// Additional Deflecting Return reflection percent while at or above the Soresu Pressure high-stack threshold.
+        /// Additional Deflecting Return reflection percent while at or above the Embattled high-stack threshold.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SoresuPressureHighStackDeflectionReflectionBonusPercent = 893,
+        EmbattledHighStackDeflectionReflectionBonusPercent = 893,
 
         /// <summary>
         /// Percent of a deflected ranged attack's pre-mitigation damage reflected back to its source.

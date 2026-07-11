@@ -10,17 +10,17 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class SarlaccSweepAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class SunderingSweepAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SarlaccSweep1, PerkType.SarlaccSweep)
-                    .Name("Sarlacc Sweep I")
+                builder.Create(FeatType.SunderingSweep1, PerkType.SunderingSweep)
+                    .Name("Sundering Sweep I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SarlaccSweep, 24.0f),
+                    .HasRecastDelay(RecastGroup.SunderingSweep, 24.0f),
                 SkillType.Lightsaber,
                 8,
                 0,
@@ -47,10 +47,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 });
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SarlaccSweep2, PerkType.SarlaccSweep)
-                    .Name("Sarlacc Sweep II")
+                builder.Create(FeatType.SunderingSweep2, PerkType.SunderingSweep)
+                    .Name("Sundering Sweep II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SarlaccSweep, 24.0f),
+                    .HasRecastDelay(RecastGroup.SunderingSweep, 24.0f),
                 SkillType.Lightsaber,
                 12,
                 0,
@@ -77,10 +77,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 });
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SarlaccSweep3, PerkType.SarlaccSweep)
-                    .Name("Sarlacc Sweep III")
+                builder.Create(FeatType.SunderingSweep3, PerkType.SunderingSweep)
+                    .Name("Sundering Sweep III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.SarlaccSweep, 24.0f),
+                    .HasRecastDelay(RecastGroup.SunderingSweep, 24.0f),
                 SkillType.Lightsaber,
                 16,
                 0,

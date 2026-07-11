@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     /// <summary>
     /// Saber Ward: while active, converts a percentage of incoming physical damage into Force damage
     /// (so it is then mitigated by Force Defense) and grants flat Defense and Force Defense.
-    /// Only the highest rank applies; Saber Ward and Perfect Soresu replace one another.
+    /// Only the highest rank applies; Saber Ward and Perfect Aegis replace one another.
     /// </summary>
     public sealed class SaberWardStatusEffect : StatusEffectBase
     {

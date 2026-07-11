@@ -35,14 +35,14 @@ public class LightsaberPerkBehaviorTests
         AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "50");
 
         // Surrounded, Not Outmatched
-        AssertPerkStat(StatType.SoresuPressureStackDefensePercent, "2");
-        AssertPerkStat(StatType.SoresuPressureStackForceDefensePercent, "2");
-        AssertPerkStat(StatType.SoresuPressureMaxStacks, "5");
+        AssertPerkStat(StatType.EmbattledStackDefensePercent, "2");
+        AssertPerkStat(StatType.EmbattledStackForceDefensePercent, "2");
+        AssertPerkStat(StatType.EmbattledMaxStacks, "5");
 
         // Center of the Storm
-        AssertPerkStat(StatType.SoresuPressureHighStackThreshold, "3");
-        AssertPerkStat(StatType.SoresuPressureHighStackMobilityResistance, "10");
-        AssertPerkStat(StatType.SoresuPressureHighStackDeflectionReflectionBonusPercent, "4");
+        AssertPerkStat(StatType.EmbattledHighStackThreshold, "3");
+        AssertPerkStat(StatType.EmbattledHighStackMobilityResistance, "10");
+        AssertPerkStat(StatType.EmbattledHighStackDeflectionReflectionBonusPercent, "4");
 
         // High Ground
         AssertPerkStat(StatType.AutoAttackSunderedTargetFPRestore, "2");
@@ -61,9 +61,9 @@ public class LightsaberPerkBehaviorTests
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.RangedDeflectionReflectionCapPercent)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.SoresuPressureStackDefensePercent)
+        Stat.GetStatTypeCategory(StatType.EmbattledStackDefensePercent)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.SoresuPressureMaxStacks)
+        Stat.GetStatTypeCategory(StatType.EmbattledMaxStacks)
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.HostileAbilityFPSpendForceAttackPercent)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
@@ -76,20 +76,20 @@ public class LightsaberPerkBehaviorTests
     }
 
     [Test]
-    public void SaberWard_SelfAppliesPerRankConversionAndReplacesPerfectSoresu()
+    public void SaberWard_SelfAppliesPerRankConversionAndReplacesPerfectAegis()
     {
         var source = AbilitySource("SaberWardAbilityDefinition.cs");
         source.Should().Contain("new SaberWardStatusEffect(conversionPercent, defensePercent, forceDefensePercent)");
-        source.Should().Contain("SelfStatusEffectsToReplace = new[] { typeof(PerfectSoresuStatusEffect) }");
+        source.Should().Contain("SelfStatusEffectsToReplace = new[] { typeof(PerfectAegisStatusEffect) }");
         source.Should().Contain("Build(builder, FeatType.SaberWard1, \"Saber Ward I\", 1, 8, 3, 2, 15, 3, 4)");
         source.Should().Contain("Build(builder, FeatType.SaberWard4, \"Saber Ward IV\", 4, 38, 12, 5, 30, 6, 9)");
     }
 
     [Test]
-    public void MasterOfSoresu_SelfAppliesPerfectSoresuReplacingSaberWard()
+    public void AegisEternal_SelfAppliesPerfectAegisReplacingSaberWard()
     {
-        var source = AbilitySource("MasterOfSoresuAbilityDefinition.cs");
-        source.Should().Contain("SelfStatusEffectFactory = () => new PerfectSoresuStatusEffect()");
+        var source = AbilitySource("AegisEternalAbilityDefinition.cs");
+        source.Should().Contain("SelfStatusEffectFactory = () => new PerfectAegisStatusEffect()");
         source.Should().Contain("SelfStatusEffectsToReplace = new[] { typeof(SaberWardStatusEffect) }");
     }
 
@@ -144,21 +144,21 @@ public class LightsaberPerkBehaviorTests
     }
 
     [Test]
-    public void PerfectSoresuStatusEffect_AppliesCapstoneWardBundle()
+    public void PerfectAegisStatusEffect_AppliesCapstoneWardBundle()
     {
-        var soresu = new PerfectSoresuStatusEffect();
-        soresu.StatGroup.Stats[StatType.IncomingPhysicalToForceConversionPercent].Should().Be(40);
-        soresu.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(18);
-        soresu.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(22);
-        soresu.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
-        soresu.StatGroup.Stats[StatType.RangedDeflectionReflectionPercent].Should().Be(24);
-        soresu.StatGroup.Stats[StatType.RangedDeflectionReflectionCapPercent].Should().Be(75);
+        var aegis = new PerfectAegisStatusEffect();
+        aegis.StatGroup.Stats[StatType.IncomingPhysicalToForceConversionPercent].Should().Be(40);
+        aegis.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(18);
+        aegis.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(22);
+        aegis.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionPercent].Should().Be(24);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapPercent].Should().Be(75);
     }
 
     [Test]
-    public void SoresuPressureStatusEffect_ScalesDefensesAndMobilityByStacks()
+    public void EmbattledStatusEffect_ScalesDefensesAndMobilityByStacks()
     {
-        var pressure = new SoresuPressureStatusEffect(3, 6, 6, 10);
+        var pressure = new EmbattledStatusEffect(3, 6, 6, 10);
         pressure.Stacks.Should().Be(3);
         pressure.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(6);
         pressure.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(6);

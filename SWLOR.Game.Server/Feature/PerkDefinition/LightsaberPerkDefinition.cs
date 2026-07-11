@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Overpower();
             FastStrikes();
             ShatteringStrike();
-            SarlaccSweep();
+            SunderingSweep();
             WeakPoints();
             ImbuementStance();
             HighGround();
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ImmovableStance();
             Reprisal();
             CenterOfTheStorm();
-            MasterOfSoresu();
+            AegisEternal();
 
             return _builder.Build();
         }
@@ -147,27 +147,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
-        private void SarlaccSweep()
+        private void SunderingSweep()
         {
-            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.SarlaccSweep)
-                .Name("Sarlacc Sweep")
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.SunderingSweep)
+                .Name("Sundering Sweep")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SarlaccSweep1)
+                .GrantsFeat(FeatType.SunderingSweep1)
                 .Description("Deals weapon DMG + 8 to all enemies within 3m. If at least one enemy is inflicted with Sunder, spread Sunder to one other enemy in melee range.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SarlaccSweep2)
+                .GrantsFeat(FeatType.SunderingSweep2)
                 .Description("Deals weapon DMG + 12 to all enemies within 3m. If at least one enemy is inflicted with Sunder, spread Sunder to one other enemy in melee range.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SarlaccSweep3)
+                .GrantsFeat(FeatType.SunderingSweep3)
                 .Description("Deals weapon DMG + 16 to all enemies within 3m. If at least one enemy is inflicted with Sunder, spread Sunder to one other enemy in melee range.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 38)
@@ -357,10 +357,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SurroundedNotOutmatchedTrait)
-                .Description("Each distinct enemy attacking you grants a stack of Soresu Pressure, up to 5 stacks. Each stack grants + 2% Defense and + 2% Force Defense.")
-                .IncreasesStat(StatType.SoresuPressureStackDefensePercent, 2)
-                .IncreasesStat(StatType.SoresuPressureStackForceDefensePercent, 2)
-                .IncreasesStat(StatType.SoresuPressureMaxStacks, 5)
+                .Description("Each distinct enemy attacking you grants a stack of Embattled, up to 5 stacks. Each stack grants + 2% Defense and + 2% Force Defense.")
+                .IncreasesStat(StatType.EmbattledStackDefensePercent, 2)
+                .IncreasesStat(StatType.EmbattledStackForceDefensePercent, 2)
+                .IncreasesStat(StatType.EmbattledMaxStacks, 5)
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -419,23 +419,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CenterOfTheStormTrait)
-                .Description("While you have 3 or more stacks of Soresu Pressure, gain + 10 Mobility Resistance and increase Deflecting Return's reflected damage by 4%.")
-                .IncreasesStat(StatType.SoresuPressureHighStackThreshold, 3)
-                .IncreasesStat(StatType.SoresuPressureHighStackMobilityResistance, 10)
-                .IncreasesStat(StatType.SoresuPressureHighStackDeflectionReflectionBonusPercent, 4)
+                .Description("While you have 3 or more stacks of Embattled, gain + 10 Mobility Resistance and increase Deflecting Return's reflected damage by 4%.")
+                .IncreasesStat(StatType.EmbattledHighStackThreshold, 3)
+                .IncreasesStat(StatType.EmbattledHighStackMobilityResistance, 10)
+                .IncreasesStat(StatType.EmbattledHighStackDeflectionReflectionBonusPercent, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
-        private void MasterOfSoresu()
+        private void AegisEternal()
         {
-            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.MasterOfSoresu)
-                .Name("Master of Soresu")
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.AegisEternal)
+                .Name("Aegis Eternal")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.MasterOfSoresu1)
-                .Description("For 30 seconds, enter Perfect Soresu, replacing Saber Ward: convert 40% of incoming physical damage to Force damage and gain + 8% Defense, + 12% Force Defense, and + 25% Enmity. Soresu Pressure is treated as 5 stacks and Deflecting Return reflects 24% of damage, up to 75% of your normal weapon damage.")
+                .GrantsFeat(FeatType.AegisEternal1)
+                .Description("For 30 seconds, enter Perfect Aegis, replacing Saber Ward: convert 40% of incoming physical damage to Force damage and gain + 8% Defense, + 12% Force Defense, and + 25% Enmity. Embattled is treated as 5 stacks and Deflecting Return reflects 24% of damage, up to 75% of your normal weapon damage.")
                 .Price(6)
                 .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

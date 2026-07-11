@@ -10,15 +10,15 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class MasterOfSoresuAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class AegisEternalAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.MasterOfSoresu1, PerkType.MasterOfSoresu)
-                    .Name("Master of Soresu")
+                builder.Create(FeatType.AegisEternal1, PerkType.AegisEternal)
+                    .Name("Aegis Eternal")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Lightsaber,
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfStatusEffectFactory = () => new PerfectSoresuStatusEffect(),
+                    SelfStatusEffectFactory = () => new PerfectAegisStatusEffect(),
                     SelfStatusEffectsToReplace = new[] { typeof(SaberWardStatusEffect) }
                 });
 

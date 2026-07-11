@@ -1872,7 +1872,7 @@ namespace SWLOR.Game.Server.Service
             ApplyRecentDamageTargetHitEffects(defender, attacker);
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))
-                SoresuPressureStatusEffect.Refresh(defender, attacker);
+                EmbattledStatusEffect.Refresh(defender, attacker);
         }
 
         private static void ApplyDamageTakenNextSkillAbilityDamage(uint defender)

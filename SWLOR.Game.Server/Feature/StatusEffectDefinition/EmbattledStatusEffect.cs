@@ -9,11 +9,11 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     /// <summary>
-    /// Soresu Pressure (Surrounded, Not Outmatched): each distinct hostile attacker currently pressuring the
+    /// Embattled (Surrounded, Not Outmatched): each distinct hostile attacker currently pressuring the
     /// wearer grants one stack (up to a stat-defined maximum). Each stack grants flat Defense and Force Defense.
     /// Center of the Storm grants additional Mobility Resistance once the high-stack threshold is reached.
     /// </summary>
-    public sealed class SoresuPressureStatusEffect : StatusEffectBase
+    public sealed class EmbattledStatusEffect : StatusEffectBase
     {
         private const float PressureWindowSeconds = 6f;
 
@@ -27,17 +27,17 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public int Stacks => _stacks;
 
-        public override string Name => "Soresu Pressure";
+        public override string Name => "Embattled";
         public override EffectIconType Icon => EffectIconType.DeflectivePresenceStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 
-        public SoresuPressureStatusEffect()
+        public EmbattledStatusEffect()
             : this(1, 2, 2, 0)
         {
         }
 
-        public SoresuPressureStatusEffect(int stacks, int defensePercent, int forceDefensePercent, int mobilityResistance)
+        public EmbattledStatusEffect(int stacks, int defensePercent, int forceDefensePercent, int mobilityResistance)
         {
             _stacks = stacks;
             _defensePercent = defensePercent;
@@ -54,11 +54,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new SoresuPressureStatusEffect(_stacks, _defensePercent, _forceDefensePercent, _mobilityResistance);
+            return new EmbattledStatusEffect(_stacks, _defensePercent, _forceDefensePercent, _mobilityResistance);
         }
 
         /// <summary>
-        /// Records a pressuring attacker against the defender and (re)applies Soresu Pressure with the
+        /// Records a pressuring attacker against the defender and (re)applies Embattled with the
         /// updated stack count. Does nothing unless the defender owns the Surrounded, Not Outmatched trait,
         /// as declared by the per-stack Defense stat.
         /// </summary>
@@ -70,23 +70,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 return;
             }
 
-            var perStackDefense = Stat.GetStatAdjustment(defender, StatType.SoresuPressureStackDefensePercent);
+            var perStackDefense = Stat.GetStatAdjustment(defender, StatType.EmbattledStackDefensePercent);
             if (perStackDefense <= 0)
                 return;
 
-            var perStackForceDefense = Stat.GetStatAdjustment(defender, StatType.SoresuPressureStackForceDefensePercent);
-            var maxStacks = Math.Max(1, Stat.GetStatAdjustment(defender, StatType.SoresuPressureMaxStacks));
-            var highStackThreshold = Stat.GetStatAdjustment(defender, StatType.SoresuPressureHighStackThreshold);
-            var highStackMobility = Stat.GetStatAdjustment(defender, StatType.SoresuPressureHighStackMobilityResistance);
+            var perStackForceDefense = Stat.GetStatAdjustment(defender, StatType.EmbattledStackForceDefensePercent);
+            var maxStacks = Math.Max(1, Stat.GetStatAdjustment(defender, StatType.EmbattledMaxStacks));
+            var highStackThreshold = Stat.GetStatAdjustment(defender, StatType.EmbattledHighStackThreshold);
+            var highStackMobility = Stat.GetStatAdjustment(defender, StatType.EmbattledHighStackMobilityResistance);
 
             var stackCount = TrackAndCount(defender, attacker, maxStacks);
             var mobility = highStackThreshold > 0 && stackCount >= highStackThreshold ? highStackMobility : 0;
 
-            StatusEffect.RemoveStatusEffect(defender, typeof(SoresuPressureStatusEffect), false);
+            StatusEffect.RemoveStatusEffect(defender, typeof(EmbattledStatusEffect), false);
             StatusEffect.ApplyStatusEffect(
                 defender,
                 defender,
-                new SoresuPressureStatusEffect(
+                new EmbattledStatusEffect(
                     stackCount,
                     stackCount * perStackDefense,
                     stackCount * perStackForceDefense,
@@ -95,14 +95,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
 
         /// <summary>
-        /// Current Soresu Pressure stack count on the defender, treating Perfect Soresu as the maximum.
+        /// Current Embattled stack count on the defender, treating Perfect Aegis as the maximum.
         /// </summary>
         public static int GetStackCount(uint defender)
         {
-            if (StatusEffect.HasStatusEffect(defender, typeof(PerfectSoresuStatusEffect)))
-                return PerfectSoresuStatusEffect.TreatedAsPressureStacks;
+            if (StatusEffect.HasStatusEffect(defender, typeof(PerfectAegisStatusEffect)))
+                return PerfectAegisStatusEffect.TreatedAsEmbattledStacks;
 
-            return StatusEffect.GetStatusEffect(defender, typeof(SoresuPressureStatusEffect)) is SoresuPressureStatusEffect pressure
+            return StatusEffect.GetStatusEffect(defender, typeof(EmbattledStatusEffect)) is EmbattledStatusEffect pressure
                 ? pressure.Stacks
                 : 0;
         }

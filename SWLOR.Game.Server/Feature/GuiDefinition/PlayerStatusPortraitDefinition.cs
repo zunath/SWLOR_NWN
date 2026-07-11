@@ -20,28 +20,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetAcceptsInput(false)
                 .AddColumn(col =>
                 {
-                    // FP (blue) on top, Stamina (green) below, matching the portrait bar ordering.
+                    // Stamina (green) on top, FP (blue) below, matching the docked HP/STM/FP order.
                     // Rows carry explicit heights (~8px over the bar height, the project's safe
                     // ratio) so both rows always fit; a too-short window clips the second bar.
-                    col.AddRow(row =>
-                    {
-                        row.AddProgressBar()
-                            .BindValue(model => model.FPProgress)
-                            .BindColor(model => model.FPColor)
-                            .SetHeight(15f)
-                            .SetPadding(0f)
-                            .AddDrawList(drawList =>
-                            {
-                                drawList.AddText(text =>
-                                {
-                                    text.BindText(model => model.FPValue);
-                                    text.SetBounds(15f, -1f, 110f, 50f);
-                                    text.SetColor(255, 255, 255);
-                                });
-                            });
-                    })
-                        .SetHeight(23f);
-
                     col.AddRow(row =>
                     {
                         row.AddProgressBar()
@@ -54,6 +35,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 drawList.AddText(text =>
                                 {
                                     text.BindText(model => model.StaminaValue);
+                                    text.SetBounds(15f, -1f, 110f, 50f);
+                                    text.SetColor(255, 255, 255);
+                                });
+                            });
+                    })
+                        .SetHeight(23f);
+
+                    col.AddRow(row =>
+                    {
+                        row.AddProgressBar()
+                            .BindValue(model => model.FPProgress)
+                            .BindColor(model => model.FPColor)
+                            .SetHeight(15f)
+                            .SetPadding(0f)
+                            .AddDrawList(drawList =>
+                            {
+                                drawList.AddText(text =>
+                                {
+                                    text.BindText(model => model.FPValue);
                                     text.SetBounds(15f, -1f, 110f, 50f);
                                     text.SetColor(255, 255, 255);
                                 });

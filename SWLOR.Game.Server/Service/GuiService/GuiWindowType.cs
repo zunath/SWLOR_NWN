@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         Disguises = 60,
         QuestContractBoard = 61,
         QuestContractEditor = 62,
+        PlayerStatusPortrait = 63,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

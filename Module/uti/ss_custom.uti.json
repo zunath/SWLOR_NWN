@@ -81,7 +81,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 25
+          "value": 7
         },
         "Param1": {
           "type": "byte",
@@ -112,7 +112,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 0
         },
         "Param1": {
           "type": "byte",
@@ -179,6 +179,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ss_custom"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SABER_TIER"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

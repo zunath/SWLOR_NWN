@@ -2,35 +2,59 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     /// <summary>
-    /// Removes DM-built lightsabers and saberstaffs (any Lightsaber/Saberstaff
+    /// Normalizes DM-built lightsabers and saberstaffs (any Lightsaber/Saberstaff
     /// base item that is not part of the craftable training saber lines or the
-    /// workbench-built sabers) and refunds one Kyber Token per removed saber.
-    /// Tokens are redeemed at a Lightsaber Workbench.
+    /// workbench-built sabers) to the tier 5 baseline: the damage profile (DMG,
+    /// weapon damage type, attack delay), attack/damage modifiers, and skill
+    /// requirement are replaced with the tier 5 values and the weapon is stamped
+    /// with the saber tier variable so the tiered upgrade kits recognize it.
+    /// Owners keep their weapons; nothing is removed.
     /// </summary>
     internal static class LegacySaberMigration
     {
-        public const string KyberTokenResref = "kyber_token";
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
-        private const string StorageObjectTag = "TEMP_ITEM_STORAGE";
+        private const string SaberTierVariable = "SABER_TIER";
+        private const int NormalizedTier = 5;
 
-        private static string _serializedToken;
-        private static string _tokenName;
-        private static string _tokenTag;
-        private static string _tokenIconResref;
+        private const int LightsaberTierDamage = 21;
+        private const int SaberstaffTierDamage = 25;
+        private const int LightsaberDelay = 24;
+        private const int SaberstaffDelay = 29;
+        private const int TierRequiredSkill = 40;
+        private const int LightsaberSkillSubtype = 38;
+        private const int SaberstaffSkillSubtype = 42;
+
+        /// <summary>
+        /// Property types that make up a saber's damage profile and attack math.
+        /// These are stripped during normalization and replaced with the tier 5
+        /// baseline; everything else on the weapon (VFX, cast spell, etc.) is kept.
+        /// </summary>
+        private static readonly HashSet<ItemPropertyType> NormalizedPropertyTypes = new()
+        {
+            ItemPropertyType.DMG,
+            ItemPropertyType.Delay,
+            ItemPropertyType.RequiresSkill,
+            ItemPropertyType.WeaponDamageType,
+            ItemPropertyType.EnhancementBonus,
+            ItemPropertyType.DamageBonus,
+            ItemPropertyType.AccuracyBonus,
+        };
 
         /// <summary>
         /// Sabers produced by crafting or the lightsaber workbench. These follow
-        /// the established rules already and are never removed.
+        /// the established rules already and are never normalized.
         /// </summary>
         private static readonly HashSet<string> CraftableSaberResrefs = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -58,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         /// <summary>
         /// Determines whether a resref belongs to a saber players can obtain
-        /// through crafting or the lightsaber workbench. These are never reclaimed.
+        /// through crafting or the lightsaber workbench. These are never normalized.
         /// </summary>
         public static bool IsCraftableSaberResref(string resref)
         {
@@ -67,7 +91,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         }
 
         /// <summary>
-        /// Determines whether an item is a DM-built saber that must be reclaimed.
+        /// Determines whether an item is a DM-built saber that must be normalized.
+        /// Already-normalized sabers (tier variable set) are skipped.
         /// </summary>
         public static bool IsLegacySaber(uint item)
         {
@@ -78,124 +103,103 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (baseItemType != BaseItem.Lightsaber && baseItemType != BaseItem.Saberstaff)
                 return false;
 
+            if (GetLocalInt(item, SaberTierVariable) > 0)
+                return false;
+
             return !CraftableSaberResrefs.Contains(GetResRef(item));
         }
 
-        public static string GetSerializedToken()
+        /// <summary>
+        /// Replaces a saber's damage profile and attack modifiers with the tier 5
+        /// baseline and stamps the saber tier variable. The weapon's name,
+        /// appearance, and remaining properties are preserved.
+        /// </summary>
+        private static void NormalizeSaber(uint item)
         {
-            return EnsureTokenTemplate() ? _serializedToken : string.Empty;
-        }
+            var isSaberstaff = GetBaseItemType(item) == BaseItem.Saberstaff;
 
-        public static string GetTokenName()
-        {
-            return EnsureTokenTemplate() ? _tokenName : "Kyber Token";
-        }
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (NormalizedPropertyTypes.Contains(GetItemPropertyType(ip)))
+                {
+                    RemoveItemProperty(item, ip);
+                }
+            }
 
-        public static string GetTokenTag()
-        {
-            return EnsureTokenTemplate() ? _tokenTag : KyberTokenResref;
-        }
+            var damage = isSaberstaff ? SaberstaffTierDamage : LightsaberTierDamage;
+            var delay = isSaberstaff ? SaberstaffDelay : LightsaberDelay;
+            var skillSubtype = isSaberstaff ? SaberstaffSkillSubtype : LightsaberSkillSubtype;
 
-        public static string GetTokenIconResref()
-        {
-            return EnsureTokenTemplate() ? _tokenIconResref : string.Empty;
-        }
+            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.DMG, -1, damage), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.RequiresSkill, skillSubtype, TierRequiredSkill), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-        private static bool EnsureTokenTemplate()
-        {
-            if (!string.IsNullOrWhiteSpace(_serializedToken))
-                return true;
-
-            var storage = GetObjectByTag(StorageObjectTag);
-            if (!GetIsObjectValid(storage))
-                return false;
-
-            var token = CreateItemOnObject(KyberTokenResref, storage);
-            if (!GetIsObjectValid(token))
-                return false;
-
-            _serializedToken = ObjectPlugin.Serialize(token);
-            _tokenName = GetName(token);
-            _tokenTag = GetTag(token);
-            _tokenIconResref = Item.GetIconResref(token);
-            DestroyObject(token);
-
-            return !string.IsNullOrWhiteSpace(_serializedToken);
+            SetLocalInt(item, SaberTierVariable, NormalizedTier);
         }
 
         /// <summary>
-        /// Login sweep for the live player object. Removes legacy sabers from
+        /// Login sweep for the live player object. Normalizes legacy sabers in
         /// equipped slots, carried inventory, nested containers, and constructed
-        /// droids, then grants one Kyber Token per removed saber and tells the
-        /// player where the workbenches are.
+        /// droids, then tells the player what happened.
         /// </summary>
         public static void MigratePlayer(uint player)
         {
-            var removed = RemoveLegacySabers(player);
-            if (removed <= 0)
+            var normalized = NormalizeSabersOnObject(player);
+            if (normalized <= 0)
                 return;
 
-            for (var index = 0; index < removed; index++)
-            {
-                CreateItemOnObject(KyberTokenResref, player);
-            }
+            var saberText = normalized == 1 ? "lightsaber has" : "lightsabers have";
+            SendMessageToPC(player, $"Your {saberText} been recalibrated to tier 5 as part of the combat overhaul. Tier 5.5 upgrade kits can be crafted through Engineering once their blueprint is recovered.");
 
-            var saberText = removed == 1 ? "lightsaber has" : "lightsabers have";
-            var tokenText = removed == 1 ? "a Kyber Token" : $"{removed} Kyber Tokens";
-            SendMessageToPC(player, $"Your {saberText} been reclaimed as part of the combat overhaul and {tokenText} placed in your inventory. Use each token to attune it, then visit a Lightsaber Workbench - at the Sith Academy on Korriban, the Jedi Enclave on Dantooine, or (so the rumors say) a hidden cave on Dathomir - to construct your lightsaber anew.");
-
-            Log.Write(LogGroup.Migration, $"Reclaimed {removed} legacy saber(s) from {GetName(player)} ({GetObjectUUID(player)}) and granted {removed} Kyber Token(s).");
+            Log.Write(LogGroup.Migration, $"Normalized {normalized} legacy saber(s) to tier {NormalizedTier} for {GetName(player)} ({GetObjectUUID(player)}).");
         }
 
-        private static int RemoveLegacySabers(uint obj)
+        private static int NormalizeSabersOnObject(uint obj)
         {
             if (!GetIsObjectValid(obj))
                 return 0;
 
-            var removed = 0;
+            var normalized = 0;
             var objectType = GetObjectType(obj);
 
             if (objectType == ObjectType.Item)
             {
                 if (IsLegacySaber(obj))
                 {
-                    DestroyObject(obj);
+                    NormalizeSaber(obj);
                     return 1;
                 }
 
-                removed += RemoveLegacySabersFromConstructedDroid(obj, false);
+                normalized += NormalizeSabersInConstructedDroid(obj);
             }
             else if (objectType == ObjectType.Creature)
             {
                 for (var index = 0; index < NumberOfInventorySlots; index++)
                 {
-                    removed += RemoveLegacySabers(GetItemInSlot((InventorySlot)index, obj));
+                    normalized += NormalizeSabersOnObject(GetItemInSlot((InventorySlot)index, obj));
                 }
             }
 
             if (!GetIsObjectValid(obj) || !GetHasInventory(obj))
-                return removed;
+                return normalized;
 
-            for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item);)
+            for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item); item = GetNextItemInInventory(obj))
             {
-                var nextItem = GetNextItemInInventory(obj);
-                removed += RemoveLegacySabers(item);
-                item = nextItem;
+                normalized += NormalizeSabersOnObject(item);
             }
 
-            return removed;
+            return normalized;
         }
 
         /// <summary>
-        /// Stored-object sweep for offline surfaces. Legacy sabers nested inside
-        /// containers are replaced with Kyber Tokens in place, so the owner keeps
-        /// the refund wherever the saber was stored. Creature roots (DM creatures)
-        /// are skipped so NPC gear stays intact. Root-level sabers are handled by
-        /// the record-level swap in StoredItemDataMigration.
+        /// Stored-object sweep for offline surfaces. Normalizes legacy sabers in
+        /// place, whether the stored object is the saber itself or a container
+        /// holding one. Creature roots (DM creatures) are skipped so NPC gear
+        /// stays intact.
         /// </summary>
-        public static bool MigrateStoredObject(uint obj, out int replacedCount)
+        public static bool MigrateStoredObject(uint obj, out int normalizedCount)
         {
-            replacedCount = 0;
+            normalizedCount = 0;
             if (!GetIsObjectValid(obj))
                 return false;
 
@@ -203,48 +207,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (objectType == ObjectType.Creature)
                 return false;
 
-            if (objectType == ObjectType.Item)
-            {
-                replacedCount += RemoveLegacySabersFromConstructedDroid(obj, true);
-            }
-
-            if (GetIsObjectValid(obj) && GetHasInventory(obj))
-            {
-                replacedCount += ReplaceNestedSabersWithTokens(obj);
-            }
-
-            return replacedCount > 0;
+            normalizedCount = NormalizeSabersOnObject(obj);
+            return normalizedCount > 0;
         }
 
-        private static int ReplaceNestedSabersWithTokens(uint container)
-        {
-            var replaced = 0;
-            for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item);)
-            {
-                var nextItem = GetNextItemInInventory(container);
-
-                if (IsLegacySaber(item))
-                {
-                    DestroyObject(item);
-                    CreateItemOnObject(KyberTokenResref, container);
-                    replaced++;
-                }
-                else
-                {
-                    replaced += RemoveLegacySabersFromConstructedDroid(item, true);
-                    if (GetHasInventory(item))
-                    {
-                        replaced += ReplaceNestedSabersWithTokens(item);
-                    }
-                }
-
-                item = nextItem;
-            }
-
-            return replaced;
-        }
-
-        private static int RemoveLegacySabersFromConstructedDroid(uint controllerItem, bool replaceWithTokens)
+        private static int NormalizeSabersInConstructedDroid(uint controllerItem)
         {
             var serialized = GetLocalString(controllerItem, ConstructedDroidVariable);
             if (string.IsNullOrWhiteSpace(serialized))
@@ -254,17 +221,17 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (droid == null)
                 return 0;
 
-            var removed = 0;
+            var normalized = 0;
 
             if (droid.EquippedItems != null)
             {
                 foreach (var slot in droid.EquippedItems.Keys.ToList())
                 {
-                    if (!IsSerializedLegacySaber(droid.EquippedItems[slot]))
-                        continue;
-
-                    droid.EquippedItems.Remove(slot);
-                    removed++;
+                    if (TryNormalizeSerializedSaber(droid.EquippedItems[slot], out var migrated))
+                    {
+                        droid.EquippedItems[slot] = migrated;
+                        normalized++;
+                    }
                 }
             }
 
@@ -272,36 +239,24 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             {
                 foreach (var key in droid.Inventory.Keys.ToList())
                 {
-                    if (!IsSerializedLegacySaber(droid.Inventory[key]))
-                        continue;
-
-                    droid.Inventory.Remove(key);
-                    removed++;
+                    if (TryNormalizeSerializedSaber(droid.Inventory[key], out var migrated))
+                    {
+                        droid.Inventory[key] = migrated;
+                        normalized++;
+                    }
                 }
             }
 
-            if (removed <= 0)
+            if (normalized <= 0)
                 return 0;
 
-            if (replaceWithTokens)
-            {
-                droid.Inventory ??= new Dictionary<string, string>();
-                for (var index = 0; index < removed; index++)
-                {
-                    var token = GetSerializedToken();
-                    if (string.IsNullOrWhiteSpace(token))
-                        break;
-
-                    droid.Inventory[Guid.NewGuid().ToString()] = token;
-                }
-            }
-
             SetLocalString(controllerItem, ConstructedDroidVariable, JsonConvert.SerializeObject(droid));
-            return removed;
+            return normalized;
         }
 
-        private static bool IsSerializedLegacySaber(string serialized)
+        private static bool TryNormalizeSerializedSaber(string serialized, out string migrated)
         {
+            migrated = serialized;
             if (string.IsNullOrWhiteSpace(serialized))
                 return false;
 
@@ -309,9 +264,16 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(obj))
                 return false;
 
-            var isLegacySaber = IsLegacySaber(obj);
+            if (!IsLegacySaber(obj))
+            {
+                DestroyObject(obj);
+                return false;
+            }
+
+            NormalizeSaber(obj);
+            migrated = ObjectPlugin.Serialize(obj);
             DestroyObject(obj);
-            return isLegacySaber;
+            return true;
         }
     }
 }

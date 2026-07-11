@@ -52,19 +52,31 @@ public class LightsaberWorkbenchTests
     }
 
     [Test]
-    public void WorkbenchSabers_MatchTierFiveTrainingSaberStats()
+    public void WorkbenchSabers_MatchTierOneTrainingSaberStatsAndCarryTierVariable()
     {
         var root = FindRepositoryRoot();
         var utiRoot = Path.Combine(root.FullName, "Module", "uti");
 
         AssertSaberMatchesTemplate(
             Path.Combine(utiRoot, "ls_custom.uti.json"),
-            Path.Combine(utiRoot, "saber_train_5.uti.json"),
+            Path.Combine(utiRoot, "saber_train_1.uti.json"),
             LightsaberBaseItem);
         AssertSaberMatchesTemplate(
             Path.Combine(utiRoot, "ss_custom.uti.json"),
-            Path.Combine(utiRoot, "trn_saberstaff_5.uti.json"),
+            Path.Combine(utiRoot, "trn_saberstaff_1.uti.json"),
             SaberstaffBaseItem);
+
+        // Bench sabers start at tier 1 so the tiered upgrade kits recognize them.
+        foreach (var resref in new[] { "ls_custom", "ss_custom" })
+        {
+            var saber = JObject.Parse(File.ReadAllText(Path.Combine(utiRoot, $"{resref}.uti.json")));
+            var tierVars = saber["VarTable"]!["value"]!
+                .Children<JObject>()
+                .Where(entry => entry["Name"]?["value"]?.Value<string>() == "SABER_TIER")
+                .ToList();
+            tierVars.Should().ContainSingle($"{resref} must carry the SABER_TIER variable");
+            tierVars[0]["Value"]!["value"]!.Value<int>().Should().Be(1);
+        }
     }
 
     private static void AssertSaberMatchesTemplate(string saberPath, string templatePath, int expectedBaseItem)
@@ -186,21 +198,39 @@ public class LightsaberWorkbenchTests
     }
 
     [Test]
-    public void StoredItemDataMigration_ReplacesRootAndNestedSabersAcrossSurfaces()
+    public void SaberMigration_NormalizesLegacySabersAcrossSurfaces()
     {
         var root = FindRepositoryRoot();
-        var migration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
+        var migrationRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "MigrationDefinition");
 
-        migration.Should().Contain("LegacySaberMigration.IsLegacySaber(obj)");
-        migration.Should().Contain("LegacySaberMigration.MigrateStoredObject(obj, out var replacedSabers)");
-        migration.Should().Contain("result.ReplacedRootSaber");
-        migration.Should().Contain("item.IsListed = false;");
+        var storedItemMigration = File.ReadAllText(Path.Combine(migrationRoot, "ServerMigration", "StoredItemDataMigration.cs"));
+        storedItemMigration.Should().Contain("LegacySaberMigration.MigrateStoredObject(obj, out var normalizedSabers)");
+
+        // Legacy sabers are normalized in place - never removed or swapped.
+        var saberMigration = File.ReadAllText(Path.Combine(migrationRoot, "LegacySaberMigration.cs"));
+        saberMigration.Should().Contain("NormalizeSaber");
+        saberMigration.Should().Contain("SABER_TIER");
+        saberMigration.Should().NotContain("kyber_token", "the migration no longer grants tokens; legacy sabers are normalized in place");
+        foreach (var normalizedProperty in new[]
+                 {
+                     "ItemPropertyType.DMG",
+                     "ItemPropertyType.Delay",
+                     "ItemPropertyType.RequiresSkill",
+                     "ItemPropertyType.WeaponDamageType",
+                     "ItemPropertyType.EnhancementBonus",
+                     "ItemPropertyType.DamageBonus",
+                     "ItemPropertyType.AccuracyBonus",
+                 })
+        {
+            saberMigration.Should().Contain(normalizedProperty, $"{normalizedProperty} is part of the normalized damage profile");
+        }
+
+        // The retired single-step kits are cleaned up by the obsolete-item sweep.
+        var obsoleteItems = File.ReadAllText(Path.Combine(migrationRoot, "ObsoleteItemMigration.cs"));
+        foreach (var retired in new[] { "saber_upg1", "saberstaff_upg1", "recipe_saberupg1", "recipe_staffupg1" })
+        {
+            obsoleteItems.Should().Contain($"\"{retired}\",");
+        }
     }
 
     [Test]

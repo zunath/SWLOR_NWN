@@ -352,14 +352,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 var migrated = ApplySerializedResult(result, value => item.Data = value);
                 migrated |= TryMigrateCombatReadinessName(item.Resref, item.Name, value => item.Name = value);
 
-                if (result.ReplacedRootSaber)
-                {
-                    item.Name = LegacySaberMigration.GetTokenName();
-                    item.Tag = LegacySaberMigration.GetTokenTag();
-                    item.Resref = LegacySaberMigration.KyberTokenResref;
-                    item.IconResref = LegacySaberMigration.GetTokenIconResref();
-                }
-
                 if (!migrated)
                 {
                     progress.RecordProcessed(false);
@@ -369,12 +361,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 DB.Set(item);
                 removedItems += result.RemovedItems;
                 droidPerksMigrated += result.MigratedDroidPerks;
-                saberTokens += result.ReplacedSabers;
+                saberTokens += result.NormalizedSabers;
                 migratedCount++;
                 progress.RecordProcessed(true);
             }
 
-            progress.FinishSection($"{migratedCount}/{items.Count} inventory item records changed. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and replaced {saberTokens} legacy sabers with Kyber Tokens.");
+            progress.FinishSection($"{migratedCount}/{items.Count} inventory item records changed. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and normalized {saberTokens} legacy sabers.");
         }
 
         private static void MigrateMarketItems(MigrationProgress progress)
@@ -450,15 +442,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 var migrated = ApplySerializedResult(result, value => item.Data = value);
                 migrated |= TryMigrateCombatReadinessName(item.Resref, item.Name, value => item.Name = value);
 
-                if (result.ReplacedRootSaber)
-                {
-                    item.Name = LegacySaberMigration.GetTokenName();
-                    item.Tag = LegacySaberMigration.GetTokenTag();
-                    item.Resref = LegacySaberMigration.KyberTokenResref;
-                    item.IconResref = LegacySaberMigration.GetTokenIconResref();
-                    item.IsListed = false;
-                }
-
                 if (!migrated)
                 {
                     progress.RecordProcessed(false);
@@ -468,12 +451,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 DB.Set(item);
                 removedItems += result.RemovedItems;
                 droidPerksMigrated += result.MigratedDroidPerks;
-                saberTokens += result.ReplacedSabers;
+                saberTokens += result.NormalizedSabers;
                 migratedCount++;
                 progress.RecordProcessed(true);
             }
 
-            progress.FinishSection($"{migratedCount}/{items.Count} market item records changed. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and replaced {saberTokens} legacy sabers with Kyber Tokens (delisted).");
+            progress.FinishSection($"{migratedCount}/{items.Count} market item records changed. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and normalized {saberTokens} legacy sabers.");
         }
 
         private static void MigrateWorldPropertyCategories(
@@ -554,14 +537,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     var itemMigrated = ApplySerializedResult(result, value => item.Data = value);
                     itemMigrated |= TryMigrateCombatReadinessName(item.Resref, item.Name, value => item.Name = value);
 
-                    if (result.ReplacedRootSaber)
-                    {
-                        item.Name = LegacySaberMigration.GetTokenName();
-                        item.Tag = LegacySaberMigration.GetTokenTag();
-                        item.Resref = LegacySaberMigration.KyberTokenResref;
-                        item.IconResref = LegacySaberMigration.GetTokenIconResref();
-                    }
-
                     if (!itemMigrated)
                     {
                         progress.RecordProcessed(false);
@@ -570,7 +545,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                     removedItems += result.RemovedItems;
                     droidPerksMigrated += result.MigratedDroidPerks;
-                    saberTokens += result.ReplacedSabers;
+                    saberTokens += result.NormalizedSabers;
                     categoryMigrated = true;
                     migratedItemCount++;
                     progress.RecordProcessed(true);
@@ -588,7 +563,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 DB.Set(category);
             }
 
-            progress.FinishSection($"{migratedItemCount}/{categoryItemCount} category items changed across {migratedCategoryCount}/{categories.Count} categories. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and replaced {saberTokens} legacy sabers with Kyber Tokens.");
+            progress.FinishSection($"{migratedItemCount}/{categoryItemCount} category items changed across {migratedCategoryCount}/{categories.Count} categories. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and normalized {saberTokens} legacy sabers.");
         }
 
         private static void MigrateEntityItems<T>(
@@ -735,24 +710,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 return result;
             }
 
-            // Root-level DM-built sabers are swapped for a Kyber Token in place so
-            // the owner keeps the refund wherever the saber was stored. If the token
-            // template cannot be built, the saber is left untouched.
-            if (LegacySaberMigration.IsLegacySaber(obj))
-            {
-                var serializedToken = LegacySaberMigration.GetSerializedToken();
-                DestroyObject(obj);
-                if (!string.IsNullOrWhiteSpace(serializedToken))
-                {
-                    result.Changed = true;
-                    result.ReplacedRootSaber = true;
-                    result.ReplacedSabers = 1;
-                    result.Data = serializedToken;
-                }
-
-                return result;
-            }
-
             result.Changed = MigrateStoredObject(obj, result);
             if (result.Changed)
                 result.Data = ObjectPlugin.Serialize(obj);
@@ -793,11 +750,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 obj,
                 out var removedItems,
                 out var migratedDroidPerks);
-            migrated |= LegacySaberMigration.MigrateStoredObject(obj, out var replacedSabers);
+            migrated |= LegacySaberMigration.MigrateStoredObject(obj, out var normalizedSabers);
 
             result.RemovedItems += removedItems;
             result.MigratedDroidPerks += migratedDroidPerks;
-            result.ReplacedSabers += replacedSabers;
+            result.NormalizedSabers += normalizedSabers;
 
             return migrated;
         }
@@ -896,8 +853,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             public bool RemovedRoot { get; set; }
             public int RemovedItems { get; set; }
             public int MigratedDroidPerks { get; set; }
-            public bool ReplacedRootSaber { get; set; }
-            public int ReplacedSabers { get; set; }
+            public int NormalizedSabers { get; set; }
         }
 
         private sealed class MigrationProgress

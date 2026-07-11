@@ -37,6 +37,9 @@ namespace SWLOR.Game.Server.Service
         private const string TerminalPlanetVariable = "CURRENT_LOCATION";
         private const string EntranceWaypointTag = "PROPERTY_ENTRANCE";
         private const string ExitPlaceableTag = "building_exit";
+        private const string ShipComputerTag = "ship_computer";
+        private const string PilotChairTag = "pilot_chair";
+        private const string PilotDroidResref = "receptiondroid";
         private const float BoardingRangeMeters = 15f;
         private const int BoardingCallSeconds = 60;
 
@@ -411,6 +414,7 @@ namespace SWLOR.Game.Server.Service
 
             var entrancePosition = Vector3(1f, 1f, 0f);
             var entranceFacing = 0f;
+            var pilotChair = OBJECT_INVALID;
 
             var objectsToDestroy = new List<uint>();
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
@@ -421,10 +425,15 @@ namespace SWLOR.Game.Server.Service
                     entrancePosition = GetPosition(obj);
                     entranceFacing = GetFacing(obj);
                 }
-                else if (tag == ExitPlaceableTag)
+                else if (tag == ExitPlaceableTag || tag == ShipComputerTag)
                 {
-                    // Passengers cannot leave a shuttle mid-flight.
+                    // Passengers cannot leave a shuttle mid-flight, and the ship's computer
+                    // (personal-ship controls) has no purpose aboard a scheduled shuttle.
                     objectsToDestroy.Add(obj);
+                }
+                else if (tag == PilotChairTag)
+                {
+                    pilotChair = obj;
                 }
             }
 
@@ -441,6 +450,25 @@ namespace SWLOR.Game.Server.Service
             SetLocalString(console, "CONVERSATION", "ShuttleStatusDialog");
             SetLocalString(console, ShuttleFlightIdVariable, flight.FlightId);
             DeleteLocalInt(console, TerminalPlanetVariable);
+
+            SpawnPilotDroid(pilotChair);
+        }
+
+        private static void SpawnPilotDroid(uint pilotChair)
+        {
+            if (!GetIsObjectValid(pilotChair))
+                return;
+
+            var droid = CreateObject(ObjectType.Creature, PilotDroidResref, GetLocation(pilotChair));
+            if (!GetIsObjectValid(droid))
+                return;
+
+            SetName(droid, "Shuttle Pilot Droid");
+            SetPlotFlag(droid, true);
+            SetImmortal(droid, true);
+
+            // Seat the droid at the controls once the freshly instanced area's scripts resume.
+            AssignCommand(droid, () => ActionSit(pilotChair));
         }
 
         private static Location GetLandingLocation(PlanetType destination)

@@ -409,6 +409,19 @@ public class MimicryTests
     }
 
     [Test]
+    public void Mimicry_IsACombatPointEarningSkill()
+    {
+        // Mimicry combat points come from two sources: casting techniques, and the Combat Analyzer
+        // recording nearby enemies' technique use (analysis points). Both only convert to Mimicry
+        // skill XP when the creature dies if Mimicry is a non-Exempt combat-point category. The
+        // attribute default is Exempt, so this guards that Mimicry stays a CP-earning skill.
+        var attribute = typeof(SkillType).GetField(nameof(SkillType.Mimicry))!
+            .GetCustomAttribute<SkillAttribute>();
+        attribute.Should().NotBeNull();
+        attribute!.CombatPointCategory.Should().Be(CombatPointCategoryType.Utility);
+    }
+
+    [Test]
     public void Mimicry_SetBonusPotencyRewardsSharedDamageTypes()
     {
         Ability.CacheData();

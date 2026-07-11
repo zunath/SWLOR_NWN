@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Service
         private const int SkillRanksPerTier = 15;
         private const int ResonancePotencyPerTechnique = 5;
         private const int ResonancePotencyCap = 20;
+        private const int AnalysisCombatPointsPerWitness = 1;
 
         private const int BaseLearnChancePercent = 20;
         private const int LearnChancePerRankDelta = 2;
@@ -111,6 +112,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsDM(nearby) && GetArea(nearby) == area)
                 {
                     TryRecordWitness(activator, nearby, techniqueFeat, techniqueDetail);
+                    TryAwardAnalysisCombatPoint(activator, nearby);
                 }
 
                 nth++;
@@ -122,6 +124,24 @@ namespace SWLOR.Game.Server.Service
         /// Records a witness entry for a player/technique pair, if they qualify and haven't already
         /// been recorded. Sends the "recording" floating text exactly once per (npc, player, technique).
         /// </summary>
+        /// <summary>
+        /// Grants a Mimicry combat point toward a creature when a player with the Combat Analyzer
+        /// witnesses it use a technique, provided the player is already engaged with it (has earned
+        /// combat points against it). The point converts to Mimicry XP when the creature dies, giving
+        /// an ongoing analysis-driven leveling source alongside learning and using techniques. Unlike
+        /// witness recording, this keeps paying out after the technique has already been learned.
+        /// </summary>
+        private static void TryAwardAnalysisCombatPoint(uint npc, uint player)
+        {
+            if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
+                return;
+
+            if (!CombatPoint.HasCombatPoints(player, npc))
+                return;
+
+            CombatPoint.AddCombatPoint(player, npc, SkillType.Mimicry, AnalysisCombatPointsPerWitness);
+        }
+
         private static void TryRecordWitness(uint npc, uint player, FeatType techniqueFeat, AbilityDetail techniqueDetail)
         {
             if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)

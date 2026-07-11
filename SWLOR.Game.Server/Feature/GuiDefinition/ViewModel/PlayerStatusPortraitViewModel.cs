@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -120,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var maxSTM = Stat.GetMaxStamina(Player, dbPlayer);
 
             StaminaValue = $"{currentSTM}";
-            StaminaProgress = maxSTM <= 0 ? 0 : (float)currentSTM / (float)maxSTM > 1.0f ? 1.0f : (float)currentSTM / (float)maxSTM;
+            StaminaProgress = maxSTM <= 0 ? 0f : Math.Clamp((float)currentSTM / maxSTM, 0f, 1f);
         }
 
         private void UpdateFP()
@@ -135,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var maxFP = Stat.GetMaxFP(Player, dbPlayer);
 
             FPValue = isStandard ? "0" : $"{currentFP}";
-            FPProgress = maxFP <= 0 || isStandard ? 0 : (float)currentFP / (float)maxFP > 1.0f ? 1.0f : (float)currentFP / (float)maxFP;
+            FPProgress = maxFP <= 0 || isStandard ? 0f : Math.Clamp((float)currentFP / maxFP, 0f, 1f);
         }
 
         public void Refresh(PlayerStatusRefreshEvent payload)

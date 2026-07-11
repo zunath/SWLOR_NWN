@@ -74,6 +74,11 @@ WEAPON_TABS = {
 BESPOKE_WEAPON_TABS = {
     "Vibroblade",
     "Heavy Vibroblade",
+    # Lightsaber is hand-authored: its abilities implement bespoke mechanics
+    # (physical->Force conversion, Soresu Pressure, bounded Deflecting Return
+    # reflection) that this description-driven generator cannot express. Do not
+    # regenerate it here or the hand-written mechanics are lost.
+    "Lightsaber",
 }
 
 GENERATED_WEAPON_TABS = WEAPON_TABS - BESPOKE_WEAPON_TABS

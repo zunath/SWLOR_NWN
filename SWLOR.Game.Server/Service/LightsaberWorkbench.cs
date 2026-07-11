@@ -84,7 +84,9 @@ namespace SWLOR.Game.Server.Service
             new SaberHiltPart(23, "Hilt 2.3", "ui_ssh_023"),
             new SaberHiltPart(31, "Hilt 3.1", "ui_ssh_031"),
             new SaberHiltPart(41, "Hilt 4.1", "ui_ssh_041"),
-            new SaberHiltPart(51, "Hilt 5.1", "ui_ssh_051"),
+            // Hilt 5.1 (model 51) is deliberately excluded: it is the only S-curved
+            // staff hilt and every staff top model is a straight center-axis blade,
+            // so no top can visually connect to it.
             new SaberHiltPart(61, "Hilt 6.1", "ui_ssh_061"),
         };
 
@@ -94,11 +96,11 @@ namespace SWLOR.Game.Server.Service
             new SaberBladeColor("Blue", 12, 32, 12, "ui_lsc_blue"),
             new SaberBladeColor("Green 1", 13, 33, 13, "ui_lsc_green"),
             new SaberBladeColor("Red", 14, 34, 14, "ui_lsc_red"),
-            new SaberBladeColor("White", 15, 35, -1, "ui_lsc_white"),
-            new SaberBladeColor("Yellow", 21, -1, 21, "ui_lsc_yellow"),
-            new SaberBladeColor("Purple 1", 22, -1, 22, "ui_lsc_purple"),
-            new SaberBladeColor("Teal", 23, -1, 23, "ui_lsc_teal"),
-            new SaberBladeColor("Pink", 24, -1, 24, "ui_lsc_pink"),
+            new SaberBladeColor("White", 15, 35, 25, "ui_lsc_white"),
+            new SaberBladeColor("Yellow", 21, 71, 21, "ui_lsc_yellow"),
+            new SaberBladeColor("Purple 1", 22, 72, 22, "ui_lsc_purple"),
+            new SaberBladeColor("Teal", 23, 73, 23, "ui_lsc_teal"),
+            new SaberBladeColor("Pink", 24, 74, 24, "ui_lsc_pink"),
             new SaberBladeColor("Brown", 51, 61, 51, "ui_lsc_brown"),
             new SaberBladeColor("Green 2", 52, 62, 52, "ui_lsc_rotjgrn"),
             new SaberBladeColor("Purple 2", 53, 63, 53, "ui_lsc_windu"),

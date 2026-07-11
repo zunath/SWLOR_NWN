@@ -289,14 +289,27 @@ public class LightsaberWorkbenchTests
         var staffColors = LightsaberWorkbench.GetBladeColors(BaseItem.Saberstaff, false);
 
         straightColors.Should().HaveCount(14);
-        staffColors.Should().HaveCount(13, "White has no saberstaff blade model");
-        curvedColors.Should().HaveCount(10, "the 02x color group has no curved blade models");
+        staffColors.Should().HaveCount(14, "every color has a saberstaff blade model (White via wdblsbr_t_025)");
+        curvedColors.Should().HaveCount(14, "every color has a curved blade model (the 02x colors via the wswglsbr_t_07x family)");
 
         foreach (var color in straightColors.Concat(curvedColors).Concat(staffColors))
         {
             color.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
             File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.tga"))
                 .Should().BeTrue($"preview texture {color.PreviewResref}.tga must exist in sw_ui");
+        }
+
+        // Every selectable top value must have a blade model and inventory icon in sw_weapon.
+        var weaponRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_weapon");
+        var topChecks = straightColors.Select(c => ("wswglsbr", c.StraightTopValue))
+            .Concat(curvedColors.Select(c => ("wswglsbr", c.CurvedTopValue)))
+            .Concat(staffColors.Select(c => ("wdblsbr", c.SaberstaffTopValue)));
+        foreach (var (prefix, value) in topChecks)
+        {
+            File.Exists(Path.Combine(weaponRoot, $"{prefix}_t_{value:D3}.mdl"))
+                .Should().BeTrue($"blade model {prefix}_t_{value:D3}.mdl must exist in sw_weapon");
+            File.Exists(Path.Combine(weaponRoot, $"i{prefix}_t_{value:D3}.tga"))
+                .Should().BeTrue($"inventory icon i{prefix}_t_{value:D3}.tga must exist in sw_weapon");
         }
 
         // Saberstaff hilts use dedicated wiki renders shipped in sw_ui.

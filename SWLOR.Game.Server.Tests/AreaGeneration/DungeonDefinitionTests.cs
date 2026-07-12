@@ -14,14 +14,28 @@ public class DungeonDefinitionTests
     private const string TreasurePlaceableResref = "_mdrn_pl_crate01";
     private const string ExitPlaceableResref = "building_exit";
 
+    // Fixed theme-key -> tileset mapping (see design/ProceduralAreaGeneration.md). Verified here so
+    // a resref rename/typo, or a theme silently failing to register, fails loudly instead of
+    // producing a subtly broken generated area at runtime.
+    private static readonly (string ThemeKey, string TilesetResref)[] ExpectedThemeTilesets =
+    {
+        (MineCaveDungeonDefinition.ThemeKey, "tdt01"),
+        (SciFiBaseDungeonDefinition.ThemeKey, "zsf01"),
+        (SewerDungeonDefinition.ThemeKey, "tds01"),
+        (AlienRuinDungeonDefinition.ThemeKey, "vmr01"),
+    };
+
     [Test]
-    public void MineCaveDungeonDefinition_RegistersUnderExpectedThemeKey()
+    public void AllDungeonDefinitions_RegisterUnderExpectedThemeKeysAndTilesets()
     {
         var dungeons = BuildAllDungeons();
 
-        dungeons.Should().ContainKey(MineCaveDungeonDefinition.ThemeKey);
-        dungeons[MineCaveDungeonDefinition.ThemeKey].DisplayName.Should().NotBeNullOrWhiteSpace();
-        dungeons[MineCaveDungeonDefinition.ThemeKey].TilesetResref.Should().Be("tdt01");
+        foreach (var (themeKey, tilesetResref) in ExpectedThemeTilesets)
+        {
+            dungeons.Should().ContainKey(themeKey);
+            dungeons[themeKey].DisplayName.Should().NotBeNullOrWhiteSpace();
+            dungeons[themeKey].TilesetResref.Should().Be(tilesetResref);
+        }
     }
 
     [Test]
@@ -127,6 +141,45 @@ public class DungeonDefinitionTests
         placeableResrefs.Should().Contain(ExitPlaceableResref);
     }
 
+    [Test]
+    public void AllDungeonDefinitions_PlaceholdersExistAndMatchTheirTileset()
+    {
+        var root = FindRepositoryRoot();
+        var moduleAreaResrefs = ReadModuleAreaListResrefs(root);
+        var failures = new List<string>();
+
+        foreach (var (themeKey, detail) in BuildAllDungeons())
+        {
+            if (string.IsNullOrWhiteSpace(detail.PlaceholderResref))
+            {
+                failures.Add($"{themeKey}: no placeholder resref configured.");
+                continue;
+            }
+
+            var arePath = Path.Combine(root.FullName, "Module", "are", $"{detail.PlaceholderResref}.are.json");
+            if (!File.Exists(arePath))
+            {
+                failures.Add($"{themeKey}: placeholder '{detail.PlaceholderResref}' has no Module/are/{detail.PlaceholderResref}.are.json.");
+                continue;
+            }
+
+            if (!moduleAreaResrefs.Contains(detail.PlaceholderResref))
+            {
+                failures.Add($"{themeKey}: placeholder '{detail.PlaceholderResref}' is not listed in Module/ifo/module.ifo.json Mod_Area_list.");
+            }
+
+            using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(arePath));
+            if (!document.RootElement.TryGetProperty("Tileset", out var tileset) ||
+                !tileset.TryGetProperty("value", out var tilesetValue) ||
+                !string.Equals(tilesetValue.GetString(), detail.TilesetResref, StringComparison.OrdinalIgnoreCase))
+            {
+                failures.Add($"{themeKey}: placeholder '{detail.PlaceholderResref}' area Tileset does not match theme TilesetResref '{detail.TilesetResref}'.");
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
     private static Dictionary<string, DungeonDetail> BuildAllDungeons()
     {
         var dungeons = new Dictionary<string, DungeonDetail>();
@@ -179,6 +232,30 @@ public class DungeonDefinitionTests
                 var resref = value.GetString();
                 if (!string.IsNullOrWhiteSpace(resref))
                     resrefs.Add(resref);
+            }
+        }
+
+        return resrefs;
+    }
+
+    private static HashSet<string> ReadModuleAreaListResrefs(DirectoryInfo root)
+    {
+        var resrefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var ifoPath = Path.Combine(root.FullName, "Module", "ifo", "module.ifo.json");
+        using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(ifoPath));
+
+        if (document.RootElement.TryGetProperty("Mod_Area_list", out var areaList) &&
+            areaList.TryGetProperty("value", out var areaListValue))
+        {
+            foreach (var area in areaListValue.EnumerateArray())
+            {
+                if (area.TryGetProperty("Area_Name", out var areaName) &&
+                    areaName.TryGetProperty("value", out var value))
+                {
+                    var resref = value.GetString();
+                    if (!string.IsNullOrWhiteSpace(resref))
+                        resrefs.Add(resref);
+                }
             }
         }
 

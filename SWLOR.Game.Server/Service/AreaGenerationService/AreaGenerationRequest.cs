@@ -33,6 +33,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public AreaPersistenceMode Persistence { get; set; } = AreaPersistenceMode.Ephemeral;
         public string DisplayName { get; set; } = "Generated Area";
         public string Tag { get; set; } = "GENERATED_AREA";
+        /// <summary>Tile light color indices applied to every generated tile (theme-driven).</summary>
+        public DungeonTileLighting Lighting { get; set; } = new();
     }
 
     public class AreaGenerationResult

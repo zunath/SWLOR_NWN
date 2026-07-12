@@ -16,19 +16,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     {
         private const float TileSize = 10.0f;
 
-        // Source light 8/8 matches the hand-built tdt01 cave areas; main light 0 keeps
-        // caves dark and lit primarily by tile source lights.
-        private const int DefaultMainLightColor = 0;
-        private const int DefaultSourceLightColor = 8;
-
         /// <summary>
         /// Creates an area instance whose tile grid is the resolved layout.
         /// The override binding on the placeholder resref is removed immediately after
         /// instancing — callers must serialize Realize calls (the generation queue does).
         /// Returns OBJECT_INVALID on engine failure.
         /// </summary>
-        public static uint Realize(ResolvedLayout layout, string placeholderResref, string overrideName, string tag, string displayName)
+        public static uint Realize(ResolvedLayout layout, string placeholderResref, string overrideName, string tag, string displayName, DungeonTileLighting lighting = null)
         {
+            lighting ??= new DungeonTileLighting();
             TilesetPlugin.CreateTileOverride(overrideName, layout.TilesetResref, layout.Width, layout.Height);
 
             for (var index = 0; index < layout.Tiles.Length; index++)
@@ -39,10 +35,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     nTileID = tile.TileId,
                     nOrientation = tile.Orientation,
                     nHeight = tile.Height,
-                    nMainLightColor1 = DefaultMainLightColor,
-                    nMainLightColor2 = DefaultMainLightColor,
-                    nSourceLightColor1 = DefaultSourceLightColor,
-                    nSourceLightColor2 = DefaultSourceLightColor,
+                    nMainLightColor1 = lighting.MainLight1,
+                    nMainLightColor2 = lighting.MainLight2,
+                    nSourceLightColor1 = lighting.SourceLight1,
+                    nSourceLightColor2 = lighting.SourceLight2,
                     bAnimLoop1 = 1,
                     bAnimLoop2 = 1,
                     bAnimLoop3 = 1

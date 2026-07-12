@@ -10,23 +10,36 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 
 /// <summary>
 /// Runs the full offline pipeline (parse real .set -> macro layout -> tile resolution)
-/// against the actual first-target tileset. This is the test that proves tdt01's tile
-/// inventory can satisfy every corner combination the macro generator produces —
+/// against every registered dungeon tileset. This is the test that proves each tileset's
+/// tile inventory can satisfy every corner combination the macro generator produces —
 /// a gap synthetic-fixture tests cannot cover.
 /// </summary>
 public class AreaGenerationPipelineTests
 {
-    private static TilesetModel LoadTdt01()
+    // haks subdirectory each tileset's .set file lives under.
+    private static readonly Dictionary<string, string> TilesetHakDirectories = new()
+    {
+        ["tdt01"] = "sw_t_minecave",
+        ["zsf01"] = "sw_t_scifibase",
+        ["tds01"] = "sw_t_sewer",
+        ["vmr01"] = "sw_t_alienruin",
+    };
+
+    private static TilesetModel LoadTileset(string tilesetResref)
     {
         var root = FindRepositoryRoot();
-        var contents = File.ReadAllText(Path.Combine(root.FullName, "SWLOR_Haks", "sw_t_minecave", "tdt01.set"));
-        return TilesetSetParser.Parse("tdt01", contents);
+        var hakDirectory = TilesetHakDirectories[tilesetResref];
+        var contents = File.ReadAllText(Path.Combine(root.FullName, "SWLOR_Haks", hakDirectory, $"{tilesetResref}.set"));
+        return TilesetSetParser.Parse(tilesetResref, contents);
     }
 
-    [Test]
-    public void Tdt01_HasSimpleTilesForEveryWallFloorCornerCombination()
+    [TestCase("tdt01")]
+    [TestCase("zsf01")]
+    [TestCase("tds01")]
+    [TestCase("vmr01")]
+    public void Tileset_HasSimpleTilesForEveryWallFloorCornerCombination(string tilesetResref)
     {
-        var model = LoadTdt01();
+        var model = LoadTileset(tilesetResref);
 
         // Simple = usable by the v1 resolver: ungrouped, crosser-free, doorless, flat.
         var simpleTiles = model.Tiles
@@ -51,7 +64,7 @@ public class AreaGenerationPipelineTests
         }
 
         var missing = new List<string>();
-        var labels = new[] { "wall", "floor" };
+        var labels = new[] { model.DefaultTerrain.ToLowerInvariant(), model.FloorTerrain.ToLowerInvariant() };
         foreach (var tl in labels)
         foreach (var tr in labels)
         foreach (var br in labels)
@@ -63,16 +76,19 @@ public class AreaGenerationPipelineTests
         }
 
         missing.Should().BeEmpty(
-            "the macro generator can produce any Wall/Floor corner combination, so tdt01 must offer a simple tile for each (TL|TR|BR|BL)");
+            $"the macro generator can produce any Wall/Floor corner combination, so {tilesetResref} must offer a simple tile for each (TL|TR|BR|BL)");
     }
 
-    [Test]
-    public void Tdt01_FullPipelineSucceedsAcrossManySeeds()
+    [TestCase("tdt01", 100)]
+    [TestCase("zsf01", 25)]
+    [TestCase("tds01", 25)]
+    [TestCase("vmr01", 25)]
+    public void Tileset_FullPipelineSucceedsAcrossManySeeds(string tilesetResref, int seedCount)
     {
-        var model = LoadTdt01();
+        var model = LoadTileset(tilesetResref);
         var failures = new List<string>();
 
-        for (var seed = 1; seed <= 100; seed++)
+        for (var seed = 1; seed <= seedCount; seed++)
         {
             var rng = new Random(seed);
             var macro = MacroLayoutGenerator.Generate(new MacroLayoutParameters
@@ -96,13 +112,16 @@ public class AreaGenerationPipelineTests
             resolved.Rooms.Should().NotBeEmpty();
         }
 
-        failures.Should().BeEmpty("every macro layout must resolve against the real tdt01 inventory");
+        failures.Should().BeEmpty($"every macro layout must resolve against the real {tilesetResref} inventory");
     }
 
-    [Test]
-    public void Tdt01_PipelineIsDeterministicPerSeed()
+    [TestCase("tdt01")]
+    [TestCase("zsf01")]
+    [TestCase("tds01")]
+    [TestCase("vmr01")]
+    public void Tileset_PipelineIsDeterministicPerSeed(string tilesetResref)
     {
-        var model = LoadTdt01();
+        var model = LoadTileset(tilesetResref);
 
         ResolvedLayout Run(int seed)
         {

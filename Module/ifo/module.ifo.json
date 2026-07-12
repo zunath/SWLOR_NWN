@@ -564,6 +564,27 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "gen_placeholder2"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "gen_placeholder3"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "gen_placeholder4"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "gl_ksthacdmyextr"
         }
       },

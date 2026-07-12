@@ -29,6 +29,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     }
 
     /// <summary>
+    /// Per-tile lighting written into every generated tile of a theme. Values are tile light
+    /// color indices (see TILE_MAIN_LIGHT_COLOR_* / TILE_SOURCE_LIGHT_COLOR_*); defaults match
+    /// the hand-built tdt01 cave areas.
+    /// </summary>
+    public class DungeonTileLighting
+    {
+        public int MainLight1 { get; set; }
+        public int MainLight2 { get; set; }
+        public int SourceLight1 { get; set; } = 8;
+        public int SourceLight2 { get; set; } = 8;
+    }
+
+    /// <summary>
     /// A themed dungeon: tileset/placeholder pairing, size range, and per-tier content.
     /// Definitions are discovered via reflection over IDungeonListDefinition (see DungeonContentPlacer),
     /// mirroring ISpawnListDefinition/ILootTableDefinition/IAbilityListDefinition in this codebase.
@@ -41,6 +54,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string PlaceholderResref { get; set; } = string.Empty;
         public int MinSize { get; set; } = 8;
         public int MaxSize { get; set; } = 32;
+        public DungeonTileLighting Lighting { get; set; } = new();
         public Dictionary<int, DungeonTierDetail> Tiers { get; set; } = new();
     }
 
@@ -98,6 +112,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             _activeDungeon.MinSize = minSize;
             _activeDungeon.MaxSize = maxSize;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the tile light color indices applied to every generated tile of this theme.
+        /// </summary>
+        public DungeonDefinitionBuilder TileLighting(int mainLight1, int mainLight2, int sourceLight1, int sourceLight2)
+        {
+            _activeDungeon.Lighting = new DungeonTileLighting
+            {
+                MainLight1 = mainLight1,
+                MainLight2 = mainLight2,
+                SourceLight1 = sourceLight1,
+                SourceLight2 = sourceLight2
+            };
             return this;
         }
 

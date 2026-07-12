@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
@@ -12,10 +14,10 @@ namespace SWLOR.Game.Server.Feature
 {
     /// <summary>
     /// Boot-time self-test for the area generation engine path, enabled by setting
-    /// AREA_GENERATION_SELF_TEST=1 in the server environment. Exercises everything a
-    /// client cannot see from the outside — tileset override, CreateArea, per-tile
-    /// readback, path validation, teardown, and override reuse — and reports PASS/FAIL
-    /// on the server console so a headless docker run verifies the whole path.
+    /// AREA_GENERATION_SELF_TEST=1 in the server environment. Runs one full pass per
+    /// registered dungeon theme — tileset override, CreateArea, per-tile readback, content
+    /// placement, treasure fill, and teardown — and reports PASS/FAIL on the server console
+    /// so a headless docker run verifies the whole path for every theme.
     /// </summary>
     public static class AreaGenerationSelfTest
     {
@@ -32,23 +34,39 @@ namespace SWLOR.Game.Server.Feature
         private static void Run()
         {
             Report("Starting area generation self-test.");
-            RunPassChain(12345, 1, () =>
-                RunPassChain(99999, 2, () =>
-                    Report("PASS - both generation passes succeeded: tiles, content, and teardown verified.")));
+            var themes = DungeonContentPlacer.GetAllDungeonThemes().Keys.OrderBy(k => k).ToList();
+            if (themes.Count == 0)
+            {
+                Report("FAIL - no dungeon themes registered.");
+                return;
+            }
+
+            RunThemeChain(themes, 0);
+        }
+
+        private static void RunThemeChain(List<string> themes, int index)
+        {
+            if (index >= themes.Count)
+            {
+                Report($"PASS - all {themes.Count} theme passes succeeded: tiles, content, and teardown verified.");
+                return;
+            }
+
+            RunPassChain(themes[index], 12345 + index, () => RunThemeChain(themes, index + 1));
         }
 
         /// <summary>
-        /// Generates and geometry-checks a pass synchronously, then defers the content phase one
+        /// Generates and geometry-checks a theme synchronously, then defers the content phase one
         /// tick — CreateArea's initialization only completes after the creating script returns, so
         /// content placement (matching the facade's deferred-callback contract) must wait.
         /// </summary>
-        private static void RunPassChain(int seed, int pass, Action onSuccess)
+        private static void RunPassChain(string themeKey, int seed, Action onSuccess)
         {
             AreaGenerationResult result;
             RuntimeAreaInstance instance;
             try
             {
-                (result, instance) = RunGeometryPhase(seed, pass);
+                (result, instance) = RunGeometryPhase(themeKey, seed);
             }
             catch (Exception ex)
             {
@@ -60,7 +78,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 try
                 {
-                    RunContentPhase(result, instance, pass, onSuccess);
+                    RunContentPhase(result, instance, themeKey, onSuccess);
                 }
                 catch (Exception ex)
                 {
@@ -69,32 +87,36 @@ namespace SWLOR.Game.Server.Feature
             }, TimeSpan.FromSeconds(2));
         }
 
-        private static (AreaGenerationResult, RuntimeAreaInstance) RunGeometryPhase(int seed, int pass)
+        private static (AreaGenerationResult, RuntimeAreaInstance) RunGeometryPhase(string themeKey, int seed)
         {
+            var detail = DungeonContentPlacer.GetDungeonDetail(themeKey);
             var stopwatch = Stopwatch.StartNew();
             var result = AreaGeneration.Generate(new AreaGenerationRequest
             {
+                TilesetResref = detail.TilesetResref,
+                PlaceholderResref = detail.PlaceholderResref,
+                Lighting = detail.Lighting,
                 Width = 16,
                 Height = 16,
                 Seed = seed,
-                DisplayName = $"SelfTest Area {pass}",
+                DisplayName = $"SelfTest {themeKey}",
                 Tag = "GEN_SELFTEST"
             });
             stopwatch.Stop();
 
             if (!result.Success)
-                throw new InvalidOperationException($"pass {pass}: generation failed: {result.FailureReason}");
+                throw new InvalidOperationException($"{themeKey}: generation failed: {result.FailureReason}");
 
             var area = result.Area;
             var layout = result.Layout;
-            Report($"pass {pass}: generated {result.InstanceId} in {stopwatch.ElapsedMilliseconds}ms " +
+            Report($"{themeKey}: generated {result.InstanceId} in {stopwatch.ElapsedMilliseconds}ms " +
                    $"(seed {result.SeedUsed}, {result.AttemptsUsed} attempt(s), {layout.Rooms.Count} rooms).");
 
             var width = GetAreaSize(Dimension.Width, area);
             var height = GetAreaSize(Dimension.Height, area);
             if (width != layout.Width || height != layout.Height)
                 throw new InvalidOperationException(
-                    $"pass {pass}: area size is {width}x{height}, expected {layout.Width}x{layout.Height} — override did not define the grid.");
+                    $"{themeKey}: area size is {width}x{height}, expected {layout.Width}x{layout.Height} — override did not define the grid.");
 
             var idMismatches = 0;
             var orientationMismatches = 0;
@@ -114,32 +136,32 @@ namespace SWLOR.Game.Server.Feature
 
             if (idMismatches > 0 || orientationMismatches > 0)
                 throw new InvalidOperationException(
-                    $"pass {pass}: tile readback mismatches — {idMismatches} IDs, {orientationMismatches} orientations of {layout.Tiles.Length} tiles.");
+                    $"{themeKey}: tile readback mismatches — {idMismatches} IDs, {orientationMismatches} orientations of {layout.Tiles.Length} tiles.");
 
-            Report($"pass {pass}: all {layout.Tiles.Length} tiles read back correctly.");
+            Report($"{themeKey}: all {layout.Tiles.Length} tiles read back correctly.");
 
             if (!RuntimeAreaRegistry.TryGetByArea(area, out var instance) || instance.WalkablePoints.Count == 0)
-                throw new InvalidOperationException($"pass {pass}: no walkable points registered.");
+                throw new InvalidOperationException($"{themeKey}: no walkable points registered.");
 
             var sample = instance.WalkablePoints[0];
-            Report($"pass {pass}: {instance.WalkablePoints.Count} walkable points; sample ground height z={sample.Z:F2}.");
+            Report($"{themeKey}: {instance.WalkablePoints.Count} walkable points; sample ground height z={sample.Z:F2}.");
 
             return (result, instance);
         }
 
-        private static void RunContentPhase(AreaGenerationResult result, RuntimeAreaInstance instance, int pass, Action onSuccess)
+        private static void RunContentPhase(AreaGenerationResult result, RuntimeAreaInstance instance, string themeKey, Action onSuccess)
         {
-            var population = DungeonContentPlacer.Populate(instance, DungeonDefinition.MineCaveDungeonDefinition.ThemeKey, 1);
+            var population = DungeonContentPlacer.Populate(instance, themeKey, 1);
             if (population.CreaturesSpawned == 0)
-                throw new InvalidOperationException($"pass {pass}: content placement spawned no creatures.");
+                throw new InvalidOperationException($"{themeKey}: content placement spawned no creatures.");
             if (!population.BossSpawned)
-                throw new InvalidOperationException($"pass {pass}: boss did not spawn.");
+                throw new InvalidOperationException($"{themeKey}: boss did not spawn.");
             if (!population.TreasurePlaced)
-                throw new InvalidOperationException($"pass {pass}: treasure container was not placed.");
+                throw new InvalidOperationException($"{themeKey}: treasure container was not placed.");
             if (!population.ExitPlaced)
-                throw new InvalidOperationException($"pass {pass}: exit placeable did not spawn.");
+                throw new InvalidOperationException($"{themeKey}: exit placeable did not spawn.");
 
-            Report($"pass {pass}: content placed — {population.CreaturesSpawned} creatures in {population.RoomsPopulated} rooms, " +
+            Report($"{themeKey}: content placed — {population.CreaturesSpawned} creatures in {population.RoomsPopulated} rooms, " +
                    $"boss '{population.BossResref}', treasure container present, exit present.");
 
             // The treasure fill happens on a later tick (placeable inventories reject items in
@@ -149,14 +171,14 @@ namespace SWLOR.Game.Server.Feature
                 try
                 {
                     if (population.TreasureItemsSpawned == 0)
-                        throw new InvalidOperationException($"pass {pass}: treasure fill produced no items.");
+                        throw new InvalidOperationException($"{themeKey}: treasure fill produced no items.");
 
-                    Report($"pass {pass}: treasure filled with {population.TreasureItemsSpawned} item(s).");
+                    Report($"{themeKey}: treasure filled with {population.TreasureItemsSpawned} item(s).");
 
                     if (!AreaGeneration.DestroyGeneratedArea(result.InstanceId, out var destroyFailure))
-                        throw new InvalidOperationException($"pass {pass}: teardown failed: {destroyFailure}");
+                        throw new InvalidOperationException($"{themeKey}: teardown failed: {destroyFailure}");
 
-                    Report($"pass {pass}: teardown clean.");
+                    Report($"{themeKey}: teardown clean.");
                     onSuccess();
                 }
                 catch (Exception ex)

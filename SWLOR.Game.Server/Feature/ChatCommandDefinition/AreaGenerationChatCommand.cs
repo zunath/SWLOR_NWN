@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void GenerateArea()
         {
             _builder.Create("genarea")
-                .Description("Generates a procedural test dungeon. Usage: /genarea [width] [height] [seed] [tier]")
+                .Description("Generates a procedural test dungeon. Usage: /genarea [width] [height] [seed] [tier] [theme]")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var height = args.Length > 1 && int.TryParse(args[1], out var h) ? h : 16;
                     int? seed = args.Length > 2 && int.TryParse(args[2], out var s) ? s : null;
                     var tier = args.Length > 3 && int.TryParse(args[3], out var t) ? t : 1;
+                    var themeKey = args.Length > 4 ? args[4] : MineCaveDungeonDefinition.ThemeKey;
 
                     if (width < 8 || width > 32 || height < 8 || height > 32)
                     {
@@ -42,7 +43,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    var dungeon = DungeonContentPlacer.GetDungeonDetail(MineCaveDungeonDefinition.ThemeKey);
+                    if (!DungeonContentPlacer.DungeonThemeExists(themeKey))
+                    {
+                        SendMessageToPC(user, $"Theme must be one of: {string.Join(", ", DungeonContentPlacer.GetAllDungeonThemes().Keys.OrderBy(k => k))}.");
+                        return;
+                    }
+
+                    var dungeon = DungeonContentPlacer.GetDungeonDetail(themeKey);
                     if (!dungeon.Tiers.ContainsKey(tier))
                     {
                         SendMessageToPC(user, $"Tier must be one of: {string.Join(", ", dungeon.Tiers.Keys.OrderBy(k => k))}.");
@@ -50,19 +57,22 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var returnLocation = GetLocation(user);
-                    SendMessageToPC(user, $"Generating {width}x{height} tier {tier} area" + (seed.HasValue ? $" with seed {seed}..." : "..."));
+                    SendMessageToPC(user, $"Generating {width}x{height} tier {tier} '{themeKey}' area" + (seed.HasValue ? $" with seed {seed}..." : "..."));
 
                     // Small areas cannot fit the default room counts; scale down so requests
                     // below 16x16 still succeed instead of burning every retry.
                     var small = width < 16 || height < 16;
                     AreaGeneration.QueueGeneration(new AreaGenerationRequest
                     {
+                        TilesetResref = dungeon.TilesetResref,
+                        PlaceholderResref = dungeon.PlaceholderResref,
+                        Lighting = dungeon.Lighting,
                         Width = width,
                         Height = height,
                         Seed = seed,
                         MinRooms = small ? 2 : 4,
                         MaxRooms = small ? 4 : 8,
-                        DisplayName = "Generated Test Area",
+                        DisplayName = $"Generated Test Area ({dungeon.DisplayName})",
                         Tag = "GEN_TEST_AREA"
                     }, result =>
                     {
@@ -80,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                         instance.ExitLocation = returnLocation;
 
-                        var population = DungeonContentPlacer.Populate(instance, MineCaveDungeonDefinition.ThemeKey, tier);
+                        var population = DungeonContentPlacer.Populate(instance, themeKey, tier);
 
                         SendMessageToPC(user,
                             $"Generated '{result.InstanceId}' (seed {result.SeedUsed}, {result.AttemptsUsed} attempt(s), {result.Layout.Rooms.Count} rooms). " +

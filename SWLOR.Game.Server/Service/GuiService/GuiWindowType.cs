@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         Disguises = 60,
 
         DebugEnmity = 900,
+        DebugNuiGallery = 901,
         ChangePortrait = 9999
     }
 }

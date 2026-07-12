@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -115,6 +117,67 @@ namespace SWLOR.Game.Server.Service.GuiService
                             });
                         });
                     });
+                })
+                .DefinePartialView("%%WINDOW_INPUT_MODAL%%", group =>
+                {
+                    // Like %%WINDOW_MODAL%%, but with a multiline text box the player
+                    // can type into. The typed text flows back to the server through
+                    // the always-watched ModalInputText bind (see GuiViewModelBase.Bind).
+                    group.AddColumn(mainCol =>
+                    {
+                        mainCol.AddRow(mainRow =>
+                        {
+                            mainRow.AddColumn(col =>
+                            {
+                                col.AddRow(row =>
+                                {
+                                    row.AddText()
+                                        .BindText(model => model.ModalPromptText)
+                                        .SetScrollbars(NuiScrollbars.None)
+                                        .SetShowBorder(false)
+                                        .SetHeight(64f);
+                                });
+
+                                // Unsized scrollable wrapper so the fixed-height editor
+                                // can never make the layout's required height exceed the
+                                // window viewport (layout rule R2b).
+                                col.AddRow(row =>
+                                {
+                                    row.AddGroup(editorGroup =>
+                                    {
+                                        editorGroup.SetShowBorder(false);
+                                        editorGroup.SetScrollbars(NuiScrollbars.Auto);
+                                        editorGroup.AddColumn(editorCol =>
+                                        {
+                                            editorCol.AddRow(editorRow =>
+                                            {
+                                                editorRow.AddTextEdit()
+                                                    .SetIsMultiline(true)
+                                                    .SetMaxLength(4000)
+                                                    .BindValue(model => model.ModalInputText)
+                                                    .SetHeight(450f);
+                                            });
+                                        });
+                                    });
+                                });
+
+                                col.AddRow(row =>
+                                {
+                                    row.AddSpacer();
+                                    row.AddButton()
+                                        .BindText(model => model.ModalConfirmButtonText)
+                                        .BindOnClicked(model => model.OnInputModalConfirmClick())
+                                        .SetHeight(35f);
+
+                                    row.AddButton()
+                                        .BindText(model => model.ModalCancelButtonText)
+                                        .BindOnClicked(model => model.OnInputModalCancelClick())
+                                        .SetHeight(35f);
+                                    row.AddSpacer();
+                                });
+                            });
+                        });
+                    });
                 });
 
             _activeWindow.Elements.Clear();
@@ -128,6 +191,16 @@ namespace SWLOR.Game.Server.Service.GuiService
                     });
                 });
 
+            var windowId = Gui.BuildWindowId(_type);
+
+            // Surface layout shapes confirmed to fail NUI's client-side constraint
+            // solver, with a widget path - the client error itself carries no context.
+            // Every warning is a real defect; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
+            foreach (var finding in GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews))
+            {
+                Console.WriteLine($"[NUI layout warning] {finding}");
+            }
+
             var partialViews = new Dictionary<string, Json>();
             foreach (var (key, partial) in _activeWindow.PartialViews)
             {
@@ -135,7 +208,19 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
 
             var json = _activeWindow.Build();
-            var windowId = Gui.BuildWindowId(_type);
+
+            // Dump the exact wire JSON for layout debugging (see Readmes/NuiLayoutRules.md,
+            // "Diagnosing a client-side layout error"). Lands in the Server log group.
+            if (ApplicationSettings.Get().ServerEnvironment != ServerEnvironmentType.Production ||
+                Environment.GetEnvironmentVariable("SWLOR_NUI_DUMP_JSON") == "1")
+            {
+                Log.Write(LogGroup.Server, $"[NUI JSON] window={windowId} root={JsonDump(json)}");
+                foreach (var (partialName, partialJson) in partialViews)
+                {
+                    Log.Write(LogGroup.Server, $"[NUI JSON] window={windowId} partial={partialName} json={JsonDump(partialJson)}");
+                }
+            }
+
             RegisterAllElementEvents();
 
             var constructedWindow = new GuiConstructedWindow(

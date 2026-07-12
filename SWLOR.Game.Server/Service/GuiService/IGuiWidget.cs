@@ -16,6 +16,18 @@ namespace SWLOR.Game.Server.Service.GuiService
         public List<IGuiWidget> Elements { get; }
 
         /// <summary>
+        /// The explicit width declared on this widget, or 0 if none was set.
+        /// Used by layout validation; only values &gt; 0 are emitted to NUI.
+        /// </summary>
+        float DeclaredWidth { get; }
+
+        /// <summary>
+        /// The explicit height declared on this widget, or 0 if none was set.
+        /// Used by layout validation; only values &gt; 0 are emitted to NUI.
+        /// </summary>
+        float DeclaredHeight { get; }
+
+        /// <summary>
         /// Retrieves the set of events registered for this widget.
         /// </summary>
         public Dictionary<string, GuiMethodDetail> Events { get; }

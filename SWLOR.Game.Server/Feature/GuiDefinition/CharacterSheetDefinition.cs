@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -234,39 +235,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         table.SetScrollbars(NuiScrollbars.None);
                         table.AddColumn(tableCol =>
                         {
-                            tableCol.AddRow(row =>
-                            {
-                                AddTableHeader(row, "STAT", 190f, "Character stat.");
-                                AddTableHeader(row, "VALUE", 0f, "Current value.");
-                            });
-
-                            tableCol.AddRow(row =>
-                            {
-                                row.AddList(template =>
-                                {
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(190f);
-                                        cell.AddLabel()
-                                            .BindText(model => model.StatNames)
-                                            .BindTooltip(model => model.StatTooltips)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddLabel()
-                                            .BindText(model => model.StatValues)
-                                            .BindTooltip(model => model.StatTooltips)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-                                })
-                                    .BindRowCount(model => model.StatNames)
-                                    .SetRowHeight(24f)
-                                    .SetShowBorders(false)
-                                    .SetScrollbars(NuiScrollbars.Y);
-                            });
+                            tableCol.AddTable<CharacterSheetViewModel>(t => t
+                                .AddColumn("STAT", 190f, model => model.StatNames, model => model.StatTooltips, "Character stat.")
+                                .AddColumn("VALUE", 0f, model => model.StatValues, model => model.StatTooltips, "Current value.")
+                                .SetRowHeight(24f));
                         });
                     })
                         .SetWidth(StatsPanelWidth);
@@ -287,57 +259,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         table.SetScrollbars(NuiScrollbars.None);
                         table.AddColumn(tableCol =>
                         {
-                            tableCol.AddRow(row =>
-                            {
-                                AddTableHeader(row, "TYPE", 90f, "Resistance family.");
-                                AddTableHeader(row, "SCORE", 55f, "Higher reduces impact.");
-                                AddTableHeader(row, "DAMAGE", 90f, "Damage received.");
-                                AddTableHeader(row, "STATUS", 0f, "Status duration.");
-                            });
-
-                            tableCol.AddRow(row =>
-                            {
-                                row.AddList(template =>
-                                {
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(90f);
-                                        cell.AddLabel()
-                                            .BindText(model => model.ResistanceNames)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(55f);
-                                        cell.AddLabel()
-                                            .BindText(model => model.ResistanceScores)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(90f);
-                                        cell.AddLabel()
-                                            .BindText(model => model.ResistanceDamageTaken)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddLabel()
-                                            .BindText(model => model.ResistanceStatusDurations)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-                                })
-                                    .BindRowCount(model => model.ResistanceNames)
-                                    .SetRowHeight(24f)
-                                    .SetShowBorders(false)
-                                    .SetScrollbars(NuiScrollbars.Y);
-                            });
+                            tableCol.AddTable<CharacterSheetViewModel>(t => t
+                                .AddColumn("TYPE", 90f, model => model.ResistanceNames, headerTooltip: "Resistance family.")
+                                .AddColumn("SCORE", 55f, model => model.ResistanceScores, headerTooltip: "Higher reduces impact.")
+                                .AddColumn("DAMAGE", 90f, model => model.ResistanceDamageTaken, headerTooltip: "Damage received.")
+                                .AddColumn("STATUS", 0f, model => model.ResistanceStatusDurations, headerTooltip: "Status duration.")
+                                .SetRowHeight(24f));
                         });
                     })
                         .SetWidth(ResistancePanelWidth);
@@ -358,48 +285,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         table.SetScrollbars(NuiScrollbars.None);
                         table.AddColumn(tableCol =>
                         {
-                            tableCol.AddRow(row =>
-                            {
-                                AddTableHeader(row, "CRAFT", 135f, "Crafting skill.");
-                                AddTableHeader(row, "CONTROL", 82f, "Craft quality and auto-craft chance.");
-                                AddTableHeader(row, "CRAFTSMANSHIP", 0f, "Craft progress and auto-craft chance.");
-                            });
-
-                            tableCol.AddRow(row =>
-                            {
-                                row.AddList(template =>
-                                {
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(135f);
-                                        cell.AddLabel()
-                                            .BindText(model => model.CraftNames)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(82f);
-                                        cell.AddLabel()
-                                            .BindText(model => model.CraftControls)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddLabel()
-                                            .BindText(model => model.CraftCraftsmanship)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-                                })
-                                    .BindRowCount(model => model.CraftNames)
-                                    .SetRowHeight(28f)
-                                    .SetShowBorders(false)
-                                    .SetScrollbars(NuiScrollbars.Y);
-                            });
-
+                            tableCol.AddTable<CharacterSheetViewModel>(t => t
+                                .AddColumn("CRAFT", 135f, model => model.CraftNames, headerTooltip: "Crafting skill.")
+                                .AddColumn("CONTROL", 82f, model => model.CraftControls, headerTooltip: "Craft quality and auto-craft chance.")
+                                .AddColumn("CRAFTSMANSHIP", 0f, model => model.CraftCraftsmanship, headerTooltip: "Craft progress and auto-craft chance.")
+                                .SetRowHeight(28f));
                         });
                     })
                         .SetWidth(CraftingPanelWidth);
@@ -469,28 +359,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 row.AddSpacer();
             });
-        }
-
-        private static void AddTableHeader(
-            GuiRow<CharacterSheetViewModel> row,
-            string text,
-            float width,
-            string tooltip = null)
-        {
-            var label = row.AddLabel()
-                .SetText(text)
-                .SetHeight(22f)
-                .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-            if (width > 0f)
-            {
-                label.SetWidth(width);
-            }
-
-            if (!string.IsNullOrWhiteSpace(tooltip))
-            {
-                label.SetTooltip(tooltip);
-            }
         }
 
         private static void AddAttributeRow(

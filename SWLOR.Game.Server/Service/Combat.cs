@@ -5303,7 +5303,7 @@ namespace SWLOR.Game.Server.Service
             var pinningRank = Stat.GetStatAdjustment(activator, StatType.RiflePacificationPinningFireRank);
             if (pinningRank >= 2)
             {
-                StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), 30f, ResistanceType.Trauma);
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), 6f, ResistanceType.Trauma);
             }
             else if (pinningRank == 1)
             {

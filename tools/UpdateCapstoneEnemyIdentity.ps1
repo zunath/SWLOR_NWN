@@ -856,6 +856,11 @@ function Get-NPCSignatureAbilities($lines) {
 
             Add-SignatureLegacyReferences $legacyFeatNames $legacyIconResrefs $legacyTlkTexts $line $profile $title $stepData $step
 
+            $statusDuration = [int](6 + ($step * 2))
+            if ($stepData.Status -eq 'KnockdownStatusEffect' -and $statusDuration -gt 6) {
+                $statusDuration = 6
+            }
+
             $ability = [pscustomobject]@{
                 Key = $key
                 Role = $role
@@ -869,7 +874,7 @@ function Get-NPCSignatureAbilities($lines) {
                 LegacyTlkTexts = $legacyTlkTexts
                 ClassName = "$($featName)AbilityDefinition"
                 DisplayName = $displayName
-                Description = "$displayName is a reusable level 50 enemy technique used by $($stepLabels[$step]) enemies. Deals $($stepData.DamageType) damage and applies $($stepData.Status -replace 'StatusEffect$', '') for $([int](6 + ($step * 2))) seconds."
+                Description = "$displayName is a reusable level 50 enemy technique used by $($stepLabels[$step]) enemies. Deals $($stepData.DamageType) damage and applies $($stepData.Status -replace 'StatusEffect$', '') for $statusDuration seconds."
                 IconResref = Get-SignatureIconResref $title
                 LegacyIconResrefs = $legacyIconResrefs
                 SemanticCategory = $stepData.Category
@@ -885,7 +890,7 @@ function Get-NPCSignatureAbilities($lines) {
                 RecastDelay = [decimal](22 + ($step * 4))
                 Stamina = 5 + $step
                 BaseDamage = Get-SignatureBaseDamage $role $step $false
-                Duration = [int](6 + ($step * 2))
+                Duration = $statusDuration
                 StatusEffect = $stepData.Status
                 DamageType = $stepData.DamageType
                 Resistance = $stepData.Resistance

@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Concussion Grenade")
 
                 .AddPerkLevel()
-                .Description("Deals 14 electrical DMG plus PER scaling in a 3m blast and knocks down for 30 seconds. Affects up to 5 targets. Consumes explosives.")
+                .Description("Deals 14 electrical DMG plus PER scaling in a 3m blast and knocks down for 3 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ConcussionGrenade1)
 
                 .AddPerkLevel()
-                .Description("Deals 28 electrical DMG plus PER scaling in a 3m blast and knocks down for 30 seconds. Affects up to 5 targets. Consumes explosives.")
+                .Description("Deals 28 electrical DMG plus PER scaling in a 3m blast and knocks down for 3 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)

@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RemoteCharge1)
 
                 .AddPerkLevel()
-                .Description("Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 10 seconds.")
+                .Description("Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)

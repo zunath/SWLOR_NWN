@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Staff - Crusher", true)]
         StaffCrusher = 41,
 
-        [PerkCategory("Staff - Breaker", true)]
+        [PerkCategory("Staff - Sentinel", true)]
         StaffSentinel = 42,
 
         [PerkCategory("Pistol - Gambler", true)]

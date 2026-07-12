@@ -220,8 +220,17 @@ namespace SWLOR.Game.Server.Feature
             if (!population.ExitPlaced)
                 throw new InvalidOperationException($"{themeKey}: exit placeable did not spawn.");
 
+            // Door-style transitions must have produced real door objects; anything the planner
+            // marked Door that failed door creation falls back to a placeable and logs an error,
+            // so a shortfall here means UtilPlugin.CreateDoor rejected the theme's blueprint.
+            var doorTransitions = instance.Layout.Transitions.Count(t => t.Style == TransitionStyle.Door);
+            if (population.DoorsCreated < doorTransitions)
+                throw new InvalidOperationException(
+                    $"{themeKey}: {doorTransitions} door-style transition(s) but only {population.DoorsCreated} door(s) created.");
+
             Report($"{themeKey}: content placed — {population.CreaturesSpawned} creatures in {population.RoomsPopulated} rooms, " +
-                   $"boss '{population.BossResref}', treasure container present, exit present.");
+                   $"boss '{population.BossResref}', treasure container present, exit present, " +
+                   $"{population.DoorsCreated}/{doorTransitions} transition doors created.");
 
             // The treasure fill happens on a later tick (placeable inventories reject items in
             // their creation script context), so its assertion and teardown defer once more.

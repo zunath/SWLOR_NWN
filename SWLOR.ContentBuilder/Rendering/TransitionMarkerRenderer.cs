@@ -19,6 +19,12 @@ namespace SWLOR.ContentBuilder.Rendering
     /// tiny "IN"/"OUT" label is drawn below the marker on a small dark backdrop (again for
     /// legibility over bright art); smaller cells omit the label since there's no room to render it
     /// cleanly.
+    ///
+    /// Door-style transitions (TileDoorPlanner substituted a real tileset door for the placeable)
+    /// additionally get a small filled square at the door's actual world position — converted from
+    /// world units (10 per tile) to grid space the same way tile cells are — so the reviewer can see
+    /// exactly where the door sits in the wall, straddling the boundary between the room-edge and
+    /// solid-side tiles.
     /// </summary>
     internal static class TransitionMarkerRenderer
     {
@@ -55,6 +61,19 @@ namespace SWLOR.ContentBuilder.Rendering
                 var fillBrush = new SolidColorBrush(isEntrance ? EntranceFill : ExitFill);
 
                 context.DrawGeometry(fillBrush, outlinePen, geometry);
+
+                if (transition.Style == TransitionStyle.Door)
+                {
+                    var doorGridX = transition.DoorX / 10.0;
+                    var doorGridY = transition.DoorY / 10.0;
+                    var doorScreenX = offsetX + doorGridX * cell;
+                    var doorScreenY = offsetY + (heightInTiles - doorGridY) * cell;
+                    var doorSize = Math.Max(4.0, cell * 0.22);
+
+                    context.DrawRectangle(
+                        fillBrush, outlinePen,
+                        new Rect(doorScreenX - doorSize / 2.0, doorScreenY - doorSize / 2.0, doorSize, doorSize));
+                }
 
                 if (cell < MinCellForLabel) continue;
 

@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .LayoutProfile(StandardLayoutProfiles.Halls)
                 .SizeRange(8, 32)
                 .ExitPlaceable("zep_portal001", "Ancient Portal")
+                .ExitDoor("_mdrn_dt_stneint")
                 .TreasurePlaceable("korrduntemple", "Ancient Reliquary")
 
                 // Tier 1 — dark side cultists haunting the outer crypt (CR ~10-15 ambient).

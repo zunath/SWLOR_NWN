@@ -22,10 +22,15 @@ using SWLOR.Game.Server.Service.AreaGenerationService;
 // also with entrance/exit counts 1/1.
 // Content is irrelevant offline (no creatures/loot/exit/treasure are ever emitted by this tool), so
 // matrix compositions carry no theme.
-// --areas: comma-separated batch entries, either "theme:tileset:layout:seed:size" (entrances/exits
-// default to 1/1) or the 7-segment "theme:tileset:layout:seed:size:entrances:exits" form. tileset/
+// --areas: comma-separated batch entries, either the 5-segment "theme:tileset:layout:seed:size"
+// form (entrances/exits default to 1/1, doors defaults to "door"), the 7-segment
+// "theme:tileset:layout:seed:size:entrances:exits" form, or the 8-segment
+// "theme:tileset:layout:seed:size:entrances:exits:doors" form (doors is "door" or "plac"). tileset/
 // layout may be left empty to use the theme's own defaults. When given, ONLY these areas are
 // generated — no default set, no matrix.
+// --extra-areas: same entry syntax as --areas, but ADDED on top of the default set (and --matrix, if
+// also given) instead of replacing it — useful for appending a few showcase areas (e.g. higher
+// entrance/exit counts to exercise door-style transitions) to the normal review build.
 //
 // Each generated area also gets one waypoint per entrance/exit transition point (tags PG_ENT_N /
 // PG_EXIT_N, names "PG Entrance N" / "PG Exit N"), so transitions are visible when reviewing the
@@ -39,6 +44,7 @@ var size = 16;
 string outPath = null;
 var matrix = false;
 string areasArg = null;
+string extraAreasArg = null;
 
 for (var i = 0; i < args.Length; i++)
 {
@@ -58,6 +64,9 @@ for (var i = 0; i < args.Length; i++)
             break;
         case "--areas":
             areasArg = args[++i];
+            break;
+        case "--extra-areas":
+            extraAreasArg = args[++i];
             break;
         default:
             Console.Error.WriteLine($"unknown argument '{args[i]}'");
@@ -94,15 +103,17 @@ try
     var usedResrefs = new HashSet<string>();
     var specs = new List<AreaSpec>();
 
-    if (areasArg != null)
+    // Shared by --areas (exclusive area list) and --extra-areas (appended on top of the default/
+    // matrix set). resrefPrefix keeps the two from colliding when both are used together.
+    void ParseAreaSpecs(string argValue, string flagName, string resrefPrefix)
     {
         var n = 1;
-        foreach (var entry in areasArg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        foreach (var entry in argValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             var parts = entry.Split(':');
-            if (parts.Length != 5 && parts.Length != 7)
+            if (parts.Length != 5 && parts.Length != 7 && parts.Length != 8)
             {
-                Console.Error.WriteLine($"--areas entry '{entry}': expected theme:tileset:layout:seed:size or theme:tileset:layout:seed:size:entrances:exits — skipped");
+                Console.Error.WriteLine($"{flagName} entry '{entry}': expected theme:tileset:layout:seed:size, theme:tileset:layout:seed:size:entrances:exits, or theme:tileset:layout:seed:size:entrances:exits:doors — skipped");
                 continue;
             }
 
@@ -111,18 +122,31 @@ try
             var layoutOverride = parts[2];
             if (!int.TryParse(parts[3], out var entrySeed) || !int.TryParse(parts[4], out var entrySize))
             {
-                Console.Error.WriteLine($"--areas entry '{entry}': seed/size must be integers — skipped");
+                Console.Error.WriteLine($"{flagName} entry '{entry}': seed/size must be integers — skipped");
                 continue;
             }
 
             var entryEntrances = 1;
             var entryExits = 1;
-            if (parts.Length == 7 &&
+            var entryDoors = true;
+            if (parts.Length >= 7 &&
                 (!int.TryParse(parts[5], out entryEntrances) || !int.TryParse(parts[6], out entryExits)))
             {
-                Console.Error.WriteLine($"--areas entry '{entry}': entrances/exits must be integers — skipped");
+                Console.Error.WriteLine($"{flagName} entry '{entry}': entrances/exits must be integers — skipped");
                 n++;
                 continue;
+            }
+
+            if (parts.Length == 8)
+            {
+                if (string.Equals(parts[7], "door", StringComparison.OrdinalIgnoreCase)) entryDoors = true;
+                else if (string.Equals(parts[7], "plac", StringComparison.OrdinalIgnoreCase)) entryDoors = false;
+                else
+                {
+                    Console.Error.WriteLine($"{flagName} entry '{entry}': doors segment must be 'door' or 'plac' — skipped");
+                    n++;
+                    continue;
+                }
             }
 
             var composition = ResolveComposition(themes, tilesetProfiles, layoutProfiles, themeKey, tilesetOverride, layoutOverride);
@@ -132,11 +156,16 @@ try
                 continue;
             }
 
-            var resref = UniqueResref($"pga{n}_{entrySeed}", usedResrefs);
+            var resref = UniqueResref($"{resrefPrefix}{n}_{entrySeed}", usedResrefs);
             var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, entrySeed);
-            specs.Add(new AreaSpec(resref, display, composition, entrySeed, entrySize, entryEntrances, entryExits));
+            specs.Add(new AreaSpec(resref, display, composition, entrySeed, entrySize, entryEntrances, entryExits, entryDoors));
             n++;
         }
+    }
+
+    if (areasArg != null)
+    {
+        ParseAreaSpecs(areasArg, "--areas", "pga");
     }
     else
     {
@@ -174,6 +203,11 @@ try
                 specs.Add(new AreaSpec(resref, display, composition, matrixSeed, size));
             }
         }
+    }
+
+    if (extraAreasArg != null)
+    {
+        ParseAreaSpecs(extraAreasArg, "--extra-areas", "pgx");
     }
 
     if (specs.Count == 0)
@@ -215,6 +249,7 @@ try
         var baseParameters = spec.Composition.BuildLayoutParameters();
         baseParameters.EntranceCount = spec.Entrances;
         baseParameters.ExitCount = spec.Exits;
+        baseParameters.DoorTransitions = spec.DoorTransitions;
         var layout = Generate(model, baseParameters, spec.Seed, spec.Size);
         if (layout == null)
         {
@@ -407,6 +442,16 @@ static void EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, strin
         var wpClose = git.IndexOf(']', wpOpen);
         git = git[..(wpOpen + 1)] + "\n" + waypoints + "\n    " + git[wpClose..];
     }
+
+    var doors = BuildDoorEntries(layout);
+    if (!string.IsNullOrEmpty(doors))
+    {
+        var doorStart = git.IndexOf("\"Door List\"", StringComparison.Ordinal);
+        var doorOpen = git.IndexOf('[', doorStart);
+        var doorClose = git.IndexOf(']', doorOpen);
+        git = git[..(doorOpen + 1)] + "\n" + doors + "\n  " + git[doorClose..];
+    }
+
     File.WriteAllText(Path.Combine(stage, resref + ".git.json"), git);
 
     // sanity: must remain valid JSON
@@ -506,6 +551,261 @@ static string WaypointEntry(string name, string tag, float x, float y)
             "ZPosition": {
               "type": "float",
               "value": 0.0
+            }
+          }
+    """;
+}
+
+/// <summary>
+/// Builds one Door GFF-JSON struct per Door-style transition point (see TileDoorPlanner /
+/// TransitionPoint.Style), in addition to that transition's waypoint. Struct shape/field set mirrors
+/// a hand-built "nw_door_fancy" generic-door instance (Module/git/dan_battlemon.git.json,
+/// __struct_id 8) — the most common plain generic door already used across the SWLOR module, fitting
+/// any Type=0 generic door slot. Position/bearing come straight from the planner's world-transform
+/// (TransitionPoint.DoorX/Y/Z/DoorOrientation, degrees); Bearing is stored in radians, matching NWN's
+/// .git convention (confirmed against hand-built door Bearing fields, e.g. veles_sewers).
+/// </summary>
+static string BuildDoorEntries(ResolvedLayout layout)
+{
+    var entranceCount = 0;
+    var exitCount = 0;
+    var entries = new List<string>();
+
+    foreach (var transition in layout.Transitions)
+    {
+        var isEntrance = transition.Kind == TransitionKind.Entrance;
+        var index = isEntrance ? ++entranceCount : ++exitCount;
+        if (transition.Style != TransitionStyle.Door)
+            continue;
+
+        var label = isEntrance ? "Entrance" : "Exit";
+        var tag = (isEntrance ? "PG_DOOR_ENT_" : "PG_DOOR_EXIT_") + index;
+        var bearingRadians = transition.DoorOrientation * Math.PI / 180.0;
+
+        entries.Add(DoorEntry(tag, label, transition.DoorX, transition.DoorY, transition.DoorZ, bearingRadians));
+    }
+
+    return string.Join(",\n", entries);
+}
+
+static string DoorEntry(string tag, string locName, float x, float y, float z, double bearingRadians)
+{
+    return $$"""
+          {
+            "__struct_id": 8,
+            "AnimationState": {
+              "type": "byte",
+              "value": 0
+            },
+            "Appearance": {
+              "type": "dword",
+              "value": 0
+            },
+            "AutoRemoveKey": {
+              "type": "byte",
+              "value": 0
+            },
+            "Bearing": {
+              "type": "float",
+              "value": {{FormatFloat(bearingRadians)}}
+            },
+            "CloseLockDC": {
+              "type": "byte",
+              "value": 0
+            },
+            "Conversation": {
+              "type": "resref",
+              "value": ""
+            },
+            "CurrentHP": {
+              "type": "short",
+              "value": 15
+            },
+            "Description": {
+              "type": "cexolocstring",
+              "value": {}
+            },
+            "DisarmDC": {
+              "type": "byte",
+              "value": 0
+            },
+            "Faction": {
+              "type": "dword",
+              "value": 1
+            },
+            "Fort": {
+              "type": "byte",
+              "value": 0
+            },
+            "GenericType_New": {
+              "type": "dword",
+              "value": 51
+            },
+            "Hardness": {
+              "type": "byte",
+              "value": 5
+            },
+            "HP": {
+              "type": "short",
+              "value": 15
+            },
+            "Interruptable": {
+              "type": "byte",
+              "value": 1
+            },
+            "KeyName": {
+              "type": "cexostring",
+              "value": ""
+            },
+            "KeyRequired": {
+              "type": "byte",
+              "value": 0
+            },
+            "LinkedTo": {
+              "type": "cexostring",
+              "value": ""
+            },
+            "LinkedToFlags": {
+              "type": "byte",
+              "value": 0
+            },
+            "LoadScreenID": {
+              "type": "word",
+              "value": 0
+            },
+            "Lockable": {
+              "type": "byte",
+              "value": 0
+            },
+            "Locked": {
+              "type": "byte",
+              "value": 0
+            },
+            "LocName": {
+              "type": "cexolocstring",
+              "value": {
+                "0": "{{locName}}"
+              }
+            },
+            "OnClick": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnClosed": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnDamaged": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnDeath": {
+              "type": "resref",
+              "value": "x2_door_death"
+            },
+            "OnDisarm": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnFailToOpen": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnHeartbeat": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnLock": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnMeleeAttacked": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnOpen": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnSpellCastAt": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnTrapTriggered": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnUnlock": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnUserDefined": {
+              "type": "resref",
+              "value": ""
+            },
+            "OpenLockDC": {
+              "type": "byte",
+              "value": 0
+            },
+            "Plot": {
+              "type": "byte",
+              "value": 0
+            },
+            "PortraitId": {
+              "type": "word",
+              "value": 0
+            },
+            "Ref": {
+              "type": "byte",
+              "value": 0
+            },
+            "Tag": {
+              "type": "cexostring",
+              "value": "{{tag}}"
+            },
+            "TemplateResRef": {
+              "type": "resref",
+              "value": "nw_door_fancy"
+            },
+            "TrapDetectable": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapDetectDC": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapDisarmable": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapFlag": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapOneShot": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapType": {
+              "type": "byte",
+              "value": 0
+            },
+            "Will": {
+              "type": "byte",
+              "value": 0
+            },
+            "X": {
+              "type": "float",
+              "value": {{FormatFloat(x)}}
+            },
+            "Y": {
+              "type": "float",
+              "value": {{FormatFloat(y)}}
+            },
+            "Z": {
+              "type": "float",
+              "value": {{FormatFloat(z)}}
             }
           }
     """;
@@ -644,4 +944,4 @@ static void Run(string exe, string arguments)
         throw new InvalidOperationException($"{Path.GetFileName(exe)} failed: {stderr}");
 }
 
-record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1);
+record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1, bool DoorTransitions = true);

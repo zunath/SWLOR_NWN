@@ -59,6 +59,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// tds01). Empty = the tileset has no verified accent coverage; compositions skip accents.
         /// </summary>
         public string AccentTerrain { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Narrowest corridor/door-gap width (in corners) this tileset can path through. Some
+        /// tilesets (zsf01) give every partially-open corner combo a movement-restricted pathnode,
+        /// so 1-wide openings fail the engine's path check; 2-wide openings put a fully-open
+        /// (pathnode A) tile in the middle. Compositions raise CorridorWidth to at least this.
+        /// </summary>
+        public int MinimumOpeningWidth { get; set; } = 1;
     }
 
     /// <summary>
@@ -101,6 +109,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string ExitPlaceableResref { get; set; } = "_mdrn_placedoord";
         public string ExitDisplayName { get; set; } = "Exit";
 
+        /// <summary>
+        /// Door blueprint spawned for Door-style transitions (doorway tiles embedded in room walls).
+        /// Every tile door slot the generator uses is generic (Type=0), so any generic-door utd fits.
+        /// </summary>
+        public string ExitDoorResref { get; set; } = "_mdrn_dt_wood";
+
         /// <summary>Treasure container spawned in the Boss room. Must have HasInventory=1 and a real appearance.</summary>
         public string TreasurePlaceableResref { get; set; } = "structure_rubble";
         public string TreasureDisplayName { get; set; } = "Treasure Cache";
@@ -130,6 +144,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     : string.Empty;
             if (parameters.AccentTerrain.Length == 0)
                 parameters.AccentDensity = 0;
+            parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, Tileset.MinimumOpeningWidth);
             return parameters;
         }
     }
@@ -198,6 +213,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             _activeDungeon.ExitPlaceableResref = resref;
             _activeDungeon.ExitDisplayName = displayName;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the door blueprint used when a transition is realized as a real tileset door.
+        /// Must be a generic-door utd (tile door slots are Type=0 generic).
+        /// </summary>
+        public DungeonDefinitionBuilder ExitDoor(string resref)
+        {
+            _activeDungeon.ExitDoorResref = resref;
             return this;
         }
 
@@ -335,6 +360,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder AccentTerrain(string terrainName)
         {
             _active.AccentTerrain = terrainName;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the narrowest opening width (in corners) this tileset can path through. Set to
+        /// 2 for tilesets whose partially-open corner combos all carry movement-restricted pathnodes.
+        /// </summary>
+        public DungeonTilesetProfileBuilder MinimumOpeningWidth(int width)
+        {
+            _active.MinimumOpeningWidth = width;
             return this;
         }
 

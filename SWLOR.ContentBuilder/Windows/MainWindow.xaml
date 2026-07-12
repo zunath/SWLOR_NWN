@@ -5,7 +5,12 @@
     <!--
         The left control panel and all its groups/rows are built in code-behind (MainWindow.xaml.cs,
         BuildLeftPanel) since most of it is repetitive labeled Slider/ComboBox rows; this file only
-        holds the structural skeleton: left panel host, right-side preview image, and status bar.
+        holds the structural skeleton: the tab strip, left panel host, right-side preview image, and
+        status bar.
+
+        Everything the tool shows today lives under the single "Areas" tab. MainTabControl is the
+        extension point for future tabs: add another TabItem alongside "Areas" and it appears in the
+        same strip without touching this one's content.
     -->
     <Grid>
         <Grid.RowDefinitions>
@@ -13,52 +18,56 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="380" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <TabControl x:Name="MainTabControl" Grid.Row="0">
+            <TabItem Header="Areas">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="380" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel x:Name="LeftStack" Margin="8" />
-            </ScrollViewer>
+                    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel x:Name="LeftStack" Margin="8" />
+                    </ScrollViewer>
 
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-                <!--
-                    Preview mode toolbar: Schematic vs Map graphics (real minimap tile art) plus the
-                    Map graphics-only room overlay toggle. Built here rather than in BuildLeftPanel
-                    since it belongs visually with the preview, not the composition knobs.
-                -->
-                <StackPanel x:Name="PreviewToolbar" Grid.Row="0" Orientation="Horizontal"
-                            Background="#FF17171A" Margin="0" >
-                    <TextBlock Text="Preview mode" VerticalAlignment="Center" Margin="8,4,4,4" Foreground="#FFDDDDDD" />
-                    <ComboBox x:Name="PreviewModeCombo" Width="140" Margin="0,4,12,4" VerticalAlignment="Center" />
-                    <CheckBox x:Name="RoomOverlayCheckBox" Content="Room overlay" IsChecked="True"
-                              VerticalAlignment="Center" Foreground="#FFDDDDDD" Margin="0,4,8,4" />
-                </StackPanel>
+                        <!--
+                            Preview mode toolbar: Schematic vs Map graphics (real minimap tile art) plus the
+                            Map graphics-only room overlay toggle. Built here rather than in BuildLeftPanel
+                            since it belongs visually with the preview, not the composition knobs.
+                        -->
+                        <StackPanel x:Name="PreviewToolbar" Grid.Row="0" Orientation="Horizontal"
+                                    Background="#FF17171A" Margin="0" >
+                            <TextBlock Text="Preview mode" VerticalAlignment="Center" Margin="8,4,4,4" Foreground="#FFDDDDDD" />
+                            <ComboBox x:Name="PreviewModeCombo" Width="140" Margin="0,4,12,4" VerticalAlignment="Center" />
+                            <CheckBox x:Name="RoomOverlayCheckBox" Content="Room overlay" IsChecked="True"
+                                      VerticalAlignment="Center" Foreground="#FFDDDDDD" Margin="0,4,8,4" />
+                        </StackPanel>
 
-                <!--
-                    PreviewHost (not PreviewImage) drives render sizing: a WPF Image with a null
-                    Source measures/arranges to 0x0 regardless of its layout slot, so its ActualWidth
-                    stays 0 until a Source exists — sizing off the Image made the first render
-                    impossible. The Border always fills its row, so its size is valid from the
-                    first layout pass.
-                -->
-                <!--
-                    Stretch="None": the bitmap is already rendered at exactly the host's size with the
-                    grid letterboxed inside it, so any Image stretching would only re-scale (and
-                    potentially crop or blur) an already-fitted image.
-                -->
-                <Border x:Name="PreviewHost" Grid.Row="1" Background="#FF0A0A0C" BorderBrush="#FF3A3A3E" BorderThickness="1,0,0,0">
-                    <Image x:Name="PreviewImage" Stretch="None" SnapsToDevicePixels="True" />
-                </Border>
-            </Grid>
-        </Grid>
+                        <!--
+                            PreviewHost (not PreviewImage) drives render sizing: a WPF Image with a null
+                            Source measures/arranges to 0x0 regardless of its layout slot, so its ActualWidth
+                            stays 0 until a Source exists — sizing off the Image made the first render
+                            impossible. The Border always fills its row, so its size is valid from the
+                            first layout pass.
+                        -->
+                        <!--
+                            Stretch="None": the bitmap is already rendered at exactly the host's size with the
+                            grid letterboxed inside it, so any Image stretching would only re-scale (and
+                            potentially crop or blur) an already-fitted image.
+                        -->
+                        <Border x:Name="PreviewHost" Grid.Row="1" Background="#FF0A0A0C" BorderBrush="#FF3A3A3E" BorderThickness="1,0,0,0">
+                            <Image x:Name="PreviewImage" Stretch="None" SnapsToDevicePixels="True" />
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
 
         <StatusBar Grid.Row="1">
             <StatusBarItem>

@@ -46,6 +46,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     }
 
     /// <summary>
+    /// How a transition is realized in the finished area. Door substitution is opportunistic and
+    /// tileset-dependent (see TileDoorPlanner) — every transition starts out and may remain Placeable.
+    /// </summary>
+    public enum TransitionStyle
+    {
+        /// <summary>Realized as a placeable spawned on <see cref="TransitionPoint.Tile"/> (original behavior).</summary>
+        Placeable = 0,
+        /// <summary>Realized as a real tileset door embedded in the room's wall.</summary>
+        Door = 1
+    }
+
+    /// <summary>
     /// A point where the area connects to the outside world. Assigned by the shared layout
     /// post-pass to fully-open tiles in distinct rooms, spread apart by geodesic distance.
     /// The first Entrance is the primary arrival anchor.
@@ -53,10 +65,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     public class TransitionPoint
     {
         public TransitionKind Kind { get; set; }
-        /// <summary>Tile the transition sits on — always fully open.</summary>
+        /// <summary>
+        /// Tile the transition sits on/arrives at — always fully open. For Door style this is the
+        /// room-side walkable cell adjacent to the door, relocated from the original assignment by
+        /// TileDoorPlanner; for Placeable style it is unchanged from the layout post-pass.
+        /// </summary>
         public (int X, int Y) Tile { get; set; }
         /// <summary>Id of the LayoutRoom hosting this transition.</summary>
         public int RoomId { get; set; }
+
+        /// <summary>How this transition is realized. Placeable unless TileDoorPlanner substitutes a door.</summary>
+        public TransitionStyle Style { get; set; } = TransitionStyle.Placeable;
+        /// <summary>Door style only: the solid-side terminator cell now hosting the doorway wall tile.</summary>
+        public (int X, int Y) DoorCell { get; set; }
+        /// <summary>Door style only: world-space X of the door object.</summary>
+        public float DoorX { get; set; }
+        /// <summary>Door style only: world-space Y of the door object.</summary>
+        public float DoorY { get; set; }
+        /// <summary>Door style only: world-space Z of the door object.</summary>
+        public float DoorZ { get; set; }
+        /// <summary>Door style only: world-space facing (degrees, normalized to (-180, 180]) of the door object.</summary>
+        public float DoorOrientation { get; set; }
     }
 
     public class LayoutRoom
@@ -77,6 +106,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public List<LayoutRoom> Rooms { get; set; } = new();
         /// <summary>Entrance/exit anchor points, assigned by the shared post-pass.</summary>
         public List<TransitionPoint> Transitions { get; set; } = new();
+        /// <summary>
+        /// Carried from MacroLayoutParameters.DoorTransitions by MacroLayoutGenerator.Generate — the
+        /// tile resolver doesn't otherwise see generation parameters, only the macro layout itself.
+        /// </summary>
+        public bool DoorTransitions { get; set; } = true;
 
         public MacroLayout(CornerTerrainGrid corners)
         {
@@ -145,6 +179,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int EntranceCount { get; set; } = 1;
         /// <summary>Outbound exit points assigned to rooms (1..3). Exit placeables spawn at each.</summary>
         public int ExitCount { get; set; } = 1;
+
+        /// <summary>
+        /// When true (default), TileDoorPlanner opportunistically substitutes a real tileset door
+        /// (room-side doorway tile + solid-side terminator tile) for each transition instead of a
+        /// placeable. Falls back to Placeable per-transition when the tileset has no usable flat,
+        /// ungrouped door-slot tiles for that spot (e.g. zsf01, which has none at all).
+        /// </summary>
+        public bool DoorTransitions { get; set; } = true;
 
         public MacroLayoutParameters Clone()
         {

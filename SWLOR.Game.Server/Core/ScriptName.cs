@@ -244,6 +244,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnPlaceableSit = "sit";
         public const string OnPlaceableBuyRebuild = "buy_rebuild";
         public const string OnDungeonExitUsed = "dungeon_exit";
+        public const string OnDungeonExitDoorUsed = "dungeon_exitdr";
 
         // Property events
         public const string OnPropertyStarportTerminal = "prop_star_term";

@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .LayoutProfile(StandardLayoutProfiles.Packed)
                 .SizeRange(8, 32)
                 .ExitPlaceable("_mdrn_placedoord", "Maintenance Hatch")
+                .ExitDoor("_mdrn_dt_slid001")
                 .TreasurePlaceable("cz220_cache", "Supply Cache")
 
                 // Tier 1 — malfunctioning junkyard droids and lab escapees (CR ~1-4 ambient).

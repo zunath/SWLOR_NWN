@@ -35,6 +35,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     $"{parameters.Style} layout produced only {layout.Rooms.Count} room(s); at least 2 are required.");
             }
 
+            layout.DoorTransitions = parameters.DoorTransitions;
+
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);
             LayoutTransitionAssignment.AssignTransitions(layout, parameters, random);

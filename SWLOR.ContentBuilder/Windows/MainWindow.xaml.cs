@@ -48,8 +48,8 @@ namespace SWLOR.ContentBuilder.Windows
 
         private Slider _widthSlider;
         private Slider _heightSlider;
-        private TextBlock _widthValueLabel;
-        private TextBlock _heightValueLabel;
+        private TextBox _widthValueBox;
+        private TextBox _heightValueBox;
 
         private Slider _minRoomsSlider;
         private Slider _maxRoomsSlider;
@@ -59,20 +59,21 @@ namespace SWLOR.ContentBuilder.Windows
         private Slider _loopFactorSlider;
         private Slider _organicFillSlider;
         private Slider _accentDensitySlider;
-        private TextBlock _minRoomsValueLabel;
-        private TextBlock _maxRoomsValueLabel;
-        private TextBlock _minRoomSizeValueLabel;
-        private TextBlock _maxRoomSizeValueLabel;
-        private TextBlock _corridorWidthValueLabel;
-        private TextBlock _loopFactorValueLabel;
-        private TextBlock _organicFillValueLabel;
-        private TextBlock _accentDensityValueLabel;
+        private TextBox _minRoomsValueBox;
+        private TextBox _maxRoomsValueBox;
+        private TextBox _minRoomSizeValueBox;
+        private TextBox _maxRoomSizeValueBox;
+        private TextBox _corridorWidthValueBox;
+        private TextBox _loopFactorValueBox;
+        private TextBox _organicFillValueBox;
+        private TextBox _accentDensityValueBox;
         private CheckBox _accentCheckBox;
 
         private Slider _entrancesSlider;
         private Slider _exitsSlider;
-        private TextBlock _entrancesValueLabel;
-        private TextBlock _exitsValueLabel;
+        private TextBox _entrancesValueBox;
+        private TextBox _exitsValueBox;
+        private CheckBox _doorTransitionsCheckBox;
 
         private TextBox _seedTextBox;
         private Button _randomSeedButton;
@@ -114,7 +115,7 @@ namespace SWLOR.ContentBuilder.Windows
             PreviewModeCombo.DisplayMemberPath = nameof(KeyedItem.DisplayName);
             PreviewModeCombo.Items.Add(new KeyedItem(SchematicModeKey, "Schematic"));
             PreviewModeCombo.Items.Add(new KeyedItem(MapGraphicsModeKey, "Map graphics"));
-            PreviewModeCombo.SelectedIndex = 0;
+            PreviewModeCombo.SelectedIndex = 1; // default to Map graphics
 
             PreviewModeCombo.SelectionChanged += (_, _) =>
             {
@@ -143,28 +144,44 @@ namespace SWLOR.ContentBuilder.Windows
             composition.Children.Add(_resetDefaultsButton);
 
             var (_, dimensions) = AddGroup(LeftStack, "Dimensions");
-            _widthSlider = AddSliderRow(dimensions, "Width", 8, 32, 16, out _widthValueLabel);
-            _heightSlider = AddSliderRow(dimensions, "Height", 8, 32, 16, out _heightValueLabel);
+            (_widthSlider, _widthValueBox) = AddSliderRow(dimensions, "Width", 8, 32, 16);
+            (_heightSlider, _heightValueBox) = AddSliderRow(dimensions, "Height", 8, 32, 16);
 
-            var (_, overrides) = AddGroup(LeftStack, "Layout overrides");
+            // Advanced: everything below is fine-grained layout tuning most users won't touch, so it
+            // lives collapsed behind an Expander rather than always taking up left-panel space. The
+            // Expander's own Content panel (not LeftStack) hosts the "Layout overrides" group so a
+            // collapsed Expander reserves only its header row.
+            var advancedContent = new StackPanel();
+            var advancedExpander = new Expander
+            {
+                Header = "Advanced",
+                IsExpanded = false,
+                Margin = new Thickness(0, 0, 0, 8),
+                Content = advancedContent
+            };
+            LeftStack.Children.Add(advancedExpander);
+
+            var (_, overrides) = AddGroup(advancedContent, "Layout overrides");
             _styleCombo = AddComboRow(overrides, "Style");
             foreach (DungeonLayoutStyle style in Enum.GetValues(typeof(DungeonLayoutStyle)))
                 _styleCombo.Items.Add(new KeyedItem(style.ToString(), style.ToString()));
 
-            _minRoomsSlider = AddSliderRow(overrides, "Min Rooms", 2, 12, 4, out _minRoomsValueLabel);
-            _maxRoomsSlider = AddSliderRow(overrides, "Max Rooms", 2, 16, 8, out _maxRoomsValueLabel);
-            _minRoomSizeSlider = AddSliderRow(overrides, "Min Room Size", 2, 10, 3, out _minRoomSizeValueLabel);
-            _maxRoomSizeSlider = AddSliderRow(overrides, "Max Room Size", 3, 12, 7, out _maxRoomSizeValueLabel);
-            _corridorWidthSlider = AddSliderRow(overrides, "Corridor Width", 1, 3, 1, out _corridorWidthValueLabel);
-            _loopFactorSlider = AddSliderRow(overrides, "Loop Factor", 0, 100, 25, out _loopFactorValueLabel, suffix: "%");
-            _organicFillSlider = AddSliderRow(overrides, "Organic Fill", 30, 60, 45, out _organicFillValueLabel, suffix: "%");
+            (_minRoomsSlider, _minRoomsValueBox) = AddSliderRow(overrides, "Min Rooms", 2, 12, 4);
+            (_maxRoomsSlider, _maxRoomsValueBox) = AddSliderRow(overrides, "Max Rooms", 2, 16, 8);
+            (_minRoomSizeSlider, _minRoomSizeValueBox) = AddSliderRow(overrides, "Min Room Size", 2, 10, 3);
+            (_maxRoomSizeSlider, _maxRoomSizeValueBox) = AddSliderRow(overrides, "Max Room Size", 3, 12, 7);
+            (_corridorWidthSlider, _corridorWidthValueBox) = AddSliderRow(overrides, "Corridor Width", 1, 3, 1);
+            (_loopFactorSlider, _loopFactorValueBox) = AddSliderRow(overrides, "Loop Factor", 0, 100, 25, suffix: "%");
+            (_organicFillSlider, _organicFillValueBox) = AddSliderRow(overrides, "Organic Fill", 30, 60, 45, suffix: "%");
 
             _accentCheckBox = AddCheckBoxRow(overrides, "Accent terrain");
-            _accentDensitySlider = AddSliderRow(overrides, "Accent Density", 1, 20, 5, out _accentDensityValueLabel, suffix: "%");
+            (_accentDensitySlider, _accentDensityValueBox) = AddSliderRow(overrides, "Accent Density", 1, 20, 5, suffix: "%");
 
             var (_, transitions) = AddGroup(LeftStack, "Transitions");
-            _entrancesSlider = AddSliderRow(transitions, "Entrances", 1, 3, 1, out _entrancesValueLabel);
-            _exitsSlider = AddSliderRow(transitions, "Exits", 1, 3, 1, out _exitsValueLabel);
+            (_entrancesSlider, _entrancesValueBox) = AddSliderRow(transitions, "Entrances", 1, 3, 1);
+            (_exitsSlider, _exitsValueBox) = AddSliderRow(transitions, "Exits", 1, 3, 1);
+            _doorTransitionsCheckBox = AddCheckBoxRow(transitions, "Door transitions (fallback: placeable)");
+            _doorTransitionsCheckBox.IsChecked = true;
 
             var (_, seedGroup) = AddGroup(LeftStack, "Seed");
             var seedRow = CreateRow();
@@ -207,6 +224,7 @@ namespace SWLOR.ContentBuilder.Windows
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Size", Binding = new Binding(nameof(BatchItem.Size)), Width = new DataGridLength(50) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Ent", Binding = new Binding(nameof(BatchItem.Entrances)), Width = new DataGridLength(36) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Exit", Binding = new Binding(nameof(BatchItem.Exits)), Width = new DataGridLength(36) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Doors", Binding = new Binding(nameof(BatchItem.DoorTransitions)), Width = new DataGridLength(48) });
             batchGroup.Children.Add(_batchGrid);
 
             var batchButtons = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 6, 0, 0) };
@@ -272,7 +290,15 @@ namespace SWLOR.ContentBuilder.Windows
             return combo;
         }
 
-        private static Slider AddSliderRow(Panel parent, string label, double min, double max, double value, out TextBlock valueLabel, string suffix = "")
+        /// <summary>
+        /// Builds a labeled Slider row whose value readout is a small editable TextBox instead of a
+        /// plain TextBlock: SliderTextBoxSync.Attach wires the two together (slider drag/programmatic
+        /// changes update the box; typing a number into the box and pressing Enter or tabbing away
+        /// commits it back to the slider, clamped to Minimum/Maximum). <paramref name="suffix"/> (e.g.
+        /// "%") is rendered as a small adjacent label, not inside the editable text, since the box only
+        /// ever accepts/shows a plain integer.
+        /// </summary>
+        private static (Slider Slider, TextBox Box) AddSliderRow(Panel parent, string label, double min, double max, double value, string suffix = "")
         {
             var row = CreateRow();
 
@@ -293,18 +319,36 @@ namespace SWLOR.ContentBuilder.Windows
             Grid.SetColumn(slider, 1);
             row.Children.Add(slider);
 
-            var valueText = new TextBlock
+            var valuePanel = new StackPanel
             {
-                Text = ((int)value) + suffix,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Right
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center
             };
-            Grid.SetColumn(valueText, 2);
-            row.Children.Add(valueText);
+            var valueBox = new TextBox
+            {
+                Width = 34,
+                TextAlignment = TextAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            valuePanel.Children.Add(valueBox);
+            if (!string.IsNullOrEmpty(suffix))
+            {
+                valuePanel.Children.Add(new TextBlock
+                {
+                    Text = suffix,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(2, 0, 0, 0)
+                });
+            }
+            Grid.SetColumn(valuePanel, 2);
+            row.Children.Add(valuePanel);
 
             parent.Children.Add(row);
-            valueLabel = valueText;
-            return slider;
+
+            SliderTextBoxSync.Attach(slider, valueBox);
+
+            return (slider, valueBox);
         }
 
         private static CheckBox AddCheckBoxRow(Panel parent, string label)
@@ -336,8 +380,8 @@ namespace SWLOR.ContentBuilder.Windows
                 _seedTextBox.Text = System.Random.Shared.Next(0, MaxSeed + 1).ToString(CultureInfo.InvariantCulture);
             };
 
-            _widthSlider.ValueChanged += (_, _) => { _widthValueLabel.Text = ((int)_widthSlider.Value).ToString(); if (_suppressEvents) return; RegeneratePreview(); };
-            _heightSlider.ValueChanged += (_, _) => { _heightValueLabel.Text = ((int)_heightSlider.Value).ToString(); if (_suppressEvents) return; RegeneratePreview(); };
+            _widthSlider.ValueChanged += (_, _) => { if (_suppressEvents) return; RegeneratePreview(); };
+            _heightSlider.ValueChanged += (_, _) => { if (_suppressEvents) return; RegeneratePreview(); };
 
             _styleCombo.SelectionChanged += (_, _) =>
             {
@@ -347,19 +391,22 @@ namespace SWLOR.ContentBuilder.Windows
                 RegeneratePreview();
             };
 
-            WireKnobSlider(_minRoomsSlider, _minRoomsValueLabel, nameof(_minRoomsSlider));
-            WireKnobSlider(_maxRoomsSlider, _maxRoomsValueLabel, nameof(_maxRoomsSlider));
-            WireKnobSlider(_minRoomSizeSlider, _minRoomSizeValueLabel, nameof(_minRoomSizeSlider));
-            WireKnobSlider(_maxRoomSizeSlider, _maxRoomSizeValueLabel, nameof(_maxRoomSizeSlider));
-            WireKnobSlider(_corridorWidthSlider, _corridorWidthValueLabel, nameof(_corridorWidthSlider));
-            WireKnobSlider(_loopFactorSlider, _loopFactorValueLabel, nameof(_loopFactorSlider), "%");
-            WireKnobSlider(_organicFillSlider, _organicFillValueLabel, nameof(_organicFillSlider), "%");
-            WireKnobSlider(_accentDensitySlider, _accentDensityValueLabel, nameof(_accentDensitySlider), "%");
-            WireKnobSlider(_entrancesSlider, _entrancesValueLabel, nameof(_entrancesSlider));
-            WireKnobSlider(_exitsSlider, _exitsValueLabel, nameof(_exitsSlider));
+            WireKnobSlider(_minRoomsSlider, nameof(_minRoomsSlider));
+            WireKnobSlider(_maxRoomsSlider, nameof(_maxRoomsSlider));
+            WireKnobSlider(_minRoomSizeSlider, nameof(_minRoomSizeSlider));
+            WireKnobSlider(_maxRoomSizeSlider, nameof(_maxRoomSizeSlider));
+            WireKnobSlider(_corridorWidthSlider, nameof(_corridorWidthSlider));
+            WireKnobSlider(_loopFactorSlider, nameof(_loopFactorSlider));
+            WireKnobSlider(_organicFillSlider, nameof(_organicFillSlider));
+            WireKnobSlider(_accentDensitySlider, nameof(_accentDensitySlider));
+            WireKnobSlider(_entrancesSlider, nameof(_entrancesSlider));
+            WireKnobSlider(_exitsSlider, nameof(_exitsSlider));
 
             _accentCheckBox.Checked += (_, _) => OnAccentCheckChanged();
             _accentCheckBox.Unchecked += (_, _) => OnAccentCheckChanged();
+
+            _doorTransitionsCheckBox.Checked += (_, _) => { if (_suppressEvents) return; MarkOverride(nameof(_doorTransitionsCheckBox)); RegeneratePreview(); };
+            _doorTransitionsCheckBox.Unchecked += (_, _) => { if (_suppressEvents) return; MarkOverride(nameof(_doorTransitionsCheckBox)); RegeneratePreview(); };
 
             _seedTextBox.PreviewTextInput += (_, e) => e.Handled = !e.Text.All(char.IsDigit);
             _seedTextBox.TextChanged += (_, _) => { if (_suppressEvents) return; RegeneratePreview(); };
@@ -369,11 +416,15 @@ namespace SWLOR.ContentBuilder.Windows
             _buildModuleButton.Click += async (_, _) => await BuildReviewModuleAsync();
         }
 
-        private void WireKnobSlider(Slider slider, TextBlock label, string key, string suffix = "")
+        /// <summary>
+        /// Domain glue for an "override" slider whose box/slider sync is already wired by
+        /// SliderTextBoxSync.Attach (see AddSliderRow): marks the knob as user-overridden (so a
+        /// theme/profile reload won't clobber it) and regenerates the preview.
+        /// </summary>
+        private void WireKnobSlider(Slider slider, string key)
         {
             slider.ValueChanged += (_, _) =>
             {
-                label.Text = ((int)slider.Value) + suffix;
                 if (_suppressEvents) return;
                 MarkOverride(key);
                 RegeneratePreview();
@@ -566,6 +617,8 @@ namespace SWLOR.ContentBuilder.Windows
                     _entrancesSlider.Value = Clamp(template.EntranceCount, _entrancesSlider.Minimum, _entrancesSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_exitsSlider)))
                     _exitsSlider.Value = Clamp(template.ExitCount, _exitsSlider.Minimum, _exitsSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_doorTransitionsCheckBox)))
+                    _doorTransitionsCheckBox.IsChecked = template.DoorTransitions;
 
                 var tileset = SelectedTilesetProfile();
                 var supportsAccent = tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
@@ -637,6 +690,7 @@ namespace SWLOR.ContentBuilder.Windows
             baseParameters.OpenFillTarget = _organicFillSlider.Value / 100.0;
             baseParameters.EntranceCount = (int)_entrancesSlider.Value;
             baseParameters.ExitCount = (int)_exitsSlider.Value;
+            baseParameters.DoorTransitions = _doorTransitionsCheckBox.IsChecked == true;
 
             var accentEnabled = _accentCheckBox.IsChecked == true && !string.IsNullOrEmpty(tilesetProfile.AccentTerrain);
             var accentTerrain = accentEnabled ? tilesetProfile.AccentTerrain : string.Empty;
@@ -774,7 +828,8 @@ namespace SWLOR.ContentBuilder.Windows
                 Seed = GetSeedValue(),
                 Size = width,
                 Entrances = (int)_entrancesSlider.Value,
-                Exits = (int)_exitsSlider.Value
+                Exits = (int)_exitsSlider.Value,
+                DoorTransitions = _doorTransitionsCheckBox.IsChecked == true
             };
 
             _batch.Add(item);

@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .LayoutProfile(StandardLayoutProfiles.Warren)
                 .SizeRange(8, 32)
                 .ExitPlaceable("_mdrn_placedoord", "Sewer Grate")
+                .ExitDoor("_mdrn_dt_bars")
                 .TreasurePlaceable("corpse", "Stashed Loot")
 
                 // Tier 1 — scavenger droids and outlaw looters (CR ~1-5 ambient).

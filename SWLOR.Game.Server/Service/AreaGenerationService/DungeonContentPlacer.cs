@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int TreasureItemsSpawned { get; set; }
         public int ExitsPlaced { get; set; }
         public bool ExitPlaced => ExitsPlaced > 0;
+        /// <summary>How many transitions were realized as real door objects (vs exit placeables).</summary>
+        public int DoorsCreated { get; set; }
     }
 
     /// <summary>
@@ -233,7 +235,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             foreach (var transition in instance.Layout.Transitions)
             {
-                if (transition.Kind == TransitionKind.Exit)
+                // Door-style entrances get a real door too (an empty doorway alcove looks unfinished,
+                // and walking back out the way you came in should work); placeable-style entrances
+                // stay bare arrival anchors as before.
+                if (transition.Style == TransitionStyle.Door)
+                    PlaceTransitionDoor(area, transition, detail, instance, result);
+                else if (transition.Kind == TransitionKind.Exit)
                     PlaceExit(area, transition, detail, instance, result);
             }
 
@@ -353,6 +360,46 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
+        /// Creates a real door object in a Door-style transition's tile door slot. The door is kept
+        /// locked and plot so it never opens into the terminator alcove behind it; clicking it fires
+        /// OnFailToOpen, which ports the player out exactly like the exit placeable. If door creation
+        /// fails (bad blueprint), an Exit transition falls back to the placeable so players are never
+        /// left without a way out.
+        /// </summary>
+        private static void PlaceTransitionDoor(
+            uint area,
+            TransitionPoint transition,
+            DungeonDetail detail,
+            RuntimeAreaInstance instance,
+            DungeonPopulationResult result)
+        {
+            var position = new Vector3(transition.DoorX, transition.DoorY, transition.DoorZ);
+            var location = Location(area, position, transition.DoorOrientation);
+            var tag = transition.Kind == TransitionKind.Exit ? "GEN_DOOR_EXIT" : "GEN_DOOR_ENT";
+
+            var door = SWLOR.NWN.API.NWNX.UtilPlugin.CreateDoor(detail.ExitDoorResref, location, tag);
+            if (!GetIsObjectValid(door))
+            {
+                Log.Write(LogGroup.Error,
+                    $"Transition door '{detail.ExitDoorResref}' failed to create at ({transition.DoorX}, {transition.DoorY}); falling back to exit placeable.");
+                if (transition.Kind == TransitionKind.Exit)
+                    PlaceExit(area, transition, detail, instance, result);
+                return;
+            }
+
+            SetName(door, detail.ExitDisplayName);
+            SetPlotFlag(door, true);
+            SetLocked(door, true);
+            SetEventScript(door, EventScript.Door_OnFailToOpen, ScriptName.OnDungeonExitDoorUsed);
+            SetEventScript(door, EventScript.Door_OnClicked, ScriptName.OnDungeonExitDoorUsed);
+
+            instance.SpawnedObjects.Add(door);
+            result.DoorsCreated++;
+            if (transition.Kind == TransitionKind.Exit)
+                result.ExitsPlaced++;
+        }
+
+        /// <summary>
         /// Fills a treasure container from the tier's loot table, mirroring Loot.SpawnLoot's item
         /// selection but driven by the population's seeded RNG for deterministic content.
         /// Items spawn at the container's location and are force-acquired: CreateItemOnObject
@@ -456,6 +503,30 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var user = GetLastUsedBy();
             var placeable = OBJECT_SELF;
             var area = GetArea(placeable);
+
+            if (!RuntimeAreaRegistry.TryGetByArea(area, out var instance) || instance.ExitLocation == null)
+            {
+                SendMessageToPC(user, "This exit hasn't been calibrated. Inform a DM.");
+                return;
+            }
+
+            AssignCommand(user, () => ActionJumpToLocation(instance.ExitLocation));
+        }
+
+        /// <summary>
+        /// Handles a player clicking a Door-style transition door (fires via OnFailToOpen since the
+        /// door is kept locked, and via OnClicked as a safety net): returns them to the location the
+        /// instance was entered from, mirroring the exit placeable.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnDungeonExitDoorUsed)]
+        public static void UseDungeonExitDoor()
+        {
+            var user = GetClickingObject();
+            var door = OBJECT_SELF;
+            var area = GetArea(door);
+
+            if (!GetIsObjectValid(user))
+                return;
 
             if (!RuntimeAreaRegistry.TryGetByArea(area, out var instance) || instance.ExitLocation == null)
             {

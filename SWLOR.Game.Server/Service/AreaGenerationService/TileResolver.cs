@@ -68,6 +68,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 }
             }
 
+            if (layout.DoorTransitions)
+            {
+                TileDoorPlanner.ApplyDoorTransitions(tileset, layout, tiles, width, height);
+            }
+
             resolved = new ResolvedLayout
             {
                 TilesetResref = tileset.Resref,

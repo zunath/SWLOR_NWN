@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .LayoutProfile(StandardLayoutProfiles.Organic)
                 .SizeRange(8, 32)
                 .ExitPlaceable("_mdrn_placedoord", "Cave Exit")
+                .ExitDoor("_mdrn_dt_rough")
                 .TreasurePlaceable("structure_rubble", "Ore-Strewn Cache")
 
                 // Tier 1 — low-level cave vermin (CR ~3-7 ambient). Boss: Shyrack (CR 14).

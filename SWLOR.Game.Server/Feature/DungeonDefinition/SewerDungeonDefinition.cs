@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Placeholder("gen_placeholder3")
                 .SizeRange(8, 32)
                 .TileLighting(0, 2, 2, 2)
+                .ExitPlaceable("_mdrn_placedoord", "Sewer Grate")
+                .TreasurePlaceable("corpse", "Stashed Loot")
 
                 // Tier 1 — scavenger droids and outlaw looters (CR ~1-5 ambient).
                 // Boss: Serpent Leader (CR 11), a Black Serpent enforcer holed up in the tunnels.

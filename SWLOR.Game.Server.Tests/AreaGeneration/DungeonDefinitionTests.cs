@@ -9,10 +9,6 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 
 public class DungeonDefinitionTests
 {
-    // Hard-coded in DungeonContentPlacer; verified here so a resref rename/typo fails loudly
-    // instead of silently spawning nothing at runtime.
-    private const string TreasurePlaceableResref = "_mdrn_pl_crate01";
-    private const string ExitPlaceableResref = "building_exit";
 
     // Fixed theme-key -> tileset mapping (see design/ProceduralAreaGeneration.md). Verified here so
     // a resref rename/typo, or a theme silently failing to register, fails loudly instead of
@@ -132,13 +128,50 @@ public class DungeonDefinitionTests
     }
 
     [Test]
-    public void TreasureAndExitPlaceableResrefs_HaveModuleBlueprints()
+    public void AllDungeonDefinitions_TreasureAndExitPlaceablesHaveModuleBlueprints()
     {
         var root = FindRepositoryRoot();
         var placeableResrefs = ReadModuleTemplateResrefs(root, "utp", "utp.json");
+        var failures = new List<string>();
 
-        placeableResrefs.Should().Contain(TreasurePlaceableResref);
-        placeableResrefs.Should().Contain(ExitPlaceableResref);
+        foreach (var (themeKey, detail) in BuildAllDungeons())
+        {
+            if (!placeableResrefs.Contains(detail.TreasurePlaceableResref))
+                failures.Add($"{themeKey}: treasure placeable '{detail.TreasurePlaceableResref}' has no utp blueprint.");
+            if (!placeableResrefs.Contains(detail.ExitPlaceableResref))
+                failures.Add($"{themeKey}: exit placeable '{detail.ExitPlaceableResref}' has no utp blueprint.");
+            if (string.IsNullOrWhiteSpace(detail.ExitDisplayName))
+                failures.Add($"{themeKey}: exit display name is empty.");
+            if (string.IsNullOrWhiteSpace(detail.TreasureDisplayName))
+                failures.Add($"{themeKey}: treasure display name is empty.");
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    // These blueprints looked plausible but render invisibly or with the wrong model —
+    // discovered live. Guard against regressions to any of them.
+    private static readonly string[] KnownBadPlaceableResrefs =
+    {
+        "building_exit",     // door model meant to sit flush against a wall; floats mid-room
+        "zep_chest_dag",     // appearance row 4245 is blank in placeables.2da (invisible)
+        "_mdrn_pl_crate01",  // HasInventory=0; item creation silently fails
+        "_mdrn_placedoorb",  // "Concealed Tunnel" = invisible object appearance
+        "_mdrn_placedoora",  // "Concealed Entrance" = invisible barrier appearance
+        "zep_doorway_d001",  // "Portal. Blue" appearance row is a carpet
+        "zep_doorway_d003",  // "Portal. Pyramid" appearance row is skeleton bones
+    };
+
+    [Test]
+    public void AllDungeonDefinitions_AvoidKnownBadPlaceables()
+    {
+        foreach (var (themeKey, detail) in BuildAllDungeons())
+        {
+            KnownBadPlaceableResrefs.Should().NotContain(detail.TreasurePlaceableResref,
+                $"{themeKey}'s treasure placeable renders incorrectly");
+            KnownBadPlaceableResrefs.Should().NotContain(detail.ExitPlaceableResref,
+                $"{themeKey}'s exit placeable renders incorrectly");
+        }
     }
 
     [Test]

@@ -55,6 +55,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int MinSize { get; set; } = 8;
         public int MaxSize { get; set; } = 32;
         public DungeonTileLighting Lighting { get; set; } = new();
+
+        /// <summary>
+        /// Exit placeable spawned in the Entrance room. Must be a useable, non-static blueprint
+        /// with a real (non-blank) appearance row — several "door"/"portal" blueprints in the
+        /// module are invisible objects or have blank appearance rows; verify in placeables.2da.
+        /// </summary>
+        public string ExitPlaceableResref { get; set; } = "_mdrn_placedoord";
+        public string ExitDisplayName { get; set; } = "Exit";
+
+        /// <summary>Treasure container spawned in the Boss room. Must have HasInventory=1 and a real appearance.</summary>
+        public string TreasurePlaceableResref { get; set; } = "structure_rubble";
+        public string TreasureDisplayName { get; set; } = "Treasure Cache";
+
         public Dictionary<int, DungeonTierDetail> Tiers { get; set; } = new();
     }
 
@@ -127,6 +140,26 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 SourceLight1 = sourceLight1,
                 SourceLight2 = sourceLight2
             };
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the exit placeable spawned in the Entrance room and its display name.
+        /// </summary>
+        public DungeonDefinitionBuilder ExitPlaceable(string resref, string displayName)
+        {
+            _activeDungeon.ExitPlaceableResref = resref;
+            _activeDungeon.ExitDisplayName = displayName;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the treasure container spawned in the Boss room and its display name.
+        /// </summary>
+        public DungeonDefinitionBuilder TreasurePlaceable(string resref, string displayName)
+        {
+            _activeDungeon.TreasurePlaceableResref = resref;
+            _activeDungeon.TreasureDisplayName = displayName;
             return this;
         }
 

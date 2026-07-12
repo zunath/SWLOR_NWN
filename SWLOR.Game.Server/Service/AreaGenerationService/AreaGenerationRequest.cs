@@ -28,8 +28,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int? Seed { get; set; }
         public int MinRooms { get; set; } = 4;
         public int MaxRooms { get; set; } = 8;
-        /// <summary>Bounded regeneration retries before the request fails cleanly.</summary>
-        public int MaxAttempts { get; set; } = 3;
+        /// <summary>
+        /// Bounded regeneration retries before the request fails cleanly. Path validation can
+        /// reject a layout when a tileset's junction tiles have restricted path nodes (observed
+        /// on zsf01, which has exactly one simple tile per corner class), so the budget must
+        /// absorb several rejections.
+        /// </summary>
+        public int MaxAttempts { get; set; } = 6;
         public AreaPersistenceMode Persistence { get; set; } = AreaPersistenceMode.Ephemeral;
         public string DisplayName { get; set; } = "Generated Area";
         public string Tag { get; set; } = "GENERATED_AREA";

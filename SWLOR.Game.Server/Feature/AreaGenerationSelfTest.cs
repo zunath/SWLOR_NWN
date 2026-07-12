@@ -24,11 +24,69 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleSelfTest()
         {
-            if (Environment.GetEnvironmentVariable("AREA_GENERATION_SELF_TEST") != "1")
-                return;
+            Report($"env: SELF_TEST='{Environment.GetEnvironmentVariable("AREA_GENERATION_SELF_TEST")}', " +
+                   $"CROSS_TEST='{Environment.GetEnvironmentVariable("AREA_GENERATION_CROSS_TEST")}'");
 
-            // Delay past module load so the scheduler and all boot caches are live.
-            Scheduler.Schedule(Run, TimeSpan.FromSeconds(10));
+            if (Environment.GetEnvironmentVariable("AREA_GENERATION_SELF_TEST") == "1")
+            {
+                // Delay past module load so the scheduler and all boot caches are live.
+                Scheduler.Schedule(Run, TimeSpan.FromSeconds(10));
+            }
+
+            if (Environment.GetEnvironmentVariable("AREA_GENERATION_CROSS_TEST") == "1")
+            {
+                Report("scheduling cross-tileset test.");
+                Scheduler.Schedule(RunCrossTilesetTest, TimeSpan.FromSeconds(10));
+            }
+        }
+
+        /// <summary>
+        /// Architecture probe: can an override re-tileset a placeholder onto a DIFFERENT tileset?
+        /// Generates on the tdt01 cave placeholder with the tds01 sewer tileset. If this passes,
+        /// one generic placeholder can serve every supported tileset.
+        /// </summary>
+        private static void RunCrossTilesetTest()
+        {
+            try
+            {
+                var result = AreaGeneration.Generate(new AreaGenerationRequest
+                {
+                    TilesetResref = "tds01",
+                    PlaceholderResref = "gen_placeholder1",
+                    Width = 16,
+                    Height = 16,
+                    Seed = 777,
+                    DisplayName = "CrossTileset Test",
+                    Tag = "GEN_CROSSTEST"
+                });
+
+                if (!result.Success)
+                {
+                    Report($"CROSS FAIL - generation failed: {result.FailureReason}");
+                    return;
+                }
+
+                var layout = result.Layout;
+                var tilesetOnArea = GetTilesetResRef(result.Area);
+                var mismatches = 0;
+                for (var y = 0; y < layout.Height; y++)
+                for (var x = 0; x < layout.Width; x++)
+                {
+                    var tileLocation = Location(result.Area, new Vector3(x * 10f + 5f, y * 10f + 5f, 0f), 0f);
+                    if (GetTileID(tileLocation) != layout.GetTile(x, y).TileId)
+                        mismatches++;
+                }
+
+                Report($"CROSS result: area tileset='{tilesetOnArea}' (wanted tds01), tile mismatches={mismatches}/{layout.Tiles.Length}.");
+                AreaGeneration.DestroyGeneratedArea(result.InstanceId, out _);
+                Report(mismatches == 0 && tilesetOnArea == "tds01"
+                    ? "CROSS PASS - overrides can re-tileset a placeholder."
+                    : "CROSS FAIL - placeholder tileset was not fully overridden.");
+            }
+            catch (Exception ex)
+            {
+                Report($"CROSS FAIL - {ex.Message}");
+            }
         }
 
         private static void Run()

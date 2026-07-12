@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                     var key = MakeKey(tl, tr, br, bl);
 
-                    if (!candidateLookup.TryGetValue(key, out var candidates) || candidates.Count == 0)
+                    if (!candidateLookup.TryGetValue(key, out var candidates) || candidates.All.Count == 0)
                     {
                         failureReason =
                             $"No matching tile for cell ({x},{y}): TL={tl}, TR={tr}, BR={br}, BL={bl}.";
@@ -53,7 +53,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         return false;
                     }
 
-                    var pick = candidates[random.Next(candidates.Count)];
+                    // Prefer fully-pathable tiles: 'A' path nodes connect all walkable edges, while
+                    // restricted nodes (observed on zsf01's junction tiles) can wall off corners the
+                    // terrain labels say are open, failing path validation later. Restricted tiles
+                    // remain in play only when no 'A' alternative exists for the combination.
+                    var pool = candidates.FullyPathable.Count > 0 ? candidates.FullyPathable : candidates.All;
+                    var pick = pool[random.Next(pool.Count)];
                     tiles[y * width + x] = new ResolvedTile
                     {
                         TileId = pick.TileId,
@@ -85,9 +90,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// "all corner heights zero" are rotation-invariant — they're checked once on the raw arrays
         /// rather than once per orientation.
         /// </summary>
-        private static Dictionary<string, List<(int TileId, int Orientation)>> BuildCandidateLookup(TilesetModel tileset)
+        private class CandidateSet
         {
-            var lookup = new Dictionary<string, List<(int TileId, int Orientation)>>();
+            public List<(int TileId, int Orientation)> All { get; } = new();
+            public List<(int TileId, int Orientation)> FullyPathable { get; } = new();
+        }
+
+        private static Dictionary<string, CandidateSet> BuildCandidateLookup(TilesetModel tileset)
+        {
+            var lookup = new Dictionary<string, CandidateSet>();
 
             foreach (var tile in tileset.Tiles)
             {
@@ -96,6 +107,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (tile.HasAnyCrosser) continue;
                 if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
                     tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) continue;
+
+                var fullyPathable = string.Equals(tile.PathNode, "A", StringComparison.OrdinalIgnoreCase);
 
                 for (var orientation = 0; orientation < 4; orientation++)
                 {
@@ -106,13 +119,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                     var key = MakeKey(tl, tr, br, bl);
 
-                    if (!lookup.TryGetValue(key, out var list))
+                    if (!lookup.TryGetValue(key, out var set))
                     {
-                        list = new List<(int, int)>();
-                        lookup[key] = list;
+                        set = new CandidateSet();
+                        lookup[key] = set;
                     }
 
-                    list.Add((tile.TileId, orientation));
+                    set.All.Add((tile.TileId, orientation));
+                    if (fullyPathable)
+                        set.FullyPathable.Add((tile.TileId, orientation));
                 }
             }
 

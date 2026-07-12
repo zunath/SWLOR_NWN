@@ -50,10 +50,6 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         // exit placeable, so they don't spawn exactly on top of the boss or the player's landing spot.
         private const float FeatureOffset = 2.5f;
 
-        // Must be a blueprint with HasInventory=1 or CreateItemOnObject silently fails —
-        // caught by the live boot self-test when this was a non-container crate.
-        private const string TreasurePlaceableResref = "zep_chest_dag";
-        private const string ExitPlaceableResref = "building_exit";
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheDungeonDefinitions()
@@ -141,11 +137,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         break;
 
                     case RoomRole.Boss:
-                        PopulateBossRoom(area, room, tierDetail, rng, instance, result);
+                        PopulateBossRoom(area, room, detail, tierDetail, rng, instance, result);
                         break;
 
                     case RoomRole.Entrance:
-                        PopulateEntranceRoom(area, room, instance, result);
+                        PopulateEntranceRoom(area, room, detail, instance, result);
                         break;
                 }
             }
@@ -189,6 +185,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         private static void PopulateBossRoom(
             uint area,
             LayoutRoom room,
+            DungeonDetail detail,
             DungeonTierDetail tier,
             System.Random rng,
             RuntimeAreaInstance instance,
@@ -213,11 +210,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             {
                 var treasurePosition = GroundedPosition(area, centerPosition.X + FeatureOffset, centerPosition.Y + FeatureOffset);
                 var treasureLocation = Location(area, treasurePosition, 0f);
-                var container = CreateObject(ObjectType.Placeable, TreasurePlaceableResref, treasureLocation);
+                var container = CreateObject(ObjectType.Placeable, detail.TreasurePlaceableResref, treasureLocation);
 
                 if (GetIsObjectValid(container))
                 {
-                    SetName(container, "Treasure Cache");
+                    SetName(container, detail.TreasureDisplayName);
+                    // Several suitable container blueprints double as scavenge points; strip the
+                    // markers so the scavenging system never claims a generated treasure cache.
+                    DeleteLocalInt(container, "SCAVENGE_POINT_LEVEL");
+                    DeleteLocalString(container, "SCAVENGE_POINT_LOOT_TABLE_NAME");
                     instance.SpawnedObjects.Add(container);
 
                     result.TreasurePlaced = true;
@@ -240,6 +241,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         private static void PopulateEntranceRoom(
             uint area,
             LayoutRoom room,
+            DungeonDetail detail,
             RuntimeAreaInstance instance,
             DungeonPopulationResult result)
         {
@@ -247,11 +249,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var exitPosition = GroundedPosition(area, centerPosition.X + FeatureOffset, centerPosition.Y - FeatureOffset);
             var exitLocation = Location(area, exitPosition, 0f);
 
-            var exit = CreateObject(ObjectType.Placeable, ExitPlaceableResref, exitLocation);
+            var exit = CreateObject(ObjectType.Placeable, detail.ExitPlaceableResref, exitLocation);
             if (!GetIsObjectValid(exit))
                 return;
 
-            SetName(exit, "Cave Exit");
+            SetName(exit, detail.ExitDisplayName);
             SetPlotFlag(exit, true);
             SetEventScript(exit, EventScript.Placeable_OnUsed, ScriptName.OnDungeonExitUsed);
 

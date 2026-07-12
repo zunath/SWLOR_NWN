@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Placeholder("gen_placeholder4")
                 .SizeRange(8, 32)
                 .TileLighting(31, 27, 10, 12)
+                .ExitPlaceable("zep_portal001", "Ancient Portal")
+                .TreasurePlaceable("korrduntemple", "Ancient Reliquary")
 
                 // Tier 1 — dark side cultists haunting the outer crypt (CR ~10-15 ambient).
                 // Boss: Sith Temple Guard (CR 83).

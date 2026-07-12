@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Placeholder("gen_placeholder2")
                 .SizeRange(8, 32)
                 .TileLighting(4, 0, 2, 2)
+                .ExitPlaceable("_mdrn_placedoord", "Maintenance Hatch")
+                .TreasurePlaceable("cz220_cache", "Supply Cache")
 
                 // Tier 1 — malfunctioning junkyard droids and lab escapees (CR ~1-4 ambient).
                 // Boss: Republic Trooper (CR 10), a security patrol that never left the facility.

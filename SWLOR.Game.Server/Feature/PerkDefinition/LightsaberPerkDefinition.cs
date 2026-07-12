@@ -337,14 +337,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansChallenge1)
-                .Description("Deals weapon DMG + 12. If the target has damaged you within the last 30 seconds, gain + 20% Enmity toward it for 30 seconds.")
+                .Description("Deals weapon DMG + 12 to enemies in a line. For each struck enemy that damaged you within the last 30 seconds, gain + 20% Enmity toward it for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansChallenge2)
-                .Description("Deals weapon DMG + 24. If the target has damaged you within the last 30 seconds, gain + 30% Enmity toward it for 30 seconds.")
+                .Description("Deals weapon DMG + 24 to enemies in a line. For each struck enemy that damaged you within the last 30 seconds, gain + 30% Enmity toward it for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

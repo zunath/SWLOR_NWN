@@ -20,10 +20,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public Dictionary<string, DungeonDetail> BuildDungeons()
         {
             _builder.Create(ThemeKey, "Alien Ruin")
-                .Tileset("vmr01")
-                .Placeholder("gen_placeholder4")
+                .TilesetProfile(StandardTilesetProfiles.AncientRuin)
+                .LayoutProfile(StandardLayoutProfiles.Halls)
                 .SizeRange(8, 32)
-                .TileLighting(31, 27, 10, 12)
                 .ExitPlaceable("zep_portal001", "Ancient Portal")
                 .TreasurePlaceable("korrduntemple", "Ancient Reliquary")
 

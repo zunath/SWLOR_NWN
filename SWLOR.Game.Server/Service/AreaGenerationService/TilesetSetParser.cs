@@ -14,6 +14,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     /// </summary>
     public static class TilesetSetParser
     {
+        // Community .set files contain corrupt counts (e.g. udp2.set declares Doors=1848138868 on
+        // some tiles — garbage left by third-party editors). Counts drive loops, so unclamped
+        // garbage turns parsing into a multi-minute stall. Bounds are far above any legitimate set.
+        private const int MaxTiles = 16384;
+        private const int MaxTerrains = 64;
+        private const int MaxCrossers = 64;
+        private const int MaxGroups = 4096;
+        private const int MaxGroupDimension = 32;
+        private const int MaxDoorsPerTile = 8;
+
         public static TilesetModel Parse(string resref, string setFileContents)
         {
             var sections = ParseSections(setFileContents);
@@ -94,7 +104,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (!sections.TryGetValue(countSectionName, out var countSection))
                 return result;
 
-            var count = GetInt(countSection, "Count");
+            var count = Math.Clamp(GetInt(countSection, "Count"), 0, MaxTerrains);
             for (var i = 0; i < count; i++)
             {
                 var name = sections.TryGetValue(itemSectionPrefix + i, out var itemSection)
@@ -114,7 +124,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (!sections.TryGetValue("TILES", out var tilesSection))
                 return tiles;
 
-            var count = GetInt(tilesSection, "Count");
+            var count = Math.Clamp(GetInt(tilesSection, "Count"), 0, MaxTiles);
             for (var i = 0; i < count; i++)
             {
                 var tile = new TileRecord
@@ -155,7 +165,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         GetString(tileSection, "Left")
                     };
 
-                    var doorCount = GetInt(tileSection, "Doors");
+                    var doorCount = Math.Clamp(GetInt(tileSection, "Doors"), 0, MaxDoorsPerTile);
                     for (var d = 0; d < doorCount; d++)
                     {
                         if (!sections.TryGetValue("TILE" + i + "DOOR" + d, out var doorSection))
@@ -187,7 +197,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (!sections.TryGetValue("GROUPS", out var groupsSection))
                 return groups;
 
-            var count = GetInt(groupsSection, "Count");
+            var count = Math.Clamp(GetInt(groupsSection, "Count"), 0, MaxGroups);
             for (var groupIndex = 0; groupIndex < count; groupIndex++)
             {
                 var group = new TileGroupRecord();
@@ -195,8 +205,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (sections.TryGetValue("GROUP" + groupIndex, out var groupSection))
                 {
                     group.Name = GetString(groupSection, "Name");
-                    group.Rows = GetInt(groupSection, "Rows");
-                    group.Columns = GetInt(groupSection, "Columns");
+                    group.Rows = Math.Clamp(GetInt(groupSection, "Rows"), 0, MaxGroupDimension);
+                    group.Columns = Math.Clamp(GetInt(groupSection, "Columns"), 0, MaxGroupDimension);
 
                     var slotCount = group.Rows * group.Columns;
                     for (var slot = 0; slot < slotCount; slot++)

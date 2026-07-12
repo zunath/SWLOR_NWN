@@ -37,6 +37,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     public static class DungeonContentPlacer
     {
         private static readonly Dictionary<string, DungeonDetail> _dungeons = new();
+        private static readonly Dictionary<string, DungeonTilesetProfile> _tilesetProfiles = new();
+        private static readonly Dictionary<string, DungeonLayoutProfile> _layoutProfiles = new();
 
         // World-space tile size/offset used by the tile resolver's grid (matches
         // AreaGenerationChatCommand's entrance-jump math: tile (x,y) -> world (x*10+5, y*10+5)).
@@ -54,12 +56,42 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheDungeonDefinitions()
         {
-            // Get all implementations of dungeon theme definitions.
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            var allTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IDungeonListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+                .Where(t => !t.IsInterface && !t.IsAbstract)
+                .ToList();
 
-            foreach (var type in types)
+            foreach (var type in allTypes.Where(t => typeof(IDungeonTilesetProfileListDefinition).IsAssignableFrom(t)))
+            {
+                var instance = (IDungeonTilesetProfileListDefinition)Activator.CreateInstance(type);
+                foreach (var (key, profile) in instance.BuildTilesetProfiles())
+                {
+                    if (string.IsNullOrWhiteSpace(key) || _tilesetProfiles.ContainsKey(key))
+                    {
+                        Log.Write(LogGroup.Error, $"Tileset profile '{key}' in {type.Name} is invalid or duplicated.");
+                        continue;
+                    }
+
+                    _tilesetProfiles[key] = profile;
+                }
+            }
+
+            foreach (var type in allTypes.Where(t => typeof(IDungeonLayoutProfileListDefinition).IsAssignableFrom(t)))
+            {
+                var instance = (IDungeonLayoutProfileListDefinition)Activator.CreateInstance(type);
+                foreach (var (key, profile) in instance.BuildLayoutProfiles())
+                {
+                    if (string.IsNullOrWhiteSpace(key) || _layoutProfiles.ContainsKey(key))
+                    {
+                        Log.Write(LogGroup.Error, $"Layout profile '{key}' in {type.Name} is invalid or duplicated.");
+                        continue;
+                    }
+
+                    _layoutProfiles[key] = profile;
+                }
+            }
+
+            foreach (var type in allTypes.Where(t => typeof(IDungeonListDefinition).IsAssignableFrom(t)))
             {
                 var instance = (IDungeonListDefinition)Activator.CreateInstance(type);
                 var builtDungeons = instance.BuildDungeons();
@@ -78,9 +110,65 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         continue;
                     }
 
+                    if (!_tilesetProfiles.ContainsKey(dungeon.Value.TilesetProfileKey))
+                    {
+                        Log.Write(LogGroup.Error, $"Dungeon theme '{dungeon.Key}' references unknown tileset profile '{dungeon.Value.TilesetProfileKey}'.");
+                        continue;
+                    }
+
+                    if (!_layoutProfiles.ContainsKey(dungeon.Value.LayoutProfileKey))
+                    {
+                        Log.Write(LogGroup.Error, $"Dungeon theme '{dungeon.Key}' references unknown layout profile '{dungeon.Value.LayoutProfileKey}'.");
+                        continue;
+                    }
+
                     _dungeons[dungeon.Key] = dungeon.Value;
                 }
             }
+        }
+
+        /// <summary>
+        /// Resolves a (content, tileset, layout) composition. The theme supplies content and its
+        /// default profiles; either profile can be overridden per request — nothing ties a content
+        /// package to a specific tileset.
+        /// </summary>
+        public static DungeonComposition GetComposition(string themeKey, string tilesetProfileKey = null, string layoutProfileKey = null)
+        {
+            var content = GetDungeonDetail(themeKey);
+            var tilesetKey = string.IsNullOrEmpty(tilesetProfileKey) ? content.TilesetProfileKey : tilesetProfileKey;
+            var layoutKey = string.IsNullOrEmpty(layoutProfileKey) ? content.LayoutProfileKey : layoutProfileKey;
+
+            if (!_tilesetProfiles.TryGetValue(tilesetKey, out var tileset))
+                throw new Exception($"Tileset profile '{tilesetKey}' is not registered.");
+            if (!_layoutProfiles.TryGetValue(layoutKey, out var layout))
+                throw new Exception($"Layout profile '{layoutKey}' is not registered.");
+
+            return new DungeonComposition
+            {
+                Content = content,
+                Tileset = tileset,
+                Layout = layout
+            };
+        }
+
+        public static bool TilesetProfileExists(string key)
+        {
+            return _tilesetProfiles.ContainsKey(key);
+        }
+
+        public static bool LayoutProfileExists(string key)
+        {
+            return _layoutProfiles.ContainsKey(key);
+        }
+
+        public static IReadOnlyDictionary<string, DungeonTilesetProfile> GetAllTilesetProfiles()
+        {
+            return _tilesetProfiles;
+        }
+
+        public static IReadOnlyDictionary<string, DungeonLayoutProfile> GetAllLayoutProfiles()
+        {
+            return _layoutProfiles;
         }
 
         /// <summary>

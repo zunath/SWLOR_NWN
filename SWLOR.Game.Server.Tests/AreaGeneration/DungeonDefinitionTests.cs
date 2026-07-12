@@ -25,12 +25,31 @@ public class DungeonDefinitionTests
     public void AllDungeonDefinitions_RegisterUnderExpectedThemeKeysAndTilesets()
     {
         var dungeons = BuildAllDungeons();
+        var tilesetProfiles = BuildAllTilesetProfiles();
+        var layoutProfiles = BuildAllLayoutProfiles();
 
         foreach (var (themeKey, tilesetResref) in ExpectedThemeTilesets)
         {
             dungeons.Should().ContainKey(themeKey);
-            dungeons[themeKey].DisplayName.Should().NotBeNullOrWhiteSpace();
-            dungeons[themeKey].TilesetResref.Should().Be(tilesetResref);
+            var detail = dungeons[themeKey];
+            detail.DisplayName.Should().NotBeNullOrWhiteSpace();
+
+            tilesetProfiles.Should().ContainKey(detail.TilesetProfileKey,
+                $"theme '{themeKey}' must reference a registered tileset profile");
+            layoutProfiles.Should().ContainKey(detail.LayoutProfileKey,
+                $"theme '{themeKey}' must reference a registered layout profile");
+
+            tilesetProfiles[detail.TilesetProfileKey].TilesetResref.Should().Be(tilesetResref);
+        }
+    }
+
+    [Test]
+    public void AllLayoutProfiles_LeaveAccentTerrainToTilesetProfiles()
+    {
+        foreach (var (key, profile) in BuildAllLayoutProfiles())
+        {
+            profile.Template.AccentTerrain.Should().BeEmpty(
+                $"layout profile '{key}' must stay tileset-independent — the accent terrain name comes from the tileset profile at composition time");
         }
     }
 
@@ -175,38 +194,38 @@ public class DungeonDefinitionTests
     }
 
     [Test]
-    public void AllDungeonDefinitions_PlaceholdersExistAndMatchTheirTileset()
+    public void AllTilesetProfiles_PlaceholdersExistAndMatchTheirTileset()
     {
         var root = FindRepositoryRoot();
         var moduleAreaResrefs = ReadModuleAreaListResrefs(root);
         var failures = new List<string>();
 
-        foreach (var (themeKey, detail) in BuildAllDungeons())
+        foreach (var (key, profile) in BuildAllTilesetProfiles())
         {
-            if (string.IsNullOrWhiteSpace(detail.PlaceholderResref))
+            if (string.IsNullOrWhiteSpace(profile.PlaceholderResref))
             {
-                failures.Add($"{themeKey}: no placeholder resref configured.");
+                failures.Add($"{key}: no placeholder resref configured.");
                 continue;
             }
 
-            var arePath = Path.Combine(root.FullName, "Module", "are", $"{detail.PlaceholderResref}.are.json");
+            var arePath = Path.Combine(root.FullName, "Module", "are", $"{profile.PlaceholderResref}.are.json");
             if (!File.Exists(arePath))
             {
-                failures.Add($"{themeKey}: placeholder '{detail.PlaceholderResref}' has no Module/are/{detail.PlaceholderResref}.are.json.");
+                failures.Add($"{key}: placeholder '{profile.PlaceholderResref}' has no Module/are/{profile.PlaceholderResref}.are.json.");
                 continue;
             }
 
-            if (!moduleAreaResrefs.Contains(detail.PlaceholderResref))
+            if (!moduleAreaResrefs.Contains(profile.PlaceholderResref))
             {
-                failures.Add($"{themeKey}: placeholder '{detail.PlaceholderResref}' is not listed in Module/ifo/module.ifo.json Mod_Area_list.");
+                failures.Add($"{key}: placeholder '{profile.PlaceholderResref}' is not listed in Module/ifo/module.ifo.json Mod_Area_list.");
             }
 
             using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(arePath));
             if (!document.RootElement.TryGetProperty("Tileset", out var tileset) ||
                 !tileset.TryGetProperty("value", out var tilesetValue) ||
-                !string.Equals(tilesetValue.GetString(), detail.TilesetResref, StringComparison.OrdinalIgnoreCase))
+                !string.Equals(tilesetValue.GetString(), profile.TilesetResref, StringComparison.OrdinalIgnoreCase))
             {
-                failures.Add($"{themeKey}: placeholder '{detail.PlaceholderResref}' area Tileset does not match theme TilesetResref '{detail.TilesetResref}'.");
+                failures.Add($"{key}: placeholder '{profile.PlaceholderResref}' area Tileset does not match profile TilesetResref '{profile.TilesetResref}'.");
             }
         }
 
@@ -314,6 +333,34 @@ public class DungeonDefinitionTests
         }
 
         return dungeons;
+    }
+
+    private static Dictionary<string, DungeonTilesetProfile> BuildAllTilesetProfiles()
+    {
+        var profiles = new Dictionary<string, DungeonTilesetProfile>();
+
+        foreach (var type in GetTypesImplementing<IDungeonTilesetProfileListDefinition>())
+        {
+            var definition = (IDungeonTilesetProfileListDefinition)Activator.CreateInstance(type)!;
+            foreach (var (key, profile) in definition.BuildTilesetProfiles())
+                profiles[key] = profile;
+        }
+
+        return profiles;
+    }
+
+    private static Dictionary<string, DungeonLayoutProfile> BuildAllLayoutProfiles()
+    {
+        var profiles = new Dictionary<string, DungeonLayoutProfile>();
+
+        foreach (var type in GetTypesImplementing<IDungeonLayoutProfileListDefinition>())
+        {
+            var definition = (IDungeonLayoutProfileListDefinition)Activator.CreateInstance(type)!;
+            foreach (var (key, profile) in definition.BuildLayoutProfiles())
+                profiles[key] = profile;
+        }
+
+        return profiles;
     }
 
     private static Dictionary<string, SWLOR.Game.Server.Service.LootService.LootTable> BuildAllLootTables()

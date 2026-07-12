@@ -101,18 +101,20 @@ namespace SWLOR.Game.Server.Service
                     : Random.Next(int.MaxValue);
 
                 var rng = new System.Random(seed);
+                var layoutParameters = request.Layout?.Clone() ?? new MacroLayoutParameters
+                {
+                    MinRooms = request.MinRooms,
+                    MaxRooms = request.MaxRooms
+                };
+                layoutParameters.Width = request.Width;
+                layoutParameters.Height = request.Height;
+                layoutParameters.SolidTerrain = model.DefaultTerrain;
+                layoutParameters.OpenTerrain = model.FloorTerrain;
+
                 MacroLayout macro;
                 try
                 {
-                    macro = MacroLayoutGenerator.Generate(new MacroLayoutParameters
-                    {
-                        Width = request.Width,
-                        Height = request.Height,
-                        SolidTerrain = model.DefaultTerrain,
-                        OpenTerrain = model.FloorTerrain,
-                        MinRooms = request.MinRooms,
-                        MaxRooms = request.MaxRooms
-                    }, rng);
+                    macro = MacroLayoutGenerator.Generate(layoutParameters, rng);
                 }
                 catch (InvalidOperationException ex)
                 {

@@ -20,10 +20,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public Dictionary<string, DungeonDetail> BuildDungeons()
         {
             _builder.Create(ThemeKey, "Sewer")
-                .Tileset("tds01")
-                .Placeholder("gen_placeholder3")
+                .TilesetProfile(StandardTilesetProfiles.Sewers)
+                .LayoutProfile(StandardLayoutProfiles.Warren)
                 .SizeRange(8, 32)
-                .TileLighting(0, 2, 2, 2)
                 .ExitPlaceable("_mdrn_placedoord", "Sewer Grate")
                 .TreasurePlaceable("corpse", "Stashed Loot")
 

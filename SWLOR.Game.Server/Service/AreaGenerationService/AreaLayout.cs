@@ -60,6 +60,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
     }
 
+    /// <summary>
+    /// The overall shape a macro layout carves. Styles are modeled on hand-built SWLOR areas:
+    /// organic caverns (Korriban caverns), dense corridor warrens (Veles sewers), and
+    /// wall-sharing packed rooms (facility interiors).
+    /// </summary>
+    public enum DungeonLayoutStyle
+    {
+        /// <summary>Rectangular rooms joined by corridors, with optional loop connections.</summary>
+        RoomsAndCorridors = 0,
+        /// <summary>Cellular-automata caves: winding, blobby open space with nooks and pockets.</summary>
+        OrganicCave = 1,
+        /// <summary>Maze-like corridor network with small chambers and loops (sewer/undercity feel).</summary>
+        Warren = 2,
+        /// <summary>Space subdivided into rooms sharing walls, joined by door gaps (facility feel).</summary>
+        PackedRooms = 3
+    }
+
     public class MacroLayoutParameters
     {
         public int Width { get; set; } = 16;
@@ -68,8 +85,42 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string SolidTerrain { get; set; } = string.Empty;
         /// <summary>Terrain label for open/walkable space (typically TilesetModel.FloorTerrain).</summary>
         public string OpenTerrain { get; set; } = string.Empty;
+
+        public DungeonLayoutStyle Style { get; set; } = DungeonLayoutStyle.RoomsAndCorridors;
+
         public int MinRooms { get; set; } = 4;
         public int MaxRooms { get; set; } = 8;
+        /// <summary>Room rectangle bounds in corners (RoomsAndCorridors/Warren chambers/PackedRooms leaves).</summary>
+        public int MinRoomCornerSize { get; set; } = 3;
+        public int MaxRoomCornerSize { get; set; } = 7;
+
+        /// <summary>Corridor width in corners. 1 = narrow tunnels, 2 = broad halls.</summary>
+        public int CorridorWidth { get; set; } = 1;
+
+        /// <summary>
+        /// Fraction of additional connections carved beyond the spanning tree (0 = tree only).
+        /// Loops make layouts feel like real areas instead of dead-end branches.
+        /// </summary>
+        public double LoopFactor { get; set; } = 0.25;
+
+        /// <summary>OrganicCave: target fraction of interior corners that end up open.</summary>
+        public double OpenFillTarget { get; set; } = 0.45;
+        /// <summary>OrganicCave: cellular-automata smoothing passes.</summary>
+        public int SmoothingPasses { get; set; } = 4;
+
+        /// <summary>
+        /// Optional third terrain painted as patches strictly inside open space (e.g. Water pools
+        /// in caves, Pit channels in sewers). Empty = none. Callers must verify the tileset covers
+        /// all (open, accent) corner combinations before enabling (see TileResolver coverage).
+        /// </summary>
+        public string AccentTerrain { get; set; } = string.Empty;
+        /// <summary>Fraction of open corners converted to accent patches (0..~0.2).</summary>
+        public double AccentDensity { get; set; } = 0.0;
+
+        public MacroLayoutParameters Clone()
+        {
+            return (MacroLayoutParameters)MemberwiseClone();
+        }
     }
 
     public class ResolvedTile

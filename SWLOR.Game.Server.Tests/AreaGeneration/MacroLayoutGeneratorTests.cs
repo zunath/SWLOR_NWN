@@ -9,7 +9,17 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 
 public class MacroLayoutGeneratorTests
 {
-    private static MacroLayoutParameters DefaultParameters(int width = 20, int height = 20, int minRooms = 4, int maxRooms = 6)
+    private static readonly DungeonLayoutStyle[] AllStyles =
+    {
+        DungeonLayoutStyle.RoomsAndCorridors,
+        DungeonLayoutStyle.OrganicCave,
+        DungeonLayoutStyle.Warren,
+        DungeonLayoutStyle.PackedRooms
+    };
+
+    private static MacroLayoutParameters DefaultParameters(
+        DungeonLayoutStyle style = DungeonLayoutStyle.RoomsAndCorridors,
+        int width = 20, int height = 20, int minRooms = 4, int maxRooms = 6)
     {
         return new MacroLayoutParameters
         {
@@ -17,20 +27,36 @@ public class MacroLayoutGeneratorTests
             Height = height,
             SolidTerrain = "Wall",
             OpenTerrain = "Floor",
+            Style = style,
             MinRooms = minRooms,
             MaxRooms = maxRooms
         };
     }
 
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
-    [TestCase(5)]
-    public void Generate_SameSeed_ProducesStructurallyIdenticalLayout(int seed)
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors, 1)]
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors, 2)]
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors, 3)]
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors, 4)]
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors, 5)]
+    [TestCase(DungeonLayoutStyle.OrganicCave, 1)]
+    [TestCase(DungeonLayoutStyle.OrganicCave, 2)]
+    [TestCase(DungeonLayoutStyle.OrganicCave, 3)]
+    [TestCase(DungeonLayoutStyle.OrganicCave, 4)]
+    [TestCase(DungeonLayoutStyle.OrganicCave, 5)]
+    [TestCase(DungeonLayoutStyle.Warren, 1)]
+    [TestCase(DungeonLayoutStyle.Warren, 2)]
+    [TestCase(DungeonLayoutStyle.Warren, 3)]
+    [TestCase(DungeonLayoutStyle.Warren, 4)]
+    [TestCase(DungeonLayoutStyle.Warren, 5)]
+    [TestCase(DungeonLayoutStyle.PackedRooms, 1)]
+    [TestCase(DungeonLayoutStyle.PackedRooms, 2)]
+    [TestCase(DungeonLayoutStyle.PackedRooms, 3)]
+    [TestCase(DungeonLayoutStyle.PackedRooms, 4)]
+    [TestCase(DungeonLayoutStyle.PackedRooms, 5)]
+    public void Generate_SameSeed_ProducesStructurallyIdenticalLayout(DungeonLayoutStyle style, int seed)
     {
-        var parametersA = DefaultParameters();
-        var parametersB = DefaultParameters();
+        var parametersA = DefaultParameters(style);
+        var parametersB = DefaultParameters(style);
 
         var layoutA = MacroLayoutGenerator.Generate(parametersA, new Random(seed));
         var layoutB = MacroLayoutGenerator.Generate(parametersB, new Random(seed));
@@ -64,10 +90,13 @@ public class MacroLayoutGeneratorTests
         }
     }
 
-    [Test]
-    public void Generate_BorderRing_AlwaysRemainsSolid()
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors)]
+    [TestCase(DungeonLayoutStyle.OrganicCave)]
+    [TestCase(DungeonLayoutStyle.Warren)]
+    [TestCase(DungeonLayoutStyle.PackedRooms)]
+    public void Generate_BorderRing_AlwaysRemainsSolid(DungeonLayoutStyle style)
     {
-        var parameters = DefaultParameters();
+        var parameters = DefaultParameters(style);
 
         for (var seed = 0; seed < 25; seed++)
         {
@@ -88,10 +117,13 @@ public class MacroLayoutGeneratorTests
         }
     }
 
-    [Test]
-    public void Generate_OpenCorners_AreFullyConnected()
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors)]
+    [TestCase(DungeonLayoutStyle.OrganicCave)]
+    [TestCase(DungeonLayoutStyle.Warren)]
+    [TestCase(DungeonLayoutStyle.PackedRooms)]
+    public void Generate_OpenCorners_AreFullyConnected(DungeonLayoutStyle style)
     {
-        var parameters = DefaultParameters();
+        var parameters = DefaultParameters(style);
 
         for (var seed = 0; seed < 25; seed++)
         {
@@ -140,10 +172,13 @@ public class MacroLayoutGeneratorTests
         return visited;
     }
 
-    [Test]
-    public void Generate_Rooms_CountAndRolesAreValid()
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors)]
+    [TestCase(DungeonLayoutStyle.OrganicCave)]
+    [TestCase(DungeonLayoutStyle.Warren)]
+    [TestCase(DungeonLayoutStyle.PackedRooms)]
+    public void Generate_Rooms_CountAndRolesAreValid(DungeonLayoutStyle style)
     {
-        var parameters = DefaultParameters();
+        var parameters = DefaultParameters(style);
 
         for (var seed = 0; seed < 25; seed++)
         {
@@ -162,6 +197,31 @@ public class MacroLayoutGeneratorTests
         }
     }
 
+    [TestCase(DungeonLayoutStyle.RoomsAndCorridors)]
+    [TestCase(DungeonLayoutStyle.OrganicCave)]
+    [TestCase(DungeonLayoutStyle.Warren)]
+    [TestCase(DungeonLayoutStyle.PackedRooms)]
+    public void Generate_RoomCenterTile_IsAlwaysFullyOpen(DungeonLayoutStyle style)
+    {
+        var parameters = DefaultParameters(style);
+
+        for (var seed = 0; seed < 25; seed++)
+        {
+            var layout = MacroLayoutGenerator.Generate(parameters, new Random(seed));
+            var corners = layout.Corners;
+
+            foreach (var room in layout.Rooms)
+            {
+                var (cx, cy) = room.CenterTile;
+
+                corners.Labels[cx, cy].Should().Be(parameters.OpenTerrain, $"seed {seed}, room {room.Id} center corner (TL)");
+                corners.Labels[cx + 1, cy].Should().Be(parameters.OpenTerrain, $"seed {seed}, room {room.Id} center corner (TR)");
+                corners.Labels[cx, cy + 1].Should().Be(parameters.OpenTerrain, $"seed {seed}, room {room.Id} center corner (BL)");
+                corners.Labels[cx + 1, cy + 1].Should().Be(parameters.OpenTerrain, $"seed {seed}, room {room.Id} center corner (BR)");
+            }
+        }
+    }
+
     [Test]
     public void Generate_TooSmallArea_Throws()
     {
@@ -170,5 +230,95 @@ public class MacroLayoutGeneratorTests
         Action act = () => MacroLayoutGenerator.Generate(parameters, new Random(1));
 
         act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Test]
+    public void Generate_AllStyles_ProduceAtLeastTwoRoomsAcrossManySeeds()
+    {
+        foreach (var style in AllStyles)
+        {
+            var parameters = DefaultParameters(style);
+
+            for (var seed = 0; seed < 25; seed++)
+            {
+                var layout = MacroLayoutGenerator.Generate(parameters, new Random(seed));
+                layout.Rooms.Count.Should().BeGreaterOrEqualTo(2, $"style {style}, seed {seed}");
+            }
+        }
+    }
+
+    [Test]
+    public void Generate_OrganicCaveAccents_NeverTouchSolidAndPreserveConnectivityAndRoomCenters()
+    {
+        var parameters = DefaultParameters(DungeonLayoutStyle.OrganicCave);
+        parameters.AccentTerrain = "Water";
+        parameters.AccentDensity = 0.08;
+
+        for (var seed = 0; seed < 25; seed++)
+        {
+            var layout = MacroLayoutGenerator.Generate(parameters, new Random(seed));
+            var corners = layout.Corners;
+
+            var accentCount = 0;
+            var openCount = 0;
+
+            for (var x = 0; x <= corners.Width; x++)
+            {
+                for (var y = 0; y <= corners.Height; y++)
+                {
+                    var label = corners.Labels[x, y];
+
+                    if (label == parameters.AccentTerrain)
+                    {
+                        accentCount++;
+
+                        for (var dx = -1; dx <= 1; dx++)
+                        {
+                            for (var dy = -1; dy <= 1; dy++)
+                            {
+                                if (dx == 0 && dy == 0) continue;
+                                var nx = x + dx;
+                                var ny = y + dy;
+                                if (nx < 0 || nx > corners.Width || ny < 0 || ny > corners.Height) continue;
+
+                                corners.Labels[nx, ny].Should().NotBe(parameters.SolidTerrain,
+                                    $"seed {seed}: accent corner ({x},{y}) has a solid 8-neighbor at ({nx},{ny})");
+                            }
+                        }
+                    }
+                    else if (label == parameters.OpenTerrain)
+                    {
+                        openCount++;
+                    }
+                }
+            }
+
+            // Open-corner connectivity must survive accent painting.
+            var openCells = new List<(int X, int Y)>();
+            for (var x = 0; x <= corners.Width; x++)
+                for (var y = 0; y <= corners.Height; y++)
+                    if (corners.Labels[x, y] == parameters.OpenTerrain)
+                        openCells.Add((x, y));
+
+            openCells.Should().NotBeEmpty($"seed {seed}");
+            var reachable = FloodFill(corners, parameters.OpenTerrain, openCells[0]);
+            reachable.Count.Should().Be(openCells.Count, $"seed {seed}: open corners must remain fully connected after accenting");
+
+            // Room centers must never be painted over.
+            foreach (var room in layout.Rooms)
+            {
+                var (cx, cy) = room.CenterTile;
+                corners.Labels[cx, cy].Should().Be(parameters.OpenTerrain, $"seed {seed}, room {room.Id} center");
+                corners.Labels[cx + 1, cy].Should().Be(parameters.OpenTerrain, $"seed {seed}, room {room.Id} center");
+                corners.Labels[cx, cy + 1].Should().Be(parameters.OpenTerrain, $"seed {seed}, room {room.Id} center");
+                corners.Labels[cx + 1, cy + 1].Should().Be(parameters.OpenTerrain, $"seed {seed}, room {room.Id} center");
+            }
+
+            var total = accentCount + openCount;
+            if (total == 0) continue;
+
+            var fraction = (double)accentCount / total;
+            fraction.Should().BeInRange(0.01, 0.2, $"seed {seed}: accent fraction should be roughly the requested density");
+        }
     }
 }

@@ -40,6 +40,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string Tag { get; set; } = "GENERATED_AREA";
         /// <summary>Tile light color indices applied to every generated tile (theme-driven).</summary>
         public DungeonTileLighting Lighting { get; set; } = new();
+
+        /// <summary>
+        /// Layout style/knobs, usually a theme's LayoutTemplate. Null falls back to
+        /// RoomsAndCorridors with this request's MinRooms/MaxRooms. The facade clones it and
+        /// stamps Width/Height/terrain labels, so the template itself is never mutated.
+        /// </summary>
+        public MacroLayoutParameters Layout { get; set; }
     }
 
     public class AreaGenerationResult

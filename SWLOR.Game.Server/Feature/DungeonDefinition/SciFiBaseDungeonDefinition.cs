@@ -19,10 +19,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public Dictionary<string, DungeonDetail> BuildDungeons()
         {
             _builder.Create(ThemeKey, "Sci-Fi Base")
-                .Tileset("zsf01")
-                .Placeholder("gen_placeholder2")
+                .TilesetProfile(StandardTilesetProfiles.Facility)
+                .LayoutProfile(StandardLayoutProfiles.Packed)
                 .SizeRange(8, 32)
-                .TileLighting(4, 0, 2, 2)
                 .ExitPlaceable("_mdrn_placedoord", "Maintenance Hatch")
                 .TreasurePlaceable("cz220_cache", "Supply Cache")
 

@@ -18,8 +18,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public Dictionary<string, DungeonDetail> BuildDungeons()
         {
             _builder.Create(ThemeKey, "Mine/Cave")
-                .Tileset("tdt01")
-                .Placeholder("gen_placeholder1")
+                .TilesetProfile(StandardTilesetProfiles.Cavern)
+                .LayoutProfile(StandardLayoutProfiles.Organic)
                 .SizeRange(8, 32)
                 .ExitPlaceable("_mdrn_placedoord", "Cave Exit")
                 .TreasurePlaceable("structure_rubble", "Ore-Strewn Cache")

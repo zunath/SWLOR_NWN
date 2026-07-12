@@ -147,13 +147,14 @@ namespace SWLOR.Game.Server.Feature
 
         private static (AreaGenerationResult, RuntimeAreaInstance) RunGeometryPhase(string themeKey, int seed)
         {
-            var detail = DungeonContentPlacer.GetDungeonDetail(themeKey);
+            var composition = DungeonContentPlacer.GetComposition(themeKey);
             var stopwatch = Stopwatch.StartNew();
             var result = AreaGeneration.Generate(new AreaGenerationRequest
             {
-                TilesetResref = detail.TilesetResref,
-                PlaceholderResref = detail.PlaceholderResref,
-                Lighting = detail.Lighting,
+                TilesetResref = composition.Tileset.TilesetResref,
+                PlaceholderResref = composition.Tileset.PlaceholderResref,
+                Lighting = composition.Tileset.Lighting,
+                Layout = composition.BuildLayoutParameters(),
                 Width = 16,
                 Height = 16,
                 Seed = seed,

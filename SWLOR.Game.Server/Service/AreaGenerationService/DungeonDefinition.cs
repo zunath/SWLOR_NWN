@@ -42,7 +42,41 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     }
 
     /// <summary>
-    /// A themed dungeon: tileset/placeholder pairing, size range, and per-tier content.
+    /// Everything that is genuinely bound to a tileset: the tileset itself, the placeholder
+    /// area cloned for instances, tile lighting, and what the tileset calls its accent terrain
+    /// (water pools, pit channels). Layout shapes and content packages compose with any profile.
+    /// </summary>
+    public class DungeonTilesetProfile
+    {
+        public string Key { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public string TilesetResref { get; set; } = string.Empty;
+        public string PlaceholderResref { get; set; } = string.Empty;
+        public DungeonTileLighting Lighting { get; set; } = new();
+
+        /// <summary>
+        /// Terrain name this tileset uses for accent patches (e.g. "Water" on tdt01, "Pit" on
+        /// tds01). Empty = the tileset has no verified accent coverage; compositions skip accents.
+        /// </summary>
+        public string AccentTerrain { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// A named layout shape: style plus tuning knobs, independent of any tileset. The template's
+    /// AccentTerrain stays empty — a nonzero AccentDensity expresses intent, and the actual
+    /// terrain name comes from the tileset profile at composition time.
+    /// </summary>
+    public class DungeonLayoutProfile
+    {
+        public string Key { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public MacroLayoutParameters Template { get; set; } = new();
+    }
+
+    /// <summary>
+    /// A content package plus its default composition: per-tier creatures/boss/treasure, exit and
+    /// treasure placeables, and the default tileset/layout profile keys. Any tileset or layout
+    /// profile can be substituted at request time — nothing here is tileset-bound.
     /// Definitions are discovered via reflection over IDungeonListDefinition (see DungeonContentPlacer),
     /// mirroring ISpawnListDefinition/ILootTableDefinition/IAbilityListDefinition in this codebase.
     /// </summary>
@@ -50,11 +84,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     {
         public string ThemeKey { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
-        public string TilesetResref { get; set; } = string.Empty;
-        public string PlaceholderResref { get; set; } = string.Empty;
+
+        /// <summary>Default tileset profile key; overridable per request.</summary>
+        public string TilesetProfileKey { get; set; } = string.Empty;
+        /// <summary>Default layout profile key; overridable per request.</summary>
+        public string LayoutProfileKey { get; set; } = string.Empty;
+
         public int MinSize { get; set; } = 8;
         public int MaxSize { get; set; } = 32;
-        public DungeonTileLighting Lighting { get; set; } = new();
 
         /// <summary>
         /// Exit placeable spawned in the Entrance room. Must be a useable, non-static blueprint
@@ -69,6 +106,32 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string TreasureDisplayName { get; set; } = "Treasure Cache";
 
         public Dictionary<int, DungeonTierDetail> Tiers { get; set; } = new();
+    }
+
+    /// <summary>
+    /// A resolved (content, tileset, layout) triple ready to drive a generation request.
+    /// </summary>
+    public class DungeonComposition
+    {
+        public DungeonDetail Content { get; set; }
+        public DungeonTilesetProfile Tileset { get; set; }
+        public DungeonLayoutProfile Layout { get; set; }
+
+        /// <summary>
+        /// Clones the layout template and stamps the tileset's accent terrain name when the
+        /// layout wants accents and the tileset supports them; otherwise accents are disabled.
+        /// </summary>
+        public MacroLayoutParameters BuildLayoutParameters()
+        {
+            var parameters = Layout.Template.Clone();
+            parameters.AccentTerrain =
+                parameters.AccentDensity > 0 && !string.IsNullOrEmpty(Tileset.AccentTerrain)
+                    ? Tileset.AccentTerrain
+                    : string.Empty;
+            if (parameters.AccentTerrain.Length == 0)
+                parameters.AccentDensity = 0;
+            return parameters;
+        }
     }
 
     /// <summary>
@@ -101,20 +164,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
-        /// Sets the tileset resref (matches the tileset's .set resource) used for generation.
+        /// Sets the default tileset profile this content package composes with. Overridable per request.
         /// </summary>
-        public DungeonDefinitionBuilder Tileset(string tilesetResref)
+        public DungeonDefinitionBuilder TilesetProfile(string tilesetProfileKey)
         {
-            _activeDungeon.TilesetResref = tilesetResref;
+            _activeDungeon.TilesetProfileKey = tilesetProfileKey;
             return this;
         }
 
         /// <summary>
-        /// Sets the module area resref cloned as the shell for generated instances of this theme.
+        /// Sets the default layout profile this content package composes with. Overridable per request.
         /// </summary>
-        public DungeonDefinitionBuilder Placeholder(string placeholderResref)
+        public DungeonDefinitionBuilder LayoutProfile(string layoutProfileKey)
         {
-            _activeDungeon.PlaceholderResref = placeholderResref;
+            _activeDungeon.LayoutProfileKey = layoutProfileKey;
             return this;
         }
 
@@ -125,21 +188,6 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             _activeDungeon.MinSize = minSize;
             _activeDungeon.MaxSize = maxSize;
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the tile light color indices applied to every generated tile of this theme.
-        /// </summary>
-        public DungeonDefinitionBuilder TileLighting(int mainLight1, int mainLight2, int sourceLight1, int sourceLight2)
-        {
-            _activeDungeon.Lighting = new DungeonTileLighting
-            {
-                MainLight1 = mainLight1,
-                MainLight2 = mainLight2,
-                SourceLight1 = sourceLight1,
-                SourceLight2 = sourceLight2
-            };
             return this;
         }
 
@@ -236,6 +284,97 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public Dictionary<string, DungeonDetail> Build()
         {
             return _dungeons;
+        }
+    }
+
+    /// <summary>Fluent builder for tileset profiles, same conventions as DungeonDefinitionBuilder.</summary>
+    public class DungeonTilesetProfileBuilder
+    {
+        private readonly Dictionary<string, DungeonTilesetProfile> _profiles = new();
+        private DungeonTilesetProfile _active;
+
+        public DungeonTilesetProfileBuilder Create(string key, string displayName)
+        {
+            _active = new DungeonTilesetProfile
+            {
+                Key = key,
+                DisplayName = displayName
+            };
+            _profiles[key] = _active;
+            return this;
+        }
+
+        public DungeonTilesetProfileBuilder Tileset(string tilesetResref)
+        {
+            _active.TilesetResref = tilesetResref;
+            return this;
+        }
+
+        public DungeonTilesetProfileBuilder Placeholder(string placeholderResref)
+        {
+            _active.PlaceholderResref = placeholderResref;
+            return this;
+        }
+
+        public DungeonTilesetProfileBuilder TileLighting(int mainLight1, int mainLight2, int sourceLight1, int sourceLight2)
+        {
+            _active.Lighting = new DungeonTileLighting
+            {
+                MainLight1 = mainLight1,
+                MainLight2 = mainLight2,
+                SourceLight1 = sourceLight1,
+                SourceLight2 = sourceLight2
+            };
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the terrain name this tileset uses for accent patches. Only set this after
+        /// verifying full (open, accent) corner coverage among resolver-usable tiles.
+        /// </summary>
+        public DungeonTilesetProfileBuilder AccentTerrain(string terrainName)
+        {
+            _active.AccentTerrain = terrainName;
+            return this;
+        }
+
+        public Dictionary<string, DungeonTilesetProfile> Build()
+        {
+            return _profiles;
+        }
+    }
+
+    /// <summary>Fluent builder for layout profiles, same conventions as DungeonDefinitionBuilder.</summary>
+    public class DungeonLayoutProfileBuilder
+    {
+        private readonly Dictionary<string, DungeonLayoutProfile> _profiles = new();
+        private DungeonLayoutProfile _active;
+
+        public DungeonLayoutProfileBuilder Create(string key, string displayName)
+        {
+            _active = new DungeonLayoutProfile
+            {
+                Key = key,
+                DisplayName = displayName
+            };
+            _profiles[key] = _active;
+            return this;
+        }
+
+        /// <summary>
+        /// Configures the layout style and tuning knobs. Width/height/terrain labels are stamped
+        /// per-request; leave AccentTerrain empty — set AccentDensity to express accent intent and
+        /// the composed tileset profile supplies the terrain name.
+        /// </summary>
+        public DungeonLayoutProfileBuilder Configure(Action<MacroLayoutParameters> configure)
+        {
+            configure(_active.Template);
+            return this;
+        }
+
+        public Dictionary<string, DungeonLayoutProfile> Build()
+        {
+            return _profiles;
         }
     }
 }

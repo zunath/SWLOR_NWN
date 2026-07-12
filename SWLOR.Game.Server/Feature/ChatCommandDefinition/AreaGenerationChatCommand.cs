@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void GenerateArea()
         {
             _builder.Create("genarea")
-                .Description("Generates a procedural test dungeon. Usage: /genarea [width] [height] [seed] [tier] [theme]")
+                .Description("Generates a procedural test dungeon. Usage: /genarea [width] [height] [seed] [tier] [theme] [tileset] [layout]")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     int? seed = args.Length > 2 && int.TryParse(args[2], out var s) ? s : null;
                     var tier = args.Length > 3 && int.TryParse(args[3], out var t) ? t : 1;
                     var themeKey = args.Length > 4 ? args[4] : MineCaveDungeonDefinition.ThemeKey;
+                    var tilesetKey = args.Length > 5 ? args[5] : null;
+                    var layoutKey = args.Length > 6 ? args[6] : null;
 
                     if (width < 8 || width > 32 || height < 8 || height > 32)
                     {
@@ -49,30 +51,46 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    var dungeon = DungeonContentPlacer.GetDungeonDetail(themeKey);
-                    if (!dungeon.Tiers.ContainsKey(tier))
+                    if (tilesetKey != null && !DungeonContentPlacer.TilesetProfileExists(tilesetKey))
                     {
-                        SendMessageToPC(user, $"Tier must be one of: {string.Join(", ", dungeon.Tiers.Keys.OrderBy(k => k))}.");
+                        SendMessageToPC(user, $"Tileset must be one of: {string.Join(", ", DungeonContentPlacer.GetAllTilesetProfiles().Keys.OrderBy(k => k))}.");
+                        return;
+                    }
+
+                    if (layoutKey != null && !DungeonContentPlacer.LayoutProfileExists(layoutKey))
+                    {
+                        SendMessageToPC(user, $"Layout must be one of: {string.Join(", ", DungeonContentPlacer.GetAllLayoutProfiles().Keys.OrderBy(k => k))}.");
+                        return;
+                    }
+
+                    var composition = DungeonContentPlacer.GetComposition(themeKey, tilesetKey, layoutKey);
+                    if (!composition.Content.Tiers.ContainsKey(tier))
+                    {
+                        SendMessageToPC(user, $"Tier must be one of: {string.Join(", ", composition.Content.Tiers.Keys.OrderBy(k => k))}.");
                         return;
                     }
 
                     var returnLocation = GetLocation(user);
-                    SendMessageToPC(user, $"Generating {width}x{height} tier {tier} '{themeKey}' area" + (seed.HasValue ? $" with seed {seed}..." : "..."));
+                    SendMessageToPC(user,
+                        $"Generating {width}x{height} tier {tier} '{themeKey}' area " +
+                        $"({composition.Tileset.DisplayName} / {composition.Layout.DisplayName})" +
+                        (seed.HasValue ? $" with seed {seed}..." : "..."));
 
                     // Small areas cannot fit the default room counts; scale down so requests
                     // below 16x16 still succeed instead of burning every retry.
                     var small = width < 16 || height < 16;
                     AreaGeneration.QueueGeneration(new AreaGenerationRequest
                     {
-                        TilesetResref = dungeon.TilesetResref,
-                        PlaceholderResref = dungeon.PlaceholderResref,
-                        Lighting = dungeon.Lighting,
+                        TilesetResref = composition.Tileset.TilesetResref,
+                        PlaceholderResref = composition.Tileset.PlaceholderResref,
+                        Lighting = composition.Tileset.Lighting,
+                        Layout = composition.BuildLayoutParameters(),
                         Width = width,
                         Height = height,
                         Seed = seed,
                         MinRooms = small ? 2 : 4,
                         MaxRooms = small ? 4 : 8,
-                        DisplayName = $"Generated Test Area ({dungeon.DisplayName})",
+                        DisplayName = $"Generated Test Area ({composition.Content.DisplayName})",
                         Tag = "GEN_TEST_AREA"
                     }, result =>
                     {

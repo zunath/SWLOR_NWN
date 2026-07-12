@@ -4,20 +4,34 @@ using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
 // Builds a standalone review module ("SWLOR Procgen Review.mod") containing offline-generated
-// areas for every registered dungeon theme, using the production solver and each theme's real
-// tileset/lighting/placeholder settings. The module opens in the toolset or game without the
-// full SWLOR module. All paths derive from the repository root (located by walking up to the
+// areas, using the production solver and the real content-theme / tileset-profile / layout-profile
+// composition (mirroring DungeonContentPlacer.GetComposition + DungeonComposition.BuildLayoutParameters
+// + AreaGeneration.Generate's seed-derived retry). The module opens in the toolset or game without
+// the full SWLOR module. All paths derive from the repository root (located by walking up to the
 // solution file), so the tool runs on any machine or drive layout.
 //
 // Usage (from anywhere inside the repo):
-//   dotnet run --project tools/ProcgenReview -- [--seeds 4242,777] [--size 16] [--out <path>]
+//   dotnet run --project tools/ProcgenReview -- [--seeds 4242,777,1337] [--size 16] [--out <path>]
+//   dotnet run --project tools/ProcgenReview -- --matrix
+//   dotnet run --project tools/ProcgenReview -- --areas minecave:::4242:16,minecave:sewers:organic:777:24
+//
+// Default (no --areas): every registered theme x seeds 4242/777/1337, composed with its own default
+// tileset/layout profiles (3 areas per theme).
+// --matrix: additionally emits one area per (tileset profile x layout profile) pair at seed 4242.
+// Content is irrelevant offline (no creatures/loot/exit/treasure are ever emitted by this tool), so
+// matrix compositions carry no theme.
+// --areas: comma-separated "theme:tileset:layout:seed:size" batch entries. tileset/layout may be
+// left empty to use the theme's own defaults. When given, ONLY these areas are generated — no
+// default set, no matrix.
 //
 // Output defaults to <repoRoot>/Module/SWLOR Procgen Review.mod — point nwn.ini's MODULES
 // directory at <repoRoot>/Module (the SWLOR dev convention) and the toolset sees it directly.
 
-var seeds = new List<int> { 4242, 777 };
+var seeds = new List<int> { 4242, 777, 1337 };
 var size = 16;
 string outPath = null;
+var matrix = false;
+string areasArg = null;
 
 for (var i = 0; i < args.Length; i++)
 {
@@ -31,6 +45,12 @@ for (var i = 0; i < args.Length; i++)
             break;
         case "--out":
             outPath = args[++i];
+            break;
+        case "--matrix":
+            matrix = true;
+            break;
+        case "--areas":
+            areasArg = args[++i];
             break;
         default:
             Console.Error.WriteLine($"unknown argument '{args[i]}'");
@@ -54,55 +74,140 @@ Directory.CreateDirectory(stage);
 
 try
 {
-    var themes = DiscoverThemes();
+    var themes = Discover<IDungeonListDefinition, DungeonDetail>(d => d.BuildDungeons());
+    var tilesetProfiles = Discover<IDungeonTilesetProfileListDefinition, DungeonTilesetProfile>(d => d.BuildTilesetProfiles());
+    var layoutProfiles = Discover<IDungeonLayoutProfileListDefinition, DungeonLayoutProfile>(d => d.BuildLayoutProfiles());
+
     if (themes.Count == 0)
     {
         Console.Error.WriteLine("no dungeon themes discovered");
         return 1;
     }
 
-    var areas = new List<(string Resref, float EntryX, float EntryY)>();
     var usedResrefs = new HashSet<string>();
+    var specs = new List<AreaSpec>();
 
-    foreach (var detail in themes)
+    if (areasArg != null)
     {
-        var setPath = Directory
-            .EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), detail.TilesetResref + ".set", SearchOption.AllDirectories)
-            .FirstOrDefault();
-        if (setPath == null)
+        var n = 1;
+        foreach (var entry in areasArg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            Console.Error.WriteLine($"{detail.ThemeKey}: tileset '{detail.TilesetResref}' has no .set under SWLOR_Haks — skipped");
-            continue;
-        }
-
-        var placeholderAre = Path.Combine(root, "Module", "are", detail.PlaceholderResref + ".are.json");
-        var placeholderGit = Path.Combine(root, "Module", "git", detail.PlaceholderResref + ".git.json");
-        if (!File.Exists(placeholderAre) || !File.Exists(placeholderGit))
-        {
-            Console.Error.WriteLine($"{detail.ThemeKey}: placeholder '{detail.PlaceholderResref}' module JSON missing — skipped");
-            continue;
-        }
-
-        var model = TilesetSetParser.Parse(detail.TilesetResref, File.ReadAllText(setPath));
-
-        foreach (var seed in seeds)
-        {
-            var layout = Generate(model, seed, size);
-            if (layout == null)
+            var parts = entry.Split(':');
+            if (parts.Length != 5)
             {
-                Console.Error.WriteLine($"{detail.ThemeKey} seed {seed}: generation failed — skipped");
+                Console.Error.WriteLine($"--areas entry '{entry}': expected theme:tileset:layout:seed:size — skipped");
                 continue;
             }
 
-            var resref = MakeResref(detail.ThemeKey, seed, usedResrefs);
-            var display = $"Procgen {detail.DisplayName} (seed {seed})";
+            var themeKey = parts[0];
+            var tilesetOverride = parts[1];
+            var layoutOverride = parts[2];
+            if (!int.TryParse(parts[3], out var entrySeed) || !int.TryParse(parts[4], out var entrySize))
+            {
+                Console.Error.WriteLine($"--areas entry '{entry}': seed/size must be integers — skipped");
+                continue;
+            }
 
-            EmitArea(layout, detail, resref, display, placeholderAre, placeholderGit, stage);
+            var composition = ResolveComposition(themes, tilesetProfiles, layoutProfiles, themeKey, tilesetOverride, layoutOverride);
+            if (composition == null)
+            {
+                n++;
+                continue;
+            }
 
-            var entrance = layout.Rooms.First(r => r.Role == RoomRole.Entrance);
-            areas.Add((resref, entrance.CenterTile.X * 10f + 5f, entrance.CenterTile.Y * 10f + 5f));
-            Console.WriteLine($"area: {resref}  \"{display}\"");
+            var resref = UniqueResref($"pga{n}_{entrySeed}", usedResrefs);
+            var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, entrySeed);
+            specs.Add(new AreaSpec(resref, display, composition, entrySeed, entrySize));
+            n++;
         }
+    }
+    else
+    {
+        foreach (var theme in themes.OrderBy(t => t.Key))
+        {
+            var composition = ResolveComposition(themes, tilesetProfiles, layoutProfiles, theme.Key, null, null);
+            if (composition == null)
+                continue;
+
+            foreach (var seed in seeds)
+            {
+                var resref = UniqueResref($"pg_{TwoLetters(theme.Key)}_{seed}", usedResrefs);
+                var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, seed);
+                specs.Add(new AreaSpec(resref, display, composition, seed, size));
+            }
+        }
+
+        if (matrix)
+        {
+            const int matrixSeed = 4242;
+            foreach (var tilesetEntry in tilesetProfiles.OrderBy(t => t.Key))
+            foreach (var layoutEntry in layoutProfiles.OrderBy(l => l.Key))
+            {
+                // Content is irrelevant offline — no creatures/loot/exit/treasure are emitted by
+                // this tool, so matrix compositions carry no theme.
+                var composition = new DungeonComposition
+                {
+                    Content = null,
+                    Tileset = tilesetEntry.Value,
+                    Layout = layoutEntry.Value
+                };
+
+                var resref = UniqueResref($"pgm_{TwoLetters(tilesetEntry.Key)}{TwoLetters(layoutEntry.Key)}_{matrixSeed}", usedResrefs);
+                var display = $"Procgen Matrix {tilesetEntry.Value.DisplayName}/{layoutEntry.Value.DisplayName} ({matrixSeed})";
+                specs.Add(new AreaSpec(resref, display, composition, matrixSeed, size));
+            }
+        }
+    }
+
+    if (specs.Count == 0)
+    {
+        Console.Error.WriteLine("no areas requested");
+        return 1;
+    }
+
+    var modelCache = new Dictionary<string, TilesetModel>();
+    var areas = new List<(string Resref, float EntryX, float EntryY)>();
+
+    foreach (var spec in specs)
+    {
+        var tileset = spec.Composition.Tileset;
+
+        if (!modelCache.TryGetValue(tileset.TilesetResref, out var model))
+        {
+            var setPath = Directory
+                .EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), tileset.TilesetResref + ".set", SearchOption.AllDirectories)
+                .FirstOrDefault();
+            if (setPath == null)
+            {
+                Console.Error.WriteLine($"{spec.Resref}: tileset '{tileset.TilesetResref}' has no .set under SWLOR_Haks — skipped");
+                continue;
+            }
+
+            model = TilesetSetParser.Parse(tileset.TilesetResref, File.ReadAllText(setPath));
+            modelCache[tileset.TilesetResref] = model;
+        }
+
+        var placeholderAre = Path.Combine(root, "Module", "are", tileset.PlaceholderResref + ".are.json");
+        var placeholderGit = Path.Combine(root, "Module", "git", tileset.PlaceholderResref + ".git.json");
+        if (!File.Exists(placeholderAre) || !File.Exists(placeholderGit))
+        {
+            Console.Error.WriteLine($"{spec.Resref}: placeholder '{tileset.PlaceholderResref}' module JSON missing — skipped");
+            continue;
+        }
+
+        var baseParameters = spec.Composition.BuildLayoutParameters();
+        var layout = Generate(model, baseParameters, spec.Seed, spec.Size);
+        if (layout == null)
+        {
+            Console.Error.WriteLine($"{spec.Resref} seed {spec.Seed}: generation failed — skipped");
+            continue;
+        }
+
+        EmitArea(layout, tileset, spec.Resref, spec.DisplayName, placeholderAre, placeholderGit, stage);
+
+        var entrance = layout.Rooms.First(r => r.Role == RoomRole.Entrance);
+        areas.Add((spec.Resref, entrance.CenterTile.X * 10f + 5f, entrance.CenterTile.Y * 10f + 5f));
+        Console.WriteLine($"area: {spec.Resref}  \"{spec.DisplayName}\"");
     }
 
     if (areas.Count == 0)
@@ -136,41 +241,83 @@ static string FindRepositoryRoot()
     throw new DirectoryNotFoundException("Could not locate the repository root (SWLOR.Game.Server.sln).");
 }
 
-static List<DungeonDetail> DiscoverThemes()
+/// <summary>
+/// Discovers every non-abstract implementation of TInterface in this assembly and merges their
+/// build-dictionaries, mirroring the DungeonContentPlacer/DungeonDefinitionBuilder discovery
+/// convention (IDungeonListDefinition, IDungeonTilesetProfileListDefinition, IDungeonLayoutProfileListDefinition).
+/// </summary>
+static Dictionary<string, TValue> Discover<TInterface, TValue>(Func<TInterface, Dictionary<string, TValue>> build)
 {
-    var themes = new List<DungeonDetail>();
-    var types = typeof(IDungeonListDefinition).Assembly.GetTypes()
-        .Where(t => typeof(IDungeonListDefinition).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+    var result = new Dictionary<string, TValue>();
+    var types = typeof(TInterface).Assembly.GetTypes()
+        .Where(t => typeof(TInterface).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
 
     foreach (var type in types)
     {
-        var definition = (IDungeonListDefinition)Activator.CreateInstance(type);
-        foreach (var (_, detail) in definition.BuildDungeons().OrderBy(d => d.Key))
-            themes.Add(detail);
+        var instance = (TInterface)Activator.CreateInstance(type);
+        foreach (var (key, value) in build(instance))
+            result[key] = value;
     }
 
-    return themes.OrderBy(t => t.ThemeKey).ToList();
+    return result;
 }
 
-static ResolvedLayout Generate(TilesetModel model, int seed, int size)
+/// <summary>
+/// Resolves a (content, tileset, layout) composition exactly like DungeonContentPlacer.GetComposition:
+/// the theme supplies content and its default profiles; either profile can be overridden per request.
+/// </summary>
+static DungeonComposition ResolveComposition(
+    Dictionary<string, DungeonDetail> themes,
+    Dictionary<string, DungeonTilesetProfile> tilesetProfiles,
+    Dictionary<string, DungeonLayoutProfile> layoutProfiles,
+    string themeKey, string tilesetProfileKeyOverride, string layoutProfileKeyOverride)
 {
-    // Mirrors the runtime facade's seed-derived retry (no path validation offline — that
+    if (!themes.TryGetValue(themeKey, out var content))
+    {
+        Console.Error.WriteLine($"unknown theme '{themeKey}' — skipped");
+        return null;
+    }
+
+    var tilesetKey = string.IsNullOrEmpty(tilesetProfileKeyOverride) ? content.TilesetProfileKey : tilesetProfileKeyOverride;
+    var layoutKey = string.IsNullOrEmpty(layoutProfileKeyOverride) ? content.LayoutProfileKey : layoutProfileKeyOverride;
+
+    if (!tilesetProfiles.TryGetValue(tilesetKey, out var tileset))
+    {
+        Console.Error.WriteLine($"theme '{themeKey}' references unknown tileset profile '{tilesetKey}' — skipped");
+        return null;
+    }
+
+    if (!layoutProfiles.TryGetValue(layoutKey, out var layout))
+    {
+        Console.Error.WriteLine($"theme '{themeKey}' references unknown layout profile '{layoutKey}' — skipped");
+        return null;
+    }
+
+    return new DungeonComposition
+    {
+        Content = content,
+        Tileset = tileset,
+        Layout = layout
+    };
+}
+
+static ResolvedLayout Generate(TilesetModel model, MacroLayoutParameters baseParameters, int seed, int size)
+{
+    // Mirrors AreaGeneration.Generate's seed-derived retry (no path validation offline — that
     // needs the engine; the review module is for visual inspection, not traversal QA).
     for (var attempt = 0; attempt < 6; attempt++)
     {
         var rng = new Random(seed + attempt);
+        var parameters = baseParameters.Clone();
+        parameters.Width = size;
+        parameters.Height = size;
+        parameters.SolidTerrain = model.DefaultTerrain;
+        parameters.OpenTerrain = model.FloorTerrain;
+
         MacroLayout macro;
         try
         {
-            macro = MacroLayoutGenerator.Generate(new MacroLayoutParameters
-            {
-                Width = size,
-                Height = size,
-                SolidTerrain = model.DefaultTerrain,
-                OpenTerrain = model.FloorTerrain,
-                MinRooms = 4,
-                MaxRooms = 8
-            }, rng);
+            macro = MacroLayoutGenerator.Generate(parameters, rng);
         }
         catch (InvalidOperationException)
         {
@@ -185,25 +332,41 @@ static ResolvedLayout Generate(TilesetModel model, int seed, int size)
     return null;
 }
 
-static string MakeResref(string themeKey, int seed, HashSet<string> used)
+static string ComposeDisplayName(string themeDisplayName, string tilesetDisplayName, string layoutDisplayName, int seed)
 {
-    var prefix = new string(themeKey.Where(char.IsLetterOrDigit).Take(2).ToArray());
-    var resref = $"pg_{prefix}_{seed}";
-    var suffix = 2;
-    while (!used.Add(resref))
-        resref = $"pg_{prefix}{suffix++}_{seed}";
-    return resref;
+    return $"Procgen {themeDisplayName} [{tilesetDisplayName}/{layoutDisplayName}] (seed {seed})";
 }
 
-static void EmitArea(ResolvedLayout layout, DungeonDetail detail, string resref, string display,
+static string TwoLetters(string key)
+{
+    return new string(key.Where(char.IsLetterOrDigit).Take(2).ToArray()).ToLowerInvariant();
+}
+
+/// <summary>Ensures resrefs stay unique and within NWN's 16-character resource limit.</summary>
+static string UniqueResref(string baseResref, HashSet<string> used)
+{
+    var candidate = baseResref.Length > 16 ? baseResref[..16] : baseResref;
+    var suffix = 2;
+    while (!used.Add(candidate))
+    {
+        var suffixText = suffix.ToString();
+        var maxBaseLength = 16 - suffixText.Length;
+        candidate = (baseResref.Length > maxBaseLength ? baseResref[..maxBaseLength] : baseResref) + suffixText;
+        suffix++;
+    }
+
+    return candidate;
+}
+
+static void EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string resref, string display,
     string placeholderArePath, string placeholderGitPath, string stage)
 {
-    var lighting = detail.Lighting;
+    var lighting = tileset.Lighting;
     var tiles = string.Join(",\n", layout.Tiles.Select(t => TileEntry(t.TileId, t.Orientation,
         lighting.MainLight1, lighting.MainLight2, lighting.SourceLight1, lighting.SourceLight2)));
 
     var are = File.ReadAllText(placeholderArePath);
-    are = are.Replace($"\"{detail.PlaceholderResref}\"", $"\"{resref}\"");
+    are = are.Replace($"\"{tileset.PlaceholderResref}\"", $"\"{resref}\"");
     are = System.Text.RegularExpressions.Regex.Replace(
         are, "\"0\": \"Generated [^\"]*Placeholder\"", $"\"0\": \"{display}\"");
     are = ReplaceFirstIntField(are, "Height", layout.Height);
@@ -346,3 +509,5 @@ static void Run(string exe, string arguments)
     if (proc.ExitCode != 0)
         throw new InvalidOperationException($"{Path.GetFileName(exe)} failed: {stderr}");
 }
+
+record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size);

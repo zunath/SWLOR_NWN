@@ -151,6 +151,86 @@ public class AreaGenerationPipelineTests
         }
     }
 
+    private static readonly DungeonLayoutStyle[] AllStyles =
+    {
+        DungeonLayoutStyle.RoomsAndCorridors,
+        DungeonLayoutStyle.OrganicCave,
+        DungeonLayoutStyle.Warren,
+        DungeonLayoutStyle.PackedRooms
+    };
+
+    /// <summary>
+    /// Runs every registered tileset against every layout style, proving each tileset's tile inventory
+    /// satisfies whatever corner combinations that style produces — not just the RoomsAndCorridors shape
+    /// the other tests exercise. tdt01/OrganicCave and tds01/Warren additionally enable an accent terrain
+    /// (Water, Pit respectively) verified to have full (open, accent) tile coverage in those tilesets.
+    /// </summary>
+    [TestCaseSource(nameof(StyleMatrixCases))]
+    public void Tileset_StyleMatrix_ResolvesAcrossSeeds(string tilesetResref, DungeonLayoutStyle style)
+    {
+        var model = LoadTileset(tilesetResref);
+        var failures = new List<string>();
+
+        for (var seed = 1; seed <= 10; seed++)
+        {
+            var rng = new Random(seed);
+            var parameters = new MacroLayoutParameters
+            {
+                Width = 16,
+                Height = 16,
+                SolidTerrain = model.DefaultTerrain,
+                OpenTerrain = model.FloorTerrain,
+                Style = style
+            };
+
+            if (tilesetResref == "tdt01" && style == DungeonLayoutStyle.OrganicCave)
+            {
+                parameters.AccentTerrain = "Water";
+                parameters.AccentDensity = 0.06;
+            }
+            else if (tilesetResref == "tds01" && style == DungeonLayoutStyle.Warren)
+            {
+                parameters.AccentTerrain = "Pit";
+                parameters.AccentDensity = 0.05;
+            }
+
+            MacroLayout macro;
+            try
+            {
+                macro = MacroLayoutGenerator.Generate(parameters, rng);
+            }
+            catch (InvalidOperationException ex)
+            {
+                failures.Add($"seed {seed}: macro layout generation failed: {ex.Message}");
+                continue;
+            }
+
+            macro.Seed = seed;
+
+            if (!TileResolver.TryResolve(model, macro, rng, out var resolved, out var reason))
+            {
+                failures.Add($"seed {seed}: {reason}");
+                continue;
+            }
+
+            resolved.Tiles.Should().HaveCount(16 * 16);
+            resolved.Rooms.Should().NotBeEmpty();
+        }
+
+        failures.Should().BeEmpty($"every {style} macro layout must resolve against the real {tilesetResref} inventory");
+    }
+
+    private static IEnumerable<TestCaseData> StyleMatrixCases()
+    {
+        foreach (var tileset in TilesetHakDirectories.Keys)
+        {
+            foreach (var style in AllStyles)
+            {
+                yield return new TestCaseData(tileset, style).SetName($"Tileset_StyleMatrix_ResolvesAcrossSeeds({tileset},{style})");
+            }
+        }
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

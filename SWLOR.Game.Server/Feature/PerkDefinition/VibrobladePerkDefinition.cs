@@ -56,9 +56,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BloodFrenzyTrait)
-                .Description("Defeating an enemy restores 15 STM and grants +10% Haste for 30 seconds.")
-                .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 15)
-                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 10)
+                .Description("Defeating an enemy restores 10 STM and grants +8% Haste for 30 seconds.")
+                .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 10)
+                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 8)
                 .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30)
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)
@@ -108,16 +108,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExecutionerTrait)
-                .Description("Deal +15% damage to targets below 30% HP.")
-                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 30)
-                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
+                .Description("Deal +8% damage to targets below 25% HP.")
+                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 25)
+                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 5)
 
                 .AddPerkLevel()
-                .Description("Deal +15% damage to targets below 50% HP.")
-                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 50)
-                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
+                .Description("Deal +10% damage to targets below 25% HP.")
+                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 25)
+                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }
@@ -302,13 +302,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave2)
-                .Description("Deal weapon DMG + 20 in a 5m radius around you and restores 2 STM per secondary target hit.")
+                .Description("Deal weapon DMG + 15 in a 5m radius around you and restore 2 STM per secondary target hit.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave3)
-                .Description("Deal weapon DMG + 15 to all enemies around you.")
+                .Description("Deal weapon DMG + 20 in a 5m radius around you and restore 2 STM per secondary target hit.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }
@@ -396,11 +396,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnbreakableTrait)
-                .Description("When reduced below 25% HP, gain 40% Physical Defense for 30 seconds. Once per 5 minutes.")
+                .Description("When reduced below 25% HP, gain 40% Physical Defense for 30 seconds. Once per 10 minutes.")
                 .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, 25)
                 .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, 40)
                 .IncreasesStat(StatType.LowHPPhysicalDefenseDurationSeconds, 30)
-                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, 300)
+                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, 600)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -12,6 +13,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;
 
+        public override string CanApply(uint creature)
+        {
+            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Blindness)
+                ? "Target is temporarily immune to blindness."
+                : string.Empty;
+        }
+
         protected override void Apply(uint creature, int durationTicks)
         {
             ApplyBlindness(creature, GetDurationSeconds(durationTicks));
@@ -20,6 +28,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Reapply(uint creature)
         {
             ApplyBlindness(creature, GetDurationSeconds(DurationTicks));
+        }
+
+        protected override void Remove(uint creature)
+        {
+            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Blindness);
         }
 
         private void ApplyBlindness(uint creature, float duration)

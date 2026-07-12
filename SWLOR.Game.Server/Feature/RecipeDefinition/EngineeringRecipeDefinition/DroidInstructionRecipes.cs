@@ -119,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 new DroidInstructionRecipe(RecipeType.InstructionKillzoneBeacon, "id_killbeacon"),
                 new DroidInstructionRecipe(RecipeType.InstructionOverloadBarrage, "id_overbarrage"),
                 new DroidInstructionRecipe(RecipeType.InstructionPowerCell3, "id_powercell3"),
+                new DroidInstructionRecipe(RecipeType.InstructionRailDart3, "id_raildart3"),
                 new DroidInstructionRecipe(RecipeType.InstructionSonicBurst3, "id_sonicburst3"),
                 new DroidInstructionRecipe(RecipeType.InstructionThermalDetonator, "id_thermdeton"),
                 new DroidInstructionRecipe(RecipeType.InstructionTreatmentKit3, "id_treatkit3"),

@@ -149,21 +149,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast reduces enemies within 5m' hit chance by 5% for 30 seconds.")
+                .Description("The beast reduces the hit chance of enemies within 5m by 5% for 30 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(22)
                 .RequirementBeastRole(BeastRoleType.Force)
                 .GrantsFeat(FeatType.PsychicCry1)
 
                 .AddPerkLevel()
-                .Description("The beast reduces enemies within 5m' hit chance by 8% and increases their force damage taken by 5% for 30 seconds.")
+                .Description("The beast reduces the hit chance of enemies within 5m by 8% and increases their force damage taken by 5% for 30 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(40)
                 .RequirementBeastRole(BeastRoleType.Force)
                 .GrantsFeat(FeatType.PsychicCry2)
 
                 .AddPerkLevel()
-                .Description("The beast reduces enemies within 5m' hit chance by 12% and increases their force damage taken by 8% for 30 seconds.")
+                .Description("The beast reduces the hit chance of enemies within 5m by 12% and increases their force damage taken by 8% for 30 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Force)
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MindfulHideTrait)
-                .Description("The beast takes 8% less force damage and gains +10% Confusion Resistance, +10% Daze Resistance, and +10% Fear Resistance.")
+                .Description("The beast takes 8% less force damage and gains +10 Mind Resistance.")
                 .Price(3)
                 .RequirementBeastLevel(38)
                 .RequirementBeastRole(BeastRoleType.Force)

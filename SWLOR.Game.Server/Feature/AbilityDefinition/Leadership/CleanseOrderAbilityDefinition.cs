@@ -88,6 +88,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 affectedCount++;
             }
 
+            LeadershipAbilityEffects.ApplyBolsterResolve(activator, duration);
+
             if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
@@ -105,6 +107,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
                 affectedCount++;
             }
+
+            LeadershipAbilityEffects.ApplyBolsterResolve(activator, duration);
 
             if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }

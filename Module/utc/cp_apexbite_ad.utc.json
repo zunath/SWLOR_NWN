@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 33
+    "value": 23
   },
   "Disarmable": {
     "type": "byte",
@@ -161,7 +161,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 23
+    "value": 33
   },
   "Interruptable": {
     "type": "byte",

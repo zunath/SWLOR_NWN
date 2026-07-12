@@ -133,6 +133,42 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the display name of an offline/persisted player record for plain-text UI surfaces
+        /// such as NUI windows, which render chat color tokens literally. Unlike
+        /// <see cref="GetDisplayNameByPlayerId"/>, targets the observer has named show only the assigned
+        /// name (no bracketed descriptor), and no output contains color tokens. Staff observers still see
+        /// the canonical name with the descriptor in brackets.
+        /// </summary>
+        /// <param name="observer">The player viewing the name.</param>
+        /// <param name="targetPlayerId">The player Id of the record being displayed.</param>
+        /// <param name="fallbackName">The persisted canonical name to fall back on.</param>
+        /// <returns>The observer-appropriate display name, free of color tokens.</returns>
+        public static string GetPlainDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)
+        {
+            if (string.IsNullOrWhiteSpace(targetPlayerId))
+                return UnknownName;
+
+            // Strip color tokens: persisted names can contain them and this surface renders tokens literally.
+            var fallbackDisplayName = string.IsNullOrWhiteSpace(fallbackName)
+                ? UnknownName
+                : UtilPlugin.StripColors(fallbackName);
+
+            if (!GetIsObjectValid(observer) || !GetIsPC(observer))
+                return fallbackDisplayName;
+
+            if (GetObjectUUID(observer) == targetPlayerId)
+                return fallbackDisplayName;
+
+            if (GetIsDM(observer) || GetIsDMPossessed(observer))
+                return $"{fallbackDisplayName} [{PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId)}]";
+
+            if (TryGetKnownName(observer, targetPlayerId, out var knownName))
+                return knownName;
+
+            return PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId);
+        }
+
+        /// <summary>
         /// Returns the observer's known name when present, otherwise the fallback name.
         /// Use for operational permission management surfaces that target persisted character records.
         /// </summary>

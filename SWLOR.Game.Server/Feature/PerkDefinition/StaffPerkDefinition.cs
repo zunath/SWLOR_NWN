@@ -127,19 +127,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker1)
-                .Description("Deals weapon DMG + 12 and inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 12 and inflicts Dazed for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker2)
-                .Description("Deals weapon DMG + 24 and inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 24 and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker3)
-                .Description("Deals weapon DMG + 36 and inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 36 and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 38);
         }
@@ -164,13 +164,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake1)
-                .Description("Deals weapon DMG + 18 to enemies within 5m and knocks down already Dazed targets for 30 seconds.")
+                .Description("Deals weapon DMG + 18 to enemies within 5m and knocks down already Dazed targets for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake2)
-                .Description("Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 30 seconds.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
         }
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
-                .Description("Deals weapon DMG + 35 to enemies within 5m. Enemies affected by control effects take +50 DMG and are Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 35 to enemies within 5m. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)
                 .RequirementQuest(StaffCapstoneQuestDefinition.WorldbreakerMasteryQuestId);
@@ -314,19 +314,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep1)
-                .Description("Deals weapon DMG + 12 and inflicts Knockdown for 30 seconds.")
+                .Description("Deals weapon DMG + 12 and inflicts Knockdown for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep2)
-                .Description("Deals weapon DMG + 24 and inflicts Knockdown for 30 seconds.")
+                .Description("Deals weapon DMG + 24 and inflicts Knockdown for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep3)
-                .Description("Deals weapon DMG + 36 and inflicts Knockdown for 30 seconds.")
+                .Description("Deals weapon DMG + 36 and inflicts Knockdown for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 38);
         }
@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShelterCircle1)
-                .Description("for 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
+                .Description("For 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
         }

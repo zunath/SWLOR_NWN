@@ -64,7 +64,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
 
                 var dbPlayerQuest = dbPlayer.Quests[questId];
-                var questDetail = Quest.GetQuestById(questId);
+                var questDetail = Quest.GetQuestByIdOrDefault(questId);
+
+                if (questDetail == null)
+                {
+                    if (SelectedQuestIndex >= 0 && SelectedQuestIndex < QuestToggles.Count)
+                        QuestToggles[SelectedQuestIndex] = false;
+
+                    SelectedQuestIndex = -1;
+                    ActiveQuestName = "[Select a Quest]";
+                    ActiveQuestDescription = "[Select a Quest]";
+                    IsAbandonQuestEnabled = false;
+                    return;
+                }
 
                 ActiveQuestName = questDetail.Name;
                 ActiveQuestDescription = BuildDescription(questDetail, dbPlayerQuest.CurrentState);
@@ -116,7 +128,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (quest.DateLastCompleted != null)
                     continue;
 
-                var questDetail = Quest.GetQuestById(questId);
+                var questDetail = Quest.GetQuestByIdOrDefault(questId);
+
+                // Quest definition no longer exists (e.g. an expired quest contract). Skip it.
+                if (questDetail == null)
+                    continue;
+
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     if (!questDetail.Name.ToLower().Contains(SearchText))
@@ -166,6 +183,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAbandonQuest() => () =>
         {
+            // Guard against a stale selection (e.g. the selected quest was removed after a delayed event).
+            if (SelectedQuestIndex < 0 || SelectedQuestIndex >= _questIds.Count)
+                return;
+
             var questId = _questIds[SelectedQuestIndex];
 
             ShowModal("Are you sure you wish to abandon this quest?", () =>

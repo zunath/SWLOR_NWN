@@ -17,6 +17,12 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - Do not start background jobs, watchers, dev servers, publish tasks, or long-lived helper processes unless the user explicitly asks for them or they are strictly required for the current task. Prefer foreground commands with bounded timeouts. If a long-lived process is necessary, record what was started, track its PID when available, stop it before handing off, and report the cleanup. Do not use `Start-Process`, shell backgrounding, persistent REPL helpers, or detached commands to continue work after the turn unless the user has explicitly approved that behavior.
 
+## Tests
+
+- Building or testing `SWLOR.Game.Server` fires a Windows post-build deploy (`SWLOR.CLI.exe -o`) that is slow and unnecessary for verification. Always skip it by passing `-p:RunPostBuildEvent=Never` on builds, and use a build-once/test-many flow.
+- Build a single time, then run only the relevant tests without rebuilding: `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`, followed by `dotnet test --no-build --filter "FullyQualifiedName~<RelevantTestClass>"`. Use `|` to combine multiple filters.
+- Only run the full unfiltered suite (`dotnet test` with no `--filter`) when a change is broad enough to plausibly affect unrelated systems, or as a final pre-handoff check — not after every edit.
+
 ## Naming
 
 - Do not use internal initiative, milestone, or phase labels such as `CombatUpgrade` in production code identifiers, filenames, namespaces, classes, methods, or comments. Use domain terms that describe gameplay behavior, such as ability targeting, ability effects, Leadership, Devices, or the specific system being changed.
@@ -37,9 +43,18 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 - Property and ship permission management is a narrow exception because it grants persistent access to real character records. These screens may search canonical character names as well as observer-known names, and should display `PlayerName.GetKnownNameOrFallbackByPlayerId(observer, playerId, fallbackName)` so fake/known names are preserved when present and canonical names are available when no known name exists.
 - Server logs and audit trails must retain raw/canonical player identity for moderation and traceability. Raw/canonical player identity is also acceptable for DM/admin-only tools, persisted ownership fields, and messages shown only to that same player. Public custom names deliberately entered by players, such as renamed properties or droids, may remain visible.
 
+## Economy-Restricted Items
+
+- Player-facing item search and economy surfaces (quest contract objective search, and any future market-style blueprint pickers) must not show NPC-only, creature, or internal items. `Item.IsEconomyRestricted` is the single source of truth; `Cache.IsItemSearchableByResref` consumes it. Never hardcode resref lists to exclude items — extend the shared classifier or flag the blueprint.
+- Creature-equipment base item types (creature weapons and `CreatureItem` "stat skins") and items whose name carries the reserved `[NPC]`/`(NPC` prefix are excluded automatically, as are blueprints with no real inventory icon.
+- For an NPC-only item that a normal player item is otherwise indistinguishable from — a real base type, a real icon, and no `[NPC]` name (e.g. the "Specialist" NPC weapons, "Republic Special Forces Rifle") — set the `NO_ECONOMY` local variable to `1` on the blueprint. This is the explicit opt-out the runtime classifier reads. Prefer this over broadening name/base-type heuristics, which risk hiding legitimate player items.
+- If a genuinely new NPC naming convention or creature base type is introduced, update the pattern/base-type set in `Item.IsEconomyRestricted` (not a resref list). `EconomyRestrictedItemTests` guards that every `[NPC]`/`(NPC` blueprint stays covered; keep it green.
+- Any item blueprint that players cannot obtain through some source must carry the `NO_ECONOMY` flag. `EconomyObtainabilityCoverageTests` enforces this: it scans every `uti` blueprint, subtracts every obtainable source (loot, stores, placed containers, recipe outputs/components, refining, fishing, quest rewards via `AddItemReward`, training store, starting gear, and `CreateItemOnObject`/`CopyItemAndModify` literals), and requires the remainder (excluding creature/`[NPC]` items the runtime already handles) to be flagged. When it fails on a new item, either wire the item to a real player source or run `python tools/FlagNpcEconomyItems.py` to stamp it. New flags require a module repack on deploy. If you add a genuinely new item-acquisition mechanism, extend the obtainable extraction in both the tool and the test.
+
 ## Design Bible
 
 - Follow `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` when editing any Design Bible workbook.
+- Never edit a Design Bible workbook with `openpyxl` (or any library that rewrites the whole workbook without recalculating formulas). It discards the cached formula-result values on every formula cell: the perk sync tests still pass (text tabs have no formulas), but formula-backed tabs silently lose their cached numbers and break tests such as `NPCEnemyBalanceAuditTests`. These workbooks are Google Sheets exports that store text as inline strings, so edit the target cells surgically at the zip/XML level (cells look like `<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and repackage copying every other zip entry byte-for-byte, so untouched sheets keep their cached values. The `tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` formatter preserves caches and is safe to run afterward.
 - After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` to refresh `SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv` and `SWLOR.Game.Server/Readmes/CombatUpgradePerkAudit.csv` from the local workbook.
 
 ## Full Rebuild Changes

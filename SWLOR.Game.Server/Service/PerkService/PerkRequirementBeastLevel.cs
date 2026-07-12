@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             _requiredLevel = requiredLevel;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.BeastLevel;
+
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);

@@ -54,8 +54,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         TwinBlade = 24,
         [RecipeCategory("Bed", true)]
         Bed = 25,
-        [RecipeCategory("Misc. Furniture", true)]
-        MiscellaneousFurniture = 25,
         [RecipeCategory("Flooring", true)]
         Flooring = 26,
         [RecipeCategory("Seating", true)]
@@ -130,6 +128,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         StarshipAmmo = 61,
         [RecipeCategory("Capital Module Recipes", true)]
         CapitalShipModule = 62,
+        [RecipeCategory("Misc. Furniture", true)]
+        MiscellaneousFurniture = 63,
     }
 
     public class RecipeCategoryAttribute : Attribute

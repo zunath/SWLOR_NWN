@@ -1715,7 +1715,7 @@ internal static class CapstoneQuestDefinitionTestData
                 NPCGroupType.Dantooine_GuardianMaster_Specialist,
                 NPCGroupType.Dantooine_GuardianMaster_Warden,
                 NPCGroupType.Dantooine_GuardianMaster_InnerCircle,
-                NPCGroupType.Dantooine_GuardianMaster_Master,
+                NPCGroupType.Dantooine_GuardianMaster_Paragon,
             },
             new[]
             {

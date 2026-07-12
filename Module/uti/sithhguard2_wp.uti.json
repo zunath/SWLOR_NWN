@@ -108,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 68
+          "value": 71
         },
         "Param1": {
           "type": "byte",
@@ -175,6 +175,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sithhguard2_wp"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

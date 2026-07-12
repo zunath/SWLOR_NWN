@@ -19,12 +19,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.MovementSpeedDisabled] = 1;
         }
 
+        public override string CanApply(uint creature)
+        {
+            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Immobilized)
+                ? "Target is temporarily immune to immobilization."
+                : string.Empty;
+        }
+
         protected override void Remove(uint creature)
         {
             if (GetIsObjectValid(creature) && !GetIsDead(creature))
             {
                 Enmity.AttackHighestEnmityTarget(creature);
             }
+
+            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Immobilized);
         }
     }
 }

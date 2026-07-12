@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CourageousResolveTrait)
-                .Description("When you use a Sense power, you and allies within 5m gain +10 Fear Resistance rating, +10 Daze Resistance rating, and +10 Confusion Resistance rating for 30 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
+                .Description("When you use a Sense power, you and allies within 5m gain +10 Mind Resistance rating for 30 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

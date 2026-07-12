@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Adamantine Guard is no longer a lesson on my ledger. You proved it in CZ-220 Breaker Yard; keep proving it when nobody is keeping score."
+            "0": "Bay One is cutting again and my paperwork finally matches my yard. That was your doing, so I'll say it once: the guard you carry now doesn't break, and neither does my word. There's a standing line on my roster with your name on it. Now stop blocking my light."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Adamantine Guard is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for CZ-220 Breaker Yard."
+            "0": "Don't touch anything. I post this work for katar hands that have nothing left to learn on a public floor, and yours aren't there yet. Come back when the blades on your fists are the last thing anybody could teach you about."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The breaker yard will try to make you give ground. Refuse correctly, and even the machinery will sound uncertain. Go to CZ-220 Breaker Yard on CZ-220, defeat the Adamantine Guard adepts, and bring back the Adamantine Guard field report."
+            "0": "Work order. Signed, dated, unfilled. She slaps the flimsi flat against your chest. \"A wreck crew set up shop in the CZ-220 Breaker Yard, this station's lower level, and they're drilling katar guard-work on my tonnage and my clock. Six adepts hold the outer floor. Put them down, pull the Adamantine Guard Breaker Yard Work Order they're cutting under, and get it on my desk. Take the job and I cut you a key for the door they welded off my grid.\""
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Key's cut. The door is the welded one off the main junkline - it reads the key, not your face, so don't bother smiling at it. Six adepts. One work order. My desk. The shift clock started when you nodded."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Adamantine Guard is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Everything the galaxy is done with. Freighters, barge hulls, one decommissioned corvette I wasn't supposed to ask about. We cut it, sort it, weigh it, sell it. Then last quarter a katar crew walked in with a guard drill and a stack of forged dockets, and the first thing they broke was my schedule. The one thing down there that never broke is why they came. Ask me about that when you've earned the deeper bays."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Wreckers I'd have hired, which is the insulting part. They drill a guard that doesn't give - adamantine, they call it - fists up, feet planted, hours at a stretch, on my power draw. Their foreman files my forms in my own format. Accurate paperwork from thieves. I almost respect it. Almost."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "It means whoever holds it holds the bay. That's yard law older than this station's registry. Their copy carries a forged authorization with my stamp on it, and while that flimsi exists, half my subcontractors think the lockout is mine. Bring it back and I start reclaiming my yard one bay at a time."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your first proof for Adamantine Guard. Finish the target there before you bring me anything else."
+            "0": "Order's still open. Six adepts in the Breaker Yard, one work order, my desk. The shift clock doesn't care how your day is going and neither do I."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Adamantine Guard lesson clean."
+            "0": "That's junkline grease on your sleeves, and nobody comes back from bay work standing that straight unless the work is done. Flimsi. Desk."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Adamantine Guard is one step closer to belonging to you."
+            "0": "Signed by their foreman, countersigned by nobody, forged stamp and all. I'll file it under evidence and frame the copy. She counts out your pay without looking at it. \"Hazard rate, no deductions. That's as warm as I get.\""
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Adamantine Guard proof is waiting in CZ-220 Breaker Yard. This one is about second proof, not repetition. Go to CZ-220 Breaker Yard on CZ-220, defeat the Adamantine Guard specialists, and bring back the Adamantine Guard calibration core."
+            "0": "You again. Good, saves me posting it. The crew rerouted my junkline - every conveyor down there feeds their drill pit now instead of my smelters, and my throughput is down forty tons a shift. Five specialists run the line. Break their guard, take back the Adamantine Guard Junkline Control Relay, and my belts start obeying people who actually work here."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Same door, same key. Follow the junkline north until the belts run the wrong direction - that's their handiwork, and the specialists post where the reroute starts. The relay comes back in one piece. It bills as salvage, not scrap."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Adamantine Guard is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A guard that doesn't break, drilled until it's true. You'd know what that's worth to a katar hand better than I would - I just know what it looks like from a crane cab. My cutters held a plasma lance on one of those adepts for a full minute and he didn't step back. Whatever they're perfecting down there, they didn't invent it. They're drilling it to sell it, and my yard is the free training floor."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "That relay is the junkline's spine. Whoever holds it decides where every belt in this yard delivers, and right now that's five squatters with katars and a work ethic I'd kill for. It's also serial-stamped to my yard. Get it back and their reroute becomes theft on paper, which is the only place theft ever really dies."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Because they never work alone and my people do. Every bay they took, they took in pairs and threes - one holds the floor, the rest move the work. It's in my own regs: nobody works a live bay without two spotters. They read my rulebook better than my shift leads do. Learn from that before the deeper bays make you learn it."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your second proof for Adamantine Guard. Finish the target there before you bring me anything else."
+            "0": "My belts still feed their pit. Five specialists on the junkline, one control relay. Everything else in that yard is somebody else's problem."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Adamantine Guard lesson clean."
+            "0": "The belts changed direction an hour ago. I felt it through the deck plating before the sensors bothered telling me, which means you're carrying my relay. Hand it here."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Adamantine Guard is one step closer to belonging to you."
+            "0": "Serial matches. The scorch marks are new, but I'll bill those to their foreman. She logs the relay and your pay in the same motion. \"Throughput's already climbing. You're the first line on tomorrow's report. Around here that's a love letter.\""
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Adamantine Guard proof is waiting in CZ-220 Breaker Yard. This one is about breach proof, not repetition. Go to CZ-220 Breaker Yard on CZ-220, defeat the Adamantine Guard warden, and bring back the Adamantine Guard broken seal."
+            "0": "Stop. Read the terms before you take this one. Their warden holds the sheared bay - the bay where a crane cable snapped years back and cut a barge hull like bread. He is the reason my recovery crews come back on stretchers. Put him down and pull the Adamantine Guard Sheared Bay Sigil off him. And you go in on my regs: two spotters, minimum. Nobody works a live bay alone, and that bay has been eating people since before this crew ever docked."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Good answer. The sheared bay is at the bottom of the junkline, past their drill pit - you'll know it by the cable scar down the far wall. My last recovery team lasted long enough to describe his guard and nothing else. Yours comes back with the sigil, or I stop signing orders with your name on them."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Adamantine Guard is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "He inspects a fight the way I inspect a wreck - finds the load point and plants himself under it. Two of my riggers put a cutting crew's worth of steel into him and his back foot never moved. Understand me: he is not their best. He is their doorman. That's what you're climbing toward, and it's why I said two spotters like I meant it."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The cable snap took that bay off my books before I made foreman. It also left the one thing this yard never managed to break - a bulkhead section that ate the whole whipping cable and didn't dent. That's what drew this crew here. You don't drill an unbreakable guard just anywhere. You drill it in front of the thing that taught it."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Every bay in this yard carries a sigil plate. Cast when the bay is commissioned, pulled when it dies. The sheared bay's plate should have been pulled twenty years ago; their warden wears it like a badge instead. It's my property and my bay's death certificate, and I want it filed properly. Sentiment and paperwork are the same thing if you do them right."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your breach proof for Adamantine Guard. Finish the target there before you bring me anything else."
+            "0": "The sheared bay is still his. One warden, one sigil, and don't you dare walk in there without your two spotters. Stretchers cost more than you do."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Adamantine Guard lesson clean."
+            "0": "You're limping on the left and grinning anyway. That's either a concussion or my sigil in your pack. Show me."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Adamantine Guard is one step closer to belonging to you."
+            "0": "Twenty years overdue and not a corner bent. She sets the sigil on her desk, square to the edge. \"First thing I've filed on time all quarter. Your pay is rated for bay-death work - the highest line I sign. Spend it slower than you earned it.\""
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Adamantine Guard proof is waiting in CZ-220 Breaker Yard. This one is about circle proof, not repetition. Go to CZ-220 Breaker Yard on CZ-220, defeat the Adamantine Guard inner circle, and bring back the Adamantine Guard command mark."
+            "0": "Now it's personal. Their inner circle - four of them, the foreman's own hands - pulled my override chip out of the yardmaster's board. That chip outranks every lock, belt, and crane in this yard, including the ones keeping stacked hulls from becoming weather. Put all four down and bring back the Adamantine Guard Foreman's Override Chip. And keep your spotters close. Every bay past the sheared line is live."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "They hold the crane deck above the drill pit. High ground, narrow catwalks, and every gate between here and there answers to the chip they're carrying, so there is no clever way in. There's just through. Which, I'm told, is the entire philosophy you people climb down there to learn."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Adamantine Guard is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "The foreman's original crew. The four who walked in with him the first day, back when I still thought they were a salvage bid. Each one has been drilled to hold a bay alone against a full cutting team. They rotate my crane deck in pairs, they sleep in shifts, and they have never once broken my safety regs. Model workers. I want their names off my roster by the weekend."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Used right, nothing - it's a foreman's tool, it makes the yard obey. Used wrong, my stacked hulls come down through the maintenance level and CZ-220 stops having a lower deck. They haven't used it. That's what worries me. People who steal a scalpel and don't cut are waiting for a patient. Get it back before they pick one."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "He holds Bay One. The first bay this yard ever commissioned, the one I apprenticed in, and he's turned it into his private drill floor. The crew, the reroute, the chip - all of it is a fence around that one room. He knows I want it back, and he guards it with the only thing in this yard that never breaks. Himself. That bill comes due after the chip."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your circle proof for Adamantine Guard. Finish the target there before you bring me anything else."
+            "0": "Four hands, one chip, crane deck over the drill pit. Until that chip is back in my board, every gate in this yard is a suggestion."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Adamantine Guard lesson clean."
+            "0": "The gates started answering my board again mid-shift. Either you have my chip or that crew grew a conscience, and their kind doesn't grow anything. Hand it over."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Adamantine Guard is one step closer to belonging to you."
+            "0": "The chip seats clean. The board is mine again - cranes, gates, belts, all of it. For one second she just breathes, and her shoulders drop half an inch. \"That's the yard back. All but one room. Rest up. The last work order I write you is the one I've wanted to write since this started.\""
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Adamantine Guard proof is waiting in CZ-220 Breaker Yard. This one is about mastery proof, not repetition. Go to CZ-220 Breaker Yard on CZ-220, defeat the Adamantine Guard master, and return with the final proof."
+            "0": "Last order on the book. Bay One. Their foreman is alone in there now - no crew, no chip, no line out. Just him and the guard he taught the rest of them, the same one your katars have been learning the hard way. I've watched him on the bay feed: cutters, riggers, one of my cranes at full swing, and his feet haven't moved in a week. Put him down and there's nothing to carry back - the yard will know, and so will I. But you don't go in alone. That bay has ended better spotters than you, and I don't stock stretchers in threes for nothing."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Then it's on the clock. Bay One sits at the dead end of the junkline, past the sheared bay, behind the oldest blast door on this station - your key is the last thing it will ever read. Keep your two inside arm's reach, watch his feet, and when they finally give ground, you'll own the thing he came here to keep."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Adamantine Guard is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "The finished article. Everything his adepts drilled at, he already is. My crane operator swears the load alarm tripped when she swung at him - he caught the wreck ball on crossed blades and the system logged him as a structure. Maybe by now he is one. He came down here to stand in front of the one thing that never breaks, and he stayed until there were two of them. Your job is to put the count back at one."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "My name is on the commissioning plate. Third apprentice, bottom line, T. Kade. Everyone else on that plate is dead or shipped out, and that room is where I learned that doing the work right is the only kindness that holds. He has been sleeping under my plate for two quarters. I want it back on my grid, cutting hulls, doing honest tonnage. That's all. That's everything."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Then I write the last page. Crew cleared, bays reclaimed, override seated, Bay One recommissioned. A clean file, front to back, and a standing line on my roster with your name on it - rated for anything, paid on time, no questions. Around here that isn't a favor. It's the highest thing I sign."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your mastery proof for Adamantine Guard. Finish the target there before you bring me anything else."
+            "0": "He's still standing in my bay. Collect your two spotters, walk the junkline to the end, and close out the last order on my book."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Adamantine Guard lesson clean."
+            "0": "The whole yard went quiet for a second mid-shift. Every belt, every crane, like the place was listening. That was him hitting the deck, wasn't it. Bay One's door is showing open on my board for the first time in twenty years. Get over here."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Adamantine Guard is one step closer to belonging to you."
+            "0": "Then the guard is yours. He taught it to everyone who ever put my people on stretchers, and now it walks out of my yard on the right fists for once. She stamps the file closed and slides your pay across, counted exact. \"Work order complete. Best line in this yard's ledger. Now get off my dock - Bay One cuts at first shift, and you're standing in my light.\""
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the work order."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Cut the key. I'll fill the order."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Adamantine Guard demand?"
+            "0": "What does this yard actually break?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Whose crew is squatting in your yard?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Why does one flimsi matter that much?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not this shift."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Adamantine Guard Breaker Yard Work Order. Filled and pulled."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "About the relay job."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Your belts will run the right way by next shift."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Adamantine Guard demand?"
+            "0": "What are they actually training down there?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What's one relay worth to you?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How did five people take an entire junkline?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "The belts can wait one more shift."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Adamantine Guard Junkline Control Relay. Careful - it still sparks."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the sheared bay."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "Two spotters. I'll bring blades, not stretcher-bearers."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Adamantine Guard demand?"
+            "0": "What makes this warden different?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What happened in the sheared bay?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What's the sigil to you?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Then I'll come back with a crew."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Adamantine Guard Sheared Bay Sigil. It was on his shoulder."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "About the chip."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "The chip comes back to your board."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Adamantine Guard demand?"
+            "0": "Who are the four?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What happens if they use it?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "And their foreman - the one running all this?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Four at once takes planning. Hold the order."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Adamantine Guard Foreman's Override Chip. Their roster is four names shorter."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to Bay One."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "Bay One opens today. I'll bring my two."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Adamantine Guard demand?"
+            "0": "A week without moving. What is he?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What's in Bay One that's worth all this to you?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "And after he's down? What then?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not until my crew is ready. He'll keep."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. His guard broke before he did."
           }
         }
       }

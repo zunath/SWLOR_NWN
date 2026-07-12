@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             _requiredCharacterType = type;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.CharacterType;
+
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);

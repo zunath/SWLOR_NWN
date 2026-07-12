@@ -240,6 +240,10 @@ namespace SWLOR.Game.Server.Entity
         public bool? ShowDescriptorsForNamedPlayers { get; set; }
         public bool? ShowOwnDescriptor { get; set; }
         public bool? ScrambleAccountName { get; set; }
+
+        // When enabled, Stamina and FP are shown as thin bars overlaid on the character portrait
+        // instead of the standalone HP/STM/FP window docked in the lower-right corner.
+        public bool? PortraitVitals { get; set; }
         public Dictionary<SkillType, PlayerColor> LanguageChatColors { get; set; }
         public PlayerColor OOCChatColor { get; set; }
         public PlayerColor EmoteChatColor { get; set; }
@@ -254,6 +258,7 @@ namespace SWLOR.Game.Server.Entity
             ShowDescriptorsForNamedPlayers = true;
             ShowOwnDescriptor = true;
             ScrambleAccountName = true;
+            PortraitVitals = true;
 
             LanguageChatColors = new Dictionary<SkillType, PlayerColor>();
         }

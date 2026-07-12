@@ -87,13 +87,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoagulantTrait)
-                .Description("Combat Pharmacology stim effects also grant 50% Bleed Resistance and 10% resistance to incoming physical damage over time effects for 2 minutes.")
+                .Description("Combat Pharmacology stim effects also grant +50 Trauma Resistance and 10% resistance to incoming physical damage over time effects for 2 minutes.")
                 .IncreasesStat(StatType.CombatPharmacologyStimCoagulantRank, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 8)
 
                 .AddPerkLevel()
-                .Description("Combat Pharmacology stim effects also grant Bleed immunity and 20% resistance to incoming physical damage over time effects for 2 minutes.")
+                .Description("Combat Pharmacology stim effects also grant Trauma immunity and 20% resistance to incoming physical damage over time effects for 2 minutes.")
                 .IncreasesStat(StatType.CombatPharmacologyStimCoagulantRank, 2)
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 40);
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Antitoxin")
 
                 .AddPerkLevel()
-                .Description("Grants 50% Poison Resistance and 50% Disease Resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack.")
+                .Description("Grants 50% Poison Resistance for 2 minutes and removes one Poison or Toxin effect. Poison Resistance also weakens Disease and Toxin effects. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 18)
                 .DroidAISlots(1)
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Cocktail")
 
                 .AddPerkLevel()
-                .Description("Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance and 50% Disease Resistance.")
+                .Description("Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 50)
                 .DroidAISlots(1)

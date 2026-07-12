@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Invincible is no longer a lesson on my ledger. You proved it in Veles Militia Annex; keep proving it when nobody is keeping score."
+            "0": "Ledger's closed, final page signed. The annex is a school again instead of a wound, and the guard you carry out of it never broke once. That's the only grade that matters now. Hold it where nobody's keeping score."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Invincible is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Veles Militia Annex."
+            "0": "Hold. Feet wrong, grip lazy, and you walked through my door leading with your chin. Fail. The annex line is for blades with nothing left to learn from ordinary drills. Finish your vibroblade schooling, all of it, then report back and I'll read your stance again."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The annex tests discipline before bravado. Break the line they built for you, then bring me proof that it broke first. Go to Veles Militia Annex on Viscara, defeat the Invincible adepts, and bring back the Invincible field report."
+            "0": "Hold still. Feet, grip, elbow, eyes. Huh. Passable. First time this month I've said that. So hear the assignment: my old command, the Veles Militia Annex, got sealed with my trainees still drilling inside, and they've kept my program running without me. Six adepts hold the drill floor. Put them down and bring me the Invincible Veles Drill Ledger they log every rotation in. Then I'll know what they've become, and I'll know what you are."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Signed and logged. This key opens the side entry, west gate off the Veles post. Six adepts, one ledger, no detours. I grade what comes back, not what you meant to bring."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Invincible is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A guard that does not break. Not bravado, not thick armor, not planting your boots because pride won't let you move. A line you hold with a vibroblade until shot, blade, and bad luck have all given up on it. Most who claim the form are lying. The drill floor sorts those out."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "West of the Veles command post, behind a gate the militia welded shut. Only sealed drill hall on Viscara, and I wrote the program that earned it the honor. My trainees refused the stand-down order when command cut us, so command locked the door on them. The key I sign over opens the side entry. Quietly."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Mine. Every adept on that floor either washed out of my program or refused to leave it, and they've drilled my forms every day since, angry. The last curious visitor who wandered in spent a month over a med table. They won't break formation because you ask nicely. Make them."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your first proof for Invincible. Finish the target there before you bring me anything else."
+            "0": "First rotation's still open on my ledger. Six adepts on the annex drill floor, and the drill ledger back in my hands. Everything else is noise."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Invincible lesson clean."
+            "0": "That shape in your pack had better be my drill ledger. On the table."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Invincible is one step closer to belonging to you."
+            "0": "Present and intact. Blood on the corner, not yours, by the way you're standing. First rotation: pass. Take the pay, eat something, sleep. The next line on this ledger is not this polite."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Invincible proof is waiting in Veles Militia Annex. This one is about second proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Invincible specialists, and bring back the Invincible calibration core."
+            "0": "Your stance survived the drill floor. Noted in the margin. Next line: the annex range block, where my specialists run scored guard drills off a range relay. Timers, targets, tally lights, the lot. Five specialists, each a full grade over the adepts you dropped. Retire them and pull the Invincible Militia Range Relay off its mount. Their scores stop counting the day it sits on my desk."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Logged. Range block sits past the drill floor you cleared. Five specialists, one relay, two bolts and a hard pull to free it. Bring me the machine, not the scores."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Invincible is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Specialists earned rank under me before the shutdown. The pass bar was holding a guard through a full rotation without one scored hit, and all five cleared it. You'll be the first live drill they've had in a year. They have been bored. Bored and good is a bad combination for you."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The relay logs every run on that range: names, times, scores. It's their proof the program still functions without a captain. On my desk it becomes proof of the opposite. Command ignores rumors and respects records, so I collect records."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Open lanes, no cover worth the word, and five blades timing exactly how long your guard holds, because timing guards is what that range is for. Keep your feet moving between lanes and make them re-aim. The range rewards patience. It buries heroes."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your second proof for Invincible. Finish the target there before you bring me anything else."
+            "0": "Range block. Five specialists. Two bolts and a hard pull, and the relay comes home. My desk is still empty."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Invincible lesson clean."
+            "0": "You're standing straighter than last week. Range time does that. The relay, on the desk."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Invincible is one step closer to belonging to you."
+            "0": "Relay checks out. Last run it ever logged is yours, which is a kind of score I can live with. Second rotation: pass. You're no stranger to the annex now, which means the annex knows you're coming. Watch the shadows past the range."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Invincible proof is waiting in Veles Militia Annex. This one is about breach proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Invincible warden, and bring back the Invincible broken seal."
+            "0": "Stop. Look at me before you take this line. The inner gate past the range belongs to the annex warden. Sarn. He was my second for six years, the best guard I ever graded, and he has ended better duelists than you for walking onto his floor alone. So you won't. Bring two blades you trust, minimum, and that's an order, not advice. Beat him and take the Invincible Scored Challenge Badge he wears. The inner annex opens with it."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Logged, and I'm holding you to the company you promised. When Sarn squares up, keep your own guard honest and let your partners cost him angles. He can't grade three tests at once. Bring my badge home."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Invincible is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Sarn. Six years my second. When command pulled the program he stayed inside the gate and I obeyed the order out of it, and neither of us has forgiven the other. He runs that gate exactly the way I taught him: nothing passes that hasn't earned it. He won't pull the blow. Don't pull yours."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Scored challenge badges went to trainees who survived a full challenge rotation against me, personally. Sarn's is the only one etched with a perfect score. While he wears it, he outranks every drill in the annex. When it sits on my desk, the rank comes back where it belongs."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Corporal Dessa Vane. Fast feet, good guard, no patience. She took the inner gate alone against my written order. Sarn's first exchange broke her arm through the block, and the second she never saw. I signed for the body. I'm not signing for another one, so you go with company or you don't go."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your breach proof for Invincible. Finish the target there before you bring me anything else."
+            "0": "The inner gate is still shut and Sarn still wears my badge. If your two blades fell through, replace them before he replaces you."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Invincible lesson clean."
+            "0": "You're walking in without a limp. Either you never fought him, or you learned faster than Vane did. The badge. Show me."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Invincible is one step closer to belonging to you."
+            "0": "His badge. Blood on the pin and a perfect score under it. He'd have fought you seriously, which means you passed something I can't teach from this side of the gate. Third rotation: pass, distinguished. Buy your partners a round. Log it as equipment maintenance."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Invincible proof is waiting in Veles Militia Annex. This one is about circle proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Invincible inner circle, and bring back the Invincible command mark."
+            "0": "You've read enough of my ledger to know what's left. Four names. My inner circle, promoted by my own hand, and they hold the last floor before the master's line. They fight as one unit, four guards overlapping like plate. Break all four and recover the Invincible Captain's Challenge Chit they keep. That chit was mine, and I want it back."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Logged. Last floor before the center. Work it like a drill: pull one guard out of formation, punish the seam, reset, repeat. Four names down, one chit home, and I'll owe you more than pay."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Invincible is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Toma, Verik, Onn, and Pale. Ten years of my mornings went into those four, and they earned every stripe I gave them before they chose the annex over the stand-down order. I'm not neutral about this line and I won't pretend otherwise. Grade them honestly. Beat what I built without insulting it."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "A captain's challenge chit. Whoever holds it can demand a graded bout with the captain, any hour, any floor. I surrendered mine the day they sealed the gate, and the circle keeps it as proof the annex still answers to a captain. It does. The wrong one."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "You don't beat four overlapping guards with one blade, so don't audition for it. Bring the partners from the gate fight. Drag one guard out of the line, hit the seam he leaves, and reset before the plates close. A circle only breaks from inside a gap. Your job is the gap."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your circle proof for Invincible. Finish the target there before you bring me anything else."
+            "0": "The circle still holds the last floor and my chit is still in their keeping. One seam at a time. Report when there's no formation left."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Invincible lesson clean."
+            "0": "Four at once. I drilled that formation for ten years and never once saw it opened. The chit, trainee. Last time I get to call you that."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Invincible is one step closer to belonging to you."
+            "0": "My chit. Lighter than I remembered. Fourth rotation: pass, full marks, and I'm done pretending you're a trainee. One line left in this ledger. In twenty years I have never had cause to mark it."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Invincible proof is waiting in Veles Militia Annex. This one is about mastery proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Invincible master, and return with the final proof."
+            "0": "Last line. The center floor belongs to the annex master. Serra Kel. I trained her, promoted her past my own grade, and her guard is the finished form: Invincible, whole, the thing you've been earning in pieces. I challenged it once and failed. Nobody walks off her floor alone, so take the partners who carried you through the gate and the circle, and I mean that as an order. No token to recover this time. Her guard breaks, or the ledger stays open forever."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Logged, final line. Center floor, past where the circle stood. Partners on your flanks, patience in the first minute, no heroics. And whatever she says to you in there, she's earned the right to say it."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Invincible is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Finished means no seams. The circle overlapped four guards; Serra is one guard with no gap in it. Blade, shot, flank, feint, she has already turned it before you commit. You will land nothing in your first minute, so spend it learning her tempo while your partners keep her turning. Even a perfect guard faces one direction at a time. That's the entire lesson, if you live to use it."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "She stayed because she believed the program was right and command was wrong, and I sealed the gate on her because an order is an order. We've both had years to chew on that. When her guard breaks, the annex stops being a wound and can be a school again. Maybe with her teaching in it. That page isn't written yet. Yours is first."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "I took my challenge rotation against her the spring before the shutdown. Best day I ever had with a blade in my hand, and she graded it a fail and helped me off the floor. A captain gets one more failure than his pride can afford, then he stops spending his trainees' respect and sends someone better. Today, better is you."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your mastery proof for Invincible. Finish the target there before you bring me anything else."
+            "0": "The center floor is still hers and the final line is still blank. Partners, tempo, patience. I'll be here. The ledger stays open until you close it."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Invincible lesson clean."
+            "0": "The annex went quiet an hour ago. I've stood posts outside that gate half my life and never once heard it quiet. Report, plainly: did her guard break?"
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Invincible is one step closer to belonging to you."
+            "0": "Then it's done. Final grading: pass. The highest mark I've ever entered, and the first one I've written with my hand shaking. Her guard is yours now. That's how the form has always passed, one unbroken line to the next. Hold it for the people behind you, not for the score. And stop standing at attention. Peers don't."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "About the assignment, Captain."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Sign me in, Captain."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Invincible demand?"
+            "0": "What exactly is Invincible?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why is the annex sealed?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Who's holding that drill floor?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet, Captain."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Your drill ledger, Captain. Six adepts couldn't hold their line."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the range assignment."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Consider them retired."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Invincible demand?"
+            "0": "What makes these specialists dangerous?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why does the relay matter?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What's the range like inside?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need more drill time first."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "One range relay, five specialists off the score sheet."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "About the warden."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring the blades. Sign me in."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Invincible demand?"
+            "0": "Who is Sarn to you?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What's the badge worth?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What happened to the last one who went alone?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Then I wait until I have my two."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Sarn's badge, Captain. Perfect score and all."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the circle."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "The circle breaks. You have my word."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Invincible demand?"
+            "0": "Who are the four?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What is the chit?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How does a formation like that break?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not until my people are ready."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "No formation left standing. Your chit, Captain."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "About Serra Kel."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "Then let's close your ledger."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Invincible demand?"
+            "0": "What am I facing in her guard?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why did she stay behind the gate?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Why isn't this your fight, Captain?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. Not for this one."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It broke, Captain. The floor is yours again."
           }
         }
       }

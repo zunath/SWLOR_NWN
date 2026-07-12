@@ -22,6 +22,10 @@ EXPLICIT_RECAST_SHORT_NAMES = {
     "Debilitating Stance": "Debil. Stance",
     "Systemic Shutdown": "Sys. Shutdown",
     "Severing Strike": "Sever. Strike",
+    "Shattering Strike": "Shatter Str.",
+    "Imbuement Stance": "Imbue Stance",
+    "Immovable Stance": "Immov. Stance",
+    "Aegis Eternal": "Aegis Eternal",
     "Guardian's Challenge": "Guard. Chall.",
     "Punishing Guard": "Punis. Guard",
     "Impenetrable Guard": "Impen. Guard",
@@ -70,6 +74,11 @@ WEAPON_TABS = {
 BESPOKE_WEAPON_TABS = {
     "Vibroblade",
     "Heavy Vibroblade",
+    # Lightsaber is hand-authored: its abilities implement bespoke mechanics
+    # (physical->Force conversion, Soresu Pressure, bounded Deflecting Return
+    # reflection) that this description-driven generator cannot express. Do not
+    # regenerate it here or the hand-written mechanics are lost.
+    "Lightsaber",
 }
 
 GENERATED_WEAPON_TABS = WEAPON_TABS - BESPOKE_WEAPON_TABS
@@ -140,8 +149,8 @@ PERK_DEFINITION_BY_TAB = {
 CAPSTONE_QUEST_REQUIREMENTS = {
     ("Vibroknife", "Viral Cascade"): ("VibroknifeCapstoneQuestDefinition", "VitalRuptureMasteryQuestId"),
     ("Vibroknife", "Escape Artist"): ("VibroknifeCapstoneQuestDefinition", "SystemicShutdownMasteryQuestId"),
-    ("Lightsaber", "Saber Storm"): ("LightsaberCapstoneQuestDefinition", "SaberStormMasteryQuestId"),
-    ("Lightsaber", "Guardian Master"): ("LightsaberCapstoneQuestDefinition", "GuardianMasterMasteryQuestId"),
+    ("Lightsaber", "Epicenter"): ("LightsaberCapstoneQuestDefinition", "SaberStormMasteryQuestId"),
+    ("Lightsaber", "Aegis Eternal"): ("LightsaberCapstoneQuestDefinition", "GuardianMasterMasteryQuestId"),
     ("Spear", "Forcebane"): ("SpearCapstoneQuestDefinition", "ForcebaneMasteryQuestId"),
     ("Spear", "Crippling Defense"): ("SpearCapstoneQuestDefinition", "CripplingDefenseMasteryQuestId"),
     ("Twin Blade", "Tempest Bloom"): ("TwinBladeCapstoneQuestDefinition", "TempestBloomMasteryQuestId"),
@@ -176,7 +185,7 @@ ABILITY_FOLDER_BY_TAB = {
 }
 
 STATUS_KEYWORDS = [
-    ("Shadow Toxin", "ShadowToxinStatusEffect"),
+    ("Venom", "VenomStatusEffect"),
     ("Poison Resistance", "PoisonResistancePenaltyStatusEffect"),
     ("Force Disruption", "ForceDisruptionStatusEffect"),
     ("Foggy Mind", "FoggyMindStatusEffect"),
@@ -246,6 +255,7 @@ RANGED_COMBAT_IMPACT_SKILLS = {"Pistol", "Rifle", "Throwing"}
 PERK_BASE_ID_ALIASES = {
     ("Katar", "Steel Shoulder"): "TwinGuardStance",
     ("Katar", "Tag In"): "TwinIntercept",
+    ("Lightsaber", "Force Link"): "SaberForceLink",
 }
 
 IMPACT_ANIMATION_BY_SKILL = {
@@ -637,10 +647,7 @@ def parse_suppression_stack_evasion_penalty(description):
 
 def status_types(description):
     result = []
-    lowered = description.lower()
     for keyword, status_type in STATUS_KEYWORDS:
-        if keyword == "Toxin" and "shadow toxin" in lowered:
-            continue
         if re.search(rf"\b{re.escape(keyword)}\b", description, re.IGNORECASE) and status_type not in result:
             result.append(status_type)
     return result
@@ -786,13 +793,13 @@ def description_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Hypermetabolize":
-        add_stat(stats, "SourceStatusHealingReceivedRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusHealingReceivedRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusHealingReceivedPercentAdjustment", "-15")
     if base == "Debilitate":
-        add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonusCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonusCategory", status_category_expression("Venom"))
         add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonus", parse_count(r"\+(\d+) DMG", description))
     if base == "Infection":
-        add_stat(stats, "SourceStatusStackRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusStackRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusStackAppliedCategory", status_category_expression("Infection"))
         add_stat(stats, "SourceStatusStackMaximum", parse_count(r"max (\d+) stacks", description) or 5)
         add_stat(stats, "SourceStatusStackDurationSeconds", parse_count(r"Stacks last (\d+) seconds", description) or 18)
@@ -800,7 +807,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelaySkillType", skill_expr)
         add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelayDurationSeconds", parse_duration(description) or 30)
     if base == "Propagation":
-        add_stat(stats, "SourceStatusAutoAttackCycleRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusAutoAttackCycleRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusAutoAttackCycleSkillType", skill_expr)
         add_stat(stats, "SourceStatusAutoAttackCycleRequiredCount", first_int(r"Every (\d+) auto-attack", description) or 3)
         add_stat(stats, "SourceStatusAutoAttackCycleDamage", parse_count(r"additional \+(\d+)(?: Poison)? DMG", description))
@@ -811,7 +818,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "HostileAbilityUsedAttackPercentAdjustmentMaximum", parse_percent(r"up to (\d+)%", description) or 15)
     if base == "First Strike":
         add_stat(stats, "FirstHostileAbilityHitDamageBonus", parse_count(r"deal \+(\d+) DMG", description))
-        add_stat(stats, "FirstHostileAbilityHitMaximumCount", parse_count(r"first (\d+) Abilities", description) or 3)
+        add_stat(stats, "FirstHostileAbilityHitMaximumCount", parse_count(r"first (\d+) Abilities", description) or parse_count(r"grants (\d+) stacks", description) or 3)
+        add_stat(stats, "FirstHostileAbilityHitCooldownSeconds", parse_cooldown(description, 90))
     if base == "Venatic Recovery":
         add_stat(stats, "FirstCombatAttackStaminaRestore", parse_count(r"restores (\d+) STM", description))
         add_stat(stats, "FirstCombatAttackStaminaRestoreCooldownSeconds", parse_cooldown(description, 60))
@@ -1680,7 +1688,7 @@ def profile_property_lines(row, level, primary_status):
     if base == "Pathogen Strike":
         add_profile_property(
             "SourceStatusEffectsToExtend",
-            "new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) }")
+            "new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }")
         add_profile_property("SourceStatusExtensionSeconds", str(parse_count(r"by (\d+) seconds", description)))
 
     if base == "Veiled Strike":
@@ -1694,7 +1702,7 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("RequireBehindForConditionalStatus", "true")
 
     if base == "Viral Cascade":
-        add_profile_property("ExtraDamageSourceStatusEffect", "typeof(ShadowToxinStatusEffect)")
+        add_profile_property("ExtraDamageSourceStatusEffect", "typeof(VenomStatusEffect)")
         add_profile_property("ExtraDamageIfSourceStatusEffect", str(first_int(r"additional \+\s*(\d+) (?:Damage|DMG)", description)))
         add_profile_property("ExtraDamageSourceStackStatusEffect", "typeof(InfectionStatusEffect)")
         add_profile_property(
@@ -2884,7 +2892,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
             if base in {"Pathogen Strike", "Viral Cascade"}:
                 statuses = [
                     status for status in statuses
-                    if status not in {"ShadowToxinStatusEffect", "InfectionStatusEffect", "ToxinStatusEffect"}
+                    if status not in {"VenomStatusEffect", "InfectionStatusEffect", "ToxinStatusEffect"}
                 ]
             if base == "Backstab":
                 statuses = [status for status in statuses if status != "KnockdownStatusEffect"]

@@ -97,6 +97,10 @@ namespace SWLOR.Game.Server.Native
 
                 // Extract weapon damage properties and get ability stats
                 var damageProfile = ExtractAttackDamageProfile(attacker, weapon);
+
+                // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
+                damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile);
+
                 var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
                 var weaponDeltaCap = GetWeaponDeltaCap(weapon);
                 var weaponSkillType = weapon == null
@@ -243,6 +247,40 @@ namespace SWLOR.Game.Server.Native
             }
 
             return ExtractWeaponDamageProfile(currentWeapon);
+        }
+
+        // While Imbuement Stance is active, the wearer's hostile weapon auto-attacks deal Force damage instead of
+        // their normal type and cost FP per swing. This only affects real auto-attacks against creatures; queued
+        // weapon abilities apply their own damage and are excluded so they are neither converted nor charged.
+        private static WeaponDamageProfile ApplyForceConversionStance(
+            CNWSCreature attacker, CNWSObject defender, WeaponDamageProfile damageProfile)
+        {
+            if (defender.m_nObjectType != (int)ObjectType.Creature)
+                return damageProfile;
+
+            // Only physical auto-attacks are converted; anything already non-physical is left untouched.
+            if (!damageProfile.DamageType.IsPhysicalDamageType())
+                return damageProfile;
+
+            var conversion = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackForceConversion);
+            if (conversion <= 0)
+                return damageProfile;
+
+            // Weapon abilities apply their own combat impact and suppress the auto-attack; do not convert/charge them.
+            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
+                return damageProfile;
+
+            var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);
+            if (fpCost > 0)
+            {
+                // Not enough FP to pay the upkeep: the swing stays its normal type and no FP is spent.
+                if (Stat.GetCurrentFP(attacker.m_idSelf) < fpCost)
+                    return damageProfile;
+
+                Stat.ReduceFP(attacker.m_idSelf, fpCost);
+            }
+
+            return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage);
         }
 
         private static WeaponDamageProfile ExtractWeaponDamageProfile(params CNWSItem[] weapons)
@@ -500,7 +538,8 @@ namespace SWLOR.Game.Server.Native
                 skillType,
                 damageType,
                 false,
-                canApplyRandomFlatBonusesThisDamage);
+                canApplyRandomFlatBonusesThisDamage,
+                out var damageBeforeTargetStatusStage);
 
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
@@ -527,7 +566,12 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
 
-            return Combat.ApplyDamageTakenModifiers(target.m_idSelf, damage, attacker.m_idSelf, damageType);
+            return Combat.ApplyDamageTakenModifiers(
+                target.m_idSelf,
+                damage,
+                attacker.m_idSelf,
+                damageType,
+                preTargetStatusStageDamage: damageBeforeTargetStatusStage);
         }
 
         private readonly struct WeaponDamageProfile

@@ -194,8 +194,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("qion_chieftainke", 1);
 
             _builder.Create("QIONHIVE_BROODMOTHER_RECIPE")
-                .AddItem("recipe_saberupg1", 10)
-                .AddItem("recipe_staffupg1", 10)
+                .AddItem("recipe_chlsupg", 10)
+                .AddItem("recipe_chssupg", 10)
                 .AddItem("recipe_chigswd", 10)
                 .AddItem("recipe_chispear", 10)
                 .AddItem("recipe_chiknife", 10)

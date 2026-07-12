@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Jam")
 
                 .AddPerkLevel()
-                .Description("Reduce one target's physical and Force ability Accuracy by 6% for 30 seconds.")
+                .Description("Reduce one target's physical and Force ability Accuracy by 6% for 18 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)

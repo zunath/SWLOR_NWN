@@ -438,8 +438,10 @@
         StormcoreMatrixStatusEffect = 434,
         TidecallBeaconStatusEffect = 435,
         InfectionStatusEffect = 436,
-        ShadowToxinStatusEffect = 437,
+        VenomStatusEffect = 437,
         AssassinsStanceStatusEffect = 438,
+        ImbuementStanceStatusEffect = 439,
+        ImmovableStanceStatusEffect = 440,
         // End custom status effect icons
     }
 }

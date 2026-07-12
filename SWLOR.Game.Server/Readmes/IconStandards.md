@@ -100,13 +100,16 @@ Required treatment:
 
 ## Generation Approach
 
-New and regenerated gameplay icon artwork must use GPT Image 2 through Codex image generation for the polished central subject. Do not require a separate OpenAI API account, `OPENAI_API_KEY`, or the local API/CLI fallback for ordinary icon production.
+The polished central subject is produced by the acting agent's native image pipeline. The frame, background, semantic color, and status-effect rank badge are always stamped by the project icon tools regardless of pipeline, so only the source of the central subject differs:
 
-Do not use locally drawn primitive/vector stand-ins as final gameplay icon art.
+- **Codex / GPT-driven requests**: generate the central subject with GPT Image 2 through Codex image generation. Do not require a separate OpenAI API account, `OPENAI_API_KEY`, or the local API/CLI fallback for ordinary icon production. Do not silently substitute a different raster image model for GPT Image 2.
+- **Claude-driven requests**: author the central subject as polished, fully illustrated SVG vector art, then rasterize it (via ImageMagick) into the source subject the icon tools composite. The SVG must meet the Artwork Quality bar in this document — layered forms, gradients, shading, highlights, and a recognizable illustrated silhouette — not flat pictograms or primitive geometry.
+
+Both pipelines must satisfy identical Semantic Color, Uniqueness, Framing, Artwork Quality, and TGA-format requirements; only the source of the central subject differs. The prohibition on primitive/vector stand-ins targets crude placeholder geometry (plain rectangles, single-line weapons, generic blobs, flat symbols); it does not forbid a fully illustrated SVG icon that meets the Artwork Quality bar.
 
 The standard pipeline is:
 
-- Generate the central subject with GPT Image 2 through Codex image generation.
+- Generate the central subject with the acting agent's sanctioned pipeline above (GPT Image 2 for Codex, illustrated SVG for Claude).
 - Prompt for a polished fantasy/RPG ability-icon illustration with clear 32x32 readability, no text, no watermark, no generated numbers, and no generated rank badge.
 - Composite the generated subject into the approved SWLOR background, frame, semantic color, and conditional status-effect rank-badge treatment.
 - Keep the semantic frame color, background, border, and status-effect numeric rank badge controlled by the project icon tools so every icon remains consistent.
@@ -118,7 +121,7 @@ The standard pipeline is:
 - Review generated source sheets and final enlarged 32x32 previews for malformed anatomy before importing to production. Regenerate or edit any icon with incorrect fingers, claws, limbs, wings, tails, or other appendages.
 - Review samples before bulk-regenerating production icon files.
 
-Do not silently use a different image model. If Codex image generation cannot use GPT Image 2, stop and resolve that issue before producing final icon artwork.
+Do not silently swap pipelines: a Codex/GPT request must not fall back to a non-GPT-Image-2 raster model, and a Claude request must not fall back to GPT Image 2 or to primitive placeholder geometry. If the acting agent's sanctioned pipeline cannot run, stop and resolve that before producing final icon artwork.
 
 ## Source Of Truth
 
@@ -152,7 +155,9 @@ Icon tools and audits must fail when a gameplay icon violates these standards:
 - Duplicate generated icon pixels for two different gameplay meanings.
 - Duplicate status-effect icon enum.
 - Generated `effecticons.2da` label with underscores or non-identifier characters.
-- Final regenerated icon artwork produced without GPT Image 2.
+- Primitive, placeholder-quality, debug, or otherwise Artwork-Quality-failing central art, regardless of which pipeline produced it.
+
+The pipeline requirement itself (GPT Image 2 for Codex requests, polished illustrated SVG for Claude requests) is enforced at authoring and code review, not by the automated icon audit: source-model provenance is not recoverable from a final flattened TGA, so the audit validates the observable properties above (semantic frame color, resource presence, uniqueness, TGA origin/opacity, rank-badge rules, and artwork quality) rather than the generation tool.
 - Icon artwork extending outside the frame or overlapping the outer border.
 - Final TGA using top-left origin, which makes classic NWN gameplay icon paths display the icon upside down.
 - Final TGA with transparent or partially transparent pixels.

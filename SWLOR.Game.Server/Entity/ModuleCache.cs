@@ -13,6 +13,5 @@ namespace SWLOR.Game.Server.Entity
 
         public int LastModuleMTime { get; set; }
         public Dictionary<string, List<Vector3>> WalkmeshesByArea { get; set; }
-        public Dictionary<string, string> ItemNamesByResref { get; set; }
     }
 }

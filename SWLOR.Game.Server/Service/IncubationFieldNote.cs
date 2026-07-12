@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -66,17 +68,30 @@ namespace SWLOR.Game.Server.Service
             EnsureRegistered();
 
             var methodsByTarget = BuildProductionIndex();
+            var populated = 0;
 
             foreach (var (target, detail) in _notesByTarget)
             {
-                var attribute = KeyItem.GetKeyItem(detail.Note);
-                var targetName = BeastMastery.GetBeastDetail(target).Name;
+                try
+                {
+                    var attribute = KeyItem.GetKeyItem(detail.Note);
+                    var targetName = BeastMastery.GetBeastDetail(target).Name;
 
-                methodsByTarget.TryGetValue(target, out var methods);
+                    methodsByTarget.TryGetValue(target, out var methods);
 
-                attribute.Name = $"Incubation Field Notes: {targetName}";
-                attribute.Description = BuildDescription(targetName, methods ?? new List<ProductionMethod>());
+                    attribute.Name = $"Incubation Field Notes: {targetName}";
+                    attribute.Description = BuildDescription(targetName, methods ?? new List<ProductionMethod>());
+                    populated++;
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(LogGroup.Incubation,
+                        $"Failed to populate incubation field note for beast '{target}' (key item '{detail.Note}'): {ex.Message}",
+                        true);
+                }
             }
+
+            Log.Write(LogGroup.Incubation, $"Populated {populated}/{_notesByTarget.Count} incubation field notes.");
         }
 
         /// <summary>

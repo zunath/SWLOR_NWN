@@ -198,7 +198,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "nima_poy"
+          "value": "fnote_vendor"
         },
         "CRAdjust": {
           "type": "int",
@@ -583,7 +583,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nima"
+            "0": "Zoya"
           }
         },
         "fortbonus": {
@@ -621,7 +621,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Poy"
+            "0": "the Beastwright"
           }
         },
         "LawfulChaotic": {
@@ -943,7 +943,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "nima_poy"
+          "value": "FNOTE_VENDOR"
         },
         "Tail_New": {
           "type": "dword",

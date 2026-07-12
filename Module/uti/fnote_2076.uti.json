@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Field research documenting the incubation of the Katarn. Use it to record the mutation methods in your Beast Mastery codex."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Field research documenting the incubation of the Katarn. Use it to record the mutation methods in your Beast Mastery codex."
     }
   },
   "Identified": {

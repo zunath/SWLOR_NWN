@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 307
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -48,7 +48,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 106
+    "value": 52
   },
   "PaletteID": {
     "type": "byte",
@@ -132,6 +132,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 106
+    "value": 52
   }
 }

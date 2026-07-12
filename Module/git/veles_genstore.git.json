@@ -318087,7 +318087,10 @@
           "type": "list",
           "value": [
             {
-              "__struct_id": 0,
+              "__struct_id": 0
+            },
+            {
+              "__struct_id": 4,
               "ItemList": {
                 "type": "list",
                 "value": [
@@ -319347,9 +319350,6 @@
                   }
                 ]
               }
-            },
-            {
-              "__struct_id": 4
             },
             {
               "__struct_id": 2

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 using SWLOR.Game.Server.Service.ChatCommandService;
@@ -25,13 +27,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void GenerateArea()
         {
             _builder.Create("genarea")
-                .Description("Generates a procedural test area. Usage: /genarea [width] [height] [seed]")
+                .Description("Generates a procedural test dungeon. Usage: /genarea [width] [height] [seed] [tier]")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
                     var width = args.Length > 0 && int.TryParse(args[0], out var w) ? w : 16;
                     var height = args.Length > 1 && int.TryParse(args[1], out var h) ? h : 16;
                     int? seed = args.Length > 2 && int.TryParse(args[2], out var s) ? s : null;
+                    var tier = args.Length > 3 && int.TryParse(args[3], out var t) ? t : 1;
 
                     if (width < 8 || width > 32 || height < 8 || height > 32)
                     {
@@ -39,8 +42,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    var dungeon = DungeonContentPlacer.GetDungeonDetail(MineCaveDungeonDefinition.ThemeKey);
+                    if (!dungeon.Tiers.ContainsKey(tier))
+                    {
+                        SendMessageToPC(user, $"Tier must be one of: {string.Join(", ", dungeon.Tiers.Keys.OrderBy(k => k))}.");
+                        return;
+                    }
+
                     var returnLocation = GetLocation(user);
-                    SendMessageToPC(user, $"Generating {width}x{height} area" + (seed.HasValue ? $" with seed {seed}..." : "..."));
+                    SendMessageToPC(user, $"Generating {width}x{height} tier {tier} area" + (seed.HasValue ? $" with seed {seed}..." : "..."));
 
                     // Small areas cannot fit the default room counts; scale down so requests
                     // below 16x16 still succeed instead of burning every retry.
@@ -62,13 +72,23 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             return;
                         }
 
-                        if (RuntimeAreaRegistry.TryGetById(result.InstanceId, out var instance))
+                        if (!RuntimeAreaRegistry.TryGetById(result.InstanceId, out var instance))
                         {
-                            instance.ExitLocation = returnLocation;
+                            SendMessageToPC(user, $"Generated '{result.InstanceId}' but could not find its runtime instance to populate. Inform a DM.");
+                            return;
                         }
 
+                        instance.ExitLocation = returnLocation;
+
+                        var population = DungeonContentPlacer.Populate(instance, MineCaveDungeonDefinition.ThemeKey, tier);
+
                         SendMessageToPC(user,
-                            $"Generated '{result.InstanceId}' (seed {result.SeedUsed}, {result.AttemptsUsed} attempt(s), {result.Layout.Rooms.Count} rooms). Jumping you to the entrance.");
+                            $"Generated '{result.InstanceId}' (seed {result.SeedUsed}, {result.AttemptsUsed} attempt(s), {result.Layout.Rooms.Count} rooms). " +
+                            $"Populated {population.RoomsPopulated} room(s) with {population.CreaturesSpawned} creature(s)" +
+                            (population.BossSpawned ? $", boss '{population.BossResref}'" : ", no boss") +
+                            (population.TreasurePlaced ? ", treasure cache placed" : ", no treasure") +
+                            (population.ExitPlaced ? ", exit placed." : ", exit NOT placed.") +
+                            " Jumping you to the entrance.");
 
                         var entrance = RuntimeAreaRegistry.GetRandomWalkableLocation(result.Area);
                         foreach (var room in result.Layout.Rooms)

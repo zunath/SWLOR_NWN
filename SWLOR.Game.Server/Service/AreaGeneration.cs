@@ -75,7 +75,10 @@ namespace SWLOR.Game.Server.Service
                 };
             }
 
-            callback?.Invoke(result);
+            // CreateArea's initialization only runs after the creating script returns, and object
+            // interactions inside the new area (e.g. filling container inventories) fail until then.
+            // Deliver the callback on a later tick so consumers can safely populate content.
+            Scheduler.Schedule(() => callback?.Invoke(result), TimeSpan.FromSeconds(1));
             ScheduleProcessing();
         }
 

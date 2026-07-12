@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public List<Vector3> WalkablePoints { get; set; } = new();
         /// <summary>Where players are delivered when the instance is torn down or lost.</summary>
         public Location ExitLocation { get; set; }
+        /// <summary>Creatures/placeables spawned by content population (e.g. DungeonContentPlacer), tracked for teardown.</summary>
+        public List<uint> SpawnedObjects { get; set; } = new();
     }
 
     public static class RuntimeAreaRegistry

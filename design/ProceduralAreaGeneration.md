@@ -75,7 +75,7 @@ After realization, before any player entry:
 
 ### 6. Persistence strategies
 `IAreaPersistenceStrategy` chosen per `GenerationRequest`:
-- **Ephemeral**: nothing persisted. On login, players whose instance vanished relocate to the recorded entrance location.
+- **Ephemeral**: nothing persisted. Verified complete by existing infrastructure: `PersistentLocation.SaveLocation` never saves positions inside areas absent from `Area.AreasByResref` (all runtime instances), so players inside a generated dungeon at restart load at their last saved outside location automatically.
 - **SeedPersisted**: persist `{seed, theme, tier, size, consumerId}` as a Redis entity; regenerate deterministically on boot or first access; players resume inside. Depends on solver determinism (guard with a golden-seed regression test).
 - **FullExport**: `NWNX_Area_ExportARE/ExportGIT` to the NWNX alias, reload as a real resource. Heaviest; documented caveats (local-variable object refs don't survive restarts). Implemented last; API shape reserved from day one.
 

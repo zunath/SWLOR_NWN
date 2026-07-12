@@ -557,8 +557,9 @@ static string WaypointEntry(string name, string tag, float x, float y)
 }
 
 /// <summary>
-/// Builds one Door GFF-JSON struct per Door-style transition point (see TileDoorPlanner /
-/// TransitionPoint.Style), in addition to that transition's waypoint. Struct shape/field set mirrors
+/// Builds one Door GFF-JSON struct per Door-style or GroupExit-style transition point (see
+/// TileDoorPlanner / GroupExitPlanner / TransitionPoint.Style), in addition to that transition's
+/// waypoint. Struct shape/field set mirrors
 /// a hand-built "nw_door_fancy" generic-door instance (Module/git/dan_battlemon.git.json,
 /// __struct_id 8) — the most common plain generic door already used across the SWLOR module, fitting
 /// any Type=0 generic door slot. Position/bearing come straight from the planner's world-transform
@@ -575,7 +576,7 @@ static string BuildDoorEntries(ResolvedLayout layout)
     {
         var isEntrance = transition.Kind == TransitionKind.Entrance;
         var index = isEntrance ? ++entranceCount : ++exitCount;
-        if (transition.Style != TransitionStyle.Door)
+        if (transition.Style is not (TransitionStyle.Door or TransitionStyle.GroupExit))
             continue;
 
         var label = isEntrance ? "Entrance" : "Exit";

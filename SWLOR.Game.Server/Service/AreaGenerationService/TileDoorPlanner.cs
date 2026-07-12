@@ -51,6 +51,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             foreach (var transition in layout.Transitions)
             {
+                // GroupExitPlanner already finalized this transition (a themed exit-group tile pinned
+                // and claimed); its Tile stays reserved via the initial `claimed` snapshot above, and
+                // its pinned cell is separately guarded below wherever a candidate is pinned.
+                if (transition.Style == TransitionStyle.GroupExit)
+                    continue;
+
                 var originalTile = transition.Tile;
                 claimed.Remove(originalTile);
 
@@ -128,7 +134,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     // Cells carrying tunnel crossers already resolved to corridor/doorway tiles whose
                     // edges their neighbors depend on; substituting a transition door there would
                     // sever the tunnel and break edge agreement.
-                    if (HasAnyCrosserEdge(layout.Crossers, roomEdge) || HasAnyCrosserEdge(layout.Crossers, solid))
+                    if (TileDoorGeometry.HasAnyCrosserEdge(layout.Crossers, roomEdge) || TileDoorGeometry.HasAnyCrosserEdge(layout.Crossers, solid))
                         continue;
 
                     // LayoutGroupStamper-pinned cells are placed verbatim by TileResolver; a
@@ -152,10 +158,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (claimed.Contains(candidateCell) || claimed.Contains(neighbor))
                     continue; // an earlier candidate in this same search may have just claimed it
 
-                var (tl, tr, br, bl) = CellCorners(layout.Corners, candidateCell.X, candidateCell.Y);
+                var (tl, tr, br, bl) = TileDoorGeometry.CellCorners(layout.Corners, candidateCell.X, candidateCell.Y);
                 var cornerKey = MakeCornerKey(tl, tr, br, bl);
 
-                var (ntl, ntr, nbr, nbl) = CellCorners(layout.Corners, neighbor.X, neighbor.Y);
+                var (ntl, ntr, nbr, nbl) = TileDoorGeometry.CellCorners(layout.Corners, neighbor.X, neighbor.Y);
                 if (!IsAllSolid(ntl, ntr, nbr, nbl, tileset.DefaultTerrain))
                     continue;
 
@@ -185,13 +191,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     Height = 0
                 };
 
-                var (rx, ry) = RotateCcw90Multiple(slot.X, slot.Y, edgePick.Orientation);
+                var (wx, wy, wz, worientation) = TileDoorGeometry.DoorWorldTransform(slot, candidateCell.X, candidateCell.Y, edgePick.Orientation);
                 roomEdgeCell = candidateCell;
                 solidCell = neighbor;
-                doorX = candidateCell.X * 10f + 5f + rx;
-                doorY = candidateCell.Y * 10f + 5f + ry;
-                doorZ = slot.Z;
-                doorOrientation = NormalizeDegrees(slot.Orientation + edgePick.Orientation * 90f);
+                doorX = wx;
+                doorY = wy;
+                doorZ = wz;
+                doorOrientation = worientation;
                 return true;
             }
 
@@ -322,7 +328,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             const float tolerance = 1.5f;
             foreach (var door in tile.Doors)
             {
-                var (rx, ry) = RotateCcw90Multiple(door.X, door.Y, orientation);
+                var (rx, ry) = TileDoorGeometry.RotateCcw90Multiple(door.X, door.Y, orientation);
                 var onEdge = edgeSlot switch
                 {
                     EdgeSlot.Top => ry >= 5f - tolerance,
@@ -339,59 +345,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             return null;
         }
 
-        /// <summary>
-        /// Rotates a tile-local (origin at tile center, range roughly [-5, 5]) point by
-        /// orientation * 90 degrees counterclockwise, using exact swaps/negations (orientation is
-        /// always a 90-degree multiple, so trig would only introduce needless floating-point error).
-        /// Matches the world-transform empirically pinned against hand-built module doors: for a
-        /// tile at grid cell (cx, cy) with this orientation, a raw door local (x, y) lands at world
-        /// (cx*10 + 5 + rx, cy*10 + 5 + ry).
-        /// </summary>
-        private static (float X, float Y) RotateCcw90Multiple(float x, float y, int orientation)
-        {
-            return ((orientation % 4 + 4) % 4) switch
-            {
-                0 => (x, y),
-                1 => (-y, x),
-                2 => (-x, -y),
-                3 => (y, -x),
-                _ => (x, y)
-            };
-        }
-
-        private static float NormalizeDegrees(float degrees)
-        {
-            var d = degrees % 360f;
-            if (d > 180f) d -= 360f;
-            if (d <= -180f) d += 360f;
-            return d;
-        }
-
-        private static (string TL, string TR, string BR, string BL) CellCorners(CornerTerrainGrid corners, int x, int y)
-        {
-            return (
-                corners.Labels[x, y + 1],
-                corners.Labels[x + 1, y + 1],
-                corners.Labels[x + 1, y],
-                corners.Labels[x, y]);
-        }
+        // Rotation, world-transform, corner-lookup, and crosser-check math shared with
+        // GroupExitPlanner lives in TileDoorGeometry (see RotateCcw90Multiple/DoorWorldTransform/
+        // CellCorners/HasAnyCrosserEdge/Eq call sites above).
 
         private static bool IsAllSolid(string tl, string tr, string br, string bl, string solidTerrain)
         {
-            return Eq(tl, solidTerrain) && Eq(tr, solidTerrain) && Eq(br, solidTerrain) && Eq(bl, solidTerrain);
-        }
-
-        private static bool Eq(string a, string b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.OrdinalIgnoreCase);
-
-        private static bool HasAnyCrosserEdge(EdgeCrosserGrid crossers, (int X, int Y) cell)
-        {
-            for (var slot = 0; slot < 4; slot++)
-            {
-                if (crossers.GetEdge(cell.X, cell.Y, slot).Length != 0)
-                    return true;
-            }
-
-            return false;
+            return TileDoorGeometry.Eq(tl, solidTerrain) && TileDoorGeometry.Eq(tr, solidTerrain) &&
+                   TileDoorGeometry.Eq(br, solidTerrain) && TileDoorGeometry.Eq(bl, solidTerrain);
         }
 
         private static string MakeCornerKey(string tl, string tr, string br, string bl)

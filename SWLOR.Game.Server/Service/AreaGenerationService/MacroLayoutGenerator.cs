@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             layout.FeatureDensity = parameters.FeatureDensity;
             layout.FeatureTiles = parameters.FeatureTiles;
             layout.SetPieces = parameters.SetPieces;
+            layout.ExitGroups = parameters.ExitGroups;
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);

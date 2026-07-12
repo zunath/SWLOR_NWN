@@ -151,7 +151,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>Realized as a placeable spawned on <see cref="TransitionPoint.Tile"/> (original behavior).</summary>
         Placeable = 0,
         /// <summary>Realized as a real tileset door embedded in the room's wall.</summary>
-        Door = 1
+        Door = 1,
+        /// <summary>
+        /// Realized as a themed 1x1 tileset "exit" group tile (e.g. tdt01 Exit01-03) pinned into the
+        /// room's wall, with a real door spawned in its door slot (see GroupExitPlanner). Exit-kind
+        /// transitions only; reuses the same Door*/DoorCell world-transform fields as Door style.
+        /// </summary>
+        GroupExit = 2
     }
 
     /// <summary>
@@ -171,17 +177,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>Id of the LayoutRoom hosting this transition.</summary>
         public int RoomId { get; set; }
 
-        /// <summary>How this transition is realized. Placeable unless TileDoorPlanner substitutes a door.</summary>
+        /// <summary>
+        /// How this transition is realized. Placeable unless TileDoorPlanner or GroupExitPlanner
+        /// substitutes a door.
+        /// </summary>
         public TransitionStyle Style { get; set; } = TransitionStyle.Placeable;
-        /// <summary>Door style only: the solid-side terminator cell now hosting the doorway wall tile.</summary>
+        /// <summary>
+        /// Door style: the solid-side terminator cell now hosting the doorway wall tile. GroupExit
+        /// style: the cell now pinned with the exit group's tile (no separate terminator — the group
+        /// tile carries no crosser edges).
+        /// </summary>
         public (int X, int Y) DoorCell { get; set; }
-        /// <summary>Door style only: world-space X of the door object.</summary>
+        /// <summary>Door/GroupExit style only: world-space X of the door object.</summary>
         public float DoorX { get; set; }
-        /// <summary>Door style only: world-space Y of the door object.</summary>
+        /// <summary>Door/GroupExit style only: world-space Y of the door object.</summary>
         public float DoorY { get; set; }
-        /// <summary>Door style only: world-space Z of the door object.</summary>
+        /// <summary>Door/GroupExit style only: world-space Z of the door object.</summary>
         public float DoorZ { get; set; }
-        /// <summary>Door style only: world-space facing (degrees, normalized to (-180, 180]) of the door object.</summary>
+        /// <summary>Door/GroupExit style only: world-space facing (degrees, normalized to (-180, 180]) of the door object.</summary>
         public float DoorOrientation { get; set; }
     }
 
@@ -238,6 +251,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// lookup entirely; TileDoorPlanner must never claim a pinned cell for a transition door.
         /// </summary>
         public Dictionary<(int X, int Y), (int TileId, int Orientation)> PinnedTiles { get; set; } = new();
+
+        /// <summary>
+        /// Carried from MacroLayoutParameters.ExitGroups by MacroLayoutGenerator.Generate — themed
+        /// 1x1 "exit" group names (e.g. tdt01 Exit01-03) in priority order, consumed by
+        /// GroupExitPlanner inside TileResolver.TryResolve. Empty = no group-exit substitution for
+        /// this tileset (e.g. zsf01/Facility).
+        /// </summary>
+        public List<string> ExitGroups { get; set; } = new();
 
         public MacroLayout(CornerTerrainGrid corners)
         {
@@ -348,6 +369,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// (shape, corners, crossers) rather than trusting this list blindly.
         /// </summary>
         public Dictionary<string, int> SetPieces { get; set; } = new();
+
+        /// <summary>
+        /// Themed 1x1 "exit" group names (e.g. tdt01 Exit01-03) this tileset offers as a GroupExit
+        /// substitution for Exit-kind transitions, in priority order — usually stamped from
+        /// DungeonTilesetProfile.ExitGroups by DungeonComposition.BuildLayoutParameters. Empty = no
+        /// group-exit substitution for this tileset. GroupExitPlanner re-verifies each name's
+        /// structural eligibility (1x1, flat, crosser-free, has a door slot) rather than trusting
+        /// this list blindly.
+        /// </summary>
+        public List<string> ExitGroups { get; set; } = new();
 
         public MacroLayoutParameters Clone()
         {

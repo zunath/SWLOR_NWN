@@ -243,8 +243,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             {
                 // Door-style entrances get a real door too (an empty doorway alcove looks unfinished,
                 // and walking back out the way you came in should work); placeable-style entrances
-                // stay bare arrival anchors as before.
-                if (transition.Style == TransitionStyle.Door)
+                // stay bare arrival anchors as before. GroupExit transitions (Exit-kind only) reuse
+                // the same door-spawning path — the exit group's tile carries the door slot, PlaceTransitionDoor
+                // only reads the planner's world-transform fields, unchanged for either style.
+                if (transition.Style is TransitionStyle.Door or TransitionStyle.GroupExit)
                     PlaceTransitionDoor(area, transition, detail, instance, result);
                 else if (transition.Kind == TransitionKind.Exit)
                     PlaceExit(area, transition, detail, instance, result);

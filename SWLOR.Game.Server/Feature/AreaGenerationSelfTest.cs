@@ -221,10 +221,11 @@ namespace SWLOR.Game.Server.Feature
             if (!population.ExitPlaced)
                 throw new InvalidOperationException($"{themeKey}: exit placeable did not spawn.");
 
-            // Door-style transitions must have produced real door objects; anything the planner
-            // marked Door that failed door creation falls back to a placeable and logs an error,
-            // so a shortfall here means UtilPlugin.CreateDoor rejected the theme's blueprint.
-            var doorTransitions = instance.Layout.Transitions.Count(t => t.Style == TransitionStyle.Door);
+            // Door-style and GroupExit-style transitions must have produced real door objects;
+            // anything the planner marked Door/GroupExit that failed door creation falls back to a
+            // placeable and logs an error, so a shortfall here means UtilPlugin.CreateDoor rejected
+            // the theme's blueprint.
+            var doorTransitions = instance.Layout.Transitions.Count(t => t.Style is TransitionStyle.Door or TransitionStyle.GroupExit);
             if (population.DoorsCreated < doorTransitions)
                 throw new InvalidOperationException(
                     $"{themeKey}: {doorTransitions} door-style transition(s) but only {population.DoorsCreated} door(s) created.");

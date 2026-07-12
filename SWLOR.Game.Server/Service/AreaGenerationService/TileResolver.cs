@@ -175,6 +175,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             if (layout.DoorTransitions)
             {
+                // GroupExitPlanner runs first so themed exit-group tiles get first pick of a room's
+                // wall cells; any Exit transition it can't place falls through unchanged to
+                // TileDoorPlanner (a real generic door) and then plain Placeable.
+                GroupExitPlanner.ApplyGroupExits(tileset, layout, tiles, width, height);
                 TileDoorPlanner.ApplyDoorTransitions(tileset, layout, tiles, width, height);
             }
 

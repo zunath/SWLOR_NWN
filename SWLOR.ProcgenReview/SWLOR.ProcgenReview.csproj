@@ -20,6 +20,8 @@
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\MacroLayoutGenerator.cs" Link="Generation\MacroLayoutGenerator.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileResolver.cs" Link="Generation\TileResolver.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileDoorPlanner.cs" Link="Generation\TileDoorPlanner.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileDoorGeometry.cs" Link="Generation\TileDoorGeometry.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\GroupExitPlanner.cs" Link="Generation\GroupExitPlanner.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\DungeonDefinition.cs" Link="Generation\DungeonDefinition.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\Layouts\*.cs" Link="Generation\Layouts\%(Filename)%(Extension)" />
   </ItemGroup>

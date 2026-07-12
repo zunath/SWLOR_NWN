@@ -35,7 +35,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Platform02_2x2")
                 .SetPiece("Pillar_1x2", 2)
                 .SetPiece("WallSection01_1x2")
-                .SetPiece("WallSection02_1x2");
+                .SetPiece("WallSection02_1x2")
+                .SetPiece("BigDoor01", 1)
+                .SetPiece("BigDoor02", 1)
+                .ExitGroup("Exit01")
+                .ExitGroup("Exit02")
+                .ExitGroup("Exit03");
 
             // Sewers (reference: veles_sewers). Pit channel accents fully covered.
             // Feature tiles: tds01 open ('Floor') 1x1 groups (Portal/Chessboard deliberately excluded).
@@ -55,7 +60,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Pillar_1x2", 2)
                 .SetPiece("WallSection01_2x1")
                 .SetPiece("WallSection02_2x1")
-                .SetPiece("CampWall");
+                .SetPiece("CampWall")
+                .SetPiece("BigDoor01", 1)
+                .SetPiece("BigDoor02", 1)
+                .ExitGroup("Exit01")
+                .ExitGroup("Exit02");
 
             // Sci-Fi Base (reference: czs220_maintlvl). No accent coverage. Every partially-open
             // corner combo on zsf01 carries a movement-restricted pathnode (H/I) — only fully-open
@@ -98,7 +107,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Amphitheater_2x2")
                 .SetPiece("Mosaic_Plaza_2x2")
                 .SetPiece("ExteriorWalkway_2x2")
-                .SetPiece("Exterior Platform 2x2");
+                .SetPiece("Exterior Platform 2x2")
+                .SetPiece("InteriorHallDoor", 1)
+                .ExitGroup("ExteriorExit01")
+                .ExitGroup("ExteriorExit02");
 
             return _builder.Build();
         }

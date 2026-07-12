@@ -62,7 +62,7 @@ namespace SWLOR.ContentBuilder.Rendering
 
                 context.DrawGeometry(fillBrush, outlinePen, geometry);
 
-                if (transition.Style == TransitionStyle.Door)
+                if (transition.Style is TransitionStyle.Door or TransitionStyle.GroupExit)
                 {
                     var doorGridX = transition.DoorX / 10.0;
                     var doorGridY = transition.DoorY / 10.0;

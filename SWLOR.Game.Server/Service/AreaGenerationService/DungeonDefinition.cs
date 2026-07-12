@@ -93,6 +93,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// corners, crossers) at stamp time rather than trusting this list blindly.
         /// </summary>
         public Dictionary<string, int> SetPieces { get; set; } = new();
+
+        /// <summary>
+        /// Themed 1x1 "exit" group names (e.g. tdt01 Exit01-03) this tileset offers as a GroupExit
+        /// substitution for Exit-kind transitions, in priority order tried by GroupExitPlanner.
+        /// Empty = no group-exit substitution configured for this tileset (e.g. zsf01/Facility).
+        /// GroupExitPlanner re-verifies each name's structural eligibility (1x1, flat, crosser-free,
+        /// has a door slot) at resolve time rather than trusting this list blindly.
+        /// </summary>
+        public List<string> ExitGroups { get; set; } = new();
     }
 
     /// <summary>
@@ -175,6 +184,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // profile is built, only read by the resolver/stamper.
             parameters.FeatureTiles = Tileset.FeatureTiles;
             parameters.SetPieces = Tileset.SetPieces;
+            parameters.ExitGroups = Tileset.ExitGroups;
             return parameters;
         }
     }
@@ -434,6 +444,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder SetPiece(string groupName, int maxPerArea = 1)
         {
             _active.SetPieces[groupName] = maxPerArea;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a themed 1x1 "exit" group (e.g. tdt01 Exit01-03) this tileset offers as a GroupExit
+        /// substitution for Exit-kind transitions. Call order is priority order: GroupExitPlanner
+        /// tries each configured name in the order added here. GroupExitPlanner re-verifies the named
+        /// group's structural eligibility at resolve time rather than trusting this call blindly.
+        /// </summary>
+        public DungeonTilesetProfileBuilder ExitGroup(string groupName)
+        {
+            _active.ExitGroups.Add(groupName);
             return this;
         }
 

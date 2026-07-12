@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.1f,
                 30f,
                 10,
-                28,
-                10,
+                0,
+                30,
                 typeof(MarkedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 5.5f,
@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Magical_Vision,
                 VisualEffect.Vfx_Fnf_Storm,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                enmityBonus: 75)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

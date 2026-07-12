@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 24f,
                 8,
                 20,
-                15,
+                30,
                 typeof(ToxinStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 4.5f,

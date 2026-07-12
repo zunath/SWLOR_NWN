@@ -24,13 +24,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.3f,
                 24f,
                 9,
-                32,
-                12,
+                0,
+                15,
                 typeof(WeaponJam1StatusEffect),
                 CombatDamageType.Electrical,
                 ResistanceType.Disruption,
                 VisualEffect.Vfx_Imp_Lightning_M,
-                maxRange: 12f)
+                maxRange: 12f,
+                additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) },
+                afterSuccessfulHit: InnateAbility.InterruptOnHit())
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

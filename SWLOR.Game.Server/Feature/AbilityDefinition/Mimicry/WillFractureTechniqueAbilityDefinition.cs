@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 30f,
                 10,
-                28,
-                8,
+                0,
+                30,
                 typeof(FoggyMindStatusEffect),
                 CombatImpactAreaShape.Cone,
                 5f,
@@ -34,7 +34,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Fear_S,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
-                maxRange: 5f)
+                maxRange: 5f,
+                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(4),
+                damagePercentAdjustment: InnateAbility.ComboBonus(40, typeof(TerrifiedStatusEffect)))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

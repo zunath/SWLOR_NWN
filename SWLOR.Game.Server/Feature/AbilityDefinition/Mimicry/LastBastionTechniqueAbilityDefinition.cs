@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,36 +15,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildArea(
-                _builder,
-                FeatType.LastBastionTechnique,
-                "Last Bastion",
-                Animation.ShieldWall,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
-                1.4f,
-                30f,
-                10,
-                28,
-                3,
-                typeof(KnockdownStatusEffect),
-                CombatImpactAreaShape.Line,
-                8f,
-                2.5f,
-                CombatDamageType.Physical,
-                ResistanceType.Mobility,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
-                VisualEffect.Vfx_Fnf_Screen_Shake,
-                maxRange: 8f)
+            _builder
+                .Create(FeatType.LastBastionTechnique, PerkType.CombatAnalyzer)
+                .Name("Last Bastion")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .CombatImpactDamageAbility(AbilityType.Vitality)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Capstone, 30f)
+                .RequirementStamina(10)
+                .IsCastedAbility()
                 .MimicryTechnique(FeatType.LastBastion, 4, 3)
-                .HasTargetingLine(
-                    Spell.LastBastionTechnique,
-                    8f,
-                    2.5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                .MimicryUtility()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
+                    {
+                        StatusEffect.ApplyStatusEffect(activator, ally, new Shielding1StatusEffect(), 30f);
+                    }
+                });
 
             return _builder.Build();
         }

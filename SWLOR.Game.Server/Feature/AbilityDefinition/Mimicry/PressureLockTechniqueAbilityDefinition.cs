@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 30f,
                 10,
-                28,
-                8,
+                0,
+                15,
                 typeof(ImmobilizedStatusEffect),
                 CombatImpactAreaShape.Cone,
                 5f,
@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Head_Electricity,
                 VisualEffect.Dur_Web,
-                maxRange: 5f)
+                maxRange: 5f,
+                damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(ImmobilizedStatusEffect)))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 30f,
                 10,
                 28,
-                3,
+                6,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
                 5f,
@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
                 VisualEffect.Vfx_Fnf_Screen_Shake,
-                maxRange: 5f)
+                maxRange: 5f,
+                additionalStatusEffects: new[] { typeof(SunderStatusEffect) })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)

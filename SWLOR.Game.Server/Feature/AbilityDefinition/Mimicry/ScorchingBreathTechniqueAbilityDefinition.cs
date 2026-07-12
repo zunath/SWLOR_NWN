@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 30f,
                 10,
                 28,
-                18,
+                30,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Cone,
                 8f,
@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Fire,
                 VisualEffect.Vfx_Com_Hit_Fire,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Fire,
-                maxRange: 8f)
+                maxRange: 8f,
+                additionalStatusEffects: new[] { typeof(WeakenedStatusEffect) })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.1f,
                 30f,
                 10,
-                28,
-                10,
-                typeof(TerrifiedStatusEffect),
+                0,
+                30,
+                typeof(WeakenedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 5.5f,
                 0f,
@@ -34,7 +34,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Aura_Negative_Energy,
                 VisualEffect.Vfx_Fnf_Howl_Mind,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(4),
+                enmityBonus: 75)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

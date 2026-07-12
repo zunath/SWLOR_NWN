@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 30f,
                 10,
-                28,
-                8,
+                0,
+                30,
                 typeof(SuppressionStatusEffect),
                 CombatImpactAreaShape.Cone,
                 5f,
@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Com_Special_Blue_Red,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
-                maxRange: 5f)
+                maxRange: 5f,
+                damagePercentAdjustment: InnateAbility.ComboBonus(40, typeof(SuppressionStatusEffect), typeof(MarkedStatusEffect)))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)

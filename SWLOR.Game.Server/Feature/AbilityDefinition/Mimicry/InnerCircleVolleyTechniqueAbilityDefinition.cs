@@ -25,12 +25,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 24f,
                 9,
                 32,
-                12,
+                30,
                 typeof(DisorientedStatusEffect),
                 CombatDamageType.Sonic,
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Dazed_S,
-                maxRange: 12f)
+                maxRange: 12f,
+                damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(DisorientedStatusEffect), typeof(DazedStatusEffect)))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

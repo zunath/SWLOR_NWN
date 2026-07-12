@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 30f,
                 10,
                 0,
-                18,
-                typeof(TerrifiedStatusEffect),
+                15,
+                typeof(DazedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 6f,
                 0f,
@@ -35,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Fnf_Howl_Mind,
                 maxRange: 6f,
                 centerOnActivator: true,
-                enmityBonus: 8)
+                enmityBonus: 8,
+                afterSuccessfulHit: InnateAbility.InterruptOnHit())
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

@@ -25,12 +25,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 24f,
                 9,
                 32,
-                12,
+                30,
                 typeof(WeakenedStatusEffect),
                 CombatDamageType.Force,
                 ResistanceType.Disruption,
                 VisualEffect.Vfx_Imp_Negative_Energy,
-                maxRange: 12f)
+                maxRange: 12f,
+                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(5))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

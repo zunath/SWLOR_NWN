@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         centerOnActivator: !GetIsObjectValid(target),
                         damageType: CombatDamageType.Fire,
                         statusResistanceType: ResistanceType.Fire,
+                        damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(BurnStatusEffect)),
                         targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                         areaVisualEffect: VisualEffect.Fnf_Fireball,
                         maxTargets: 8,

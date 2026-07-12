@@ -13,36 +13,34 @@ Rationale:
 
 The handful of techniques with Force-flavored names (see below) are not exempt from this — they draw from the same universal Stamina pool as every other technique.
 
-## Scaling Stats
+## Composition & scaling
 
-Every technique's damage now scales off exactly one of the six core attributes, matching how native abilities scale via `CombatImpactDamageAbility`. Previously, technique damage was a flat value copied from the source NPC/creature with no player-stat scaling at all; this re-tune brings Mimicry in line with the rest of the ability system.
+The pool is deliberately **not** a set of interchangeable damage nukes. Most active techniques deal no direct damage at all — they are control, debuffs, support, persistent zones, or stances — so that each technique is a distinct *kind* of ability rather than "damage in a shape with a different status." Composition of the 88-technique pool:
 
-Assignment rule — the stat is chosen by the technique's combat fantasy, not arbitrarily:
+| Group | Count |
+|---|---|
+| Passive traits | 21 |
+| Stances | 3 |
+| Damage-dealing actives | 21 |
+| Non-damage actives (control / debuff / support / zone) | 43 |
+| **Total** | **88** |
+
+Only the **damage-dealing subset** scales off a core attribute (via `CombatImpactDamageAbility`), chosen by combat fantasy:
 
 | Combat fantasy | Stat |
 |---|---|
-| Mental / Force / fear / sonic effects | Willpower (WIL) |
+| Mental / Force / sonic effects | Willpower (WIL) |
 | Command / coordination / pack-tactics effects | Social (SOC) |
-| Defensive hardening / self-buff effects | Vitality (VIT) |
+| Defensive / self-buff effects | Vitality (VIT) |
 | Aimed / ranged / thrown / chemical / energy attacks | Perception (PER) |
 | Finesse / speed / flurry attacks | Agility (AGI) |
 | Brute melee attacks | Might (MGT) |
 
-Resulting distribution across all 88 techniques (all six attributes represented):
-
-| Stat | Count |
-|---|---|
-| MGT | 27 |
-| PER | 19 |
-| SOC | 13 |
-| WIL | 12 |
-| AGI | 11 |
-| VIT | 6 |
-| **Total** | **88** |
+Every non-damage active carries **no scaling attribute** (`Primary Stat = None` in the Bible); its power is a fixed-magnitude effect (duration, percent, heal/shield amount), balanced through Stamina cost, cooldown, and effect duration rather than a damage number.
 
 ## Damage / Cost Tiers
 
-Base damage and Stamina cost are banded by tier. Single-target hits use the higher damage figure in a band; area techniques (cone/sphere/line) use the lower figure, reflecting that they hit multiple targets:
+For the **damage-dealing subset**, base damage and Stamina cost are banded by tier. Single-target hits use the higher damage figure in a band; area techniques (cone/sphere/line) use the lower figure, reflecting that they hit multiple targets. Non-damage actives use the same Stamina/cooldown bands but replace the damage figure with a fixed-magnitude effect.
 
 | Tier | Single dmg | Area dmg | STM | Cooldown (single/area) |
 |---|---|---|---|---|
@@ -55,13 +53,13 @@ Learn gates (Mimicry skill requirement) scale with tier: **T1 = Mimicry 0, T2 = 
 
 Cooldowns are banded by tier and shape (higher tiers and area techniques recast slower), replacing the ad-hoc creature values inherited during generation.
 
-### Utility / crowd-control techniques
+### Non-damage actives (the majority)
 
-Two active techniques deal no direct damage — `Savage Roar` (debuff) and `Terrifying Bellow` (AoE fear). Their power is the effect itself, whose magnitude is a fixed, shared status-effect class also used by the source creatures. Per the stat-driven-gameplay rule, those shared magnitudes are **not** re-scaled per-caster (doing so would special-case shared infrastructure and skew NPC balance), so a damage-scaling attribute is meaningless for them. They are instead balanced through the same levers as any utility ability — Stamina cost, cooldown, and effect duration, all normalized to their tier band. Their attribute assignment is retained as thematic metadata only.
+**43 of the 64 active techniques deal no direct damage.** They span control (roots, stuns, freezes, knockdowns), debuffs (armor-strip, accuracy/attack-down, caster-accuracy debuff, vulnerability marks, ability lockout, resource drain), support (ally buffs/heals, taunts, riposte), and persistent zones (root/stun/burning fields). Their power is the effect itself at a fixed magnitude — never re-scaled per-caster — so it is balanced through Stamina cost, cooldown, and effect duration rather than a damage number. None declares a scaling attribute (`Primary Stat = None`). No fear effects are used anywhere in the pool.
 
 ### Passive trait techniques
 
-Twenty-one techniques are **passive traits** rather than activated abilities. They do not appear on the hotbar, cost no Stamina, and deal no direct damage; equipping one applies a permanent status effect for as long as it occupies a technique slot (see the `IsMimicryTrait` model). Because they are passive, the damage/Stat/STM columns of the per-technique table below do not apply to trait rows — a trait's power *is* its passive effect, listed here.
+Twenty-one techniques are **passive traits** rather than activated abilities. They do not appear on the hotbar, cost no Stamina, and deal no direct damage; equipping one applies a permanent status effect for as long as it occupies a technique slot (see the `IsMimicryTrait` model). A trait's power *is* its passive effect, listed here.
 
 Each trait grants a **unique** effect, and effect strength scales with tier so a higher-tier trait is always worth more than a lower-tier one (no two traits are interchangeable). Two flavours exist:
 
@@ -94,108 +92,73 @@ Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Comba
 | Opening Cut | T3 | 2 | 24% chance to inflict Bleed |
 | Rangefinder Shot | T3 | 2 | +8% Accuracy |
 
-### Hard crowd-control durations
+### Effect durations (match the rest of the Bible)
 
-Effects copied from creatures carried creature-length durations that are oppressive in player hands (a 14-second knockdown, for instance). Hard full-lockout control is capped to player-appropriate lengths: **Knockdown and Stun to 3 seconds** (matching native player knockdowns) and **Dazed to 6 seconds**. Soft debuffs that still let the target act — Terrified (−8% Attack/Defense), Immobilized (root), Hamstring, Disoriented, Weakened, Vulnerable — keep their longer durations, since they are not lockouts.
+Durations follow the conventions used across the other skill trees, not ad-hoc creature values:
+
+- **Soft effects default to 30 seconds** — DoTs (Bleed, Burn, Poison, Shock, Sunder…), stat debuffs (Attack/Accuracy/Defense down, suppression, slows, vulnerability marks, Force-suppression, ability lockout), self/ally buffs (Haste, Attack, Defense, shields, momentum), enmity/taunt, and reflect. This is the dominant duration in the Bible; effects should not be shorter than this without a real reason.
+- **Dazed = 15 seconds**, matching every other Dazed application.
+- **Hard full-lockout control = 6 seconds** — Stun, Knockdown, and solid Freeze. This is the only case with a real reason to run short: the target can take no action at all.
+- **Root / ability-lockout = 15 seconds** — Immobilized (still able to act) and Weapon Jam sit between the two.
+
+Magnitudes are likewise capped to Bible norms: Accuracy debuffs at −10%, movement slows at −18%, Attack/Defense at ±20%, Haste/Attack buffs at +15%, critical chance at +25%, damage-taken marks at +10%, reflect at 20%, and taunt as **+25% Enmity toward you for 30 seconds** (the pattern shared with Covering Strike, etc.) rather than a forced-attack charm.
 
 ### Loadout economy (technique slots)
 
 The slot budget is the primary limiter on simultaneous power, since a player can freely swap techniques out of combat and cheaply learns the entire pool. Combat Analyzer grants **2** slots; Analyzer Memory adds **+1 per rank** (3 ranks) for a maximum of **5**. With slot costs of 1–3 (rising with tier), a fully-invested analyst runs roughly 2–3 techniques at once — a deliberate jack-of-all-trades kit that must be tailored per encounter rather than a standing library of every effect.
 
-### Full per-technique table
+### Tier-4 signature mechanics
 
-> Note: the 21 passive traits listed in *Passive trait techniques* above are included below for tier/stat provenance, but their **Base Dmg** and **STM** figures are historical (from when they were active abilities) and no longer apply — traits are passive, cost no Stamina, and deal no direct damage. Use the trait table for their live values.
+Tier-4 (Mimicry 45–50) techniques are the capstone of the pool. The design goal is that **each is a distinct *kind* of ability, not a damage nuke with a different garnish** — so only ~10 deal meaningful direct damage; the other ~23 are built around a non-damage core (control, debuff, support, threat, reactive, self-buff, or a stance). Non-damage abilities carry no damage-scaling **Primary Stat** (`None` in the Bible). Grouped by core identity:
 
-| Technique | Tier | Stat | Base Dmg | STM |
-|---|---|---|---|---|
-| Crippling Talons | T1 | MGT | 10 | 3 |
-| Frost Spit | T1 | PER | 10 | 3 |
-| Raking Claws | T1 | AGI | 10 | 3 |
-| Rending Bite | T1 | MGT | 10 | 3 |
-| Target Lock | T1 | SOC | 10 | 3 |
-| Toxic Spit | T1 | PER | 10 | 3 |
-| Barbed Volley | T2 | PER | 13 | 5 |
-| Bonecrusher Bite | T2 | MGT | 16 | 5 |
-| Brutal Bash | T2 | MGT | 16 | 5 |
-| Capacitor Surge | T2 | PER | 13 | 5 |
-| Chitin Guard | T2 | VIT | 0 | 5 |
-| Concussive Challenge | T2 | SOC | 13 | 5 |
-| Force Rend | T2 | WIL | 16 | 5 |
-| Glacial Slime | T2 | MGT | 16 | 5 |
-| Hoarfrost Glob | T2 | PER | 16 | 5 |
-| Ion Burst | T2 | PER | 13 | 5 |
-| Iron Carapace | T2 | VIT | 0 | 5 |
-| Mauling Bite | T2 | MGT | 16 | 5 |
-| Mind Spike | T2 | WIL | 16 | 5 |
-| Overload Shot | T2 | PER | 16 | 5 |
-| Piercing Quills | T2 | PER | 13 | 5 |
-| Pouncing Strike | T2 | MGT | 16 | 5 |
-| Precision Shot | T2 | PER | 16 | 5 |
-| Rending Carve | T2 | AGI | 16 | 5 |
-| Rime Pounce | T2 | AGI | 16 | 5 |
-| Savage Roar | T2 | MGT | 0 | 5 |
-| Serrated Slash | T2 | AGI | 16 | 5 |
-| Sonic Shriek | T2 | WIL | 13 | 5 |
-| Static Web | T2 | PER | 13 | 5 |
-| Suppressing Shot | T2 | PER | 13 | 5 |
-| Tactical Mark | T2 | SOC | 16 | 5 |
-| Tail Sweep | T2 | MGT | 13 | 5 |
-| Venom Spray | T2 | PER | 13 | 5 |
-| Arc Pulse | T3 | PER | 20 | 8 |
-| Blood Frenzy Flurry | T3 | AGI | 20 | 8 |
-| Brace Breaker | T3 | VIT | 24 | 7 |
-| Dark Shock | T3 | WIL | 20 | 8 |
-| Disorienting Screech | T3 | WIL | 20 | 8 |
-| Dread Wave | T3 | WIL | 20 | 8 |
-| Essence Scar | T3 | WIL | 24 | 7 |
-| Force Sunder | T3 | WIL | 24 | 7 |
-| Goring Charge | T3 | MGT | 20 | 8 |
-| Grenade Burst | T3 | PER | 20 | 8 |
-| Null Shock | T3 | WIL | 20 | 8 |
-| Opening Cut | T3 | AGI | 24 | 7 |
-| Pack Harrier | T3 | SOC | 24 | 7 |
-| Permafrost Rupture | T3 | MGT | 20 | 8 |
-| Rally Breaker | T3 | SOC | 24 | 7 |
-| Rangefinder Shot | T3 | PER | 24 | 7 |
-| Seismic Slam | T3 | MGT | 20 | 8 |
-| Shrapnel Burst | T3 | PER | 20 | 8 |
-| Signal Snare | T3 | SOC | 24 | 7 |
-| Static Burst | T3 | PER | 20 | 8 |
-| Stim Canister | T3 | MGT | 20 | 8 |
-| Toxic Cloud | T3 | PER | 20 | 8 |
-| Apex Collapse | T4 | MGT | 28 | 10 |
-| Crossfire Drill | T4 | AGI | 28 | 10 |
-| Cryo Bile | T4 | PER | 28 | 10 |
-| Final Eclipse | T4 | MGT | 28 | 10 |
-| Final Line | T4 | MGT | 28 | 10 |
-| Final Mandate | T4 | MGT | 28 | 10 |
-| Final Suppression | T4 | MGT | 28 | 10 |
-| Finishing Drive | T4 | AGI | 28 | 10 |
-| Holdfast Slam | T4 | VIT | 32 | 9 |
-| Inferno Blast | T4 | MGT | 28 | 10 |
-| Inner Circle Bind | T4 | SOC | 32 | 9 |
-| Inner Circle Pounce | T4 | SOC | 32 | 9 |
-| Inner Circle Surge | T4 | SOC | 32 | 9 |
-| Inner Circle Volley | T4 | SOC | 32 | 9 |
-| Inner Ring Flurry | T4 | AGI | 32 | 9 |
-| Inner Void | T4 | WIL | 32 | 9 |
-| Last Bastion | T4 | VIT | 28 | 10 |
-| Lockstep Crush | T4 | AGI | 28 | 10 |
-| Merciless Angle | T4 | SOC | 28 | 10 |
-| Pressure Lock | T4 | MGT | 28 | 10 |
-| Rupturing Quake | T4 | MGT | 28 | 10 |
-| Scorching Breath | T4 | MGT | 28 | 10 |
-| Snap Rush | T4 | AGI | 28 | 10 |
-| Sustain Burn | T4 | MGT | 28 | 10 |
-| Terrifying Bellow | T4 | WIL | 0 | 10 |
-| Warden Clamp | T4 | MGT | 28 | 10 |
-| Warden Mark | T4 | SOC | 28 | 10 |
-| Warden Maul | T4 | MGT | 28 | 10 |
-| Warden Order | T4 | SOC | 28 | 10 |
-| Warden Rend | T4 | MGT | 28 | 10 |
-| Warden Sweep | T4 | MGT | 28 | 10 |
-| Warden Wall | T4 | VIT | 28 | 10 |
-| Will Fracture | T4 | WIL | 28 | 10 |
+**Direct damage (9)** — each a distinct damage archetype
+| Technique | Core |
+|---|---|
+| Inner Circle Pounce | Precision strike — greatly increased critical chance |
+| Inner Circle Surge | Chain lightning — arcs to up to 3 nearby enemies |
+| Inner Circle Volley | Rapid 3-shot volley on a single target |
+| Lockstep Crush | Crowd-scaling — more damage per additional enemy struck |
+| Merciless Angle | Detonator — consumes Bleed/Hemorrhage; little vs unafflicted |
+| Final Line | Missing-HP finisher (≤ +35%) |
+| Final Eclipse | Delayed nova |
+| Inferno Blast | Persistent burning damage field |
+| Inner Void | Lifesteal + FP siphon |
+
+**Damage-over-time (1)** · Scorching Breath — contagious Burn that spreads across a group
+
+**Hard control, no direct damage (4)** · Holdfast Slam (single stun) · Cryo Bile (AoE freeze) · Warden Maul (pull/gather + knockdown) · Rupturing Quake (delayed knockdown)
+
+**Caster disruption (1)** · Will Fracture (−20% Ability Accuracy debuff; the earlier AoE charm was dropped as over-strong and without Bible precedent)
+
+**Persistent zones (2)** · Warden Clamp (root field) · Final Suppression (shock/stun field)
+
+**Debuff / setup, no damage (5)** · Inner Circle Bind (interrupt + disable-lock) · Inner Ring Flurry (armor-strip / guard-break) · Warden Mark (vulnerability mark) · Pressure Lock (control-amplifier — deepens existing CC) · Crossfire Drill (suppression — cuts enemy Attack/Accuracy)
+
+**Threat / tank (2)** · Warden Rend (pure taunt) · Last Bastion (ally-guard + taunt)
+
+**Support / party (2)** · Final Mandate (buffs allies) · Warden Order (heals allies)
+
+**Reactive (1)** · Warden Sweep (riposte / reflect melee)
+
+**Self-buff & economy (2 + 3 stances ⬥)** · Finishing Drive (stacking momentum) · Snap Rush (self-haste + Stamina) · **Warden Wall** ⬥ (defensive stance) · **Apex Collapse** ⬥ (offensive stance) · **Sustain Burn** ⬥ (caustic stance)
+
+**Setup nova (1)** · Terrifying Bellow — mass interrupt + Daze (no fear, no damage)
+
+Mechanics reuse shared, stat-driven building blocks (chain/detonate/hazard-pulse/pull/heal helpers on `InnateAbility` and the `CombatAreaPulses`/`AbilityTargeting` services) so nothing special-cases a perk. Stances use the existing `ConfigureToggle` model; stances and the non-damage utility actives are classified so the contract tests exempt them (like passive traits) from the hostile/damage-element/scaling assertions.
+
+### Per-technique reference
+
+The authoritative per-technique specifics — name, tier, slot cost, role, scaling stat (or `None`), and full effect text — live in the **Design Bible workbook** (`Mimicry` tab) and its generated manifest `SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv`. That is the single source of truth. A duplicate damage-centric table previously lived here and repeatedly drifted, so it has been removed; the passive traits are tabulated above, the Tier-4 roles are mapped above, and the pre-45 active roles are summarised below.
+
+### Pre-45 active roles
+
+The 34 pre-45 active techniques get the same treatment as Tier-4 — spread across kinds (~15 deal damage, ~19 non-damage), all with specific numbers. By role:
+
+- **Damage** — Raking Claws (basic strike), Pouncing Strike (opener), Brutal Bash (hit + stun), Sonic Shriek (cone), Tail Sweep (AoE + knockdown), Blood Frenzy Flurry (multi-hit), Goring Charge (line), Grenade Burst (AoE fire), Seismic Slam (AoE + knockdown), Shrapnel Burst (cone + Sunder), Static Burst (chain)
+- **Damage-over-time** — Toxic Spit, Venom Spray & Barbed Volley (Bleed), Toxic Cloud (poison zone)
+- **Control** — Frost Spit (chill), Static Web (root), Capacitor Surge (ability lockout), Permafrost Rupture (freeze), Brace Breaker (guard-break stun), Signal Snare (root), Arc Pulse (stun)
+- **Debuff** — Piercing Quills (Sunder / −Def), Ion Burst (−Accuracy), Suppressing Shot (−Attack), Savage Roar (−damage), Disorienting Screech (Disorient), Dark Shock (Force lockout), Null Shock (resource drain), Rally Breaker (vulnerability mark), Pack Harrier (slow), Dread Wave (demoralize — no fear)
+- **Threat / support** — Concussive Challenge (taunt), Stim Canister (ally buff)
 
 ## Force-Flavored Subset Note
 

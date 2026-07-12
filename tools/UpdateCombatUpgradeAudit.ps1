@@ -544,6 +544,8 @@ function Get-CanonicalManifestHeader {
         "devstatus" { return "DevStatus" }
         "additionalrequirements" { return "AdditionalRequirements" }
         "notes" { return "Notes" }
+        "slots" { return "Slots" }
+        "slot" { return "Slots" }
         default { return "" }
     }
 }
@@ -686,6 +688,7 @@ function Import-BibleWorkbookManifestRows {
                     DevStatus = $devStatus
                     AdditionalRequirements = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "AdditionalRequirements"
                     Notes = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Notes"
+                    Slots = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Slots"
                 }) | Out-Null
             }
         }
@@ -754,6 +757,7 @@ if ($RefreshBible) {
                 DevStatus = Get-FirstPropertyValue $row @("DevStatus", "Dev Status")
                 AdditionalRequirements = Get-FirstPropertyValue $row @("AdditionalRequirements", "Additional Requirements")
                 Notes = Get-PropertyValue $row "Notes"
+                Slots = Get-FirstPropertyValue $row @("Slots", "Slot")
             }) | Out-Null
         }
     }

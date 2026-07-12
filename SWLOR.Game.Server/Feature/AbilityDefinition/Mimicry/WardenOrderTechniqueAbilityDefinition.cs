@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,35 +15,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildArea(
-                _builder,
-                FeatType.WardenOrderTechnique,
-                "Warden Order",
-                Animation.FireForgetTaunt,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
-                1.1f,
-                30f,
-                10,
-                28,
-                10,
-                typeof(DisorientedStatusEffect),
-                CombatImpactAreaShape.Sphere,
-                5.5f,
-                0f,
-                CombatDamageType.Sonic,
-                ResistanceType.Mind,
-                VisualEffect.Vfx_Imp_Dazed_S,
-                VisualEffect.Vfx_Fnf_Sound_Burst,
-                centerOnActivator: true)
+            _builder
+                .Create(FeatType.WardenOrderTechnique, PerkType.CombatAnalyzer)
+                .Name("Warden Order")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .CombatImpactDamageAbility(AbilityType.Social)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Capstone, 30f)
+                .RequirementStamina(10)
+                .IsCastedAbility()
                 .MimicryTechnique(FeatType.WardenOrder, 4, 3)
-                .HasTargetingSphere(
-                    Spell.WardenOrderTechnique,
-                    5.5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                .MimicryUtility()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5.5f))
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectHeal(30), ally);
+                    }
+                });
 
             return _builder.Build();
         }

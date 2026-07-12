@@ -70,6 +70,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public Type MimicryTraitStatusEffect { get; set; }
 
         /// <summary>
+        /// When true this mimicked technique is a self-toggle stance (via the toggle model) rather than
+        /// a hostile cast, so the contract tests exempt it from the hostility / damage-element /
+        /// combat-scaling assertions the way passive traits are exempt.
+        /// </summary>
+        public bool IsMimicryStance { get; set; }
+
+        /// <summary>
+        /// When true this mimicked technique is an active but non-damaging utility (control, debuff,
+        /// support, or zone) — it targets and casts like any active, but declares no damage element or
+        /// scaling attribute, so the contract tests exempt it from those assertions.
+        /// </summary>
+        public bool IsMimicryUtility { get; set; }
+
+        /// <summary>
         /// The damage type this mimicked technique deals, used for damage-type loadout set bonuses
         /// (elemental resonance). <see cref="CombatDamageType.Invalid"/> for techniques with no
         /// damage element (passive flat/self-buff traits), which do not contribute to a set.

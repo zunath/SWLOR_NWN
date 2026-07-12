@@ -24,13 +24,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.3f,
                 24f,
                 9,
-                32,
-                12,
-                typeof(ExposedStatusEffect),
+                0,
+                30,
+                typeof(BleedStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Special_Red_White,
-                maxRange: 3f)
+                maxRange: 3f,
+                afterSuccessfulHit: InnateAbility.RestoreStaminaOnHit(4))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)

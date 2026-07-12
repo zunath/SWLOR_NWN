@@ -799,6 +799,29 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Marks a mimicked technique as a self-toggle stance: it activates/deactivates a stance status
+        /// effect rather than casting a hostile ability, so the contract tests exempt it from the
+        /// hostility / damage-element / combat-scaling assertions.
+        /// </summary>
+        public AbilityBuilder MimicryStance(FeatType sourceCreatureFeat, int tier, int slotCost)
+        {
+            MimicryTechnique(sourceCreatureFeat, tier, slotCost);
+            _activeAbility.IsMimicryStance = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Marks a mimicked technique as a non-damaging utility active (control, debuff, support, or
+        /// zone) that declares no damage element or scaling attribute — for example an ally-targeting
+        /// support cast. Exempts it from the damage-element / scaling / hostility contract assertions.
+        /// </summary>
+        public AbilityBuilder MimicryUtility()
+        {
+            _activeAbility.IsMimicryUtility = true;
+            return this;
+        }
+
+        /// <summary>
         /// Declares the damage type a mimicked technique deals, used for damage-type loadout set
         /// bonuses (elemental resonance).
         /// </summary>

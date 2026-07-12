@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         centerOnActivator: true,
                         damageType: CombatDamageType.Physical,
                         statusResistanceType: ResistanceType.Mobility,
+                        additionalStatusEffects: new[] { typeof(SunderStatusEffect) },
                         targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Nature,
                         areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake,
                         maxTargets: 12,

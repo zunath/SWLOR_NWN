@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 18f,
                 5,
                 13,
-                4,
+                15,
                 typeof(DazedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 4.5f,

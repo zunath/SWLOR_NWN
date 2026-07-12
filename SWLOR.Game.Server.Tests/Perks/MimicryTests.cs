@@ -119,9 +119,10 @@ public class MimicryTests
             ability.Name.Should().Be(sourceAbility.Name,
                 $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat})");
 
-            // Passive traits have no activation, so hostility (an activation concept) does not apply
-            // to them; it is only meaningful for active techniques, which must mirror their source.
-            if (!ability.IsMimicryTrait)
+            // Passive traits have no activation, and stances / non-damaging support utilities are not
+            // hostile casts, so hostility (an activation concept mirrored from the source) only applies
+            // to ordinary active techniques.
+            if (!ability.IsMimicryTrait && !ability.IsMimicryStance && !ability.IsMimicryUtility)
             {
                 ability.IsHostileAbility.Should().Be(sourceAbility.IsHostileAbility,
                     $"{feat}'s IsHostileAbility should mirror its source NPC ability {ability.MimicrySourceFeat}'s hostility " +
@@ -138,7 +139,9 @@ public class MimicryTests
     public void MimicryTechniques_DeclareScalingStatsSpanningAllSixAttributes()
     {
         var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
-        var activeTechniques = techniques.Where(t => !t.Detail.IsMimicryTrait).ToList();
+        var activeTechniques = techniques
+            .Where(t => !t.Detail.IsMimicryTrait && !t.Detail.IsMimicryStance && !t.Detail.IsMimicryUtility)
+            .ToList();
         var usedStats = new HashSet<AbilityType>();
 
         foreach (var technique in activeTechniques)
@@ -190,7 +193,7 @@ public class MimicryTests
     public void MimicryActiveTechniques_RegisterTheirDamageElement()
     {
         var activeTechniques = BuildAllAbilities(MimicryTechniqueNamespace)
-            .Where(t => !t.Detail.IsMimicryTrait)
+            .Where(t => !t.Detail.IsMimicryTrait && !t.Detail.IsMimicryStance && !t.Detail.IsMimicryUtility)
             .ToList();
 
         activeTechniques.Should().NotBeEmpty("most techniques are active damage abilities");

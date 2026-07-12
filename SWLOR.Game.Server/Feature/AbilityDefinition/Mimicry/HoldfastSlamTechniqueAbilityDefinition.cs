@@ -24,13 +24,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.3f,
                 24f,
                 9,
-                32,
-                12,
+                0,
+                30,
                 typeof(SunderStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
-                maxRange: 3f)
+                maxRange: 3f,
+                enmityBonus: 100,
+                additionalStatusEffects: new[] { typeof(ExposedStatusEffect) })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Vitality)

@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.1f,
                 30f,
                 10,
-                28,
-                3,
+                0,
+                6,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 5.5f,
@@ -34,7 +34,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
                 VisualEffect.Vfx_Fnf_Screen_Shake,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                enmityBonus: 100,
+                afterSuccessfulHit: InnateAbility.PullOnHit())
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

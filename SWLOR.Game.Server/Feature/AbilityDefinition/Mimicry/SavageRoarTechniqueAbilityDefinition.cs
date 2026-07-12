@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 18f,
                 5,
                 0,
-                14,
+                30,
                 typeof(WeakenedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 6f,

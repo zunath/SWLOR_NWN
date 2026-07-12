@@ -25,12 +25,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 24f,
                 9,
                 32,
-                12,
+                30,
                 typeof(ExposedStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Special_Red_White,
-                maxRange: 3f)
+                maxRange: 3f,
+                criticalRatePercentAdjustment: 25)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

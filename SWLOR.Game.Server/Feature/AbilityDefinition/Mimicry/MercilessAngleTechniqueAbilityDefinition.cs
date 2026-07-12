@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 30f,
                 10,
                 28,
-                8,
+                30,
                 typeof(HemorrhageStatusEffect),
                 CombatImpactAreaShape.Cone,
                 5f,
@@ -34,7 +34,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
-                maxRange: 5f)
+                maxRange: 5f,
+                damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(BleedStatusEffect), typeof(HemorrhageStatusEffect)),
+                afterSuccessfulHit: InnateAbility.DetonateOnHit(InnateAbilityProfile.Mimicry, 40, CombatDamageType.Physical, typeof(BleedStatusEffect), typeof(HemorrhageStatusEffect)))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

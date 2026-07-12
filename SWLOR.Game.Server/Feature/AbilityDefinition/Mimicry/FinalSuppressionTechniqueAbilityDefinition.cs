@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.4f,
                 30f,
                 10,
-                28,
-                3,
+                0,
+                6,
                 typeof(StunnedStatusEffect),
                 CombatImpactAreaShape.Line,
                 8f,
@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Lightning_S,
                 VisualEffect.Vfx_Fnf_Storm,
-                maxRange: 8f)
+                maxRange: 8f,
+                damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(DazedStatusEffect), typeof(DisorientedStatusEffect), typeof(StunnedStatusEffect)))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,35 +15,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildArea(
-                _builder,
-                FeatType.StimCanisterTechnique,
-                "Stim Canister",
-                Animation.ThrowGrenade,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.StimCanister,
-                1.2f,
-                24f,
-                8,
-                20,
-                10,
-                typeof(PoisonStatusEffect),
-                CombatImpactAreaShape.Sphere,
-                4.0f,
-                0f,
-                CombatDamageType.Poison,
-                ResistanceType.Poison,
-                VisualEffect.Vfx_Imp_Poison_S,
-                VisualEffect.Vfx_Fnf_Gas_Explosion_Acid,
-                maxRange: 8f)
+            _builder
+                .Create(FeatType.StimCanisterTechnique, PerkType.CombatAnalyzer)
+                .Name("Stim Canister")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .CombatImpactDamageAbility(AbilityType.Might)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Capstone, 30f)
+                .RequirementStamina(10)
+                .IsCastedAbility()
                 .MimicryTechnique(FeatType.StimCanister, 3, 3)
-                .HasTargetingSphere(
-                    Spell.StimCanisterTechnique,
-                    4.0f,
-                    AbilityTargetingFlags.HarmsEnemies);
+                .MimicryUtility()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 4.0f))
+                    {
+                        StatusEffect.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f);
+                    }
+                });
 
             return _builder.Build();
         }

@@ -213,6 +213,95 @@ public class DungeonDefinitionTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
+    /// <summary>
+    /// Validates every theme's exit/treasure placeable renders and behaves at the DATA level:
+    /// the blueprint must be useable, non-static, point at a placeables.2da row whose ModelName
+    /// is not blank (blank rows render invisible — this happened with zep_chest_dag), and
+    /// treasure containers must have an inventory (or item creation silently fails).
+    /// This is the automated stand-in for eyeballing placeables in the client.
+    /// </summary>
+    [Test]
+    public void AllDungeonDefinitions_PlaceablesAreVisibleUseableAndCorrectlyFlagged()
+    {
+        var root = FindRepositoryRoot();
+        var modelNamesByRow = ReadPlaceableAppearanceModelNames(root);
+        var failures = new List<string>();
+
+        void CheckPlaceable(string themeKey, string role, string resref, bool requireInventory)
+        {
+            var utpPath = Path.Combine(root.FullName, "Module", "utp", $"{resref}.utp.json");
+            if (!File.Exists(utpPath))
+            {
+                failures.Add($"{themeKey} {role}: '{resref}' has no utp blueprint.");
+                return;
+            }
+
+            using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(utpPath));
+            var rootElement = document.RootElement;
+
+            int GetIntField(string field) =>
+                rootElement.TryGetProperty(field, out var f) && f.TryGetProperty("value", out var v)
+                    ? v.GetInt32()
+                    : 0;
+
+            if (GetIntField("Useable") != 1)
+                failures.Add($"{themeKey} {role}: '{resref}' is not Useable.");
+            if (GetIntField("Static") != 0)
+                failures.Add($"{themeKey} {role}: '{resref}' is Static (non-interactive).");
+            if (requireInventory && GetIntField("HasInventory") != 1)
+                failures.Add($"{themeKey} {role}: '{resref}' has no inventory; item creation will silently fail.");
+
+            var appearance = GetIntField("Appearance");
+            if (!modelNamesByRow.TryGetValue(appearance, out var modelName))
+                failures.Add($"{themeKey} {role}: '{resref}' appearance row {appearance} does not exist in placeables.2da.");
+            else if (string.IsNullOrEmpty(modelName) || modelName == "****")
+                failures.Add($"{themeKey} {role}: '{resref}' appearance row {appearance} has a blank ModelName — it renders invisible.");
+        }
+
+        foreach (var (themeKey, detail) in BuildAllDungeons())
+        {
+            CheckPlaceable(themeKey, "exit", detail.ExitPlaceableResref, requireInventory: false);
+            CheckPlaceable(themeKey, "treasure", detail.TreasurePlaceableResref, requireInventory: true);
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    /// <summary>Parses placeables.2da into row index -> ModelName (third column; "****" = blank).</summary>
+    private static Dictionary<int, string> ReadPlaceableAppearanceModelNames(DirectoryInfo root)
+    {
+        var result = new Dictionary<int, string>();
+        var path = Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "placeables.2da");
+
+        foreach (var line in File.ReadLines(path).Skip(3))
+        {
+            var parts = line.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 3 || !int.TryParse(parts[0], out var row))
+                continue;
+
+            // Column layout: RowIndex Label StrRef ModelName ... but Label may be a quoted string
+            // with spaces. ModelName is the token after StrRef; find it by walking past the label:
+            // simplest robust heuristic — quoted labels start with '"'; rejoin and skip to the
+            // closing quote, then StrRef, then ModelName.
+            string modelName;
+            if (parts[1].StartsWith('"') && !parts[1].EndsWith('"'))
+            {
+                var idx = 2;
+                while (idx < parts.Length && !parts[idx].EndsWith('"'))
+                    idx++;
+                modelName = idx + 2 < parts.Length ? parts[idx + 2] : "****";
+            }
+            else
+            {
+                modelName = parts.Length > 3 ? parts[3] : "****";
+            }
+
+            result[row] = modelName;
+        }
+
+        return result;
+    }
+
     private static Dictionary<string, DungeonDetail> BuildAllDungeons()
     {
         var dungeons = new Dictionary<string, DungeonDetail>();

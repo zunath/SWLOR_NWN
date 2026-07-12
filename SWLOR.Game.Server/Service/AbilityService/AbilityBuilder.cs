@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -748,6 +749,62 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             _activeAbility.TriggersDarkForceConversion = true;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the active ability as a Mimicry technique learned from an enemy creature's ability.
+        /// </summary>
+        /// <param name="sourceCreatureFeat">The NPC feat this technique is copied from.</param>
+        /// <param name="tier">The Mimicry tier of this technique, used to gate learning by skill rank.</param>
+        /// <param name="slotCost">The number of technique slots this ability consumes when equipped.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTechnique(FeatType sourceCreatureFeat, int tier, int slotCost)
+        {
+            if (sourceCreatureFeat == FeatType.Invalid)
+                throw new ArgumentException($"{nameof(sourceCreatureFeat)} must be a real creature ability feat.");
+            if (tier < 1)
+                throw new ArgumentException($"{nameof(tier)} must be at least 1.");
+            if (slotCost < 1)
+                throw new ArgumentException($"{nameof(slotCost)} must be at least 1.");
+
+            _activeAbility.MimicrySourceFeat = sourceCreatureFeat;
+            _activeAbility.MimicryTier = tier;
+            _activeAbility.MimicrySlotCost = slotCost;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the active ability as a Mimicry trait: a passive technique learned from an enemy
+        /// that, while equipped, applies <paramref name="traitStatusEffect"/> instead of granting a
+        /// hotbar action. Otherwise identical to a technique for learning, slot budgeting, and tier gating.
+        /// </summary>
+        /// <param name="sourceCreatureFeat">The NPC feat this trait is copied from.</param>
+        /// <param name="tier">The Mimicry tier of this trait, used to gate learning by skill rank.</param>
+        /// <param name="slotCost">The number of technique slots this trait consumes when equipped.</param>
+        /// <param name="traitStatusEffect">The status effect applied to the wielder while this trait is equipped.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTrait(FeatType sourceCreatureFeat, int tier, int slotCost, Type traitStatusEffect)
+        {
+            MimicryTechnique(sourceCreatureFeat, tier, slotCost);
+
+            if (traitStatusEffect == null)
+                throw new ArgumentException($"{nameof(traitStatusEffect)} must be a real status effect type.");
+
+            _activeAbility.IsMimicryTrait = true;
+            _activeAbility.MimicryTraitStatusEffect = traitStatusEffect;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the damage type a mimicked technique deals, used for damage-type loadout set
+        /// bonuses (elemental resonance).
+        /// </summary>
+        public AbilityBuilder MimicryElement(CombatDamageType element)
+        {
+            _activeAbility.MimicryElement = element;
             return this;
         }
 

@@ -5214,7 +5214,45 @@ namespace SWLOR.Game.Server.Service.StatService
         /// FP cost consumed by each hostile auto-attack while Imbuement Stance is active.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        StanceHostileAutoAttackFPCost = 904
+        StanceHostileAutoAttackFPCost = 916,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Bleed on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtBleedChance = 910,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Freezing on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtFreezingChance = 911,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Shock on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtShockChance = 912,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Sunder on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtSunderChance = 913,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Hemorrhage on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtHemorrhageChance = 914,
+
+        /// <summary>
+        /// Percent bonus to the direct damage of mimicked techniques (combat analyzer potency).
+        /// Granted by Combat Analyzer ranks, the Overclocked Analyzer capstone's Overload, and
+        /// damage-type loadout set bonuses; read by the Mimicry technique impact as a damage-percent adjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MimicryPotencyPercent = 915,
     }
 
     public class StatTypeAttribute : Attribute

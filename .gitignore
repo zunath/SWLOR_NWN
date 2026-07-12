@@ -280,3 +280,6 @@ Module/Star Wars LOR v2.mod
 /tools/SWLOR.CLI/InputFiles/
 /tools/SWLOR.CLI/Templates/
 /tools/SWLOR.CLI/*.pdb
+
+# Git worktrees created under the repo
+/.claude/worktrees/

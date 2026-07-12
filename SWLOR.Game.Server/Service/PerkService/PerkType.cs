@@ -727,6 +727,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         CenterOfTheStorm = 779,
         AegisEternal = 782,
         SaberForceLink = 649,
-        // IDs 650, 767, 780, and 783+ are free.
+        CombatAnalyzer = 767,
+        AnalyzerMemory = 780,
+        PatternRecognition = 783,
+        OverclockedAnalyzer = 784,
+        // IDs 650 and 785+ are free.
     }
 }

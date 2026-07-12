@@ -1,7 +1,7 @@
 using System;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.AreaBuilder
+namespace SWLOR.ContentBuilder.Services
 {
     /// <summary>Outcome of one GenerationEngine.Generate call.</summary>
     internal sealed class GenerationResult

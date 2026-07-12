@@ -4,7 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.AreaBuilder
+namespace SWLOR.ContentBuilder.Services
 {
     /// <summary>
     /// Reflects over the linked theme/tileset-profile/layout-profile definitions, the same

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace SWLOR.AreaBuilder
+namespace SWLOR.ContentBuilder.Services
 {
     /// <summary>
     /// Locates repository-relative paths the same way SWLOR.ProcgenReview does: walk up from the

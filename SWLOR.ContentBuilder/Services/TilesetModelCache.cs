@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.AreaBuilder
+namespace SWLOR.ContentBuilder.Services
 {
     /// <summary>
     /// Lazily parses each tileset's .set file the first time its profile is selected, by scanning

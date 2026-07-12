@@ -1,7 +1,7 @@
-<Window x:Class="SWLOR.AreaBuilder.MainWindow"
+<Window x:Class="SWLOR.ContentBuilder.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Area Builder" Width="1300" Height="850" MinWidth="1100" MinHeight="750">
+        Title="Content Builder" Width="1300" Height="850" MinWidth="1100" MinHeight="750">
     <!--
         The left control panel and all its groups/rows are built in code-behind (MainWindow.xaml.cs,
         BuildLeftPanel) since most of it is repetitive labeled Slider/ComboBox rows; this file only

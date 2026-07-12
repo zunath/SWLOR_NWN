@@ -6,8 +6,8 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyName>SWLOR.AreaBuilder</AssemblyName>
-    <RootNamespace>SWLOR.AreaBuilder</RootNamespace>
+    <AssemblyName>SWLOR.ContentBuilder</AssemblyName>
+    <RootNamespace>SWLOR.ContentBuilder</RootNamespace>
   </PropertyGroup>
 
   <!--

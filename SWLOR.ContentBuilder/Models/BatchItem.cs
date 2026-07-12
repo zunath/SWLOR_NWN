@@ -1,4 +1,4 @@
-namespace SWLOR.AreaBuilder
+namespace SWLOR.ContentBuilder.Models
 {
     /// <summary>
     /// One queued composition for "Build Review Module". Serializes to SWLOR.ProcgenReview's

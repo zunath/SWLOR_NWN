@@ -11,10 +11,13 @@ using System.Windows.Media;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.AreaBuilder
+using SWLOR.ContentBuilder.Models;
+using SWLOR.ContentBuilder.Rendering;
+using SWLOR.ContentBuilder.Services;
+namespace SWLOR.ContentBuilder.Windows
 {
     /// <summary>
-    /// Area Builder main window: pick a content theme / tileset profile / layout profile, tune
+    /// Content Builder main window: pick a content theme / tileset profile / layout profile, tune
     /// layout knobs, preview the generated schematic instantly, queue compositions into a batch,
     /// and build a toolset-reviewable module via SWLOR.ProcgenReview with one click.
     ///

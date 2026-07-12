@@ -1792,6 +1792,12 @@ namespace SWLOR.Game.Server.Service
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
 
+            // Register the combat point before applying damage. A lethal hit resolves the target's
+            // death (and its skill XP distribution) synchronously during EffectDamage below, so
+            // registering afterward would miss the payout entirely when an ability one-shots a target.
+            if (awardsCombatPoints)
+                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
+
             if (damage > 0)
             {
                 Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
@@ -1855,8 +1861,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             afterSuccessfulHit?.Invoke(target);
-            if (awardsCombatPoints)
-                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
             RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
         }
@@ -2194,6 +2198,14 @@ namespace SWLOR.Game.Server.Service
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+                target,
+                damageType,
+                defense,
+                () => Combat.ApplyStatusSourceDefenseModifiers(
+                    activator,
+                    target,
+                    Stat.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var defenseIgnorePercent =
                 Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
@@ -2402,6 +2414,14 @@ namespace SWLOR.Game.Server.Service
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+                target,
+                damageType,
+                defense,
+                () => Combat.ApplyStatusSourceDefenseModifiers(
+                    activator,
+                    target,
+                    Stat.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var defenseIgnorePercent =
                 Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +

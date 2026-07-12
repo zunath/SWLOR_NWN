@@ -727,9 +727,13 @@ namespace SWLOR.Game.Server.Service.PerkService
         CenterOfTheStorm = 779,
         AegisEternal = 782,
         SaberForceLink = 649,
+        CombatAnalyzer = 767,
+        AnalyzerMemory = 780,
+        PatternRecognition = 783,
+        OverclockedAnalyzer = 784,
         Cultivation = 650,
-        Horticulture = 767,
-        Botany = 780,
-        // IDs 783+ are free.
+        Horticulture = 785,
+        Botany = 786,
+        // IDs 787+ are free.
     }
 }

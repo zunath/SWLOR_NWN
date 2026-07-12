@@ -68,7 +68,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         LightsaberWorkbench = 63,
         PlayerStatusPortrait = 64,
         PlayerStatusPortraitSpace = 65,
-        Planter = 66,
+        Techniques = 66,
+        Planter = 67,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

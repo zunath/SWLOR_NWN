@@ -10,6 +10,7 @@ This plan tracks quest-line rules for locking level 50 capstone perks behind que
 - The capstone perk unlocked by the line must be assigned to the final boss of that quest line. For passive or trait capstones, assign the granted feat and the matching `PERK_LEVEL_<perk id>` local so the existing perk-stat path activates; for active capstones, assign the granted feat or spell through the boss ability package.
 - Each capstone quest line should use new enemies, items, or encounters when it asks for kills, collection, investigation, or other tasks.
 - Each capstone quest line must have its own dedicated quest giver NPC. Area groups may be reused by up to three capstone lines, but the player-facing trainer/requester for each capstone line must be distinct.
+- Quest giver NPCs must be placed in safe areas with no enemy spawns (settlements, landings, hubs), never in areas with ambient creature spawn tables or spawn waypoints. Quest journal "return to" text must name the quest giver's actual hub location once the giver is placed.
 - Generated capstone `NPCGroupType` identifiers must use the planet prefix from the line's area group, such as `Viscara_` or `Dathomir_`, not an internal `Capstone_` prefix.
 - Every generated capstone enemy must have a new first-class NPC signature ability plus a distinct support ability package and a documented resistance profile. Reusable NPC signature abilities live directly under `SWLOR.Game.Server/Feature/AbilityDefinition/NPC`, not under a capstone-specific subfolder. Humanoid enemies must use humanoid, tech, Force, command, or weapon abilities rather than creature-only body attacks; beast enemies should use beast-appropriate attacks, roars, hides, or creature movement abilities.
 - Capstone-tier NPC signature abilities must use the existing `RecastGroup.Capstone` cooldown bucket. Do not add duplicate recast groups such as `CapstoneSignature` or `NPCSignature` unless a separate gameplay cooldown is explicitly designed and approved.
@@ -103,6 +104,12 @@ For capstone planning, a content package is not a single physical area. Followin
 
 The 13 content packages below therefore represent 26 physical areas to build: 13 dungeons and 13 attached boss arenas.
 
+Current build state (2026-07-11):
+
+- **Dathomir Grotto Apex Den** is fully placed and wired (see the dedicated section below). Its three lines await only an in-game progression pass and a position review.
+- **Czerka Arms Test Range** has an imported dungeon area (`pw_ar_czarmrange`, `[KA] Czerka Weapons Testing Facility`) that is decoration-only: no boss arena, no transitions into it, and no capstone wiring. Do not wire its three lines until the attached boss arena exists.
+- The remaining 11 packages have no physical areas yet.
+
 ### Generated Reusable Content
 
 - General lesson enemies use one spawn table per area group. Each table contains only quest steps 1, 2, and 4: adept, specialist, and inner circle enemies.
@@ -165,7 +172,7 @@ These spawn tables are for the dungeon/lesson areas only. Do not place these way
 ### Area Builder Handoff For Each Content Package
 
 - Create two attached physical areas: a gated dungeon/lesson area and a boss arena area reachable from that dungeon.
-- Place each capstone line's dedicated quest giver NPC. Do not collapse multiple capstone quest lines onto one shared area trainer even when the lines reuse the same content package.
+- Place each capstone line's dedicated quest giver NPC in a safe hub area with no enemy spawns (such as a settlement or landing pad on the package's planet). Do not collapse multiple capstone quest lines onto one shared area trainer even when the lines reuse the same content package. Update the line's journal "return to" text to name that hub.
 - Add a standard access object or equivalent gate that checks the content package's capstone key item and sends the player into the dungeon/lesson area.
 - In the dungeon/lesson area, place the general spawn waypoint using the generated waypoint resref above. Its tag already matches the generated spawn table ID.
 - In the dungeon/lesson area, use the generated level 50 spawn table for general lesson enemies only. Do not place the table in low-level, public, or boss arena areas.
@@ -183,6 +190,58 @@ These spawn tables are for the dungeon/lesson areas only. Do not place these way
 - Add World NPCs Bible rows for every generated enemy and boss using the established NPC guide, formulas, dropdown-backed fields, resistance overrides, weapon delay rows, and ability packages before final balance sign-off.
 - Generated enemies already require reusable generic signature abilities. Create any extra boss-only abilities later as reusable behavior/effect assets, one ability definition per file directly under `SWLOR.Game.Server/Feature/AbilityDefinition/NPC`, with valid icons and generated cooldown icon variants, when a line needs more than its assigned capstone feat, generated signature ability, and baseline NPC support package.
 - Run a full in-game progression pass for every line assigned to the area group after placement.
+
+### Area Builder Quick Reference
+
+Literal handoff values for every capstone line. All lines follow the same deterministic patterns:
+
+- Quest IDs: `<quest id stem>_foundation`, `_measure`, `_breach` (warden), `_circle`, `_mastery` (master).
+- Warden activator locals: `QUEST_ID = <stem>_breach`, `QUEST_ENCOUNTER_ID = <stem>_breach_warden`, `QUEST_ENCOUNTER_RESREF = cp_<code>_wd`, `QUEST_ENCOUNTER_WAYPOINT = CAPSTONE_<CODE>_WD_SPAWN` (waypoint blueprint `wp_<code>_wd`).
+- Master activator locals: `QUEST_ID = <stem>_mastery`, `QUEST_ENCOUNTER_ID = <stem>_mastery_master`, `QUEST_ENCOUNTER_RESREF = cp_<code>_ms`, `QUEST_ENCOUNTER_WAYPOINT = CAPSTONE_<CODE>_MS_SPAWN` (waypoint blueprint `wp_<code>_ms`).
+- Every activator: `QUEST_STATE = 1`, `VISIBILITY_HIDDEN_DEFAULT = 1`, a unique `VISIBILITY_OBJECT_ID`, `QUEST_ENCOUNTER_COOLDOWN_MINUTES = 60`, `QUEST_ENCOUNTER_IDLE_MINUTES = 10`, `OnUsed = quest_enc`, `LocName = ???`.
+- Access gate: `tele_obj` instance with `KEY_ITEM_ID` = the package's key item ID below, `TELEPORT_PARTY_MEMBERS = 1`, and a `MISSING_KEY_ITEM_MESSAGE` naming the package location.
+
+| Content Package | Line (Skill) | Quest Giver (resref) | Line Code | Quest ID Stem | Key Item ID |
+| --- | --- | --- | --- | --- | --- |
+| Veles Militia Annex | Invincible (Vibroblade) | Captain Tov Renn (`cq_invinc`) | `invinc` | `invincible` | 107 |
+| Veles Militia Annex | Vital Rupture (Vibroknife) | Mikka Varn (`cq_vitrupt`) | `vitrupt` | `vital_rupture` | 107 |
+| Veles Militia Annex | Systemic Shutdown (Vibroknife) | Dalen Orso (`cq_sysshut`) | `sysshut` | `systemic_shutdown` | 107 |
+| Dantooine Jedi Enclave Trial Halls | Saber Storm (Lightsaber) | Talan Rees (`cq_sabstorm`) | `sabstorm` | `saber_storm` | 108 |
+| Dantooine Jedi Enclave Trial Halls | Guardian Master (Lightsaber) | Miris Aven (`cq_guardmst`) | `guardmst` | `guardian_master` | 108 |
+| Dantooine Jedi Enclave Trial Halls | Saber Cyclone (Saberstaff) | Jora Sel (`cq_sabcycl`) | `sabcycl` | `saber_cyclone` | 108 |
+| Korriban Forge Caverns | Absolute Defense (HeavyVibroblade) | Valis Korr (`cq_absdef`) | `absdef` | `absolute_defense` | 109 |
+| Korriban Forge Caverns | Soul Ascension (HeavyVibroblade) | Senn Dralok (`cq_soulasc`) | `soulasc` | `soul_ascension` | 109 |
+| Korriban Forge Caverns | Forcebane (Spear) | Maar Veth (`cq_forcebane`) | `forcebane` | `forcebane` | 109 |
+| Smuggler's Moon Fight Club Backrooms | Crippling Defense (Spear) | Dax Rell (`cq_cripdef`) | `cripdef` | `crippling_defense` | 110 |
+| Smuggler's Moon Fight Club Backrooms | Tempest Bloom (TwinBlade) | Iven Brask (`cq_tempbloom`) | `tempbloom` | `tempest_bloom` | 110 |
+| Smuggler's Moon Fight Club Backrooms | Red Bloom (TwinBlade) | Nyra Tane (`cq_redbloom`) | `redbloom` | `red_bloom` | 110 |
+| CZ-220 Breaker Yard | Adamantine Guard (Katar) | Tressa Kade (`cq_adamguard`) | `adamguard` | `adamantine_guard` | 111 |
+| CZ-220 Breaker Yard | Scrapheap Lockdown (Katar) | Borrik Sen (`cq_scraplock`) | `scraplock` | `scrapheap_lockdown` | 111 |
+| CZ-220 Breaker Yard | Worldbreaker (Staff) | Unit KX-17 (`cq_worldbrk`) | `worldbrk` | `worldbreaker` | 111 |
+| Anchorhead Canyon Range | Unmoving Center (Staff) | Marda Voss (`cq_unmovctr`) | `unmovctr` | `unmoving_center` | 112 |
+| Anchorhead Canyon Range | Last Word (Pistol) | Jek Talin (`cq_lastword`) | `lastword` | `last_word` | 112 |
+| Anchorhead Canyon Range | Dead Man's Hand (Pistol) | Pavo Orrel (`cq_deadhand`) | `deadhand` | `dead_mans_hand` | 112 |
+| Czerka Arms Test Range | Kill Box (Rifle) | Ressa Vale (`cq_killbox`) | `killbox` | `kill_box` | 113 |
+| Czerka Arms Test Range | One Shot (Rifle) | Orin Tal (`cq_oneshot`) | `oneshot` | `one_shot` | 113 |
+| Czerka Arms Test Range | Rain of Steel (Throwing) | Varik Dane (`cq_rainsteel`) | `rainsteel` | `rain_of_steel` | 113 |
+| Hutlar Qion Test Site | Perfect Flurry (Throwing) | Selka Vorn (`cq_perflurry`) | `perflurry` | `perfect_flurry` | 114 |
+| Hutlar Qion Test Site | Thermal Detonator (Devices) | Ruk Halven (`cq_thermdet`) | `thermdet` | `thermal_detonator` | 114 |
+| Hutlar Qion Test Site | Overload Barrage (Devices) | Miri Koss (`cq_overbarr`) | `overbarr` | `overload_barrage` | 114 |
+| Korriban Sith Crypt Depths | Last Stand of the Light (Force) | Seris Nahl (`cq_lightstand`) | `lightstand` | `last_stand_of_the_light` | 115 |
+| Korriban Sith Crypt Depths | Hunger of the Dark (Force) | Neth Kyr (`cq_darkhung`) | `darkhung` | `hunger_of_the_dark` | 115 |
+| Korriban Sith Crypt Depths | Eclipse of Resolve (Force) | Acolyte Varn (`cq_eclipse`) | `eclipse` | `eclipse_of_resolve` | 115 |
+| Viscara Republic Engineering Bunker | Killzone Beacon (Devices) | Aric Jorr (`cq_killbeacon`) | `killbeacon` | `killzone_beacon` | 116 |
+| Viscara Republic Engineering Bunker | Emergency Bunker (Devices) | Nella Voss (`cq_embunker`) | `embunker` | `emergency_bunker` | 116 |
+| Viscara Republic Engineering Bunker | Decisive Command (Leadership) | Varen Kell (`cq_deccommand`) | `deccommand` | `decisive_command` | 116 |
+| Dantooine Medical Sublevel | Hold the Line (Leadership) | Edda Maln (`cq_holdline`) | `holdline` | `hold_the_line` | 117 |
+| Dantooine Medical Sublevel | Emergency Cocktail (FirstAid) | Kavi Dorn (`cq_emcocktail`) | `emcocktail` | `emergency_cocktail` | 117 |
+| Dantooine Medical Sublevel | Infinite Conduit (Saberstaff) | Tessa Quell (`cq_infconduit`) | `infconduit` | `infinite_conduit` | 117 |
+| Dathomir Tarn Jungle Preserve | Apex Bite (BeastMastery) | Talra Venn (`cq_apexbite`) | `apexbite` | `apex_bite` | 118 |
+| Dathomir Tarn Jungle Preserve | Unbreakable Beast (BeastMastery) | Oren Krast (`cq_unbrbeast`) | `unbrbeast` | `unbreakable_beast` | 118 |
+| Dathomir Tarn Jungle Preserve | Alpha Rhythm (BeastMastery) | Mira Syth (`cq_alpharhy`) | `alpharhy` | `alpha_rhythm` | 118 |
+| Dathomir Grotto Apex Den | Primal Overrun (BeastMastery) | Nalka Rinn (`cq_primover`) | `primover` | `primal_overrun` | 119 |
+| Dathomir Grotto Apex Den | Untouchable Instinct (BeastMastery) | Voro Thane (`cq_untinst`) | `untinst` | `untouchable_instinct` | 119 |
+| Dathomir Grotto Apex Den | Force-Bonded Beast (BeastMastery) | Eshka Korr (`cq_forcebeast`) | `forcebeast` | `force_bonded_beast` | 119 |
 
 ## Blood Frenzy
 
@@ -231,7 +290,7 @@ The current module content includes the level 50 Viscara Sewers Depths area and 
 - Neither `bf_butch_call` nor `bf_kess_call` should exist in the placeable blueprint palette or as `Module/utp` files. Their placed area instances are intentional.
 - The Sewers Depths area has a teleport to the Kess arena, and the arena has a return teleport to `VISC_SEWERS_ARENA_EXIT`.
 
-Do not consider the Blood Frenzy line fully validated until the in-game progression pass below is complete.
+The full in-game progression pass for Blood Frenzy was completed on 2026-07-11. The line is fully validated.
 
 ### Area Builder Follow-Ups
 
@@ -249,4 +308,24 @@ Do not consider the Blood Frenzy line fully validated until the in-game progress
   - Blood Frenzy Butcher
   - Kess Draavo, the Blood Frenzy King
 - Keep Sera Vonn's dialogue, the Blood Frenzy journal text, and the access key item naming aligned on `Viscara Sewers Depths`.
-- Run an in-game progression pass from quest 1 through Blood Frenzy purchase after the final area placement is in place.
+- The in-game progression pass from quest 1 through Blood Frenzy purchase is complete (2026-07-11). No open follow-ups remain unless the area layout changes.
+
+## Dathomir Grotto Apex Den
+
+The Dathomir Grotto Apex Den content package hosts the Primal Overrun, Untouchable Instinct, and Force-Bonded Beast capstone lines (BeastMastery). Placement was completed on 2026-07-11 and is covered by `DathomirGrottoApexDenPlacementTests`.
+
+### Placement Status
+
+- The dungeon is `pw_sc_dath_apexd` (`Dathomir - Grotto Apex Den`, tag `pw_sc_dath_apexden`). The attached boss arena is `pw_sc_dath_sden` (`Dathomir - Sealed Apex Den`, tag `pw_sc_dath_sden`; the tag was corrected from a duplicated `pw_sc_dath_apexden`). The two areas are door-linked via `dath_to_apexsealed`/`dath_sealedden`.
+- The three quest givers are hand-placed beside the Beast Stables terminal in the safe `Dathomir - Jungle Landing` hub (`dath_landingpad`): Nalka Rinn (`cq_primover`), Voro Thane (`cq_untinst`), and Eshka Korr (`cq_forcebeast`). Quest journal "return to" text names the Dathomir Jungle Landing. Quest givers must not stand in the Grotto Caverns, which have ambient enemy spawns.
+- The access point is a standard `tele_obj` instance named `Enter the Grotto Apex Den` at the fire-pit camp inside `Dathomir - Grotto Caverns`' anti-spawn zone (`dathgrottocavern`), using `KEY_ITEM_ID = 119` (`CapstoneDathomirGrottoApexDenKey`), `DESTINATION = DATH_APEX_DEN_INSIDE`, and `TELEPORT_PARTY_MEMBERS = 1`. A matching `Exit the Apex Den` `tele_obj` inside the dungeon returns players to the hand-placed `DATH_APEX_DEN_OUTSIDE` waypoint at the camp.
+- The dungeon uses the area-local spawn wiring pattern (`CREATURE_SPAWN_TABLE_ID = CAPSTONE_DATHOMIR_GROTTO_APEX_DEN`, `IS_DUNGEON = 1`, `MINI_MAP_DISABLED = 1`, `MAP_KEY_ITEM_ID = 65`), so only adept/specialist/inner-circle lesson enemies spawn ambiently. The generated `wp_cap_dgrot` waypoint blueprint remains available if fixed spawn points are preferred later.
+- Six `quest_enc` activator instances are placed in the sealed den arena, one warden and one master per line (`primov_wd_call`, `primov_ms_call`, `untinst_wd_call`, `untinst_ms_call`, `fbeast_wd_call`, `fbeast_ms_call`), each with the full `QUEST_ID`/`QUEST_STATE`/`QUEST_ENCOUNTER_*`/`VISIBILITY_*` local set, `LocName = ???`, a 60-minute starter cooldown, and a 10-minute idle despawn. Their six boss spawn waypoints (`CAPSTONE_<CODE>_WD|MS_SPAWN`) are placed mid-arena. None of the activators exist as palette blueprints or `Module/utp` files; the placed instances are the source of truth.
+- `STUCK_WAYPOINT` instances exist in both new areas.
+- Journal text, dialogue, and the access key item all name the `Dathomir Grotto Apex Den`; the quest givers stand at its entrance camp in the Grotto Caverns.
+
+### Area Builder Follow-Ups
+
+- Placements were made from module JSON coordinates, not in the toolset. Verify in the toolset or in game that the quest giver trio at the Jungle Landing (beside the Beast Stables terminal, around x25-27, y76-81), the gate camp in the Grotto Caverns (around the fire pit near x27, y31), the dungeon entry cluster (inside the `dath_apexentrance` door, around x142, y133), and the arena activator/spawn spread sit on valid walkmesh, and nudge as needed.
+- The decorative `dath_apexentrance` door in the dungeon is unlinked by design; entry and exit flow through the `tele_obj` pair. Remove or relocate the door only alongside a layout pass.
+- Run the full in-game progression pass for all three lines (quest 1 through capstone perk purchase) before calling the package validated.

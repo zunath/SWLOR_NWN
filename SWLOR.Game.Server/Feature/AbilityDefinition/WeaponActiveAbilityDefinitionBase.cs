@@ -1282,7 +1282,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
                 else
                 {
-                    ability.IsSingleTargetAbility().RequiresTarget();
+                    ability.IsSingleTargetAbility();
+
+                    // Queued weapon abilities fire on the wearer's next landed auto-attack, so they must
+                    // not force up-front target selection (the on-hit event supplies the target). Only
+                    // cast-style single-target abilities require picking a target object.
+                    if (!profile.IsQueuedWeaponAbility)
+                        ability.RequiresTarget();
+
                     if (maxRange > 0f)
                         ability.HasMaxRange(maxRange);
                 }

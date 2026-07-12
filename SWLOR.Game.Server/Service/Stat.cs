@@ -876,7 +876,7 @@ namespace SWLOR.Game.Server.Service
             return ApplyPostAttackStatusModifiers(creature, attack, skillType);
         }
 
-        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid)
+        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid, bool useForceAttack = false)
         {
             var attackBonus = 0;
             var skillLevel = 0;
@@ -885,6 +885,11 @@ namespace SWLOR.Game.Server.Service
                 : Combat.GetWeaponDamageAbilityType(creature.m_idSelf, itemType);
             var stat = GetStatValueNative(creature, statType);
             var skillType = Skill.GetSkillTypeByBaseItem(itemType);
+
+            // Force-typed attacks (e.g. Imbuement Stance retyping a weapon swing to Force) use the
+            // wearer's Force Attack in place of physical Attack so the attack side matches the Force
+            // Defense the hit is mitigated against. The weapon's own skill rank still governs the roll.
+            var usesForceAttack = useForceAttack || skillType == SkillType.Force;
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -896,7 +901,7 @@ namespace SWLOR.Game.Server.Service
                     if(skillType != SkillType.Invalid)
                         skillLevel = dbPlayer.Skills[skillType].Rank;
 
-                    if (skillType == SkillType.Force)
+                    if (usesForceAttack)
                         attackBonus += dbPlayer.ForceAttack;
                     else
                         attackBonus += dbPlayer.Attack;
@@ -912,7 +917,7 @@ namespace SWLOR.Game.Server.Service
                     ? npcStats.Skills[skillType]
                     : npcStats.Level;
 
-                if (skillType == SkillType.Force)
+                if (usesForceAttack)
                     attackBonus += npcStats.ForceAttack;
                 else
                     attackBonus += npcStats.Attack;
@@ -921,7 +926,7 @@ namespace SWLOR.Game.Server.Service
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
 
             var attack = GetAttack(skillLevel, stat, attackBonus);
-            return ApplyPostAttackStatusModifiers(creature.m_idSelf, attack, skillType);
+            return ApplyPostAttackStatusModifiers(creature.m_idSelf, attack, usesForceAttack ? SkillType.Force : skillType);
         }
 
         /// <summary>

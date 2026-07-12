@@ -758,6 +758,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         InterruptingSweep = 466,
         [RecastGroup("Field Tool", "Field Tool", true)]
         FieldTool = 467,
+        [RecastGroup("Overload", "Overload", true)]
+        Overload = 483,
     }
 
     public class RecastGroupAttribute : Attribute

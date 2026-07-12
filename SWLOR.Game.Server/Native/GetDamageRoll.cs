@@ -122,7 +122,10 @@ namespace SWLOR.Game.Server.Native
                 var critical = bCritical == 1
                     ? Combat.StandardCriticalRating
                     : 0;
-                var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem, attackerStatType);
+                // Force-typed swings (e.g. Imbuement Stance) use Force Attack so the attack side lines up
+                // with the Force Defense the damage is mitigated against.
+                var useForceAttack = damageProfile.DamageType == CombatDamageType.Force;
+                var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem, attackerStatType, useForceAttack);
                 var totalDamage = 0;
 
                 var physicalDamage = ProcessDamage(pTarget, attacker, damageProfile, pAttackData,
@@ -501,6 +504,14 @@ namespace SWLOR.Game.Server.Native
             var damagePower = attacker.CalculateDamagePower(target, bOffHand);
             var defense = Stat.GetDefenseNative(target, damageType, defenderAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
+            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+                target.m_idSelf,
+                damageType,
+                defense,
+                () => Combat.ApplyStatusSourceDefenseModifiers(
+                    attacker.m_idSelf,
+                    target.m_idSelf,
+                    Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
             var attackDamage = damageProfile.Damage + Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType);
 

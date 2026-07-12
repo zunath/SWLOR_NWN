@@ -1156,6 +1156,7 @@ namespace SWLOR.Game.Server.Service
             ApplyPredatorsMarkEffects(attacker, defender, skillType);
             ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);
             ApplyDamageDealtHamstringEffect(attacker, defender, skillType, damageType);
+            ApplyDamageDealtMimicryTraitProcs(attacker, defender);
             ApplyNextDamageDealtBleedEffect(attacker, defender, damageType);
             ApplyAutoAttackSuppressionStack(attacker, defender, skillType, damageType);
             ApplyRangedHitSuppressionStack(attacker, defender, skillType, damageType);
@@ -1346,6 +1347,42 @@ namespace SWLOR.Game.Server.Service
                 typeof(HamstringStatusEffect),
                 duration,
                 damageType);
+        }
+
+        /// <summary>
+        /// On-hit proc traits mimicked from enemies. Each equipped proc trait grants a
+        /// DamageDealt&lt;Effect&gt;Chance stat (via its trait status effect); on a landed direct hit
+        /// each chance is rolled independently and, on success, applies the matching status effect
+        /// for a fixed duration. Mirrors <see cref="ApplyDamageDealtHamstringEffect"/> but is not
+        /// weapon-skill gated, since the analyzer replicates the trait regardless of armament.
+        /// </summary>
+        private static readonly (StatType Chance, Type Effect, CombatDamageType Damage, float Duration)[] MimicryTraitProcs =
+        {
+            (StatType.DamageDealtBleedChance, typeof(BleedStatusEffect), CombatDamageType.Physical, 12f),
+            (StatType.DamageDealtFreezingChance, typeof(FreezingStatusEffect), CombatDamageType.Ice, 6f),
+            (StatType.DamageDealtShockChance, typeof(ShockStatusEffect), CombatDamageType.Electrical, 10f),
+            (StatType.DamageDealtSunderChance, typeof(SunderStatusEffect), CombatDamageType.Physical, 14f),
+            (StatType.DamageDealtHemorrhageChance, typeof(HemorrhageStatusEffect), CombatDamageType.Physical, 12f),
+        };
+
+        private static void ApplyDamageDealtMimicryTraitProcs(uint attacker, uint defender)
+        {
+            if (!GetIsObjectValid(defender))
+                return;
+
+            foreach (var proc in MimicryTraitProcs)
+            {
+                var chance = Stat.GetStatAdjustment(attacker, proc.Chance);
+                if (chance <= 0 || Random.D100(1) > chance)
+                    continue;
+
+                StatusEffect.ApplyStatusEffect(
+                    attacker,
+                    defender,
+                    proc.Effect,
+                    proc.Duration,
+                    proc.Damage);
+            }
         }
 
         private static void ApplySideAttackDamageEffects(uint attacker, uint defender, SkillType skillType, int damage)
@@ -3670,6 +3707,33 @@ namespace SWLOR.Game.Server.Service
             return adjustment == 0
                 ? defense
                 : Math.Max(0, defense + (int)Math.Ceiling(defense * (adjustment / 100f)));
+        }
+
+        /// <summary>
+        /// Saber Ward (and Aegis Eternal) let a defender treat a percentage of incoming physical damage
+        /// as Force damage so it is mitigated by Force Defense instead of Physical Defense. The physical
+        /// hit's damage roll uses a defense value blended between the defender's Physical Defense and Force
+        /// Defense by that percent, so the converted share is effectively mitigated as Force. The percentage
+        /// is read from <see cref="StatType.IncomingPhysicalToForceConversionPercent"/> on the defender, and
+        /// only physical-category damage is affected. The Force Defense value is resolved lazily because the
+        /// auto-attack and ability damage paths look it up through different (native vs managed) helpers.
+        /// </summary>
+        public static int ApplyIncomingPhysicalToForceDefenseConversion(
+            uint defender,
+            CombatDamageType damageType,
+            int physicalDefense,
+            Func<int> forceDefenseProvider)
+        {
+            if (!damageType.IsPhysicalDamageType())
+                return physicalDefense;
+
+            var conversionPercent = Stat.GetStatAdjustment(defender, StatType.IncomingPhysicalToForceConversionPercent);
+            if (conversionPercent <= 0)
+                return physicalDefense;
+
+            conversionPercent = Math.Clamp(conversionPercent, 0, 100);
+            var forceDefense = forceDefenseProvider();
+            return (physicalDefense * (100 - conversionPercent) + forceDefense * conversionPercent) / 100;
         }
 
         public static int ApplyStatusSourceAccuracyModifiers(uint attacker, uint defender, int accuracy)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -56,6 +57,24 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public List<Type> StatusEffectTypesRemovedOnPerkRefund { get; set; }
         public AITargetSelector AITargetSelector { get; set; }
         public AIScoreCalculation AIScore { get; set; }
+        public FeatType MimicrySourceFeat { get; set; }
+        public int MimicryTier { get; set; }
+        public int MimicrySlotCost { get; set; }
+
+        /// <summary>
+        /// When true this mimicked technique is a passive trait rather than an activated ability:
+        /// equipping it applies <see cref="MimicryTraitStatusEffect"/> for as long as it is slotted
+        /// (granting flat stats, a self-buff, or an on-hit proc chance) and it has no hotbar action.
+        /// </summary>
+        public bool IsMimicryTrait { get; set; }
+        public Type MimicryTraitStatusEffect { get; set; }
+
+        /// <summary>
+        /// The damage type this mimicked technique deals, used for damage-type loadout set bonuses
+        /// (elemental resonance). <see cref="CombatDamageType.Invalid"/> for techniques with no
+        /// damage element (passive flat/self-buff traits), which do not contribute to a set.
+        /// </summary>
+        public CombatDamageType MimicryElement { get; set; }
 
         public AbilityDetail()
         {
@@ -86,6 +105,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
             SuppressesSourceStatusStackRiders = false;
             AdditionalActivationTargeting = new List<AbilityTargetingDetail>();
             StatusEffectTypesRemovedOnPerkRefund = new List<Type>();
+            MimicrySourceFeat = FeatType.Invalid;
+            MimicryElement = CombatDamageType.Invalid;
         }
     }
 }

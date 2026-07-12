@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public bool TreasurePlaced { get; set; }
         public uint TreasureContainer { get; set; } = OBJECT_INVALID;
         public int TreasureItemsSpawned { get; set; }
-        public bool ExitPlaced { get; set; }
+        public int ExitsPlaced { get; set; }
+        public bool ExitPlaced => ExitsPlaced > 0;
     }
 
     /// <summary>
@@ -202,9 +203,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>
         /// Populates a freshly generated area instance with tier-scaled content for the given dungeon
         /// theme: ambient creatures in every Standard room, a boss + filled treasure container in the
-        /// Boss room, and an exit placeable in the Entrance room. All randomness derives from the
-        /// instance's layout seed (plus the tier), so a given (seed, tier) always produces the same
-        /// population. Safe to call once, immediately after a successful Generate/QueueGeneration.
+        /// Boss room, and an exit placeable at every Exit transition point. All randomness derives
+        /// from the instance's layout seed (plus the tier), so a given (seed, tier) always produces
+        /// the same population. Safe to call once, immediately after a successful Generate/QueueGeneration.
         /// </summary>
         public static DungeonPopulationResult Populate(RuntimeAreaInstance instance, string themeKey, int tier)
         {
@@ -227,11 +228,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     case RoomRole.Boss:
                         PopulateBossRoom(area, room, detail, tierDetail, rng, instance, result);
                         break;
-
-                    case RoomRole.Entrance:
-                        PopulateEntranceRoom(area, room, detail, instance, result);
-                        break;
                 }
+            }
+
+            foreach (var transition in instance.Layout.Transitions)
+            {
+                if (transition.Kind == TransitionKind.Exit)
+                    PlaceExit(area, transition, detail, instance, result);
             }
 
             return result;
@@ -326,15 +329,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             }
         }
 
-        private static void PopulateEntranceRoom(
+        private static void PlaceExit(
             uint area,
-            LayoutRoom room,
+            TransitionPoint transition,
             DungeonDetail detail,
             RuntimeAreaInstance instance,
             DungeonPopulationResult result)
         {
-            var centerPosition = RoomCenterPosition(area, room);
-            var exitPosition = GroundedPosition(area, centerPosition.X + FeatureOffset, centerPosition.Y - FeatureOffset);
+            var flat = TileCenter(transition.Tile.X, transition.Tile.Y);
+            var exitPosition = GroundedPosition(area, flat.X + FeatureOffset, flat.Y - FeatureOffset);
             var exitLocation = Location(area, exitPosition, 0f);
 
             var exit = CreateObject(ObjectType.Placeable, detail.ExitPlaceableResref, exitLocation);
@@ -346,7 +349,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             SetEventScript(exit, EventScript.Placeable_OnUsed, ScriptName.OnDungeonExitUsed);
 
             instance.SpawnedObjects.Add(exit);
-            result.ExitPlaced = true;
+            result.ExitsPlaced++;
         }
 
         /// <summary>

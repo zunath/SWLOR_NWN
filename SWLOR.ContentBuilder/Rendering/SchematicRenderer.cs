@@ -135,6 +135,8 @@ namespace SWLOR.ContentBuilder.Rendering
                         formattedText,
                         new Point(centerX - formattedText.Width / 2.0, centerY - formattedText.Height / 2.0));
                 }
+
+                TransitionMarkerRenderer.Draw(context, layout.Transitions, cell, offsetX, offsetY, height);
             }
 
             var bitmap = new RenderTargetBitmap(

@@ -140,6 +140,8 @@ namespace SWLOR.ContentBuilder.Rendering
 
                 if (showRoomOverlay)
                     DrawRoomOverlay(context, resolved, cell, offsetX, offsetY, height);
+
+                TransitionMarkerRenderer.Draw(context, resolved.Transitions, cell, offsetX, offsetY, height);
             }
 
             var bitmap = new RenderTargetBitmap(

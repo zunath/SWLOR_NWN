@@ -33,6 +33,51 @@ public class MacroLayoutGeneratorTests
         };
     }
 
+    [Test]
+    public void Generate_Transitions_HonorCountsAndPlacementInvariants()
+    {
+        foreach (var style in AllStyles)
+        {
+            for (var seed = 1; seed <= 15; seed++)
+            {
+                foreach (var (entrances, exits) in new[] { (1, 1), (2, 2), (3, 3), (1, 3) })
+                {
+                    var parameters = DefaultParameters(style);
+                    parameters.EntranceCount = entrances;
+                    parameters.ExitCount = exits;
+
+                    var layout = MacroLayoutGenerator.Generate(parameters, new Random(seed));
+
+                    var entrancePoints = layout.Transitions.Where(t => t.Kind == TransitionKind.Entrance).ToList();
+                    var exitPoints = layout.Transitions.Where(t => t.Kind == TransitionKind.Exit).ToList();
+
+                    entrancePoints.Should().HaveCount(entrances, $"{style} seed {seed}");
+                    exitPoints.Should().HaveCount(exits, $"{style} seed {seed}");
+
+                    // First entrance is the Entrance room's arrival anchor.
+                    var entranceRoom = layout.Rooms.Single(r => r.Role == RoomRole.Entrance);
+                    entrancePoints[0].Tile.Should().Be(entranceRoom.CenterTile);
+                    entrancePoints[0].RoomId.Should().Be(entranceRoom.Id);
+
+                    var roomsById = layout.Rooms.ToDictionary(r => r.Id);
+                    foreach (var transition in layout.Transitions)
+                    {
+                        var room = roomsById[transition.RoomId];
+                        room.Tiles.Should().Contain(transition.Tile,
+                            $"{style} seed {seed}: transition tiles must be fully-open room tiles");
+
+                        if (transition.Kind == TransitionKind.Entrance)
+                            room.Role.Should().NotBe(RoomRole.Boss,
+                                $"{style} seed {seed}: boss rooms never host entrances");
+                    }
+
+                    // Distinct tiles across all transitions.
+                    layout.Transitions.Select(t => t.Tile).Should().OnlyHaveUniqueItems($"{style} seed {seed}");
+                }
+            }
+        }
+    }
+
     [TestCase(DungeonLayoutStyle.RoomsAndCorridors, 1)]
     [TestCase(DungeonLayoutStyle.RoomsAndCorridors, 2)]
     [TestCase(DungeonLayoutStyle.RoomsAndCorridors, 3)]

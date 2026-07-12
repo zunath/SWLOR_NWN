@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);
+            LayoutTransitionAssignment.AssignTransitions(layout, parameters, random);
 
             ValidateInvariants(layout, parameters);
 

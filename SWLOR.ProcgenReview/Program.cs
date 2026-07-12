@@ -14,15 +14,22 @@ using SWLOR.Game.Server.Service.AreaGenerationService;
 //   dotnet run --project SWLOR.ProcgenReview -- [--seeds 4242,777,1337] [--size 16] [--out <path>]
 //   dotnet run --project SWLOR.ProcgenReview -- --matrix
 //   dotnet run --project SWLOR.ProcgenReview -- --areas minecave:::4242:16,minecave:sewers:organic:777:24
+//   dotnet run --project SWLOR.ProcgenReview -- --areas minecave:::4242:16:2:2,scifibase:::777:16:1:3
 //
 // Default (no --areas): every registered theme x seeds 4242/777/1337, composed with its own default
-// tileset/layout profiles (3 areas per theme).
-// --matrix: additionally emits one area per (tileset profile x layout profile) pair at seed 4242.
+// tileset/layout profiles (3 areas per theme). Entrance/exit counts are 1/1.
+// --matrix: additionally emits one area per (tileset profile x layout profile) pair at seed 4242,
+// also with entrance/exit counts 1/1.
 // Content is irrelevant offline (no creatures/loot/exit/treasure are ever emitted by this tool), so
 // matrix compositions carry no theme.
-// --areas: comma-separated "theme:tileset:layout:seed:size" batch entries. tileset/layout may be
-// left empty to use the theme's own defaults. When given, ONLY these areas are generated — no
-// default set, no matrix.
+// --areas: comma-separated batch entries, either "theme:tileset:layout:seed:size" (entrances/exits
+// default to 1/1) or the 7-segment "theme:tileset:layout:seed:size:entrances:exits" form. tileset/
+// layout may be left empty to use the theme's own defaults. When given, ONLY these areas are
+// generated — no default set, no matrix.
+//
+// Each generated area also gets one waypoint per entrance/exit transition point (tags PG_ENT_N /
+// PG_EXIT_N, names "PG Entrance N" / "PG Exit N"), so transitions are visible when reviewing the
+// area in the toolset.
 //
 // Output defaults to <repoRoot>/Module/SWLOR Procgen Review.mod — point nwn.ini's MODULES
 // directory at <repoRoot>/Module (the SWLOR dev convention) and the toolset sees it directly.
@@ -93,9 +100,9 @@ try
         foreach (var entry in areasArg.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             var parts = entry.Split(':');
-            if (parts.Length != 5)
+            if (parts.Length != 5 && parts.Length != 7)
             {
-                Console.Error.WriteLine($"--areas entry '{entry}': expected theme:tileset:layout:seed:size — skipped");
+                Console.Error.WriteLine($"--areas entry '{entry}': expected theme:tileset:layout:seed:size or theme:tileset:layout:seed:size:entrances:exits — skipped");
                 continue;
             }
 
@@ -108,6 +115,16 @@ try
                 continue;
             }
 
+            var entryEntrances = 1;
+            var entryExits = 1;
+            if (parts.Length == 7 &&
+                (!int.TryParse(parts[5], out entryEntrances) || !int.TryParse(parts[6], out entryExits)))
+            {
+                Console.Error.WriteLine($"--areas entry '{entry}': entrances/exits must be integers — skipped");
+                n++;
+                continue;
+            }
+
             var composition = ResolveComposition(themes, tilesetProfiles, layoutProfiles, themeKey, tilesetOverride, layoutOverride);
             if (composition == null)
             {
@@ -117,7 +134,7 @@ try
 
             var resref = UniqueResref($"pga{n}_{entrySeed}", usedResrefs);
             var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, entrySeed);
-            specs.Add(new AreaSpec(resref, display, composition, entrySeed, entrySize));
+            specs.Add(new AreaSpec(resref, display, composition, entrySeed, entrySize, entryEntrances, entryExits));
             n++;
         }
     }
@@ -196,6 +213,8 @@ try
         }
 
         var baseParameters = spec.Composition.BuildLayoutParameters();
+        baseParameters.EntranceCount = spec.Entrances;
+        baseParameters.ExitCount = spec.Exits;
         var layout = Generate(model, baseParameters, spec.Seed, spec.Size);
         if (layout == null)
         {
@@ -378,10 +397,125 @@ static void EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, strin
     are = are[..(open + 1)] + "\n" + tiles + "\n    " + are[close..];
 
     File.WriteAllText(Path.Combine(stage, resref + ".are.json"), are);
-    File.Copy(placeholderGitPath, Path.Combine(stage, resref + ".git.json"));
+
+    var git = File.ReadAllText(placeholderGitPath);
+    var waypoints = BuildWaypointEntries(layout);
+    if (!string.IsNullOrEmpty(waypoints))
+    {
+        var wpStart = git.IndexOf("\"WaypointList\"", StringComparison.Ordinal);
+        var wpOpen = git.IndexOf('[', wpStart);
+        var wpClose = git.IndexOf(']', wpOpen);
+        git = git[..(wpOpen + 1)] + "\n" + waypoints + "\n    " + git[wpClose..];
+    }
+    File.WriteAllText(Path.Combine(stage, resref + ".git.json"), git);
 
     // sanity: must remain valid JSON
     _ = JsonNode.Parse(File.ReadAllText(Path.Combine(stage, resref + ".are.json")));
+    _ = JsonNode.Parse(File.ReadAllText(Path.Combine(stage, resref + ".git.json")));
+}
+
+/// <summary>
+/// Builds one waypoint GFF-JSON struct per entrance/exit transition point, so transitions are
+/// visible when reviewing a generated area in the toolset. Struct shape/field set mirrors an
+/// existing hand-built waypoint instance (see Module/git/veles_sewers.git.json), __struct_id 5.
+/// Positioned at the transition tile's center (tile*10+5), Z 0. Named "PG Entrance N"/"PG Exit N"
+/// with tags PG_ENT_N/PG_EXIT_N, numbered separately per kind in transition order (the first
+/// Entrance is always the primary arrival anchor).
+/// </summary>
+static string BuildWaypointEntries(ResolvedLayout layout)
+{
+    var entranceCount = 0;
+    var exitCount = 0;
+    var entries = new List<string>();
+
+    foreach (var transition in layout.Transitions)
+    {
+        var isEntrance = transition.Kind == TransitionKind.Entrance;
+        var index = isEntrance ? ++entranceCount : ++exitCount;
+        var label = isEntrance ? "Entrance" : "Exit";
+        var tag = (isEntrance ? "PG_ENT_" : "PG_EXIT_") + index;
+        var name = $"PG {label} {index}";
+        var x = transition.Tile.X * 10f + 5f;
+        var y = transition.Tile.Y * 10f + 5f;
+
+        entries.Add(WaypointEntry(name, tag, x, y));
+    }
+
+    return string.Join(",\n", entries);
+}
+
+static string WaypointEntry(string name, string tag, float x, float y)
+{
+    return $$"""
+          {
+            "__struct_id": 5,
+            "Appearance": {
+              "type": "byte",
+              "value": 1
+            },
+            "Description": {
+              "type": "cexolocstring",
+              "value": {}
+            },
+            "HasMapNote": {
+              "type": "byte",
+              "value": 0
+            },
+            "LinkedTo": {
+              "type": "cexostring",
+              "value": ""
+            },
+            "LocalizedName": {
+              "type": "cexolocstring",
+              "value": {
+                "0": "{{name}}"
+              }
+            },
+            "MapNote": {
+              "type": "cexolocstring",
+              "value": {}
+            },
+            "MapNoteEnabled": {
+              "type": "byte",
+              "value": 0
+            },
+            "Tag": {
+              "type": "cexostring",
+              "value": "{{tag}}"
+            },
+            "TemplateResRef": {
+              "type": "resref",
+              "value": "nw_waypoint001"
+            },
+            "XOrientation": {
+              "type": "float",
+              "value": 0.0
+            },
+            "XPosition": {
+              "type": "float",
+              "value": {{FormatFloat(x)}}
+            },
+            "YOrientation": {
+              "type": "float",
+              "value": 1.0
+            },
+            "YPosition": {
+              "type": "float",
+              "value": {{FormatFloat(y)}}
+            },
+            "ZPosition": {
+              "type": "float",
+              "value": 0.0
+            }
+          }
+    """;
+}
+
+/// <summary>nwn_gff requires float lexemes ("5.0"); a bare integer-valued double round-trips as "5".</summary>
+static string FormatFloat(double value)
+{
+    var text = value.ToString("0.0###############", System.Globalization.CultureInfo.InvariantCulture);
+    return text;
 }
 
 static string ReplaceFirstIntField(string json, string field, int value)
@@ -510,4 +644,4 @@ static void Run(string exe, string arguments)
         throw new InvalidOperationException($"{Path.GetFileName(exe)} failed: {stderr}");
 }
 
-record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size);
+record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1);

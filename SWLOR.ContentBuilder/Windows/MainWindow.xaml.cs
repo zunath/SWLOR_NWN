@@ -69,6 +69,11 @@ namespace SWLOR.ContentBuilder.Windows
         private TextBlock _accentDensityValueLabel;
         private CheckBox _accentCheckBox;
 
+        private Slider _entrancesSlider;
+        private Slider _exitsSlider;
+        private TextBlock _entrancesValueLabel;
+        private TextBlock _exitsValueLabel;
+
         private TextBox _seedTextBox;
         private Button _randomSeedButton;
 
@@ -157,6 +162,10 @@ namespace SWLOR.ContentBuilder.Windows
             _accentCheckBox = AddCheckBoxRow(overrides, "Accent terrain");
             _accentDensitySlider = AddSliderRow(overrides, "Accent Density", 1, 20, 5, out _accentDensityValueLabel, suffix: "%");
 
+            var (_, transitions) = AddGroup(LeftStack, "Transitions");
+            _entrancesSlider = AddSliderRow(transitions, "Entrances", 1, 3, 1, out _entrancesValueLabel);
+            _exitsSlider = AddSliderRow(transitions, "Exits", 1, 3, 1, out _exitsValueLabel);
+
             var (_, seedGroup) = AddGroup(LeftStack, "Seed");
             var seedRow = CreateRow();
             var seedLabel = new TextBlock { Text = "Seed", VerticalAlignment = VerticalAlignment.Center };
@@ -196,6 +205,8 @@ namespace SWLOR.ContentBuilder.Windows
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Layout", Binding = new Binding(nameof(BatchItem.LayoutDisplayName)), Width = new DataGridLength(1, DataGridLengthUnitType.Star) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Seed", Binding = new Binding(nameof(BatchItem.Seed)), Width = new DataGridLength(50) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Size", Binding = new Binding(nameof(BatchItem.Size)), Width = new DataGridLength(50) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Ent", Binding = new Binding(nameof(BatchItem.Entrances)), Width = new DataGridLength(36) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Exit", Binding = new Binding(nameof(BatchItem.Exits)), Width = new DataGridLength(36) });
             batchGroup.Children.Add(_batchGrid);
 
             var batchButtons = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 6, 0, 0) };
@@ -344,6 +355,8 @@ namespace SWLOR.ContentBuilder.Windows
             WireKnobSlider(_loopFactorSlider, _loopFactorValueLabel, nameof(_loopFactorSlider), "%");
             WireKnobSlider(_organicFillSlider, _organicFillValueLabel, nameof(_organicFillSlider), "%");
             WireKnobSlider(_accentDensitySlider, _accentDensityValueLabel, nameof(_accentDensitySlider), "%");
+            WireKnobSlider(_entrancesSlider, _entrancesValueLabel, nameof(_entrancesSlider));
+            WireKnobSlider(_exitsSlider, _exitsValueLabel, nameof(_exitsSlider));
 
             _accentCheckBox.Checked += (_, _) => OnAccentCheckChanged();
             _accentCheckBox.Unchecked += (_, _) => OnAccentCheckChanged();
@@ -549,6 +562,10 @@ namespace SWLOR.ContentBuilder.Windows
                     _loopFactorSlider.Value = Clamp(Math.Round(template.LoopFactor * 100), _loopFactorSlider.Minimum, _loopFactorSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_organicFillSlider)))
                     _organicFillSlider.Value = Clamp(Math.Round(template.OpenFillTarget * 100), _organicFillSlider.Minimum, _organicFillSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_entrancesSlider)))
+                    _entrancesSlider.Value = Clamp(template.EntranceCount, _entrancesSlider.Minimum, _entrancesSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_exitsSlider)))
+                    _exitsSlider.Value = Clamp(template.ExitCount, _exitsSlider.Minimum, _exitsSlider.Maximum);
 
                 var tileset = SelectedTilesetProfile();
                 var supportsAccent = tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
@@ -618,6 +635,8 @@ namespace SWLOR.ContentBuilder.Windows
             baseParameters.CorridorWidth = (int)_corridorWidthSlider.Value;
             baseParameters.LoopFactor = _loopFactorSlider.Value / 100.0;
             baseParameters.OpenFillTarget = _organicFillSlider.Value / 100.0;
+            baseParameters.EntranceCount = (int)_entrancesSlider.Value;
+            baseParameters.ExitCount = (int)_exitsSlider.Value;
 
             var accentEnabled = _accentCheckBox.IsChecked == true && !string.IsNullOrEmpty(tilesetProfile.AccentTerrain);
             var accentTerrain = accentEnabled ? tilesetProfile.AccentTerrain : string.Empty;
@@ -753,7 +772,9 @@ namespace SWLOR.ContentBuilder.Windows
                 LayoutProfileKey = layoutProfile.Key == theme.LayoutProfileKey ? string.Empty : layoutProfile.Key,
                 LayoutDisplayName = layoutProfile.DisplayName,
                 Seed = GetSeedValue(),
-                Size = width
+                Size = width,
+                Entrances = (int)_entrancesSlider.Value,
+                Exits = (int)_exitsSlider.Value
             };
 
             _batch.Add(item);

@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 DungeonLayoutStyle.OrganicCave => OrganicCaveLayout.Generate(parameters, random),
                 DungeonLayoutStyle.Warren => WarrenLayout.Generate(parameters, random),
                 DungeonLayoutStyle.PackedRooms => PackedRoomsLayout.Generate(parameters, random),
+                DungeonLayoutStyle.Labyrinth => LabyrinthLayout.Generate(parameters, random),
                 _ => throw new ArgumentOutOfRangeException(nameof(parameters), parameters.Style, "Unknown DungeonLayoutStyle.")
             };
 

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string Warren = "warren";
         public const string Packed = "packed";
         public const string Halls = "halls";
+        public const string Labyrinth = "labyrinth";
 
         private readonly DungeonLayoutProfileBuilder _builder = new();
 
@@ -65,6 +66,19 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     p.MaxRoomCornerSize = 6;
                     p.CorridorWidth = 2;
                     p.LoopFactor = 0.35;
+                });
+
+            // Near-perfect winding maze with a handful of small chambers (reference: classic labyrinth).
+            _builder.Create(Labyrinth, "Labyrinth")
+                .Configure(p =>
+                {
+                    p.Style = DungeonLayoutStyle.Labyrinth;
+                    p.CorridorWidth = 1;
+                    p.LoopFactor = 0.05;
+                    p.MinRooms = 3;
+                    p.MaxRooms = 4;
+                    p.MinRoomCornerSize = 2;
+                    p.MaxRoomCornerSize = 4;
                 });
 
             return _builder.Build();

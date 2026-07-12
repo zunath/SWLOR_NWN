@@ -14,7 +14,8 @@ public class MacroLayoutGeneratorTests
         DungeonLayoutStyle.RoomsAndCorridors,
         DungeonLayoutStyle.OrganicCave,
         DungeonLayoutStyle.Warren,
-        DungeonLayoutStyle.PackedRooms
+        DungeonLayoutStyle.PackedRooms,
+        DungeonLayoutStyle.Labyrinth
     };
 
     private static MacroLayoutParameters DefaultParameters(
@@ -98,6 +99,11 @@ public class MacroLayoutGeneratorTests
     [TestCase(DungeonLayoutStyle.PackedRooms, 3)]
     [TestCase(DungeonLayoutStyle.PackedRooms, 4)]
     [TestCase(DungeonLayoutStyle.PackedRooms, 5)]
+    [TestCase(DungeonLayoutStyle.Labyrinth, 1)]
+    [TestCase(DungeonLayoutStyle.Labyrinth, 2)]
+    [TestCase(DungeonLayoutStyle.Labyrinth, 3)]
+    [TestCase(DungeonLayoutStyle.Labyrinth, 4)]
+    [TestCase(DungeonLayoutStyle.Labyrinth, 5)]
     public void Generate_SameSeed_ProducesStructurallyIdenticalLayout(DungeonLayoutStyle style, int seed)
     {
         var parametersA = DefaultParameters(style);
@@ -139,6 +145,7 @@ public class MacroLayoutGeneratorTests
     [TestCase(DungeonLayoutStyle.OrganicCave)]
     [TestCase(DungeonLayoutStyle.Warren)]
     [TestCase(DungeonLayoutStyle.PackedRooms)]
+    [TestCase(DungeonLayoutStyle.Labyrinth)]
     public void Generate_BorderRing_AlwaysRemainsSolid(DungeonLayoutStyle style)
     {
         var parameters = DefaultParameters(style);
@@ -166,6 +173,7 @@ public class MacroLayoutGeneratorTests
     [TestCase(DungeonLayoutStyle.OrganicCave)]
     [TestCase(DungeonLayoutStyle.Warren)]
     [TestCase(DungeonLayoutStyle.PackedRooms)]
+    [TestCase(DungeonLayoutStyle.Labyrinth)]
     public void Generate_OpenCorners_AreFullyConnected(DungeonLayoutStyle style)
     {
         var parameters = DefaultParameters(style);
@@ -221,6 +229,7 @@ public class MacroLayoutGeneratorTests
     [TestCase(DungeonLayoutStyle.OrganicCave)]
     [TestCase(DungeonLayoutStyle.Warren)]
     [TestCase(DungeonLayoutStyle.PackedRooms)]
+    [TestCase(DungeonLayoutStyle.Labyrinth)]
     public void Generate_Rooms_CountAndRolesAreValid(DungeonLayoutStyle style)
     {
         var parameters = DefaultParameters(style);
@@ -246,6 +255,7 @@ public class MacroLayoutGeneratorTests
     [TestCase(DungeonLayoutStyle.OrganicCave)]
     [TestCase(DungeonLayoutStyle.Warren)]
     [TestCase(DungeonLayoutStyle.PackedRooms)]
+    [TestCase(DungeonLayoutStyle.Labyrinth)]
     public void Generate_RoomCenterTile_IsAlwaysFullyOpen(DungeonLayoutStyle style)
     {
         var parameters = DefaultParameters(style);

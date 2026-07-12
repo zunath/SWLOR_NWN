@@ -156,7 +156,8 @@ public class AreaGenerationPipelineTests
         DungeonLayoutStyle.RoomsAndCorridors,
         DungeonLayoutStyle.OrganicCave,
         DungeonLayoutStyle.Warren,
-        DungeonLayoutStyle.PackedRooms
+        DungeonLayoutStyle.PackedRooms,
+        DungeonLayoutStyle.Labyrinth
     };
 
     /// <summary>

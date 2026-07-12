@@ -28,7 +28,8 @@ public class TileDoorPlannerTests
         DungeonLayoutStyle.RoomsAndCorridors,
         DungeonLayoutStyle.OrganicCave,
         DungeonLayoutStyle.Warren,
-        DungeonLayoutStyle.PackedRooms
+        DungeonLayoutStyle.PackedRooms,
+        DungeonLayoutStyle.Labyrinth
     };
 
     private static TilesetModel LoadTileset(string resref, string hakFolder, string setFile)

@@ -132,7 +132,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>Maze-like corridor network with small chambers and loops (sewer/undercity feel).</summary>
         Warren = 2,
         /// <summary>Space subdivided into rooms sharing walls, joined by door gaps (facility feel).</summary>
-        PackedRooms = 3
+        PackedRooms = 3,
+        /// <summary>Near-perfect maze of long winding 1-corridor-wide passages with a few small chambers at junctions.</summary>
+        Labyrinth = 4
     }
 
     public class MacroLayoutParameters

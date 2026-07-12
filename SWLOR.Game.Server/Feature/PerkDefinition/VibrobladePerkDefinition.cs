@@ -396,11 +396,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnbreakableTrait)
-                .Description("When reduced below 25% HP, gain 40% Physical Defense for 30 seconds. Once per 10 minutes.")
+                .Description("When reduced below 25% HP, gain 40% Physical Defense for 30 seconds. Once per 3 minutes.")
                 .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, 25)
                 .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, 40)
                 .IncreasesStat(StatType.LowHPPhysicalDefenseDurationSeconds, 30)
-                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, 600)
+                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, 180)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }

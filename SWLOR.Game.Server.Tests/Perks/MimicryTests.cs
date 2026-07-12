@@ -48,7 +48,7 @@ public class MimicryTests
             abilities.Should().ContainKey(entry.Technique, $"{entry.Technique} should register itself");
             var ability = abilities[entry.Technique];
 
-            ((int)entry.Technique).Should().BeInRange(2773, 2782);
+            ((int)entry.Technique).Should().BeInRange(2796, 2805);
             ability.Name.Should().NotBeNullOrWhiteSpace();
             ability.MimicryTier.Should().BeInRange(1, 4);
             ability.MimicrySlotCost.Should().BeInRange(1, 3);

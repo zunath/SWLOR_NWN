@@ -5109,34 +5109,142 @@ namespace SWLOR.Game.Server.Service.StatService
         DirectDamageToStatusCategoryOrStealthBonusCategory = 885,
 
         /// <summary>
+        /// Percent of incoming physical damage converted to Force damage before mitigation (Saber Ward / Perfect Aegis).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        IncomingPhysicalToForceConversionPercent = 887,
+
+        /// <summary>
+        /// Defense percent granted per Embattled stack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EmbattledStackDefensePercent = 904,
+
+        /// <summary>
+        /// Force Defense percent granted per Embattled stack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EmbattledStackForceDefensePercent = 905,
+
+        /// <summary>
+        /// Maximum number of Embattled stacks that may be held.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        EmbattledMaxStacks = 906,
+
+        /// <summary>
+        /// Embattled stack count at or above which high-stack bonuses apply.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        EmbattledHighStackThreshold = 907,
+
+        /// <summary>
+        /// Mobility Resistance granted while at or above the Embattled high-stack threshold.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EmbattledHighStackMobilityResistance = 908,
+
+        /// <summary>
+        /// Additional Deflecting Return reflection percent while at or above the Embattled high-stack threshold.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EmbattledHighStackDeflectionReflectionBonusPercent = 909,
+
+        /// <summary>
+        /// Percent of a deflected ranged attack's pre-mitigation damage reflected back to its source.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedDeflectionReflectionPercent = 894,
+
+        /// <summary>
+        /// Cap on Deflecting Return reflected damage, expressed as a percent of normal main-hand weapon damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedDeflectionReflectionCapPercent = 895,
+
+        /// <summary>
+        /// Force Attack percent granted for spending at least the minimum FP on a hostile combat ability (Overpower).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityFPSpendForceAttackPercent = 896,
+
+        /// <summary>
+        /// Maximum stacked Force Attack percent from Overpower's FP-spend trigger.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityFPSpendForceAttackMaxPercent = 897,
+
+        /// <summary>
+        /// Minimum FP cost required to trigger Overpower's Force Attack bonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityFPSpendForceAttackMinFPCost = 898,
+
+        /// <summary>
+        /// Duration in seconds of Overpower's Force Attack bonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityFPSpendForceAttackDurationSeconds = 899,
+
+        /// <summary>
+        /// FP restored when landing an auto-attack on a target afflicted by the attacker's Sunder (High Ground).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackSunderedTargetFPRestore = 900,
+
+        /// <summary>
+        /// Attack percent granted while current FP is below the low-FP threshold (Focus Shift).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LowFPAttackPercentAdjustment = 901,
+
+        /// <summary>
+        /// FP percent below which the low-FP Attack bonus applies.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LowFPAttackThresholdPercent = 902,
+
+        /// <summary>
+        /// While positive, the wearer's hostile weapon auto-attacks deal Force damage instead of their normal type (Imbuement Stance).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StanceHostileAutoAttackForceConversion = 903,
+
+        /// <summary>
+        /// FP cost consumed by each hostile auto-attack while Imbuement Stance is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StanceHostileAutoAttackFPCost = 916,
+
+        /// <summary>
         /// Percent chance for a mimicked trait to inflict Bleed on damage dealt.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DamageDealtBleedChance = 887,
+        DamageDealtBleedChance = 910,
 
         /// <summary>
         /// Percent chance for a mimicked trait to inflict Freezing on damage dealt.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DamageDealtFreezingChance = 888,
+        DamageDealtFreezingChance = 911,
 
         /// <summary>
         /// Percent chance for a mimicked trait to inflict Shock on damage dealt.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DamageDealtShockChance = 889,
+        DamageDealtShockChance = 912,
 
         /// <summary>
         /// Percent chance for a mimicked trait to inflict Sunder on damage dealt.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DamageDealtSunderChance = 890,
+        DamageDealtSunderChance = 913,
 
         /// <summary>
         /// Percent chance for a mimicked trait to inflict Hemorrhage on damage dealt.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DamageDealtHemorrhageChance = 891,
+        DamageDealtHemorrhageChance = 914,
 
         /// <summary>
         /// Percent bonus to the direct damage of mimicked techniques (combat analyzer potency).
@@ -5144,7 +5252,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// damage-type loadout set bonuses; read by the Mimicry technique impact as a damage-percent adjustment.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        MimicryPotencyPercent = 892
+        MimicryPotencyPercent = 915,
     }
 
     public class StatTypeAttribute : Attribute

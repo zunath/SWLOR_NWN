@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public KeenSightStatusEffect()
         {
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 3;
+            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 4;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     /// <summary>
     /// Passive effect applied while the Glacial Slime Mimicry trait is equipped. The corrosive
-    /// glacial slime grants a chance for landed hits to eat through the target's defenses (Sunder).
+    /// glacial slime grants a chance for landed hits to eat into the target with lingering Poison.
     /// </summary>
     public sealed class GlacialCorrosionStatusEffect : StatusEffectBase
     {
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public GlacialCorrosionStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtSunderChance] = 20;
+            StatGroup.Stats[StatType.DamageDealtPoisonChance] = 18;
         }
     }
 }

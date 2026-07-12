@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Chitin Guard")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.ChitinGuard, 2, 2, typeof(IronCarapaceStatusEffect));
+                .MimicryTrait(FeatType.ChitinGuard, 2, 2, typeof(ChitinGuardStatusEffect));
 
             return _builder.Build();
         }

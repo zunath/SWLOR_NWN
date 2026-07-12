@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public RimedStrikesStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtFreezingChance] = 20;
+            StatGroup.Stats[StatType.DamageDealtFreezingChance] = 18;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public RendingInstinctStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtBleedChance] = 20;
+            StatGroup.Stats[StatType.DamageDealtBleedChance] = 12;
         }
     }
 }

@@ -7,14 +7,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     /// <summary>
     /// Passive effect applied while its Mimicry trait technique is equipped. Grants a chance for landed hits to inflict its status effect.
     /// </summary>
-    public sealed class BonebreakerInstinctStatusEffect : StatusEffectBase
+    public sealed class MaulingInstinctStatusEffect : StatusEffectBase
     {
-        public override string Name => "Bonebreaker Instinct";
+        public override string Name => "Mauling Instinct";
         public override EffectIconType Icon => EffectIconType.Invalid;
 
-        public BonebreakerInstinctStatusEffect()
+        public MaulingInstinctStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtSunderChance] = 18;
+            StatGroup.Stats[StatType.DamageDealtBleedChance] = 18;
         }
     }
 }

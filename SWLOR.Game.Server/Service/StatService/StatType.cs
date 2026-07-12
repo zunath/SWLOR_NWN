@@ -5255,6 +5255,12 @@ namespace SWLOR.Game.Server.Service.StatService
         MimicryPotencyPercent = 915,
 
         /// <summary>
+        /// Percent chance for a mimicked trait to inflict Poison on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtPoisonChance = 917,
+
+        /// <summary>
         /// Percent reduction to crop growth stage durations for farming.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]

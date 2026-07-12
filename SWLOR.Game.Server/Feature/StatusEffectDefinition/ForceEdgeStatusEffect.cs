@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ForceEdgeStatusEffect()
         {
-            StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = 3;
+            StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = 6;
         }
     }
 }

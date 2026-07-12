@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Rending Carve")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.RendingCarve, 2, 2, typeof(SerratedInstinctStatusEffect));
+                .MimicryTrait(FeatType.RendingCarve, 2, 2, typeof(CarvingInstinctStatusEffect));
 
             return _builder.Build();
         }

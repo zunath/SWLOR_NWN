@@ -604,6 +604,14 @@ function Get-StatusEffectClasses([string]$path) {
         }
 
         $className = $Matches[2]
+
+        # Status effects that declare no gameplay icon (EffectIconType.Invalid) have nothing to audit:
+        # no effecticons.2da row, no generated TGA, and their combat-log name comes from the C# Name
+        # property rather than the custom TLK. Skip them so they are not required to carry TLK entries.
+        if ($content -match 'Icon\s*=>\s*EffectIconType\.Invalid') {
+            continue
+        }
+
         $name = $className -replace "StatusEffect$", ""
         if ($content -match 'public\s+override\s+string\s+Name\s*=>\s*"([^"]+)"') {
             $name = $Matches[1]

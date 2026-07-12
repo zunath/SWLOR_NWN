@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Service
         private const int DefaultAttackDeflectionChanceCap = 50;
         private const int MaximumDeflectionChanceCap = 100;
         private const int MaximumShieldDeflectionChance = 75;
-        private const int InherentShieldDeflectionChance = 10;
         private const int MaximumGuardChance = 100;
         public const int MaximumCombatReadinessPercent = 15;
         private const float MinimumMovementSpeedMultiplier = 0f;
@@ -1431,8 +1430,7 @@ namespace SWLOR.Game.Server.Service
             if (shield == null)
                 return 0;
 
-            var chance = InherentShieldDeflectionChance +
-                         GetShieldDeflectionItemPropertyBonusNative(shield) +
+            var chance = GetShieldDeflectionItemPropertyBonusNative(shield) +
                          GetStatAdjustment(creature.m_idSelf, StatType.ShieldDeflection);
             return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
         }
@@ -1443,8 +1441,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(shield))
                 return 0;
 
-            var chance = InherentShieldDeflectionChance +
-                         GetShieldDeflectionItemPropertyBonus(shield) +
+            var chance = GetShieldDeflectionItemPropertyBonus(shield) +
                          GetStatAdjustment(creature, StatType.ShieldDeflection);
             return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
         }

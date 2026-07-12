@@ -341,7 +341,8 @@ public class LinkedBankStorageTests
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
 
-        while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, ".git")))
+        // Walk to the .sln rather than .git: in a git worktree .git is a file, not a directory.
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
         {
             directory = directory.Parent;
         }

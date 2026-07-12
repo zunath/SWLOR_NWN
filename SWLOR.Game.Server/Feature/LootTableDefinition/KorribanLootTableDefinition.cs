@@ -341,6 +341,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("FROG_BOSS_RARES")
                 .IsRare()
+                .AddItem("fnote_328", 2, 1, true)
                 .AddItem("chiro_shard", 1, 1, true)
                 .AddGold(1000, 5);
 

@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.SeismicSlam, 3, 3)
+                .MimicryElement(CombatDamageType.Physical)
                 .HasTargetingSphere(
                     Spell.SeismicSlamTechnique,
                     6f,

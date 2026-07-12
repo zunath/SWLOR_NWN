@@ -799,6 +799,11 @@ namespace SWLOR.Game.Server.Feature
             Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
             Combat.ApplyAbilityImpactEffects(activator, summary);
 
+            if (!GetIsPC(activator))
+            {
+                Mimicry.OnCreatureAbilityUsed(activator, activeWeaponAbility);
+            }
+
             DeleteLocalString(activator, ActiveAbilityIdName);
             DeleteLocalInt(activator, ActiveAbilityFeatIdName);
             DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);

@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.PackHarrier, 3, 2);
+                .MimicryTechnique(FeatType.PackHarrier, 3, 2)
+                .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();
         }

@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.InnerCircleBind, 4, 3);
+                .MimicryTechnique(FeatType.InnerCircleBind, 4, 3)
+                .MimicryElement(CombatDamageType.Electrical);
 
             return _builder.Build();
         }

@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.FrostSpit, 1, 1);
+                .MimicryTechnique(FeatType.FrostSpit, 1, 1)
+                .MimicryElement(CombatDamageType.Ice);
 
             return _builder.Build();
         }

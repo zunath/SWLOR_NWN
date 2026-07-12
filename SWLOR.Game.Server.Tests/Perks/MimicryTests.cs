@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -182,6 +183,25 @@ public class MimicryTests
         }
     }
 
+    // Active damage techniques must register their damage element so the elemental-resonance
+    // loadout bonus can count them (InnateAbility.BuildArea/BuildSingle set MimicryElement from the
+    // damage type). A technique left with an Invalid element would be silently omitted from resonance.
+    [Test]
+    public void MimicryActiveTechniques_RegisterTheirDamageElement()
+    {
+        var activeTechniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(t => !t.Detail.IsMimicryTrait)
+            .ToList();
+
+        activeTechniques.Should().NotBeEmpty("most techniques are active damage abilities");
+
+        foreach (var technique in activeTechniques)
+        {
+            technique.Detail.MimicryElement.Should().NotBe(CombatDamageType.Invalid,
+                $"{technique.Feat} is an active technique and must register a damage element for elemental resonance");
+        }
+    }
+
     // The core completeness requirement: every NPC ability the game registers must be learnable
     // through Mimicry, and every technique must copy a real NPC ability. Asserted bidirectionally
     // and 1:1 so the pool can never drift out of sync with the NPC ability roster.
@@ -294,7 +314,7 @@ public class MimicryTests
             [PerkType.PatternRecognition] = FeatType.PatternRecognitionTrait,
             [PerkType.OverclockedAnalyzer] = FeatType.Overload,
         };
-        var techniqueFeats = TechniqueTable.Select(x => x.Technique).ToHashSet();
+        var techniqueFeats = BuildAllAbilities(MimicryTechniqueNamespace).Select(x => x.Feat).ToHashSet();
 
         foreach (var (perkType, perk) in perks)
         {
@@ -341,8 +361,8 @@ public class MimicryTests
 
             if (technique.Detail.IsMimicryTrait)
             {
-                // Passive traits are not cast: their feat.2da row must not link to a castable spell.
-                int.TryParse(spellIdText, out _).Should().BeFalse(
+                // Passive traits are not cast: their feat.2da row must use the blank SPELLID sentinel.
+                spellIdText.Should().Be("****",
                     $"{feat} is a passive trait and should have a blank SPELLID (****), was '{spellIdText}'");
             }
             else
@@ -356,13 +376,15 @@ public class MimicryTests
                 linkedFeatId.Should().Be(featId, $"{feat}'s spells.2da row should point back at its feat.2da row");
             }
 
-            var classFeatRow = classFeatRows.Values.FirstOrDefault(row =>
+            var classFeatRowMatches = classFeatRows.Values.Where(row =>
                 row.TryGetValue("FeatIndex", out var featIndexText) &&
                 int.TryParse(featIndexText, out var featIndex) &&
-                featIndex == featId);
+                featIndex == featId).ToList();
 
-            classFeatRow.Should().NotBeNull($"CLS_FEAT_FIGHT.2da should expose {feat} (feat id {featId})");
-            classFeatRow!["List"].Should().Be("1", $"{feat} should be List=1 in CLS_FEAT_FIGHT.2da");
+            classFeatRowMatches.Should().ContainSingle(
+                $"CLS_FEAT_FIGHT.2da should expose {feat} (feat id {featId}) exactly once");
+            var classFeatRow = classFeatRowMatches[0];
+            classFeatRow["List"].Should().Be("1", $"{feat} should be List=1 in CLS_FEAT_FIGHT.2da");
             classFeatRow["GrantedOnLevel"].Should().Be("99", $"{feat} should be GrantedOnLevel=99 in CLS_FEAT_FIGHT.2da");
             classFeatRow["OnMenu"].Should().Be("1", $"{feat} should be OnMenu=1 in CLS_FEAT_FIGHT.2da");
         }

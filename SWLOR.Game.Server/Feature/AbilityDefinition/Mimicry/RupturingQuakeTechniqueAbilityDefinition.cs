@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.RupturingQuake, 4, 3)
+                .MimicryElement(CombatDamageType.Physical)
                 .HasTargetingSphere(
                     Spell.RupturingQuakeTechnique,
                     9f,

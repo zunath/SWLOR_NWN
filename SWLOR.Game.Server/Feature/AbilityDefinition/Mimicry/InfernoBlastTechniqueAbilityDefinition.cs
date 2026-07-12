@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
                 .MimicryTechnique(FeatType.InfernoBlast, 4, 3)
+                .MimicryElement(CombatDamageType.Fire)
                 .HasTargetingCone(
                     Spell.InfernoBlastTechnique,
                     10f,

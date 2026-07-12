@@ -117,9 +117,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 			_builder.Create("NARSHADDAA_SERPENT_LEADER_RARES")
 				.IsRare()
-				.AddItem("fnote_293", 1, 1, true)
-				.AddItem("fnote_308", 1, 1, true)
-				.AddItem("fnote_315", 1, 1, true)
+				.AddItem("fnote_2017", 1, 1, true)
+				.AddItem("fnote_2032", 1, 1, true)
+				.AddItem("fnote_2039", 1, 1, true)
 				.AddItem("ruby", 1, 1, true)
 				.AddItem("ns_holo_jelly", 1, 1, true)
 				.AddItem("map_82", 2, 1, true)
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES")
 				.IsRare()
-				.AddItem("fnote_320", 2, 1, true)
+				.AddItem("fnote_2044", 2, 1, true)
 				.AddItem("chiro_shard", 1, 1, true)
 				.AddItem("emerald", 1, 1, true)
 				.AddItem("ruby", 1, 1, true)

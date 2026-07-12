@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("DATHOMIR_CHIRODACTYL_RARES")
                 .IsRare()
-                .AddItem("fnote_277", 2, 1, true)
+                .AddItem("fnote_2001", 2, 1, true)
                 .AddItem("emerald", 1, 1, true)
                 .AddItem("chiro_shard", 1, 1, true);
 
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("DATHOMIR_DRAGON_TURTLE_RARES")
                 .IsRare()
-                .AddItem("fnote_307", 2, 1, true)
+                .AddItem("fnote_2031", 2, 1, true)
                 .AddItem("ruby", 20, 1, true)
                 .AddItem("emerald", 80, 1, true)
                 .AddItem("red_shell_shard", 1, 1, true)

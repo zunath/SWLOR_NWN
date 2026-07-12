@@ -1667,6 +1667,11 @@ public class CombatUpgradeBibleSyncTests
         if (OutOfScopeTabs.Contains(row.Tab))
             return new ReviewScope(false, $"Skipped: out-of-scope tab {row.Tab}");
 
+        // Mimicry techniques are learned creature abilities rather than purchasable perks; they are
+        // reviewed as feat-granting abilities, not perk levels, regardless of their Type label.
+        if ("Technique".Equals(row.Style, StringComparison.OrdinalIgnoreCase))
+            return new ReviewScope(false, "Skipped: Mimicry learned technique");
+
         if (!ScopedTypes.Contains(row.Type))
             return new ReviewScope(false, $"Skipped: non-scoped type {row.Type}");
 
@@ -1989,7 +1994,11 @@ public class CombatUpgradeBibleSyncTests
 
     private static bool IsScopedImplementedRow(BiblePerkRow row)
     {
+        // Mimicry techniques are learned creature abilities, not purchasable perks: they carry a
+        // "Technique" style and are validated as feat-granting abilities elsewhere, so they are
+        // excluded from perk-level scope regardless of their (standard) Type label.
         return !OutOfScopeTabs.Contains(row.Tab) &&
+               !"Technique".Equals(row.Style, StringComparison.OrdinalIgnoreCase) &&
                ScopedTypes.Contains(row.Type) &&
                ImplementedStatuses.Contains(row.DevStatus) &&
                !string.IsNullOrWhiteSpace(row.PerkName);

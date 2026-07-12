@@ -30,24 +30,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CombatAnalyzerTrait)
-                .Description("Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots and lets you replicate tier 1 techniques.")
+                .Description("Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots and lets you replicate Mimicry 1-14 techniques.")
                 .Price(2)
                 .RequirementSkill(SkillType.Mimicry, 0)
 
                 .AddPerkLevel()
-                .Description("Upgrades the combat analyzer, improving equipped technique potency and letting you replicate tier 2 techniques.")
+                .Description("Upgrades the combat analyzer, improving equipped technique potency and letting you replicate Mimicry 15-29 techniques.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 15)
                 .IncreasesStat(StatType.MimicryPotencyPercent, 5)
 
                 .AddPerkLevel()
-                .Description("Further upgrades the combat analyzer, improving equipped technique potency and letting you replicate tier 3 techniques.")
+                .Description("Further upgrades the combat analyzer, improving equipped technique potency and letting you replicate Mimicry 30-44 techniques.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 30)
                 .IncreasesStat(StatType.MimicryPotencyPercent, 10)
 
                 .AddPerkLevel()
-                .Description("Maximizes the combat analyzer, improving equipped technique potency and letting you replicate tier 4 techniques.")
+                .Description("Maximizes the combat analyzer, improving equipped technique potency and letting you replicate Mimicry 45-50 techniques.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 45)
                 .IncreasesStat(StatType.MimicryPotencyPercent, 15);

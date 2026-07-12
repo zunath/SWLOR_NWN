@@ -873,6 +873,11 @@ $statusChecks = @(
 $auditRows = New-Object System.Collections.Generic.List[object]
 
 foreach ($row in $manifest) {
+    # Mimicry learned techniques are not purchasable perks and have no perk name, recast group, or
+    # dedicated perk-menu ability; they are audited as feat-granting abilities elsewhere. Skip the
+    # perk/ability/recast checks for them regardless of their (standard) Type label.
+    if ($row.Style -eq "Technique") { continue }
+
     $rowBaseName = Get-SanitizedName $row.PerkName
     $expectsPerkDefinition = $row.DevStatus -eq "Implemented"
     if ($expectsPerkDefinition -and !$perkBaseNameIndex.ContainsKey($rowBaseName)) {

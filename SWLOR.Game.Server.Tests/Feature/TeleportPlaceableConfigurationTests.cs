@@ -18,7 +18,7 @@ public class TeleportPlaceableConfigurationTests
     }
 
     [Test]
-    public void BloodFrenzyAccess_IsOnlyTeleportPlaceableOptedIntoPartyTeleport()
+    public void CapstoneAccessGates_AreOnlyTeleportPlaceablesOptedIntoPartyTeleport()
     {
         var enabledTeleporters = LoadTeleportObjects()
             .Where(teleport => teleport.PartyTeleportFlag == 1)
@@ -28,6 +28,7 @@ public class TeleportPlaceableConfigurationTests
         enabledTeleporters.Should().BeEquivalentTo(new[]
         {
             "Module/git/veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
+            "Module/git/dathgrottocavern.git.json|Enter the Grotto Apex Den|DATH_APEX_DEN_INSIDE|tele_obj|tele_obj",
         });
 
         LoadTeleportObjects()

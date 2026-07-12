@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Primal Overrun Grotto Track Slate is secured. Return to Nalka Rinn in the Dathomir Grotto Apex Den.")
+                    "The six adepts are down and the Primal Overrun Grotto Track Slate is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Primal Overrun Resonant Fang Charm is secured. Return to Nalka Rinn in the Dathomir Grotto Apex Den.")
+                    "The five specialists are defeated and the Primal Overrun Resonant Fang Charm is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun warden is defeated and the Primal Overrun Cracked Apex Totem is secured. Return to Nalka Rinn in the Dathomir Grotto Apex Den.")
+                    "The Primal Overrun warden is defeated and the Primal Overrun Cracked Apex Totem is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun inner circle is defeated and the Primal Overrun Den-Mother's Fang Token is secured. Return to Nalka Rinn in the Dathomir Grotto Apex Den.")
+                    "The Primal Overrun inner circle is defeated and the Primal Overrun Den-Mother's Fang Token is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun master is defeated. Return to Nalka Rinn in the Dathomir Grotto Apex Den to complete the trial.")
+                    "The Primal Overrun master is defeated. Return to Nalka Rinn at the Dathomir Jungle Landing to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Untouchable Instinct Grotto Track Slate is secured. Return to Voro Thane in the Dathomir Grotto Apex Den.")
+                    "The six adepts are down and the Untouchable Instinct Grotto Track Slate is secured. Return to Voro Thane at the Dathomir Jungle Landing.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Untouchable Instinct Resonant Fang Charm is secured. Return to Voro Thane in the Dathomir Grotto Apex Den.")
+                    "The five specialists are defeated and the Untouchable Instinct Resonant Fang Charm is secured. Return to Voro Thane at the Dathomir Jungle Landing.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct warden is defeated and the Untouchable Instinct Cracked Apex Totem is secured. Return to Voro Thane in the Dathomir Grotto Apex Den.")
+                    "The Untouchable Instinct warden is defeated and the Untouchable Instinct Cracked Apex Totem is secured. Return to Voro Thane at the Dathomir Jungle Landing.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct inner circle is defeated and the Untouchable Instinct Den-Mother's Fang Token is secured. Return to Voro Thane in the Dathomir Grotto Apex Den.")
+                    "The Untouchable Instinct inner circle is defeated and the Untouchable Instinct Den-Mother's Fang Token is secured. Return to Voro Thane at the Dathomir Jungle Landing.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct master is defeated. Return to Voro Thane in the Dathomir Grotto Apex Den to complete the trial.")
+                    "The Untouchable Instinct master is defeated. Return to Voro Thane at the Dathomir Jungle Landing to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Force-Bonded Beast Grotto Track Slate is secured. Return to Eshka Korr in the Dathomir Grotto Apex Den.")
+                    "The six adepts are down and the Force-Bonded Beast Grotto Track Slate is secured. Return to Eshka Korr at the Dathomir Jungle Landing.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -367,7 +367,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Force-Bonded Beast Resonant Fang Charm is secured. Return to Eshka Korr in the Dathomir Grotto Apex Den.")
+                    "The five specialists are defeated and the Force-Bonded Beast Resonant Fang Charm is secured. Return to Eshka Korr at the Dathomir Jungle Landing.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast warden is defeated and the Force-Bonded Beast Cracked Apex Totem is secured. Return to Eshka Korr in the Dathomir Grotto Apex Den.")
+                    "The Force-Bonded Beast warden is defeated and the Force-Bonded Beast Cracked Apex Totem is secured. Return to Eshka Korr at the Dathomir Jungle Landing.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast inner circle is defeated and the Force-Bonded Beast Den-Mother's Fang Token is secured. Return to Eshka Korr in the Dathomir Grotto Apex Den.")
+                    "The Force-Bonded Beast inner circle is defeated and the Force-Bonded Beast Den-Mother's Fang Token is secured. Return to Eshka Korr at the Dathomir Jungle Landing.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -427,7 +427,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast master is defeated. Return to Eshka Korr in the Dathomir Grotto Apex Den to complete the trial.")
+                    "The Force-Bonded Beast master is defeated. Return to Eshka Korr at the Dathomir Jungle Landing to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

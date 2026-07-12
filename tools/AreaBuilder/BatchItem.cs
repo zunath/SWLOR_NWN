@@ -1,0 +1,25 @@
+namespace SWLOR.Tools.AreaBuilder
+{
+    /// <summary>
+    /// One queued composition for "Build Review Module". Serializes to tools/ProcgenReview's
+    /// "--areas" wire format: theme:tileset:layout:seed:size (see Program.cs there). An empty
+    /// TilesetProfileKey/LayoutProfileKey means "use the theme's own default profile".
+    ///
+    /// ProcgenReview only accepts one square size per area, while the preview UI allows
+    /// independent Width/Height sliders; Size here is stamped from Width when queuing (see
+    /// MainWindow.AddToBatch), matching the review tool's square-area contract.
+    /// </summary>
+    internal sealed class BatchItem
+    {
+        public string ThemeKey { get; init; }
+        public string ThemeDisplayName { get; init; }
+        public string TilesetProfileKey { get; init; }
+        public string TilesetDisplayName { get; init; }
+        public string LayoutProfileKey { get; init; }
+        public string LayoutDisplayName { get; init; }
+        public int Seed { get; init; }
+        public int Size { get; init; }
+
+        public string ToSpec() => $"{ThemeKey}:{TilesetProfileKey}:{LayoutProfileKey}:{Seed}:{Size}";
+    }
+}

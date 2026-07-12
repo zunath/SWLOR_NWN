@@ -1,0 +1,49 @@
+<Window x:Class="SWLOR.Tools.AreaBuilder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Area Builder" Width="1300" Height="850" MinWidth="1100" MinHeight="750">
+    <!--
+        The left control panel and all its groups/rows are built in code-behind (MainWindow.xaml.cs,
+        BuildLeftPanel) since most of it is repetitive labeled Slider/ComboBox rows; this file only
+        holds the structural skeleton: left panel host, right-side preview image, and status bar.
+    -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="380" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel x:Name="LeftStack" Margin="8" />
+            </ScrollViewer>
+
+            <!--
+                PreviewHost (not PreviewImage) drives render sizing: a WPF Image with a null
+                Source measures/arranges to 0x0 regardless of its layout slot, so its ActualWidth
+                stays 0 until a Source exists — sizing off the Image made the first render
+                impossible. The Border always fills the column, so its size is valid from the
+                first layout pass.
+            -->
+            <!--
+                Stretch="None": the bitmap is already rendered at exactly the host's size with the
+                grid letterboxed inside it, so any Image stretching would only re-scale (and
+                potentially crop or blur) an already-fitted image.
+            -->
+            <Border x:Name="PreviewHost" Grid.Column="1" Background="#FF0A0A0C" BorderBrush="#FF3A3A3E" BorderThickness="1,0,0,0">
+                <Image x:Name="PreviewImage" Stretch="None" SnapsToDevicePixels="True" />
+            </Border>
+        </Grid>
+
+        <StatusBar Grid.Row="1">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusTextBlock" Text="Ready" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

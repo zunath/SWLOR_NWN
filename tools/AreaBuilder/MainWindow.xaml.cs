@@ -1,0 +1,777 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
+using SWLOR.Game.Server.Feature.DungeonDefinition;
+using SWLOR.Game.Server.Service.AreaGenerationService;
+
+namespace SWLOR.Tools.AreaBuilder
+{
+    /// <summary>
+    /// Area Builder main window: pick a content theme / tileset profile / layout profile, tune
+    /// layout knobs, preview the generated schematic instantly, queue compositions into a batch,
+    /// and build a toolset-reviewable module via tools/ProcgenReview with one click.
+    ///
+    /// All controls are constructed in code (BuildLeftPanel) rather than XAML, since the left panel
+    /// is mostly repetitive labeled Slider/ComboBox rows; MainWindow.xaml only holds the structural
+    /// skeleton (left panel host, preview image, status bar).
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private const int MaxSeed = int.MaxValue - 1000;
+
+        private readonly DefinitionCatalog _catalog = new();
+        private readonly ObservableCollection<BatchItem> _batch = new();
+        private readonly System.Collections.Generic.HashSet<string> _overriddenKnobs = new();
+
+        private bool _suppressEvents;
+        private GenerationResult _lastResult;
+        private DungeonLayoutProfile _currentLayoutProfile;
+
+        private ComboBox _themeCombo;
+        private ComboBox _tilesetCombo;
+        private ComboBox _layoutCombo;
+        private ComboBox _styleCombo;
+        private Button _resetDefaultsButton;
+
+        private Slider _widthSlider;
+        private Slider _heightSlider;
+        private TextBlock _widthValueLabel;
+        private TextBlock _heightValueLabel;
+
+        private Slider _minRoomsSlider;
+        private Slider _maxRoomsSlider;
+        private Slider _minRoomSizeSlider;
+        private Slider _maxRoomSizeSlider;
+        private Slider _corridorWidthSlider;
+        private Slider _loopFactorSlider;
+        private Slider _organicFillSlider;
+        private Slider _accentDensitySlider;
+        private TextBlock _minRoomsValueLabel;
+        private TextBlock _maxRoomsValueLabel;
+        private TextBlock _minRoomSizeValueLabel;
+        private TextBlock _maxRoomSizeValueLabel;
+        private TextBlock _corridorWidthValueLabel;
+        private TextBlock _loopFactorValueLabel;
+        private TextBlock _organicFillValueLabel;
+        private TextBlock _accentDensityValueLabel;
+        private CheckBox _accentCheckBox;
+
+        private TextBox _seedTextBox;
+        private Button _randomSeedButton;
+
+        private Button _generateButton;
+        private Button _addToBatchButton;
+
+        private DataGrid _batchGrid;
+        private Button _removeSelectedButton;
+        private Button _clearBatchButton;
+        private Button _buildModuleButton;
+
+        private TextBox _logTextBox;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            BuildLeftPanel();
+            PopulateCombos();
+            // Size renders off PreviewHost, never PreviewImage: a WPF Image with a null Source
+            // measures/arranges to 0x0 regardless of its layout slot, so the Image's own
+            // ActualWidth/SizeChanged never deliver a usable size for the FIRST render — sizing
+            // off the Image left the preview permanently blank at startup.
+            PreviewHost.SizeChanged += (_, _) => RenderPreview();
+
+            ApplyThemeDefaults(resetDimensionsAndSeed: true);
+            RegeneratePreview();
+        }
+
+        // ------------------------------------------------------------------
+        // Left panel construction
+        // ------------------------------------------------------------------
+
+        private void BuildLeftPanel()
+        {
+            var (_, composition) = AddGroup(LeftStack, "Composition");
+            _themeCombo = AddComboRow(composition, "Theme");
+            _tilesetCombo = AddComboRow(composition, "Tileset Profile");
+            _layoutCombo = AddComboRow(composition, "Layout Profile");
+            _resetDefaultsButton = new Button { Content = "Reset to theme defaults", Margin = new Thickness(0, 6, 0, 0) };
+            composition.Children.Add(_resetDefaultsButton);
+
+            var (_, dimensions) = AddGroup(LeftStack, "Dimensions");
+            _widthSlider = AddSliderRow(dimensions, "Width", 8, 32, 16, out _widthValueLabel);
+            _heightSlider = AddSliderRow(dimensions, "Height", 8, 32, 16, out _heightValueLabel);
+
+            var (_, overrides) = AddGroup(LeftStack, "Layout overrides");
+            _styleCombo = AddComboRow(overrides, "Style");
+            foreach (DungeonLayoutStyle style in Enum.GetValues(typeof(DungeonLayoutStyle)))
+                _styleCombo.Items.Add(new KeyedItem(style.ToString(), style.ToString()));
+
+            _minRoomsSlider = AddSliderRow(overrides, "Min Rooms", 2, 12, 4, out _minRoomsValueLabel);
+            _maxRoomsSlider = AddSliderRow(overrides, "Max Rooms", 2, 16, 8, out _maxRoomsValueLabel);
+            _minRoomSizeSlider = AddSliderRow(overrides, "Min Room Size", 2, 10, 3, out _minRoomSizeValueLabel);
+            _maxRoomSizeSlider = AddSliderRow(overrides, "Max Room Size", 3, 12, 7, out _maxRoomSizeValueLabel);
+            _corridorWidthSlider = AddSliderRow(overrides, "Corridor Width", 1, 3, 1, out _corridorWidthValueLabel);
+            _loopFactorSlider = AddSliderRow(overrides, "Loop Factor", 0, 100, 25, out _loopFactorValueLabel, suffix: "%");
+            _organicFillSlider = AddSliderRow(overrides, "Organic Fill", 30, 60, 45, out _organicFillValueLabel, suffix: "%");
+
+            _accentCheckBox = AddCheckBoxRow(overrides, "Accent terrain");
+            _accentDensitySlider = AddSliderRow(overrides, "Accent Density", 1, 20, 5, out _accentDensityValueLabel, suffix: "%");
+
+            var (_, seedGroup) = AddGroup(LeftStack, "Seed");
+            var seedRow = CreateRow();
+            var seedLabel = new TextBlock { Text = "Seed", VerticalAlignment = VerticalAlignment.Center };
+            Grid.SetColumn(seedLabel, 0);
+            seedRow.Children.Add(seedLabel);
+            _seedTextBox = new TextBox { Text = "4242", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 4, 0) };
+            Grid.SetColumn(_seedTextBox, 1);
+            seedRow.Children.Add(_seedTextBox);
+            _randomSeedButton = new Button { Content = "Random", Padding = new Thickness(6, 0, 6, 0) };
+            Grid.SetColumn(_randomSeedButton, 2);
+            Grid.SetColumnSpan(_randomSeedButton, 1);
+            seedRow.Children.Add(_randomSeedButton);
+            seedGroup.Children.Add(seedRow);
+
+            var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 4, 0, 8) };
+            _generateButton = new Button { Content = "Generate Preview", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(8, 4, 8, 4) };
+            _addToBatchButton = new Button { Content = "Add to Batch", Padding = new Thickness(8, 4, 8, 4) };
+            buttonPanel.Children.Add(_generateButton);
+            buttonPanel.Children.Add(_addToBatchButton);
+            LeftStack.Children.Add(buttonPanel);
+
+            var (_, batchGroup) = AddGroup(LeftStack, "Batch");
+            _batchGrid = new DataGrid
+            {
+                AutoGenerateColumns = false,
+                IsReadOnly = true,
+                CanUserAddRows = false,
+                CanUserDeleteRows = false,
+                CanUserReorderColumns = false,
+                Height = 150,
+                ItemsSource = _batch,
+                HeadersVisibility = DataGridHeadersVisibility.Column,
+                SelectionMode = DataGridSelectionMode.Extended
+            };
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Theme", Binding = new Binding(nameof(BatchItem.ThemeDisplayName)), Width = new DataGridLength(1, DataGridLengthUnitType.Star) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Tileset", Binding = new Binding(nameof(BatchItem.TilesetDisplayName)), Width = new DataGridLength(1, DataGridLengthUnitType.Star) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Layout", Binding = new Binding(nameof(BatchItem.LayoutDisplayName)), Width = new DataGridLength(1, DataGridLengthUnitType.Star) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Seed", Binding = new Binding(nameof(BatchItem.Seed)), Width = new DataGridLength(50) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Size", Binding = new Binding(nameof(BatchItem.Size)), Width = new DataGridLength(50) });
+            batchGroup.Children.Add(_batchGrid);
+
+            var batchButtons = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 6, 0, 0) };
+            _removeSelectedButton = new Button { Content = "Remove Selected", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(6, 2, 6, 2) };
+            _clearBatchButton = new Button { Content = "Clear", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(6, 2, 6, 2) };
+            _buildModuleButton = new Button { Content = "Build Review Module", Padding = new Thickness(6, 2, 6, 2) };
+            batchButtons.Children.Add(_removeSelectedButton);
+            batchButtons.Children.Add(_clearBatchButton);
+            batchButtons.Children.Add(_buildModuleButton);
+            batchGroup.Children.Add(batchButtons);
+
+            var (_, logGroup) = AddGroup(LeftStack, "Log");
+            _logTextBox = new TextBox
+            {
+                IsReadOnly = true,
+                TextWrapping = TextWrapping.Wrap,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                AcceptsReturn = true,
+                Height = 90,
+                FontFamily = new FontFamily("Consolas")
+            };
+            logGroup.Children.Add(_logTextBox);
+
+            WireEvents();
+        }
+
+        private static (GroupBox Box, StackPanel Content) AddGroup(Panel parent, string header)
+        {
+            var content = new StackPanel { Margin = new Thickness(6) };
+            var box = new GroupBox { Header = header, Margin = new Thickness(0, 0, 0, 8), Content = content };
+            parent.Children.Add(box);
+            return (box, content);
+        }
+
+        private static Grid CreateRow()
+        {
+            var grid = new Grid { Margin = new Thickness(0, 2, 0, 2) };
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(118) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(42) });
+            return grid;
+        }
+
+        private static ComboBox AddComboRow(Panel parent, string label)
+        {
+            var row = CreateRow();
+
+            var text = new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center };
+            Grid.SetColumn(text, 0);
+            row.Children.Add(text);
+
+            var combo = new ComboBox
+            {
+                DisplayMemberPath = nameof(KeyedItem.DisplayName),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 2, 0, 2)
+            };
+            Grid.SetColumn(combo, 1);
+            Grid.SetColumnSpan(combo, 2);
+            row.Children.Add(combo);
+
+            parent.Children.Add(row);
+            return combo;
+        }
+
+        private static Slider AddSliderRow(Panel parent, string label, double min, double max, double value, out TextBlock valueLabel, string suffix = "")
+        {
+            var row = CreateRow();
+
+            var text = new TextBlock { Text = label, VerticalAlignment = VerticalAlignment.Center };
+            Grid.SetColumn(text, 0);
+            row.Children.Add(text);
+
+            var slider = new Slider
+            {
+                Minimum = min,
+                Maximum = max,
+                Value = value,
+                IsSnapToTickEnabled = true,
+                TickFrequency = 1,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0, 4, 0)
+            };
+            Grid.SetColumn(slider, 1);
+            row.Children.Add(slider);
+
+            var valueText = new TextBlock
+            {
+                Text = ((int)value) + suffix,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+            Grid.SetColumn(valueText, 2);
+            row.Children.Add(valueText);
+
+            parent.Children.Add(row);
+            valueLabel = valueText;
+            return slider;
+        }
+
+        private static CheckBox AddCheckBoxRow(Panel parent, string label)
+        {
+            var row = CreateRow();
+            var checkBox = new CheckBox { Content = label, VerticalAlignment = VerticalAlignment.Center };
+            Grid.SetColumn(checkBox, 0);
+            Grid.SetColumnSpan(checkBox, 3);
+            row.Children.Add(checkBox);
+            parent.Children.Add(row);
+            return checkBox;
+        }
+
+        // ------------------------------------------------------------------
+        // Event wiring
+        // ------------------------------------------------------------------
+
+        private void WireEvents()
+        {
+            _themeCombo.SelectionChanged += (_, _) => { if (_suppressEvents) return; OnThemeChanged(); };
+            _tilesetCombo.SelectionChanged += (_, _) => { if (_suppressEvents) return; OnTilesetChanged(); };
+            _layoutCombo.SelectionChanged += (_, _) => { if (_suppressEvents) return; OnLayoutProfileChanged(); };
+            _resetDefaultsButton.Click += (_, _) => { ApplyThemeDefaults(resetDimensionsAndSeed: true); RegeneratePreview(); };
+
+            _generateButton.Click += (_, _) => GeneratePreview();
+            _addToBatchButton.Click += (_, _) => AddToBatch();
+            _randomSeedButton.Click += (_, _) =>
+            {
+                _seedTextBox.Text = System.Random.Shared.Next(0, MaxSeed + 1).ToString(CultureInfo.InvariantCulture);
+            };
+
+            _widthSlider.ValueChanged += (_, _) => { _widthValueLabel.Text = ((int)_widthSlider.Value).ToString(); if (_suppressEvents) return; RegeneratePreview(); };
+            _heightSlider.ValueChanged += (_, _) => { _heightValueLabel.Text = ((int)_heightSlider.Value).ToString(); if (_suppressEvents) return; RegeneratePreview(); };
+
+            _styleCombo.SelectionChanged += (_, _) =>
+            {
+                if (_suppressEvents) return;
+                MarkOverride(nameof(_styleCombo));
+                UpdateOrganicFillEnabled();
+                RegeneratePreview();
+            };
+
+            WireKnobSlider(_minRoomsSlider, _minRoomsValueLabel, nameof(_minRoomsSlider));
+            WireKnobSlider(_maxRoomsSlider, _maxRoomsValueLabel, nameof(_maxRoomsSlider));
+            WireKnobSlider(_minRoomSizeSlider, _minRoomSizeValueLabel, nameof(_minRoomSizeSlider));
+            WireKnobSlider(_maxRoomSizeSlider, _maxRoomSizeValueLabel, nameof(_maxRoomSizeSlider));
+            WireKnobSlider(_corridorWidthSlider, _corridorWidthValueLabel, nameof(_corridorWidthSlider));
+            WireKnobSlider(_loopFactorSlider, _loopFactorValueLabel, nameof(_loopFactorSlider), "%");
+            WireKnobSlider(_organicFillSlider, _organicFillValueLabel, nameof(_organicFillSlider), "%");
+            WireKnobSlider(_accentDensitySlider, _accentDensityValueLabel, nameof(_accentDensitySlider), "%");
+
+            _accentCheckBox.Checked += (_, _) => OnAccentCheckChanged();
+            _accentCheckBox.Unchecked += (_, _) => OnAccentCheckChanged();
+
+            _seedTextBox.PreviewTextInput += (_, e) => e.Handled = !e.Text.All(char.IsDigit);
+            _seedTextBox.TextChanged += (_, _) => { if (_suppressEvents) return; RegeneratePreview(); };
+
+            _removeSelectedButton.Click += (_, _) => RemoveSelectedBatchItems();
+            _clearBatchButton.Click += (_, _) => _batch.Clear();
+            _buildModuleButton.Click += async (_, _) => await BuildReviewModuleAsync();
+        }
+
+        private void WireKnobSlider(Slider slider, TextBlock label, string key, string suffix = "")
+        {
+            slider.ValueChanged += (_, _) =>
+            {
+                label.Text = ((int)slider.Value) + suffix;
+                if (_suppressEvents) return;
+                MarkOverride(key);
+                RegeneratePreview();
+            };
+        }
+
+        private void MarkOverride(string key) => _overriddenKnobs.Add(key);
+
+        private void OnAccentCheckChanged()
+        {
+            _accentDensitySlider.IsEnabled = _accentCheckBox.IsChecked == true;
+            if (_suppressEvents) return;
+            MarkOverride(nameof(_accentCheckBox));
+            RegeneratePreview();
+        }
+
+        // ------------------------------------------------------------------
+        // Combo population / selection helpers
+        // ------------------------------------------------------------------
+
+        private void PopulateCombos()
+        {
+            foreach (var theme in _catalog.Themes)
+                _themeCombo.Items.Add(new KeyedItem(theme.ThemeKey, theme.DisplayName));
+
+            foreach (var profile in _catalog.TilesetProfiles.Values.OrderBy(p => p.DisplayName))
+                _tilesetCombo.Items.Add(new KeyedItem(profile.Key, profile.DisplayName));
+
+            foreach (var profile in _catalog.LayoutProfiles.Values.OrderBy(p => p.DisplayName))
+                _layoutCombo.Items.Add(new KeyedItem(profile.Key, profile.DisplayName));
+
+            _suppressEvents = true;
+            try
+            {
+                if (_themeCombo.Items.Count > 0) _themeCombo.SelectedIndex = 0;
+            }
+            finally
+            {
+                _suppressEvents = false;
+            }
+        }
+
+        private static void SelectComboByKey(ComboBox combo, string key)
+        {
+            foreach (var obj in combo.Items)
+            {
+                if (obj is KeyedItem item && item.Key == key)
+                {
+                    combo.SelectedItem = obj;
+                    return;
+                }
+            }
+
+            if (combo.Items.Count > 0) combo.SelectedIndex = 0;
+        }
+
+        private DungeonDetail SelectedTheme()
+        {
+            var key = (_themeCombo.SelectedItem as KeyedItem)?.Key;
+            return key == null ? null : _catalog.Themes.FirstOrDefault(t => t.ThemeKey == key);
+        }
+
+        private DungeonTilesetProfile SelectedTilesetProfile()
+        {
+            var key = (_tilesetCombo.SelectedItem as KeyedItem)?.Key;
+            return key != null && _catalog.TilesetProfiles.TryGetValue(key, out var profile) ? profile : null;
+        }
+
+        private DungeonLayoutProfile SelectedLayoutProfile()
+        {
+            var key = (_layoutCombo.SelectedItem as KeyedItem)?.Key;
+            return key != null && _catalog.LayoutProfiles.TryGetValue(key, out var profile) ? profile : null;
+        }
+
+        private DungeonLayoutStyle SelectedStyle()
+        {
+            var key = (_styleCombo.SelectedItem as KeyedItem)?.Key;
+            return key != null && Enum.TryParse<DungeonLayoutStyle>(key, out var style) ? style : DungeonLayoutStyle.RoomsAndCorridors;
+        }
+
+        // ------------------------------------------------------------------
+        // Theme / tileset / layout profile change handling
+        // ------------------------------------------------------------------
+
+        private void OnThemeChanged()
+        {
+            ApplyThemeDefaults(resetDimensionsAndSeed: false);
+            RegeneratePreview();
+        }
+
+        private void OnTilesetChanged()
+        {
+            UpdateAccentAvailability();
+            RegeneratePreview();
+        }
+
+        private void OnLayoutProfileChanged()
+        {
+            _overriddenKnobs.Clear();
+            LoadLayoutProfileKnobs(SelectedLayoutProfile());
+            RegeneratePreview();
+        }
+
+        /// <summary>
+        /// Selects the theme's default tileset/layout profiles (Composition group) and, when
+        /// requested, resets Width/Height/Seed too — used both by the explicit "Reset to theme
+        /// defaults" button and by picking a new Theme.
+        /// </summary>
+        private void ApplyThemeDefaults(bool resetDimensionsAndSeed)
+        {
+            var theme = SelectedTheme();
+            if (theme == null) return;
+
+            _suppressEvents = true;
+            try
+            {
+                SelectComboByKey(_tilesetCombo, theme.TilesetProfileKey);
+                SelectComboByKey(_layoutCombo, theme.LayoutProfileKey);
+
+                if (resetDimensionsAndSeed)
+                {
+                    _widthSlider.Value = 16;
+                    _heightSlider.Value = 16;
+                    _seedTextBox.Text = "4242";
+                }
+            }
+            finally
+            {
+                _suppressEvents = false;
+            }
+
+            _overriddenKnobs.Clear();
+            UpdateAccentAvailability();
+            LoadLayoutProfileKnobs(SelectedLayoutProfile());
+        }
+
+        private void UpdateAccentAvailability()
+        {
+            var tileset = SelectedTilesetProfile();
+            var supportsAccent = tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
+
+            _accentCheckBox.IsEnabled = supportsAccent;
+            if (!supportsAccent && _accentCheckBox.IsChecked == true)
+            {
+                _suppressEvents = true;
+                try { _accentCheckBox.IsChecked = false; }
+                finally { _suppressEvents = false; }
+            }
+
+            _accentDensitySlider.IsEnabled = supportsAccent && _accentCheckBox.IsChecked == true;
+        }
+
+        private void UpdateOrganicFillEnabled()
+        {
+            _organicFillSlider.IsEnabled = SelectedStyle() == DungeonLayoutStyle.OrganicCave;
+        }
+
+        /// <summary>
+        /// Pre-fills the "Layout overrides" knobs from the profile's template, skipping any field
+        /// the user has directly edited since the last profile load / theme-defaults reset.
+        /// </summary>
+        private void LoadLayoutProfileKnobs(DungeonLayoutProfile profile)
+        {
+            _currentLayoutProfile = profile;
+            if (profile == null) return;
+
+            var template = profile.Template;
+
+            _suppressEvents = true;
+            try
+            {
+                if (!_overriddenKnobs.Contains(nameof(_styleCombo)))
+                    SelectComboByKey(_styleCombo, template.Style.ToString());
+
+                if (!_overriddenKnobs.Contains(nameof(_minRoomsSlider)))
+                    _minRoomsSlider.Value = Clamp(template.MinRooms, _minRoomsSlider.Minimum, _minRoomsSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_maxRoomsSlider)))
+                    _maxRoomsSlider.Value = Clamp(template.MaxRooms, _maxRoomsSlider.Minimum, _maxRoomsSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_minRoomSizeSlider)))
+                    _minRoomSizeSlider.Value = Clamp(template.MinRoomCornerSize, _minRoomSizeSlider.Minimum, _minRoomSizeSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_maxRoomSizeSlider)))
+                    _maxRoomSizeSlider.Value = Clamp(template.MaxRoomCornerSize, _maxRoomSizeSlider.Minimum, _maxRoomSizeSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_corridorWidthSlider)))
+                    _corridorWidthSlider.Value = Clamp(template.CorridorWidth, _corridorWidthSlider.Minimum, _corridorWidthSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_loopFactorSlider)))
+                    _loopFactorSlider.Value = Clamp(Math.Round(template.LoopFactor * 100), _loopFactorSlider.Minimum, _loopFactorSlider.Maximum);
+                if (!_overriddenKnobs.Contains(nameof(_organicFillSlider)))
+                    _organicFillSlider.Value = Clamp(Math.Round(template.OpenFillTarget * 100), _organicFillSlider.Minimum, _organicFillSlider.Maximum);
+
+                var tileset = SelectedTilesetProfile();
+                var supportsAccent = tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
+
+                if (!_overriddenKnobs.Contains(nameof(_accentCheckBox)))
+                    _accentCheckBox.IsChecked = supportsAccent && template.AccentDensity > 0;
+                if (!_overriddenKnobs.Contains(nameof(_accentDensitySlider)))
+                {
+                    var density = template.AccentDensity > 0 ? Math.Round(template.AccentDensity * 100) : 5;
+                    _accentDensitySlider.Value = Clamp(density, _accentDensitySlider.Minimum, _accentDensitySlider.Maximum);
+                }
+
+                _accentCheckBox.IsEnabled = supportsAccent;
+                _accentDensitySlider.IsEnabled = supportsAccent && _accentCheckBox.IsChecked == true;
+
+                UpdateOrganicFillEnabled();
+            }
+            finally
+            {
+                _suppressEvents = false;
+            }
+        }
+
+        private static double Clamp(double value, double min, double max) => Math.Max(min, Math.Min(max, value));
+
+        // ------------------------------------------------------------------
+        // Generation / preview
+        // ------------------------------------------------------------------
+
+        private void RegeneratePreview()
+        {
+            if (_suppressEvents) return;
+            GeneratePreview();
+        }
+
+        private void GeneratePreview()
+        {
+            var theme = SelectedTheme();
+            var tilesetProfile = SelectedTilesetProfile();
+            var layoutProfile = SelectedLayoutProfile();
+
+            if (theme == null || tilesetProfile == null || layoutProfile == null || _currentLayoutProfile == null)
+            {
+                SetStatus("No composition selected.");
+                return;
+            }
+
+            TilesetModel tilesetModel;
+            try
+            {
+                tilesetModel = TilesetModelCache.Get(tilesetProfile.TilesetResref);
+            }
+            catch (Exception ex)
+            {
+                _lastResult = new GenerationResult { Success = false, FailureReason = $"Tileset load failed: {ex.Message}" };
+                RenderPreview();
+                SetStatus(_lastResult.FailureReason);
+                return;
+            }
+
+            var baseParameters = _currentLayoutProfile.Template.Clone();
+            baseParameters.Style = SelectedStyle();
+            baseParameters.MinRooms = (int)_minRoomsSlider.Value;
+            baseParameters.MaxRooms = (int)_maxRoomsSlider.Value;
+            baseParameters.MinRoomCornerSize = (int)_minRoomSizeSlider.Value;
+            baseParameters.MaxRoomCornerSize = (int)_maxRoomSizeSlider.Value;
+            baseParameters.CorridorWidth = (int)_corridorWidthSlider.Value;
+            baseParameters.LoopFactor = _loopFactorSlider.Value / 100.0;
+            baseParameters.OpenFillTarget = _organicFillSlider.Value / 100.0;
+
+            var accentEnabled = _accentCheckBox.IsChecked == true && !string.IsNullOrEmpty(tilesetProfile.AccentTerrain);
+            var accentTerrain = accentEnabled ? tilesetProfile.AccentTerrain : string.Empty;
+            var accentDensity = accentEnabled ? _accentDensitySlider.Value / 100.0 : 0.0;
+
+            var width = (int)_widthSlider.Value;
+            var height = (int)_heightSlider.Value;
+            var seed = GetSeedValue();
+
+            var result = GenerationEngine.Generate(baseParameters, tilesetModel, width, height, accentTerrain, accentDensity, seed);
+            _lastResult = result;
+
+            RenderPreview();
+
+            if (!result.Success)
+            {
+                SetStatus($"Generation failed: {result.FailureReason}");
+                return;
+            }
+
+            var openPercent = ComputeOpenPercent(result.Layout, result.Parameters.OpenTerrain);
+            SetStatus($"rooms: {result.Layout.Rooms.Count} | open corners: {openPercent:0}% | attempt seed: {result.AttemptSeed}");
+        }
+
+        /// <summary>
+        /// Redraws the last generation result (success schematic or failure text) into the preview
+        /// image, sized to the preview host panel. Sizing must come from PreviewHost — an Image with
+        /// a null Source measures to 0x0, so the Image's own ActualWidth is useless pre-first-render.
+        /// </summary>
+        private void RenderPreview()
+        {
+            if (_lastResult == null) return;
+
+            var actualWidth = PreviewHost.ActualWidth - PreviewHost.BorderThickness.Left - PreviewHost.BorderThickness.Right;
+            var actualHeight = PreviewHost.ActualHeight - PreviewHost.BorderThickness.Top - PreviewHost.BorderThickness.Bottom;
+            if (actualWidth < 1 || actualHeight < 1) return;
+
+            PreviewImage.Source = _lastResult.Success
+                ? SchematicRenderer.Render(_lastResult.Layout, _lastResult.Parameters, actualWidth, actualHeight)
+                : SchematicRenderer.RenderMessage($"Generation failed:\n{_lastResult.FailureReason}", actualWidth, actualHeight);
+        }
+
+        private static double ComputeOpenPercent(MacroLayout layout, string openTerrain)
+        {
+            var total = (layout.Corners.Width + 1) * (layout.Corners.Height + 1);
+            if (total == 0) return 0;
+
+            var open = 0;
+            for (var x = 0; x <= layout.Corners.Width; x++)
+            for (var y = 0; y <= layout.Corners.Height; y++)
+                if (layout.Corners.Labels[x, y] == openTerrain) open++;
+
+            return 100.0 * open / total;
+        }
+
+        /// <summary>Updates the status bar and mirrors the message into the log so app state is inspectable after the fact.</summary>
+        private void SetStatus(string text)
+        {
+            StatusTextBlock.Text = text;
+            AppendLog(text);
+        }
+
+        private int GetSeedValue()
+        {
+            if (int.TryParse(_seedTextBox.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
+                return Math.Clamp(value, 0, MaxSeed);
+            return 4242;
+        }
+
+        // ------------------------------------------------------------------
+        // Batch
+        // ------------------------------------------------------------------
+
+        private void AddToBatch()
+        {
+            var theme = SelectedTheme();
+            var tilesetProfile = SelectedTilesetProfile();
+            var layoutProfile = SelectedLayoutProfile();
+            if (theme == null || tilesetProfile == null || layoutProfile == null) return;
+
+            var width = (int)_widthSlider.Value;
+            var height = (int)_heightSlider.Value;
+            if (width != height)
+            {
+                AppendLog($"Width ({width}) and Height ({height}) differ; the review module builder " +
+                          $"only supports square areas, so {width} will be used for both when building.");
+            }
+
+            var item = new BatchItem
+            {
+                ThemeKey = theme.ThemeKey,
+                ThemeDisplayName = theme.DisplayName,
+                TilesetProfileKey = tilesetProfile.Key == theme.TilesetProfileKey ? string.Empty : tilesetProfile.Key,
+                TilesetDisplayName = tilesetProfile.DisplayName,
+                LayoutProfileKey = layoutProfile.Key == theme.LayoutProfileKey ? string.Empty : layoutProfile.Key,
+                LayoutDisplayName = layoutProfile.DisplayName,
+                Seed = GetSeedValue(),
+                Size = width
+            };
+
+            _batch.Add(item);
+        }
+
+        private void RemoveSelectedBatchItems()
+        {
+            foreach (var item in _batchGrid.SelectedItems.Cast<BatchItem>().ToList())
+                _batch.Remove(item);
+        }
+
+        // ------------------------------------------------------------------
+        // Build Review Module
+        // ------------------------------------------------------------------
+
+        private async Task BuildReviewModuleAsync()
+        {
+            if (_batch.Count == 0)
+            {
+                AppendLog("Batch is empty; nothing to build.");
+                return;
+            }
+
+            _buildModuleButton.IsEnabled = false;
+            try
+            {
+                var specs = string.Join(",", _batch.Select(b => b.ToSpec()));
+                var outPath = RepoPaths.ReviewModuleOutputPath;
+                var projectPath = RepoPaths.ProcgenReviewProjectPath;
+
+                AppendLog($"Building review module with {_batch.Count} area(s)...");
+
+                var arguments = $"run --project \"{projectPath}\" -- --areas \"{specs}\" --out \"{outPath}\"";
+                var exitCode = await RunProcessAsync("dotnet", arguments);
+
+                AppendLog(exitCode == 0
+                    ? $"Build succeeded: {outPath}"
+                    : $"Build failed (exit code {exitCode}).");
+            }
+            catch (Exception ex)
+            {
+                AppendLog($"Build failed: {ex.Message}");
+            }
+            finally
+            {
+                _buildModuleButton.IsEnabled = true;
+            }
+        }
+
+        private Task<int> RunProcessAsync(string fileName, string arguments)
+        {
+            var tcs = new TaskCompletionSource<int>();
+
+            var psi = new ProcessStartInfo(fileName, arguments)
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WorkingDirectory = RepoPaths.Root
+            };
+
+            var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
+            process.OutputDataReceived += (_, e) => { if (e.Data != null) AppendLog(e.Data); };
+            process.ErrorDataReceived += (_, e) => { if (e.Data != null) AppendLog(e.Data); };
+            process.Exited += (_, _) =>
+            {
+                tcs.TrySetResult(process.ExitCode);
+                process.Dispose();
+            };
+
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+            return tcs.Task;
+        }
+
+        private void AppendLog(string line)
+        {
+            if (!_logTextBox.Dispatcher.CheckAccess())
+            {
+                _logTextBox.Dispatcher.Invoke(() => AppendLog(line));
+                return;
+            }
+
+            _logTextBox.AppendText(line + Environment.NewLine);
+            _logTextBox.ScrollToEnd();
+        }
+    }
+}

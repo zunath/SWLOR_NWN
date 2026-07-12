@@ -100,6 +100,17 @@ Mine/Cave (`tdt01`) entrance on a suitable planet → party selects tier → ins
 5. **Memory/instance growth** (leak history fixed in 8193.31, but monitor). → Profiler plugin metrics + idle teardown; M6 soak test.
 6. **Determinism drift** breaking SeedPersisted. → golden-seed regression tests in CI.
 
+## Offline review workflow
+
+`dotnet run --project tools/ProcgenReview` builds a standalone `Module/SWLOR Procgen Review.mod`
+containing offline-generated areas for every registered dungeon theme (default: seeds 4242 and 777,
+16x16; override with `--seeds a,b,c --size N --out <path>`). It uses the production solver and each
+theme's real tileset/lighting/placeholder settings via linked sources, so the review module always
+matches runtime behavior. Paths derive from the repository root, so it runs on any machine/drive;
+point nwn.ini's MODULES directory at `<repo>/Module` (the dev convention) and the toolset sees the
+output directly. Note: offline generation skips engine path validation — the review module is for
+visual inspection, not traversal QA.
+
 ## Milestones
 - **M0 — Spike (riskiest first)**: flip `NWNX_TILESET_SKIP=n` (debugserver + note for prod env), write `SWLOR.NWN.API/NWNX/TilesetPlugin.cs` wrapper, hand-author a 4×4 override on `tdt01`, bind + `CreateArea`, walk it in-game. Verify: geometry, walkmesh, minimap, lighting, `GetPathExists`, door slots, teardown. Go/no-go on the NWNX path (contingency: `SetTileJson`).
 - **M1 — Tileset data model**: `.set` parser + NWNX-backed provider + adjacency cache for `tdt01`; unit tests against the real `.set` file.

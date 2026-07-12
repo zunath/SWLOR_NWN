@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Field research documenting the incubation of the Dathomir Wyrmling. Use it to record the mutation methods in your Beast Mastery codex."
+      "0": "Field research documenting the incubation of the Dathomir Wyrmling. Use it to record the mutation methods in your Incubation codex."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Field research documenting the incubation of the Dathomir Wyrmling. Use it to record the mutation methods in your Beast Mastery codex."
+      "0": "Field research documenting the incubation of the Dathomir Wyrmling. Use it to record the mutation methods in your Incubation codex."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dathomir Wyrmling"
+      "0": "Field Note: Dathomir Wyrmling"
     }
   },
   "ModelPart1": {

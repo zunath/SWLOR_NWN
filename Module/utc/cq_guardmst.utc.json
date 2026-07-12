@@ -663,10 +663,6 @@
     "type": "resref",
     "value": "cq_guardmst"
   },
-  "VarTable": {
-    "type": "list",
-    "value": []
-  },
   "WalkRate": {
     "type": "int",
     "value": 7

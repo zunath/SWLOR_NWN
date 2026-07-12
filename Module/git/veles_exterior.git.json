@@ -40,26 +40,6 @@
       "MusicNight": {
         "type": "int",
         "value": 353
-      },
-      "VarTable": {
-        "type": "list",
-        "value": [
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "PLANET_TYPE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 1
-            },
-            "Value": {
-              "type": "int",
-              "value": 1
-            }
-          }
-        ]
       }
     }
   },
@@ -24666,7 +24646,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Moira Halaz, one of many of the Veles residents, takes care of supply runs out to the various remote outposts around Viscara. She\u2019s been plagued by the local wildlife as of late, and her distraught expression betrays that trouble is never too far away."
+            "0": "Moira Halaz, one of many of the Veles residents, takes care of supply runs out to the various remote outposts around Viscara. She’s been plagued by the local wildlife as of late, and her distraught expression betrays that trouble is never too far away."
           }
         },
         "Dex": {
@@ -24925,7 +24905,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.011737491242518e-42
+                "value": 1.011737491242518e-042
               },
               "XPosition": {
                 "type": "float",
@@ -25539,7 +25519,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.2
+          "value": 0.2000000029802322
         }
       }
     ]
@@ -179876,10 +179856,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": []
         },
         "Will": {
           "type": "byte",

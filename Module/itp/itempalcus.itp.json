@@ -7075,6 +7075,17 @@
                     },
                     "RESREF": {
                       "type": "resref",
+                      "value": "gark_bite_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Arkanian Dragon Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
                       "value": "narkbite"
                     }
                   },
@@ -12514,6 +12525,116 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_arena_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_hiddenb_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_pirate_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_redbld_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_serpent_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_serpld_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_slaver_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_sniper_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_thief_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco-Terrorist Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_troubl_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Eco-Terrorist Leader Stat Skin"
                     },
                     "RESREF": {
@@ -15521,6 +15642,17 @@
                     },
                     "RESREF": {
                       "type": "resref",
+                      "value": "garkdragon_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Old Scar Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
                       "value": "oldscar_k_sk"
                     }
                   },
@@ -15544,6 +15676,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "outlaw_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patrol Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_cmddr_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patrol Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_rogued_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Patrol Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_scav_sk"
                     }
                   },
                   {
@@ -53459,6 +53624,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chiro Lightsaber Upgrade Kit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saber_upgchi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chiro Saberstaff Upgrade Kit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "staff_upgchi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Droid Controller"
                     },
                     "RESREF": {
@@ -53497,6 +53684,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saber_upg1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lightsaber Upgrade Kit II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saber_upg2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lightsaber Upgrade Kit III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saber_upg3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lightsaber Upgrade Kit IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saber_upg4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lightsaber Upgrade Kit V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saber_upg5"
                     }
                   },
                   {
@@ -53552,6 +53783,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff_upg1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Upgrade Kit II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "staff_upg2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Upgrade Kit III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "staff_upg3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Upgrade Kit IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "staff_upg4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Upgrade Kit V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "staff_upg5"
                     }
                   },
                   {
@@ -56950,6 +57225,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Chiro Lightsaber Upgrade Kit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chlsupg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Chiro Longsword"
                     },
                     "RESREF": {
@@ -56977,6 +57263,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_chirifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Chiro Saberstaff Upgrade Kit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_chssupg"
                     }
                   },
                   {
@@ -60800,6 +61097,820 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Field Note: Aardvark"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2000"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Abyssweb Ravager"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Allosaurus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Balanoro Force Mite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Bearbug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2010"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Bhalir"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2011"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Binarian Sabercat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2012"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Blastail"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2013"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Blistering Beetle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Boma Beast"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2017"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Boma Beast Baby"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2018"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Bramble Lynx"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2019"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Burrowberry Bird"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2022"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Burrowberry Pack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Cannok"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2024"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Char Hound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2025"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Cragscale"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2030"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Crimson Skyrender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2031"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Crocodile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2032"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Dathomir Wyrmling"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2034"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Deeprock Mauler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2036"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Deepwoods Rager"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2038"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Dewback"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2039"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Dreamwalker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2043"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Drexclaw Marauder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2044"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Frog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2051"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Frostback Spineguard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2052"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Fungal Shambler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2054"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Garral"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2055"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Garu Bear Ripper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2056"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Giant Garu Bear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2057"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Grutchin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2065"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Hanadak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2066"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Horned Kath Hound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2067"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Hssiss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2069"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Hutlar Penguin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2070"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Juvenile Chirodactyl"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2074"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Juvenile Rancor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2075"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Katarn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2076"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Mush Warrior"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2078"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Mutated Boar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2080"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Mutated Frog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2081"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Orbak Water Horse"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2084"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Orray"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2085"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Porg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2087"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Razorhide Hound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2089"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Ronto"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2091"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Royal Plumage"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2093"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Rustwhisker Gnawfiend"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2096"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Saberleg Kharaxis"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2097"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Scrap Rat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2100"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Serene Grovetreader"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2101"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Sink Crab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2104"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Speckled Seer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2106"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Spined Crawler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2107"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Spinosaurus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2108"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Stegosaurus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2109"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Stinging Swarm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2110"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Stoneclad Behemoth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2111"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Swamp Rat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2114"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Tach"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2115"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Terentatek"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2117"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Torosaurus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2119"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Triceratops"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2120"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Tukata"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2121"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Tundra Ponderer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2122"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Tyrannosaurus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2123"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Ubese Thorn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2124"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Umbral Barghest"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2126"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Underbrush Scamp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2128"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Undersea Carver"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2129"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Weasel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2136"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Wraid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2137"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Field Note: Wraithweb Nythrax"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fnote_2138"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hutlar - Outpost Map"
                     },
                     "RESREF": {
@@ -63937,6 +65048,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "hv_servo"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Kyber Token"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "kyber_token"
               }
             },
             {
@@ -68646,6 +69768,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Electroblade III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_pirate_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Electroblade III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_serpent_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Electroblade IV"
                           },
                           "RESREF": {
@@ -68860,6 +70004,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "lightsaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ls_custom"
                           }
                         },
                         {
@@ -69404,6 +70559,39 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "h_katar_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunter Katar III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_arena_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunter Katar III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_hiddenb_w2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunter Katar III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_hiddenb_wp"
                           }
                         },
                         {
@@ -70593,6 +71781,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ss_custom"
                     }
                   },
                   {
@@ -71989,6 +73188,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hunter Spear III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_redbld_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hunter Spear IV"
                     },
                     "RESREF": {
@@ -72751,6 +73961,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Hunter Pistol III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_cmddr_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunter Pistol III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_scav_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Hunter Pistol IV"
                           },
                           "RESREF": {
@@ -72986,6 +74218,17 @@
                           },
                           "RESREF": {
                             "type": "resref",
+                            "value": "nar_slaver_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sacred Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
                             "value": "sc_pistol"
                           }
                         },
@@ -73020,6 +74263,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "sithofficer_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_rogued_wp"
                           }
                         },
                         {
@@ -73157,6 +74411,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bol_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bol Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_sniper_wp"
                           }
                         },
                         {
@@ -73317,11 +74582,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Hunter Rifle III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_thief_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Hunter Rifle IV"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "h_rifle_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunter Rifle IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nar_serpld_wp"
                           }
                         },
                         {
@@ -73763,6 +75050,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "h_shuriken_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunter Shuriken IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_troubl_wp"
                     }
                   },
                   {

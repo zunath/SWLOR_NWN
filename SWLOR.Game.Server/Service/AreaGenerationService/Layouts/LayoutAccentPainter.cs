@@ -8,6 +8,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     /// Shared accent post-pass: paints a secondary terrain (e.g. Water pools, Pit channels) as random-walk
     /// blob patches strictly inside open space, subject to hard constraints (never touches solid, never
     /// eats a room's center tile, never breaks open-corner connectivity). Runs last, after role assignment.
+    ///
+    /// v1 scope note: operates only on MacroLayoutParameters.OpenTerrain (the primary terrain), never
+    /// MacroLayoutParameters.SecondaryOpenTerrain -- a multi-terrain district room's corners never equal
+    /// OpenTerrain, so CanAccept naturally excludes them with no extra guard needed; districted layouts
+    /// simply never paint accents into a secondary room.
     /// </summary>
     internal static class LayoutAccentPainter
     {

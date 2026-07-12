@@ -24,17 +24,38 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
         internal static List<(int X, int Y)> GetCorners(CornerTerrainGrid corners, string label)
         {
+            return GetCorners(corners, new HashSet<string> { label });
+        }
+
+        /// <summary>Multi-label variant: every corner whose terrain is any of <paramref name="labels"/>.</summary>
+        internal static List<(int X, int Y)> GetCorners(CornerTerrainGrid corners, HashSet<string> labels)
+        {
             var result = new List<(int X, int Y)>();
             for (var x = 0; x <= corners.Width; x++)
             {
                 for (var y = 0; y <= corners.Height; y++)
                 {
-                    if (corners.Labels[x, y] == label)
+                    if (labels.Contains(corners.Labels[x, y]))
                         result.Add((x, y));
                 }
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// The set of terrain labels a layout treats as "open" for district-aware connectivity/geodesic
+        /// passes: OpenTerrain always, plus SecondaryOpenTerrain when districts are configured (see
+        /// MacroLayoutParameters.SecondaryOpenTerrain). Single-label callers (accent painting, accent
+        /// channels, fences) intentionally keep using the plain string overloads below — those systems
+        /// are v1-scoped to the primary terrain only.
+        /// </summary>
+        internal static HashSet<string> OpenLabelSet(MacroLayoutParameters parameters)
+        {
+            var labels = new HashSet<string> { parameters.OpenTerrain };
+            if (!string.IsNullOrEmpty(parameters.SecondaryOpenTerrain))
+                labels.Add(parameters.SecondaryOpenTerrain);
+            return labels;
         }
 
         internal static HashSet<(int X, int Y)> FloodFill(CornerTerrainGrid corners, string label, (int X, int Y) start)
@@ -73,6 +94,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
         internal static Dictionary<(int X, int Y), int> BfsDistances(CornerTerrainGrid corners, string label, (int X, int Y) start)
         {
+            return BfsDistances(corners, new HashSet<string> { label }, start);
+        }
+
+        /// <summary>Multi-label variant: traverses any corner whose terrain is in <paramref name="labels"/>.</summary>
+        internal static Dictionary<(int X, int Y), int> BfsDistances(CornerTerrainGrid corners, HashSet<string> labels, (int X, int Y) start)
+        {
             var dist = new Dictionary<(int X, int Y), int> { [start] = 0 };
             var queue = new Queue<(int X, int Y)>();
             queue.Enqueue(start);
@@ -87,7 +114,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var nx = current.X + dx;
                     var ny = current.Y + dy;
                     if (nx < 0 || nx > corners.Width || ny < 0 || ny > corners.Height) continue;
-                    if (corners.Labels[nx, ny] != label) continue;
+                    if (!labels.Contains(corners.Labels[nx, ny])) continue;
 
                     var key = (nx, ny);
                     if (dist.ContainsKey(key)) continue;
@@ -111,8 +138,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             (int X, int Y) start,
             IReadOnlyList<TunnelLink> links)
         {
+            return DistancesWithLinks(corners, new HashSet<string> { label }, start, links);
+        }
+
+        /// <summary>
+        /// Multi-label variant of <see cref="DistancesWithLinks(CornerTerrainGrid,string,(int,int),IReadOnlyList{TunnelLink})"/>:
+        /// treats any corner whose terrain is in <paramref name="labels"/> as walkable. Used by
+        /// district-aware passes (role assignment boss geodesics, ValidateInvariants) so a secondary
+        /// district's own open corners count as reachable space alongside the primary terrain.
+        /// </summary>
+        internal static Dictionary<(int X, int Y), int> DistancesWithLinks(
+            CornerTerrainGrid corners,
+            HashSet<string> labels,
+            (int X, int Y) start,
+            IReadOnlyList<TunnelLink> links)
+        {
             if (links == null || links.Count == 0)
-                return BfsDistances(corners, label, start);
+                return BfsDistances(corners, labels, start);
 
             // Corner -> (other endpoint, length) adjacency contributed by tunnel links.
             var linkEdges = new Dictionary<(int X, int Y), List<((int X, int Y) To, int Length)>>();
@@ -148,7 +190,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var nx = current.X + dx;
                     var ny = current.Y + dy;
                     if (nx < 0 || nx > corners.Width || ny < 0 || ny > corners.Height) continue;
-                    if (corners.Labels[nx, ny] != label) continue;
+                    if (!labels.Contains(corners.Labels[nx, ny])) continue;
                     Relax((nx, ny), 1);
                 }
 
@@ -168,13 +210,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// </summary>
         internal static bool IsConnectedWithLinks(CornerTerrainGrid corners, string label, IReadOnlyList<TunnelLink> links)
         {
-            if (links == null || links.Count == 0)
-                return IsSingleComponent(corners, label);
+            return IsConnectedWithLinks(corners, new HashSet<string> { label }, links);
+        }
 
-            var all = GetCorners(corners, label);
+        /// <summary>
+        /// Multi-label variant: true when every corner whose terrain is in <paramref name="labels"/> is
+        /// reachable from every other, counting tunnel links as connections between their endpoint
+        /// corners. A districted layout's primary and secondary open corners are disjoint components in
+        /// the plain corner graph (they only ever touch through a Tunnel-mode TunnelLink), so this is
+        /// the check ValidateInvariants/role assignment must use once SecondaryOpenTerrain is active.
+        /// </summary>
+        internal static bool IsConnectedWithLinks(CornerTerrainGrid corners, HashSet<string> labels, IReadOnlyList<TunnelLink> links)
+        {
+            var all = GetCorners(corners, labels);
             if (all.Count == 0) return false;
 
-            var reachable = DistancesWithLinks(corners, label, all[0], links);
+            // BfsDistances with no links reduces to a plain flood fill; DistancesWithLinks falls back
+            // to it internally too, so this single call covers both the linked and unlinked case.
+            var reachable = DistancesWithLinks(corners, labels, all[0], links);
             return reachable.Count == all.Count;
         }
 

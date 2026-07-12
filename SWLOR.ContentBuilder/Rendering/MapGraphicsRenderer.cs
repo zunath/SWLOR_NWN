@@ -132,7 +132,7 @@ namespace SWLOR.ContentBuilder.Rendering
                         else
                         {
                             stats.Misses++;
-                            var color = FallbackColor(tileRecord, resolvedTile.Orientation, tileset, resolved.OpenTerrain, roomByTile, (x, y));
+                            var color = FallbackColor(tileRecord, resolvedTile.Orientation, tileset, resolved.OpenTerrain, resolved.SecondaryOpenTerrain, roomByTile, (x, y));
                             context.DrawRectangle(new SolidColorBrush(color), null, cellRect);
                         }
                     }
@@ -156,6 +156,7 @@ namespace SWLOR.ContentBuilder.Rendering
             int orientation,
             TilesetModel tileset,
             string layoutOpenTerrain,
+            string layoutSecondaryOpenTerrain,
             Dictionary<(int X, int Y), RoomRole> roomByTile,
             (int X, int Y) coord)
         {
@@ -172,9 +173,17 @@ namespace SWLOR.ContentBuilder.Rendering
                            LabelEquals(br, tileset.DefaultTerrain) && LabelEquals(bl, tileset.DefaultTerrain);
             if (allSolid) return SolidColor;
 
-            var allOpen = LabelEquals(tl, openTerrain) && LabelEquals(tr, openTerrain) &&
-                          LabelEquals(br, openTerrain) && LabelEquals(bl, openTerrain);
-            if (allOpen)
+            // A tile's four corners are always a single terrain when fully open, so it either matches
+            // the primary open terrain OR (when multi-terrain districts are active) the secondary one
+            // -- never a mix (see MacroLayoutParameters.SecondaryOpenTerrain).
+            var allOpenPrimary = LabelEquals(tl, openTerrain) && LabelEquals(tr, openTerrain) &&
+                                 LabelEquals(br, openTerrain) && LabelEquals(bl, openTerrain);
+
+            var allOpenSecondary = !string.IsNullOrEmpty(layoutSecondaryOpenTerrain) &&
+                                    LabelEquals(tl, layoutSecondaryOpenTerrain) && LabelEquals(tr, layoutSecondaryOpenTerrain) &&
+                                    LabelEquals(br, layoutSecondaryOpenTerrain) && LabelEquals(bl, layoutSecondaryOpenTerrain);
+
+            if (allOpenPrimary || allOpenSecondary)
             {
                 return roomByTile.TryGetValue(coord, out var role) ? RoomColor(role) : OpenColor;
             }

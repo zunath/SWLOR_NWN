@@ -41,6 +41,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     /// transition tile) and before LayoutGroupStamper, whose CorridorInsert classifier can optionally
     /// splice a FenceDoor/InteriorFenceDoor/ExteriorFenceDoor group gate into a straight body segment
     /// this pass carved, when a tileset profile configures one via SetPieces.
+    ///
+    /// v1 scope note: operates only on MacroLayoutParameters.OpenTerrain (the primary terrain), never
+    /// SecondaryOpenTerrain -- IsClearCell requires every corner of a candidate cell to already equal
+    /// the primary open terrain, so a multi-terrain district room's cells are naturally excluded with no
+    /// extra guard needed.
     /// </summary>
     internal static class LayoutFenceCarver
     {

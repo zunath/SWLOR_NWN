@@ -24,15 +24,45 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             var roomRects = PlaceRooms(parameters, random);
 
-            // Carve room interiors open. Border ring is never touched since room placement always
-            // keeps a >=1 solid-corner gap from it.
-            foreach (var rect in roomRects)
+            // Multi-terrain districts (v1: Tunnel mode only -- see MacroLayoutParameters.
+            // SecondaryOpenTerrain doc comment for why OpenLane is excluded). Room 0 (the first room a
+            // style places) always stays OpenTerrain so the entrance biases toward the primary
+            // district; every other room independently rolls SecondaryRoomFraction. When districts are
+            // inactive every entry is just parameters.OpenTerrain and zero extra RNG is consumed, so
+            // back-compat is exact.
+            //
+            // Also requires CorridorCrosserType.Corridor: Alley is a single-terrain-verified vocabulary
+            // (vmr01's Plaza-only "exterior streets" crosser, see CorridorCrosserType doc comment) with
+            // no confirmed Alley-port tiles for any secondary district terrain, whereas Corridor/Doorway
+            // is verified present on every generation tileset including both district terrains (zsf01
+            // floor+Floor2, vmr01 Plaza+Floor). A tileset profile may declare SecondaryOpenTerrain and
+            // still be composed with an Alley-mode (Streets) layout profile for its own single-terrain
+            // exterior use — districts simply stay inactive for that pairing.
+            var useDistricts = parameters.CorridorMode == CorridorMode.Tunnel &&
+                                parameters.CorridorCrosserType == CorridorCrosserType.Corridor &&
+                                !string.IsNullOrEmpty(parameters.SecondaryOpenTerrain) &&
+                                parameters.SecondaryRoomFraction > 0;
+
+            var roomTerrain = new string[roomRects.Count];
+            for (var i = 0; i < roomRects.Count; i++)
             {
+                roomTerrain[i] = i == 0 || !useDistricts
+                    ? parameters.OpenTerrain
+                    : random.NextDouble() < parameters.SecondaryRoomFraction
+                        ? parameters.SecondaryOpenTerrain
+                        : parameters.OpenTerrain;
+            }
+
+            // Carve room interiors open, each from its own assigned terrain. Border ring is never
+            // touched since room placement always keeps a >=1 solid-corner gap from it.
+            for (var i = 0; i < roomRects.Count; i++)
+            {
+                var rect = roomRects[i];
                 for (var x = rect.X0; x <= rect.X1; x++)
                 {
                     for (var y = rect.Y0; y <= rect.Y1; y++)
                     {
-                        corners.Labels[x, y] = parameters.OpenTerrain;
+                        corners.Labels[x, y] = roomTerrain[i];
                     }
                 }
             }
@@ -74,11 +104,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 added++;
             }
 
-            CarveAllEdges(layout, roomRects, centers, allEdges, parameters, random);
+            CarveAllEdges(layout, roomRects, centers, roomTerrain, allEdges, parameters, random);
 
             var rooms = new List<LayoutRoom>(roomRects.Count);
             for (var i = 0; i < roomRects.Count; i++)
-                rooms.Add(LayoutRoomBuilder.BuildFromRect(i, roomRects[i], corners, parameters.OpenTerrain));
+                rooms.Add(LayoutRoomBuilder.BuildFromRect(i, roomRects[i], corners, roomTerrain[i]));
 
             layout.Rooms = rooms;
             return layout;
@@ -91,11 +121,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// could open corners underneath existing crosser chains and strand unresolvable half-tunnels,
         /// so if any tunnel fails, all crossers are discarded and every connection is re-carved as an
         /// open lane. Failures are rare (a tunnel needs only one solid path between two walls).
+        ///
+        /// District-aware: OpenLane bands are carved straight from room center to room center, which
+        /// would repaint a secondary-terrain room's own interior back to OpenTerrain partway through.
+        /// So the fallback additionally downgrades every room to OpenTerrain (a no-op when districts
+        /// were never active -- every entry already equals OpenTerrain) before carving lanes, keeping
+        /// <paramref name="roomTerrain"/> consistent with what the corner grid actually ends up holding
+        /// for the caller's subsequent LayoutRoomBuilder pass.
         /// </summary>
         private static void CarveAllEdges(
             MacroLayout layout,
             List<RoomRect> roomRects,
             (int X, int Y)[] centers,
+            string[] roomTerrain,
             List<(int U, int V)> edges,
             MacroLayoutParameters parameters,
             System.Random random)
@@ -105,7 +143,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 var allTunneled = true;
                 foreach (var (u, v) in edges)
                 {
-                    if (!LayoutTunnelCarver.TryConnect(layout, roomRects[u], roomRects[v], parameters, random))
+                    if (!LayoutTunnelCarver.TryConnect(layout, roomRects[u], roomRects[v], roomTerrain[u], roomTerrain[v], parameters, random))
                     {
                         allTunneled = false;
                         break;
@@ -117,6 +155,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
                 layout.Crossers = new EdgeCrosserGrid(parameters.Width, parameters.Height);
                 layout.TunnelLinks.Clear();
+
+                DowngradeDistrictsToOpenTerrain(layout.Corners, roomRects, roomTerrain, parameters.OpenTerrain);
             }
 
             foreach (var (u, v) in edges)
@@ -128,6 +168,31 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 LayoutCornerUtils.CarveLShapedCorridor(
                     layout.Corners, a.X, a.Y, b.X, b.Y, horizontalFirst,
                     Math.Max(1, parameters.CorridorWidth), parameters.Width, parameters.Height, parameters.OpenTerrain);
+            }
+        }
+
+        /// <summary>
+        /// Repaints every room whose assigned terrain differs from <paramref name="primaryOpenTerrain"/>
+        /// back to it, and resets <paramref name="roomTerrain"/> to match -- used only when Tunnel
+        /// carving fails entirely and generation falls back to OpenLane corridors (see CarveAllEdges).
+        /// </summary>
+        private static void DowngradeDistrictsToOpenTerrain(
+            CornerTerrainGrid corners, List<RoomRect> roomRects, string[] roomTerrain, string primaryOpenTerrain)
+        {
+            for (var i = 0; i < roomRects.Count; i++)
+            {
+                if (roomTerrain[i] == primaryOpenTerrain) continue;
+
+                var rect = roomRects[i];
+                for (var x = rect.X0; x <= rect.X1; x++)
+                {
+                    for (var y = rect.Y0; y <= rect.Y1; y++)
+                    {
+                        corners.Labels[x, y] = primaryOpenTerrain;
+                    }
+                }
+
+                roomTerrain[i] = primaryOpenTerrain;
             }
         }
 

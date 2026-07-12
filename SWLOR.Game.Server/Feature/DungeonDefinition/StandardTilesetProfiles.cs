@@ -82,6 +82,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // zsf01's declared floor ("Floor2") has a single fully-open tile; 'floor' is the
                 // terrain czs220_maintlvl builds its rooms from (3 diagonal variants + doorway tiles).
                 .PrimaryOpenTerrain("floor")
+                // Multi-terrain districts: 'Floor2' has full 16/16 corner coverage vs 'wall' plus
+                // Doorway-junction tiles (TILE54 verified offline), so some rooms can be carved as
+                // walled Floor2 districts joined to 'floor' rooms via Tunnel-mode corridors — this
+                // unlocks Floor2's own separate ~13-tile vocabulary that was otherwise unreachable under
+                // the single-open-terrain constraint. Only takes effect because Facility's default
+                // layout profile (Complex) already uses Tunnel mode.
+                .SecondaryOpenTerrain("Floor2")
                 .SetPiece("Cell", 2)
                 .SetPiece("Room", 2)
                 .SetPiece("Bedroom")
@@ -91,13 +98,26 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Alien Ruin (reference: korr_crypt_zil). Chasm lacks coverage — no accents.
             // 'Plaza' carries 11 fully-open tile variants vs 4 on the declared 'Floor'.
             // Feature tiles: vmr01's nine curated 1x1 groups (Portal/Chessboard/Mosaic_Plaza_2x2
-            // deliberately excluded); TileResolver's corner-key matching naturally excludes the
-            // handful whose own corners are 'Floor' rather than 'Plaza' (e.g. InteriorRubble).
+            // deliberately excluded). InteriorRubble/RuinedHouse are Floor-cornered: with no
+            // SecondaryOpenTerrain their corner key never appears in a Plaza-only layout, so they were
+            // previously placed zero times; once districts are active (SecondaryOpenTerrain("Floor")
+            // below, composed with a Tunnel-mode layout) Floor rooms actually exist and these start
+            // matching automatically — no resolver change needed, TileResolver's corner-key lookup is
+            // already terrain-agnostic.
             _builder.Create(AncientRuin, "Ancient Ruin")
                 .Tileset("vmr01")
                 .Placeholder("gen_placeholder4")
                 .TileLighting(31, 27, 10, 12)
                 .PrimaryOpenTerrain("Plaza")
+                // Multi-terrain districts: 'Floor' has full 16/16 corner coverage vs 'Wall' plus
+                // Doorway-junction tiles (TILE6 verified offline), so some rooms can be carved as walled
+                // Floor districts joined to Plaza rooms via Tunnel-mode corridors — this unlocks
+                // Floor's ~50-tile vocabulary (including feature/group tiles like InteriorMosaic_2x2
+                // that structurally require Floor corners, see SetPiece("Amphitheater_2x2") note below)
+                // that was otherwise unreachable under the single-open-terrain constraint. Only takes
+                // effect when composed with a Tunnel-mode layout profile (Streets; the shipped default
+                // Halls pairing stays OpenLane and never activates districts).
+                .SecondaryOpenTerrain("Floor")
                 .FeatureTile("ExteriorFountain", 2)
                 .FeatureTile("ExteriorOvergrownGarden", 2)
                 .FeatureTile("ExteriorPool", 2)
@@ -107,8 +127,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FeatureTile("Exterior Pillar 2")
                 .FeatureTile("Exterior Dais 1")
                 .FeatureTile("Exterior Dais 2")
-                // InteriorMosaic_2x2 is deliberately excluded: its corners are 'Floor', not 'Plaza',
-                // so it never structurally matches this profile's open terrain (verified offline).
+                // InteriorMosaic_2x2's corners are 'Floor', not 'Plaza' — LayoutGroupStamper's
+                // OpenSetPiece classifier now determines a piece's own open terrain and restricts
+                // placement to rooms carved from that same terrain (LayoutRoom.OpenTerrain), so this
+                // only ever stamps into a Floor district room (created when districts are active) and
+                // is otherwise silently unplaceable, exactly like the feature tiles above.
+                .SetPiece("InteriorMosaic_2x2")
                 .SetPiece("Amphitheater_2x2")
                 .SetPiece("Mosaic_Plaza_2x2")
                 .SetPiece("ExteriorWalkway_2x2")

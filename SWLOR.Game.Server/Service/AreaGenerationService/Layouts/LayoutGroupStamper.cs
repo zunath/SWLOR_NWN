@@ -79,6 +79,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             /// candidate cell must have.
             /// </summary>
             public string InsertCrosser;
+
+            /// <summary>
+            /// OpenSetPiece only: which open terrain this piece's own corners represent (primary
+            /// OpenTerrain or MacroLayoutParameters.SecondaryOpenTerrain) -- a piece whose corners are a
+            /// mix of solid and ONE open terrain only. TryPlaceOpenSetPiece restricts candidate sites to
+            /// rooms whose LayoutRoom.OpenTerrain matches, so e.g. vmr01's Floor-cornered
+            /// InteriorMosaic_2x2 only ever stamps into a Floor district room, never a Plaza one.
+            /// </summary>
+            public string OpenSetPieceTerrain;
         }
 
         internal static void Stamp(MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset, System.Random random)
@@ -217,25 +226,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 return true;
             }
 
-            // OpenSetPiece: every corner must be either solid or this layout's own open terrain —
-            // groups whose "open" corner name doesn't match the current layout (e.g. vmr01's
-            // Floor-cornered InteriorMosaic in a Plaza-terrain area) are structurally incompatible
-            // here and skipped whole.
-            foreach (var member in members)
-            {
-                foreach (var corner in member.Tile.Corners)
-                {
-                    if (!Eq(corner, parameters.SolidTerrain) && !Eq(corner, parameters.OpenTerrain))
-                        return false;
-                }
-            }
+            // OpenSetPiece: every corner must be solid plus EXACTLY ONE of this layout's open terrains
+            // (primary OpenTerrain or, when districts are configured, SecondaryOpenTerrain) — a group
+            // whose corners mix both, or match neither (e.g. a Floor-cornered piece in a Chasm-only
+            // layout), is structurally incompatible here and skipped whole. Determining which single
+            // terrain the piece's open corners represent lets TryPlaceOpenSetPiece restrict candidate
+            // rooms to that same district (see LayoutRoom.OpenTerrain).
+            var matchesPrimary = members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain) || Eq(c, parameters.OpenTerrain)));
+            var matchesSecondary = !string.IsNullOrEmpty(parameters.SecondaryOpenTerrain) &&
+                                    members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain) || Eq(c, parameters.SecondaryOpenTerrain)));
+
+            string openSetPieceTerrain;
+            if (matchesPrimary) openSetPieceTerrain = parameters.OpenTerrain;
+            else if (matchesSecondary) openSetPieceTerrain = parameters.SecondaryOpenTerrain;
+            else return false;
 
             classified = new ClassifiedGroup
             {
                 Group = group,
                 Members = members,
                 Kind = GroupKind.OpenSetPiece,
-                PerimeterDoorways = perimeterDoorways
+                PerimeterDoorways = perimeterDoorways,
+                OpenSetPieceTerrain = openSetPieceTerrain
             };
             return true;
         }
@@ -501,7 +513,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var group = classified.Group;
 
             var siteCandidates = new List<(LayoutRoom Room, (int X, int Y) Anchor)>();
-            foreach (var room in layout.Rooms.Where(r => !r.IsSetPiece).OrderBy(r => r.Id))
+            // District-aware: only rooms carved from this piece's own open terrain are eligible (see
+            // ClassifiedGroup.OpenSetPieceTerrain) — a room's OpenTerrain is always populated by every
+            // layout style's room-building path, and equals parameters.OpenTerrain everywhere districts
+            // are inactive, so this is a no-op filter in the single-terrain case.
+            foreach (var room in layout.Rooms.Where(r => !r.IsSetPiece && Eq(r.OpenTerrain, classified.OpenSetPieceTerrain)).OrderBy(r => r.Id))
             {
                 foreach (var anchor in room.Tiles.OrderBy(t => t.Y).ThenBy(t => t.X))
                     siteCandidates.Add((room, anchor));
@@ -602,6 +618,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         {
             if (Eq(label, parameters.SolidTerrain)) return parameters.SolidTerrain;
             if (Eq(label, parameters.OpenTerrain)) return parameters.OpenTerrain;
+            if (!string.IsNullOrEmpty(parameters.SecondaryOpenTerrain) && Eq(label, parameters.SecondaryOpenTerrain))
+                return parameters.SecondaryOpenTerrain;
             return label;
         }
 

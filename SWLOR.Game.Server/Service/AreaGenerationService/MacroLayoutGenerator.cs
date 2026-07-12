@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             layout.DoorTransitions = parameters.DoorTransitions;
             layout.OpenTerrain = parameters.OpenTerrain;
+            layout.SecondaryOpenTerrain = parameters.SecondaryOpenTerrain;
             layout.FeatureDensity = parameters.FeatureDensity;
             layout.FeatureTiles = parameters.FeatureTiles;
             layout.SetPieces = parameters.SetPieces;
@@ -92,7 +93,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 }
             }
 
-            if (!LayoutCornerUtils.IsConnectedWithLinks(corners, parameters.OpenTerrain, layout.TunnelLinks))
+            // District-aware: when SecondaryOpenTerrain is active, a secondary room's corners are a
+            // disjoint component from the primary open graph until a Tunnel-mode TunnelLink joins them
+            // (see LayoutTunnelCarver), so connectivity must be checked over both labels together.
+            var openLabels = LayoutCornerUtils.OpenLabelSet(parameters);
+            if (!LayoutCornerUtils.IsConnectedWithLinks(corners, openLabels, layout.TunnelLinks))
             {
                 throw new InvalidOperationException(
                     $"{parameters.Style} layout produced disconnected open space.");

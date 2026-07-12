@@ -25,8 +25,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (rooms.Count < 2) return;
 
             var entranceCorner = rooms[entranceIndex].CenterTile;
+            // District-aware: a boss room in a secondary-terrain district is only reachable through a
+            // Tunnel-mode TunnelLink, not the primary open-corner graph alone (see
+            // MacroLayoutParameters.SecondaryOpenTerrain), so geodesics must span both labels.
+            var openLabels = LayoutCornerUtils.OpenLabelSet(parameters);
             var distances = LayoutCornerUtils.DistancesWithLinks(
-                layout.Corners, parameters.OpenTerrain, entranceCorner, layout.TunnelLinks);
+                layout.Corners, openLabels, entranceCorner, layout.TunnelLinks);
 
             var bossIndex = -1;
             var bestDist = -1;

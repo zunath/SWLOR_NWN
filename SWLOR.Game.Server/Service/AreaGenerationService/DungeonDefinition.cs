@@ -77,6 +77,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string PrimaryOpenTerrain { get; set; } = string.Empty;
 
         /// <summary>
+        /// Optional second open-terrain label this tileset offers for multi-terrain districts (see
+        /// MacroLayoutParameters.SecondaryOpenTerrain), e.g. zsf01's "Floor2" alongside its
+        /// PrimaryOpenTerrain "floor", or vmr01's "Floor" alongside "Plaza". Empty = no districts for
+        /// this tileset. Only takes effect when the composed layout profile uses RoomsAndCorridors in
+        /// Tunnel mode; only set this after verifying full (secondary, solid) corner coverage AND
+        /// Doorway-junction tiles for the secondary terrain (see MultiTerrainDistrictTests).
+        /// </summary>
+        public string SecondaryOpenTerrain { get; set; } = string.Empty;
+
+        /// <summary>
         /// 1x1 "group" tiles (treasure mounds, pillars, hot springs, ...) this tileset offers as rare
         /// decorative sprinkles into open room space, keyed by the .set [GROUPn] Name with a relative
         /// weight. Empty = no feature tiles configured for this tileset. TileResolver re-verifies each
@@ -180,6 +190,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (parameters.AccentTerrain.Length == 0)
                 parameters.AccentDensity = 0;
             parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, Tileset.MinimumOpeningWidth);
+            // Unconditional pass-through: RoomsAndCorridorsLayout itself gates all district behavior
+            // (and every extra RNG draw) behind CorridorMode == Tunnel, so stamping this even for a
+            // layout profile that never uses Tunnel mode is inert.
+            parameters.SecondaryOpenTerrain = Tileset.SecondaryOpenTerrain ?? string.Empty;
             // Shared reference is fine: FeatureTiles/SetPieces are never mutated after a tileset
             // profile is built, only read by the resolver/stamper.
             parameters.FeatureTiles = Tileset.FeatureTiles;
@@ -420,6 +434,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder PrimaryOpenTerrain(string terrainName)
         {
             _active.PrimaryOpenTerrain = terrainName;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares a second open terrain this tileset offers for multi-terrain districts. Only set
+        /// after verifying full (secondary, solid) corner coverage AND Doorway-junction tiles for the
+        /// secondary terrain among resolver-usable tiles (see MultiTerrainDistrictTests).
+        /// </summary>
+        public DungeonTilesetProfileBuilder SecondaryOpenTerrain(string terrainName)
+        {
+            _active.SecondaryOpenTerrain = terrainName;
             return this;
         }
 

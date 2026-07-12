@@ -46,17 +46,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// Carves a tunnel between two rooms. Returns true on success (edges labeled, TunnelLink
         /// recorded); false when no solid path exists between any port pair, in which case the caller
         /// should fall back to an open-lane corridor.
+        ///
+        /// <paramref name="roomAOpen"/>/<paramref name="roomBOpen"/> are each room's OWN carved
+        /// terrain (equal to each other and to MacroLayoutParameters.OpenTerrain unless multi-terrain
+        /// districts are active -- see MacroLayoutParameters.SecondaryOpenTerrain), so a room's ports
+        /// are only found on ITS OWN open corners even when the two rooms are carved from different
+        /// terrains.
         /// </summary>
         internal static bool TryConnect(
             MacroLayout layout,
             RoomRect roomA,
             RoomRect roomB,
+            string roomAOpen,
+            string roomBOpen,
             MacroLayoutParameters parameters,
             System.Random random)
         {
             var corners = layout.Corners;
             var crossers = layout.Crossers;
-            var open = parameters.OpenTerrain;
+
+            // The solid tunnel chain must avoid EVERY district's open terrain, not just one room's own
+            // -- otherwise a chain could wander through another district's already-carved interior.
+            var allOpenLabels = LayoutCornerUtils.OpenLabelSet(parameters);
 
             // Alley mode carves vmr01's exterior alley crosser for both the tunnel body AND the room
             // port (verified offline: no separate Doorway-equivalent exists for Alley); Corridor mode
@@ -65,8 +76,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var bodyCrosser = isAlley ? AlleyCrosser : CorridorCrosser;
             var portCrosser = isAlley ? AlleyCrosser : DoorwayCrosser;
 
-            var portsA = EnumeratePorts(corners, crossers, roomA, open);
-            var portsB = EnumeratePorts(corners, crossers, roomB, open);
+            var portsA = EnumeratePorts(corners, crossers, roomA, roomAOpen, allOpenLabels);
+            var portsB = EnumeratePorts(corners, crossers, roomB, roomBOpen, allOpenLabels);
             if (portsA.Count == 0 || portsB.Count == 0)
                 return false;
 
@@ -92,7 +103,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var goals = new Dictionary<(int X, int Y), Port>();
             foreach (var b in portsB)
             {
-                if (IsSolidCell(corners, b.TunnelCell, open) && !goals.ContainsKey(b.TunnelCell))
+                if (IsSolidCell(corners, b.TunnelCell, allOpenLabels) && !goals.ContainsKey(b.TunnelCell))
                     goals[b.TunnelCell] = b;
             }
             if (goals.Count == 0)
@@ -104,7 +115,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             foreach (var a in portsA)
             {
-                if (!IsSolidCell(corners, a.TunnelCell, open) || origin.ContainsKey(a.TunnelCell)) continue;
+                if (!IsSolidCell(corners, a.TunnelCell, allOpenLabels) || origin.ContainsKey(a.TunnelCell)) continue;
                 origin[a.TunnelCell] = a;
                 cameFrom[a.TunnelCell] = a.TunnelCell;
                 queue.Enqueue(a.TunnelCell);
@@ -126,7 +137,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 {
                     var next = (X: current.X + dx, Y: current.Y + dy);
                     if (next.X < 0 || next.Y < 0 || next.X >= corners.Width || next.Y >= corners.Height) continue;
-                    if (!IsSolidCell(corners, next, open)) continue;
+                    if (!IsSolidCell(corners, next, allOpenLabels)) continue;
                     if (cameFrom.ContainsKey(next)) continue;
 
                     cameFrom[next] = current;
@@ -177,14 +188,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// side-open cell), no crosser already on any edge of the boundary cell (side-open doorway
         /// tiles carry exactly one crosser), and the doorway not opening off-grid.
         /// </summary>
-        private static List<Port> EnumeratePorts(CornerTerrainGrid corners, EdgeCrosserGrid crossers, RoomRect rect, string open)
+        private static List<Port> EnumeratePorts(CornerTerrainGrid corners, EdgeCrosserGrid crossers, RoomRect rect, string open, HashSet<string> allOpenLabels)
         {
             var ports = new List<Port>();
 
             // Left wall: boundary cells in column rect.X0 - 1, open side = Right, doorway = Left.
             for (var y = rect.Y0; y < rect.Y1; y++)
             {
-                TryAddPort(corners, crossers, ports, open,
+                TryAddPort(corners, crossers, ports, open, allOpenLabels,
                     boundaryCell: (rect.X0 - 1, y), doorwaySlot: EdgeSlot.Left,
                     tunnelCell: (rect.X0 - 2, y), openCorner: (rect.X0, y));
             }
@@ -192,7 +203,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // Right wall: boundary cells in column rect.X1, open side = Left, doorway = Right.
             for (var y = rect.Y0; y < rect.Y1; y++)
             {
-                TryAddPort(corners, crossers, ports, open,
+                TryAddPort(corners, crossers, ports, open, allOpenLabels,
                     boundaryCell: (rect.X1, y), doorwaySlot: EdgeSlot.Right,
                     tunnelCell: (rect.X1 + 1, y), openCorner: (rect.X1, y));
             }
@@ -200,7 +211,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // Bottom wall: boundary cells in row rect.Y0 - 1, open side = Top, doorway = Bottom.
             for (var x = rect.X0; x < rect.X1; x++)
             {
-                TryAddPort(corners, crossers, ports, open,
+                TryAddPort(corners, crossers, ports, open, allOpenLabels,
                     boundaryCell: (x, rect.Y0 - 1), doorwaySlot: EdgeSlot.Bottom,
                     tunnelCell: (x, rect.Y0 - 2), openCorner: (x, rect.Y0));
             }
@@ -208,7 +219,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // Top wall: boundary cells in row rect.Y1, open side = Bottom, doorway = Top.
             for (var x = rect.X0; x < rect.X1; x++)
             {
-                TryAddPort(corners, crossers, ports, open,
+                TryAddPort(corners, crossers, ports, open, allOpenLabels,
                     boundaryCell: (x, rect.Y1), doorwaySlot: EdgeSlot.Top,
                     tunnelCell: (x, rect.Y1 + 1), openCorner: (x, rect.Y1));
             }
@@ -221,6 +232,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             EdgeCrosserGrid crossers,
             List<Port> ports,
             string open,
+            HashSet<string> allOpenLabels,
             (int X, int Y) boundaryCell,
             int doorwaySlot,
             (int X, int Y) tunnelCell,
@@ -229,7 +241,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var (cx, cy) = boundaryCell;
             if (cx < 0 || cy < 0 || cx >= corners.Width || cy >= corners.Height) return;
 
-            // The cell must be cleanly side-open: room-side edge corners open, far-side corners solid.
+            // The cell must be cleanly side-open: room-side edge corners open (in THIS room's own
+            // terrain), far-side corners solid (not open in ANY district's terrain -- a bordering
+            // different-terrain room's already-carved corner must never be mistaken for a wall).
             // Classify via the doorway direction: the two corners on the doorway edge must be solid,
             // the two opposite corners open.
             var (solidA, solidB, openA, openB) = doorwaySlot switch
@@ -243,8 +257,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             if (corners.Labels[openA.Item1, openA.Item2] != open) return;
             if (corners.Labels[openB.Item1, openB.Item2] != open) return;
-            if (corners.Labels[solidA.Item1, solidA.Item2] == open) return;
-            if (corners.Labels[solidB.Item1, solidB.Item2] == open) return;
+            if (allOpenLabels.Contains(corners.Labels[solidA.Item1, solidA.Item2])) return;
+            if (allOpenLabels.Contains(corners.Labels[solidB.Item1, solidB.Item2])) return;
 
             // Side-open doorway tiles carry exactly one crosser; skip boundary cells already claimed.
             for (var slot = 0; slot < 4; slot++)
@@ -257,12 +271,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             ports.Add(new Port(boundaryCell, doorwaySlot, tunnelCell, openCorner));
         }
 
-        private static bool IsSolidCell(CornerTerrainGrid corners, (int X, int Y) cell, string open)
+        private static bool IsSolidCell(CornerTerrainGrid corners, (int X, int Y) cell, HashSet<string> allOpenLabels)
         {
-            return corners.Labels[cell.X, cell.Y] != open &&
-                   corners.Labels[cell.X + 1, cell.Y] != open &&
-                   corners.Labels[cell.X, cell.Y + 1] != open &&
-                   corners.Labels[cell.X + 1, cell.Y + 1] != open;
+            return !allOpenLabels.Contains(corners.Labels[cell.X, cell.Y]) &&
+                   !allOpenLabels.Contains(corners.Labels[cell.X + 1, cell.Y]) &&
+                   !allOpenLabels.Contains(corners.Labels[cell.X, cell.Y + 1]) &&
+                   !allOpenLabels.Contains(corners.Labels[cell.X + 1, cell.Y + 1]);
         }
 
         private static void SetSharedEdge(EdgeCrosserGrid crossers, (int X, int Y) a, (int X, int Y) b, string crosser)

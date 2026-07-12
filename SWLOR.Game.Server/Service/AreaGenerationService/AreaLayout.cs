@@ -228,6 +228,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// often not 'A'). Content placement and path validation must skip these rooms.
         /// </summary>
         public bool IsSetPiece { get; set; }
+
+        /// <summary>
+        /// The terrain label this room's interior is carved from. Defaults to the layout's primary
+        /// OpenTerrain; districted RoomsAndCorridors/Tunnel layouts may carve a room from
+        /// MacroLayoutParameters.SecondaryOpenTerrain instead (see MacroLayoutParameters.SecondaryOpenTerrain).
+        /// Always populated by every layout style's room-building path, so downstream consumers
+        /// (LayoutGroupStamper's OpenSetPiece matching) can rely on it rather than assuming the
+        /// layout's single OpenTerrain applies to every room.
+        /// </summary>
+        public string OpenTerrain { get; set; } = string.Empty;
     }
 
     /// <summary>Output of the macro layout stage; input to the tile resolver.</summary>
@@ -254,6 +264,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public bool DoorTransitions { get; set; } = true;
         /// <summary>Effective open-terrain label, carried from parameters for downstream consumers.</summary>
         public string OpenTerrain { get; set; } = string.Empty;
+        /// <summary>
+        /// Effective secondary district terrain label (empty = no districts), carried from
+        /// MacroLayoutParameters.SecondaryOpenTerrain by MacroLayoutGenerator.Generate.
+        /// </summary>
+        public string SecondaryOpenTerrain { get; set; } = string.Empty;
         /// <summary>Carried from MacroLayoutParameters.FeatureDensity by MacroLayoutGenerator.Generate.</summary>
         public double FeatureDensity { get; set; } = 0.05;
         /// <summary>Carried from MacroLayoutParameters.FeatureTiles by MacroLayoutGenerator.Generate.</summary>
@@ -309,6 +324,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string SolidTerrain { get; set; } = string.Empty;
         /// <summary>Terrain label for open/walkable space (typically TilesetModel.FloorTerrain).</summary>
         public string OpenTerrain { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Optional second open-terrain label for multi-terrain districts: some rooms are carved as
+        /// walled districts of this terrain instead of OpenTerrain, connected via Tunnel-mode
+        /// corridors (see RoomsAndCorridorsLayout, LayoutTunnelCarver). Empty = no districts (default;
+        /// fully back-compat, zero extra RNG draws). v1 scope: honored only when Style is
+        /// RoomsAndCorridors and CorridorMode is Tunnel — OpenLane corridors carve straight bands from
+        /// room center to room center and would repaint a secondary room's interior back to
+        /// OpenTerrain, so this field is silently ignored outside Tunnel mode. Callers must verify the
+        /// tileset has full (secondary, solid) corner coverage AND Doorway-junction tiles for the
+        /// secondary terrain before enabling (see MultiTerrainDistrictTests).
+        /// </summary>
+        public string SecondaryOpenTerrain { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Fraction of non-entrance rooms carved from SecondaryOpenTerrain instead of OpenTerrain when
+        /// districts are active (room 0 — the first room a style places — always stays OpenTerrain, so
+        /// the entrance is biased toward the primary district). Ignored when SecondaryOpenTerrain is
+        /// empty. Default 0.35 mirrors AccentDensity's "roughly this share" convention.
+        /// </summary>
+        public double SecondaryRoomFraction { get; set; } = 0.35;
 
         public DungeonLayoutStyle Style { get; set; } = DungeonLayoutStyle.RoomsAndCorridors;
 
@@ -459,6 +495,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public List<TransitionPoint> Transitions { get; set; } = new();
         /// <summary>Effective open-terrain label used by this layout (may differ from the tileset's declared Floor).</summary>
         public string OpenTerrain { get; set; } = string.Empty;
+        /// <summary>Effective secondary district terrain label used by this layout (empty = no districts).</summary>
+        public string SecondaryOpenTerrain { get; set; } = string.Empty;
 
         public ResolvedTile GetTile(int x, int y)
         {

@@ -22,6 +22,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     /// LayoutTunnelCarver uses for wall-embedded tunnels) so MacroLayoutGenerator.ValidateInvariants
     /// and role-assignment geodesics see it as a crossing even where the channel fully separates the
     /// two sides.
+    ///
+    /// v1 scope note: operates only on MacroLayoutParameters.OpenTerrain (the primary terrain), never
+    /// SecondaryOpenTerrain -- ValidateBand requires every corner it reads to already equal the primary
+    /// open terrain, so a multi-terrain district room's corners are naturally excluded with no extra
+    /// guard needed.
     /// </summary>
     internal static class LayoutAccentChannelCarver
     {

@@ -51,7 +51,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 Id = id,
                 Role = RoomRole.Standard,
                 CenterTile = centerTile,
-                Tiles = tiles
+                Tiles = tiles,
+                OpenTerrain = openTerrain
             };
         }
 
@@ -91,7 +92,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 Id = id,
                 Role = RoomRole.Standard,
                 CenterTile = seedTile,
-                Tiles = tiles
+                Tiles = tiles,
+                OpenTerrain = openTerrain
             };
         }
 

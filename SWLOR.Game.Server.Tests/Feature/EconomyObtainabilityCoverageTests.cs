@@ -111,16 +111,26 @@ public class EconomyObtainabilityCoverageTests
             foreach (var file in Directory.EnumerateFiles(Path.Combine(root, "Module", dir), ext))
             {
                 var text = File.ReadAllText(file);
-                if (!text.Contains("InventoryRes")) continue;
+                // Store items are either resref references (InventoryRes) or fully embedded
+                // item copies (TemplateResRef, like the toolset produces when an item is dragged in).
+                if (!text.Contains("InventoryRes") && !text.Contains("TemplateResRef")) continue;
                 using var doc = JsonDocument.Parse(text);
                 if (TryGetArray(doc.RootElement, "StoreList", out var stores))
                 {
                     foreach (var st in stores.EnumerateArray())
                         if (TryGetArray(st, "ItemList", out var sItems))
-                            foreach (var e in sItems.EnumerateArray()) Add(GetString(e, "InventoryRes"));
+                            foreach (var e in sItems.EnumerateArray())
+                            {
+                                Add(GetString(e, "InventoryRes"));
+                                Add(GetString(e, "TemplateResRef"));
+                            }
                 }
                 if (TryGetArray(doc.RootElement, "ItemList", out var items))
-                    foreach (var e in items.EnumerateArray()) Add(GetString(e, "InventoryRes"));
+                    foreach (var e in items.EnumerateArray())
+                    {
+                        Add(GetString(e, "InventoryRes"));
+                        Add(GetString(e, "TemplateResRef"));
+                    }
             }
         }
 

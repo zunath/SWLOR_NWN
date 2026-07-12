@@ -38,6 +38,19 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("WallSection02_1x2")
                 .SetPiece("BigDoor01", 1)
                 .SetPiece("BigDoor02", 1)
+                // Bridge gate: LayoutGroupStamper's CorridorInsert classifier splices this into a
+                // Water channel span (LayoutAccentChannelCarver, active by default via Organic's
+                // AccentChannels — see StandardLayoutProfiles.Organic).
+                .SetPiece("BridgeDoor", 1)
+                // Corridor-terminal stairs: LayoutGroupStamper's CorridorStub classifier splices these
+                // onto an existing Tunnel-mode chain as a dead-end cap; a no-op under Cavern's default
+                // OpenLane (Organic) pairing, exercisable via Complex (Tunnel mode).
+                .SetPiece("StairsDown01", 1)
+                .SetPiece("StairsUp01", 1)
+                // 2x2 stairs: all-Floor-cornered OpenSetPiece with one tolerated door slot (the tile's
+                // own art carries the doorframe; no door object is spawned).
+                .SetPiece("StairsDown_2x2")
+                .SetPiece("StairsUp_2x2")
                 .ExitGroup("Exit01")
                 .ExitGroup("Exit02")
                 .ExitGroup("Exit03");
@@ -68,6 +81,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // this tileset's production layout pairing); a no-op when no Fence run exists.
                 .SetPiece("FenceDoor01", 1)
                 .SetPiece("FenceDoor02", 1)
+                // Bridge gate: splices into a Pit channel span (LayoutAccentChannelCarver); a no-op
+                // under Sewers' default Warren pairing (Warren deliberately never enables
+                // AccentChannels — see StandardLayoutProfiles.Warren), exercisable via Organic (this
+                // tileset's other verified channel pairing, see BridgeChannelTests).
+                .SetPiece("BridgeDoor01", 1)
+                // Corridor-terminal stairs: a no-op under Warren's OpenLane corridors, exercisable via
+                // Complex (Tunnel mode).
+                .SetPiece("StairsDown", 1)
+                .SetPiece("StairsUp", 1)
+                // 2x2 stairs: all-Floor-cornered OpenSetPiece with one tolerated door slot.
+                .SetPiece("StairsDown_2x2")
+                .SetPiece("StairsUp_2x2")
                 .ExitGroup("Exit01")
                 .ExitGroup("Exit02");
 
@@ -93,7 +118,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Room", 2)
                 .SetPiece("Bedroom")
                 .SetPiece("2x1Room")
-                .SetPiece("Transiton");
+                .SetPiece("Transiton")
+                // Corridor-terminal stairs (all-wall corners, single Corridor edge, no door slot):
+                // exercisable in Facility's own default Complex (Tunnel mode) pairing.
+                .SetPiece("StairsUP", 1)
+                .SetPiece("StairsDOWN", 1);
 
             // Alien Ruin (reference: korr_crypt_zil). Chasm lacks coverage — no accents.
             // 'Plaza' carries 11 fully-open tile variants vs 4 on the declared 'Floor'.
@@ -109,6 +138,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Placeholder("gen_placeholder4")
                 .TileLighting(31, 27, 10, 12)
                 .PrimaryOpenTerrain("Plaza")
+                // Channel-only accent: Chasm has verified bank (half-Chasm/half-Plaza, single Bridge
+                // edge, e.g. TILE52) and span (all-Chasm, opposite Bridge pair, e.g. TILE47-51/98)
+                // coverage against Plaza (LayoutAccentChannelCarver's v1 scope is always the primary
+                // open terrain), but no verified blob-patch (LayoutAccentPainter) coverage against any
+                // open terrain, so AccentTerrain stays empty and only ChannelTerrain is set.
+                .ChannelTerrain("Chasm")
                 // Multi-terrain districts: 'Floor' has full 16/16 corner coverage vs 'Wall' plus
                 // Doorway-junction tiles (TILE6 verified offline), so some rooms can be carved as walled
                 // Floor districts joined to Plaza rooms via Tunnel-mode corridors — this unlocks
@@ -145,6 +180,28 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("InteriorFenceDoor", 1)
                 .SetPiece("ExteriorFenceDoor", 1)
                 .SetPiece("BigDoorAlley", 1)
+                // Bridge gate: splices into a Chasm channel span; active by default via Halls'
+                // AccentChannels (see StandardLayoutProfiles.Halls / StandardTilesetProfiles.
+                // AncientRuin.ChannelTerrain).
+                .SetPiece("BridgeDoor01", 1)
+                // Corridor-terminal stairs: Corridor-crosser variants splice onto a Complex (Tunnel)
+                // chain; Alley-crosser variants splice onto a Streets (Alley Tunnel) chain. Both are
+                // a no-op under AncientRuin's default OpenLane (Halls) pairing.
+                .SetPiece("InteriorStairsDown", 1)
+                .SetPiece("InteriorStairsUp", 1)
+                .SetPiece("ExteriorStairsDown", 1)
+                .SetPiece("ExteriorStairsUp", 1)
+                // 2x2 stairs/tower: all-Plaza-cornered OpenSetPiece, each with one tolerated door slot.
+                .SetPiece("ExteriorStairsDown_2x2")
+                .SetPiece("ExteriorStairsUp_2x2")
+                .SetPiece("ExteriorRuinedTower_2x2")
+                // WallAlcove: small enclosed wall chambers with a doorframe object but no Doorway
+                // crosser vocabulary of their own (see LayoutGroupStamper.TryPlaceWallAlcove).
+                .SetPiece("Room 1 2x2")
+                .SetPiece("Room 2 2x2")
+                .SetPiece("Room 3 2x2")
+                .SetPiece("Room 4 2x2")
+                .SetPiece("Room 5 2x2")
                 .ExitGroup("ExteriorExit01")
                 .ExitGroup("ExteriorExit02");
 

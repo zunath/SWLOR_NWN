@@ -92,6 +92,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     // AncientRuin's (vmr01) production pairing (see AlienRuinDungeonDefinition), and
                     // vmr01 has verified Fence vocabulary; a no-op on any tileset without it.
                     p.FenceLines = 2;
+                    // Channels are mode-agnostic (LayoutAccentChannelCarver operates purely on the
+                    // primary-open-terrain corner grid, regardless of OpenLane/Tunnel) and this is
+                    // AncientRuin's (vmr01) default pairing -- enabling it here is what actually
+                    // exercises vmr01's Chasm channel/bank vocabulary (see StandardTilesetProfiles.
+                    // AncientRuin.ChannelTerrain) in the shipped default composition. A no-op on any
+                    // tileset without a channel terrain configured.
+                    p.AccentChannels = 1;
                 });
 
             // Discrete rooms joined by wall-embedded tunnel corridors with doorway junctions

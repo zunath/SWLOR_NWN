@@ -302,31 +302,52 @@ public class BridgeChannelTests
     }
 
     [Test]
-    public void AccentChannels_AncientRuinProfileKeepsChasmChannelsDisabled()
+    public void AccentChannels_AncientRuinProfileKeepsChasmBlobPaintingDisabledButEnablesChannelsViaChannelTerrain()
     {
         var tilesetProfiles = new StandardTilesetProfiles().BuildTilesetProfiles();
         var layoutProfiles = new StandardLayoutProfiles().BuildLayoutProfiles();
 
+        // AncientRuin's shipped default pairing (see AlienRuinDungeonDefinition).
         var composition = new DungeonComposition
         {
             Tileset = tilesetProfiles[StandardTilesetProfiles.AncientRuin],
-            Layout = layoutProfiles[StandardLayoutProfiles.Organic]
+            Layout = layoutProfiles[StandardLayoutProfiles.Halls]
         };
 
         var parameters = composition.BuildLayoutParameters();
         parameters.AccentTerrain.Should().BeEmpty("vmr01/Chasm has no verified blob-patch coverage; the shared AccentTerrain field must stay off");
+        parameters.ChannelTerrain.Should().Be("Chasm", "vmr01/Chasm has verified bank/span coverage against Plaza, so ChannelTerrain (independent of AccentTerrain) should be populated");
 
         parameters.Width = 24;
         parameters.Height = 24;
         parameters.SolidTerrain = "Wall";
         parameters.OpenTerrain = "Plaza";
 
-        for (var seed = 9500; seed < 9510; seed++)
+        var model = LoadTileset("vmr01");
+        var failures = new List<string>();
+        var seedsWithBridge = 0;
+
+        for (var seed = 9500; seed < 9515; seed++)
         {
-            var macro = MacroLayoutGenerator.Generate(parameters, new Random(seed));
-            AllCrosserLabels(macro, parameters.Width, parameters.Height)
-                .Should().BeEmpty($"seed {seed}: AncientRuin composition must not place any crosser edges");
+            var rng = new Random(seed);
+            var macro = MacroLayoutGenerator.Generate(parameters, rng);
+            macro.Seed = seed;
+
+            var hasBridge = AllCrosserLabels(macro, parameters.Width, parameters.Height)
+                .Any(e => string.Equals(e, "Bridge", StringComparison.OrdinalIgnoreCase));
+            if (hasBridge) seedsWithBridge++;
+
+            if (!TileResolver.TryResolve(model, macro, rng, out var resolved, out var reason))
+            {
+                failures.Add($"seed {seed}: resolution failed: {reason}");
+                continue;
+            }
+
+            AssertEdgeAgreement(model, macro, resolved, seed, failures);
         }
+
+        failures.Should().BeEmpty();
+        seedsWithBridge.Should().BeGreaterThan(0, "AncientRuin's shipped Halls pairing now carves Chasm channels via ChannelTerrain");
     }
 
     [TestCase(StandardTilesetProfiles.Cavern, StandardLayoutProfiles.Organic)]

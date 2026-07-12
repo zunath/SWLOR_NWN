@@ -396,11 +396,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>
         /// Number of linear accent-terrain channels (one-cell-wide bands, e.g. a Water/Pit "river")
         /// carved through open space, each crossed by exactly one real Bridge edge-crosser chain.
-        /// 0 = none (default; back-compat). Requires AccentTerrain to be set (same field
-        /// AccentDensity patches use) and the tileset to carry Bridge-edge vocabulary — callers must
+        /// 0 = none (default; back-compat). Requires ChannelTerrain (or, when that's empty,
+        /// AccentTerrain) to be set and the tileset to carry Bridge-edge vocabulary — callers must
         /// verify coverage before enabling (see LayoutAccentChannelCarver).
         /// </summary>
         public int AccentChannels { get; set; } = 0;
+
+        /// <summary>
+        /// Effective terrain LayoutAccentChannelCarver paints channel bands/banks in. Usually stamped
+        /// from DungeonTilesetProfile.ChannelTerrain (falling back to AccentTerrain) by
+        /// DungeonComposition.BuildLayoutParameters. Separate from AccentTerrain because a tileset can
+        /// have verified channel/bank coverage against a terrain with no verified blob-patch coverage
+        /// (e.g. vmr01's Chasm against Plaza).
+        /// </summary>
+        public string ChannelTerrain { get; set; } = string.Empty;
 
         /// <summary>
         /// Number of linear Fence edge-crosser lines carved through open room interiors (e.g. a

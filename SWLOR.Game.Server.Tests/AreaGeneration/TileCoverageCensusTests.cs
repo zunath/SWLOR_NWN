@@ -1,0 +1,480 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Feature.DungeonDefinition;
+using SWLOR.Game.Server.Service.AreaGenerationService;
+
+namespace SWLOR.Game.Server.Tests.AreaGeneration;
+
+/// <summary>
+/// Final-phase acceptance test for the 100% tile-coverage effort: enumerates EVERY tile in all four
+/// generation tilesets' real .set data and classifies each as reachable by one of the generator's
+/// shipped mechanisms, or lists it in an exact, reasoned exemption set. The classifier mirrors the
+/// real production constraints (TileResolver, TileDoorPlanner, GroupExitPlanner,
+/// LayoutGroupStamper) rather than trusting any tileset profile's configured lists -- a tile counts
+/// as reachable when it structurally qualifies for a mechanism, whether or not the shipped
+/// StandardTilesetProfiles entry happens to enable it for that tileset (an "optional config" tile
+/// is exactly as reachable as a currently-wired one, since the mechanism's own structural rule is
+/// what a maintainer would extend a profile with).
+///
+/// This is intentionally a read-only census: it duplicates classification logic (mirroring the
+/// existing convention in GroupStamperTests/FeatureTileTests/GroupExitAndCorridorInsertTests, which
+/// already duplicate SlotOffsets/corner-key helpers since the production classes are internal with
+/// no InternalsVisibleTo) rather than reaching into internals via reflection.
+/// </summary>
+public class TileCoverageCensusTests
+{
+    private static readonly Dictionary<string, string> TilesetHakDirectories = new()
+    {
+        ["tdt01"] = "sw_t_minecave",
+        ["zsf01"] = "sw_t_scifibase",
+        ["tds01"] = "sw_t_sewer",
+        ["vmr01"] = "sw_t_alienruin",
+    };
+
+    private static TilesetModel LoadTileset(string tilesetResref)
+    {
+        var root = FindRepositoryRoot();
+        var hakDirectory = TilesetHakDirectories[tilesetResref];
+        var contents = File.ReadAllText(Path.Combine(root.FullName, "SWLOR_Haks", hakDirectory, $"{tilesetResref}.set"));
+        return TilesetSetParser.Parse(tilesetResref, contents);
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var current = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (current != null)
+        {
+            if (File.Exists(Path.Combine(current.FullName, "SWLOR.Game.Server.sln")))
+                return current;
+            current = current.Parent;
+        }
+
+        throw new InvalidOperationException("Could not locate repository root (SWLOR.Game.Server.sln).");
+    }
+
+    private const string DoorwayCrosser = "Doorway";
+    private const string CorridorCrosser = "Corridor";
+    private const string AlleyCrosser = "Alley";
+    private const string FenceCrosser = "Fence";
+    private const string BridgeCrosser = "Bridge";
+
+    private static bool Eq(string a, string b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsFlat(TileRecord tile) =>
+        tile.CornerHeights[0] == 0 && tile.CornerHeights[1] == 0 && tile.CornerHeights[2] == 0 && tile.CornerHeights[3] == 0;
+
+    /// <summary>The tileset's declared generation vocabulary — the same terrain/crosser labels a
+    /// StandardTilesetProfiles entry declares (solid = the tileset's Default terrain always).</summary>
+    private sealed class TilesetVocabulary
+    {
+        public string Solid = string.Empty;
+        public string Open = string.Empty;
+        public string Secondary = string.Empty;
+        public string Accent = string.Empty; // blob-patch terrain (LayoutAccentPainter)
+        public string Channel = string.Empty; // channel/bank terrain (LayoutAccentChannelCarver), falls back to Accent
+    }
+
+    private static TilesetVocabulary BuildVocabulary(TilesetModel model, DungeonTilesetProfile profile)
+    {
+        return new TilesetVocabulary
+        {
+            Solid = model.DefaultTerrain,
+            Open = string.IsNullOrEmpty(profile.PrimaryOpenTerrain) ? model.FloorTerrain : profile.PrimaryOpenTerrain,
+            Secondary = profile.SecondaryOpenTerrain ?? string.Empty,
+            Accent = profile.AccentTerrain ?? string.Empty,
+            Channel = !string.IsNullOrEmpty(profile.ChannelTerrain) ? profile.ChannelTerrain : (profile.AccentTerrain ?? string.Empty),
+        };
+    }
+
+    // ---------------- ungrouped tile mechanisms ----------------
+
+    private static bool IsDoorway(string edge) => Eq(edge, DoorwayCrosser);
+    private static bool IsBridge(string edge) => Eq(edge, BridgeCrosser);
+
+    /// <summary>Mirrors TileResolver.BuildCandidateLookup's registration rule for a single tile: flat,
+    /// ungrouped, and either crosser-free, or crosser-bearing with any door slot facing a Doorway/Bridge
+    /// edge. Uses the real public TileResolver.HasCandidate hook so this is checking actual production
+    /// behavior, not a re-guessed copy of it.</summary>
+    private static bool IsCornerEdgeResolverReachable(TilesetModel model, TileRecord tile)
+    {
+        if (tile.GroupIndex != -1) return false;
+        if (!IsFlat(tile)) return false;
+
+        var hasCrosser = tile.HasAnyCrosser;
+        var hasDoors = tile.Doors.Count != 0;
+        if (hasDoors && !hasCrosser) return false; // TileDoorPlanner's inventory instead
+
+        for (var orientation = 0; orientation < 4; orientation++)
+        {
+            var tl = tile.GetCornerAt(orientation, CornerSlot.TopLeft);
+            var tr = tile.GetCornerAt(orientation, CornerSlot.TopRight);
+            var br = tile.GetCornerAt(orientation, CornerSlot.BottomRight);
+            var bl = tile.GetCornerAt(orientation, CornerSlot.BottomLeft);
+            var top = tile.GetEdgeAt(orientation, EdgeSlot.Top);
+            var right = tile.GetEdgeAt(orientation, EdgeSlot.Right);
+            var bottom = tile.GetEdgeAt(orientation, EdgeSlot.Bottom);
+            var left = tile.GetEdgeAt(orientation, EdgeSlot.Left);
+
+            if (hasCrosser && hasDoors)
+            {
+                var hasDoorwayEdge = IsDoorway(top) || IsDoorway(right) || IsDoorway(bottom) || IsDoorway(left);
+                var hasBridgeEdge = IsBridge(top) || IsBridge(right) || IsBridge(bottom) || IsBridge(left);
+                if (!hasDoorwayEdge && !hasBridgeEdge) continue;
+            }
+
+            if (TileResolver.HasCandidate(model, tl, tr, br, bl, top, right, bottom, left))
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>Mirrors TileDoorPlanner's TryGetSingleDoorwaySlot + door-slot requirement, covering both
+    /// its room-edge pool (any corner pattern) and terminator pool (all-solid corners) uniformly: a
+    /// flat, ungrouped, door-bearing tile with exactly one rotated Doorway edge (the other three blank)
+    /// is reachable at SOME real room boundary, since boundary corner patterns are produced freely by
+    /// every layout style and TileDoorPlanner's room-edge candidates are keyed purely by corner pattern
+    /// with no restriction of their own.</summary>
+    private static bool IsDoorTransitionReachable(TileRecord tile)
+    {
+        if (tile.GroupIndex != -1) return false;
+        if (!IsFlat(tile)) return false;
+        if (tile.Doors.Count == 0) return false;
+
+        for (var orientation = 0; orientation < 4; orientation++)
+        {
+            var found = 0;
+            var ok = true;
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var edge = tile.GetEdgeAt(orientation, slot) ?? string.Empty;
+                if (edge.Length == 0) continue;
+                if (!IsDoorway(edge)) { ok = false; break; }
+                found++;
+            }
+
+            if (ok && found == 1) return true;
+        }
+
+        return false;
+    }
+
+    // ---------------- group mechanisms ----------------
+
+    private enum GroupMechanism
+    {
+        None,
+        FeatureTile,
+        ExitGroup,
+        SetPieceWallRoom,
+        SetPieceWallAlcove,
+        SetPieceOpenSetPiece,
+        SetPieceCorridorInsert,
+        SetPieceCorridorStub,
+    }
+
+    /// <summary>Mirrors TileResolver.BuildFeatureLookup's structural eligibility check.</summary>
+    private static bool IsFeatureTileEligible(TilesetModel model, TileGroupRecord group)
+    {
+        if (group.Rows != 1 || group.Columns != 1 || group.TileIds.Count != 1) return false;
+        var tileId = group.TileIds[0];
+        if (tileId < 0 || tileId >= model.Tiles.Count) return false;
+        var tile = model.Tiles[tileId];
+        if (!IsFlat(tile)) return false;
+        if (tile.HasAnyCrosser) return false;
+        if (tile.Doors.Count != 0) return false;
+        if (!Eq(tile.PathNode, "A")) return false;
+        return true;
+    }
+
+    /// <summary>Mirrors GroupExitPlanner.BuildCandidateGroups' structural eligibility check.</summary>
+    private static bool IsExitGroupEligible(TilesetModel model, TileGroupRecord group)
+    {
+        if (group.Rows != 1 || group.Columns != 1 || group.TileIds.Count != 1) return false;
+        var tileId = group.TileIds[0];
+        if (tileId < 0 || tileId >= model.Tiles.Count) return false;
+        var tile = model.Tiles[tileId];
+        if (!IsFlat(tile)) return false;
+        if (tile.Doors.Count == 0) return false;
+        if (tile.HasAnyCrosser) return false;
+        return true;
+    }
+
+    private static readonly (int Dx, int Dy)[] SlotOffsets = { (0, 1), (1, 0), (0, -1), (-1, 0) };
+
+    /// <summary>Mirrors LayoutGroupStamper.TryClassifyCorridorInsert (Corridor/Alley/Fence/Bridge
+    /// opposite-pair 1x1 dead-straight gate).</summary>
+    private static bool IsCorridorInsertEligible(TileRecord tile, TilesetVocabulary vocab)
+    {
+        if (!IsFlat(tile)) return false;
+
+        var allSolid = tile.Corners.All(c => Eq(c, vocab.Solid));
+        var allOpen = !string.IsNullOrEmpty(vocab.Open) && tile.Corners.All(c => Eq(c, vocab.Open));
+        var allSecondary = !string.IsNullOrEmpty(vocab.Secondary) && tile.Corners.All(c => Eq(c, vocab.Secondary));
+        var allAccent = !string.IsNullOrEmpty(vocab.Channel) && tile.Corners.All(c => Eq(c, vocab.Channel));
+        if (!allSolid && !allOpen && !allSecondary && !allAccent) return false;
+
+        foreach (var crosser in new[] { CorridorCrosser, AlleyCrosser, FenceCrosser, BridgeCrosser })
+        {
+            // Fence gates splice into a LayoutFenceCarver run in EITHER the primary or (when
+            // districted) secondary open terrain -- see LayoutFenceCarver.CarveFences' independent
+            // per-terrain passes (e.g. vmr01's Floor-cornered InteriorFenceDoor vs Plaza-cornered
+            // ExteriorFenceDoor).
+            var terrainMatches = crosser switch
+            {
+                FenceCrosser => allOpen || allSecondary,
+                BridgeCrosser => allAccent,
+                _ => allSolid
+            };
+            if (!terrainMatches) continue;
+
+            var hasCrosser = new bool[4];
+            var edgesMatch = true;
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var edge = tile.Edges[slot] ?? string.Empty;
+                if (edge.Length == 0) continue;
+                if (!Eq(edge, crosser)) { edgesMatch = false; break; }
+                hasCrosser[slot] = true;
+            }
+            if (!edgesMatch) continue;
+
+            var isVerticalPair = hasCrosser[EdgeSlot.Top] && hasCrosser[EdgeSlot.Bottom] && !hasCrosser[EdgeSlot.Left] && !hasCrosser[EdgeSlot.Right];
+            var isHorizontalPair = hasCrosser[EdgeSlot.Left] && hasCrosser[EdgeSlot.Right] && !hasCrosser[EdgeSlot.Top] && !hasCrosser[EdgeSlot.Bottom];
+            if (isVerticalPair || isHorizontalPair) return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>Mirrors LayoutGroupStamper.TryClassifyCorridorStub (Corridor/Alley single-edge dead
+    /// end, all-solid corners).</summary>
+    private static bool IsCorridorStubEligible(TileRecord tile, TilesetVocabulary vocab)
+    {
+        if (!IsFlat(tile)) return false;
+        if (!tile.Corners.All(c => Eq(c, vocab.Solid))) return false;
+
+        foreach (var crosser in new[] { CorridorCrosser, AlleyCrosser })
+        {
+            var crosserCount = 0;
+            var edgesMatch = true;
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var edge = tile.Edges[slot] ?? string.Empty;
+                if (edge.Length == 0) continue;
+                if (!Eq(edge, crosser)) { edgesMatch = false; break; }
+                crosserCount++;
+            }
+            if (edgesMatch && crosserCount == 1) return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>Mirrors LayoutGroupStamper.TryClassify's WallRoom/WallAlcove/OpenSetPiece branch (the
+    /// multi-tile — and, for OpenSetPiece, also 1x1 — path taken once CorridorInsert/CorridorStub have
+    /// been ruled out).</summary>
+    private static GroupMechanism ClassifyMultiTileSetPiece(TilesetModel model, TileGroupRecord group, TilesetVocabulary vocab)
+    {
+        if (group.Rows <= 0 || group.Columns <= 0) return GroupMechanism.None;
+        if (group.TileIds.Count != group.Rows * group.Columns) return GroupMechanism.None;
+
+        var members = new List<TileRecord>();
+        foreach (var tileId in group.TileIds)
+        {
+            if (tileId < 0 || tileId >= model.Tiles.Count) return GroupMechanism.None; // hole
+            var tile = model.Tiles[tileId];
+            if (!IsFlat(tile)) return GroupMechanism.None;
+            foreach (var edge in tile.Edges)
+            {
+                if (!string.IsNullOrEmpty(edge) && !Eq(edge, DoorwayCrosser)) return GroupMechanism.None;
+            }
+            members.Add(tile);
+        }
+
+        var hasAnyDoorway = members.Any(m => m.Edges.Any(e => Eq(e, DoorwayCrosser)));
+        var allCornersSolid = members.All(m => m.Corners.All(c => Eq(c, vocab.Solid)));
+        var hasAnyDoor = members.Any(m => m.Doors.Count != 0);
+
+        if (hasAnyDoorway)
+        {
+            if (!allCornersSolid || hasAnyDoor) return GroupMechanism.None;
+            // At least one Doorway edge must be a perimeter opening (face outward) -- true for every
+            // real WallRoom shape in the verified inventory (a fully interior Doorway edge, shared
+            // between two members, would be unusual and isn't relied on here).
+            return GroupMechanism.SetPieceWallRoom;
+        }
+
+        if (allCornersSolid && hasAnyDoor)
+            return GroupMechanism.SetPieceWallAlcove;
+
+        var matchesPrimary = members.All(m => m.Corners.All(c => Eq(c, vocab.Solid) || Eq(c, vocab.Open))) &&
+                              members.Any(m => m.Corners.Any(c => Eq(c, vocab.Open)));
+        var matchesSecondary = !string.IsNullOrEmpty(vocab.Secondary) &&
+                                members.All(m => m.Corners.All(c => Eq(c, vocab.Solid) || Eq(c, vocab.Secondary))) &&
+                                members.Any(m => m.Corners.Any(c => Eq(c, vocab.Secondary)));
+
+        if (matchesPrimary || matchesSecondary) return GroupMechanism.SetPieceOpenSetPiece;
+
+        return GroupMechanism.None;
+    }
+
+    private static GroupMechanism ClassifySetPiece(TilesetModel model, TileGroupRecord group, TilesetVocabulary vocab)
+    {
+        if (group.Rows == 1 && group.Columns == 1 && group.TileIds.Count == 1)
+        {
+            var soloTileId = group.TileIds[0];
+            if (soloTileId >= 0 && soloTileId < model.Tiles.Count)
+            {
+                var soloTile = model.Tiles[soloTileId];
+                if (IsCorridorInsertEligible(soloTile, vocab)) return GroupMechanism.SetPieceCorridorInsert;
+                if (IsCorridorStubEligible(soloTile, vocab)) return GroupMechanism.SetPieceCorridorStub;
+            }
+        }
+
+        return ClassifyMultiTileSetPiece(model, group, vocab);
+    }
+
+    // ---------------- the census itself ----------------
+
+    private sealed class Exemption
+    {
+        public string Tileset;
+        public string TileOrGroup;
+        public string Reason;
+    }
+
+    /// <summary>
+    /// The EXACT, named exemption set (asserted as a full set, not a subset): every tile in every
+    /// tileset that this census could not structurally place into a mechanism, with a one-line reason.
+    /// Keep this empty or as small as possible -- see the class doc comment.
+    /// </summary>
+    private static readonly HashSet<(string Tileset, string Label)> ExpectedExemptions = new()
+    {
+        // vmr01 "Door_Trans" (tile 152) / "Door_Trans_Exterior" (tile 60): a single-Doorway-edge,
+        // all-Wall-cornered, 1-door wall segment INSIDE a [GROUP] -- structurally identical to a
+        // TileDoorPlanner terminator, but TileDoorPlanner's candidate scan deliberately excludes every
+        // grouped tile (GroupIndex != -1) so it never fights LayoutGroupStamper for the same cells; no
+        // shipped mechanism reaches into a group's own member tile that way. tdt01's "Door_Trans"
+        // (tile 151) additionally carries an opposite Doorway PAIR (Left+Right) that no shipped
+        // Tunnel-mode carver ever produces as a stand-alone straight segment (Doorway edges are only
+        // ever written as a single edge at a room/tunnel junction, never as a carved straight chain the
+        // way Corridor/Alley/Fence/Bridge are) -- extending CorridorInsert to a fourth, structurally
+        // unverified crosser-pair vocabulary was judged too high-risk for this pass.
+        ("tdt01", "GROUP:Door_Trans"),
+        ("tds01", "GROUP:Door_Trans"),
+        ("vmr01", "GROUP:Door_Trans"),
+        ("vmr01", "GROUP:Door_Trans_Exterior"),
+
+        // tdt01/tds01 "Platform03_2x2": an L-shaped 2x2 group with a HOLE (one Tile slot is -1, no
+        // physical tile there at all). Every shipped set-piece kind (WallRoom/WallAlcove/OpenSetPiece/
+        // CorridorInsert/CorridorStub) requires a complete Rows x Columns rectangle with a real tile in
+        // every slot -- LayoutGroupStamper.TryClassify rejects any group with a -1 member outright, the
+        // same rule every other 2x2/2x3 set piece in these tilesets already relies on for its own
+        // rectangular footprint. Supporting a non-rectangular footprint would need new stamping/site-
+        // validation math (partial corner/edge writes, an irregular margin shape) -- real, unverified
+        // new engineering out of scope for this pass.
+        ("tdt01", "GROUP:Platform03_2x2"),
+        ("tds01", "GROUP:Platform03_2x2"),
+    };
+
+    public static IEnumerable<string> TilesetKeys => new[] { "tdt01", "tds01", "zsf01", "vmr01" };
+
+    [TestCaseSource(nameof(TilesetKeys))]
+    public void EveryTileIsReachableOrExplicitlyExempted(string tilesetResref)
+    {
+        var model = LoadTileset(tilesetResref);
+        var profileKey = tilesetResref switch
+        {
+            "tdt01" => StandardTilesetProfiles.Cavern,
+            "tds01" => StandardTilesetProfiles.Sewers,
+            "zsf01" => StandardTilesetProfiles.Facility,
+            "vmr01" => StandardTilesetProfiles.AncientRuin,
+            _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
+        };
+        var profile = new StandardTilesetProfiles().BuildTilesetProfiles()[profileKey];
+        var vocab = BuildVocabulary(model, profile);
+
+        var coveredTileIds = new HashSet<int>();
+        var mechanismCounts = new Dictionary<string, int>();
+        var exemptions = new List<Exemption>();
+
+        void Cover(int tileId, string mechanism)
+        {
+            coveredTileIds.Add(tileId);
+            mechanismCounts[mechanism] = mechanismCounts.GetValueOrDefault(mechanism) + 1;
+        }
+
+        // Pass 1: every GROUP, classified once, covers all its member tiles together.
+        foreach (var group in model.Groups)
+        {
+            var memberIds = group.TileIds.Where(id => id >= 0 && id < model.Tiles.Count).ToList();
+            if (memberIds.Count == 0) continue;
+
+            var mechanism = GroupMechanism.None;
+            if (IsFeatureTileEligible(model, group)) mechanism = GroupMechanism.FeatureTile;
+            else if (IsExitGroupEligible(model, group)) mechanism = GroupMechanism.ExitGroup;
+            else mechanism = ClassifySetPiece(model, group, vocab);
+
+            if (mechanism != GroupMechanism.None)
+            {
+                foreach (var id in memberIds) Cover(id, mechanism.ToString());
+                continue;
+            }
+
+            if (ExpectedExemptions.Contains((tilesetResref, "GROUP:" + group.Name)))
+            {
+                foreach (var id in memberIds)
+                    exemptions.Add(new Exemption { Tileset = tilesetResref, TileOrGroup = $"TILE{id} (group '{group.Name}')", Reason = "see ExpectedExemptions doc comment" });
+            }
+            // Groups that neither classify nor carry a pre-declared exemption fall through: their
+            // member tiles are re-evaluated as plain tiles below (harmless -- GroupIndex != -1 makes
+            // both ungrouped-tile checks return false, so an uncovered, unexempted member surfaces as
+            // a genuine failure in the final assertion instead of being silently swallowed here).
+        }
+
+        // Pass 2: every remaining (ungrouped, or grouped-but-unclassified-and-unexempted) tile.
+        for (var tileId = 0; tileId < model.Tiles.Count; tileId++)
+        {
+            if (coveredTileIds.Contains(tileId)) continue;
+            if (exemptions.Any(e => e.TileOrGroup.StartsWith($"TILE{tileId} "))) continue;
+
+            var tile = model.Tiles[tileId];
+
+            if (IsCornerEdgeResolverReachable(model, tile)) { Cover(tileId, "CornerEdgeResolver"); continue; }
+            if (IsDoorTransitionReachable(tile)) { Cover(tileId, "DoorTransition"); continue; }
+
+            exemptions.Add(new Exemption { Tileset = tilesetResref, TileOrGroup = $"TILE{tileId}", Reason = "UNCLASSIFIED" });
+        }
+
+        // ---- report ----
+        TestContext.WriteLine($"=== {tilesetResref} ({profileKey}) coverage ===");
+        TestContext.WriteLine($"Total tiles: {model.Tiles.Count}");
+        foreach (var kv in mechanismCounts.OrderByDescending(k => k.Value))
+            TestContext.WriteLine($"  {kv.Key,-24} {kv.Value,4} tiles");
+        TestContext.WriteLine($"  {"Exempted",-24} {exemptions.Count,4} tiles");
+        foreach (var e in exemptions.OrderBy(e => e.TileOrGroup, StringComparer.Ordinal))
+            TestContext.WriteLine($"    {e.TileOrGroup}: {e.Reason}");
+
+        // ---- assertions ----
+        var unclassified = exemptions.Where(e => e.Reason == "UNCLASSIFIED").Select(e => e.TileOrGroup).ToList();
+        unclassified.Should().BeEmpty($"every {tilesetResref} tile must be either reachable or carry a pre-declared, reasoned exemption");
+
+        var actualExemptionLabels = exemptions.Select(e => e.TileOrGroup).ToHashSet();
+        var expectedLabelsForThisTileset = model.Groups
+            .Where(g => ExpectedExemptions.Contains((tilesetResref, "GROUP:" + g.Name)))
+            .SelectMany(g => g.TileIds.Where(id => id >= 0))
+            .Select(id => model.Tiles.First(t => t.TileId == id))
+            .Select(t => $"TILE{t.TileId} (group '{model.Groups[t.GroupIndex].Name}')")
+            .ToHashSet();
+
+        actualExemptionLabels.Should().BeEquivalentTo(expectedLabelsForThisTileset,
+            $"the {tilesetResref} exemption set must be EXACT -- any drift must be visible here, not silently absorbed");
+
+        (coveredTileIds.Count + exemptions.Count).Should().Be(model.Tiles.Count);
+    }
+}

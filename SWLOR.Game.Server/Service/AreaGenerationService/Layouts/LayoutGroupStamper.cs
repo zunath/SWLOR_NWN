@@ -35,15 +35,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         private const string CorridorCrosser = "Corridor";
         private const string FenceCrosser = "Fence";
         private const string AlleyCrosser = "Alley";
+        private const string BridgeCrosser = "Bridge";
 
         /// <summary>
         /// Crosser names TryClassifyCorridorInsert checks a 1x1 group's tile against, in priority
         /// order. Corridor/Alley inserts (BigDoor01/02, BigDoorAlley) sit on fully solid corners, the
         /// same wall-embedded tunnel body Corridor/Alley chains carve; Fence inserts (FenceDoor01/02,
         /// Interior/ExteriorFenceDoor) sit on this layout's own open terrain, matching
-        /// LayoutFenceCarver's fully-open fence run.
+        /// LayoutFenceCarver's fully-open fence run; Bridge inserts (BridgeDoor/BridgeDoor01) sit on
+        /// the accent/channel terrain, splicing into a LayoutAccentChannelCarver span (see
+        /// TryClassifyCorridorInsert's accent-terrain resolution).
         /// </summary>
-        private static readonly string[] CorridorInsertCrossers = { CorridorCrosser, AlleyCrosser, FenceCrosser };
+        private static readonly string[] CorridorInsertCrossers = { CorridorCrosser, AlleyCrosser, FenceCrosser, BridgeCrosser };
+
+        /// <summary>
+        /// Crosser names TryPlaceCorridorStub extends an existing Tunnel-mode chain with, in priority
+        /// order. Matches a dead-end (single-edge, not an opposite pair) wall-embedded set piece —
+        /// e.g. tdt01 StairsDown01/StairsUp01, tds01 StairsDown/StairsUp, vmr01
+        /// InteriorStairsDown/InteriorStairsUp/ExteriorStairsDown/ExteriorStairsUp — onto an all-solid
+        /// cell adjacent to an existing Corridor/Alley chain cell.
+        /// </summary>
+        private static readonly string[] CorridorStubCrossers = { CorridorCrosser, AlleyCrosser };
 
         // Slot -> (Dx, Dy) step to the neighboring cell across that edge. Matches EdgeSlot's
         // Top=0/Right=1/Bottom=2/Left=3 ordering and the "Top is the +Y (north) side" convention
@@ -57,7 +69,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             public TileRecord Tile;
         }
 
-        private enum GroupKind { WallRoom, OpenSetPiece, CorridorInsert }
+        private enum GroupKind { WallRoom, OpenSetPiece, CorridorInsert, WallAlcove, CorridorStub }
 
         private sealed class ClassifiedGroup
         {
@@ -73,12 +85,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             public List<(int Row, int Col, int Slot)> PerimeterDoorways;
 
             /// <summary>
-            /// CorridorInsert only: which crosser name ("Corridor", "Alley", or "Fence") the straight
-            /// segment this group's tile fits into carries. Selects which crosser
-            /// TryPlaceCorridorInsert searches the layout for and which terrain (solid or open) the
-            /// candidate cell must have.
+            /// CorridorInsert/CorridorStub only: which crosser name ("Corridor", "Alley", "Fence", or
+            /// "Bridge") the segment this group's tile fits into carries. Selects which crosser
+            /// TryPlaceCorridorInsert/TryPlaceCorridorStub searches the layout for and which terrain
+            /// (solid, open, or accent) the candidate cell must have.
             /// </summary>
             public string InsertCrosser;
+
+            /// <summary>
+            /// CorridorStub only: the tile's own (unrotated) edge slot carrying its single crosser
+            /// edge — the slot TryPlaceCorridorStub must rotate to face back at the chain cell it
+            /// splices onto.
+            /// </summary>
+            public int StubEdgeSlot;
 
             /// <summary>
             /// OpenSetPiece only: which open terrain this piece's own corners represent (primary
@@ -115,6 +134,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                         GroupKind.WallRoom => TryPlaceWallRoom(layout, parameters, classified, random, ref nextRoomId),
                         GroupKind.OpenSetPiece => TryPlaceOpenSetPiece(layout, parameters, classified, random),
                         GroupKind.CorridorInsert => TryPlaceCorridorInsert(layout, parameters, classified, random),
+                        GroupKind.WallAlcove => TryPlaceWallAlcove(layout, parameters, classified, random, ref nextRoomId),
+                        GroupKind.CorridorStub => TryPlaceCorridorStub(layout, parameters, classified, random),
                         _ => false
                     };
 
@@ -139,11 +160,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// <summary>
         /// Structurally re-verifies a configured group name against real tileset data rather than
         /// trusting a tileset profile's list blindly. A 1x1 group is first checked against
-        /// CorridorInsert (see TryClassifyCorridorInsert); anything that doesn't match falls through
-        /// to the WallRoom/OpenSetPiece rules, which reject holes (-1 members), raised corners, door
-        /// slots, and non-Doorway crossers, then classify the surviving shape as WallRoom (all-solid
-        /// corners with at least one perimeter Doorway edge) or OpenSetPiece (no crosser edges at all,
-        /// with every corner either solid or matching this layout's own open terrain).
+        /// CorridorInsert (see TryClassifyCorridorInsert) and then CorridorStub (see
+        /// TryClassifyCorridorStub); anything that doesn't match falls through to the
+        /// WallRoom/WallAlcove/OpenSetPiece rules, which reject holes (-1 members) and raised corners,
+        /// then classify the surviving shape as WallRoom (all-solid corners with at least one
+        /// perimeter Doorway edge), WallAlcove (all-solid corners, zero crosser edges, at least one
+        /// door slot — e.g. vmr01 Room 1-5 2x2), or OpenSetPiece (no crosser edges at all, with every
+        /// corner either solid or matching this layout's own open terrain, and at least one corner
+        /// actually open). A door slot is tolerated (never spawns a door object) on a WallAlcove or
+        /// OpenSetPiece candidate — matching the existing CorridorInsert precedent (BigDoor01/02,
+        /// InteriorHallDoor) — but still rejected on a WallRoom candidate, since none of the verified
+        /// WallRoom shapes (Cell/Room/Bedroom/2x1Room/Transiton) carry one.
         /// </summary>
         private static bool TryClassify(TilesetModel tileset, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
         {
@@ -151,19 +178,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (group.Rows <= 0 || group.Columns <= 0) return false;
             if (group.TileIds.Count != group.Rows * group.Columns) return false;
 
-            // CorridorInsert is checked first and independently of the WallRoom/OpenSetPiece rules
-            // below: a 1x1, all-solid-corner, flat tile whose only edge crossers are a single
-            // opposite pair of Corridor (Top+Bottom or Left+Right), with an optional door slot
-            // (BigDoor01/02, InteriorHallDoor all carry exactly one; this pass never spawns a door
-            // object for it — the tile art carries the door frame). Everything else falls through to
-            // the existing hole/height/door-slot rejection used by WallRoom/OpenSetPiece.
+            // CorridorInsert/CorridorStub are checked first and independently of the
+            // WallRoom/WallAlcove/OpenSetPiece rules below. Everything else falls through to the
+            // hole/height rejection used by WallRoom/WallAlcove/OpenSetPiece.
             if (group.Rows == 1 && group.Columns == 1 && group.TileIds.Count == 1)
             {
                 var soloTileId = group.TileIds[0];
-                if (soloTileId >= 0 && soloTileId < tileset.Tiles.Count &&
-                    TryClassifyCorridorInsert(tileset.Tiles[soloTileId], group, parameters, out classified))
+                if (soloTileId >= 0 && soloTileId < tileset.Tiles.Count)
                 {
-                    return true;
+                    var soloTile = tileset.Tiles[soloTileId];
+                    if (TryClassifyCorridorInsert(soloTile, group, parameters, out classified))
+                        return true;
+                    if (TryClassifyCorridorStub(soloTile, group, parameters, out classified))
+                        return true;
                 }
             }
 
@@ -178,7 +205,6 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var tile = tileset.Tiles[tileId];
                     if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
                         tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) return false; // raised
-                    if (tile.Doors.Count != 0) return false; // door slots are out of scope for this pass
 
                     foreach (var edge in tile.Edges)
                     {
@@ -208,13 +234,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             var hasAnyDoorway = members.Any(m => m.Tile.Edges.Any(e => Eq(e, DoorwayCrosser)));
             var allCornersSolid = members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain)));
+            var hasAnyDoor = members.Any(m => m.Tile.Doors.Count != 0);
 
             if (hasAnyDoorway)
             {
                 // A doorway edge implies a WallRoom; anything that isn't all-solid-cornered with at
-                // least one opening facing outward is an unsupported shape for this pass (v1 scope is
-                // WallRooms and OpenSetPieces only, per the verified .set inventory).
-                if (!allCornersSolid || perimeterDoorways.Count == 0) return false;
+                // least one opening facing outward is an unsupported shape for this pass. None of the
+                // verified WallRoom shapes carry a door slot, so this stays strict (unlike WallAlcove/
+                // OpenSetPiece below).
+                if (!allCornersSolid || perimeterDoorways.Count == 0 || hasAnyDoor) return false;
 
                 classified = new ClassifiedGroup
                 {
@@ -226,15 +254,40 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 return true;
             }
 
+            // WallAlcove: all-solid corners, zero crosser edges anywhere, at least one door slot (e.g.
+            // vmr01 "Room 1 2x2".."Room 5 2x2" — a small enclosed wall chamber with a doorframe object
+            // but no Doorway crosser vocabulary of its own). Checked before OpenSetPiece so an
+            // all-solid group is never misrouted there (see OpenSetPiece's own open-corner requirement
+            // below, which independently guards against the same misroute).
+            if (allCornersSolid && hasAnyDoor)
+            {
+                classified = new ClassifiedGroup
+                {
+                    Group = group,
+                    Members = members,
+                    Kind = GroupKind.WallAlcove,
+                    PerimeterDoorways = new List<(int, int, int)>()
+                };
+                return true;
+            }
+
             // OpenSetPiece: every corner must be solid plus EXACTLY ONE of this layout's open terrains
-            // (primary OpenTerrain or, when districts are configured, SecondaryOpenTerrain) — a group
-            // whose corners mix both, or match neither (e.g. a Floor-cornered piece in a Chasm-only
-            // layout), is structurally incompatible here and skipped whole. Determining which single
-            // terrain the piece's open corners represent lets TryPlaceOpenSetPiece restrict candidate
-            // rooms to that same district (see LayoutRoom.OpenTerrain).
-            var matchesPrimary = members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain) || Eq(c, parameters.OpenTerrain)));
+            // (primary OpenTerrain or, when districts are configured, SecondaryOpenTerrain), with AT
+            // LEAST ONE corner actually equal to that open terrain — an all-solid group vacuously
+            // satisfies "every corner is solid-or-open" without this, which would misclassify a
+            // WallAlcove-shaped group (already routed above) or any other all-solid shape as floor
+            // decor. A group whose corners mix both open terrains, or match neither (e.g. a
+            // Floor-cornered piece in a Chasm-only layout), is structurally incompatible here and
+            // skipped whole. Determining which single terrain the piece's open corners represent lets
+            // TryPlaceOpenSetPiece restrict candidate rooms to that same district (see
+            // LayoutRoom.OpenTerrain). A door slot is tolerated (never spawns a door object) — e.g.
+            // tdt01/tds01 StairsDown_2x2/StairsUp_2x2 and vmr01 ExteriorStairsDown_2x2/
+            // ExteriorStairsUp_2x2/ExteriorRuinedTower_2x2 each carry exactly one.
+            var matchesPrimary = members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain) || Eq(c, parameters.OpenTerrain))) &&
+                                  members.Any(m => m.Tile.Corners.Any(c => Eq(c, parameters.OpenTerrain)));
             var matchesSecondary = !string.IsNullOrEmpty(parameters.SecondaryOpenTerrain) &&
-                                    members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain) || Eq(c, parameters.SecondaryOpenTerrain)));
+                                    members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain) || Eq(c, parameters.SecondaryOpenTerrain))) &&
+                                    members.Any(m => m.Tile.Corners.Any(c => Eq(c, parameters.SecondaryOpenTerrain)));
 
             string openSetPieceTerrain;
             if (matchesPrimary) openSetPieceTerrain = parameters.OpenTerrain;
@@ -258,7 +311,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// Doorway edge, a third crosser, an L/T/X junction pattern) is rejected. Matches only a
         /// straight segment, never a junction or room-adapter tile. Tries Corridor and Alley (solid
         /// corners, a wall-embedded tunnel gate: BigDoor01/02, BigDoorAlley) before Fence (this
-        /// layout's open terrain, a fence-run gate: FenceDoor01/02, Interior/ExteriorFenceDoor).
+        /// layout's open terrain, a fence-run gate: FenceDoor01/02, Interior/ExteriorFenceDoor) before
+        /// Bridge (this layout's accent/channel terrain, a gate spliced into a
+        /// LayoutAccentChannelCarver span: tdt01 BridgeDoor, tds01/vmr01 BridgeDoor01).
         /// </summary>
         private static bool TryClassifyCorridorInsert(TileRecord tile, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
         {
@@ -267,16 +322,25 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
                 tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) return false; // raised
 
+            var accentTerrain = !string.IsNullOrEmpty(parameters.ChannelTerrain) ? parameters.ChannelTerrain : parameters.AccentTerrain;
+
             var allSolid = tile.Corners.All(c => Eq(c, parameters.SolidTerrain));
             var allOpen = !string.IsNullOrEmpty(parameters.OpenTerrain) && tile.Corners.All(c => Eq(c, parameters.OpenTerrain));
-            if (!allSolid && !allOpen) return false;
+            var allAccent = !string.IsNullOrEmpty(accentTerrain) && tile.Corners.All(c => Eq(c, accentTerrain));
+            if (!allSolid && !allOpen && !allAccent) return false;
 
             foreach (var crosser in CorridorInsertCrossers)
             {
                 // Corridor/Alley inserts are wall-embedded tunnel gates (solid corners); a Fence
-                // insert is a fence-run gate (this layout's open terrain). Skip whichever terrain
-                // this tile's own corners don't support for that crosser.
-                var terrainMatches = crosser == FenceCrosser ? allOpen : allSolid;
+                // insert is a fence-run gate (this layout's open terrain); a Bridge insert is a channel
+                // gate (this layout's accent/channel terrain). Skip whichever terrain this tile's own
+                // corners don't support for that crosser.
+                var terrainMatches = crosser switch
+                {
+                    FenceCrosser => allOpen,
+                    BridgeCrosser => allAccent,
+                    _ => allSolid
+                };
                 if (!terrainMatches) continue;
 
                 var hasCrosser = new bool[4];
@@ -310,6 +374,56 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             return false;
         }
 
+        /// <summary>
+        /// Classifies a 1x1 group as a CorridorStub: flat, all-solid corners, exactly ONE crosser edge
+        /// (a dead end, never an opposite pair — that shape is CorridorInsert's, checked first by
+        /// TryClassify) of Corridor or Alley, with an optional door slot the tile's own art carries as
+        /// a doorframe (this pass never spawns a door object for it, matching CorridorInsert's
+        /// precedent). Matches tdt01 StairsDown01/StairsUp01, tds01 StairsDown/StairsUp, and vmr01
+        /// InteriorStairsDown/InteriorStairsUp (Corridor) and ExteriorStairsDown/ExteriorStairsUp
+        /// (Alley) — a themed dead-end cap TryPlaceCorridorStub splices onto an existing Tunnel-mode
+        /// chain by extending it one cell.
+        /// </summary>
+        private static bool TryClassifyCorridorStub(TileRecord tile, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
+        {
+            classified = null;
+
+            if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
+                tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) return false; // raised
+            if (!tile.Corners.All(c => Eq(c, parameters.SolidTerrain))) return false;
+
+            foreach (var crosser in CorridorStubCrossers)
+            {
+                var hasCrosser = new bool[4];
+                var crosserCount = 0;
+                var edgesMatch = true;
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    var edge = tile.Edges[slot] ?? string.Empty;
+                    if (edge.Length == 0) continue;
+                    if (!Eq(edge, crosser)) { edgesMatch = false; break; }
+                    hasCrosser[slot] = true;
+                    crosserCount++;
+                }
+                if (!edgesMatch || crosserCount != 1) continue; // exactly one edge — a dead end, not a pair
+
+                var slotIndex = Array.IndexOf(hasCrosser, true);
+
+                classified = new ClassifiedGroup
+                {
+                    Group = group,
+                    Members = new List<GroupMember> { new GroupMember { LocalRow = 0, LocalCol = 0, Tile = tile } },
+                    Kind = GroupKind.CorridorStub,
+                    PerimeterDoorways = new List<(int, int, int)>(),
+                    InsertCrosser = crosser,
+                    StubEdgeSlot = slotIndex
+                };
+                return true;
+            }
+
+            return false;
+        }
+
         // ---------------- CorridorInsert ----------------
 
         /// <summary>
@@ -328,6 +442,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var crossers = layout.Crossers;
             var width = corners.Width;
             var height = corners.Height;
+            var accentTerrain = !string.IsNullOrEmpty(parameters.ChannelTerrain) ? parameters.ChannelTerrain : parameters.AccentTerrain;
 
             var transitionTiles = new HashSet<(int X, int Y)>(layout.Transitions.Select(t => t.Tile));
             var candidates = new List<(int X, int Y)>();
@@ -341,10 +456,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     if (transitionTiles.Contains(cell)) continue;
 
                     // Corridor/Alley inserts sit on a fully solid cell (wall-embedded tunnel body); a
-                    // Fence insert sits on a fully open cell (a gate spliced into an open fence run).
-                    var terrainOk = crosser == FenceCrosser
-                        ? IsFullyOpenCell(corners, cell, parameters.OpenTerrain)
-                        : IsFullySolidCell(corners, cell, parameters.SolidTerrain);
+                    // Fence insert sits on a fully open cell (a gate spliced into an open fence run); a
+                    // Bridge insert sits on a fully accent-terrain cell (a gate spliced into a channel
+                    // span carved by LayoutAccentChannelCarver).
+                    var terrainOk = crosser switch
+                    {
+                        FenceCrosser => IsFullyOpenCell(corners, cell, parameters.OpenTerrain),
+                        BridgeCrosser => !string.IsNullOrEmpty(accentTerrain) && IsFullyOpenCell(corners, cell, accentTerrain),
+                        _ => IsFullySolidCell(corners, cell, parameters.SolidTerrain)
+                    };
                     if (!terrainOk) continue;
 
                     if (!IsStraightCorridorCell(crossers, cell, crosser, out _)) continue;
@@ -396,6 +516,101 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var isHorizontal = Eq(left, crosser) && Eq(right, crosser) && top.Length == 0 && bottom.Length == 0;
 
             return isVertical || isHorizontal;
+        }
+
+        // ---------------- CorridorStub ----------------
+
+        /// <summary>
+        /// Extends an existing Tunnel-mode chain by one dead-end cell: finds an all-solid,
+        /// currently crosser-free, unpinned, non-transition cell adjacent to an existing chain cell
+        /// that already carries the classified crosser on some OTHER edge (confirming it's a genuine
+        /// body cell of an existing Corridor/Alley chain, not a fresh cell of its own), sets the
+        /// shared edge between the two cells to that crosser — splicing a one-cell stub off the chain
+        /// — and pins the stub tile at whichever orientation puts its own single crosser edge on that
+        /// shared slot (with the other three edges blank, matching the classified dead-end shape). A
+        /// no-op (returns false, no grid mutation) when no chain of the required crosser exists yet —
+        /// e.g. any OpenLane-mode layout profile, where CorridorMode never carves Corridor/Alley edges.
+        /// </summary>
+        private static bool TryPlaceCorridorStub(
+            MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified, System.Random random)
+        {
+            var tile = classified.Members[0].Tile;
+            var crosser = classified.InsertCrosser;
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+            var width = corners.Width;
+            var height = corners.Height;
+
+            var transitionTiles = new HashSet<(int X, int Y)>(layout.Transitions.Select(t => t.Tile));
+            var candidates = new List<((int X, int Y) Cell, int SlotFromCell)>();
+
+            for (var y = 0; y < height; y++)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    var cell = (X: x, Y: y);
+                    if (layout.PinnedTiles.ContainsKey(cell)) continue;
+                    if (transitionTiles.Contains(cell)) continue;
+                    if (!IsFullySolidCell(corners, cell, parameters.SolidTerrain)) continue;
+                    if (TileDoorGeometry.HasAnyCrosserEdge(crossers, cell)) continue; // must be a fresh dead end
+
+                    for (var slot = 0; slot < 4; slot++)
+                    {
+                        var (dx, dy) = SlotOffsets[slot];
+                        var neighbor = (X: cell.X + dx, Y: cell.Y + dy);
+                        if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.X >= width || neighbor.Y >= height) continue;
+                        if (layout.PinnedTiles.ContainsKey(neighbor)) continue;
+                        if (!IsFullySolidCell(corners, neighbor, parameters.SolidTerrain)) continue;
+
+                        var backSlot = OppositeSlot(slot);
+                        if (crossers.GetEdge(neighbor.X, neighbor.Y, backSlot).Length != 0) continue; // shared edge must still be blank
+
+                        var neighborHasChain = false;
+                        for (var s = 0; s < 4; s++)
+                        {
+                            if (s == backSlot) continue;
+                            if (Eq(crossers.GetEdge(neighbor.X, neighbor.Y, s), crosser)) { neighborHasChain = true; break; }
+                        }
+                        if (!neighborHasChain) continue;
+
+                        candidates.Add((cell, slot));
+                    }
+                }
+            }
+
+            Shuffle(candidates, random);
+
+            foreach (var (cell, slotFromCell) in candidates)
+            {
+                for (var orientation = 0; orientation < 4; orientation++)
+                {
+                    var matches = true;
+                    for (var s = 0; s < 4; s++)
+                    {
+                        var expected = s == slotFromCell ? crosser : string.Empty;
+                        if (!Eq(tile.GetEdgeAt(orientation, s), expected)) { matches = false; break; }
+                    }
+                    if (!matches) continue;
+
+                    crossers.SetEdge(cell.X, cell.Y, slotFromCell, crosser);
+                    layout.PinnedTiles[cell] = (tile.TileId, orientation);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static int OppositeSlot(int slot)
+        {
+            return slot switch
+            {
+                EdgeSlot.Top => EdgeSlot.Bottom,
+                EdgeSlot.Bottom => EdgeSlot.Top,
+                EdgeSlot.Left => EdgeSlot.Right,
+                EdgeSlot.Right => EdgeSlot.Left,
+                _ => slot
+            };
         }
 
         // ---------------- WallRoom ----------------
@@ -503,6 +718,107 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 CenterTile = footprint[0],
                 Tiles = footprint
             });
+        }
+
+        // ---------------- WallAlcove ----------------
+
+        /// <summary>
+        /// Places a WallAlcove (e.g. vmr01 "Room 1 2x2".."Room 5 2x2"): stamps the group's footprint
+        /// into solid space exactly like TryPlaceWallRoom, but since this shape carries no Doorway
+        /// crosser vocabulary of its own (see TryClassify), the site requirement is relaxed to: at
+        /// least one footprint-perimeter cell already touches the reachable network — either a
+        /// fully-open room cell (this layout's OpenTerrain or, when districts are active,
+        /// SecondaryOpenTerrain) or an existing Corridor/Alley tunnel-chain cell. Conservative v1: the
+        /// door slot's own facing is not aligned to that touch point, and no door object is ever
+        /// spawned for it (matching the CorridorInsert/OpenSetPiece-with-tolerated-doors precedent) —
+        /// the alcove is placed as an inert decorative wall chamber wherever the footprint legally
+        /// fits and happens to border the network somewhere.
+        /// </summary>
+        private static bool TryPlaceWallAlcove(
+            MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified,
+            System.Random random, ref int nextRoomId)
+        {
+            var group = classified.Group;
+            var width = layout.Corners.Width;
+            var height = layout.Corners.Height;
+
+            var anchors = new List<(int X, int Y)>();
+            for (var ay = 0; ay <= height - group.Rows; ay++)
+            for (var ax = 0; ax <= width - group.Columns; ax++)
+                anchors.Add((ax, ay));
+
+            Shuffle(anchors, random);
+
+            var transitionTiles = new HashSet<(int X, int Y)>(layout.Transitions.Select(t => t.Tile));
+
+            foreach (var anchor in anchors)
+            {
+                if (!IsWallAlcoveSiteValid(layout, parameters, classified, anchor, transitionTiles))
+                    continue;
+
+                StampWallRoom(layout, parameters, classified, anchor, ref nextRoomId);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsWallAlcoveSiteValid(
+            MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified,
+            (int X, int Y) anchor, HashSet<(int X, int Y)> transitionTiles)
+        {
+            var group = classified.Group;
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+            var width = corners.Width;
+            var height = corners.Height;
+
+            var footprint = new HashSet<(int X, int Y)>();
+            for (var r = 0; r < group.Rows; r++)
+            {
+                for (var c = 0; c < group.Columns; c++)
+                {
+                    var cell = (X: anchor.X + c, Y: anchor.Y + r);
+                    footprint.Add(cell);
+
+                    if (layout.PinnedTiles.ContainsKey(cell)) return false;
+                    if (transitionTiles.Contains(cell)) return false;
+                    if (!IsFullySolidCell(corners, cell, parameters.SolidTerrain)) return false;
+
+                    for (var slot = 0; slot < 4; slot++)
+                    {
+                        if (crossers.GetEdge(cell.X, cell.Y, slot).Length != 0) return false;
+                    }
+                }
+            }
+
+            foreach (var cell in footprint)
+            {
+                foreach (var (dx, dy) in SlotOffsets)
+                {
+                    var neighbor = (X: cell.X + dx, Y: cell.Y + dy);
+                    if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.X >= width || neighbor.Y >= height) continue;
+                    if (footprint.Contains(neighbor)) continue; // interior to this same footprint
+
+                    // A room's own interior cells are always separated from the untouched solid mass
+                    // by at least one "mixed" boundary cell (open on the room-facing side, solid on the
+                    // far side, mirroring the wall-cell ring TileDoorPlanner/GroupExitPlanner walk) —
+                    // no solid footprint candidate is ever directly adjacent to a FULLY open cell.
+                    // Requiring only that the neighbor carries at least one corner of the open terrain
+                    // correctly matches that mixed boundary ring.
+                    if (CellHasAnyCornerOfTerrain(corners, neighbor, parameters.OpenTerrain)) return true;
+                    if (!string.IsNullOrEmpty(parameters.SecondaryOpenTerrain) &&
+                        CellHasAnyCornerOfTerrain(corners, neighbor, parameters.SecondaryOpenTerrain)) return true;
+
+                    for (var slot = 0; slot < 4; slot++)
+                    {
+                        var edge = crossers.GetEdge(neighbor.X, neighbor.Y, slot);
+                        if (Eq(edge, CorridorCrosser) || Eq(edge, AlleyCrosser)) return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         // ---------------- OpenSetPiece ----------------
@@ -637,6 +953,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                    Eq(corners.Labels[cell.X + 1, cell.Y], openTerrain) &&
                    Eq(corners.Labels[cell.X, cell.Y + 1], openTerrain) &&
                    Eq(corners.Labels[cell.X + 1, cell.Y + 1], openTerrain);
+        }
+
+        /// <summary>True when any one of the cell's 4 corners equals the given terrain (as opposed to
+        /// IsFullyOpenCell's stricter "all 4 corners" requirement) — used by WallAlcove's network-touch
+        /// check, since a room-adjacent solid cell borders a mixed boundary cell, never a fully open
+        /// one directly.</summary>
+        private static bool CellHasAnyCornerOfTerrain(CornerTerrainGrid corners, (int X, int Y) cell, string terrain)
+        {
+            return Eq(corners.Labels[cell.X, cell.Y], terrain) ||
+                   Eq(corners.Labels[cell.X + 1, cell.Y], terrain) ||
+                   Eq(corners.Labels[cell.X, cell.Y + 1], terrain) ||
+                   Eq(corners.Labels[cell.X + 1, cell.Y + 1], terrain);
         }
 
         private static bool Eq(string a, string b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.OrdinalIgnoreCase);

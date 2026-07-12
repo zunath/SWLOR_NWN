@@ -42,10 +42,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     /// splice a FenceDoor/InteriorFenceDoor/ExteriorFenceDoor group gate into a straight body segment
     /// this pass carved, when a tileset profile configures one via SetPieces.
     ///
-    /// v1 scope note: operates only on MacroLayoutParameters.OpenTerrain (the primary terrain), never
-    /// SecondaryOpenTerrain -- IsClearCell requires every corner of a candidate cell to already equal
-    /// the primary open terrain, so a multi-terrain district room's cells are naturally excluded with no
-    /// extra guard needed.
+    /// Runs a fully independent pass per terrain: MacroLayoutParameters.OpenTerrain (the primary
+    /// terrain, always) and, when districts are active, MacroLayoutParameters.SecondaryOpenTerrain too
+    /// (e.g. vmr01's InteriorFenceDoor gate needs a Floor-terrain fence run, alongside
+    /// ExteriorFenceDoor's Plaza-terrain one) -- each pass's IsClearCell/LabelComponents only ever read
+    /// or write cells already homogeneous in that single pass's own terrain, so the two passes never
+    /// interact or need to know about each other's crossers.
     /// </summary>
     internal static class LayoutFenceCarver
     {
@@ -60,7 +62,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (parameters.FenceLines <= 0) return;
             if (tileset == null) return;
 
-            var open = parameters.OpenTerrain;
+            // Primary pass (original v1 scope, fully back-compat). A second, independent pass for
+            // SecondaryOpenTerrain follows when districts are active and the tileset separately
+            // covers Fence vocabulary against that terrain too (e.g. vmr01's InteriorFenceDoor against
+            // Floor, alongside ExteriorFenceDoor against Plaza) -- each pass only ever touches cells of
+            // its own terrain, so the two never interact.
+            CarveFencesForTerrain(layout, parameters, tileset, random, parameters.OpenTerrain);
+            if (!string.IsNullOrEmpty(parameters.SecondaryOpenTerrain))
+                CarveFencesForTerrain(layout, parameters, tileset, random, parameters.SecondaryOpenTerrain);
+        }
+
+        private static void CarveFencesForTerrain(
+            MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset, System.Random random, string open)
+        {
             if (string.IsNullOrEmpty(open)) return;
 
             // Zero-config capability probe: only a tileset whose current open terrain resolves both

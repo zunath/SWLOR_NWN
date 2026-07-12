@@ -38,11 +38,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         internal static void CarveChannels(MacroLayout layout, MacroLayoutParameters parameters, System.Random random)
         {
             if (parameters.AccentChannels <= 0) return;
-            if (string.IsNullOrEmpty(parameters.AccentTerrain)) return;
+
+            // ChannelTerrain is the dedicated channel/bank terrain slot (falls back to AccentTerrain
+            // when a tileset never declared one separately — see DungeonTilesetProfile.ChannelTerrain).
+            var accent = !string.IsNullOrEmpty(parameters.ChannelTerrain) ? parameters.ChannelTerrain : parameters.AccentTerrain;
+            if (string.IsNullOrEmpty(accent)) return;
 
             var corners = layout.Corners;
             var open = parameters.OpenTerrain;
-            var accent = parameters.AccentTerrain;
 
             var forbidden = new HashSet<(int X, int Y)>();
             foreach (var room in layout.Rooms)

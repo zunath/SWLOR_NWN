@@ -61,6 +61,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string AccentTerrain { get; set; } = string.Empty;
 
         /// <summary>
+        /// Terrain name this tileset uses for its accent CHANNEL/bank vocabulary (LayoutAccentChannelCarver)
+        /// when it differs from the blob-patch AccentTerrain — e.g. vmr01's "Chasm", which has verified
+        /// bank/span tile coverage against its primary open terrain (Plaza) but no verified blob-patch
+        /// coverage, so AccentTerrain stays empty while this is set. Empty = channels fall back to
+        /// AccentTerrain (the original, single-terrain behavior).
+        /// </summary>
+        public string ChannelTerrain { get; set; } = string.Empty;
+
+        /// <summary>
         /// Narrowest corridor/door-gap width (in corners) this tileset can path through. Some
         /// tilesets (zsf01) give every partially-open corner combo a movement-restricted pathnode,
         /// so 1-wide openings fail the engine's path check; 2-wide openings put a fully-open
@@ -189,6 +198,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     : string.Empty;
             if (parameters.AccentTerrain.Length == 0)
                 parameters.AccentDensity = 0;
+            // Channels have their own terrain slot (ChannelTerrain) because some tilesets have
+            // verified channel/bank coverage against a terrain with no verified blob-patch coverage
+            // (vmr01's Chasm) — fall back to AccentTerrain when the tileset never set it separately,
+            // preserving the original single-terrain behavior for every other tileset.
+            var channelSource = !string.IsNullOrEmpty(Tileset.ChannelTerrain) ? Tileset.ChannelTerrain : Tileset.AccentTerrain;
+            parameters.ChannelTerrain =
+                parameters.AccentChannels > 0 && !string.IsNullOrEmpty(channelSource)
+                    ? channelSource
+                    : string.Empty;
+            if (parameters.ChannelTerrain.Length == 0)
+                parameters.AccentChannels = 0;
             parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, Tileset.MinimumOpeningWidth);
             // Unconditional pass-through: RoomsAndCorridorsLayout itself gates all district behavior
             // (and every extra RNG draw) behind CorridorMode == Tunnel, so stamping this even for a
@@ -414,6 +434,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder AccentTerrain(string terrainName)
         {
             _active.AccentTerrain = terrainName;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares a separate terrain for accent CHANNEL/bank coverage when it differs from
+        /// AccentTerrain (the blob-patch terrain). Only set this after verifying channel/bank tile
+        /// coverage against the current PrimaryOpenTerrain (see LayoutAccentChannelCarver).
+        /// </summary>
+        public DungeonTilesetProfileBuilder ChannelTerrain(string terrainName)
+        {
+            _active.ChannelTerrain = terrainName;
             return this;
         }
 

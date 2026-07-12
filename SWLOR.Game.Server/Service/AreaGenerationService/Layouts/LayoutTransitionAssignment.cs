@@ -9,7 +9,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     /// outbound exit points on fully-open room tiles. The first entrance is always the Entrance
     /// room's center (the primary arrival anchor, preserving single-entrance behavior). Additional
     /// transitions prefer distinct, geodesically far-apart rooms; boss rooms may host exits but
-    /// never entrances. Runs after accent painting so tile openness is final.
+    /// never entrances. Runs after accent painting so tile openness is final, and before
+    /// LayoutGroupStamper in MacroLayoutGenerator.Generate, so set-piece rooms do not exist yet and
+    /// are never picked here (LayoutGroupStamper itself avoids landing a set piece on an already-
+    /// assigned transition tile).
     /// </summary>
     internal static class LayoutTransitionAssignment
     {

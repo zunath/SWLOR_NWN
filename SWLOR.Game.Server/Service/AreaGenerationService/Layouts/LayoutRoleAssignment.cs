@@ -5,7 +5,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     /// <summary>
     /// Shared role-assignment post-pass: Entrance is a random room, Boss is whichever other room's
     /// center is geodesically farthest from the entrance (BFS over open corners), the rest Standard.
-    /// Runs identically regardless of which style produced the rooms.
+    /// Runs identically regardless of which style produced the rooms. Runs before LayoutGroupStamper
+    /// in MacroLayoutGenerator.Generate, so it only ever sees the style's own rooms — set-piece rooms
+    /// do not exist yet and never receive Entrance/Boss roles.
     /// </summary>
     internal static class LayoutRoleAssignment
     {

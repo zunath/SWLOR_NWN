@@ -15,7 +15,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     /// </summary>
     public static class MacroLayoutGenerator
     {
-        public static MacroLayout Generate(MacroLayoutParameters parameters, System.Random random)
+        /// <summary>
+        /// <paramref name="tileset"/> is optional and defaults to null for back-compat: existing
+        /// callers that never configure MacroLayoutParameters.SetPieces get identical behavior with
+        /// zero extra work. Pass the same TilesetModel that will later resolve this layout so
+        /// LayoutGroupStamper can structurally re-verify configured set-piece groups against real
+        /// tile data before pinning them.
+        /// </summary>
+        public static MacroLayout Generate(MacroLayoutParameters parameters, System.Random random, TilesetModel tileset = null)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             if (random == null) throw new ArgumentNullException(nameof(random));
@@ -40,10 +47,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             layout.OpenTerrain = parameters.OpenTerrain;
             layout.FeatureDensity = parameters.FeatureDensity;
             layout.FeatureTiles = parameters.FeatureTiles;
+            layout.SetPieces = parameters.SetPieces;
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);
             LayoutTransitionAssignment.AssignTransitions(layout, parameters, random);
+
+            // Runs after transitions are anchored (so set pieces can avoid them) and before invariant
+            // validation (so a bad stamp still fails loudly instead of silently corrupting a layout).
+            if (tileset != null)
+                LayoutGroupStamper.Stamp(layout, parameters, tileset, random);
 
             ValidateInvariants(layout, parameters);
 

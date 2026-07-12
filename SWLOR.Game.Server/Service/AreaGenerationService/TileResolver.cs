@@ -50,6 +50,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             {
                 for (var x = 0; x < width; x++)
                 {
+                    // LayoutGroupStamper-pinned cells bypass candidate lookup entirely: the stamper
+                    // already verified the exact (tileId, orientation) is structurally consistent with
+                    // the surrounding grid, so it is placed verbatim with no random draw.
+                    if (layout.PinnedTiles.TryGetValue((x, y), out var pin))
+                    {
+                        tiles[y * width + x] = new ResolvedTile
+                        {
+                            TileId = pin.TileId,
+                            Orientation = pin.Orientation,
+                            Height = 0
+                        };
+                        continue;
+                    }
+
                     var tl = layout.Corners.Labels[x, y + 1];
                     var tr = layout.Corners.Labels[x + 1, y + 1];
                     var br = layout.Corners.Labels[x + 1, y];

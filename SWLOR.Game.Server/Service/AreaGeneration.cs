@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Service
                 MacroLayout macro;
                 try
                 {
-                    macro = MacroLayoutGenerator.Generate(layoutParameters, rng);
+                    macro = MacroLayoutGenerator.Generate(layoutParameters, rng, model);
                 }
                 catch (InvalidOperationException ex)
                 {

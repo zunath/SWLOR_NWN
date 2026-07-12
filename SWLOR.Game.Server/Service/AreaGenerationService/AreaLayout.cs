@@ -193,6 +193,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public (int X, int Y) CenterTile { get; set; }
         /// <summary>All tile coordinates belonging to this room's open space.</summary>
         public List<(int X, int Y)> Tiles { get; set; } = new();
+        /// <summary>
+        /// True for a WallRoom set piece registered by LayoutGroupStamper: a pre-designed multi-tile
+        /// chunk whose interior is walkable via its own baked model walkmesh, not the abstract
+        /// corner-terrain path graph (its Tiles are fully-solid corner cells and its pathnodes are
+        /// often not 'A'). Content placement and path validation must skip these rooms.
+        /// </summary>
+        public bool IsSetPiece { get; set; }
     }
 
     /// <summary>Output of the macro layout stage; input to the tile resolver.</summary>
@@ -223,6 +230,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public double FeatureDensity { get; set; } = 0.05;
         /// <summary>Carried from MacroLayoutParameters.FeatureTiles by MacroLayoutGenerator.Generate.</summary>
         public Dictionary<string, int> FeatureTiles { get; set; } = new();
+        /// <summary>Carried from MacroLayoutParameters.SetPieces by MacroLayoutGenerator.Generate.</summary>
+        public Dictionary<string, int> SetPieces { get; set; } = new();
+        /// <summary>
+        /// Cells LayoutGroupStamper has stamped verbatim with a specific (tileId, orientation) from a
+        /// tileset group. TileResolver places these tiles directly, bypassing corner/edge candidate
+        /// lookup entirely; TileDoorPlanner must never claim a pinned cell for a transition door.
+        /// </summary>
+        public Dictionary<(int X, int Y), (int TileId, int Orientation)> PinnedTiles { get; set; } = new();
 
         public MacroLayout(CornerTerrainGrid corners)
         {
@@ -326,11 +341,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public Dictionary<string, int> FeatureTiles { get; set; } = new();
 
+        /// <summary>
+        /// Set-piece group name -> max instances per area, usually stamped from
+        /// DungeonTilesetProfile.SetPieces by DungeonComposition.BuildLayoutParameters. Empty = no
+        /// set-piece stamping. LayoutGroupStamper re-verifies each name's structural eligibility
+        /// (shape, corners, crossers) rather than trusting this list blindly.
+        /// </summary>
+        public Dictionary<string, int> SetPieces { get; set; } = new();
+
         public MacroLayoutParameters Clone()
         {
-            // MemberwiseClone shares the FeatureTiles dictionary reference with the original rather
-            // than copying it. That's fine: callers only ever assign this from an immutable
-            // tileset-profile dictionary and never mutate it post-construction.
+            // MemberwiseClone shares the FeatureTiles/SetPieces dictionary references with the
+            // original rather than copying them. That's fine: callers only ever assign these from an
+            // immutable tileset-profile dictionary and never mutate them post-construction.
             return (MacroLayoutParameters)MemberwiseClone();
         }
     }

@@ -718,7 +718,7 @@ namespace SWLOR.ContentBuilder.Windows
 
             var result = GenerationEngine.Generate(
                 baseParameters, tilesetModel, width, height, accentTerrain, accentDensity, seed,
-                tilesetProfile.PrimaryOpenTerrain, tilesetProfile.FeatureTiles, featureDensity);
+                tilesetProfile.PrimaryOpenTerrain, tilesetProfile.FeatureTiles, tilesetProfile.SetPieces, featureDensity);
             _lastResult = result;
 
             RenderPreview();

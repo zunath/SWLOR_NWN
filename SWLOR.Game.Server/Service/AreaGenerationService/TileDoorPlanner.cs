@@ -131,6 +131,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (HasAnyCrosserEdge(layout.Crossers, roomEdge) || HasAnyCrosserEdge(layout.Crossers, solid))
                         continue;
 
+                    // LayoutGroupStamper-pinned cells are placed verbatim by TileResolver; a
+                    // transition door must never overwrite one.
+                    if (layout.PinnedTiles.ContainsKey(roomEdge) || layout.PinnedTiles.ContainsKey(solid))
+                        continue;
+
                     candidates.Add((roomEdge, solid, edgeFromCell, edgeBack));
                 }
             }

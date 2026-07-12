@@ -36,6 +36,7 @@ namespace SWLOR.ContentBuilder.Services
             int seed,
             string openTerrainOverride = "",
             Dictionary<string, int> featureTiles = null,
+            Dictionary<string, int> setPieces = null,
             double featureDensity = 0.05)
         {
             var lastFailure = "no attempts made";
@@ -58,11 +59,13 @@ namespace SWLOR.ContentBuilder.Services
                 // the only user-tunable knob (Advanced > Feature Density slider).
                 parameters.FeatureTiles = featureTiles ?? new Dictionary<string, int>();
                 parameters.FeatureDensity = featureDensity;
+                // Set pieces likewise ride the tileset profile with no dedicated UI.
+                parameters.SetPieces = setPieces ?? new Dictionary<string, int>();
 
                 MacroLayout macro;
                 try
                 {
-                    macro = MacroLayoutGenerator.Generate(parameters, random);
+                    macro = MacroLayoutGenerator.Generate(parameters, random, tileset);
                     macro.Seed = trySeed;
                 }
                 catch (InvalidOperationException ex)

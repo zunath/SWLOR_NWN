@@ -221,6 +221,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             foreach (var room in instance.Layout.Rooms)
             {
+                // LayoutGroupStamper set-piece rooms (WallRooms) are walkable only via their own
+                // baked model walkmesh, not the abstract tile grid this placer reasons about; never
+                // spawn ambient creatures, bosses, or treasure inside one.
+                if (room.IsSetPiece)
+                    continue;
+
                 switch (room.Role)
                 {
                     case RoomRole.Standard:

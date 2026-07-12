@@ -84,6 +84,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// time and silently drops any that fail rather than trusting this list blindly.
         /// </summary>
         public Dictionary<string, int> FeatureTiles { get; set; } = new();
+
+        /// <summary>
+        /// Tileset "group" set pieces (wall-bounded rooms hanging off Tunnel corridors, or floor-level
+        /// decorative pieces dropped into open room interiors) this tileset offers, keyed by the .set
+        /// [GROUPn] Name with a max-instances-per-area count. Empty = no set pieces configured for
+        /// this tileset. LayoutGroupStamper re-verifies each name's structural eligibility (shape,
+        /// corners, crossers) at stamp time rather than trusting this list blindly.
+        /// </summary>
+        public Dictionary<string, int> SetPieces { get; set; } = new();
     }
 
     /// <summary>
@@ -162,9 +171,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (parameters.AccentTerrain.Length == 0)
                 parameters.AccentDensity = 0;
             parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, Tileset.MinimumOpeningWidth);
-            // Shared reference is fine: FeatureTiles is never mutated after a tileset profile is
-            // built, only read by the resolver.
+            // Shared reference is fine: FeatureTiles/SetPieces are never mutated after a tileset
+            // profile is built, only read by the resolver/stamper.
             parameters.FeatureTiles = Tileset.FeatureTiles;
+            parameters.SetPieces = Tileset.SetPieces;
             return parameters;
         }
     }
@@ -412,6 +422,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder FeatureTile(string groupName, int weight = 1)
         {
             _active.FeatureTiles[groupName] = weight;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a tileset "group" set piece (a WallRoom hanging off a Tunnel corridor, or an
+        /// OpenSetPiece dropped into open room space) with a max-instances-per-area count (default 1).
+        /// LayoutGroupStamper re-verifies the named group's structural eligibility at stamp time
+        /// rather than trusting this call blindly.
+        /// </summary>
+        public DungeonTilesetProfileBuilder SetPiece(string groupName, int maxPerArea = 1)
+        {
+            _active.SetPieces[groupName] = maxPerArea;
             return this;
         }
 

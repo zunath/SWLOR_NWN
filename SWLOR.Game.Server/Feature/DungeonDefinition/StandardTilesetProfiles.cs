@@ -30,7 +30,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FeatureTile("Treasure02", 2)
                 .FeatureTile("Pillar01")
                 .FeatureTile("Pillar02")
-                .FeatureTile("Hot_Springs");
+                .FeatureTile("Hot_Springs")
+                .SetPiece("Platform01_2x3")
+                .SetPiece("Platform02_2x2")
+                .SetPiece("Pillar_1x2", 2)
+                .SetPiece("WallSection01_1x2")
+                .SetPiece("WallSection02_1x2");
 
             // Sewers (reference: veles_sewers). Pit channel accents fully covered.
             // Feature tiles: tds01 open ('Floor') 1x1 groups (Portal/Chessboard deliberately excluded).
@@ -44,7 +49,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FeatureTile("Pillar01")
                 .FeatureTile("Pillar02")
                 .FeatureTile("Pillar03")
-                .FeatureTile("Camp");
+                .FeatureTile("Camp")
+                .SetPiece("Platform01_2x2")
+                .SetPiece("Platform02_2x2")
+                .SetPiece("Pillar_1x2", 2)
+                .SetPiece("WallSection01_2x1")
+                .SetPiece("WallSection02_2x1")
+                .SetPiece("CampWall");
 
             // Sci-Fi Base (reference: czs220_maintlvl). No accent coverage. Every partially-open
             // corner combo on zsf01 carries a movement-restricted pathnode (H/I) — only fully-open
@@ -56,7 +67,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .MinimumOpeningWidth(2)
                 // zsf01's declared floor ("Floor2") has a single fully-open tile; 'floor' is the
                 // terrain czs220_maintlvl builds its rooms from (3 diagonal variants + doorway tiles).
-                .PrimaryOpenTerrain("floor");
+                .PrimaryOpenTerrain("floor")
+                .SetPiece("Cell", 2)
+                .SetPiece("Room", 2)
+                .SetPiece("Bedroom")
+                .SetPiece("2x1Room")
+                .SetPiece("Transiton");
 
             // Alien Ruin (reference: korr_crypt_zil). Chasm lacks coverage — no accents.
             // 'Plaza' carries 11 fully-open tile variants vs 4 on the declared 'Floor'.
@@ -76,7 +92,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FeatureTile("Exterior Pillar 1")
                 .FeatureTile("Exterior Pillar 2")
                 .FeatureTile("Exterior Dais 1")
-                .FeatureTile("Exterior Dais 2");
+                .FeatureTile("Exterior Dais 2")
+                // InteriorMosaic_2x2 is deliberately excluded: its corners are 'Floor', not 'Plaza',
+                // so it never structurally matches this profile's open terrain (verified offline).
+                .SetPiece("Amphitheater_2x2")
+                .SetPiece("Mosaic_Plaza_2x2")
+                .SetPiece("ExteriorWalkway_2x2")
+                .SetPiece("Exterior Platform 2x2");
 
             return _builder.Build();
         }

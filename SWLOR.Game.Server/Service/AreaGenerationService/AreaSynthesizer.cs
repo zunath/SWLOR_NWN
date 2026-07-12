@@ -91,6 +91,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (room.Id == entrance.Id)
                     continue;
 
+                // LayoutGroupStamper set-piece rooms (WallRooms) sit on fully-solid corner cells and
+                // are entered via their own baked model walkmesh, not the abstract tile path graph
+                // this check reasons about (their pathnodes are often not 'A') — skip them.
+                if (room.IsSetPiece)
+                    continue;
+
                 var end = TileCenterPosition(area, room.CenterTile.X, room.CenterTile.Y);
                 if (!AreaPlugin.GetPathExists(area, start, end, maxDepth))
                 {

@@ -63,6 +63,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("CampWall")
                 .SetPiece("BigDoor01", 1)
                 .SetPiece("BigDoor02", 1)
+                // Fence gate: LayoutGroupStamper's CorridorInsert classifier splices one of these into
+                // a straight Fence run LayoutFenceCarver carves (see StandardLayoutProfiles.Warren,
+                // this tileset's production layout pairing); a no-op when no Fence run exists.
+                .SetPiece("FenceDoor01", 1)
+                .SetPiece("FenceDoor02", 1)
                 .ExitGroup("Exit01")
                 .ExitGroup("Exit02");
 
@@ -109,6 +114,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("ExteriorWalkway_2x2")
                 .SetPiece("Exterior Platform 2x2")
                 .SetPiece("InteriorHallDoor", 1)
+                // Fence/Alley gates: LayoutGroupStamper's CorridorInsert classifier splices one of
+                // these into a straight Fence run (LayoutFenceCarver) or Alley tunnel segment
+                // (LayoutTunnelCarver with CorridorCrosserType.Alley, see
+                // StandardLayoutProfiles.Streets); a no-op unless that run/mode is actually used.
+                .SetPiece("InteriorFenceDoor", 1)
+                .SetPiece("ExteriorFenceDoor", 1)
+                .SetPiece("BigDoorAlley", 1)
                 .ExitGroup("ExteriorExit01")
                 .ExitGroup("ExteriorExit02");
 

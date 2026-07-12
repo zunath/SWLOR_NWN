@@ -120,6 +120,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     }
 
     /// <summary>
+    /// Which crosser vocabulary Tunnel-mode corridors carve. Corridor (default) is the classic
+    /// wall-embedded facility tunnel: a Corridor-edge body chain entering rooms through Doorway-edge
+    /// ports (see LayoutTunnelCarver). Alley reuses the identical port/BFS/chain mechanics but carves
+    /// vmr01's exterior "alley" crosser instead -- verified offline against vmr01 .set data, a single
+    /// crosser name serves both the tunnel body (TILE221, all-solid straight pair) AND the room-facing
+    /// port (TILE210, Plaza-cornered with the crosser on the solid side) -- there is no separate
+    /// Doorway-equivalent the way Corridor mode has. Ignored unless CorridorMode is Tunnel.
+    /// </summary>
+    public enum CorridorCrosserType
+    {
+        Corridor = 0,
+        Alley = 1
+    }
+
+    /// <summary>
     /// A tunnel segment connecting two open regions through solid cells. Recorded by layout styles
     /// carving in Tunnel mode so geodesic passes (role assignment) can traverse connections that do
     /// not exist in the open-corner graph.
@@ -317,6 +332,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public CorridorMode CorridorMode { get; set; } = CorridorMode.OpenLane;
 
         /// <summary>
+        /// Crosser vocabulary Tunnel-mode corridors carve. See <see cref="CorridorCrosserType"/>.
+        /// Ignored unless CorridorMode is Tunnel; the default Corridor value is fully back-compat.
+        /// </summary>
+        public CorridorCrosserType CorridorCrosserType { get; set; } = CorridorCrosserType.Corridor;
+
+        /// <summary>
         /// Fraction of additional connections carved beyond the spanning tree (0 = tree only).
         /// Loops make layouts feel like real areas instead of dead-end branches.
         /// </summary>
@@ -344,6 +365,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// verify coverage before enabling (see LayoutAccentChannelCarver).
         /// </summary>
         public int AccentChannels { get; set; } = 0;
+
+        /// <summary>
+        /// Number of linear Fence edge-crosser lines carved through open room interiors (e.g. a
+        /// fenced-off maintenance yard divider in tds01 Sewers, or a courtyard partition in vmr01).
+        /// Unlike AccentChannels, a fence line never repaints corner terrain -- every corner on both
+        /// sides stays this layout's own open terrain the whole time -- so it needs no TunnelLink, but
+        /// that also means the shared corner-graph connectivity check can't see a Fence barrier either
+        /// (both sides still read as plain open corners). LayoutFenceCarver instead runs its own
+        /// cell-level tentative-commit/verify/revert check (mirroring LayoutAccentChannelCarver's own
+        /// pattern) before keeping any run. 0 = none (default; back-compat). Requires the tileset to
+        /// carry Fence-edge vocabulary for the current
+        /// OpenTerrain -- LayoutFenceCarver probes TileResolver.HasCandidate at carve time and
+        /// silently no-ops when absent (e.g. tdt01, zsf01), so this is safe to enable on any
+        /// tileset/profile pairing without per-tileset configuration.
+        /// </summary>
+        public int FenceLines { get; set; } = 0;
 
         /// <summary>Arrival points assigned to rooms (1..3). The first is the primary anchor.</summary>
         public int EntranceCount { get; set; } = 1;

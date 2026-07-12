@@ -33,6 +33,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     {
         private const string DoorwayCrosser = "Doorway";
         private const string CorridorCrosser = "Corridor";
+        private const string FenceCrosser = "Fence";
+        private const string AlleyCrosser = "Alley";
+
+        /// <summary>
+        /// Crosser names TryClassifyCorridorInsert checks a 1x1 group's tile against, in priority
+        /// order. Corridor/Alley inserts (BigDoor01/02, BigDoorAlley) sit on fully solid corners, the
+        /// same wall-embedded tunnel body Corridor/Alley chains carve; Fence inserts (FenceDoor01/02,
+        /// Interior/ExteriorFenceDoor) sit on this layout's own open terrain, matching
+        /// LayoutFenceCarver's fully-open fence run.
+        /// </summary>
+        private static readonly string[] CorridorInsertCrossers = { CorridorCrosser, AlleyCrosser, FenceCrosser };
 
         // Slot -> (Dx, Dy) step to the neighboring cell across that edge. Matches EdgeSlot's
         // Top=0/Right=1/Bottom=2/Left=3 ordering and the "Top is the +Y (north) side" convention
@@ -60,6 +71,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             /// WallRoom only.
             /// </summary>
             public List<(int Row, int Col, int Slot)> PerimeterDoorways;
+
+            /// <summary>
+            /// CorridorInsert only: which crosser name ("Corridor", "Alley", or "Fence") the straight
+            /// segment this group's tile fits into carries. Selects which crosser
+            /// TryPlaceCorridorInsert searches the layout for and which terrain (solid or open) the
+            /// candidate cell must have.
+            /// </summary>
+            public string InsertCrosser;
         }
 
         internal static void Stamp(MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset, System.Random random)
@@ -222,10 +241,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         }
 
         /// <summary>
-        /// Classifies a 1x1 group as a CorridorInsert: all corners solid, and edges carry exactly one
-        /// opposite pair of Corridor crossers (Top+Bottom or Left+Right) with the other two edges
-        /// blank — anything else (a Doorway edge, a third crosser, an L/T/X junction pattern) is
-        /// rejected. Matches only a straight tunnel segment, never a junction or room-adapter tile.
+        /// Classifies a 1x1 group as a CorridorInsert: edges carry exactly one opposite pair of a
+        /// single crosser (Top+Bottom or Left+Right) with the other two edges blank — anything else (a
+        /// Doorway edge, a third crosser, an L/T/X junction pattern) is rejected. Matches only a
+        /// straight segment, never a junction or room-adapter tile. Tries Corridor and Alley (solid
+        /// corners, a wall-embedded tunnel gate: BigDoor01/02, BigDoorAlley) before Fence (this
+        /// layout's open terrain, a fence-run gate: FenceDoor01/02, Interior/ExteriorFenceDoor).
         /// </summary>
         private static bool TryClassifyCorridorInsert(TileRecord tile, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
         {
@@ -234,31 +255,47 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
                 tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) return false; // raised
 
-            if (!tile.Corners.All(c => Eq(c, parameters.SolidTerrain))) return false;
+            var allSolid = tile.Corners.All(c => Eq(c, parameters.SolidTerrain));
+            var allOpen = !string.IsNullOrEmpty(parameters.OpenTerrain) && tile.Corners.All(c => Eq(c, parameters.OpenTerrain));
+            if (!allSolid && !allOpen) return false;
 
-            var isCorridor = new bool[4];
-            for (var slot = 0; slot < 4; slot++)
+            foreach (var crosser in CorridorInsertCrossers)
             {
-                var edge = tile.Edges[slot] ?? string.Empty;
-                if (edge.Length == 0) continue;
-                if (!Eq(edge, CorridorCrosser)) return false; // Doorway or any other crosser disqualifies
-                isCorridor[slot] = true;
+                // Corridor/Alley inserts are wall-embedded tunnel gates (solid corners); a Fence
+                // insert is a fence-run gate (this layout's open terrain). Skip whichever terrain
+                // this tile's own corners don't support for that crosser.
+                var terrainMatches = crosser == FenceCrosser ? allOpen : allSolid;
+                if (!terrainMatches) continue;
+
+                var hasCrosser = new bool[4];
+                var edgesMatch = true;
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    var edge = tile.Edges[slot] ?? string.Empty;
+                    if (edge.Length == 0) continue;
+                    if (!Eq(edge, crosser)) { edgesMatch = false; break; } // any other crosser disqualifies this candidate
+                    hasCrosser[slot] = true;
+                }
+                if (!edgesMatch) continue;
+
+                var isVerticalPair = hasCrosser[EdgeSlot.Top] && hasCrosser[EdgeSlot.Bottom] &&
+                                      !hasCrosser[EdgeSlot.Left] && !hasCrosser[EdgeSlot.Right];
+                var isHorizontalPair = hasCrosser[EdgeSlot.Left] && hasCrosser[EdgeSlot.Right] &&
+                                        !hasCrosser[EdgeSlot.Top] && !hasCrosser[EdgeSlot.Bottom];
+                if (!isVerticalPair && !isHorizontalPair) continue;
+
+                classified = new ClassifiedGroup
+                {
+                    Group = group,
+                    Members = new List<GroupMember> { new GroupMember { LocalRow = 0, LocalCol = 0, Tile = tile } },
+                    Kind = GroupKind.CorridorInsert,
+                    PerimeterDoorways = new List<(int, int, int)>(),
+                    InsertCrosser = crosser
+                };
+                return true;
             }
 
-            var isVerticalPair = isCorridor[EdgeSlot.Top] && isCorridor[EdgeSlot.Bottom] &&
-                                  !isCorridor[EdgeSlot.Left] && !isCorridor[EdgeSlot.Right];
-            var isHorizontalPair = isCorridor[EdgeSlot.Left] && isCorridor[EdgeSlot.Right] &&
-                                    !isCorridor[EdgeSlot.Top] && !isCorridor[EdgeSlot.Bottom];
-            if (!isVerticalPair && !isHorizontalPair) return false;
-
-            classified = new ClassifiedGroup
-            {
-                Group = group,
-                Members = new List<GroupMember> { new GroupMember { LocalRow = 0, LocalCol = 0, Tile = tile } },
-                Kind = GroupKind.CorridorInsert,
-                PerimeterDoorways = new List<(int, int, int)>()
-            };
-            return true;
+            return false;
         }
 
         // ---------------- CorridorInsert ----------------
@@ -274,6 +311,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified, System.Random random)
         {
             var tile = classified.Members[0].Tile;
+            var crosser = classified.InsertCrosser;
             var corners = layout.Corners;
             var crossers = layout.Crossers;
             var width = corners.Width;
@@ -289,8 +327,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var cell = (X: x, Y: y);
                     if (layout.PinnedTiles.ContainsKey(cell)) continue;
                     if (transitionTiles.Contains(cell)) continue;
-                    if (!IsFullySolidCell(corners, cell, parameters.SolidTerrain)) continue;
-                    if (!IsStraightCorridorCell(crossers, cell, out _)) continue;
+
+                    // Corridor/Alley inserts sit on a fully solid cell (wall-embedded tunnel body); a
+                    // Fence insert sits on a fully open cell (a gate spliced into an open fence run).
+                    var terrainOk = crosser == FenceCrosser
+                        ? IsFullyOpenCell(corners, cell, parameters.OpenTerrain)
+                        : IsFullySolidCell(corners, cell, parameters.SolidTerrain);
+                    if (!terrainOk) continue;
+
+                    if (!IsStraightCorridorCell(crossers, cell, crosser, out _)) continue;
 
                     candidates.Add(cell);
                 }
@@ -300,7 +345,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             foreach (var cell in candidates)
             {
-                IsStraightCorridorCell(crossers, cell, out var isVertical);
+                IsStraightCorridorCell(crossers, cell, crosser, out var isVertical);
 
                 for (var orientation = 0; orientation < 4; orientation++)
                 {
@@ -310,8 +355,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var oLeft = tile.GetEdgeAt(orientation, EdgeSlot.Left);
 
                     var matches = isVertical
-                        ? Eq(oTop, CorridorCrosser) && Eq(oBottom, CorridorCrosser) && (oLeft ?? "").Length == 0 && (oRight ?? "").Length == 0
-                        : Eq(oLeft, CorridorCrosser) && Eq(oRight, CorridorCrosser) && (oTop ?? "").Length == 0 && (oBottom ?? "").Length == 0;
+                        ? Eq(oTop, crosser) && Eq(oBottom, crosser) && (oLeft ?? "").Length == 0 && (oRight ?? "").Length == 0
+                        : Eq(oLeft, crosser) && Eq(oRight, crosser) && (oTop ?? "").Length == 0 && (oBottom ?? "").Length == 0;
 
                     if (!matches) continue;
 
@@ -324,19 +369,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         }
 
         /// <summary>
-        /// True when the cell's crosser plan is exactly one opposite Corridor pair (Top+Bottom or
-        /// Left+Right) with the other two edges blank — a straight tunnel segment, never a junction
-        /// or a room-adapter (Doorway) cell. <paramref name="isVertical"/> is true for Top+Bottom.
+        /// True when the cell's crosser plan is exactly one opposite pair of <paramref name="crosser"/>
+        /// (Top+Bottom or Left+Right) with the other two edges blank — a straight segment, never a
+        /// junction or a room-adapter (Doorway) cell. <paramref name="isVertical"/> is true for Top+Bottom.
         /// </summary>
-        private static bool IsStraightCorridorCell(EdgeCrosserGrid crossers, (int X, int Y) cell, out bool isVertical)
+        private static bool IsStraightCorridorCell(EdgeCrosserGrid crossers, (int X, int Y) cell, string crosser, out bool isVertical)
         {
             var top = crossers.GetEdge(cell.X, cell.Y, EdgeSlot.Top);
             var right = crossers.GetEdge(cell.X, cell.Y, EdgeSlot.Right);
             var bottom = crossers.GetEdge(cell.X, cell.Y, EdgeSlot.Bottom);
             var left = crossers.GetEdge(cell.X, cell.Y, EdgeSlot.Left);
 
-            isVertical = Eq(top, CorridorCrosser) && Eq(bottom, CorridorCrosser) && left.Length == 0 && right.Length == 0;
-            var isHorizontal = Eq(left, CorridorCrosser) && Eq(right, CorridorCrosser) && top.Length == 0 && bottom.Length == 0;
+            isVertical = Eq(top, crosser) && Eq(bottom, crosser) && left.Length == 0 && right.Length == 0;
+            var isHorizontal = Eq(left, crosser) && Eq(right, crosser) && top.Length == 0 && bottom.Length == 0;
 
             return isVertical || isHorizontal;
         }
@@ -566,6 +611,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                    Eq(corners.Labels[cell.X + 1, cell.Y], solidTerrain) &&
                    Eq(corners.Labels[cell.X, cell.Y + 1], solidTerrain) &&
                    Eq(corners.Labels[cell.X + 1, cell.Y + 1], solidTerrain);
+        }
+
+        private static bool IsFullyOpenCell(CornerTerrainGrid corners, (int X, int Y) cell, string openTerrain)
+        {
+            return Eq(corners.Labels[cell.X, cell.Y], openTerrain) &&
+                   Eq(corners.Labels[cell.X + 1, cell.Y], openTerrain) &&
+                   Eq(corners.Labels[cell.X, cell.Y + 1], openTerrain) &&
+                   Eq(corners.Labels[cell.X + 1, cell.Y + 1], openTerrain);
         }
 
         private static bool Eq(string a, string b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.OrdinalIgnoreCase);

@@ -55,6 +55,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             LayoutAccentChannelCarver.CarveChannels(layout, parameters, random);
             LayoutTransitionAssignment.AssignTransitions(layout, parameters, random);
 
+            // Runs after transitions are anchored (so a fence line can avoid them) and before
+            // LayoutGroupStamper, whose CorridorInsert classifier can splice a FenceDoor/BigDoorAlley
+            // group gate into a straight run this pass carves when a tileset profile configures one.
+            LayoutFenceCarver.CarveFences(layout, parameters, tileset, random);
+
             // Runs after transitions are anchored (so set pieces can avoid them) and before invariant
             // validation (so a bad stamp still fails loudly instead of silently corrupting a layout).
             if (tileset != null)

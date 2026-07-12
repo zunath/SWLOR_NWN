@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string Halls = "halls";
         public const string Labyrinth = "labyrinth";
         public const string Complex = "complex";
+        public const string Streets = "streets";
 
         private readonly DungeonLayoutProfileBuilder _builder = new();
 
@@ -53,6 +54,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     // 5-tall chamber, the two possible 4-row windows always include the center row
                     // (verified offline: 0 of 19 candidate windows survived the center-tile exclusion
                     // across sampled seeds). See LayoutAccentChannelCarver and BridgeChannelTests.
+                    // FenceLines is NOT enabled here for the identical reason: a run needs length+2
+                    // cells of contiguous fully-open CELLS along one axis (not corners), and Warren's
+                    // CorridorWidth=1 open lanes are only 1 corner wide — a cell needs both its y and
+                    // y+1 corner rows open to count as fully open, so a 1-wide lane contributes zero
+                    // fully-open cells at all, leaving only the 5-corner-capped chambers (at most 4
+                    // cells per axis) as candidate space (verified offline: 0 placements across 20
+                    // seeds of the shipped Sewers/Warren composition, see FenceAndAlleyTests). See
+                    // StandardLayoutProfiles.Halls for where FenceLines is wired instead.
                 });
 
             // Wall-sharing packed rooms joined by door gaps (reference: facility interiors).
@@ -77,6 +86,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     p.MaxRoomCornerSize = 6;
                     p.CorridorWidth = 2;
                     p.LoopFactor = 0.35;
+                    // Rooms up to 6 corners (5 cells) plus 2-corner-wide open lanes (which, unlike
+                    // Warren's 1-wide lanes, DO contribute fully-open cells along their own length)
+                    // give LayoutFenceCarver's whole-grid scan plenty of candidate space — this is
+                    // AncientRuin's (vmr01) production pairing (see AlienRuinDungeonDefinition), and
+                    // vmr01 has verified Fence vocabulary; a no-op on any tileset without it.
+                    p.FenceLines = 2;
                 });
 
             // Discrete rooms joined by wall-embedded tunnel corridors with doorway junctions
@@ -87,6 +102,29 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 {
                     p.Style = DungeonLayoutStyle.RoomsAndCorridors;
                     p.CorridorMode = CorridorMode.Tunnel;
+                    p.MinRooms = 6;
+                    p.MaxRooms = 9;
+                    p.MinRoomCornerSize = 3;
+                    p.MaxRoomCornerSize = 5;
+                    p.LoopFactor = 0.3;
+                });
+
+            // Exterior city blocks joined by wall-embedded Alley crosser tunnels instead of Corridor
+            // (reference: vmr01 exterior "streets" feel). Identical shape/mechanics to Complex --
+            // discrete plazas joined by wall-embedded tunnels with junction ports -- just carved with
+            // CorridorCrosserType.Alley. Unlike LayoutFenceCarver, LayoutTunnelCarver does not probe
+            // tileset capability itself (Alley edges are labeled purely from corner geometry, the same
+            // as Corridor/Doorway), so this profile is only meant for vmr01, the one generation
+            // tileset with verified Alley vocabulary (see AlleyCorridorTests) -- pairing it with a
+            // tileset lacking Alley tiles would make every generation attempt fail tile resolution and
+            // exhaust the request's retry budget. Additive: no existing profile pairing selects this by
+            // default (see AlienRuinDungeonDefinition, which still defaults to Halls).
+            _builder.Create(Streets, "City Streets")
+                .Configure(p =>
+                {
+                    p.Style = DungeonLayoutStyle.RoomsAndCorridors;
+                    p.CorridorMode = CorridorMode.Tunnel;
+                    p.CorridorCrosserType = CorridorCrosserType.Alley;
                     p.MinRooms = 6;
                     p.MaxRooms = 9;
                     p.MinRoomCornerSize = 3;

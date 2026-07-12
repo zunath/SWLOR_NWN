@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     {
         private const string CorridorCrosser = "Corridor";
         private const string DoorwayCrosser = "Doorway";
+        private const string AlleyCrosser = "Alley";
 
         /// <summary>
         /// A candidate doorway position on a room's wall: the boundary cell straddling the wall
@@ -57,6 +58,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var crossers = layout.Crossers;
             var open = parameters.OpenTerrain;
 
+            // Alley mode carves vmr01's exterior alley crosser for both the tunnel body AND the room
+            // port (verified offline: no separate Doorway-equivalent exists for Alley); Corridor mode
+            // keeps the original two-crosser vocabulary.
+            var isAlley = parameters.CorridorCrosserType == CorridorCrosserType.Alley;
+            var bodyCrosser = isAlley ? AlleyCrosser : CorridorCrosser;
+            var portCrosser = isAlley ? AlleyCrosser : DoorwayCrosser;
+
             var portsA = EnumeratePorts(corners, crossers, roomA, open);
             var portsB = EnumeratePorts(corners, crossers, roomB, open);
             if (portsA.Count == 0 || portsB.Count == 0)
@@ -73,7 +81,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 {
                     if (a.TunnelCell != b.BoundaryCell || b.TunnelCell != a.BoundaryCell) continue;
 
-                    crossers.SetEdge(a.BoundaryCell.X, a.BoundaryCell.Y, a.DoorwaySlot, DoorwayCrosser);
+                    crossers.SetEdge(a.BoundaryCell.X, a.BoundaryCell.Y, a.DoorwaySlot, portCrosser);
                     layout.TunnelLinks.Add(new TunnelLink { CornerA = a.OpenCorner, CornerB = b.OpenCorner, Length = 1 });
                     return true;
                 }
@@ -148,11 +156,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             }
             chain.Reverse(); // startPort.TunnelCell ... goalPort.TunnelCell
 
-            crossers.SetEdge(startPort.BoundaryCell.X, startPort.BoundaryCell.Y, startPort.DoorwaySlot, DoorwayCrosser);
-            crossers.SetEdge(goalPort.BoundaryCell.X, goalPort.BoundaryCell.Y, goalPort.DoorwaySlot, DoorwayCrosser);
+            crossers.SetEdge(startPort.BoundaryCell.X, startPort.BoundaryCell.Y, startPort.DoorwaySlot, portCrosser);
+            crossers.SetEdge(goalPort.BoundaryCell.X, goalPort.BoundaryCell.Y, goalPort.DoorwaySlot, portCrosser);
 
             for (var i = 0; i + 1 < chain.Count; i++)
-                SetSharedEdge(crossers, chain[i], chain[i + 1], CorridorCrosser);
+                SetSharedEdge(crossers, chain[i], chain[i + 1], bodyCrosser);
 
             layout.TunnelLinks.Add(new TunnelLink
             {

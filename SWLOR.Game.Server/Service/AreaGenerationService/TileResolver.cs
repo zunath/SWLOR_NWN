@@ -6,11 +6,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     /// <summary>
     /// Resolves a corner-granularity <see cref="MacroLayout"/> into concrete (tileId, orientation) picks
     /// from a <see cref="TilesetModel"/>'s tile inventory, matching each tile cell's four world corners
-    /// against the tileset's corner-terrain data (the same corner-matching model the toolset terrain
-    /// brush uses).
+    /// AND four world edges (<see cref="MacroLayout.Crossers"/>) against the tileset's corner-terrain
+    /// and edge-crosser data (the same corner/edge-matching model the toolset terrain brush uses).
     ///
-    /// Scope (v1): only tiles with no edge crossers, no group membership, flat corner heights, and no
-    /// door slots are considered — matching the height/edge/group scope discipline of the layout solver.
+    /// Scope: ungrouped, flat-cornered (CornerHeights all 0) tiles only. Within that scope, a tile is a
+    /// candidate when it is either (a) crosser-free and door-free — the full v1 tile set, unchanged —
+    /// or (b) has at least one edge crosser. Crosser tiles that ALSO carry door slots are only ever
+    /// registered under keys whose edge part contains a Doorway crosser (a door slot implies a door
+    /// frame, so such a tile must never leak into a blank-edge cell); door-slot tiles with no crosser
+    /// at all remain excluded — they are TileDoorPlanner's post-resolution inventory, not the corner
+    /// resolver's.
     /// </summary>
     public static class TileResolver
     {
@@ -43,12 +48,25 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     var br = layout.Corners.Labels[x + 1, y];
                     var bl = layout.Corners.Labels[x, y];
 
-                    var key = MakeKey(tl, tr, br, bl);
+                    var top = layout.Crossers.GetEdge(x, y, EdgeSlot.Top);
+                    var right = layout.Crossers.GetEdge(x, y, EdgeSlot.Right);
+                    var bottom = layout.Crossers.GetEdge(x, y, EdgeSlot.Bottom);
+                    var left = layout.Crossers.GetEdge(x, y, EdgeSlot.Left);
+
+                    var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
 
                     if (!candidateLookup.TryGetValue(key, out var candidates) || candidates.All.Count == 0)
                     {
+                        var edgeNote = string.Empty;
+                        if (!string.IsNullOrEmpty(top) || !string.IsNullOrEmpty(right) ||
+                            !string.IsNullOrEmpty(bottom) || !string.IsNullOrEmpty(left))
+                        {
+                            edgeNote =
+                                $" Edges: Top={Describe(top)}, Right={Describe(right)}, Bottom={Describe(bottom)}, Left={Describe(left)}.";
+                        }
+
                         failureReason =
-                            $"No matching tile for cell ({x},{y}): TL={tl}, TR={tr}, BR={br}, BL={bl}.";
+                            $"No matching tile for cell ({x},{y}): TL={tl}, TR={tr}, BR={br}, BL={bl}.{edgeNote}";
                         resolved = null;
                         return false;
                     }
@@ -88,13 +106,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
-        /// Builds a lookup from a case-insensitive (TL, TR, BR, BL) corner-label key to every
-        /// (tileId, orientation) candidate satisfying the v1 resolution rules. Built once per resolve
+        /// Builds a lookup from a case-insensitive (TL, TR, BR, BL, Top, Right, Bottom, Left) key to
+        /// every (tileId, orientation) candidate satisfying the resolution rules. Built once per resolve
         /// call rather than scanning all tiles per cell.
         ///
-        /// Rotation permutes a tile's fixed Corners/Edges/CornerHeights arrays, so "all edges empty" /
-        /// "all corner heights zero" are rotation-invariant — they're checked once on the raw arrays
-        /// rather than once per orientation.
+        /// Rotation permutes a tile's fixed Corners/Edges/CornerHeights arrays, so "all corner heights
+        /// zero" and "has any crosser at all" are rotation-invariant — checked once on the raw arrays
+        /// rather than once per orientation. Back-compat with the pre-crosser resolver is by
+        /// construction: a crosser-free, door-free tile's oriented edge tuple is "","","","" under every
+        /// orientation (rotating four blanks yields four blanks), so it only ever registers under a key
+        /// whose edge part is fully blank — exactly the set, order, and per-key grouping the v1 resolver
+        /// produced before edges existed in the key. A tile with HasAnyCrosser true can never rotate to
+        /// an all-blank edge tuple (rotation only permutes the existing non-blank value(s), it can't
+        /// erase them), so it can never appear under a fully-blank-edge key and therefore never disturbs
+        /// the blank-edge candidate pools crosser-free layouts resolve against.
         /// </summary>
         private class CandidateSet
         {
@@ -109,10 +134,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             foreach (var tile in tileset.Tiles)
             {
                 if (tile.GroupIndex != -1) continue;
-                if (tile.Doors.Count != 0) continue;
-                if (tile.HasAnyCrosser) continue;
                 if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
                     tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) continue;
+
+                var hasCrosser = tile.HasAnyCrosser;
+                var hasDoors = tile.Doors.Count != 0;
+
+                // Door-slot tiles with no crosser at all stay excluded: they're TileDoorPlanner's
+                // inventory (a bare door slot with no matching Doorway crosser can't be corner/edge
+                // matched into a generic cell).
+                if (hasDoors && !hasCrosser) continue;
 
                 var fullyPathable = string.Equals(tile.PathNode, "A", StringComparison.OrdinalIgnoreCase);
 
@@ -123,7 +154,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     var br = tile.GetCornerAt(orientation, CornerSlot.BottomRight);
                     var bl = tile.GetCornerAt(orientation, CornerSlot.BottomLeft);
 
-                    var key = MakeKey(tl, tr, br, bl);
+                    var top = tile.GetEdgeAt(orientation, EdgeSlot.Top);
+                    var right = tile.GetEdgeAt(orientation, EdgeSlot.Right);
+                    var bottom = tile.GetEdgeAt(orientation, EdgeSlot.Bottom);
+                    var left = tile.GetEdgeAt(orientation, EdgeSlot.Left);
+
+                    // A crosser tile that also has door slots may only be registered under keys whose
+                    // edge part carries a Doorway crosser somewhere — a door slot implies a door frame,
+                    // so it must never leak into a cell that doesn't expect a doorway.
+                    if (hasCrosser && hasDoors)
+                    {
+                        var hasDoorwayEdge =
+                            IsDoorway(top) || IsDoorway(right) || IsDoorway(bottom) || IsDoorway(left);
+                        if (!hasDoorwayEdge) continue;
+                    }
+
+                    var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
 
                     if (!lookup.TryGetValue(key, out var set))
                     {
@@ -140,14 +186,50 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             return lookup;
         }
 
-        private static string MakeKey(string tl, string tr, string br, string bl)
+        private static bool IsDoorway(string edge)
         {
-            return string.Join(
+            return string.Equals(edge, "Doorway", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string Describe(string edge)
+        {
+            return string.IsNullOrEmpty(edge) ? "-" : edge;
+        }
+
+        private static string MakeKey(string tl, string tr, string br, string bl, string top, string right, string bottom, string left)
+        {
+            var cornerPart = string.Join(
                 "|",
                 (tl ?? string.Empty).ToUpperInvariant(),
                 (tr ?? string.Empty).ToUpperInvariant(),
                 (br ?? string.Empty).ToUpperInvariant(),
                 (bl ?? string.Empty).ToUpperInvariant());
+
+            var edgePart = string.Join(
+                "|",
+                (top ?? string.Empty).ToUpperInvariant(),
+                (right ?? string.Empty).ToUpperInvariant(),
+                (bottom ?? string.Empty).ToUpperInvariant(),
+                (left ?? string.Empty).ToUpperInvariant());
+
+            return cornerPart + "‖" + edgePart;
+        }
+
+        /// <summary>
+        /// Test/tooling hook: true if the tileset has at least one (tileId, orientation) candidate for
+        /// the given corner+edge combination under the same rules <see cref="TryResolve"/> uses. Builds
+        /// the lookup fresh each call — not for use in hot per-cell resolution.
+        /// </summary>
+        public static bool HasCandidate(
+            TilesetModel tileset,
+            string tl, string tr, string br, string bl,
+            string top, string right, string bottom, string left)
+        {
+            if (tileset == null) throw new ArgumentNullException(nameof(tileset));
+
+            var lookup = BuildCandidateLookup(tileset);
+            var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
+            return lookup.TryGetValue(key, out var set) && set.All.Count > 0;
         }
     }
 }

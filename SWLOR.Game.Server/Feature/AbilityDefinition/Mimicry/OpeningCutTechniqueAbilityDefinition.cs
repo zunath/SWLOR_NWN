@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Opening Cut")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.OpeningCut, 3, 2, typeof(RendingInstinctStatusEffect));
+                .MimicryTrait(FeatType.OpeningCut, 3, 2, typeof(OpeningInstinctStatusEffect));
 
             return _builder.Build();
         }

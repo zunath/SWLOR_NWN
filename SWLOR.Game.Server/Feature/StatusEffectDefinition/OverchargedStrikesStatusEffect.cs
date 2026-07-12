@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public OverchargedStrikesStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtShockChance] = 20;
+            StatGroup.Stats[StatType.DamageDealtShockChance] = 18;
         }
     }
 }

@@ -57,7 +57,42 @@ Cooldowns are banded by tier and shape (higher tiers and area techniques recast 
 
 ### Utility / crowd-control techniques
 
-Four techniques deal no direct damage — `Chitin Guard`, `Iron Carapace` (defensive self-buffs), `Savage Roar` (debuff), and `Terrifying Bellow` (AoE fear). Their power is the effect itself, whose magnitude is a fixed, shared status-effect class also used by the source creatures. Per the stat-driven-gameplay rule, those shared magnitudes are **not** re-scaled per-caster (doing so would special-case shared infrastructure and skew NPC balance), so a damage-scaling attribute is meaningless for them. They are instead balanced through the same levers as any utility ability — Stamina cost, cooldown, and effect duration, all normalized to their tier band. Their attribute assignment is retained as thematic metadata only.
+Two active techniques deal no direct damage — `Savage Roar` (debuff) and `Terrifying Bellow` (AoE fear). Their power is the effect itself, whose magnitude is a fixed, shared status-effect class also used by the source creatures. Per the stat-driven-gameplay rule, those shared magnitudes are **not** re-scaled per-caster (doing so would special-case shared infrastructure and skew NPC balance), so a damage-scaling attribute is meaningless for them. They are instead balanced through the same levers as any utility ability — Stamina cost, cooldown, and effect duration, all normalized to their tier band. Their attribute assignment is retained as thematic metadata only.
+
+### Passive trait techniques
+
+Twenty-one techniques are **passive traits** rather than activated abilities. They do not appear on the hotbar, cost no Stamina, and deal no direct damage; equipping one applies a permanent status effect for as long as it occupies a technique slot (see the `IsMimicryTrait` model). Because they are passive, the damage/Stat/STM columns of the per-technique table below do not apply to trait rows — a trait's power *is* its passive effect, listed here.
+
+Each trait grants a **unique** effect, and effect strength scales with tier so a higher-tier trait is always worth more than a lower-tier one (no two traits are interchangeable). Two flavours exist:
+
+- **On-hit procs** — a percent chance for a landed hit to inflict a status effect, scaling roughly T1 = 12%, T2 = 18%, T3 = 24% (with a couple of intentional off-band values to keep same-tier procs of one element distinct).
+- **Flat buffs** — a permanent stat bonus, scaling roughly T1 = +4%, T2 = +6%, T3 = +8%.
+
+Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. The two defensive traits (`Chitin Guard`, `Iron Carapace`) are deliberately given **different** resistance/defense profiles so they are complementary rather than identical.
+
+| Technique | Tier | Slot | Passive trait effect |
+|---|---|---|---|
+| Rending Bite | T1 | 1 | 12% chance to inflict Bleed |
+| Crippling Talons | T1 | 1 | 12% chance to inflict Hemorrhage |
+| Target Lock | T1 | 1 | +4% Accuracy |
+| Bonecrusher Bite | T2 | 2 | 18% chance to inflict Sunder |
+| Chitin Guard | T2 | 2 | +10% Physical Def, +15% Force Def, +20 Fire & Poison Resist |
+| Force Rend | T2 | 2 | +6% Force Attack |
+| Glacial Slime | T2 | 2 | 18% chance to inflict Poison |
+| Hoarfrost Glob | T2 | 2 | 18% chance to inflict Freezing |
+| Iron Carapace | T2 | 2 | +15% Physical Def, +10% Force Def, +25 Trauma, +15 Fire & Poison Resist |
+| Mauling Bite | T2 | 2 | 18% chance to inflict Bleed |
+| Mind Spike | T2 | 2 | +6% Accuracy |
+| Overload Shot | T2 | 2 | 18% chance to inflict Shock |
+| Precision Shot | T2 | 2 | +6% Critical Rate |
+| Rending Carve | T2 | 2 | 18% chance to inflict Hemorrhage |
+| Rime Pounce | T2 | 2 | 15% chance to inflict Freezing |
+| Serrated Slash | T2 | 2 | 20% chance to inflict Bleed |
+| Tactical Mark | T2 | 2 | +6% Attack |
+| Essence Scar | T3 | 2 | +8% Force Attack |
+| Force Sunder | T3 | 2 | 24% chance to inflict Sunder |
+| Opening Cut | T3 | 2 | 24% chance to inflict Bleed |
+| Rangefinder Shot | T3 | 2 | +8% Accuracy |
 
 ### Hard crowd-control durations
 
@@ -68,6 +103,8 @@ Effects copied from creatures carried creature-length durations that are oppress
 The slot budget is the primary limiter on simultaneous power, since a player can freely swap techniques out of combat and cheaply learns the entire pool. Combat Analyzer grants **2** slots; Analyzer Memory adds **+1 per rank** (3 ranks) for a maximum of **5**. With slot costs of 1–3 (rising with tier), a fully-invested analyst runs roughly 2–3 techniques at once — a deliberate jack-of-all-trades kit that must be tailored per encounter rather than a standing library of every effect.
 
 ### Full per-technique table
+
+> Note: the 21 passive traits listed in *Passive trait techniques* above are included below for tier/stat provenance, but their **Base Dmg** and **STM** figures are historical (from when they were active abilities) and no longer apply — traits are passive, cost no Stamina, and deal no direct damage. Use the trait table for their live values.
 
 | Technique | Tier | Stat | Base Dmg | STM |
 |---|---|---|---|---|

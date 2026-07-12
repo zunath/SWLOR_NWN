@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public BattleFocusStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 3;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = 6;
         }
     }
 }

@@ -1363,6 +1363,7 @@ namespace SWLOR.Game.Server.Service
             (StatType.DamageDealtShockChance, typeof(ShockStatusEffect), CombatDamageType.Electrical, 10f),
             (StatType.DamageDealtSunderChance, typeof(SunderStatusEffect), CombatDamageType.Physical, 14f),
             (StatType.DamageDealtHemorrhageChance, typeof(HemorrhageStatusEffect), CombatDamageType.Physical, 12f),
+            (StatType.DamageDealtPoisonChance, typeof(PoisonStatusEffect), CombatDamageType.Poison, 12f),
         };
 
         private static void ApplyDamageDealtMimicryTraitProcs(uint attacker, uint defender)

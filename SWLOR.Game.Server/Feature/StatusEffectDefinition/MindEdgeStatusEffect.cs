@@ -7,14 +7,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     /// <summary>
     /// Passive effect applied while its Mimicry trait technique is equipped. Grants a flat offensive bonus.
     /// </summary>
-    public sealed class LethalAimStatusEffect : StatusEffectBase
+    public sealed class MindEdgeStatusEffect : StatusEffectBase
     {
-        public override string Name => "Lethal Aim";
+        public override string Name => "Mind Edge";
         public override EffectIconType Icon => EffectIconType.Invalid;
 
-        public LethalAimStatusEffect()
+        public MindEdgeStatusEffect()
         {
-            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 6;
+            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 6;
         }
     }
 }

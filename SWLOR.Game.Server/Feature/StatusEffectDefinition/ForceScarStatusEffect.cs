@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ForceScarStatusEffect()
         {
-            StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = 4;
+            StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = 8;
         }
     }
 }

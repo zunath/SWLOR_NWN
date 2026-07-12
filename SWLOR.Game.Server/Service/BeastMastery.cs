@@ -115,6 +115,11 @@ namespace SWLOR.Game.Server.Service
             return _beasts[type];
         }
 
+        public static IEnumerable<BeastType> GetAllBeastTypes()
+        {
+            return _beasts.Keys.ToList();
+        }
+
         public static BeastRoleAttribute GetBeastRoleDetail(BeastRoleType type)
         {
             return _beastRoles[type];
@@ -792,6 +797,13 @@ namespace SWLOR.Game.Server.Service
 
             var mutation = DetermineMutation(job.BeastDNAType, job);
             var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
+
+            // A successful mutation reveals the field note for the beast the player just produced,
+            // documenting every way to incubate it. No-op if already owned.
+            if (mutation != BeastType.Invalid)
+            {
+                IncubationFieldNote.GrantDiscoveredNote(player, mutation);
+            }
 
             var itemProperties = new List<ItemProperty>
             {

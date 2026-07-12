@@ -17,20 +17,6 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class IncubationFieldNote
     {
-        public class FieldNoteDetail
-        {
-            public BeastType Target { get; }
-            public KeyItemType Note { get; }
-            public FieldNoteAcquisitionType Acquisition { get; }
-
-            public FieldNoteDetail(BeastType target, KeyItemType note, FieldNoteAcquisitionType acquisition)
-            {
-                Target = target;
-                Note = note;
-                Acquisition = acquisition;
-            }
-        }
-
         private readonly record struct ProductionMethod(BeastType Source, List<IMutationRequirement> Requirements);
 
         private static readonly Dictionary<BeastType, FieldNoteDetail> _notesByTarget = new();

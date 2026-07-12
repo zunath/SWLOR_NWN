@@ -552,6 +552,10 @@ namespace SWLOR.Game.Server.Native
                 canApplyRandomFlatBonusesThisDamage,
                 out var damageBeforeTargetStatusStage);
 
+            // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force
+            // instance (mitigated by Force resistance, shown as Force) before physical resistance.
+            Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
+
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
             // Apply droid electrical damage bonus

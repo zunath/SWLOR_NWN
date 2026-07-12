@@ -487,6 +487,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 and your racial bonus stat will be refunded. You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
+                // Return the player to a clean state before refunding: drop every stance/status effect and
+                // deactivate all toggled auras so nothing granted by a soon-to-be-refunded perk lingers.
+                StatusEffect.RemoveAllStatusEffects(Player);
+                Ability.ClearAllPlayerAuras(Player);
+
                 UnequipAllItems();
                 RefundAllPerks();
                 ResetFeats();

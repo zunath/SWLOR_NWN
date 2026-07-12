@@ -3711,12 +3711,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Saber Ward (and Aegis Eternal) let a defender treat a percentage of incoming physical damage
-        /// as Force damage so it is mitigated by Force Defense instead of Physical Defense. The physical
-        /// hit's damage roll uses a defense value blended between the defender's Physical Defense and Force
-        /// Defense by that percent, so the converted share is effectively mitigated as Force. The percentage
-        /// is read from <see cref="StatType.IncomingPhysicalToForceConversionPercent"/> on the defender, and
-        /// only physical-category damage is affected. The Force Defense value is resolved lazily because the
+        /// First half of Saber Ward / Aegis Eternal conversion: give the converted share its Force Defense
+        /// mitigation. The physical hit's damage roll uses a defense value blended between the defender's
+        /// Physical Defense and Force Defense by the conversion percent, so the converted share is mitigated
+        /// as Force. The single damage roll is RNG-based and consumes stateful modifiers, so it cannot be run
+        /// twice per hit; blending the defense is how the Force-Defense mitigation is applied without a second
+        /// roll. The re-typing itself — removing the converted share from the physical hit and dealing it as a
+        /// real Force instance (Force resistance, combat-log visibility) — is done afterward by
+        /// <see cref="ApplyIncomingPhysicalToForceConversion"/>. The percentage is read from
+        /// <see cref="StatType.IncomingPhysicalToForceConversionPercent"/> on the defender, and only
+        /// physical-category damage is affected. The Force Defense value is resolved lazily because the
         /// auto-attack and ability damage paths look it up through different (native vs managed) helpers.
         /// </summary>
         public static int ApplyIncomingPhysicalToForceDefenseConversion(
@@ -3735,6 +3739,66 @@ namespace SWLOR.Game.Server.Service
             conversionPercent = Math.Clamp(conversionPercent, 0, 100);
             var forceDefense = forceDefenseProvider();
             return (physicalDefense * (100 - conversionPercent) + forceDefense * conversionPercent) / 100;
+        }
+
+        /// <summary>
+        /// The pure split math for <see cref="ApplyIncomingPhysicalToForceConversion"/>: how much of an
+        /// incoming physical hit is re-typed to Force at the given conversion percent. Rounded to the
+        /// nearest point (away from zero) and never more than the physical damage available.
+        /// </summary>
+        public static int GetIncomingPhysicalToForceConversionPortion(int physicalDamage, int conversionPercent)
+        {
+            if (physicalDamage <= 0)
+                return 0;
+
+            conversionPercent = Math.Clamp(conversionPercent, 0, 100);
+            if (conversionPercent <= 0)
+                return 0;
+
+            var forcePortion = (int)Math.Round(physicalDamage * (conversionPercent / 100f), MidpointRounding.AwayFromZero);
+            return Math.Clamp(forcePortion, 0, physicalDamage);
+        }
+
+        /// <summary>
+        /// Saber Ward (and Aegis Eternal) re-type a percentage of an incoming physical hit into a real
+        /// Force damage instance. The converted share's Force Defense mitigation is already reflected in
+        /// <paramref name="physicalDamage"/> because <see cref="ApplyIncomingPhysicalToForceDefenseConversion"/>
+        /// blends the defense used for the damage roll toward Force Defense by the same percent. This removes
+        /// the converted share from <paramref name="physicalDamage"/> (so it is not also dealt as physical) and
+        /// deals it as Force damage, so it is reduced by the defender's Force resistance and shown as Force in
+        /// the combat log. Runs before the physical-resistance stage; the Force portion is routed through
+        /// <see cref="ApplyTriggeredDamage"/>, which applies Force resistance and the damage-taken pipeline.
+        /// Returns the pre-resistance Force amount split off (0 when nothing converts).
+        /// </summary>
+        public static int ApplyIncomingPhysicalToForceConversion(
+            uint attacker,
+            uint defender,
+            CombatDamageType damageType,
+            ref int physicalDamage)
+        {
+            if (physicalDamage <= 0 || !damageType.IsPhysicalDamageType())
+                return 0;
+
+            var conversionPercent = Stat.GetStatAdjustment(defender, StatType.IncomingPhysicalToForceConversionPercent);
+            var forcePortion = GetIncomingPhysicalToForceConversionPortion(physicalDamage, conversionPercent);
+            if (forcePortion <= 0)
+                return 0;
+
+            physicalDamage -= forcePortion;
+
+            // This method runs inside the native GetDamageRoll hook and the ability damage paths, i.e. while
+            // the current attack's own damage has not yet resolved. Applying a fully dispatched damage event
+            // (ApplyTriggeredDamage) synchronously here re-enters the engine's OnCreatureDamaged / AI / enmity
+            // chain mid-attack and clobbers shared combat state (GetLastDamager / OBJECT_SELF), which caused
+            // runaway reflect cascades and mis-targeted reflects with effects such as Blazing Spikes. Defer the
+            // Force portion to the next frame so it lands as a clean, separate damage instance off the attack's
+            // stack; the physical carve above stays synchronous so the physical hit is correctly reduced.
+            DelayCommand(0.0f, () =>
+            {
+                if (GetIsObjectValid(attacker) && GetIsObjectValid(defender))
+                    ApplyTriggeredDamage(attacker, defender, forcePortion, CombatDamageType.Force);
+            });
+            return forcePortion;
         }
 
         public static int ApplyStatusSourceAccuracyModifiers(uint attacker, uint defender, int accuracy)
@@ -5793,6 +5857,61 @@ namespace SWLOR.Game.Server.Service
             ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);
             StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
             return damage;
+        }
+
+        private const int DeflectingReturnCooldownSeconds = 6;
+
+        /// <summary>
+        /// Pure math for Deflecting Return: reflect <paramref name="reflectPercent"/>% of the deflected
+        /// ranged attack's weapon damage, capped at <paramref name="capPercent"/>% of the deflector's own
+        /// weapon damage. Both damage inputs are the SWLOR weapon DMG values, so they share a scale.
+        /// </summary>
+        public static int GetRangedDeflectionReflectionAmount(
+            int attackWeaponDamage,
+            int reflectPercent,
+            int deflectorWeaponDamage,
+            int capPercent)
+        {
+            if (attackWeaponDamage <= 0 || reflectPercent <= 0)
+                return 0;
+
+            var reflected = attackWeaponDamage * reflectPercent / 100;
+            if (capPercent > 0 && deflectorWeaponDamage > 0)
+                reflected = Math.Min(reflected, deflectorWeaponDamage * capPercent / 100);
+
+            return Math.Max(0, reflected);
+        }
+
+        /// <summary>
+        /// Deflecting Return: when the defender deflects a directly targeted ranged attack, reflect a capped
+        /// share of weapon damage back to the attacker as Force damage. Fires at most once every
+        /// <see cref="DeflectingReturnCooldownSeconds"/> seconds. Reflection amount is driven by the
+        /// <see cref="StatType.RangedDeflectionReflectionPercent"/> / <see cref="StatType.RangedDeflectionReflectionCapPercent"/>
+        /// stats the Deflecting Return / Perfect Aegis perks grant, so it is fully stat-driven.
+        /// </summary>
+        public static void ApplyRangedDeflectionReflection(uint defender, uint attacker, SkillType attackerWeaponSkill)
+        {
+            if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
+                return;
+
+            var reflectPercent = Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionPercent);
+            if (reflectPercent <= 0)
+                return;
+
+            var capPercent = Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionCapPercent);
+            var reflected = GetRangedDeflectionReflectionAmount(
+                GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill),
+                reflectPercent,
+                GetCombatImpactWeaponDamage(defender, SkillType.Lightsaber),
+                capPercent);
+            if (reflected <= 0)
+                return;
+
+            // Consume the shared cooldown only when a hit will actually be reflected.
+            if (!TryUseStatTrigger(defender, StatType.RangedDeflectionReflectionPercent, DeflectingReturnCooldownSeconds))
+                return;
+
+            ApplyTriggeredDamage(defender, attacker, reflected, CombatDamageType.Force);
         }
 
         private static void ApplyGuardiansResolve(uint activator)

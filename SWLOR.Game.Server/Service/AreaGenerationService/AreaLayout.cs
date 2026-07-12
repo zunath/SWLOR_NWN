@@ -219,6 +219,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public bool DoorTransitions { get; set; } = true;
         /// <summary>Effective open-terrain label, carried from parameters for downstream consumers.</summary>
         public string OpenTerrain { get; set; } = string.Empty;
+        /// <summary>Carried from MacroLayoutParameters.FeatureDensity by MacroLayoutGenerator.Generate.</summary>
+        public double FeatureDensity { get; set; } = 0.05;
+        /// <summary>Carried from MacroLayoutParameters.FeatureTiles by MacroLayoutGenerator.Generate.</summary>
+        public Dictionary<string, int> FeatureTiles { get; set; } = new();
 
         public MacroLayout(CornerTerrainGrid corners)
         {
@@ -309,8 +313,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public bool DoorTransitions { get; set; } = true;
 
+        /// <summary>
+        /// Fraction of eligible open cells (see TileResolver) that receive a rare decorative feature
+        /// tile (treasure mounds, pillars, hot springs, ...) instead of a normal open tile.
+        /// </summary>
+        public double FeatureDensity { get; set; } = 0.05;
+
+        /// <summary>
+        /// Feature group name -> relative weight, usually stamped from DungeonTilesetProfile.FeatureTiles
+        /// by DungeonComposition.BuildLayoutParameters. Empty = no feature sprinkling. TileResolver
+        /// re-verifies each name's structural eligibility rather than trusting this list blindly.
+        /// </summary>
+        public Dictionary<string, int> FeatureTiles { get; set; } = new();
+
         public MacroLayoutParameters Clone()
         {
+            // MemberwiseClone shares the FeatureTiles dictionary reference with the original rather
+            // than copying it. That's fine: callers only ever assign this from an immutable
+            // tileset-profile dictionary and never mutate it post-construction.
             return (MacroLayoutParameters)MemberwiseClone();
         }
     }

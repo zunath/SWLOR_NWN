@@ -38,6 +38,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             layout.DoorTransitions = parameters.DoorTransitions;
             layout.OpenTerrain = parameters.OpenTerrain;
+            layout.FeatureDensity = parameters.FeatureDensity;
+            layout.FeatureTiles = parameters.FeatureTiles;
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);

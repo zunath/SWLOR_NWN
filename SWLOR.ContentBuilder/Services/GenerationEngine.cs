@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
 namespace SWLOR.ContentBuilder.Services
@@ -33,7 +34,9 @@ namespace SWLOR.ContentBuilder.Services
             string accentTerrain,
             double accentDensity,
             int seed,
-            string openTerrainOverride = "")
+            string openTerrainOverride = "",
+            Dictionary<string, int> featureTiles = null,
+            double featureDensity = 0.05)
         {
             var lastFailure = "no attempts made";
 
@@ -51,6 +54,10 @@ namespace SWLOR.ContentBuilder.Services
                     : openTerrainOverride;
                 parameters.AccentTerrain = accentTerrain ?? string.Empty;
                 parameters.AccentDensity = string.IsNullOrEmpty(parameters.AccentTerrain) ? 0.0 : accentDensity;
+                // Feature tile SET always comes from the tileset profile (no UI for that); density is
+                // the only user-tunable knob (Advanced > Feature Density slider).
+                parameters.FeatureTiles = featureTiles ?? new Dictionary<string, int>();
+                parameters.FeatureDensity = featureDensity;
 
                 MacroLayout macro;
                 try

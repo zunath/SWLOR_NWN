@@ -34,7 +34,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var height = layout.Corners.Height;
 
             var candidateLookup = BuildCandidateLookup(tileset);
+            var featureLookup = layout.FeatureTiles.Count > 0
+                ? BuildFeatureLookup(tileset, layout.FeatureTiles)
+                : null;
             var tiles = new ResolvedTile[width * height];
+
+            // Cells that have already received a feature tile this resolve, tracked for the spacing
+            // rule (no two features within Chebyshev distance 2 of each other).
+            var placedFeatures = new List<(int X, int Y)>();
 
             // Bottom-up, row-major order — matches ResolvedLayout.Tiles indexing (index = y * Width + x,
             // y = 0 at the south edge). This is also the "first unresolvable cell" order used for
@@ -76,11 +83,77 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     // terrain labels say are open, failing path validation later. Restricted tiles
                     // remain in play only when no 'A' alternative exists for the combination.
                     var pool = candidates.FullyPathable.Count > 0 ? candidates.FullyPathable : candidates.All;
-                    var pick = pool[random.Next(pool.Count)];
+
+                    // Feature sprinkling: only ever rolled when this configuration has feature tiles
+                    // AND this specific cell's key has a matching feature candidate. This ordering is
+                    // load-bearing for determinism/back-compat — when layout.FeatureTiles is empty
+                    // (every caller until a tileset profile stamps it), featureLookup is null and this
+                    // whole block is skipped with zero extra random calls, so existing seeds/tests
+                    // resolve with exactly the pre-feature RNG sequence (one random.Next per cell).
+                    var (tileId, orientation) = (pool[0].TileId, pool[0].Orientation);
+                    var usedNormalPick = false;
+
+                    if (featureLookup != null &&
+                        featureLookup.TryGetValue(key, out var featureSet) &&
+                        featureSet.TotalWeight > 0)
+                    {
+                        var densityRoll = random.NextDouble();
+                        if (densityRoll < layout.FeatureDensity)
+                        {
+                            var featurePick = PickWeighted(featureSet, random);
+
+                            var isTransitionAnchor = false;
+                            foreach (var transition in layout.Transitions)
+                            {
+                                if (transition.Tile.X == x && transition.Tile.Y == y)
+                                {
+                                    isTransitionAnchor = true;
+                                    break;
+                                }
+                            }
+
+                            var tooCloseToAnotherFeature = false;
+                            foreach (var placed in placedFeatures)
+                            {
+                                if (Math.Max(Math.Abs(placed.X - x), Math.Abs(placed.Y - y)) <= 2)
+                                {
+                                    tooCloseToAnotherFeature = true;
+                                    break;
+                                }
+                            }
+
+                            if (isTransitionAnchor || tooCloseToAnotherFeature)
+                            {
+                                usedNormalPick = true;
+                            }
+                            else
+                            {
+                                tileId = featurePick.TileId;
+                                orientation = featurePick.Orientation;
+                                placedFeatures.Add((x, y));
+                            }
+                        }
+                        else
+                        {
+                            usedNormalPick = true;
+                        }
+                    }
+                    else
+                    {
+                        usedNormalPick = true;
+                    }
+
+                    if (usedNormalPick)
+                    {
+                        var pick = pool[random.Next(pool.Count)];
+                        tileId = pick.TileId;
+                        orientation = pick.Orientation;
+                    }
+
                     tiles[y * width + x] = new ResolvedTile
                     {
-                        TileId = pick.TileId,
-                        Orientation = pick.Orientation,
+                        TileId = tileId,
+                        Orientation = orientation,
                         Height = 0
                     };
                 }
@@ -185,6 +258,102 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             }
 
             return lookup;
+        }
+
+        /// <summary>
+        /// One configured feature group's registered candidates: every (tileId, orientation, weight)
+        /// under the corner+edge key(s) its 1x1 tile matches. All entries for a given feature group
+        /// share the same weight (the group's configured weight).
+        /// </summary>
+        private class FeatureCandidateSet
+        {
+            public List<(int TileId, int Orientation, int Weight)> Candidates { get; } = new();
+            public int TotalWeight { get; set; }
+        }
+
+        /// <summary>
+        /// Builds the feature-tile candidate lookup: for each configured (group name, weight) pair,
+        /// resolves the tileset's matching [GROUPn] and re-verifies structural eligibility (1x1, flat,
+        /// doorless, crosser-free, pathnode A) rather than trusting the configured name blindly. A
+        /// name that doesn't resolve to a tileset group, or resolves to a group that fails the
+        /// structural check, is silently skipped — the caller (a tileset profile) may list features
+        /// that don't apply to every tileset, or a group's shape may have changed since the profile
+        /// was written.
+        /// </summary>
+        private static Dictionary<string, FeatureCandidateSet> BuildFeatureLookup(
+            TilesetModel tileset, IReadOnlyDictionary<string, int> featureTiles)
+        {
+            var lookup = new Dictionary<string, FeatureCandidateSet>();
+
+            foreach (var (groupName, weight) in featureTiles)
+            {
+                if (weight <= 0) continue;
+
+                TileGroupRecord group = null;
+                foreach (var candidate in tileset.Groups)
+                {
+                    if (string.Equals(candidate.Name, groupName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        group = candidate;
+                        break;
+                    }
+                }
+
+                if (group == null) continue;
+                if (group.Rows != 1 || group.Columns != 1 || group.TileIds.Count != 1) continue;
+
+                var tileId = group.TileIds[0];
+                if (tileId < 0 || tileId >= tileset.Tiles.Count) continue;
+
+                var tile = tileset.Tiles[tileId];
+
+                if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
+                    tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) continue;
+                if (tile.HasAnyCrosser) continue;
+                if (tile.Doors.Count != 0) continue;
+                if (!string.Equals(tile.PathNode, "A", StringComparison.OrdinalIgnoreCase)) continue;
+
+                for (var orientation = 0; orientation < 4; orientation++)
+                {
+                    var tl = tile.GetCornerAt(orientation, CornerSlot.TopLeft);
+                    var tr = tile.GetCornerAt(orientation, CornerSlot.TopRight);
+                    var br = tile.GetCornerAt(orientation, CornerSlot.BottomRight);
+                    var bl = tile.GetCornerAt(orientation, CornerSlot.BottomLeft);
+
+                    // Structurally eligible group tiles are crosser-free by construction (checked
+                    // above), so their edge tuple is always blank under every orientation.
+                    var key = MakeKey(tl, tr, br, bl, string.Empty, string.Empty, string.Empty, string.Empty);
+
+                    if (!lookup.TryGetValue(key, out var set))
+                    {
+                        set = new FeatureCandidateSet();
+                        lookup[key] = set;
+                    }
+
+                    set.Candidates.Add((tile.TileId, orientation, weight));
+                    set.TotalWeight += weight;
+                }
+            }
+
+            return lookup;
+        }
+
+        /// <summary>Weighted roll over a feature candidate set's entries, consuming one random.Next call.</summary>
+        private static (int TileId, int Orientation) PickWeighted(FeatureCandidateSet set, System.Random random)
+        {
+            var roll = random.Next(set.TotalWeight);
+            var cumulative = 0;
+            foreach (var candidate in set.Candidates)
+            {
+                cumulative += candidate.Weight;
+                if (roll < cumulative)
+                    return (candidate.TileId, candidate.Orientation);
+            }
+
+            // Unreachable given TotalWeight is the sum of all Weight values, but keeps the compiler
+            // and any future refactor honest.
+            var last = set.Candidates[^1];
+            return (last.TileId, last.Orientation);
         }
 
         private static bool IsDoorway(string edge)

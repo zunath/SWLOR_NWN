@@ -59,6 +59,7 @@ namespace SWLOR.ContentBuilder.Windows
         private Slider _loopFactorSlider;
         private Slider _organicFillSlider;
         private Slider _accentDensitySlider;
+        private Slider _featureDensitySlider;
         private TextBox _minRoomsValueBox;
         private TextBox _maxRoomsValueBox;
         private TextBox _minRoomSizeValueBox;
@@ -67,6 +68,7 @@ namespace SWLOR.ContentBuilder.Windows
         private TextBox _loopFactorValueBox;
         private TextBox _organicFillValueBox;
         private TextBox _accentDensityValueBox;
+        private TextBox _featureDensityValueBox;
         private CheckBox _accentCheckBox;
 
         private Slider _entrancesSlider;
@@ -176,6 +178,10 @@ namespace SWLOR.ContentBuilder.Windows
 
             _accentCheckBox = AddCheckBoxRow(overrides, "Accent terrain");
             (_accentDensitySlider, _accentDensityValueBox) = AddSliderRow(overrides, "Accent Density", 1, 20, 5, suffix: "%");
+
+            // Feature tile SET (treasure mounds, pillars, hot springs, ...) always comes from the
+            // tileset profile - only the density is user-tunable here.
+            (_featureDensitySlider, _featureDensityValueBox) = AddSliderRow(overrides, "Feature Density", 0, 15, 5, suffix: "%");
 
             var (_, transitions) = AddGroup(LeftStack, "Transitions");
             (_entrancesSlider, _entrancesValueBox) = AddSliderRow(transitions, "Entrances", 1, 3, 1);
@@ -399,6 +405,7 @@ namespace SWLOR.ContentBuilder.Windows
             WireKnobSlider(_loopFactorSlider, nameof(_loopFactorSlider));
             WireKnobSlider(_organicFillSlider, nameof(_organicFillSlider));
             WireKnobSlider(_accentDensitySlider, nameof(_accentDensitySlider));
+            WireKnobSlider(_featureDensitySlider, nameof(_featureDensitySlider));
             WireKnobSlider(_entrancesSlider, nameof(_entrancesSlider));
             WireKnobSlider(_exitsSlider, nameof(_exitsSlider));
 
@@ -518,6 +525,7 @@ namespace SWLOR.ContentBuilder.Windows
         private void OnTilesetChanged()
         {
             UpdateAccentAvailability();
+            UpdateFeatureAvailability();
             RegeneratePreview();
         }
 
@@ -558,6 +566,7 @@ namespace SWLOR.ContentBuilder.Windows
 
             _overriddenKnobs.Clear();
             UpdateAccentAvailability();
+            UpdateFeatureAvailability();
             LoadLayoutProfileKnobs(SelectedLayoutProfile());
         }
 
@@ -575,6 +584,12 @@ namespace SWLOR.ContentBuilder.Windows
             }
 
             _accentDensitySlider.IsEnabled = supportsAccent && _accentCheckBox.IsChecked == true;
+        }
+
+        private void UpdateFeatureAvailability()
+        {
+            var tileset = SelectedTilesetProfile();
+            _featureDensitySlider.IsEnabled = tileset != null && tileset.FeatureTiles.Count > 0;
         }
 
         private void UpdateOrganicFillEnabled()
@@ -695,6 +710,7 @@ namespace SWLOR.ContentBuilder.Windows
             var accentEnabled = _accentCheckBox.IsChecked == true && !string.IsNullOrEmpty(tilesetProfile.AccentTerrain);
             var accentTerrain = accentEnabled ? tilesetProfile.AccentTerrain : string.Empty;
             var accentDensity = accentEnabled ? _accentDensitySlider.Value / 100.0 : 0.0;
+            var featureDensity = _featureDensitySlider.Value / 100.0;
 
             var width = (int)_widthSlider.Value;
             var height = (int)_heightSlider.Value;
@@ -702,7 +718,7 @@ namespace SWLOR.ContentBuilder.Windows
 
             var result = GenerationEngine.Generate(
                 baseParameters, tilesetModel, width, height, accentTerrain, accentDensity, seed,
-                tilesetProfile.PrimaryOpenTerrain);
+                tilesetProfile.PrimaryOpenTerrain, tilesetProfile.FeatureTiles, featureDensity);
             _lastResult = result;
 
             RenderPreview();

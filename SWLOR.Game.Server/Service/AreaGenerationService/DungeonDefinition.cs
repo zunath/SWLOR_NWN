@@ -75,6 +75,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// variants, and vmr01's 'Plaza' has 11 fully-open variants vs 4 on 'Floor'.
         /// </summary>
         public string PrimaryOpenTerrain { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 1x1 "group" tiles (treasure mounds, pillars, hot springs, ...) this tileset offers as rare
+        /// decorative sprinkles into open room space, keyed by the .set [GROUPn] Name with a relative
+        /// weight. Empty = no feature tiles configured for this tileset. TileResolver re-verifies each
+        /// name's structural eligibility (1x1, flat, doorless, crosser-free, pathnode A) at resolve
+        /// time and silently drops any that fail rather than trusting this list blindly.
+        /// </summary>
+        public Dictionary<string, int> FeatureTiles { get; set; } = new();
     }
 
     /// <summary>
@@ -153,6 +162,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (parameters.AccentTerrain.Length == 0)
                 parameters.AccentDensity = 0;
             parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, Tileset.MinimumOpeningWidth);
+            // Shared reference is fine: FeatureTiles is never mutated after a tileset profile is
+            // built, only read by the resolver.
+            parameters.FeatureTiles = Tileset.FeatureTiles;
             return parameters;
         }
     }
@@ -388,6 +400,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder PrimaryOpenTerrain(string terrainName)
         {
             _active.PrimaryOpenTerrain = terrainName;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a rare decorative "group" tile (treasure mound, pillar, hot spring, ...) this
+        /// tileset can sprinkle into open room space, with a relative weight (default 1; e.g.
+        /// treasure mounds are commonly weighted 2). TileResolver re-verifies the named group's
+        /// structural eligibility at resolve time rather than trusting this call blindly.
+        /// </summary>
+        public DungeonTilesetProfileBuilder FeatureTile(string groupName, int weight = 1)
+        {
+            _active.FeatureTiles[groupName] = weight;
             return this;
         }
 

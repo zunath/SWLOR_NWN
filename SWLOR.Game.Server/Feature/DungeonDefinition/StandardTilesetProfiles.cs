@@ -20,18 +20,31 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public Dictionary<string, DungeonTilesetProfile> BuildTilesetProfiles()
         {
             // Sea Caves (reference: moncaladungeon1). Water accents fully covered.
+            // Feature tiles: tdt01 open ('Floor') 1x1 groups (Portal/Chessboard deliberately excluded).
             _builder.Create(Cavern, "Cavern")
                 .Tileset("tdt01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
-                .AccentTerrain("Water");
+                .AccentTerrain("Water")
+                .FeatureTile("Treasure01", 2)
+                .FeatureTile("Treasure02", 2)
+                .FeatureTile("Pillar01")
+                .FeatureTile("Pillar02")
+                .FeatureTile("Hot_Springs");
 
             // Sewers (reference: veles_sewers). Pit channel accents fully covered.
+            // Feature tiles: tds01 open ('Floor') 1x1 groups (Portal/Chessboard deliberately excluded).
             _builder.Create(Sewers, "Sewers")
                 .Tileset("tds01")
                 .Placeholder("gen_placeholder3")
                 .TileLighting(0, 2, 2, 2)
-                .AccentTerrain("Pit");
+                .AccentTerrain("Pit")
+                .FeatureTile("Treasure01", 2)
+                .FeatureTile("Treasure02", 2)
+                .FeatureTile("Pillar01")
+                .FeatureTile("Pillar02")
+                .FeatureTile("Pillar03")
+                .FeatureTile("Camp");
 
             // Sci-Fi Base (reference: czs220_maintlvl). No accent coverage. Every partially-open
             // corner combo on zsf01 carries a movement-restricted pathnode (H/I) — only fully-open
@@ -47,11 +60,23 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
 
             // Alien Ruin (reference: korr_crypt_zil). Chasm lacks coverage — no accents.
             // 'Plaza' carries 11 fully-open tile variants vs 4 on the declared 'Floor'.
+            // Feature tiles: vmr01's nine curated 1x1 groups (Portal/Chessboard/Mosaic_Plaza_2x2
+            // deliberately excluded); TileResolver's corner-key matching naturally excludes the
+            // handful whose own corners are 'Floor' rather than 'Plaza' (e.g. InteriorRubble).
             _builder.Create(AncientRuin, "Ancient Ruin")
                 .Tileset("vmr01")
                 .Placeholder("gen_placeholder4")
                 .TileLighting(31, 27, 10, 12)
-                .PrimaryOpenTerrain("Plaza");
+                .PrimaryOpenTerrain("Plaza")
+                .FeatureTile("ExteriorFountain", 2)
+                .FeatureTile("ExteriorOvergrownGarden", 2)
+                .FeatureTile("ExteriorPool", 2)
+                .FeatureTile("InteriorRubble", 2)
+                .FeatureTile("RuinedHouse", 2)
+                .FeatureTile("Exterior Pillar 1")
+                .FeatureTile("Exterior Pillar 2")
+                .FeatureTile("Exterior Dais 1")
+                .FeatureTile("Exterior Dais 2");
 
             return _builder.Build();
         }

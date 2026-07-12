@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
 
                     methodsByTarget.TryGetValue(target, out var methods);
 
-                    attribute.Name = $"Incubation Field Notes: {targetName}";
+                    attribute.Name = targetName;
                     attribute.Description = BuildDescription(targetName, methods ?? new List<ProductionMethod>());
                     populated++;
                 }

@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         Blueprints = 4,
         [KeyItemCategory("Keys", true)]
         Keys = 5,
-        [KeyItemCategory("Field Notes", true)]
+        [KeyItemCategory("Incubation Field Notes", true)]
         FieldNotes = 6
     }
 

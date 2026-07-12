@@ -21,5 +21,10 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 
             return string.Empty;
         }
+
+        public string GetRequirementDescription()
+        {
+            return $"Mutation chance at least {_minimumChanceRequired}%";
+        }
     }
 }

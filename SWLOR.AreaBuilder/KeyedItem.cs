@@ -1,4 +1,4 @@
-namespace SWLOR.Tools.AreaBuilder
+namespace SWLOR.AreaBuilder
 {
     /// <summary>Lightweight ComboBox item: stable key plus the display text shown to the user.</summary>
     internal sealed class KeyedItem

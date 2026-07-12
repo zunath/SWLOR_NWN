@@ -6,7 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.Tools.AreaBuilder
+namespace SWLOR.AreaBuilder
 {
     /// <summary>
     /// Draws a corner-grid macro layout as a schematic bitmap: solid corners near-black, tiles

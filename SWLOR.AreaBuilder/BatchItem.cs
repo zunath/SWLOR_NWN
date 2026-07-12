@@ -1,7 +1,7 @@
-namespace SWLOR.Tools.AreaBuilder
+namespace SWLOR.AreaBuilder
 {
     /// <summary>
-    /// One queued composition for "Build Review Module". Serializes to tools/ProcgenReview's
+    /// One queued composition for "Build Review Module". Serializes to SWLOR.ProcgenReview's
     /// "--areas" wire format: theme:tileset:layout:seed:size (see Program.cs there). An empty
     /// TilesetProfileKey/LayoutProfileKey means "use the theme's own default profile".
     ///

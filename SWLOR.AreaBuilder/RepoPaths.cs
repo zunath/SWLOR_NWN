@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 
-namespace SWLOR.Tools.AreaBuilder
+namespace SWLOR.AreaBuilder
 {
     /// <summary>
-    /// Locates repository-relative paths the same way tools/ProcgenReview does: walk up from the
-    /// running executable's directory until SWLOR.Game.Server.sln is found, so the tool runs
+    /// Locates repository-relative paths the same way SWLOR.ProcgenReview does: walk up from the
+    /// running executable's directory until SWLOR.Game.Server.sln is found, so the app runs
     /// correctly regardless of machine or drive layout.
     /// </summary>
     internal static class RepoPaths
@@ -14,7 +14,7 @@ namespace SWLOR.Tools.AreaBuilder
 
         public static string HaksDirectory => Path.Combine(Root, "SWLOR_Haks");
 
-        public static string ProcgenReviewProjectPath => Path.Combine(Root, "tools", "ProcgenReview");
+        public static string ProcgenReviewProjectPath => Path.Combine(Root, "SWLOR.ProcgenReview");
 
         public static string ReviewModuleOutputPath => Path.Combine(Root, "Module", "SWLOR Procgen Review.mod");
 

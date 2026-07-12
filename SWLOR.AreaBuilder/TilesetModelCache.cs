@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.Tools.AreaBuilder
+namespace SWLOR.AreaBuilder
 {
     /// <summary>
     /// Lazily parses each tileset's .set file the first time its profile is selected, by scanning
-    /// SWLOR_Haks for a matching filename (same discovery approach as tools/ProcgenReview). Parsed
+    /// SWLOR_Haks for a matching filename (same discovery approach as SWLOR.ProcgenReview). Parsed
     /// models are cached by tileset resref for the life of the process.
     /// </summary>
     internal static class TilesetModelCache

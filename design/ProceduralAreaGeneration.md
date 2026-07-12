@@ -102,7 +102,7 @@ Mine/Cave (`tdt01`) entrance on a suitable planet → party selects tier → ins
 
 ## Offline review workflow
 
-`dotnet run --project tools/ProcgenReview` builds a standalone `Module/SWLOR Procgen Review.mod`
+`dotnet run --project SWLOR.ProcgenReview` builds a standalone `Module/SWLOR Procgen Review.mod`
 containing offline-generated areas for every registered dungeon theme (default: seeds 4242 and 777,
 16x16; override with `--seeds a,b,c --size N --out <path>`). It uses the production solver and each
 theme's real tileset/lighting/placeholder settings via linked sources, so the review module always

@@ -1,7 +1,7 @@
 using System;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.Tools.AreaBuilder
+namespace SWLOR.AreaBuilder
 {
     /// <summary>Outcome of one GenerationEngine.Generate call.</summary>
     internal sealed class GenerationResult
@@ -14,7 +14,7 @@ namespace SWLOR.Tools.AreaBuilder
     }
 
     /// <summary>
-    /// Drives the same seed-derived retry loop as the runtime facade and tools/ProcgenReview:
+    /// Drives the same seed-derived retry loop as the runtime facade and SWLOR.ProcgenReview:
     /// MacroLayoutGenerator.Generate can throw InvalidOperationException for an unlucky roll, and
     /// TileResolver.TryResolve can fail to cover a corner combination — either is worth a retry with
     /// the next seed before giving up.

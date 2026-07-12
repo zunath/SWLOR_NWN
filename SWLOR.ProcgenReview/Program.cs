@@ -11,9 +11,9 @@ using SWLOR.Game.Server.Service.AreaGenerationService;
 // solution file), so the tool runs on any machine or drive layout.
 //
 // Usage (from anywhere inside the repo):
-//   dotnet run --project tools/ProcgenReview -- [--seeds 4242,777,1337] [--size 16] [--out <path>]
-//   dotnet run --project tools/ProcgenReview -- --matrix
-//   dotnet run --project tools/ProcgenReview -- --areas minecave:::4242:16,minecave:sewers:organic:777:24
+//   dotnet run --project SWLOR.ProcgenReview -- [--seeds 4242,777,1337] [--size 16] [--out <path>]
+//   dotnet run --project SWLOR.ProcgenReview -- --matrix
+//   dotnet run --project SWLOR.ProcgenReview -- --areas minecave:::4242:16,minecave:sewers:organic:777:24
 //
 // Default (no --areas): every registered theme x seeds 4242/777/1337, composed with its own default
 // tileset/layout profiles (3 areas per theme).

@@ -11,12 +11,12 @@ using System.Windows.Media;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.Tools.AreaBuilder
+namespace SWLOR.AreaBuilder
 {
     /// <summary>
     /// Area Builder main window: pick a content theme / tileset profile / layout profile, tune
     /// layout knobs, preview the generated schematic instantly, queue compositions into a batch,
-    /// and build a toolset-reviewable module via tools/ProcgenReview with one click.
+    /// and build a toolset-reviewable module via SWLOR.ProcgenReview with one click.
     ///
     /// All controls are constructed in code (BuildLeftPanel) rather than XAML, since the left panel
     /// is mostly repetitive labeled Slider/ComboBox rows; MainWindow.xaml only holds the structural

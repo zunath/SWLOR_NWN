@@ -4,11 +4,11 @@ using System.Linq;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
-namespace SWLOR.Tools.AreaBuilder
+namespace SWLOR.AreaBuilder
 {
     /// <summary>
     /// Reflects over the linked theme/tileset-profile/layout-profile definitions, the same
-    /// discovery convention DungeonContentPlacer and tools/ProcgenReview use, so the picker
+    /// discovery convention DungeonContentPlacer and SWLOR.ProcgenReview use, so the picker
     /// dropdowns always reflect exactly what the production module registers.
     /// </summary>
     internal sealed class DefinitionCatalog

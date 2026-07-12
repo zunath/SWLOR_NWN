@@ -1,4 +1,4 @@
-<Window x:Class="SWLOR.Tools.AreaBuilder.MainWindow"
+<Window x:Class="SWLOR.AreaBuilder.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Area Builder" Width="1300" Height="850" MinWidth="1100" MinHeight="750">

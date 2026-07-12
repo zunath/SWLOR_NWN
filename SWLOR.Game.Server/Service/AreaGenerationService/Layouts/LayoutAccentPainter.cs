@@ -71,15 +71,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 }
             }
 
-            // Recompute reported room tiles: any tile that lost full-open status (an accent corner
-            // took one of its four corners) drops out. Center tiles are guaranteed to survive since
-            // their corners were forbidden from ever being painted.
-            foreach (var room in layout.Rooms)
-            {
-                room.Tiles = room.Tiles
-                    .Where(t => LayoutCornerUtils.IsTileFullyOpen(corners, t.X, t.Y, openTerrain))
-                    .ToList();
-            }
+            LayoutCornerUtils.RecomputeFullyOpenRoomTiles(layout, openTerrain);
         }
 
         private static bool CanAccept(

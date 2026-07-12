@@ -30,6 +30,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     p.SmoothingPasses = 4;
                     p.CorridorWidth = 2;
                     p.AccentDensity = 0.06;
+                    // A single linear crossing (e.g. a stream cutting through a cavern floor) on top
+                    // of the blob patches above; only takes effect where the composed tileset profile
+                    // supplies an AccentTerrain (see DungeonComposition.BuildLayoutParameters).
+                    p.AccentChannels = 1;
                 });
 
             // Dense looping corridor maze with small chambers (reference: Veles Sewers).
@@ -43,6 +47,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     p.MaxRooms = 5;
                     p.MaxRoomCornerSize = 5;
                     p.AccentDensity = 0.05;
+                    // AccentChannels intentionally NOT enabled here: WarrenLayout hard-caps chamber
+                    // size at 5 corners, and a valid channel crossing needs 4 consecutive open corner
+                    // rows/columns that avoid the chamber's own protected center-tile corners — in a
+                    // 5-tall chamber, the two possible 4-row windows always include the center row
+                    // (verified offline: 0 of 19 candidate windows survived the center-tile exclusion
+                    // across sampled seeds). See LayoutAccentChannelCarver and BridgeChannelTests.
                 });
 
             // Wall-sharing packed rooms joined by door gaps (reference: facility interiors).

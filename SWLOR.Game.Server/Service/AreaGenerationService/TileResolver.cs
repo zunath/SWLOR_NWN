@@ -252,13 +252,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     var left = tile.GetEdgeAt(orientation, EdgeSlot.Left);
 
                     // A crosser tile that also has door slots may only be registered under keys whose
-                    // edge part carries a Doorway crosser somewhere — a door slot implies a door frame,
-                    // so it must never leak into a cell that doesn't expect a doorway.
+                    // edge part carries a Doorway (or Bridge — a door built directly into a bridge
+                    // bank's wall-facing edge, verified on vmr01 TILE100) crosser somewhere — a door
+                    // slot implies a door frame, so it must never leak into a cell that doesn't expect
+                    // one.
                     if (hasCrosser && hasDoors)
                     {
                         var hasDoorwayEdge =
                             IsDoorway(top) || IsDoorway(right) || IsDoorway(bottom) || IsDoorway(left);
-                        if (!hasDoorwayEdge) continue;
+                        var hasBridgeEdge =
+                            IsBridge(top) || IsBridge(right) || IsBridge(bottom) || IsBridge(left);
+                        if (!hasDoorwayEdge && !hasBridgeEdge) continue;
                     }
 
                     var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
@@ -377,6 +381,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         private static bool IsDoorway(string edge)
         {
             return string.Equals(edge, "Doorway", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsBridge(string edge)
+        {
+            return string.Equals(edge, "Bridge", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string Describe(string edge)

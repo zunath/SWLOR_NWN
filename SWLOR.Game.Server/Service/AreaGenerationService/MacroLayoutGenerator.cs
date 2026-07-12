@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);
+            LayoutAccentChannelCarver.CarveChannels(layout, parameters, random);
             LayoutTransitionAssignment.AssignTransitions(layout, parameters, random);
 
             // Runs after transitions are anchored (so set pieces can avoid them) and before invariant

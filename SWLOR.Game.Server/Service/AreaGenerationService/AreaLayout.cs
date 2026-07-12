@@ -336,6 +336,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>Fraction of open corners converted to accent patches (0..~0.2).</summary>
         public double AccentDensity { get; set; } = 0.0;
 
+        /// <summary>
+        /// Number of linear accent-terrain channels (one-cell-wide bands, e.g. a Water/Pit "river")
+        /// carved through open space, each crossed by exactly one real Bridge edge-crosser chain.
+        /// 0 = none (default; back-compat). Requires AccentTerrain to be set (same field
+        /// AccentDensity patches use) and the tileset to carry Bridge-edge vocabulary — callers must
+        /// verify coverage before enabling (see LayoutAccentChannelCarver).
+        /// </summary>
+        public int AccentChannels { get; set; } = 0;
+
         /// <summary>Arrival points assigned to rooms (1..3). The first is the primary anchor.</summary>
         public int EntranceCount { get; set; } = 1;
         /// <summary>Outbound exit points assigned to rooms (1..3). Exit placeables spawn at each.</summary>

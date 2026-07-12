@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 {
@@ -185,6 +186,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                    corners.Labels[tx + 1, ty] == openTerrain &&
                    corners.Labels[tx, ty + 1] == openTerrain &&
                    corners.Labels[tx + 1, ty + 1] == openTerrain;
+        }
+
+        /// <summary>
+        /// Drops any tile from each room's reported Tiles list that lost full-open status because a
+        /// post-pass (accent blob painting, accent channel carving) painted one of its four corners
+        /// non-open. Center tiles are guaranteed to survive since callers forbid painting their
+        /// corners. Shared by every post-pass that repaints open corners after LayoutRoomBuilder
+        /// first populates Rooms.Tiles.
+        /// </summary>
+        internal static void RecomputeFullyOpenRoomTiles(MacroLayout layout, string openTerrain)
+        {
+            foreach (var room in layout.Rooms)
+            {
+                room.Tiles = room.Tiles
+                    .Where(t => IsTileFullyOpen(layout.Corners, t.X, t.Y, openTerrain))
+                    .ToList();
+            }
         }
 
         /// <summary>

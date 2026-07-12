@@ -29,6 +29,9 @@ namespace SWLOR.ContentBuilder.Windows
     {
         private const int MaxSeed = int.MaxValue - 1000;
 
+        private const string SchematicModeKey = "schematic";
+        private const string MapGraphicsModeKey = "mapgraphics";
+
         private readonly DefinitionCatalog _catalog = new();
         private readonly ObservableCollection<BatchItem> _batch = new();
         private readonly System.Collections.Generic.HashSet<string> _overriddenKnobs = new();
@@ -85,6 +88,7 @@ namespace SWLOR.ContentBuilder.Windows
 
             BuildLeftPanel();
             PopulateCombos();
+            SetUpPreviewToolbar();
             // Size renders off PreviewHost, never PreviewImage: a WPF Image with a null Source
             // measures/arranges to 0x0 regardless of its layout slot, so the Image's own
             // ActualWidth/SizeChanged never deliver a usable size for the FIRST render — sizing
@@ -94,6 +98,31 @@ namespace SWLOR.ContentBuilder.Windows
             ApplyThemeDefaults(resetDimensionsAndSeed: true);
             RegeneratePreview();
         }
+
+        /// <summary>
+        /// Wires the Schematic / Map graphics mode picker and the Map graphics-only room overlay
+        /// toggle. Switching mode or toggling the overlay only re-draws the last generation result
+        /// (RenderPreview) — it never re-runs generation.
+        /// </summary>
+        private void SetUpPreviewToolbar()
+        {
+            PreviewModeCombo.DisplayMemberPath = nameof(KeyedItem.DisplayName);
+            PreviewModeCombo.Items.Add(new KeyedItem(SchematicModeKey, "Schematic"));
+            PreviewModeCombo.Items.Add(new KeyedItem(MapGraphicsModeKey, "Map graphics"));
+            PreviewModeCombo.SelectedIndex = 0;
+
+            PreviewModeCombo.SelectionChanged += (_, _) =>
+            {
+                RoomOverlayCheckBox.IsEnabled = IsMapGraphicsMode;
+                RenderPreview();
+            };
+            RoomOverlayCheckBox.Checked += (_, _) => RenderPreview();
+            RoomOverlayCheckBox.Unchecked += (_, _) => RenderPreview();
+            RoomOverlayCheckBox.IsEnabled = IsMapGraphicsMode;
+        }
+
+        private bool IsMapGraphicsMode =>
+            (PreviewModeCombo.SelectedItem as KeyedItem)?.Key == MapGraphicsModeKey;
 
         // ------------------------------------------------------------------
         // Left panel construction
@@ -626,9 +655,47 @@ namespace SWLOR.ContentBuilder.Windows
             var actualHeight = PreviewHost.ActualHeight - PreviewHost.BorderThickness.Top - PreviewHost.BorderThickness.Bottom;
             if (actualWidth < 1 || actualHeight < 1) return;
 
-            PreviewImage.Source = _lastResult.Success
-                ? SchematicRenderer.Render(_lastResult.Layout, _lastResult.Parameters, actualWidth, actualHeight)
-                : SchematicRenderer.RenderMessage($"Generation failed:\n{_lastResult.FailureReason}", actualWidth, actualHeight);
+            if (!_lastResult.Success)
+            {
+                PreviewImage.Source = SchematicRenderer.RenderMessage($"Generation failed:\n{_lastResult.FailureReason}", actualWidth, actualHeight);
+                return;
+            }
+
+            if (IsMapGraphicsMode && _lastResult.Resolved != null)
+            {
+                PreviewImage.Source = MapGraphicsRenderer.Render(
+                    _lastResult.Resolved,
+                    _lastResult.Tileset,
+                    RoomOverlayCheckBox.IsChecked == true,
+                    actualWidth,
+                    actualHeight,
+                    out var stats);
+
+                ReportMapGraphicsStats(stats);
+            }
+            else
+            {
+                PreviewImage.Source = SchematicRenderer.Render(_lastResult.Layout, _lastResult.Parameters, actualWidth, actualHeight);
+            }
+        }
+
+        /// <summary>
+        /// Surfaces where minimap tile art came from (or that it's missing) in the status bar,
+        /// without clobbering the rooms/open-percent summary GeneratePreview already set — Map
+        /// graphics mode appends its own line instead of overwriting.
+        /// </summary>
+        private void ReportMapGraphicsStats(MapRenderStats stats)
+        {
+            if (stats == null) return;
+
+            var message = stats.Misses > 0
+                ? $"map art: {stats.LooseHits} loose, {stats.ArchiveHits} base-game, {stats.Misses} tiles without minimap art"
+                : $"map art: {stats.LooseHits} loose, {stats.ArchiveHits} base-game";
+
+            if (!string.IsNullOrEmpty(stats.BaseGameArchiveStatus))
+                message += $" (base game archive unavailable: {stats.BaseGameArchiveStatus})";
+
+            AppendLog(message);
         }
 
         private static double ComputeOpenPercent(MacroLayout layout, string openTerrain)

@@ -9,6 +9,8 @@ namespace SWLOR.ContentBuilder.Services
         public bool Success { get; init; }
         public MacroLayout Layout { get; init; }
         public MacroLayoutParameters Parameters { get; init; }
+        public TilesetModel Tileset { get; init; }
+        public ResolvedLayout Resolved { get; init; }
         public int AttemptSeed { get; init; }
         public string FailureReason { get; init; }
     }
@@ -59,13 +61,15 @@ namespace SWLOR.ContentBuilder.Services
                     continue;
                 }
 
-                if (TileResolver.TryResolve(tileset, macro, random, out _, out var failureReason))
+                if (TileResolver.TryResolve(tileset, macro, random, out var resolved, out var failureReason))
                 {
                     return new GenerationResult
                     {
                         Success = true,
                         Layout = macro,
                         Parameters = parameters,
+                        Tileset = tileset,
+                        Resolved = resolved,
                         AttemptSeed = trySeed
                     };
                 }

@@ -23,21 +23,41 @@
                 <StackPanel x:Name="LeftStack" Margin="8" />
             </ScrollViewer>
 
-            <!--
-                PreviewHost (not PreviewImage) drives render sizing: a WPF Image with a null
-                Source measures/arranges to 0x0 regardless of its layout slot, so its ActualWidth
-                stays 0 until a Source exists — sizing off the Image made the first render
-                impossible. The Border always fills the column, so its size is valid from the
-                first layout pass.
-            -->
-            <!--
-                Stretch="None": the bitmap is already rendered at exactly the host's size with the
-                grid letterboxed inside it, so any Image stretching would only re-scale (and
-                potentially crop or blur) an already-fitted image.
-            -->
-            <Border x:Name="PreviewHost" Grid.Column="1" Background="#FF0A0A0C" BorderBrush="#FF3A3A3E" BorderThickness="1,0,0,0">
-                <Image x:Name="PreviewImage" Stretch="None" SnapsToDevicePixels="True" />
-            </Border>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--
+                    Preview mode toolbar: Schematic vs Map graphics (real minimap tile art) plus the
+                    Map graphics-only room overlay toggle. Built here rather than in BuildLeftPanel
+                    since it belongs visually with the preview, not the composition knobs.
+                -->
+                <StackPanel x:Name="PreviewToolbar" Grid.Row="0" Orientation="Horizontal"
+                            Background="#FF17171A" Margin="0" >
+                    <TextBlock Text="Preview mode" VerticalAlignment="Center" Margin="8,4,4,4" Foreground="#FFDDDDDD" />
+                    <ComboBox x:Name="PreviewModeCombo" Width="140" Margin="0,4,12,4" VerticalAlignment="Center" />
+                    <CheckBox x:Name="RoomOverlayCheckBox" Content="Room overlay" IsChecked="True"
+                              VerticalAlignment="Center" Foreground="#FFDDDDDD" Margin="0,4,8,4" />
+                </StackPanel>
+
+                <!--
+                    PreviewHost (not PreviewImage) drives render sizing: a WPF Image with a null
+                    Source measures/arranges to 0x0 regardless of its layout slot, so its ActualWidth
+                    stays 0 until a Source exists — sizing off the Image made the first render
+                    impossible. The Border always fills its row, so its size is valid from the
+                    first layout pass.
+                -->
+                <!--
+                    Stretch="None": the bitmap is already rendered at exactly the host's size with the
+                    grid letterboxed inside it, so any Image stretching would only re-scale (and
+                    potentially crop or blur) an already-fitted image.
+                -->
+                <Border x:Name="PreviewHost" Grid.Row="1" Background="#FF0A0A0C" BorderBrush="#FF3A3A3E" BorderThickness="1,0,0,0">
+                    <Image x:Name="PreviewImage" Stretch="None" SnapsToDevicePixels="True" />
+                </Border>
+            </Grid>
         </Grid>
 
         <StatusBar Grid.Row="1">

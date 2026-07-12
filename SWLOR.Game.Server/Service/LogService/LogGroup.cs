@@ -42,6 +42,8 @@ namespace SWLOR.Game.Server.Service.LogService
         Incubation,
         [LogGroup("AI", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
         AI,
+        [LogGroup("Mimicry", ServerEnvironmentType.All)]
+        Mimicry,
         [LogGroup("QuestContract", ServerEnvironmentType.All)]
         QuestContract
     }

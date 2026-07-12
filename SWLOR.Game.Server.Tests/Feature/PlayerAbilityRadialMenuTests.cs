@@ -38,6 +38,10 @@ public class PlayerAbilityRadialMenuTests
         var npcAbilityFeatIds = BuildNpcAbilityFeats()
             .Select(feat => (int)feat)
             .ToHashSet();
+        // Mimicry trait techniques are passive: they are granted (and appear in the class feat
+        // table) like other techniques but are not cast, so they intentionally have no spells.2da
+        // link. Their passiveness is validated by MimicryTests instead.
+        var mimicryTraitFeatIds = BuildMimicryTraitFeatIds();
         var failures = new List<string>();
 
         playerAbilityFeats.Should().NotBeEmpty();
@@ -49,12 +53,16 @@ public class PlayerAbilityRadialMenuTests
 
             var featRow = featRows[featId];
             var featLabel = featRow["LABEL"];
-            featRow["SPELLID"].Should().NotBe("****", $"{feat} must link to spells.2da");
 
-            var spellId = int.Parse(featRow["SPELLID"]);
-            spellRows.Should().ContainKey(spellId, $"{feat} must have a spell row");
-            spellRows[spellId]["Label"].Should().Be(featLabel, $"{feat} spell row should use the feat.2da label");
-            spellRows[spellId]["FeatID"].Should().Be(featId.ToString(), $"{feat} spell row should point back to its feat");
+            if (!mimicryTraitFeatIds.Contains(featId))
+            {
+                featRow["SPELLID"].Should().NotBe("****", $"{feat} must link to spells.2da");
+
+                var spellId = int.Parse(featRow["SPELLID"]);
+                spellRows.Should().ContainKey(spellId, $"{feat} must have a spell row");
+                spellRows[spellId]["Label"].Should().Be(featLabel, $"{feat} spell row should use the feat.2da label");
+                spellRows[spellId]["FeatID"].Should().Be(featId.ToString(), $"{feat} spell row should point back to its feat");
+            }
 
             var classFeatEntry = classFeatRows
                 .Should()
@@ -140,6 +148,31 @@ public class PlayerAbilityRadialMenuTests
         }
 
         return feats;
+    }
+
+    private static HashSet<int> BuildMimicryTraitFeatIds()
+    {
+        var definitionType = typeof(IAbilityListDefinition);
+        var ids = new HashSet<int>();
+        var definitions = definitionType.Assembly
+            .GetTypes()
+            .Where(type =>
+                type.IsClass &&
+                !type.IsAbstract &&
+                definitionType.IsAssignableFrom(type) &&
+                type.Namespace == "SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry")
+            .Select(type => (IAbilityListDefinition)Activator.CreateInstance(type)!);
+
+        foreach (var definition in definitions)
+        {
+            foreach (var (feat, detail) in definition.BuildAbilities())
+            {
+                if (detail.IsMimicryTrait)
+                    ids.Add((int)feat);
+            }
+        }
+
+        return ids;
     }
 
     private static HashSet<FeatType> BuildNpcAbilityFeats()

@@ -271,6 +271,11 @@ namespace SWLOR.Game.Server.Feature
 
             Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
             Combat.ApplyAbilityImpactEffects(activator, summary);
+
+            if (!GetIsPC(activator))
+            {
+                Mimicry.OnCreatureAbilityUsed(activator, feat);
+            }
         }
 
 
@@ -793,6 +798,11 @@ namespace SWLOR.Game.Server.Feature
             var summary = Ability.EndAbilityImpact(activator);
             Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
             Combat.ApplyAbilityImpactEffects(activator, summary);
+
+            if (!GetIsPC(activator))
+            {
+                Mimicry.OnCreatureAbilityUsed(activator, activeWeaponAbility);
+            }
 
             DeleteLocalString(activator, ActiveAbilityIdName);
             DeleteLocalInt(activator, ActiveAbilityFeatIdName);

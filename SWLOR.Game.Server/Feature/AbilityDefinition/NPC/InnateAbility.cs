@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         public static readonly InnateAbilityProfile Staff = new(SkillType.Staff, SkillType.Staff, false);
         public static readonly InnateAbilityProfile Throwing = new(SkillType.Throwing, SkillType.Throwing, false);
         public static readonly InnateAbilityProfile Vibroblade = new(SkillType.Vibroblade, SkillType.Vibroblade, false);
+        public static readonly InnateAbilityProfile Mimicry = new(SkillType.Mimicry, SkillType.Mimicry, false, PerkType.CombatAnalyzer);
 
         public SkillType PlayerSkillType { get; }
         public SkillType NPCSkillType { get; }
@@ -70,7 +72,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return GetIsObjectValid(activator) && !GetIsPC(activator);
         }
 
-        public static void BuildSingleTarget(
+        /// <summary>
+        /// Applies combat-analyzer potency to a mimicked technique's base damage. Potency
+        /// (<see cref="StatType.MimicryPotencyPercent"/>) is granted by Combat Analyzer ranks, the
+        /// Overclocked Analyzer capstone's Overload, and damage-type set bonuses. Only the Mimicry
+        /// profile is affected, so shared innate-ability damage for other skills is unchanged.
+        /// </summary>
+        private static int ScaleForMimicryPotency(uint activator, InnateAbilityProfile profile, int baseDamage)
+        {
+            if (!ReferenceEquals(profile, InnateAbilityProfile.Mimicry))
+                return baseDamage;
+
+            var potency = Stat.GetStatAdjustment(activator, StatType.MimicryPotencyPercent);
+            if (potency <= 0)
+                return baseDamage;
+
+            return baseDamage + baseDamage * potency / 100;
+        }
+
+        public static AbilityBuilder BuildSingleTarget(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -114,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     target,
                     location,
                     ResolveSkillType(activator, profile),
-                    baseDamage,
+                    ScaleForMimicryPotency(activator, profile, baseDamage),
                     duration,
                     statusEffect,
                     false,
@@ -125,9 +145,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     afterSuccessfulHit: hitTarget => afterSuccessfulHit?.Invoke(activator, hitTarget),
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
+
+            ability.MimicryElement(damageType);
+
+            return ability;
         }
 
-        public static void BuildArea(
+        public static AbilityBuilder BuildArea(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -181,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     target,
                     location,
                     ResolveSkillType(activator, profile),
-                    baseDamage,
+                    ScaleForMimicryPotency(activator, profile, baseDamage),
                     duration,
                     statusEffect,
                     shape,
@@ -197,9 +221,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     enmityBonus: enmityBonus,
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
+
+            ability.MimicryElement(damageType);
+
+            return ability;
         }
 
-        public static void BuildSelfBuff(
+        public static AbilityBuilder BuildSelfBuff(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -213,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             float duration,
             VisualEffect targetVisualEffect = VisualEffect.None)
         {
-            builder
+            var ability = builder
                 .Create(feat, profile.PlayerPerkType)
                 .Name(name)
                 .HasActivationDelay(activationDelay)
@@ -230,6 +258,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), activator);
                     }
                 });
+
+            return ability;
         }
 
         private static bool HasNaturalWeapon(uint creature)

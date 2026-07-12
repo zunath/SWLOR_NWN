@@ -132,7 +132,7 @@ namespace SWLOR.ContentBuilder.Rendering
                         else
                         {
                             stats.Misses++;
-                            var color = FallbackColor(tileRecord, resolvedTile.Orientation, tileset, roomByTile, (x, y));
+                            var color = FallbackColor(tileRecord, resolvedTile.Orientation, tileset, resolved.OpenTerrain, roomByTile, (x, y));
                             context.DrawRectangle(new SolidColorBrush(color), null, cellRect);
                         }
                     }
@@ -155,10 +155,13 @@ namespace SWLOR.ContentBuilder.Rendering
             TileRecord tile,
             int orientation,
             TilesetModel tileset,
+            string layoutOpenTerrain,
             Dictionary<(int X, int Y), RoomRole> roomByTile,
             (int X, int Y) coord)
         {
             if (tile == null) return PartialColor;
+
+            var openTerrain = string.IsNullOrEmpty(layoutOpenTerrain) ? tileset.FloorTerrain : layoutOpenTerrain;
 
             var tl = tile.GetCornerAt(orientation, CornerSlot.TopLeft);
             var tr = tile.GetCornerAt(orientation, CornerSlot.TopRight);
@@ -169,8 +172,8 @@ namespace SWLOR.ContentBuilder.Rendering
                            LabelEquals(br, tileset.DefaultTerrain) && LabelEquals(bl, tileset.DefaultTerrain);
             if (allSolid) return SolidColor;
 
-            var allOpen = LabelEquals(tl, tileset.FloorTerrain) && LabelEquals(tr, tileset.FloorTerrain) &&
-                          LabelEquals(br, tileset.FloorTerrain) && LabelEquals(bl, tileset.FloorTerrain);
+            var allOpen = LabelEquals(tl, openTerrain) && LabelEquals(tr, openTerrain) &&
+                          LabelEquals(br, openTerrain) && LabelEquals(bl, openTerrain);
             if (allOpen)
             {
                 return roomByTile.TryGetValue(coord, out var role) ? RoomColor(role) : OpenColor;

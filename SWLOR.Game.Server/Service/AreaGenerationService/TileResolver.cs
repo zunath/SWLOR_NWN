@@ -99,7 +99,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 Height = height,
                 Tiles = tiles,
                 Rooms = layout.Rooms,
-                Transitions = layout.Transitions
+                Transitions = layout.Transitions,
+                OpenTerrain = layout.OpenTerrain
             };
             failureReason = null;
             return true;

@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (rooms.Count < 2) return;
 
             var entranceCorner = rooms[entranceIndex].CenterTile;
-            var distances = LayoutCornerUtils.BfsDistances(layout.Corners, parameters.OpenTerrain, entranceCorner);
+            var distances = LayoutCornerUtils.DistancesWithLinks(
+                layout.Corners, parameters.OpenTerrain, entranceCorner, layout.TunnelLinks);
 
             var bossIndex = -1;
             var bestDist = -1;

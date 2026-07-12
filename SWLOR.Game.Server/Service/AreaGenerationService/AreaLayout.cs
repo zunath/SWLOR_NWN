@@ -110,6 +110,30 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         Boss = 2
     }
 
+    /// <summary>How a layout style realizes the connections between rooms.</summary>
+    public enum CorridorMode
+    {
+        /// <summary>Corridors are open-terrain corner bands (walkable floor lanes).</summary>
+        OpenLane = 0,
+        /// <summary>Corridors are Corridor edge-crosser chains through solid cells (wall-embedded tunnels).</summary>
+        Tunnel = 1
+    }
+
+    /// <summary>
+    /// A tunnel segment connecting two open regions through solid cells. Recorded by layout styles
+    /// carving in Tunnel mode so geodesic passes (role assignment) can traverse connections that do
+    /// not exist in the open-corner graph.
+    /// </summary>
+    public class TunnelLink
+    {
+        /// <summary>Open corner where the tunnel meets open space on one side.</summary>
+        public (int X, int Y) CornerA { get; set; }
+        /// <summary>Open corner where the tunnel meets open space on the other side.</summary>
+        public (int X, int Y) CornerB { get; set; }
+        /// <summary>Traversal cost in cells (>= 1).</summary>
+        public int Length { get; set; }
+    }
+
     public enum TransitionKind
     {
         /// <summary>An arrival point: players enter the area here.</summary>
@@ -186,11 +210,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public List<LayoutRoom> Rooms { get; set; } = new();
         /// <summary>Entrance/exit anchor points, assigned by the shared post-pass.</summary>
         public List<TransitionPoint> Transitions { get; set; } = new();
+        /// <summary>Tunnel segments carved in Tunnel corridor mode (empty otherwise).</summary>
+        public List<TunnelLink> TunnelLinks { get; set; } = new();
         /// <summary>
         /// Carried from MacroLayoutParameters.DoorTransitions by MacroLayoutGenerator.Generate — the
         /// tile resolver doesn't otherwise see generation parameters, only the macro layout itself.
         /// </summary>
         public bool DoorTransitions { get; set; } = true;
+        /// <summary>Effective open-terrain label, carried from parameters for downstream consumers.</summary>
+        public string OpenTerrain { get; set; } = string.Empty;
 
         public MacroLayout(CornerTerrainGrid corners)
         {
@@ -235,8 +263,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int MinRoomCornerSize { get; set; } = 3;
         public int MaxRoomCornerSize { get; set; } = 7;
 
-        /// <summary>Corridor width in corners. 1 = narrow tunnels, 2 = broad halls.</summary>
+        /// <summary>Corridor width in corners. 1 = narrow tunnels, 2 = broad halls. OpenLane mode only.</summary>
         public int CorridorWidth { get; set; } = 1;
+
+        /// <summary>
+        /// How corridors are realized. OpenLane carves open-terrain corner bands (original behavior).
+        /// Tunnel keeps the corners solid and lays Corridor edge crossers along the cell path instead,
+        /// resolving to wall-embedded tunnel tiles with Doorway junctions where a tunnel meets open
+        /// space — the way hand-built facility interiors are assembled. Tunnel passages are always
+        /// exactly one tile wide and traverse via crosser edges, so CorridorWidth and pathnode-driven
+        /// minimum opening widths do not apply to them.
+        /// </summary>
+        public CorridorMode CorridorMode { get; set; } = CorridorMode.OpenLane;
 
         /// <summary>
         /// Fraction of additional connections carved beyond the spanning tree (0 = tree only).
@@ -299,6 +337,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public List<LayoutRoom> Rooms { get; set; } = new();
         /// <summary>Entrance/exit anchor points carried through from the macro layout.</summary>
         public List<TransitionPoint> Transitions { get; set; } = new();
+        /// <summary>Effective open-terrain label used by this layout (may differ from the tileset's declared Floor).</summary>
+        public string OpenTerrain { get; set; } = string.Empty;
 
         public ResolvedTile GetTile(int x, int y)
         {

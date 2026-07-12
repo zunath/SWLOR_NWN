@@ -250,7 +250,7 @@ try
         baseParameters.EntranceCount = spec.Entrances;
         baseParameters.ExitCount = spec.Exits;
         baseParameters.DoorTransitions = spec.DoorTransitions;
-        var layout = Generate(model, baseParameters, spec.Seed, spec.Size);
+        var layout = Generate(model, baseParameters, spec.Seed, spec.Size, spec.Composition.Tileset.PrimaryOpenTerrain);
         if (layout == null)
         {
             Console.Error.WriteLine($"{spec.Resref} seed {spec.Seed}: generation failed — skipped");
@@ -355,7 +355,7 @@ static DungeonComposition ResolveComposition(
     };
 }
 
-static ResolvedLayout Generate(TilesetModel model, MacroLayoutParameters baseParameters, int seed, int size)
+static ResolvedLayout Generate(TilesetModel model, MacroLayoutParameters baseParameters, int seed, int size, string openTerrainOverride = "")
 {
     // Mirrors AreaGeneration.Generate's seed-derived retry (no path validation offline — that
     // needs the engine; the review module is for visual inspection, not traversal QA).
@@ -366,7 +366,7 @@ static ResolvedLayout Generate(TilesetModel model, MacroLayoutParameters basePar
         parameters.Width = size;
         parameters.Height = size;
         parameters.SolidTerrain = model.DefaultTerrain;
-        parameters.OpenTerrain = model.FloorTerrain;
+        parameters.OpenTerrain = string.IsNullOrEmpty(openTerrainOverride) ? model.FloorTerrain : openTerrainOverride;
 
         MacroLayout macro;
         try

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string Packed = "packed";
         public const string Halls = "halls";
         public const string Labyrinth = "labyrinth";
+        public const string Complex = "complex";
 
         private readonly DungeonLayoutProfileBuilder _builder = new();
 
@@ -66,6 +67,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     p.MaxRoomCornerSize = 6;
                     p.CorridorWidth = 2;
                     p.LoopFactor = 0.35;
+                });
+
+            // Discrete rooms joined by wall-embedded tunnel corridors with doorway junctions
+            // (reference: czs220_maintlvl facility maintenance level). Tunnels traverse via crosser
+            // edges, so pathnode-restricted tilesets (zsf01) work at their natural corridor width.
+            _builder.Create(Complex, "Corridor Complex")
+                .Configure(p =>
+                {
+                    p.Style = DungeonLayoutStyle.RoomsAndCorridors;
+                    p.CorridorMode = CorridorMode.Tunnel;
+                    p.MinRooms = 6;
+                    p.MaxRooms = 9;
+                    p.MinRoomCornerSize = 3;
+                    p.MaxRoomCornerSize = 5;
+                    p.LoopFactor = 0.3;
                 });
 
             // Near-perfect winding maze with a handful of small chambers (reference: classic labyrinth).

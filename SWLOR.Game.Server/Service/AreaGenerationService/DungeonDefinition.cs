@@ -67,6 +67,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// (pathnode A) tile in the middle. Compositions raise CorridorWidth to at least this.
         /// </summary>
         public int MinimumOpeningWidth { get; set; } = 1;
+
+        /// <summary>
+        /// Terrain used for open/walkable space. Empty = the tileset's declared Floor terrain.
+        /// Some tilesets keep their richest room vocabulary on a different terrain: zsf01's declared
+        /// floor has a single fully-open tile while its 'floor' terrain carries the hand-built room
+        /// variants, and vmr01's 'Plaza' has 11 fully-open variants vs 4 on 'Floor'.
+        /// </summary>
+        public string PrimaryOpenTerrain { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -370,6 +378,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder MinimumOpeningWidth(int width)
         {
             _active.MinimumOpeningWidth = width;
+            return this;
+        }
+
+        /// <summary>
+        /// Overrides the terrain used for open space. Only set after verifying full (open, solid)
+        /// corner coverage for that terrain among resolver-usable tiles.
+        /// </summary>
+        public DungeonTilesetProfileBuilder PrimaryOpenTerrain(string terrainName)
+        {
+            _active.PrimaryOpenTerrain = terrainName;
             return this;
         }
 

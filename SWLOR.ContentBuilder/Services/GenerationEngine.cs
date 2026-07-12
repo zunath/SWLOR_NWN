@@ -32,7 +32,8 @@ namespace SWLOR.ContentBuilder.Services
             int height,
             string accentTerrain,
             double accentDensity,
-            int seed)
+            int seed,
+            string openTerrainOverride = "")
         {
             var lastFailure = "no attempts made";
 
@@ -45,7 +46,9 @@ namespace SWLOR.ContentBuilder.Services
                 parameters.Width = width;
                 parameters.Height = height;
                 parameters.SolidTerrain = tileset.DefaultTerrain;
-                parameters.OpenTerrain = tileset.FloorTerrain;
+                parameters.OpenTerrain = string.IsNullOrEmpty(openTerrainOverride)
+                    ? tileset.FloorTerrain
+                    : openTerrainOverride;
                 parameters.AccentTerrain = accentTerrain ?? string.Empty;
                 parameters.AccentDensity = string.IsNullOrEmpty(parameters.AccentTerrain) ? 0.0 : accentDensity;
 

@@ -99,6 +99,84 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             return dist;
         }
 
+        /// <summary>
+        /// Geodesic distances over open corners, additionally traversing tunnel links (weighted
+        /// edges between their endpoint corners). Falls back to plain BFS behavior when
+        /// <paramref name="links"/> is empty. Dijkstra because links carry integer lengths > 1.
+        /// </summary>
+        internal static Dictionary<(int X, int Y), int> DistancesWithLinks(
+            CornerTerrainGrid corners,
+            string label,
+            (int X, int Y) start,
+            IReadOnlyList<TunnelLink> links)
+        {
+            if (links == null || links.Count == 0)
+                return BfsDistances(corners, label, start);
+
+            // Corner -> (other endpoint, length) adjacency contributed by tunnel links.
+            var linkEdges = new Dictionary<(int X, int Y), List<((int X, int Y) To, int Length)>>();
+            foreach (var link in links)
+            {
+                if (!linkEdges.TryGetValue(link.CornerA, out var fromA))
+                    linkEdges[link.CornerA] = fromA = new List<((int X, int Y), int)>();
+                fromA.Add((link.CornerB, link.Length));
+
+                if (!linkEdges.TryGetValue(link.CornerB, out var fromB))
+                    linkEdges[link.CornerB] = fromB = new List<((int X, int Y), int)>();
+                fromB.Add((link.CornerA, link.Length));
+            }
+
+            var dist = new Dictionary<(int X, int Y), int> { [start] = 0 };
+            var queue = new PriorityQueue<(int X, int Y), int>();
+            queue.Enqueue(start, 0);
+
+            while (queue.TryDequeue(out var current, out var d))
+            {
+                if (dist[current] < d) continue;
+
+                void Relax((int X, int Y) next, int cost)
+                {
+                    var nd = d + cost;
+                    if (dist.TryGetValue(next, out var known) && known <= nd) return;
+                    dist[next] = nd;
+                    queue.Enqueue(next, nd);
+                }
+
+                foreach (var (dx, dy) in Ortho4)
+                {
+                    var nx = current.X + dx;
+                    var ny = current.Y + dy;
+                    if (nx < 0 || nx > corners.Width || ny < 0 || ny > corners.Height) continue;
+                    if (corners.Labels[nx, ny] != label) continue;
+                    Relax((nx, ny), 1);
+                }
+
+                if (linkEdges.TryGetValue(current, out var throughTunnels))
+                {
+                    foreach (var (to, length) in throughTunnels)
+                        Relax(to, Math.Max(1, length));
+                }
+            }
+
+            return dist;
+        }
+
+        /// <summary>
+        /// True when every corner labeled <paramref name="label"/> is reachable from every other,
+        /// counting tunnel links as connections between their endpoint corners.
+        /// </summary>
+        internal static bool IsConnectedWithLinks(CornerTerrainGrid corners, string label, IReadOnlyList<TunnelLink> links)
+        {
+            if (links == null || links.Count == 0)
+                return IsSingleComponent(corners, label);
+
+            var all = GetCorners(corners, label);
+            if (all.Count == 0) return false;
+
+            var reachable = DistancesWithLinks(corners, label, all[0], links);
+            return reachable.Count == all.Count;
+        }
+
         internal static bool IsTileFullyOpen(CornerTerrainGrid corners, int tx, int ty, string openTerrain)
         {
             if (tx < 0 || ty < 0 || tx >= corners.Width || ty >= corners.Height) return false;

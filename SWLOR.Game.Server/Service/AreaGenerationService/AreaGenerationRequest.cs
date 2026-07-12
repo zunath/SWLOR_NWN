@@ -22,6 +22,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string TilesetResref { get; set; } = "tdt01";
         /// <summary>Module area cloned as the shell for the generated grid. Must be registered in the module.</summary>
         public string PlaceholderResref { get; set; } = "gen_placeholder1";
+        /// <summary>
+        /// Terrain used for open space. Empty = the tileset's declared Floor terrain. Driven by
+        /// DungeonTilesetProfile.PrimaryOpenTerrain for tilesets whose room vocabulary lives on a
+        /// different terrain (zsf01 'floor', vmr01 'Plaza').
+        /// </summary>
+        public string OpenTerrainOverride { get; set; } = string.Empty;
         public int Width { get; set; } = 16;
         public int Height { get; set; } = 16;
         /// <summary>Fixed seed for deterministic output. Null picks a random seed per attempt.</summary>

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         {
             _builder.Create(ThemeKey, "Sci-Fi Base")
                 .TilesetProfile(StandardTilesetProfiles.Facility)
-                .LayoutProfile(StandardLayoutProfiles.Packed)
+                .LayoutProfile(StandardLayoutProfiles.Complex)
                 .SizeRange(8, 32)
                 .ExitPlaceable("_mdrn_placedoord", "Maintenance Hatch")
                 .ExitDoor("_mdrn_dt_slid001")

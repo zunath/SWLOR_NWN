@@ -46,11 +46,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             var treeEdges = BuildSpanningTree(centers);
             var edgeSet = new HashSet<(int, int)>();
+            var allEdges = new List<(int U, int V)>();
             foreach (var edge in treeEdges)
+            {
                 edgeSet.Add(Normalize(edge.U, edge.V));
-
-            foreach (var edge in treeEdges)
-                CarveEdge(corners, centers, edge.U, edge.V, parameters, random);
+                allEdges.Add((edge.U, edge.V));
+            }
 
             // Loop connections: extra corridors between random room pairs beyond the spanning tree,
             // so the layout has cycles instead of reading as a strict branching tree.
@@ -69,9 +70,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 var key = Normalize(a, b);
                 if (!edgeSet.Add(key)) continue;
 
-                CarveEdge(corners, centers, a, b, parameters, random);
+                allEdges.Add((a, b));
                 added++;
             }
+
+            CarveAllEdges(layout, roomRects, centers, allEdges, parameters, random);
 
             var rooms = new List<LayoutRoom>(roomRects.Count);
             for (var i = 0; i < roomRects.Count; i++)
@@ -83,15 +86,49 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
         private static (int, int) Normalize(int u, int v) => u < v ? (u, v) : (v, u);
 
-        private static void CarveEdge(CornerTerrainGrid corners, (int X, int Y)[] centers, int u, int v, MacroLayoutParameters parameters, System.Random random)
+        /// <summary>
+        /// Carves every room connection. Tunnel mode is all-or-nothing: a lane carved after tunnels
+        /// could open corners underneath existing crosser chains and strand unresolvable half-tunnels,
+        /// so if any tunnel fails, all crossers are discarded and every connection is re-carved as an
+        /// open lane. Failures are rare (a tunnel needs only one solid path between two walls).
+        /// </summary>
+        private static void CarveAllEdges(
+            MacroLayout layout,
+            List<RoomRect> roomRects,
+            (int X, int Y)[] centers,
+            List<(int U, int V)> edges,
+            MacroLayoutParameters parameters,
+            System.Random random)
         {
-            var a = centers[u];
-            var b = centers[v];
-            var horizontalFirst = random.Next(2) == 0;
+            if (parameters.CorridorMode == CorridorMode.Tunnel)
+            {
+                var allTunneled = true;
+                foreach (var (u, v) in edges)
+                {
+                    if (!LayoutTunnelCarver.TryConnect(layout, roomRects[u], roomRects[v], parameters, random))
+                    {
+                        allTunneled = false;
+                        break;
+                    }
+                }
 
-            LayoutCornerUtils.CarveLShapedCorridor(
-                corners, a.X, a.Y, b.X, b.Y, horizontalFirst,
-                Math.Max(1, parameters.CorridorWidth), parameters.Width, parameters.Height, parameters.OpenTerrain);
+                if (allTunneled)
+                    return;
+
+                layout.Crossers = new EdgeCrosserGrid(parameters.Width, parameters.Height);
+                layout.TunnelLinks.Clear();
+            }
+
+            foreach (var (u, v) in edges)
+            {
+                var a = centers[u];
+                var b = centers[v];
+                var horizontalFirst = random.Next(2) == 0;
+
+                LayoutCornerUtils.CarveLShapedCorridor(
+                    layout.Corners, a.X, a.Y, b.X, b.Y, horizontalFirst,
+                    Math.Max(1, parameters.CorridorWidth), parameters.Width, parameters.Height, parameters.OpenTerrain);
+            }
         }
 
         private static List<RoomRect> PlaceRooms(MacroLayoutParameters parameters, System.Random random)

@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             }
 
             layout.DoorTransitions = parameters.DoorTransitions;
+            layout.OpenTerrain = parameters.OpenTerrain;
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 }
             }
 
-            if (!LayoutCornerUtils.IsSingleComponent(corners, parameters.OpenTerrain))
+            if (!LayoutCornerUtils.IsConnectedWithLinks(corners, parameters.OpenTerrain, layout.TunnelLinks))
             {
                 throw new InvalidOperationException(
                     $"{parameters.Style} layout produced disconnected open space.");

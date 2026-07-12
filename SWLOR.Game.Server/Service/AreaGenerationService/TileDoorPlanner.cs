@@ -125,6 +125,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (solid.X < 0 || solid.Y < 0 || solid.X >= width || solid.Y >= height)
                         continue;
 
+                    // Cells carrying tunnel crossers already resolved to corridor/doorway tiles whose
+                    // edges their neighbors depend on; substituting a transition door there would
+                    // sever the tunnel and break edge agreement.
+                    if (HasAnyCrosserEdge(layout.Crossers, roomEdge) || HasAnyCrosserEdge(layout.Crossers, solid))
+                        continue;
+
                     candidates.Add((roomEdge, solid, edgeFromCell, edgeBack));
                 }
             }
@@ -371,6 +377,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         private static bool Eq(string a, string b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+
+        private static bool HasAnyCrosserEdge(EdgeCrosserGrid crossers, (int X, int Y) cell)
+        {
+            for (var slot = 0; slot < 4; slot++)
+            {
+                if (crossers.GetEdge(cell.X, cell.Y, slot).Length != 0)
+                    return true;
+            }
+
+            return false;
+        }
 
         private static string MakeCornerKey(string tl, string tr, string br, string bl)
         {

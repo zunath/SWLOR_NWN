@@ -109,7 +109,9 @@ namespace SWLOR.Game.Server.Service
                 layoutParameters.Width = request.Width;
                 layoutParameters.Height = request.Height;
                 layoutParameters.SolidTerrain = model.DefaultTerrain;
-                layoutParameters.OpenTerrain = model.FloorTerrain;
+                layoutParameters.OpenTerrain = string.IsNullOrEmpty(request.OpenTerrainOverride)
+                    ? model.FloorTerrain
+                    : request.OpenTerrainOverride;
 
                 MacroLayout macro;
                 try

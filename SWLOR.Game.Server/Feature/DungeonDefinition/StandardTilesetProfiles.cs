@@ -40,13 +40,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Tileset("zsf01")
                 .Placeholder("gen_placeholder2")
                 .TileLighting(4, 0, 2, 2)
-                .MinimumOpeningWidth(2);
+                .MinimumOpeningWidth(2)
+                // zsf01's declared floor ("Floor2") has a single fully-open tile; 'floor' is the
+                // terrain czs220_maintlvl builds its rooms from (3 diagonal variants + doorway tiles).
+                .PrimaryOpenTerrain("floor");
 
-            // Alien Ruin (reference: korr_crypt_zil). Chasm/Plaza lack coverage — no accents.
+            // Alien Ruin (reference: korr_crypt_zil). Chasm lacks coverage — no accents.
+            // 'Plaza' carries 11 fully-open tile variants vs 4 on the declared 'Floor'.
             _builder.Create(AncientRuin, "Ancient Ruin")
                 .Tileset("vmr01")
                 .Placeholder("gen_placeholder4")
-                .TileLighting(31, 27, 10, 12);
+                .TileLighting(31, 27, 10, 12)
+                .PrimaryOpenTerrain("Plaza");
 
             return _builder.Build();
         }

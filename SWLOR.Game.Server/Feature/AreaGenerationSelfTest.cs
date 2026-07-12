@@ -153,6 +153,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 TilesetResref = composition.Tileset.TilesetResref,
                 PlaceholderResref = composition.Tileset.PlaceholderResref,
+                OpenTerrainOverride = composition.Tileset.PrimaryOpenTerrain,
                 Lighting = composition.Tileset.Lighting,
                 Layout = composition.BuildLayoutParameters(),
                 Width = 16,

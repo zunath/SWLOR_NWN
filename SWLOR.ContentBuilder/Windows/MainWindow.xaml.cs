@@ -700,7 +700,9 @@ namespace SWLOR.ContentBuilder.Windows
             var height = (int)_heightSlider.Value;
             var seed = GetSeedValue();
 
-            var result = GenerationEngine.Generate(baseParameters, tilesetModel, width, height, accentTerrain, accentDensity, seed);
+            var result = GenerationEngine.Generate(
+                baseParameters, tilesetModel, width, height, accentTerrain, accentDensity, seed,
+                tilesetProfile.PrimaryOpenTerrain);
             _lastResult = result;
 
             RenderPreview();

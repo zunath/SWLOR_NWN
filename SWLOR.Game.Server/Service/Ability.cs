@@ -719,6 +719,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Deactivates every aura the player is currently projecting and strips any aura effects they are
+        /// receiving as a recipient. Used by flows that must return a player to a clean state, such as the
+        /// character rebuilder before a reset.
+        /// </summary>
+        public static void ClearAllPlayerAuras(uint player)
+        {
+            RemoveAllAuras(player);
+            RemoveCreatureFromAllAuraRanges(player);
+        }
+
+        /// <summary>
         /// Removes a creature from all active aura range lists and strips any aura effects they received
         /// as a recipient. Used when a creature leaves the game world in a way that bypasses the normal
         /// AOE exit event (e.g., entering space, being teleported).
@@ -2274,6 +2285,9 @@ namespace SWLOR.Game.Server.Service
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
+            // instance (mitigated by Force resistance, shown as Force) before physical resistance.
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
 
@@ -2490,6 +2504,9 @@ namespace SWLOR.Game.Server.Service
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
+            // instance (mitigated by Force resistance, shown as Force) before physical resistance.
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
 

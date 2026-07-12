@@ -19,62 +19,71 @@ namespace SWLOR.Game.Server.Enumeration
             "",
             "",
             0,
+            0,
             false)]
         Invalid = 0,
         [Planet("Viscara",
             "Viscara - ",
             "Viscara_Orbit",
             "VISCARA_LANDING",
-            100,
+            10,
+            50,
             true)]
         Viscara = 1,
         [Planet("Tatooine",
             "Tatooine - ",
             "Tatooine_Orbit",
             "TATOOINE_LANDING",
-            400,
+            55,
+            65,
             true)]
         Tatooine = 2,
         [Planet("Mon Cala",
             "Mon Cala - ",
             "MonCala_Orbit",
             "MON_CALA_LANDING",
-            200,
+            28,
+            60,
             true)]
         MonCala = 4,
         [Planet("Hutlar",
             "Hutlar - ",
             "Hutlar_Orbit",
             "HUTLAR_LANDING",
-            300,
+            34,
+            30,
             true)]
         Hutlar = 8,
         [Planet("CZ-220",
             "CZ-220 - ",
             "CZ220_Orbit",
             "CZ220_LANDING",
-            100,
+            13,
+            54,
             true)]
         CZ220 = 16,
         [Planet("Korriban",
             "Korriban - ",
             "Korriban_Orbit",
             "KORRIBAN_LANDING",
-            500,
+            72,
+            78,
             true)]
         Korriban = 32,
         [Planet("Dathomir",
             "Dathomir - ",
             "Dathomir_Orbit",
             "DATHOMIR_LANDING",
-            800,
+            78,
+            12,
             true)]
         Dathomir = 64,
         [Planet("Dantooine",
             "Dantooine - ",
             "Dantooine_Orbit",
             "DANTOOINE_LANDING",
-            1000,
+            92,
+            56,
             true)]
         Dantooine = 128,
         [Description("Smuggler's Moon")]
@@ -82,7 +91,8 @@ namespace SWLOR.Game.Server.Enumeration
             "Smuggler's Moon - ",
             "SmugglersMoon_Orbit",
             "SMUGGLERS_MOON_LANDING",
-            500,
+            62,
+            38,
             true)]
         SmugglersMoon = 256,
         [Description("Smuggler's Moon Station")]
@@ -90,7 +100,8 @@ namespace SWLOR.Game.Server.Enumeration
             "Smuggler's Moon Station - ",
             "Smugglers_Station_Orbit",
             "SMUGGLERS_STATION_LANDING",
-            0,
+            63,
+            38,
             true)]
         SmugglersMoonStation = 512,
     }
@@ -101,7 +112,8 @@ namespace SWLOR.Game.Server.Enumeration
         public string Prefix { get; set; }
         public string SpaceOrbitWaypointTag { get; set; }
         public string LandingWaypointTag { get; set; }
-        public int NPCTransportationFee { get; set; }
+        public int GalaxyX { get; set; }
+        public int GalaxyY { get; set; }
         public bool IsActive { get; set; }
 
         public PlanetAttribute(
@@ -109,14 +121,16 @@ namespace SWLOR.Game.Server.Enumeration
             string prefix,
             string spaceOrbitWaypointTag,
             string landingWaypointTag,
-            int npcTransportationFee,
+            int galaxyX,
+            int galaxyY,
             bool isActive)
         {
             Name = name;
             Prefix = prefix;
             SpaceOrbitWaypointTag = spaceOrbitWaypointTag;
             LandingWaypointTag = landingWaypointTag;
-            NPCTransportationFee = npcTransportationFee;
+            GalaxyX = galaxyX;
+            GalaxyY = galaxyY;
             IsActive = isActive;
         }
     }

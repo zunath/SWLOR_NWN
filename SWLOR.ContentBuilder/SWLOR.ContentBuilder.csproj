@@ -16,23 +16,25 @@
     linked-sources pattern in SWLOR.ProcgenReview/SWLOR.ProcgenReview.csproj.
   -->
   <ItemGroup>
-    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TilesetModel.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TilesetSetParser.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\AreaLayout.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\MacroLayoutGenerator.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileResolver.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\DungeonDefinition.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\Layouts\*.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TilesetModel.cs" Link="Generation\TilesetModel.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TilesetSetParser.cs" Link="Generation\TilesetSetParser.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\AreaLayout.cs" Link="Generation\AreaLayout.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\MacroLayoutGenerator.cs" Link="Generation\MacroLayoutGenerator.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileResolver.cs" Link="Generation\TileResolver.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\DungeonDefinition.cs" Link="Generation\DungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\Layouts\*.cs" Link="Generation\Layouts\%(Filename)%(Extension)" />
+  </ItemGroup>
 
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\IDungeonListDefinition.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\IDungeonTilesetProfileListDefinition.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\IDungeonLayoutProfileListDefinition.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\StandardTilesetProfiles.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\StandardLayoutProfiles.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\MineCaveDungeonDefinition.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\SciFiBaseDungeonDefinition.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\SewerDungeonDefinition.cs" />
-    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\AlienRuinDungeonDefinition.cs" />
+  <ItemGroup>
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\IDungeonListDefinition.cs" Link="Definitions\IDungeonListDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\IDungeonTilesetProfileListDefinition.cs" Link="Definitions\IDungeonTilesetProfileListDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\IDungeonLayoutProfileListDefinition.cs" Link="Definitions\IDungeonLayoutProfileListDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\StandardTilesetProfiles.cs" Link="Definitions\StandardTilesetProfiles.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\StandardLayoutProfiles.cs" Link="Definitions\StandardLayoutProfiles.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\MineCaveDungeonDefinition.cs" Link="Definitions\MineCaveDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\SciFiBaseDungeonDefinition.cs" Link="Definitions\SciFiBaseDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\SewerDungeonDefinition.cs" Link="Definitions\SewerDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\AlienRuinDungeonDefinition.cs" Link="Definitions\AlienRuinDungeonDefinition.cs" />
   </ItemGroup>
 
 </Project>

@@ -554,6 +554,42 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public int ElevationRegions { get; set; } = 0;
 
+        /// <summary>
+        /// When true (default false; fully back-compat), LayoutElevationPainter additionally tries to
+        /// splice a Ramp edge-crosser "lane" into one straight rim edge of each successfully-placed
+        /// OpenTerrain split-level blob, connecting the raised patch back down to ground level via a
+        /// real walkable ramp surface instead of a sheer step. Purely additive to an already-placed
+        /// blob: only the shared EdgeCrosserGrid edges along the chosen rim run are rewritten (no
+        /// corner/height/terrain change), verified live via TileResolver.HasHeightAwareCandidate before
+        /// committing, and reverted with zero effect on the underlying blob when unsupported or when
+        /// the blob's rim isn't at least 2 tiles long on some side (a 1-tile-long rim has no interior
+        /// cell to carry the shared "Ramp" edge without touching a corner cell -- see
+        /// LayoutElevationPainter.TryAddRampLane). Self-gated: never requires a tileset profile cap,
+        /// mirroring LayoutFenceCarver's own probe-then-carve-or-noop convention.
+        /// </summary>
+        public bool ElevationRamps { get; set; } = false;
+
+        /// <summary>
+        /// Effective terrain LayoutElevationPoolPainter sinks pool interiors to (e.g.
+        /// DungeonTilesetProfile.AccentTerrain's "Lava" on tde01). Empty = no depth pools (default;
+        /// fully back-compat). Usually stamped from the tileset's own AccentTerrain by
+        /// DungeonComposition.BuildLayoutParameters -- the same "layout expresses intent via a count,
+        /// tileset profile supplies the terrain name" shape as AccentTerrain/ChannelTerrain vs
+        /// AccentDensity/AccentChannels.
+        /// </summary>
+        public string PoolTerrain { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Number of depth pools LayoutElevationPoolPainter attempts to paint strictly inside a room's
+        /// own OpenTerrain interior: a small rectangle of PoolTerrain sunk one story below a raised
+        /// Floor rim (reusing LayoutElevationPainter's own verified rectangle/rim machinery for the
+        /// rim, then overwriting a smaller interior sub-rectangle with PoolTerrain at the original,
+        /// unraised height). 0 = none (default; fully back-compat). Best-effort and shape-gated exactly
+        /// like ElevationRegions -- silently paints fewer than requested when the tileset lacks
+        /// verified pool-bank vocabulary or no candidate room fits.
+        /// </summary>
+        public int PoolRegions { get; set; } = 0;
+
         public MacroLayoutParameters Clone()
         {
             // MemberwiseClone shares the FeatureTiles/SetPieces dictionary references with the

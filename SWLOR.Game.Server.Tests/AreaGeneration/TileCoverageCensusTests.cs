@@ -184,6 +184,89 @@ public class TileCoverageCensusTests
         return false;
     }
 
+    /// <summary>Mirrors LayoutElevationPainter.TryAddRampLane's shape: a RAISED (non-flat), ungrouped,
+    /// doorless, all-OpenTerrain-corner tile with the "two adjacent corners raised" delta profile (the
+    /// same shape IsElevationBlobReachable's edge case already covers) plus one or two "Ramp" edges on
+    /// the axis perpendicular to the height transition (the other two edges always blank). Distinguished
+    /// from IsElevationBlobReachable by requiring at least one Ramp edge -- that method's own
+    /// HasAnyCrosser guard means it never overlaps this one.</summary>
+    private static bool IsElevationRampReachable(TileRecord tile, TilesetVocabulary vocab)
+    {
+        if (tile.GroupIndex != -1) return false;
+        if (tile.Doors.Count != 0) return false;
+        if (string.IsNullOrEmpty(vocab.Open)) return false;
+        if (!tile.Corners.All(c => Eq(c, vocab.Open))) return false;
+
+        var heights = tile.CornerHeights;
+        var min = heights.Min();
+        var normalized = heights.Select(h => h - min).ToArray();
+        var nonZero = normalized.Count(h => h != 0);
+        if (nonZero != 2 || normalized.Where(h => h != 0).Distinct().Count() != 1) return false;
+
+        bool tl = normalized[0] != 0, tr = normalized[1] != 0, br = normalized[2] != 0, bl = normalized[3] != 0;
+        var adjacent = (tl && tr) || (tr && br) || (br && bl) || (bl && tl);
+        if (!adjacent) return false;
+
+        var sawRamp = false;
+        foreach (var edge in tile.Edges)
+        {
+            if (string.IsNullOrEmpty(edge)) continue;
+            if (!Eq(edge, "Ramp")) return false;
+            sawRamp = true;
+        }
+
+        return sawRamp;
+    }
+
+    /// <summary>Mirrors LayoutElevationPoolPainter.TryPlacePool's boundary shapes: a raised (non-flat),
+    /// blank-edge, doorless tile whose corners mix EXACTLY two terrains -- this layout's OpenTerrain and
+    /// the tileset's Accent (pool) terrain, with at least one corner of each -- where every Open corner
+    /// shares one height and every Accent corner shares a height exactly RaiseDelta (1) below it, and the
+    /// Accent corners form either a single corner (one Accent corner, three Open) or a straight edge
+    /// (two ADJACENT Accent corners) -- never a 3-corner or diagonal split, which the mechanism's
+    /// axis-aligned rectangle boundary never generates.</summary>
+    private static bool IsPoolBankReachable(TileRecord tile, TilesetVocabulary vocab)
+    {
+        if (tile.GroupIndex != -1) return false;
+        if (tile.HasAnyCrosser) return false;
+        if (tile.Doors.Count != 0) return false;
+        if (string.IsNullOrEmpty(vocab.Open) || string.IsNullOrEmpty(vocab.Accent)) return false;
+
+        var corners = tile.Corners;
+        if (!corners.All(c => Eq(c, vocab.Open) || Eq(c, vocab.Accent))) return false;
+
+        var openCount = corners.Count(c => Eq(c, vocab.Open));
+        if (openCount == 0 || openCount == 4) return false; // uniform-terrain -- a different bucket
+
+        var heights = tile.CornerHeights;
+        int? openHeight = null, accentHeight = null;
+        for (var i = 0; i < 4; i++)
+        {
+            if (Eq(corners[i], vocab.Open))
+            {
+                if (openHeight.HasValue && openHeight.Value != heights[i]) return false;
+                openHeight = heights[i];
+            }
+            else
+            {
+                if (accentHeight.HasValue && accentHeight.Value != heights[i]) return false;
+                accentHeight = heights[i];
+            }
+        }
+        if (openHeight!.Value - accentHeight!.Value != 1) return false;
+
+        var accentCount = 4 - openCount;
+        if (accentCount == 1) return true;
+        if (accentCount == 2)
+        {
+            bool tlA = Eq(corners[0], vocab.Accent), trA = Eq(corners[1], vocab.Accent),
+                 brA = Eq(corners[2], vocab.Accent), blA = Eq(corners[3], vocab.Accent);
+            return (tlA && trA) || (trA && brA) || (brA && blA) || (blA && tlA);
+        }
+
+        return false;
+    }
+
     // ---------------- group mechanisms ----------------
 
     private enum GroupMechanism
@@ -881,6 +964,8 @@ public class TileCoverageCensusTests
             if (IsCornerEdgeResolverReachable(model, tile)) { Cover(tileId, "CornerEdgeResolver"); continue; }
             if (IsDoorTransitionReachable(model, tile)) { Cover(tileId, "DoorTransition"); continue; }
             if (IsElevationBlobReachable(tile, vocab)) { Cover(tileId, "ElevationBlob"); continue; }
+            if (IsElevationRampReachable(tile, vocab)) { Cover(tileId, "ElevationRamp"); continue; }
+            if (IsPoolBankReachable(tile, vocab)) { Cover(tileId, "PoolBank"); continue; }
 
             if (!IsFlat(tile)) { Exempt(tileId, $"TILE{tileId}", HeightExemptionReason); continue; }
             if (UsesOnlyAlternateVocab(model, new[] { tile }, tilesetResref)) { Exempt(tileId, $"TILE{tileId}", AlternateVocabExemptionReason); continue; }

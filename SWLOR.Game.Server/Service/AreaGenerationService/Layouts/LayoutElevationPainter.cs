@@ -33,12 +33,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
     /// edge) -- plus the interior of any raised patch resolves for free using the tileset's ordinary
     /// flat Floor tile pool, placed at a nonzero Tile_Height by TileResolver's existing
     /// delta-profile-normalization (see TileResolver class doc; no special "plateau top" tile is
-    /// needed). tde01 additionally has "Ramp" edge-crosser tiles and 1x1-GROUPed "Ramp -
-    /// Straight/Corner, *" pieces that could connect two DIFFERENT terrains or richer rim variety --
-    /// deliberately NOT used here (v1 scope: corner-blend rim only, no crosser plumbing, no group
-    /// stamping) since the six plain ungrouped tiles already give full rectangular-blob coverage
-    /// without them. A future pass could extend this to consume the Ramp crosser/group vocabulary for
-    /// wider or cross-terrain rims.
+    /// needed). tde01 additionally has 32 ungrouped "Ramp" edge-crosser tiles (TILE560-562 pure-Floor,
+    /// plus per-liquid families) sharing the EXACT two-adjacent-corners-raised rim shape above, just
+    /// with a Ramp crosser on the axis perpendicular to the height transition -- see
+    /// MacroLayoutParameters.ElevationRamps/TryAddRampLane, which optionally splices a Ramp lane into
+    /// one straight rim edge of a placed OpenTerrain blob so the raised patch is walkable up to, not
+    /// just steppable. The 1x1-GROUPed "Ramp - Straight/Corner, *" pieces remain unused (they are
+    /// non-flat, so LayoutGroupStamper's TryClassify rejects them outright -- a genuinely separate,
+    /// still-unclaimed mechanism, not this pass's concern).
     ///
     /// Runs after LayoutFenceCarver (so it can see fence crossers and avoid them) and before
     /// LayoutGroupStamper (see MacroLayoutGenerator.Generate): the stamper's own flat-cell guards
@@ -93,7 +95,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     continue;
                 }
 
-                if (openRimOk && TryPaintOpenRoomBlob(layout, tileset, parameters.OpenTerrain, forbidden, touchedThisPass, random))
+                if (openRimOk && TryPaintOpenRoomBlob(layout, parameters, tileset, parameters.OpenTerrain, forbidden, touchedThisPass, random))
                 {
                     painted++;
                 }
@@ -207,7 +209,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// see TryPlaceRectangle's margin requirement.
         /// </summary>
         private static bool TryPaintOpenRoomBlob(
-            MacroLayout layout, TilesetModel tileset, string terrain,
+            MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset, string terrain,
             HashSet<(int X, int Y)> forbidden, HashSet<(int X, int Y)> touchedThisPass, System.Random random)
         {
             var roomOrder = new int[layout.Rooms.Count];
@@ -258,11 +260,144 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var y0 = random.Next(minY0, maxY0 + 1);
 
                     if (TryPlaceRectangle(layout, tileset, terrain, forbidden, touchedThisPass, x0, y0, x0 + spanX, y0 + spanY))
+                    {
+                        // Best-effort, purely additive: a Ramp lane is a bonus on top of an already-
+                        // successfully-placed blob, never a precondition for it. Only attempted for
+                        // OpenTerrain (the only blob kind with any real vocabulary in the one tileset
+                        // (tde01) that has Ramp vocabulary at all -- see TryAddRampLane's own live probe,
+                        // which no-ops harmlessly on every other tileset/terrain pairing).
+                        if (parameters.ElevationRamps)
+                            TryAddRampLane(layout, tileset, terrain, x0, y0, x0 + spanX, y0 + spanY, random);
+
                         return true;
+                    }
                 }
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Splices a Ramp edge-crosser lane into ONE straight rim edge of an already-placed raised
+        /// rectangle [x0..x1] x [y0..y1] (see TryPaintOpenRoomBlob), turning that edge's plain "two
+        /// adjacent corners raised" rim cells into their Ramp-crossed twin (tde01 TILE560-562: the
+        /// identical corner/height shape, plus a Ramp edge) so the raised patch is walkable up to from
+        /// ground level rather than only reachable by the engine's own auto-step. Purely an
+        /// EdgeCrosserGrid rewrite -- no corner terrain or height change, so this can never affect
+        /// whether the underlying blob itself is valid.
+        ///
+        /// A rim edge of tile-length N needs at least 2 cells: the shared boundary between any two
+        /// consecutive lane cells carries "Ramp" (giving each of them one Ramp edge facing its
+        /// neighbor), while the two end cells' OUTWARD edges (facing the rectangle's own corner cells,
+        /// which have no Ramp vocabulary of their own -- see class doc) stay blank. A length-1 edge has
+        /// no such interior boundary to carry the shared edge without touching a corner cell, so it is
+        /// skipped (silently -- this is a bonus, not a requirement).
+        ///
+        /// Tries all 4 candidate edges (in a random order) and commits the first whose entire lane
+        /// re-verifies live via TileResolver.HasHeightAwareCandidate (the authoritative check, exactly
+        /// CellResolves' own convention) with its Ramp edges in place; reverts and tries the next edge
+        /// on any failure. Records a single TunnelLink spanning the lane's low-to-high corners so
+        /// link-aware connectivity/geodesic passes have real data for this connection, even though nothing
+        /// about a same-terrain-label OpenTerrain blob ever actually requires one for connectivity today
+        /// (see class doc) -- forward-looking parity with outdoor Slope-tileset use, where a Ramp lane
+        /// may one day be the only walkable link between two otherwise-severed regions.
+        /// </summary>
+        private static void TryAddRampLane(
+            MacroLayout layout, TilesetModel tileset, string terrain, int x0, int y0, int x1, int y1, System.Random random)
+        {
+            // Each candidate: the column/row of rim CELLS just outside the raised rectangle on that
+            // side, whether the lane runs along Y (east/west edges, Ramp on Top/Bottom) or along X
+            // (north/south edges, Ramp on Left/Right), and a representative (ground corner, raised
+            // corner) pair for the TunnelLink bookkeeping (see method doc).
+            var candidates = new List<(int CellX, int CellY, bool AlongY, int Count, (int X, int Y) GroundCorner, (int X, int Y) RaisedCorner)>
+            {
+                // East edge: cells at cell-x = x1, cell-y in [y0..y1-1]; raised column is x1 (west side of the cell), ground is x1+1 (east side).
+                (x1, y0, true, y1 - y0, (x1 + 1, y0), (x1, y0)),
+                // West edge: cells at cell-x = x0-1, cell-y in [y0..y1-1]; raised column is x0 (east side of the cell), ground is x0-1 (west side).
+                (x0 - 1, y0, true, y1 - y0, (x0 - 1, y0), (x0, y0)),
+                // North edge: cells at cell-y = y1, cell-x in [x0..x1-1]; raised row is y1 (south side of the cell), ground is y1+1 (north side).
+                (x0, y1, false, x1 - x0, (x0, y1 + 1), (x0, y1)),
+                // South edge: cells at cell-y = y0-1, cell-x in [x0..x1-1]; raised row is y0 (north side of the cell), ground is y0-1 (south side).
+                (x0, y0 - 1, false, x1 - x0, (x0, y0 - 1), (x0, y0)),
+            };
+
+            Shuffle(candidates, random);
+
+            foreach (var (cellX, cellY, alongY, count, groundCorner, raisedCorner) in candidates)
+            {
+                if (count < 2) continue; // no interior boundary to carry the shared Ramp edge
+
+                if (TryCommitRampLane(layout, tileset, cellX, cellY, alongY, count, groundCorner, raisedCorner))
+                    return; // one lane per blob is plenty; first success wins
+            }
+        }
+
+        private static bool TryCommitRampLane(
+            MacroLayout layout, TilesetModel tileset,
+            int cellX, int cellY, bool alongY, int count,
+            (int X, int Y) groundCorner, (int X, int Y) raisedCorner)
+        {
+            const string RampCrosser = "Ramp";
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+
+            // The N cells of this lane, in order along its own axis.
+            var cells = new List<(int X, int Y)>();
+            for (var i = 0; i < count; i++)
+                cells.Add(alongY ? (cellX, cellY + i) : (cellX + i, cellY));
+
+            // Every lane cell must currently be crosser-free (a fresh rim cell this pass itself just
+            // painted, never shared with an unrelated feature) -- defensive; true by construction since
+            // these cells were only ever touched (if at all) by this same TryPlaceRectangle call.
+            foreach (var (cx, cy) in cells)
+            {
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    if (crossers.GetEdge(cx, cy, slot).Length != 0) return false;
+                }
+            }
+
+            var innerSlot = alongY ? EdgeSlot.Top : EdgeSlot.Right;
+
+            // Write the N-1 shared interior boundaries to Ramp (the two true end-facing edges, at the
+            // start of cells[0] and the end of cells[^1], stay blank -- they face the rectangle's own
+            // corner cells, which have no Ramp vocabulary). Setting cell i's own Top (or Right) edge
+            // also writes cell i+1's Bottom (or Left) edge -- EdgeCrosserGrid stores one value per
+            // SHARED edge (see its doc comment) -- so no separate write is needed for the neighbor side.
+            for (var i = 0; i < count - 1; i++)
+            {
+                var (cx, cy) = cells[i];
+                crossers.SetEdge(cx, cy, innerSlot, RampCrosser);
+            }
+
+            var allResolve = true;
+            foreach (var (cx, cy) in cells)
+            {
+                if (!CellResolves(corners, crossers, tileset, cx, cy)) { allResolve = false; break; }
+            }
+
+            if (!allResolve)
+            {
+                foreach (var (cx, cy) in cells)
+                {
+                    crossers.SetEdge(cx, cy, EdgeSlot.Top, string.Empty);
+                    crossers.SetEdge(cx, cy, EdgeSlot.Right, string.Empty);
+                    crossers.SetEdge(cx, cy, EdgeSlot.Bottom, string.Empty);
+                    crossers.SetEdge(cx, cy, EdgeSlot.Left, string.Empty);
+                }
+                return false;
+            }
+
+            // Bookkeeping only (see method doc): record a link spanning the lane's ground-side corner
+            // to its raised-side corner.
+            layout.TunnelLinks.Add(new TunnelLink
+            {
+                CornerA = groundCorner,
+                CornerB = raisedCorner,
+                Length = 1
+            });
+
+            return true;
         }
 
         /// <summary>
@@ -277,7 +412,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// reports failure (a normal, expected outcome -- callers retry with a new placement) on any
         /// violation.
         /// </summary>
-        private static bool TryPlaceRectangle(
+        internal static bool TryPlaceRectangle(
             MacroLayout layout, TilesetModel tileset, string terrain,
             HashSet<(int X, int Y)> forbidden, HashSet<(int X, int Y)> touchedThisPass,
             int x0, int y0, int x1, int y1)
@@ -367,7 +502,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// checks TileResolver.HasHeightAwareCandidate against it -- the same computation TryResolve
         /// itself performs per cell, used here purely as a pre-commit verification (no tile is actually
         /// picked or placed).</summary>
-        private static bool CellResolves(CornerTerrainGrid corners, EdgeCrosserGrid crossers, TilesetModel tileset, int x, int y)
+        internal static bool CellResolves(CornerTerrainGrid corners, EdgeCrosserGrid crossers, TilesetModel tileset, int x, int y)
         {
             var tl = corners.Labels[x, y + 1];
             var tr = corners.Labels[x + 1, y + 1];
@@ -388,6 +523,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             return TileResolver.HasHeightAwareCandidate(
                 tileset, tl, tr, br, bl, top, right, bottom, left,
                 hTl - min, hTr - min, hBr - min, hBl - min);
+        }
+
+        private static void Shuffle<T>(List<T> list, System.Random random)
+        {
+            for (var i = list.Count - 1; i > 0; i--)
+            {
+                var j = random.Next(i + 1);
+                (list[i], list[j]) = (list[j], list[i]);
+            }
         }
     }
 }

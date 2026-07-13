@@ -134,6 +134,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// only controls how many regions a composition ASKS for, never whether painting one is safe.
         /// </summary>
         public int MaxElevationRegions { get; set; } = 0;
+
+        /// <summary>
+        /// Largest MacroLayoutParameters.PoolRegions value this tileset's real tile inventory has
+        /// verified depth-pool vocabulary for (see LayoutElevationPoolPainter.HasPoolVocabulary). 0 = no
+        /// verified pool vocabulary; a layout profile's own PoolRegions request is clamped down to this
+        /// by DungeonComposition.BuildLayoutParameters, the same "layout expresses intent, tileset caps
+        /// to verified support" shape as MaxElevationRegions. Pools use this profile's own AccentTerrain
+        /// as the pool terrain (the same terrain LayoutAccentPainter/LayoutAccentChannelCarver already
+        /// use for this tileset's secondary hazard/liquid terrain), so this only takes effect when
+        /// AccentTerrain is also set.
+        /// </summary>
+        public int MaxPoolRegions { get; set; } = 0;
     }
 
     /// <summary>
@@ -236,6 +248,30 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // tileset profile caps it to verified support -- 0 on every profile except
             // BaseGameTilesetProfiles.Dungeon means this is a no-op everywhere else today.
             parameters.ElevationRegions = Math.Min(parameters.ElevationRegions, Tileset.MaxElevationRegions);
+            // Depth pools reuse the tileset's own blob-patch AccentTerrain as the pool terrain (e.g.
+            // tde01's "Lava") -- never enabled without one, and clamped to the tileset's own verified
+            // pool-vocabulary cap, mirroring ElevationRegions/MaxElevationRegions immediately above.
+            parameters.PoolTerrain =
+                parameters.PoolRegions > 0 && !string.IsNullOrEmpty(Tileset.AccentTerrain)
+                    ? Tileset.AccentTerrain
+                    : string.Empty;
+            parameters.PoolRegions = parameters.PoolTerrain.Length == 0
+                ? 0
+                : Math.Min(parameters.PoolRegions, Tileset.MaxPoolRegions);
+            // A pool's own room-scoped rim+interior+rim footprint (LayoutElevationPoolPainter's
+            // MinOuterSpan, 3 tiles) needs a room at least MinOuterSpan+2 tiles wide/tall on the
+            // placement axis (the mechanism's own 1-corner-inset room-boundary margin on top of that).
+            // Empirically, a layout profile's nominal MaxRoomCornerSize ceiling (e.g. Complex's 5) is
+            // rarely actually realized once RoomsAndCorridorsLayout's own placement-attempt "degrade"
+            // and overlap rejection are in play, so floor generously (+2 tiles of headroom) rather than
+            // to the bare minimum -- mirroring CorridorWidth's own floor against
+            // Tileset.MinimumOpeningWidth immediately above. A no-op whenever PoolRegions ended up 0.
+            if (parameters.PoolRegions > 0)
+            {
+                var floor = Layouts.LayoutElevationPoolPainter.MinOuterSpan + 4;
+                parameters.MaxRoomCornerSize = Math.Max(parameters.MaxRoomCornerSize, floor);
+                parameters.MinRoomCornerSize = Math.Min(parameters.MinRoomCornerSize, parameters.MaxRoomCornerSize);
+            }
             return parameters;
         }
     }
@@ -484,6 +520,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder MaxElevationRegions(int count)
         {
             _active.MaxElevationRegions = count;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the largest MacroLayoutParameters.PoolRegions request this tileset's real tile
+        /// inventory has verified depth-pool vocabulary for. Only set after verifying with
+        /// LayoutElevationPoolPainter's shape probe (TileResolver.HasHeightAwareCandidate) against the
+        /// composed PrimaryOpenTerrain/AccentTerrain pairing -- see BaseGameTilesetProfiles.Dungeon.
+        /// </summary>
+        public DungeonTilesetProfileBuilder MaxPoolRegions(int count)
+        {
+            _active.MaxPoolRegions = count;
             return this;
         }
 

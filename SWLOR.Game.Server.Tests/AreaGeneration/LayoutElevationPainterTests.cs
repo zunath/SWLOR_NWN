@@ -117,6 +117,66 @@ public class LayoutElevationPainterTests
         };
     }
 
+    /// <summary>
+    /// BuildElevationCapableTileset plus every rotation of the Ramp-crossed rim variant (the same
+    /// two-adjacent-corners-raised shape, plus a "Ramp" edge on the axis perpendicular to the height
+    /// transition -- see LayoutElevationPainter.TryAddRampLane) needed for a lane on any of the 4
+    /// rectangle edges, both/single Ramp-edge variants.
+    /// </summary>
+    private static TilesetModel BuildRampCapableTileset()
+    {
+        // Floor-only rim vocabulary (mirrors real tde01, where Wall/SolidTerrain never carries height
+        // at all -- see LayoutElevationPainter class doc): giving Wall its own rim vocabulary too (as
+        // BuildElevationCapableTileset does) would let TryPaintSolidBlob win the region budget ahead of
+        // TryPaintOpenRoomBlob, starving the ramp hook, which only fires on the OpenTerrain path.
+        var tileset = BuildFlatOnlyTileset();
+        var nextTileId = tileset.Tiles.Count;
+        tileset.Tiles.Add(NewRaisedTile(nextTileId++, Floor, new[] { 0, 0, 1, 0 })); // one corner raised
+        tileset.Tiles.Add(NewRaisedTile(nextTileId++, Floor, new[] { 0, 1, 1, 0 })); // two adjacent corners raised
+
+        // East/west lanes: raised LEFT column (TL,BL), ground RIGHT column (TR,BR) -- Ramp on Top/Bottom.
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 1, 0, 0, 1 }, "Ramp", "", "Ramp", ""));
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 1, 0, 0, 1 }, "Ramp", "", "", ""));
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 1, 0, 0, 1 }, "", "", "Ramp", ""));
+
+        // The mirrored raised-RIGHT-column shape (west edge orientation).
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 0, 1, 1, 0 }, "Ramp", "", "Ramp", ""));
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 0, 1, 1, 0 }, "Ramp", "", "", ""));
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 0, 1, 1, 0 }, "", "", "Ramp", ""));
+
+        // North/south lanes: raised BOTTOM row (BL,BR), ground TOP row (TL,TR) -- Ramp on Left/Right.
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 0, 0, 1, 1 }, "", "Ramp", "", "Ramp"));
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 0, 0, 1, 1 }, "", "Ramp", "", ""));
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 0, 0, 1, 1 }, "", "", "", "Ramp"));
+
+        // The mirrored raised-TOP-row shape (south edge orientation).
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 1, 1, 0, 0 }, "", "Ramp", "", "Ramp"));
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 1, 1, 0, 0 }, "", "Ramp", "", ""));
+        tileset.Tiles.Add(NewEdgedTile(nextTileId++, Floor, new[] { 1, 1, 0, 0 }, "", "", "", "Ramp"));
+
+        return tileset;
+    }
+
+    private static TileRecord NewEdgedTile(int tileId, string terrain, int[] heights, string top, string right, string bottom, string left)
+    {
+        return new TileRecord
+        {
+            TileId = tileId,
+            Corners = new[] { terrain, terrain, terrain, terrain },
+            CornerHeights = heights,
+            Edges = new[] { top, right, bottom, left },
+            PathNode = "A",
+            GroupIndex = -1
+        };
+    }
+
+    private static MacroLayoutParameters BuildRampParameters(int elevationRegions)
+    {
+        var parameters = BuildParameters(elevationRegions);
+        parameters.ElevationRamps = true;
+        return parameters;
+    }
+
     private static bool AnyCellCarriesACrosser(MacroLayout layout, int x, int y)
     {
         for (var dx = -1; dx <= 0; dx++)
@@ -319,5 +379,161 @@ public class LayoutElevationPainterTests
 
         resolvedCount.Should().BeGreaterThan(0, "at least some seeds must generate successfully to evaluate elevation painting");
         paintedCount.Should().BeGreaterThan(0, "the real Dungeon/Complex composition must paint elevation on at least one of 30 seeds");
+    }
+
+    // ------------------------------------------------------------------
+    // Ramp lane (MacroLayoutParameters.ElevationRamps / TryAddRampLane)
+    // ------------------------------------------------------------------
+
+    private static bool AnyRampEdgePresent(MacroLayout layout)
+    {
+        var crossers = layout.Crossers;
+        for (var x = 0; x < crossers.Width; x++)
+        for (var y = 0; y < crossers.Height; y++)
+        {
+            for (var slot = 0; slot < 4; slot++)
+            {
+                if (string.Equals(crossers.GetEdge(x, y, slot), "Ramp", StringComparison.Ordinal))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    [Test]
+    public void Ramps_Disabled_NeverWritesRampEdgesAcrossManySeeds()
+    {
+        var tileset = BuildRampCapableTileset();
+        var parameters = BuildParameters(elevationRegions: 3); // ElevationRamps left at its false default
+
+        for (var seed = 0; seed < 20; seed++)
+        {
+            var layout = MacroLayoutGenerator.Generate(parameters, new Random(seed), tileset);
+            AnyRampEdgePresent(layout).Should().BeFalse(
+                $"seed {seed}: ElevationRamps=false is the default for every existing caller and must never write a Ramp edge");
+        }
+    }
+
+    [Test]
+    public void Ramps_NoVocabulary_LeavesGridWithoutRampEdgesEvenWhenEnabled()
+    {
+        var tileset = BuildElevationCapableTileset(); // no Ramp-edged tiles at all
+        var parameters = BuildRampParameters(elevationRegions: 3);
+
+        for (var seed = 0; seed < 20; seed++)
+        {
+            var layout = MacroLayoutGenerator.Generate(parameters, new Random(seed), tileset);
+            AnyRampEdgePresent(layout).Should().BeFalse(
+                $"seed {seed}: a tileset with zero Ramp vocabulary must leave TryAddRampLane fully inert");
+        }
+    }
+
+    [Test]
+    public void Ramps_Enabled_SometimesWritesRampEdgesAndAlwaysResolves()
+    {
+        var tileset = BuildRampCapableTileset();
+        var parameters = BuildRampParameters(elevationRegions: 2);
+
+        var rampedCount = 0;
+        var paintedCount = 0;
+        for (var seed = 0; seed < 40; seed++)
+        {
+            var layout = MacroLayoutGenerator.Generate(parameters, new Random(seed), tileset);
+            if (layout.Corners.HasAnyHeight()) paintedCount++;
+            if (AnyRampEdgePresent(layout))
+                rampedCount++;
+
+            var success = TileResolver.TryResolve(tileset, layout, new Random(seed + 1000), out _, out var failureReason);
+            success.Should().BeTrue($"seed {seed}: a layout with (or without) a ramp lane must still resolve end to end: {failureReason}");
+        }
+
+        TestContext.WriteLine($"paintedCount={paintedCount} rampedCount={rampedCount}");
+        rampedCount.Should().BeGreaterThan(0, "full Ramp vocabulary exists, so at least one of 40 seeds should splice a lane");
+    }
+
+    /// <summary>Every Ramp edge written must sit on a raised (nonzero-height) cell -- TryAddRampLane
+    /// only ever operates on rim cells of an already-placed elevation blob, never a flat cell.</summary>
+    [Test]
+    public void Ramps_OnlyEverWrittenOnRaisedCells()
+    {
+        var tileset = BuildRampCapableTileset();
+        var parameters = BuildRampParameters(elevationRegions: 3);
+
+        for (var seed = 0; seed < 40; seed++)
+        {
+            var layout = MacroLayoutGenerator.Generate(parameters, new Random(seed), tileset);
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+
+            for (var x = 0; x < crossers.Width; x++)
+            for (var y = 0; y < crossers.Height; y++)
+            {
+                var hasRamp = false;
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    if (string.Equals(crossers.GetEdge(x, y, slot), "Ramp", StringComparison.Ordinal))
+                        hasRamp = true;
+                }
+                if (!hasRamp) continue;
+
+                var anyRaisedCorner =
+                    corners.Heights[x, y] != 0 || corners.Heights[x + 1, y] != 0 ||
+                    corners.Heights[x, y + 1] != 0 || corners.Heights[x + 1, y + 1] != 0;
+                anyRaisedCorner.Should().BeTrue($"seed {seed}: Ramp-crossed cell ({x},{y}) must touch at least one raised corner");
+            }
+        }
+    }
+
+    [Test]
+    public void Ramps_SameSeed_IsDeterministic()
+    {
+        var tileset = BuildRampCapableTileset();
+        var parameters = BuildRampParameters(elevationRegions: 2);
+
+        var layoutA = MacroLayoutGenerator.Generate(parameters, new Random(555), tileset);
+        var layoutB = MacroLayoutGenerator.Generate(parameters, new Random(555), tileset);
+
+        for (var x = 0; x < layoutA.Crossers.Width; x++)
+        for (var y = 0; y < layoutA.Crossers.Height; y++)
+        for (var slot = 0; slot < 4; slot++)
+        {
+            layoutB.Crossers.GetEdge(x, y, slot).Should().Be(layoutA.Crossers.GetEdge(x, y, slot), $"cell ({x},{y}) slot {slot}");
+        }
+    }
+
+    /// <summary>Locks in the real production pairing (BaseGameTilesetProfiles.Dungeon x
+    /// StandardLayoutProfiles.Complex, which now sets ElevationRamps=true) actually splices a ramp
+    /// lane at least some of the time.</summary>
+    [Test]
+    public void RealDungeonComplexComposition_SometimesWritesRampEdges()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Dungeon];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = TilesetTestSource.LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        var rampedCount = 0;
+        var resolvedCount = 0;
+        const int size = 24;
+
+        for (var seed = 30000; seed < 30040; seed++)
+        {
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            parameters.ElevationRamps.Should().BeTrue("Dungeon/Complex must enable ramp lanes");
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            if (!solved.Success) continue;
+
+            resolvedCount++;
+            if (AnyRampEdgePresent(solved.Layout))
+                rampedCount++;
+        }
+
+        resolvedCount.Should().BeGreaterThan(0, "at least some seeds must generate successfully to evaluate ramp splicing");
+        rampedCount.Should().BeGreaterThan(0, "the real Dungeon/Complex composition must splice at least one ramp lane across 40 seeds");
     }
 }

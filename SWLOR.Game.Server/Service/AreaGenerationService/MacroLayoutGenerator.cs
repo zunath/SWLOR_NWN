@@ -138,6 +138,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // extra code on the stamper's side.
             LayoutElevationPainter.Paint(layout, parameters, tileset, random);
 
+            // Runs immediately after LayoutElevationPainter for the same reason (final heights/terrain
+            // must be settled before LayoutGroupStamper's flat-cell guards run): paints depth pools of a
+            // second terrain inside room interiors, reusing LayoutElevationPainter's own verified
+            // rectangle/rim machinery for the raised Floor bank around each pool.
+            LayoutElevationPoolPainter.Paint(layout, parameters, tileset, random);
+
             // Runs after transitions are anchored (so set pieces can avoid them) and before invariant
             // validation (so a bad stamp still fails loudly instead of silently corrupting a layout).
             if (tileset != null)

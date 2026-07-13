@@ -122,6 +122,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     // Dungeon's own onboarded pairing is Complex/Halls/Organic, but only Complex is
                     // exercised with elevation this round.
                     p.ElevationRegions = 2;
+                    // Ramp lanes are a bonus on top of ElevationRegions' own placed blobs (no-op
+                    // without at least one raised blob, and self-gated per-tileset regardless -- see
+                    // MacroLayoutParameters.ElevationRamps/LayoutElevationPainter.TryAddRampLane).
+                    p.ElevationRamps = true;
+                    // Requests up to 2 depth pools from LayoutElevationPoolPainter; a no-op on any
+                    // tileset profile whose MaxPoolRegions is 0 or AccentTerrain is empty (see
+                    // DungeonComposition.BuildLayoutParameters).
+                    p.PoolRegions = 2;
                 });
 
             // Exterior city blocks joined by wall-embedded Alley crosser tunnels instead of Corridor

@@ -502,6 +502,15 @@ static void EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, strin
     are = ReplaceFirstIntField(are, "Height", layout.Height);
     are = ReplaceFirstIntField(are, "Width", layout.Width);
 
+    // The placeholder area carries its own Tileset resref (gen_placeholder1 is a tdt01 area). At
+    // runtime the NWNX override sets the tileset explicitly, but an emitted .are must carry the
+    // REAL tileset or the toolset indexes the tile list against the wrong .set — e.g. Steamworks
+    // tile IDs (up to 178) read against tdt01's 159 tiles crash with "List index out of bounds".
+    are = System.Text.RegularExpressions.Regex.Replace(
+        are,
+        "(\"Tileset\"\\s*:\\s*\\{[^}]*\"value\"\\s*:\\s*\")[^\"]*(\")",
+        $"${{1}}{tileset.TilesetResref}$2");
+
     var start = are.IndexOf("\"Tile_List\"", StringComparison.Ordinal);
     var open = are.IndexOf('[', start);
     var close = are.IndexOf(']', open);

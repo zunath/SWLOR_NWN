@@ -2184,7 +2184,7 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool canCritical = true)
         {
-            if (baseDamage <= 0)
+            if (baseDamage <= 0 && !Combat.IsWeaponSkillType(skillType))
                 return 0;
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
@@ -2395,7 +2395,7 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool canCritical = true)
         {
-            if (baseDamage <= 0)
+            if (baseDamage <= 0 && !Combat.IsWeaponSkillType(skillType))
                 return 0;
 
             var trackedImpact = GetTrackedAbilityImpact(activator);

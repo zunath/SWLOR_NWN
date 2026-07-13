@@ -204,23 +204,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a tracked creature is destroyed, drop its tracker (its object id may be reused).
+        /// When a tracked creature is destroyed, clear its name-plate override and drop its
+        /// tracker. Clearing first matters because NWN reuses object ids — a lingering override
+        /// could otherwise "ghost" onto a new object that reuses the same id. Uses Remove(),
+        /// which no-ops for untracked objects (the common case for this frequent event).
         /// </summary>
         [NWNEventHandler(ScriptName.OnObjectDestroyed)]
         public static void RemoveTrackerOnDestroyed()
         {
-            var self = OBJECT_SELF;
-            _trackers.Remove(self);
+            Remove(OBJECT_SELF);
         }
 
         /// <summary>
-        /// When a tracked player logs out, drop their tracker.
+        /// When a tracked player logs out, clear their name-plate override and drop their tracker.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void RemoveTrackerOnExit()
         {
-            var player = GetExitingObject();
-            _trackers.Remove(player);
+            Remove(GetExitingObject());
         }
     }
 }

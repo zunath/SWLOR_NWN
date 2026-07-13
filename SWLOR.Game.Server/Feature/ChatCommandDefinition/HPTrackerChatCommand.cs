@@ -74,8 +74,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     HPTracker.Set(target, current, max);
-                    var (c, m) = HPTracker.Get(target);
-                    BroadcastNearby(target, ColorToken.Green($"{GetName(target)}'s HP tracker set to {c}/{m}."));
+                    BroadcastNearby(target, ColorToken.Green($"{GetName(target)}'s HP tracker set to {current}/{max}."));
                 });
         }
 
@@ -155,8 +154,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             }
 
             HPTracker.Adjust(target, delta);
-            var (c, m) = HPTracker.Get(target);
-            BroadcastNearby(target, ColorToken.Green($"{GetName(target)}'s HP tracker is now {c}/{m}."));
+            var (current, max) = HPTracker.Get(target);
+            BroadcastNearby(target, ColorToken.Green($"{GetName(target)}'s HP tracker is now {current}/{max}."));
         }
 
         /// <summary>

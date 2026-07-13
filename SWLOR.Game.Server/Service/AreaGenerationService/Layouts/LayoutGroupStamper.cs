@@ -39,12 +39,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
         /// <summary>
         /// Crosser names TryClassifyCorridorInsert checks a 1x1 group's tile against, in priority
-        /// order. Corridor/Alley inserts (BigDoor01/02, BigDoorAlley) sit on fully solid corners, the
-        /// same wall-embedded tunnel body Corridor/Alley chains carve; Fence inserts (FenceDoor01/02,
-        /// Interior/ExteriorFenceDoor) sit on this layout's own open terrain, matching
-        /// LayoutFenceCarver's fully-open fence run; Bridge inserts (BridgeDoor/BridgeDoor01) sit on
-        /// the accent/channel terrain, splicing into a LayoutAccentChannelCarver span (see
-        /// TryClassifyCorridorInsert's accent-terrain resolution).
+        /// order. Corridor/Alley/Custom-body inserts (BigDoor01/02, BigDoorAlley, tdc01 "[Grey] Door -
+        /// Big 1/2") sit on fully solid corners, the same wall-embedded tunnel body chain LayoutTunnelCarver
+        /// carves for the composed CorridorCrosserType; Fence inserts (FenceDoor01/02, Interior/
+        /// ExteriorFenceDoor) sit on this layout's own open terrain, matching LayoutFenceCarver's
+        /// fully-open fence run; Bridge inserts (BridgeDoor/BridgeDoor01) sit on the accent/channel
+        /// terrain, splicing into a LayoutAccentChannelCarver span (see TryClassifyCorridorInsert's
+        /// accent-terrain resolution). The Custom-mode body crosser (see
+        /// MacroLayoutParameters.TunnelBodyCrosser) is appended when configured -- see
+        /// CorridorInsertCrossersFor -- so a tileset-declared alternate body family (e.g. "GreyCorridor")
+        /// is tried alongside the two hardcoded canonical names, never in place of them (Fence/Bridge
+        /// inserts remain available even when Custom mode is active).
         /// </summary>
         private static readonly string[] CorridorInsertCrossers = { CorridorCrosser, AlleyCrosser, FenceCrosser, BridgeCrosser };
 
@@ -52,10 +57,36 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// Crosser names TryPlaceCorridorStub extends an existing Tunnel-mode chain with, in priority
         /// order. Matches a dead-end (single-edge, not an opposite pair) wall-embedded set piece —
         /// e.g. tdt01 StairsDown01/StairsUp01, tds01 StairsDown/StairsUp, vmr01
-        /// InteriorStairsDown/InteriorStairsUp/ExteriorStairsDown/ExteriorStairsUp — onto an all-solid
-        /// cell adjacent to an existing Corridor/Alley chain cell.
+        /// InteriorStairsDown/InteriorStairsUp/ExteriorStairsDown/ExteriorStairsUp, tdc01 "[Grey] Stairs
+        /// - Down/Up" — onto an all-solid cell adjacent to an existing Corridor/Alley/Custom-body chain
+        /// cell. See CorridorStubCrossersFor for how the Custom-mode body crosser is appended.
         /// </summary>
         private static readonly string[] CorridorStubCrossers = { CorridorCrosser, AlleyCrosser };
+
+        /// <summary>
+        /// Effective CorridorInsertCrossers for this composition: the two hardcoded canonical names
+        /// plus, when the layout is composed with a Custom-mode tileset-declared body crosser (see
+        /// MacroLayoutParameters.TunnelBodyCrosser), that name too -- so a district-scoped alternate
+        /// corridor family (e.g. tdc01's "GreyCorridor", tdm01's "DesertCorridor"/"OrganicCorridor")
+        /// gets the same CorridorInsert/CorridorStub set-piece treatment the canonical Corridor family
+        /// already has, without hardcoding any specific tileset's naming.
+        /// </summary>
+        private static string[] CorridorInsertCrossersFor(MacroLayoutParameters parameters)
+        {
+            return parameters.CorridorCrosserType == CorridorCrosserType.Custom &&
+                   !string.IsNullOrEmpty(parameters.TunnelBodyCrosser)
+                ? new[] { CorridorCrosser, AlleyCrosser, FenceCrosser, BridgeCrosser, parameters.TunnelBodyCrosser }
+                : CorridorInsertCrossers;
+        }
+
+        /// <summary>See <see cref="CorridorInsertCrossersFor"/>; the CorridorStub analogue.</summary>
+        private static string[] CorridorStubCrossersFor(MacroLayoutParameters parameters)
+        {
+            return parameters.CorridorCrosserType == CorridorCrosserType.Custom &&
+                   !string.IsNullOrEmpty(parameters.TunnelBodyCrosser)
+                ? new[] { CorridorCrosser, AlleyCrosser, parameters.TunnelBodyCrosser }
+                : CorridorStubCrossers;
+        }
 
         // Slot -> (Dx, Dy) step to the neighboring cell across that edge. Matches EdgeSlot's
         // Top=0/Right=1/Bottom=2/Left=3 ordering and the "Top is the +Y (north) side" convention
@@ -356,12 +387,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var allAccent = !string.IsNullOrEmpty(accentTerrain) && tile.Corners.All(c => Eq(c, accentTerrain));
             if (!allSolid && !allOpen && !allAccent) return false;
 
-            foreach (var crosser in CorridorInsertCrossers)
+            foreach (var crosser in CorridorInsertCrossersFor(parameters))
             {
-                // Corridor/Alley inserts are wall-embedded tunnel gates (solid corners); a Fence
-                // insert is a fence-run gate (this layout's open terrain); a Bridge insert is a channel
-                // gate (this layout's accent/channel terrain). Skip whichever terrain this tile's own
-                // corners don't support for that crosser.
+                // Corridor/Alley/Custom-body inserts are wall-embedded tunnel gates (solid corners); a
+                // Fence insert is a fence-run gate (this layout's open terrain); a Bridge insert is a
+                // channel gate (this layout's accent/channel terrain). Skip whichever terrain this
+                // tile's own corners don't support for that crosser.
                 var terrainMatches = crosser switch
                 {
                     FenceCrosser => allOpen,
@@ -489,7 +520,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) return false; // raised
             if (!tile.Corners.All(c => Eq(c, parameters.SolidTerrain))) return false;
 
-            foreach (var crosser in CorridorStubCrossers)
+            foreach (var crosser in CorridorStubCrossersFor(parameters))
             {
                 var hasCrosser = new bool[4];
                 var crosserCount = 0;
@@ -1029,6 +1060,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     {
                         var edge = crossers.GetEdge(neighbor.X, neighbor.Y, slot);
                         if (Eq(edge, CorridorCrosser) || Eq(edge, AlleyCrosser)) return true;
+                        if (parameters.CorridorCrosserType == CorridorCrosserType.Custom &&
+                            !string.IsNullOrEmpty(parameters.TunnelBodyCrosser) &&
+                            Eq(edge, parameters.TunnelBodyCrosser)) return true;
                     }
                 }
             }

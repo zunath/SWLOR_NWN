@@ -50,8 +50,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 wasCloned = true;
             }
 
-            // Tunnel mode (Corridor crosser type, post Alley-downgrade above) needs the full Corridor/
-            // Doorway SHAPE inventory the tunnel carver can emit, not merely both crosser names present
+            // Tunnel mode (Corridor or Custom crosser type, post Alley-downgrade above) needs the full
+            // body/port SHAPE inventory the tunnel carver can emit, not merely both crosser names present
             // in the tileset's own declared vocabulary. Some onboarded tilesets (e.g. Barrows/tbw01)
             // carve a real "corridor" crosser but never declare a "Doorway" crosser at all -- Tunnel
             // mode's port carving always needs one. Others (Illithid Interior/tii01) declare both names
@@ -64,13 +64,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // the pairing into a rooms-with-open-lanes layout instead of a resolution failure (Barrows) or
             // an unreliable one (Illithid). A tileset that downgraded out of Alley above and also lacks
             // full Corridor/Doorway shape coverage (Barrows/Streets) composes both downgrades in
-            // sequence: Alley -> Corridor -> OpenLane.
+            // sequence: Alley -> Corridor -> OpenLane. Custom (a tileset-declared alternate body/port
+            // family, see MacroLayoutParameters.TunnelBodyCrosser) is probed and downgraded the same way
+            // -- DungeonComposition.BuildLayoutParameters only ever switches a composition into Custom
+            // when the tileset profile actually declared a vocabulary, but the shape probe still runs
+            // here rather than trusting that declaration blindly, mirroring every other tileset-declared
+            // capability (AccentTerrain, ChannelTerrain, ElevationRegions, ...) in this codebase.
             if (tileset != null &&
                 parameters.CorridorMode == CorridorMode.Tunnel &&
-                parameters.CorridorCrosserType == CorridorCrosserType.Corridor &&
+                (parameters.CorridorCrosserType == CorridorCrosserType.Corridor ||
+                 parameters.CorridorCrosserType == CorridorCrosserType.Custom) &&
                 !TunnelVocabularyCheck.SupportsTunnels(
                     tileset, parameters.OpenTerrain, parameters.SecondaryOpenTerrain, parameters.SolidTerrain,
-                    CorridorCrosserType.Corridor))
+                    parameters.CorridorCrosserType, parameters.TunnelBodyCrosser, parameters.TunnelPortCrosser))
             {
                 if (!wasCloned)
                 {

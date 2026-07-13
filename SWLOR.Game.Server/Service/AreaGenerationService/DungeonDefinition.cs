@@ -148,6 +148,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int MaxPoolRegions { get; set; } = 0;
 
         /// <summary>
+        /// Alternate Tunnel-mode body crosser this tileset's district/palette carves instead of the
+        /// canonical "Corridor" (e.g. tdc01's "[Grey]" district uses "GreyCorridor") -- mechanically
+        /// identical vocabulary, just a different string the tileset's own art was authored under.
+        /// Empty = no alternate body vocabulary; the composed layout keeps using canonical Corridor/
+        /// Doorway. Only takes effect when paired with TunnelPortCrosser (both or neither) and when the
+        /// composed layout profile requests Corridor-type Tunnel mode (see
+        /// DungeonComposition.BuildLayoutParameters, which switches CorridorCrosserType to Custom).
+        /// Only set after verifying the full body/port SHAPE inventory with TunnelVocabularyCheck.
+        /// SupportsTunnels (Custom overload), not merely that both crosser names appear somewhere in the
+        /// tileset's declared vocabulary.
+        /// </summary>
+        public string TunnelBodyCrosser { get; set; } = string.Empty;
+
+        /// <summary>See <see cref="TunnelBodyCrosser"/>. May equal the canonical "Doorway" (several
+        /// districts rename only their body crosser and keep door transitions on canonical "Doorway"),
+        /// or a district-specific name (e.g. a district that renames both, like tdc01's "[Dwarven]"
+        /// district's "DwarvenDoorway" -- verify independently, since renaming the port is a materially
+        /// different shape probe than a body-only rename).</summary>
+        public string TunnelPortCrosser { get; set; } = string.Empty;
+
+        /// <summary>
         /// True for a profile that recomposes an ALREADY-onboarded tileset resref against a different
         /// terrain/district palette (e.g. "crypt_grey" recomposing tdc01's Grey palette alongside the
         /// base "crypt" profile's Tan palette) rather than onboarding a new physical tileset. Palette
@@ -248,6 +269,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (parameters.ChannelTerrain.Length == 0)
                 parameters.AccentChannels = 0;
             parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, Tileset.MinimumOpeningWidth);
+            // Tunnel body/port crosser vocabulary: a tileset profile may declare an alternate crosser
+            // family (e.g. tdc01's GreyCorridor body paired with the canonical Doorway port) that is
+            // mechanically identical to the canonical Corridor/Doorway family LayoutTunnelCarver
+            // defaults to, just under different names. Only takes effect for Tunnel-mode Corridor-type
+            // layouts -- an Alley-mode (Streets-style) layout profile keeps its own vmr01-verified
+            // vocabulary untouched -- and only when the tileset actually declared both halves of the
+            // pair; MacroLayoutGenerator still re-probes the real shape inventory before dispatch
+            // (see its Custom-mode downgrade), the same "tileset declares intent, generator re-verifies"
+            // shape as every other tileset-declared capability here.
+            if (parameters.CorridorCrosserType == CorridorCrosserType.Corridor &&
+                !string.IsNullOrEmpty(Tileset.TunnelBodyCrosser) && !string.IsNullOrEmpty(Tileset.TunnelPortCrosser))
+            {
+                parameters.CorridorCrosserType = CorridorCrosserType.Custom;
+                parameters.TunnelBodyCrosser = Tileset.TunnelBodyCrosser;
+                parameters.TunnelPortCrosser = Tileset.TunnelPortCrosser;
+            }
             // Unconditional pass-through: RoomsAndCorridorsLayout itself gates all district behavior
             // (and every extra RNG draw) behind CorridorMode == Tunnel, so stamping this even for a
             // layout profile that never uses Tunnel mode is inert.
@@ -602,6 +639,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder ExitGroup(string groupName)
         {
             _active.ExitGroups.Add(groupName);
+            return this;
+        }
+
+        /// <summary>
+        /// Declares an alternate Tunnel-mode body/port crosser pair this tileset's district/palette
+        /// carves instead of the canonical Corridor/Doorway names -- see
+        /// DungeonTilesetProfile.TunnelBodyCrosser. Only call this after verifying the full shape
+        /// inventory with TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom, body,
+        /// port), not merely that both names appear in the tileset's declared crosser list.
+        /// </summary>
+        public DungeonTilesetProfileBuilder TunnelCrossers(string bodyCrosser, string portCrosser)
+        {
+            _active.TunnelBodyCrosser = bodyCrosser;
+            _active.TunnelPortCrosser = portCrosser;
             return this;
         }
 

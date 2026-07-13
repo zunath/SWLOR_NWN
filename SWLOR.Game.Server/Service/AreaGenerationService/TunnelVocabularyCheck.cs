@@ -93,16 +93,25 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// useDistricts gate never activates a secondary-terrain room under Alley mode (verified by
         /// MultiTerrainDistrictTests.AlleyCrosserType_NeverActivatesDistrictsEvenWithSecondaryOpenTerrainConfigured),
         /// so probing it would only produce a misleading false negative, never a true one.
+        ///
+        /// <paramref name="customBodyCrosser"/>/<paramref name="customPortCrosser"/> are read only when
+        /// <paramref name="crosserType"/> is <see cref="CorridorCrosserType.Custom"/> -- pass a tileset
+        /// profile's declared TunnelBodyCrosser/TunnelPortCrosser (see
+        /// MacroLayoutParameters.TunnelBodyCrosser doc comment) to probe an alternate district-scoped
+        /// crosser family (e.g. tdc01's "GreyCorridor" body paired with the canonical "Doorway" port).
         /// </summary>
         public static bool SupportsTunnels(
             TilesetModel tileset, string openTerrain, string secondaryOpenTerrain, string solidTerrain,
-            CorridorCrosserType crosserType)
+            CorridorCrosserType crosserType, string customBodyCrosser = null, string customPortCrosser = null)
         {
             if (tileset == null) throw new ArgumentNullException(nameof(tileset));
 
             var isAlley = crosserType == CorridorCrosserType.Alley;
-            var body = isAlley ? AlleyCrosser : CorridorCrosser;
-            var port = isAlley ? AlleyCrosser : DoorwayCrosser;
+            var isCustom = crosserType == CorridorCrosserType.Custom;
+            var body = isCustom ? customBodyCrosser : isAlley ? AlleyCrosser : CorridorCrosser;
+            var port = isCustom ? customPortCrosser : isAlley ? AlleyCrosser : DoorwayCrosser;
+
+            if (string.IsNullOrEmpty(body) || string.IsNullOrEmpty(port)) return false;
 
             if (!tileset.Crossers.Contains(body, StringComparer.OrdinalIgnoreCase)) return false;
             if (!tileset.Crossers.Contains(port, StringComparer.OrdinalIgnoreCase)) return false;

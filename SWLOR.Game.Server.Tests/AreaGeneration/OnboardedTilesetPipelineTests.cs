@@ -313,6 +313,58 @@ public class OnboardedTilesetPipelineTests
     }
 
     /// <summary>
+    /// Locks in that a palette-variant profile declaring TunnelCrossers (see
+    /// DungeonTilesetProfile.TunnelBodyCrosser/TunnelPortCrosser) actually composes into
+    /// CorridorCrosserType.Custom and carves ITS OWN district-scoped body crosser under Complex --
+    /// not merely that generation succeeds (FullPipelineSucceedsAcrossManySeeds already proves that),
+    /// but that the Custom-mode downgrade path (MacroLayoutGenerator's shape re-probe) never actually
+    /// triggers for these three verified-good families, the positive-case mirror of
+    /// BarrowsComplexDowngradesToOpenLaneWithNoTunnelCrossers/IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers
+    /// above.
+    /// </summary>
+    [TestCase(BaseGameTilesetProfiles.CryptGrey, "GreyCorridor")]
+    [TestCase(BaseGameTilesetProfiles.MinesAndCavernsDesert, "DesertCorridor")]
+    [TestCase(BaseGameTilesetProfiles.MinesAndCavernsOrganic, "OrganicCorridor")]
+    public void CustomCrosserProfile_ComplexActuallyCarvesTheDeclaredBodyCrosser(string tilesetKey, string expectedBodyCrosser)
+    {
+        var tilesetProfile = TilesetProfiles[tilesetKey];
+        var layoutProfile = LayoutProfiles[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        composition.BuildLayoutParameters().CorridorCrosserType.Should().Be(CorridorCrosserType.Custom,
+            $"{tilesetKey} declares TunnelCrossers, so composing with a Corridor-type Tunnel layout must switch to Custom mode");
+
+        const int size = 20;
+        var sawBodyCrosser = false;
+        var seedCount = 0;
+
+        for (var seed = 6000; seed < 6015; seed++)
+        {
+            seedCount++;
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            solved.Success.Should().BeTrue($"seed {seed}: {tilesetKey}/Complex must succeed with its Custom crosser vocabulary -- {solved.FailureReason}");
+
+            for (var y = 0; y < solved.Layout.Corners.Height && !sawBodyCrosser; y++)
+            for (var x = 0; x < solved.Layout.Corners.Width && !sawBodyCrosser; x++)
+            for (var slot = 0; slot < 4; slot++)
+            {
+                if (string.Equals(solved.Layout.Crossers.GetEdge(x, y, slot), expectedBodyCrosser, StringComparison.OrdinalIgnoreCase))
+                    sawBodyCrosser = true;
+            }
+        }
+
+        seedCount.Should().Be(15, "the seed loop must actually have run");
+        sawBodyCrosser.Should().BeTrue(
+            $"{tilesetKey}/Complex must actually carve '{expectedBodyCrosser}' edges somewhere across the seed range -- the downgrade-to-OpenLane path must never trigger for this verified-good family");
+    }
+
+    /// <summary>
     /// Per-tile edge self-consistency: every resolved tile's oriented edge must equal the oriented
     /// edge its neighbor presents back across the shared boundary (both directions), and a tile's own
     /// declared edge must be internally well-formed (empty or a name present in this tileset's crosser

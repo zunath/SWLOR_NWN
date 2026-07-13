@@ -70,11 +70,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var allOpenLabels = LayoutCornerUtils.OpenLabelSet(parameters);
 
             // Alley mode carves vmr01's exterior alley crosser for both the tunnel body AND the room
-            // port (verified offline: no separate Doorway-equivalent exists for Alley); Corridor mode
-            // keeps the original two-crosser vocabulary.
-            var isAlley = parameters.CorridorCrosserType == CorridorCrosserType.Alley;
-            var bodyCrosser = isAlley ? AlleyCrosser : CorridorCrosser;
-            var portCrosser = isAlley ? AlleyCrosser : DoorwayCrosser;
+            // port (verified offline: no separate Doorway-equivalent exists for Alley); Custom mode
+            // carves whatever body/port pair the composed tileset profile declared (see
+            // MacroLayoutParameters.TunnelBodyCrosser/TunnelPortCrosser -- a district-scoped crosser
+            // family that is mechanically identical to Corridor/Doorway, just under different names);
+            // Corridor mode (default) keeps the original two-crosser vocabulary.
+            var bodyCrosser = parameters.CorridorCrosserType switch
+            {
+                CorridorCrosserType.Alley => AlleyCrosser,
+                CorridorCrosserType.Custom => parameters.TunnelBodyCrosser,
+                _ => CorridorCrosser
+            };
+            var portCrosser = parameters.CorridorCrosserType switch
+            {
+                CorridorCrosserType.Alley => AlleyCrosser,
+                CorridorCrosserType.Custom => parameters.TunnelPortCrosser,
+                _ => DoorwayCrosser
+            };
 
             var portsA = EnumeratePorts(corners, crossers, roomA, roomAOpen, allOpenLabels);
             var portsB = EnumeratePorts(corners, crossers, roomB, roomBOpen, allOpenLabels);

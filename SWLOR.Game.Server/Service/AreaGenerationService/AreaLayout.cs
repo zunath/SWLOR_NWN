@@ -184,12 +184,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     /// vmr01's exterior "alley" crosser instead -- verified offline against vmr01 .set data, a single
     /// crosser name serves both the tunnel body (TILE221, all-solid straight pair) AND the room-facing
     /// port (TILE210, Plaza-cornered with the crosser on the solid side) -- there is no separate
-    /// Doorway-equivalent the way Corridor mode has. Ignored unless CorridorMode is Tunnel.
+    /// Doorway-equivalent the way Corridor mode has. Custom carves an arbitrary tileset-declared
+    /// body/port crosser PAIR (see MacroLayoutParameters.TunnelBodyCrosser/TunnelPortCrosser): several
+    /// onboarded tilesets ship a district-scoped crosser family that is mechanically identical to the
+    /// Corridor/Doorway pairing, just under different names (e.g. tdc01's "[Grey]" district uses
+    /// "GreyCorridor" for the body but the CANONICAL "Doorway" for the port; tdm01's "[Desert]"/
+    /// "[Organic]" districts follow the same body-only-renamed pattern) -- production carvers only
+    /// ever WRITE the literal strings a profile declares, they never infer a family from a naming
+    /// convention. Ignored unless CorridorMode is Tunnel.
     /// </summary>
     public enum CorridorCrosserType
     {
         Corridor = 0,
-        Alley = 1
+        Alley = 1,
+        Custom = 2
     }
 
     /// <summary>
@@ -438,6 +446,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// Ignored unless CorridorMode is Tunnel; the default Corridor value is fully back-compat.
         /// </summary>
         public CorridorCrosserType CorridorCrosserType { get; set; } = CorridorCrosserType.Corridor;
+
+        /// <summary>
+        /// Tunnel body/port crosser strings used when <see cref="CorridorCrosserType"/> is Custom
+        /// (ignored otherwise). Usually stamped from DungeonTilesetProfile.TunnelBodyCrosser/
+        /// TunnelPortCrosser by DungeonComposition.BuildLayoutParameters -- see that type's own doc
+        /// comment for the "layout expresses intent, tileset profile supplies the vocabulary" shape
+        /// this mirrors (the same pattern as AccentTerrain/ChannelTerrain vs AccentDensity/
+        /// AccentChannels). LayoutTunnelCarver/TunnelVocabularyCheck read these instead of the literal
+        /// "Corridor"/"Doorway" constants when CorridorCrosserType is Custom.
+        /// </summary>
+        public string TunnelBodyCrosser { get; set; } = string.Empty;
+
+        /// <summary>See <see cref="TunnelBodyCrosser"/>.</summary>
+        public string TunnelPortCrosser { get; set; } = string.Empty;
 
         /// <summary>
         /// Fraction of additional connections carved beyond the spanning tree (0 = tree only).

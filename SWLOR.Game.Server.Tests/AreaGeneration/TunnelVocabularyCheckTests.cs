@@ -171,4 +171,63 @@ public class TunnelVocabularyCheckTests
         TunnelVocabularyCheck.SupportsTunnels(model, "Plaza", "Floor", model.DefaultTerrain, CorridorCrosserType.Alley)
             .Should().BeTrue("Alley mode never activates districts, so an unsupported secondary-terrain boundary shape must not gate the verdict");
     }
+
+    // ============================================================
+    // Custom crosser vocabulary: district-scoped alternate body/port families a tileset profile can
+    // declare (see MacroLayoutParameters.TunnelBodyCrosser/DungeonTilesetProfile.TunnelBodyCrosser).
+    // Empirically probed directly against the SWLOR_Haks-resolved .set data for every district family
+    // this generalization pass investigated -- see BaseGameTilesetProfiles.CryptGrey/CryptDwarven/
+    // MinesAndCavernsDesert/MinesAndCavernsOrganic for the wiring these verdicts justify.
+    // ============================================================
+
+    [Test]
+    public void CryptGrey_SupportsCustomTunnels_GreyCorridorDoorway()
+    {
+        var model = LoadTileset("tdc01");
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, "GreyFloor", string.Empty, model.DefaultTerrain, CorridorCrosserType.Custom, "GreyCorridor", "Doorway")
+            .Should().BeTrue("tdc01's [Grey] district renames only its Tunnel body crosser (\"GreyCorridor\") and keeps the canonical \"Doorway\" port -- TILE515 and the GreyFloor|Wall boundary tiles carry it directly");
+    }
+
+    [Test]
+    public void CryptDwarven_DoesNotSupportCustomTunnels_DwarvenCorridorDwarvenDoorway()
+    {
+        var model = LoadTileset("tdc01");
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, "DwarvenFloor", string.Empty, model.DefaultTerrain, CorridorCrosserType.Custom, "DwarvenCorridor", "DwarvenDoorway")
+            .Should().BeFalse("tdc01's [Dwarven] district renames BOTH halves of the pair and has no resolvable DwarvenFloor|Wall boundary tile carrying a lone \"DwarvenDoorway\" edge -- a genuine gap, not merely an unwired name (matches ExpectedUnsupported above)");
+    }
+
+    [Test]
+    public void MinesAndCavernsDesert_SupportsCustomTunnels_DesertCorridorDoorway()
+    {
+        var model = LoadTileset("tdm01");
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, "Desert", string.Empty, model.DefaultTerrain, CorridorCrosserType.Custom, "DesertCorridor", "Doorway")
+            .Should().BeTrue("tdm01's [Desert] district renames only its Tunnel body crosser (\"DesertCorridor\") and keeps the canonical \"Doorway\" port, mirroring Crypt Grey's own shape");
+    }
+
+    [Test]
+    public void MinesAndCavernsOrganic_SupportsCustomTunnels_OrganicCorridorDoorway()
+    {
+        var model = LoadTileset("tdm01");
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, "Organic", string.Empty, model.DefaultTerrain, CorridorCrosserType.Custom, "OrganicCorridor", "Doorway")
+            .Should().BeTrue("tdm01's [Organic] district renames only its Tunnel body crosser (\"OrganicCorridor\") and keeps the canonical \"Doorway\" port, mirroring Desert's own shape");
+    }
+
+    /// <summary>
+    /// tdm01 ships a SECOND, independent alternate body family per district ("Tracks"/"DesertTracks"/
+    /// "OrganicTracks") that is ALSO fully shape-verified -- confirmed here so the "stays unwired"
+    /// documentation in BaseGameTilesetProfiles/TileCoverageCensusTests is a real, checked capability
+    /// gap (one Tunnel body/port slot per profile) rather than an unverified assumption.
+    /// </summary>
+    [Test]
+    public void MinesAndCavernsDesert_TracksFamilyAlsoSupportsCustomTunnels_ButIsNotWired()
+    {
+        var model = LoadTileset("tdm01");
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, "Desert", string.Empty, model.DefaultTerrain, CorridorCrosserType.Custom, "DesertTracks", "Doorway")
+            .Should().BeTrue("DesertTracks is a second, fully shape-verified alternate body family alongside DesertCorridor -- a tileset profile carries only one Tunnel body/port slot, so this stays unwired (see BaseGameTilesetProfiles.MinesAndCavernsDesert)");
+    }
 }

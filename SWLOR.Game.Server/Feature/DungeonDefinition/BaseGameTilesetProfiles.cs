@@ -120,13 +120,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // default 1. AccentTerrain("GreyPit") mirrors Tan's Pit -- "[Grey] Door - Bridge 1" is an
             // all-GreyPit-cornered Bridge-gated adapter, the identical shape. "[Grey] Door - Fence 1/2"
             // and "[Grey] Door - Transition" use the CANONICAL Fence/Doorway crosser names (not a
-            // Grey-prefixed variant), so they compose normally; "[Grey] Door - Big 1/2" and "[Grey]
-            // Stairs - Down/Up" (the 1x1 forms) are excluded -- they carry a "GreyCorridor" edge, a
-            // real district-specific crosser name outside the shared layout carvers' hardcoded Doorway/
-            // Corridor/Alley/Fence/Bridge vocabulary (production carvers write the literal string
-            // "Corridor", never "GreyCorridor"), so no composed layout can ever select them; this is a
-            // genuine capability gap, not a curation omission, and TileCoverageCensusTests'
-            // PilotAlternateVocabCrossers["tdc01"] keeps exempting them for exactly that reason. Every
+            // Grey-prefixed variant), so they compose normally. TunnelCrossers("GreyCorridor", "Doorway")
+            // declares the district's own body-renamed Tunnel vocabulary -- verified via
+            // TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom, "GreyCorridor",
+            // "Doorway") returning true (the district keeps the CANONICAL "Doorway" port -- only the
+            // body chain is renamed -- confirmed directly: "[Grey] Door - Transition"/TILE675 and the
+            // GreyFloor|Wall boundary tile TILE515 both carry a literal "Doorway" edge, never a
+            // "GreyDoorway"). This closes the last real capability gap: "[Grey] Door - Big 1/2"
+            // (TILE575/640, a GreyCorridor opposite-pair) and "[Grey] Stairs - Down/Up" (TILE578/579, a
+            // GreyCorridor single-edge dead end) now classify as SetPieceCorridorInsert/
+            // SetPieceCorridorStub the same way tdt01's BigDoor01/02 and StairsDown01/StairsUp01 always
+            // have (see LayoutGroupStamper.CorridorInsertCrossersFor/CorridorStubCrossersFor). Every
             // other Grey group (Platforms, Wall Sections, Pillar, Stairs 2x2, Treasure, Chessboard,
             // Portal, Mass Grave, Exit 1/2) mirrors Tan's own wired set piece/feature-tile/exit-group
             // shapes tile-for-tile. IsPaletteVariant() excludes this profile from --matrix's full
@@ -139,6 +143,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .PrimaryOpenTerrain("GreyFloor")
                 .AccentTerrain("GreyPit")
+                .TunnelCrossers("GreyCorridor", "Doorway")
                 .FeatureTile("[Grey] Treasure 1", 2)
                 .FeatureTile("[Grey] Treasure 2", 2)
                 .FeatureTile("[Grey] Pillar 1")
@@ -159,6 +164,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Grey] Door - Fence 1", 1)
                 .SetPiece("[Grey] Door - Fence 2", 1)
                 .SetPiece("[Grey] Door - Transition", 1)
+                .SetPiece("[Grey] Door - Big 1", 1)
+                .SetPiece("[Grey] Door - Big 2", 1)
+                .SetPiece("[Grey] Stairs - Down", 1)
+                .SetPiece("[Grey] Stairs - Up", 1)
                 .SetPiece("[Grey] Stairs - Down (2x2)")
                 .SetPiece("[Grey] Stairs - Up (2x2)")
                 .ExitGroup("[Grey] Exit 1")
@@ -176,11 +185,15 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // same real capability gap as Crypt (Grey)'s GreyCorridor exclusion, just larger here:
             // because [Dwarven] keeps even its DOOR TRANSITIONS on the non-canonical "DwarvenDoorway"
             // (where [Grey]/[Tan] use the canonical "Doorway"), no Doorway-port boundary shape exists
-            // against DwarvenFloor at all, TunnelVocabularyCheck.SupportsTunnels is false for this
-            // profile (locked in by TunnelVocabularyCheckTests.ExpectedUnsupported), and
-            // MacroLayoutGenerator downgrades Complex's Tunnel mode to OpenLane before dispatch -- the
-            // same machinery as Barrows' missing-Doorway gap, verified green in
-            // OnboardedTilesetPipelineTests. "[Dwarven] Cave Entrance (2x1)" mixes THREE terrains (DwarvenFloor/DwarvenPit/
+            // against DwarvenFloor at all -- confirmed even under the generalized Custom-vocabulary
+            // probe (TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom,
+            // "DwarvenCorridor", "DwarvenDoorway") returns false), so TunnelCrossers() is deliberately
+            // NOT called here: unlike Grey/Desert/Organic, this isn't a body-only rename with an intact
+            // canonical port, it's a genuine missing boundary shape (locked in by
+            // TunnelVocabularyCheckTests.ExpectedUnsupported), and MacroLayoutGenerator downgrades
+            // Complex's Tunnel mode to OpenLane before dispatch -- the same machinery as Barrows'
+            // missing-Doorway gap, verified green in OnboardedTilesetPipelineTests. "[Dwarven] Cave
+            // Entrance (2x1)" mixes THREE terrains (DwarvenFloor/DwarvenPit/
             // Wall) in one group -- outside ClassifyMultiTileSetPiece's two-terrain (Solid/Open or
             // Solid/Secondary) shape -- and stays exempted, a genuine structural gap shared with the
             // base Crypt profile's own scope (multi-terrain sets are never wired anywhere in this file).
@@ -428,11 +441,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // DesertLava) -- "[Desert] Door - Bridge, Water" is an all-DesertWater-cornered Bridge
             // adapter, the identical shape. "[Desert] Door - Transition" uses the CANONICAL "Doorway"
             // crosser (composes normally); "[Desert] Door - Fence 1/2" use the canonical "Fence" crosser.
-            // "[Desert] Door - Big 1-4" and "[Desert] Stairs - Down/Up 1/2" (the 1x1 forms) are excluded
-            // -- they carry "DesertCorridor"/"DesertTracks" edges, district-specific crosser names
-            // outside the shared layout carvers' hardcoded vocabulary (the carvers only ever write the
-            // literal "Corridor"), the same real capability gap as Crypt (Grey)'s GreyCorridor exclusion
-            // -- TileCoverageCensusTests.PilotAlternateVocabCrossers["tdm01"] keeps exempting them.
+            // "[Desert] Door - Big 1/2" (TILE770/851) and "[Desert] Stairs - Down/Up 1" (TILE774/775)
+            // carry a "DesertCorridor" edge; TunnelCrossers("DesertCorridor", "Doorway") declares that
+            // body-renamed family (port stays the CANONICAL "Doorway" -- "[Desert] Door - Transition"
+            // uses it directly, mirroring Crypt Grey's own body-only-renamed shape). Verified via
+            // TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom, "DesertCorridor",
+            // "Doorway") returning true; this closes Door - Big 1/2 and Stairs - Down/Up 1 as
+            // SetPieceCorridorInsert/SetPieceCorridorStub. "[Desert] Door - Big 3/4" and "[Desert]
+            // Stairs - Down/Up 2" are a SECOND, independent alternate body family ("DesertTracks",
+            // itself independently shape-verified True) -- a tileset profile carries only one Tunnel
+            // body/port slot, so wiring DesertCorridor here leaves DesertTracks's own four pieces
+            // exempt; closing that second family needs a dedicated profile (same "one body crosser per
+            // composition" constraint LayoutTunnelCarver enforces), left for a future wave.
             // "[Desert] Cave Entrance" and "[Desert] Ramp" are non-flat (HasHeightTransition tiles,
             // outside this pilot's flat-only classifiers) and excluded, matching [Cave]'s own Ramp/Cave
             // Entrance exclusion. Every other Desert group (Platforms, Pillar, Stairs 2x2, Treasure,
@@ -449,6 +469,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Desert")
                 .AccentTerrain("DesertWater")
+                .TunnelCrossers("DesertCorridor", "Doorway")
                 .FeatureTile("[Desert] Treasure 1", 2)
                 .FeatureTile("[Desert] Treasure 2 - Water", 2)
                 .FeatureTile("[Desert] Treasure 2 - Lava", 2)
@@ -464,6 +485,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Desert] Door - Fence 2", 1)
                 .SetPiece("[Desert] Door - Bridge, Water", 1)
                 .SetPiece("[Desert] Door - Transition", 1)
+                .SetPiece("[Desert] Door - Big 1", 1)
+                .SetPiece("[Desert] Door - Big 2", 1)
+                .SetPiece("[Desert] Stairs - Down 1", 1)
+                .SetPiece("[Desert] Stairs - Up 1", 1)
                 .SetPiece("[Desert] Stairs - Down (2x2)")
                 .SetPiece("[Desert] Stairs - Up, Water (2x2)")
                 .SetPiece("[Desert] Platform 1 (2x2)")
@@ -489,8 +514,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // (OrganicWater/OrganicPit/OrganicSlime). The curation is a name-for-name mirror of Desert's
             // (this mega-set's four districts are authored in lockstep): canonical-crosser pieces
             // (Door - Transition on "Doorway", Door - Fence 1/2 on "Fence", Door - Bridge, Water) are
-            // wired; "OrganicCorridor"/"OrganicTracks" pieces (Door - Big 1-4, Stairs - Down/Up 1/2 1x1
-            // forms) stay excluded as non-canonical district crossers, and Cave Entrance/Ramp stay
+            // wired; TunnelCrossers("OrganicCorridor", "Doorway") mirrors Desert's own body-only-rename
+            // shape (verified via TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom,
+            // "OrganicCorridor", "Doorway") returning true), closing "[Organic] Door - Big 1/2"
+            // (TILE1123/1204) and "[Organic] Stairs - Down/Up 1" (TILE1127/1128) as
+            // SetPieceCorridorInsert/SetPieceCorridorStub; "OrganicTracks" (Door - Big 3/4, Stairs -
+            // Down/Up 2) is the same second independent alternate family as Desert's own DesertTracks and
+            // stays unwired for the same one-body-crosser-per-profile reason, and Cave Entrance/Ramp stay
             // excluded as non-flat -- see the Desert profile's comment for the full reasoning.
             _builder.Create(MinesAndCavernsOrganic, "Mines and Caverns (Organic)")
                 .Tileset("tdm01")
@@ -499,6 +529,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Organic")
                 .AccentTerrain("OrganicWater")
+                .TunnelCrossers("OrganicCorridor", "Doorway")
                 .FeatureTile("[Organic] Treasure 1", 2)
                 .FeatureTile("[Organic] Treasure 2 - Water", 2)
                 .FeatureTile("[Organic] Treasure 2 - Slime", 2)
@@ -514,6 +545,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Organic] Door - Fence 2", 1)
                 .SetPiece("[Organic] Door - Bridge, Water", 1)
                 .SetPiece("[Organic] Door - Transition", 1)
+                .SetPiece("[Organic] Door - Big 1", 1)
+                .SetPiece("[Organic] Door - Big 2", 1)
+                .SetPiece("[Organic] Stairs - Down 1", 1)
+                .SetPiece("[Organic] Stairs - Up 1", 1)
                 .SetPiece("[Organic] Stairs - Down (2x2)")
                 .SetPiece("[Organic] Stairs - Up, Water (2x2)")
                 .SetPiece("[Organic] Stairs - Up, Slime (2x2)")

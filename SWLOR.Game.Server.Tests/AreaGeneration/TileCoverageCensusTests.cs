@@ -49,6 +49,17 @@ public class TileCoverageCensusTests
         public string Secondary = string.Empty;
         public string Accent = string.Empty; // blob-patch terrain (LayoutAccentPainter)
         public string Channel = string.Empty; // channel/bank terrain (LayoutAccentChannelCarver), falls back to Accent
+
+        /// <summary>
+        /// Tunnel body/port crosser names this profile carves -- canonical "Corridor"/"Doorway" unless
+        /// the profile declares an alternate district-scoped family (see
+        /// DungeonTilesetProfile.TunnelBodyCrosser/TunnelPortCrosser, mirrored here so
+        /// IsCorridorInsertEligible/IsCorridorStubEligible/ClassifyMultiTileSetPiece credit the SAME
+        /// alternate vocabulary LayoutGroupStamper.CorridorInsertCrossersFor/CorridorStubCrossersFor
+        /// and LayoutTunnelCarver actually carve for a Custom-mode composition).
+        /// </summary>
+        public string TunnelBody = CorridorCrosser;
+        public string TunnelPort = DoorwayCrosser;
     }
 
     private static TilesetVocabulary BuildVocabulary(TilesetModel model, DungeonTilesetProfile profile)
@@ -60,6 +71,8 @@ public class TileCoverageCensusTests
             Secondary = profile.SecondaryOpenTerrain ?? string.Empty,
             Accent = profile.AccentTerrain ?? string.Empty,
             Channel = !string.IsNullOrEmpty(profile.ChannelTerrain) ? profile.ChannelTerrain : (profile.AccentTerrain ?? string.Empty),
+            TunnelBody = !string.IsNullOrEmpty(profile.TunnelBodyCrosser) ? profile.TunnelBodyCrosser : CorridorCrosser,
+            TunnelPort = !string.IsNullOrEmpty(profile.TunnelPortCrosser) ? profile.TunnelPortCrosser : DoorwayCrosser,
         };
     }
 
@@ -323,7 +336,10 @@ public class TileCoverageCensusTests
         var allAccent = !string.IsNullOrEmpty(vocab.Channel) && tile.Corners.All(c => Eq(c, vocab.Channel));
         if (!allSolid && !allOpen && !allSecondary && !allAccent) return false;
 
-        foreach (var crosser in new[] { CorridorCrosser, AlleyCrosser, FenceCrosser, BridgeCrosser })
+        // vocab.TunnelBody defaults to the canonical "Corridor" (see BuildVocabulary) -- an alternate
+        // district-scoped body crosser (e.g. tdc01's "GreyCorridor") is credited here the same way
+        // LayoutGroupStamper.CorridorInsertCrossersFor tries it for a Custom-mode composition.
+        foreach (var crosser in new[] { vocab.TunnelBody, AlleyCrosser, FenceCrosser, BridgeCrosser })
         {
             // Fence gates splice into a LayoutFenceCarver run in EITHER the primary or (when
             // districted) secondary open terrain -- see LayoutFenceCarver.CarveFences' independent
@@ -371,7 +387,7 @@ public class TileCoverageCensusTests
         {
             var edge = tile.Edges[slot] ?? string.Empty;
             if (edge.Length == 0) continue;
-            if (!IsDoorway(edge)) { doorwayOnly = false; break; }
+            if (!IsDoorway(edge) && !Eq(edge, vocab.TunnelPort)) { doorwayOnly = false; break; }
             hasDoorway[slot] = true;
         }
         if (!doorwayOnly) return false;
@@ -384,8 +400,10 @@ public class TileCoverageCensusTests
     }
 
     /// <summary>True when the tileset carries at least one flat, all-solid-corner tile with exactly
-    /// one Corridor edge and its opposite edge Doorway (the other two blank) -- mirrors
-    /// LayoutGroupStamper.HasCorridorDoorwayAdapter.</summary>
+    /// one body-crosser edge and its opposite edge a port-crosser edge (the other two blank) -- mirrors
+    /// LayoutGroupStamper.HasCorridorDoorwayAdapter. vocab.TunnelBody/TunnelPort default to the
+    /// canonical "Corridor"/"Doorway" pair (see BuildVocabulary), so this is unchanged for every
+    /// profile that doesn't declare an alternate Tunnel crosser family.</summary>
     private static bool HasCorridorDoorwayAdapter(TilesetModel model, TilesetVocabulary vocab)
     {
         foreach (var candidate in model.Tiles)
@@ -400,8 +418,8 @@ public class TileCoverageCensusTests
             {
                 var edge = candidate.Edges[slot] ?? string.Empty;
                 if (edge.Length == 0) continue;
-                if (Eq(edge, CorridorCrosser)) corridorSlot = slot;
-                else if (IsDoorway(edge)) doorwaySlot = slot;
+                if (Eq(edge, vocab.TunnelBody)) corridorSlot = slot;
+                else if (Eq(edge, vocab.TunnelPort) || IsDoorway(edge)) doorwaySlot = slot;
                 else { onlyThoseTwo = false; break; }
             }
 
@@ -419,7 +437,7 @@ public class TileCoverageCensusTests
         if (!IsFlat(tile)) return false;
         if (!tile.Corners.All(c => Eq(c, vocab.Solid))) return false;
 
-        foreach (var crosser in new[] { CorridorCrosser, AlleyCrosser })
+        foreach (var crosser in new[] { vocab.TunnelBody, AlleyCrosser })
         {
             var crosserCount = 0;
             var edgesMatch = true;
@@ -684,14 +702,30 @@ public class TileCoverageCensusTests
     /// </summary>
     private static readonly Dictionary<string, HashSet<string>> PilotAlternateVocabCrossers = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["tdc01"] = new(StringComparer.OrdinalIgnoreCase) { "GreyCorridor", "DwarvenDoorway", "DwarvenCorridor", "ChultDoorway", "ChultCorridor" },
+        // "GreyCorridor" is no longer here: BaseGameTilesetProfiles.CryptGrey declares it as
+        // TunnelBodyCrosser (paired with the canonical "Doorway" port), a verified body-only-renamed
+        // family (see that profile's own doc comment) -- the census now credits it the same way
+        // LayoutGroupStamper/LayoutTunnelCarver do for a Custom-mode composition. "DwarvenCorridor"/
+        // "DwarvenDoorway"/"ChultDoorway"/"ChultCorridor" remain unwired: Dwarven renames BOTH halves
+        // of the pair with no verified boundary shape (TunnelVocabularyCheck.SupportsTunnels returns
+        // false even under the generalized Custom probe), and Chult has no boundary/open-terrain tile
+        // at all (every Chult-crossered tile is all-Wall-cornered) -- see BaseGameTilesetProfiles.Crypt.
+        ["tdc01"] = new(StringComparer.OrdinalIgnoreCase) { "DwarvenDoorway", "DwarvenCorridor", "ChultDoorway", "ChultCorridor" },
         ["tde01"] = new(StringComparer.OrdinalIgnoreCase) { "MazeMosaic" },
         ["tin01"] = new(StringComparer.OrdinalIgnoreCase),
         ["tbw01"] = new(StringComparer.OrdinalIgnoreCase) { "door_barrow", "door_corridor" },
+        // "DesertCorridor"/"OrganicCorridor" are no longer here: BaseGameTilesetProfiles.
+        // MinesAndCavernsDesert/MinesAndCavernsOrganic declare them as TunnelBodyCrosser (paired with
+        // the canonical "Doorway" port), verified body-only-renamed families mirroring Crypt Grey's own
+        // shape. "Tracks"/"DesertTracks"/"OrganicTracks" are SECOND, independent alternate body
+        // families (each its own full shape-verified vocabulary, confirmed by direct probe) that stay
+        // unwired -- a tileset profile carries only one Tunnel body/port slot, so closing these needs a
+        // dedicated profile per family, left for a future wave. "DesertFence"/"CityFence" are
+        // unrelated (Fence-carver vocabulary, not Tunnel body/port) and stay unwired/out of scope.
         ["tdm01"] = new(StringComparer.OrdinalIgnoreCase)
         {
-            "Tracks", "DesertCorridor", "DesertTracks", "DesertFence",
-            "OrganicCorridor", "OrganicTracks", "CityFence",
+            "Tracks", "DesertTracks", "DesertFence",
+            "OrganicTracks", "CityFence",
         },
         ["tdr01"] = new(StringComparer.OrdinalIgnoreCase),
         ["tic01"] = new(StringComparer.OrdinalIgnoreCase) { "Window", "MazeMosaic", "MazeMarble" },

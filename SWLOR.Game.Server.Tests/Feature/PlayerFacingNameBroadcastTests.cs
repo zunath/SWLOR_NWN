@@ -127,9 +127,13 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);");
         communicationSource.Should().Contain("private static void SendProcessedChatMessage(");
         communicationSource.Should().NotContain("SendMessageToPC(receiver");
-        communicationSource.Should().Contain("var finalChannel = channel == ChatChannel.PlayerParty");
-        communicationSource.Should().Contain("? ChatChannel.DMTalk");
-        communicationSource.Should().Contain("ChatPlugin.SendMessage(finalChannel, message, speaker, receiver)");
+        // NWNX_Rename only patches the per-observer name override around the native Party/Shout/Tell
+        // chat functions (see its HOOK_CHAT registrations) - not Talk/Whisper (which instead rely on
+        // the speaker's object update already being visible/patched to a nearby observer) and not any
+        // DM_* channel. Comms must dispatch on the native PlayerParty channel, not DMTalk, or the
+        // override never applies and the speaker's true name leaks once they leave the receiver's area.
+        communicationSource.Should().NotContain("ChatChannel.DMTalk");
+        communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
         communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");
         communicationSource.Should().NotContain("ChatChannel.PlayerDM, finalMessageColored");

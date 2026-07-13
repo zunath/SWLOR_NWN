@@ -436,15 +436,19 @@ namespace SWLOR.Game.Server.Service
             uint speaker,
             string message)
         {
-            // Comms uses DMTalk to cross area boundaries without adding the native party chat label.
-            var finalChannel = channel == ChatChannel.PlayerParty
-                ? ChatChannel.DMTalk
-                : channel;
-
+            // NWNX_Rename only patches the per-observer PC name override around three native chat
+            // functions - Party, Shout, and Tell (see the plugin's HOOK_CHAT registrations). Talk and
+            // Whisper are not among them; they render correctly today only because the speaker's
+            // object update is already visible/patched for a nearby observer. DM_Talk is not hooked at
+            // all, so routing cross-area Comms through it (as before) always rendered the speaker's
+            // true name regardless of the override. Route Comms through the native Party channel
+            // instead - Rename patches it, and an explicit per-receiver target dispatches directly
+            // rather than broadcasting to nearby party members, so it still crosses area/planet
+            // boundaries the same way DMTalk did.
             PlayerName.SendChatMessageWithChatNameOverride(
                 receiver,
                 speaker,
-                () => ChatPlugin.SendMessage(finalChannel, message, speaker, receiver));
+                () => ChatPlugin.SendMessage(channel, message, speaker, receiver));
         }
 
         private static bool IsChatCommandMessage(string message)

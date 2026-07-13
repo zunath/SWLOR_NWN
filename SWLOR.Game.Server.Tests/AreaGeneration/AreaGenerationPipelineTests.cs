@@ -17,21 +17,7 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 public class AreaGenerationPipelineTests
 {
     // haks subdirectory each tileset's .set file lives under.
-    private static readonly Dictionary<string, string> TilesetHakDirectories = new()
-    {
-        ["tdt01"] = "sw_t_minecave",
-        ["zsf01"] = "sw_t_scifibase",
-        ["tds01"] = "sw_t_sewer",
-        ["vmr01"] = "sw_t_alienruin",
-    };
-
-    private static TilesetModel LoadTileset(string tilesetResref)
-    {
-        var root = FindRepositoryRoot();
-        var hakDirectory = TilesetHakDirectories[tilesetResref];
-        var contents = File.ReadAllText(Path.Combine(root.FullName, "SWLOR_Haks", hakDirectory, $"{tilesetResref}.set"));
-        return TilesetSetParser.Parse(tilesetResref, contents);
-    }
+    private static TilesetModel LoadTileset(string tilesetResref) => TilesetTestSource.LoadTileset(tilesetResref);
 
     [TestCase("tdt01")]
     [TestCase("zsf01")]
@@ -221,9 +207,12 @@ public class AreaGenerationPipelineTests
         failures.Should().BeEmpty($"every {style} macro layout must resolve against the real {tilesetResref} inventory");
     }
 
+    // The four original generation tilesets (matches the former TilesetHakDirectories.Keys set).
+    private static readonly string[] KnownTilesetResrefs = { "tdt01", "zsf01", "tds01", "vmr01" };
+
     private static IEnumerable<TestCaseData> StyleMatrixCases()
     {
-        foreach (var tileset in TilesetHakDirectories.Keys)
+        foreach (var tileset in KnownTilesetResrefs)
         {
             foreach (var style in AllStyles)
             {
@@ -232,17 +221,4 @@ public class AreaGenerationPipelineTests
         }
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

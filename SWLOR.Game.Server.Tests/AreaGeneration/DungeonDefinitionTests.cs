@@ -199,6 +199,7 @@ public class DungeonDefinitionTests
         var root = FindRepositoryRoot();
         var moduleAreaResrefs = ReadModuleAreaListResrefs(root);
         var failures = new List<string>();
+        var profilesByPlaceholder = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var (key, profile) in BuildAllTilesetProfiles())
         {
@@ -220,12 +221,35 @@ public class DungeonDefinitionTests
                 failures.Add($"{key}: placeholder '{profile.PlaceholderResref}' is not listed in Module/ifo/module.ifo.json Mod_Area_list.");
             }
 
-            using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(arePath));
-            if (!document.RootElement.TryGetProperty("Tileset", out var tileset) ||
-                !tileset.TryGetProperty("value", out var tilesetValue) ||
-                !string.Equals(tilesetValue.GetString(), profile.TilesetResref, StringComparison.OrdinalIgnoreCase))
+            if (!profilesByPlaceholder.TryGetValue(profile.PlaceholderResref, out var sharing))
             {
-                failures.Add($"{key}: placeholder '{profile.PlaceholderResref}' area Tileset does not match profile TilesetResref '{profile.TilesetResref}'.");
+                sharing = new List<string>();
+                profilesByPlaceholder[profile.PlaceholderResref] = sharing;
+            }
+            sharing.Add(profile.TilesetResref);
+        }
+
+        // A placeholder's baked-in .are Tileset field only needs to match AT LEAST ONE profile that
+        // references it, not every profile: cross-tileset override (LayoutSolver/AreaSynthesizer +
+        // NWNX TilesetPlugin's runtime tile-model override) is proven live -- any tileset can be
+        // stamped onto any placeholder at generation time -- so multiple tileset profiles
+        // intentionally share one placeholder (e.g. gen_placeholder1 backs Cavern's tdt01 AND the
+        // base-game pilots' tdc01/tde01/tin01). This still catches a genuine typo: a placeholder
+        // referenced by profiles whose TilesetResref never matches its own baked field at all.
+        foreach (var (placeholderResref, tilesetResrefs) in profilesByPlaceholder)
+        {
+            var arePath = Path.Combine(root.FullName, "Module", "are", $"{placeholderResref}.are.json");
+            if (!File.Exists(arePath)) continue; // already reported above
+
+            using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(arePath));
+            var bakedTileset = document.RootElement.TryGetProperty("Tileset", out var tileset) &&
+                                tileset.TryGetProperty("value", out var tilesetValue)
+                ? tilesetValue.GetString()
+                : null;
+
+            if (bakedTileset == null || !tilesetResrefs.Any(t => string.Equals(t, bakedTileset, StringComparison.OrdinalIgnoreCase)))
+            {
+                failures.Add($"placeholder '{placeholderResref}' area Tileset '{bakedTileset}' does not match ANY referencing profile's TilesetResref ({string.Join(", ", tilesetResrefs)}).");
             }
         }
 

@@ -19,35 +19,7 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 /// </summary>
 public class EdgeCrosserResolutionTests
 {
-    private static readonly Dictionary<string, string> TilesetHakDirectories = new()
-    {
-        ["tdt01"] = "sw_t_minecave",
-        ["zsf01"] = "sw_t_scifibase",
-        ["tds01"] = "sw_t_sewer",
-        ["vmr01"] = "sw_t_alienruin",
-    };
-
-    private static TilesetModel LoadTileset(string tilesetResref)
-    {
-        var root = FindRepositoryRoot();
-        var hakDirectory = TilesetHakDirectories[tilesetResref];
-        var contents = File.ReadAllText(Path.Combine(root.FullName, "SWLOR_Haks", hakDirectory, $"{tilesetResref}.set"));
-        return TilesetSetParser.Parse(tilesetResref, contents);
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
+    private static TilesetModel LoadTileset(string tilesetResref) => TilesetTestSource.LoadTileset(tilesetResref);
 
     // ------------------------------------------------------------------
     // 1. Back-compat regression: blank Crossers must resolve exactly like the pre-crosser resolver.

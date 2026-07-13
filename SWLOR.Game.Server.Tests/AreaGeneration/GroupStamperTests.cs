@@ -17,39 +17,12 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 /// </summary>
 public class GroupStamperTests
 {
-    private static readonly Dictionary<string, string> TilesetHakDirectories = new()
-    {
-        ["tdt01"] = "sw_t_minecave",
-        ["zsf01"] = "sw_t_scifibase",
-        ["tds01"] = "sw_t_sewer",
-        ["vmr01"] = "sw_t_alienruin",
-    };
+    private static TilesetModel LoadTileset(string tilesetResref) => TilesetTestSource.LoadTileset(tilesetResref);
 
     // Slot -> (Dx, Dy) step to the neighboring cell across that edge, matching EdgeSlot's
     // Top=0/Right=1/Bottom=2/Left=3 ordering. Duplicated from LayoutGroupStamper (internal, no
     // InternalsVisibleTo) so this test file can walk edges through the public MacroLayout surface.
     private static readonly (int Dx, int Dy)[] SlotOffsets = { (0, 1), (1, 0), (0, -1), (-1, 0) };
-
-    private static TilesetModel LoadTileset(string tilesetResref)
-    {
-        var root = FindRepositoryRoot();
-        var hakDirectory = TilesetHakDirectories[tilesetResref];
-        var contents = File.ReadAllText(Path.Combine(root.FullName, "SWLOR_Haks", hakDirectory, $"{tilesetResref}.set"));
-        return TilesetSetParser.Parse(tilesetResref, contents);
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var current = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "SWLOR.Game.Server.sln")))
-                return current;
-            current = current.Parent;
-        }
-
-        throw new InvalidOperationException("Could not locate repository root (SWLOR.Game.Server.sln).");
-    }
 
     private static MacroLayoutParameters FacilityCorridorComplexParameters(TilesetModel model, Dictionary<string, int> setPieces)
     {

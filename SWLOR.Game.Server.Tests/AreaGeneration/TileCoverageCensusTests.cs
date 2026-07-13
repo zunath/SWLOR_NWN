@@ -27,34 +27,7 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 /// </summary>
 public class TileCoverageCensusTests
 {
-    private static readonly Dictionary<string, string> TilesetHakDirectories = new()
-    {
-        ["tdt01"] = "sw_t_minecave",
-        ["zsf01"] = "sw_t_scifibase",
-        ["tds01"] = "sw_t_sewer",
-        ["vmr01"] = "sw_t_alienruin",
-    };
-
-    private static TilesetModel LoadTileset(string tilesetResref)
-    {
-        var root = FindRepositoryRoot();
-        var hakDirectory = TilesetHakDirectories[tilesetResref];
-        var contents = File.ReadAllText(Path.Combine(root.FullName, "SWLOR_Haks", hakDirectory, $"{tilesetResref}.set"));
-        return TilesetSetParser.Parse(tilesetResref, contents);
-    }
-
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var current = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "SWLOR.Game.Server.sln")))
-                return current;
-            current = current.Parent;
-        }
-
-        throw new InvalidOperationException("Could not locate repository root (SWLOR.Game.Server.sln).");
-    }
+    private static TilesetModel LoadTileset(string tilesetResref) => TilesetTestSource.LoadTileset(tilesetResref);
 
     private const string DoorwayCrosser = "Doorway";
     private const string CorridorCrosser = "Corridor";
@@ -541,5 +514,194 @@ public class TileCoverageCensusTests
 
         (coveredTileIds.Count + exemptions.Count).Should().Be(model.Tiles.Count);
         coveredTileIds.Count.Should().Be(model.Tiles.Count, $"{tilesetResref} must reach 100% tile coverage ({model.Tiles.Count}/{model.Tiles.Count})");
+    }
+
+    // ---------------- pilot wave (base-game, non-hak tilesets) ----------------
+
+    private const string HeightExemptionReason = "requires height support";
+    private const string AlternateVocabExemptionReason =
+        "alternate-palette/decorative vocabulary (terrain or crosser name outside this pilot's wired vocabulary); out of scope for this pilot";
+
+    /// <summary>
+    /// Per-tileset terrain names that exist ONLY as an alternate decorative palette or an extra
+    /// accent-terrain variant this pilot wave did not wire into BaseGameTilesetProfiles -- e.g.
+    /// tdc01's "Grey"/"Dwarven" palettes (GreyFloor/GreyPit/DwarvenFloor/DwarvenPit vs. the wired
+    /// "[Tan]" palette's plain Wall/Floor/Pit), or tde01's Water/Sewer/Ice accent-channel variants
+    /// beyond the single wired AccentTerrain ("Lava"). A group/tile whose corners use ONLY these
+    /// terrains (beyond Solid/Open/Secondary/Accent) is auto-exempted -- see
+    /// AlternateVocabExemptionReason -- rather than hand-enumerated tile-by-tile.
+    /// </summary>
+    private static readonly Dictionary<string, HashSet<string>> PilotAlternateVocabTerrains = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["tdc01"] = new(StringComparer.OrdinalIgnoreCase) { "GreyFloor", "GreyPit", "DwarvenFloor", "DwarvenPit" },
+        ["tde01"] = new(StringComparer.OrdinalIgnoreCase) { "Water", "Sewer", "Ice", "Pit" },
+        ["tin01"] = new(StringComparer.OrdinalIgnoreCase),
+    };
+
+    /// <summary>
+    /// Per-tileset crosser names outside the shared layout carvers' canonical Doorway/Corridor/
+    /// Alley/Fence/Bridge vocabulary (e.g. tdc01's GreyCorridor/DwarvenDoorway/DwarvenCorridor/
+    /// ChultDoorway/ChultCorridor district-junction crossers, tde01's MazeMosaic). A group/tile whose
+    /// non-blank edges are ALL among these is auto-exempted the same way as PilotAlternateVocabTerrains.
+    /// </summary>
+    private static readonly Dictionary<string, HashSet<string>> PilotAlternateVocabCrossers = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["tdc01"] = new(StringComparer.OrdinalIgnoreCase) { "GreyCorridor", "DwarvenDoorway", "DwarvenCorridor", "ChultDoorway", "ChultCorridor" },
+        ["tde01"] = new(StringComparer.OrdinalIgnoreCase) { "MazeMosaic" },
+        ["tin01"] = new(StringComparer.OrdinalIgnoreCase),
+    };
+
+    private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
+    {
+        var terrains = PilotAlternateVocabTerrains[tilesetResref];
+        var crossers = PilotAlternateVocabCrossers[tilesetResref];
+
+        var anyAlternateTerrain = members.Any(m => m.Corners.Any(c => terrains.Contains(c ?? string.Empty)));
+        var anyAlternateCrosser = members.Any(m => m.Edges.Any(e => !string.IsNullOrEmpty(e) && crossers.Contains(e)));
+        return anyAlternateTerrain || anyAlternateCrosser;
+    }
+
+    /// <summary>
+    /// Named, reasoned exemptions for the pilot tilesets (tdc01/tde01/tin01, see
+    /// BaseGameTilesetProfiles) that are NEITHER height-dependent (tagged automatically, see
+    /// HeightExemptionReason) NOR alternate-vocabulary (tagged automatically, see
+    /// PilotAlternateVocabTerrains/Crossers): a genuine gap in the shared classification mechanisms
+    /// themselves. Currently just tin01's five "*Room01_1x2"/"*Room02_1x2" door-entrance pairs (see
+    /// the doc comment on BaseGameTilesetProfiles.CityInterior) -- each pairs a blank wall tile with a
+    /// tile carrying BOTH a Doorway edge crosser AND a door slot on the same tile, which
+    /// LayoutGroupStamper's WallRoom classification excludes (requires no door slot) and which isn't a
+    /// trivial 1x1 group either (so the door-transition tolerance doesn't apply).
+    /// </summary>
+    private static readonly HashSet<(string Tileset, string Label)> PilotExpectedExemptions = new()
+    {
+        ("tin01", "GROUP:Livingroom01_1x2"),
+        ("tin01", "GROUP:Livingroom02_1x2"),
+        ("tin01", "GROUP:KitchenRoom01_1x2"),
+        ("tin01", "GROUP:KitchenRoom02_1x2"),
+        ("tin01", "GROUP:InnRoom01_1x2"),
+        ("tin01", "GROUP:InnRoom02_1x2"),
+        ("tin01", "GROUP:ShopRoom01_1x2"),
+        ("tin01", "GROUP:ShopRoom02_1x2"),
+        ("tin01", "GROUP:Bordello"),
+    };
+
+    public static IEnumerable<string> PilotTilesetKeys => new[] { "tdc01", "tde01", "tin01" };
+
+    [TestCaseSource(nameof(PilotTilesetKeys))]
+    public void PilotEveryTileIsReachableOrExplicitlyExempted(string tilesetResref)
+    {
+        var model = LoadTileset(tilesetResref);
+        var profileKey = tilesetResref switch
+        {
+            "tdc01" => BaseGameTilesetProfiles.Crypt,
+            "tde01" => BaseGameTilesetProfiles.Dungeon,
+            "tin01" => BaseGameTilesetProfiles.CityInterior,
+            _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
+        };
+        var profile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[profileKey];
+        var vocab = BuildVocabulary(model, profile);
+
+        var coveredTileIds = new HashSet<int>();
+        var mechanismCounts = new Dictionary<string, int>();
+        var exemptions = new List<Exemption>();
+
+        void Cover(int tileId, string mechanism)
+        {
+            coveredTileIds.Add(tileId);
+            mechanismCounts[mechanism] = mechanismCounts.GetValueOrDefault(mechanism) + 1;
+        }
+
+        void Exempt(int tileId, string label, string reason)
+        {
+            exemptions.Add(new Exemption { Tileset = tilesetResref, TileOrGroup = label, Reason = reason });
+        }
+
+        foreach (var group in model.Groups)
+        {
+            var members = group.TileIds.Where(id => id >= 0 && id < model.Tiles.Count).Select(id => model.Tiles[id]).ToList();
+            if (members.Count == 0) continue;
+            var memberIds = members.Select(m => m.TileId).ToList();
+
+            var mechanism = GroupMechanism.None;
+            if (IsFeatureTileEligible(model, group)) mechanism = GroupMechanism.FeatureTile;
+            else if (IsExitGroupEligible(model, group)) mechanism = GroupMechanism.ExitGroup;
+            else mechanism = ClassifySetPiece(model, group, vocab);
+
+            if (mechanism != GroupMechanism.None)
+            {
+                foreach (var id in memberIds) Cover(id, mechanism.ToString());
+                continue;
+            }
+
+            if (members.Any(m => !IsFlat(m)))
+            {
+                foreach (var id in memberIds) Exempt(id, $"TILE{id} (group '{group.Name}')", HeightExemptionReason);
+                continue;
+            }
+
+            if (UsesOnlyAlternateVocab(model, members, tilesetResref))
+            {
+                foreach (var id in memberIds) Exempt(id, $"TILE{id} (group '{group.Name}')", AlternateVocabExemptionReason);
+                continue;
+            }
+
+            if (PilotExpectedExemptions.Contains((tilesetResref, "GROUP:" + group.Name)))
+            {
+                foreach (var id in memberIds)
+                    Exempt(id, $"TILE{id} (group '{group.Name}')", "see PilotExpectedExemptions doc comment");
+            }
+        }
+
+        for (var tileId = 0; tileId < model.Tiles.Count; tileId++)
+        {
+            if (coveredTileIds.Contains(tileId)) continue;
+            if (exemptions.Any(e => e.TileOrGroup.StartsWith($"TILE{tileId} ") || e.TileOrGroup == $"TILE{tileId}")) continue;
+
+            var tile = model.Tiles[tileId];
+
+            if (IsCornerEdgeResolverReachable(model, tile)) { Cover(tileId, "CornerEdgeResolver"); continue; }
+            if (IsDoorTransitionReachable(model, tile)) { Cover(tileId, "DoorTransition"); continue; }
+
+            if (!IsFlat(tile)) { Exempt(tileId, $"TILE{tileId}", HeightExemptionReason); continue; }
+            if (UsesOnlyAlternateVocab(model, new[] { tile }, tilesetResref)) { Exempt(tileId, $"TILE{tileId}", AlternateVocabExemptionReason); continue; }
+            if (PilotExpectedExemptions.Contains((tilesetResref, "TILE" + tileId))) { Exempt(tileId, $"TILE{tileId}", "see PilotExpectedExemptions doc comment"); continue; }
+
+            Exempt(tileId, $"TILE{tileId}", "UNCLASSIFIED");
+        }
+
+        // ---- report ----
+        var coveragePercent = model.Tiles.Count == 0 ? 100.0 : 100.0 * coveredTileIds.Count / model.Tiles.Count;
+        TestContext.WriteLine($"=== PILOT {tilesetResref} ({profileKey}) coverage: {coveredTileIds.Count}/{model.Tiles.Count} ({coveragePercent:0.0}%) ===");
+        foreach (var kv in mechanismCounts.OrderByDescending(k => k.Value))
+            TestContext.WriteLine($"  {kv.Key,-24} {kv.Value,4} tiles");
+        foreach (var kv in exemptions.GroupBy(e => e.Reason).OrderByDescending(g => g.Count()))
+            TestContext.WriteLine($"  EXEMPT: {kv.Key,-90} {kv.Count(),4} tiles");
+
+        // ---- assertions ----
+        // Every tile must be either reachable, or carry an honest, reasoned exemption (automatic
+        // height/alternate-vocabulary tagging, or a pre-declared PilotExpectedExemptions entry) -- an
+        // honest gap list is acceptable here (unlike the original four), an un-reasoned UNCLASSIFIED
+        // tile is not.
+        var unclassified = exemptions.Where(e => e.Reason == "UNCLASSIFIED").Select(e => e.TileOrGroup).ToList();
+        unclassified.Should().BeEmpty($"every {tilesetResref} tile must be either reachable or carry an honest, reasoned exemption");
+
+        // The manually-curated PilotExpectedExemptions subset (excludes the two auto-tagged
+        // categories) must be EXACT -- any drift must be visible here, not silently absorbed.
+        var manualExemptionLabels = exemptions
+            .Where(e => e.Reason == "see PilotExpectedExemptions doc comment")
+            .Select(e => e.TileOrGroup)
+            .ToHashSet();
+        var expectedManualLabels = model.Groups
+            .Where(g => PilotExpectedExemptions.Contains((tilesetResref, "GROUP:" + g.Name)))
+            .SelectMany(g => g.TileIds.Where(id => id >= 0))
+            .Select(id => model.Tiles.First(t => t.TileId == id))
+            .Where(t => IsFlat(t) && !UsesOnlyAlternateVocab(model, new[] { t }, tilesetResref))
+            .Select(t => $"TILE{t.TileId} (group '{model.Groups[t.GroupIndex].Name}')")
+            .ToHashSet();
+
+        manualExemptionLabels.Should().BeEquivalentTo(expectedManualLabels,
+            $"the {tilesetResref} manually-curated pilot exemption set must be EXACT -- any drift must be visible here, not silently absorbed");
+
+        (coveredTileIds.Count + exemptions.Count).Should().Be(model.Tiles.Count);
     }
 }

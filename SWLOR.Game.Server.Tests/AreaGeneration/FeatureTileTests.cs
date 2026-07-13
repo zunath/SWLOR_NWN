@@ -17,21 +17,7 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 /// </summary>
 public class FeatureTileTests
 {
-    private static readonly Dictionary<string, string> TilesetHakDirectories = new()
-    {
-        ["tdt01"] = "sw_t_minecave",
-        ["zsf01"] = "sw_t_scifibase",
-        ["tds01"] = "sw_t_sewer",
-        ["vmr01"] = "sw_t_alienruin",
-    };
-
-    private static TilesetModel LoadTileset(string tilesetResref)
-    {
-        var root = FindRepositoryRoot();
-        var hakDirectory = TilesetHakDirectories[tilesetResref];
-        var contents = File.ReadAllText(Path.Combine(root.FullName, "SWLOR_Haks", hakDirectory, $"{tilesetResref}.set"));
-        return TilesetSetParser.Parse(tilesetResref, contents);
-    }
+    private static TilesetModel LoadTileset(string tilesetResref) => TilesetTestSource.LoadTileset(tilesetResref);
 
     private static Dictionary<string, DungeonTilesetProfile> LoadProfiles()
     {
@@ -265,16 +251,4 @@ public class FeatureTileTests
         }
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
-    {
-        var current = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (current != null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "SWLOR.Game.Server.sln")))
-                return current;
-            current = current.Parent;
-        }
-
-        throw new InvalidOperationException("Could not locate repository root (SWLOR.Game.Server.sln).");
-    }
 }

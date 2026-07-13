@@ -282,12 +282,10 @@ try
 
         if (!modelCache.TryGetValue(tileset.TilesetResref, out var model))
         {
-            var setPath = Directory
-                .EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), tileset.TilesetResref + ".set", SearchOption.AllDirectories)
-                .FirstOrDefault();
+            var setPath = TilesetSetSource.FindSetFilePath(root, tileset.TilesetResref);
             if (setPath == null)
             {
-                Console.Error.WriteLine($"{spec.Resref}: tileset '{tileset.TilesetResref}' has no .set under SWLOR_Haks — skipped");
+                Console.Error.WriteLine($"{spec.Resref}: tileset '{tileset.TilesetResref}' has no .set under SWLOR_Haks or basegame_sets — skipped");
                 continue;
             }
 

@@ -394,6 +394,7 @@ namespace SWLOR.ContentBuilder.Windows
                 if (_suppressEvents) return;
                 MarkOverride(nameof(_styleCombo));
                 UpdateOrganicFillEnabled();
+                UpdateSizeFloor();
                 RegeneratePreview();
             };
 
@@ -661,6 +662,19 @@ namespace SWLOR.ContentBuilder.Windows
         /// Pre-fills the "Layout overrides" knobs from the profile's template, skipping any field
         /// the user has directly edited since the last profile load / theme-defaults reset.
         /// </summary>
+        /// <summary>
+        /// Raises the Width/Height slider minimums to the effective layout style's empirically
+        /// measured size floor (see LayoutStyleSizeFloor) so sizes that cannot generate are simply
+        /// not selectable. WPF sliders coerce Value up automatically when Minimum rises, and the
+        /// numeric boxes clamp typed input to the slider range.
+        /// </summary>
+        private void UpdateSizeFloor()
+        {
+            var floor = LayoutStyleSizeFloor.For(SelectedStyle());
+            _widthSlider.Minimum = floor;
+            _heightSlider.Minimum = floor;
+        }
+
         private void LoadLayoutProfileKnobs(DungeonLayoutProfile profile)
         {
             _currentLayoutProfile = profile;
@@ -710,6 +724,7 @@ namespace SWLOR.ContentBuilder.Windows
                 _accentDensitySlider.IsEnabled = supportsAccent && _accentCheckBox.IsChecked == true;
 
                 UpdateOrganicFillEnabled();
+                UpdateSizeFloor();
             }
             finally
             {

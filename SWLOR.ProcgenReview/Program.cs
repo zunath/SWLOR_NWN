@@ -238,6 +238,16 @@ try
             modelCache[tileset.TilesetResref] = model;
         }
 
+        // Sizes below the layout style's empirically measured floor fail generation structurally
+        // (see LayoutStyleSizeFloor); clamp up with a note instead of burning retries and failing.
+        var sizeFloor = LayoutStyleSizeFloor.For(spec.Composition.Layout.Template.Style);
+        var effectiveSize = spec.Size;
+        if (effectiveSize < sizeFloor)
+        {
+            Console.WriteLine($"{spec.Resref}: size {spec.Size} is below the {spec.Composition.Layout.Template.Style} floor of {sizeFloor} — clamped to {sizeFloor}");
+            effectiveSize = sizeFloor;
+        }
+
         // A layout profile that carves Alley corridors is meaningless on tilesets without the
         // Alley crosser vocabulary: the generator downgrades it to Corridor tunnels, producing a
         // duplicate of the equivalent Corridor-profile area. Skip instead of emitting redundancy.
@@ -261,7 +271,7 @@ try
         baseParameters.EntranceCount = spec.Entrances;
         baseParameters.ExitCount = spec.Exits;
         baseParameters.DoorTransitions = spec.DoorTransitions;
-        var layout = Generate(model, baseParameters, spec.Seed, spec.Size, spec.Composition.Tileset.PrimaryOpenTerrain);
+        var layout = Generate(model, baseParameters, spec.Seed, effectiveSize, spec.Composition.Tileset.PrimaryOpenTerrain);
         if (layout == null)
         {
             Console.Error.WriteLine($"{spec.Resref} seed {spec.Seed}: generation failed — skipped");

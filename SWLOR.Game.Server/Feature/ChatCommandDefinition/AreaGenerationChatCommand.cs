@@ -70,6 +70,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    // Sizes below the layout style's measured floor fail generation structurally
+                    // (see LayoutStyleSizeFloor) — clamp up and tell the requester.
+                    var sizeFloor = LayoutStyleSizeFloor.For(composition.Layout.Template.Style);
+                    if (width < sizeFloor || height < sizeFloor)
+                    {
+                        SendMessageToPC(user,
+                            $"{composition.Layout.DisplayName} needs at least {sizeFloor}x{sizeFloor}; clamping.");
+                        width = Math.Max(width, sizeFloor);
+                        height = Math.Max(height, sizeFloor);
+                    }
+
                     var returnLocation = GetLocation(user);
                     SendMessageToPC(user,
                         $"Generating {width}x{height} tier {tier} '{themeKey}' area " +

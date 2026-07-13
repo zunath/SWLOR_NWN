@@ -887,8 +887,18 @@ public class TileCoverageCensusTests
             "twc03" => BaseGameTilesetProfiles.FortInterior,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
-        var profile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[profileKey];
-        var vocab = BuildVocabulary(model, profile);
+        // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --
+        // not just the primary one keyed by profileKey above. This closes the "alternate-palette"
+        // exemption bucket honestly: registering a palette-variant profile (e.g. "crypt_grey" alongside
+        // "crypt", both TilesetResref "tdc01" -- see BaseGameTilesetProfiles.IsPaletteVariant) is a real
+        // structural unlock the census now recognizes, the same way an "optional config" tile was always
+        // exactly as reachable as a currently-wired one per this class's own doc comment. The primary
+        // profile is always included (a resref with no variants yields a single-entry list, unchanged
+        // behavior from before this loop existed).
+        var allVocabs = new BaseGameTilesetProfiles().BuildTilesetProfiles().Values
+            .Where(p => Eq(p.TilesetResref, tilesetResref))
+            .Select(p => BuildVocabulary(model, p))
+            .ToList();
 
         var coveredTileIds = new HashSet<int>();
         var mechanismCounts = new Dictionary<string, int>();
@@ -927,7 +937,14 @@ public class TileCoverageCensusTests
             var mechanism = GroupMechanism.None;
             if (IsFeatureTileEligible(model, group)) mechanism = GroupMechanism.FeatureTile;
             else if (IsExitGroupEligible(model, group)) mechanism = GroupMechanism.ExitGroup;
-            else mechanism = ClassifySetPiece(model, group, vocab);
+            else
+            {
+                foreach (var candidateVocab in allVocabs)
+                {
+                    mechanism = ClassifySetPiece(model, group, candidateVocab);
+                    if (mechanism != GroupMechanism.None) break;
+                }
+            }
 
             if (mechanism != GroupMechanism.None)
             {
@@ -963,9 +980,15 @@ public class TileCoverageCensusTests
 
             if (IsCornerEdgeResolverReachable(model, tile)) { Cover(tileId, "CornerEdgeResolver"); continue; }
             if (IsDoorTransitionReachable(model, tile)) { Cover(tileId, "DoorTransition"); continue; }
-            if (IsElevationBlobReachable(tile, vocab)) { Cover(tileId, "ElevationBlob"); continue; }
-            if (IsElevationRampReachable(tile, vocab)) { Cover(tileId, "ElevationRamp"); continue; }
-            if (IsPoolBankReachable(tile, vocab)) { Cover(tileId, "PoolBank"); continue; }
+
+            var vocabMechanism = string.Empty;
+            foreach (var candidateVocab in allVocabs)
+            {
+                if (IsElevationBlobReachable(tile, candidateVocab)) { vocabMechanism = "ElevationBlob"; break; }
+                if (IsElevationRampReachable(tile, candidateVocab)) { vocabMechanism = "ElevationRamp"; break; }
+                if (IsPoolBankReachable(tile, candidateVocab)) { vocabMechanism = "PoolBank"; break; }
+            }
+            if (vocabMechanism.Length != 0) { Cover(tileId, vocabMechanism); continue; }
 
             if (!IsFlat(tile)) { Exempt(tileId, $"TILE{tileId}", HeightExemptionReason); continue; }
             if (UsesOnlyAlternateVocab(model, new[] { tile }, tilesetResref)) { Exempt(tileId, $"TILE{tileId}", AlternateVocabExemptionReason); continue; }

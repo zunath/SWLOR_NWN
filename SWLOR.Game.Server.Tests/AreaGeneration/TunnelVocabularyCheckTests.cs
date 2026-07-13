@@ -113,6 +113,12 @@ public class TunnelVocabularyCheckTests
     {
         BaseGameTilesetProfiles.Barrows,
         BaseGameTilesetProfiles.IllithidInterior,
+        // Crypt (Dwarven): tdc01's [Dwarven] palette keeps its door transitions on the non-canonical
+        // "DwarvenDoorway" crosser (unlike [Grey]/[Tan], whose Door - Transition tiles use the
+        // canonical "Doorway"), so no Doorway-port boundary shape exists against the variant's
+        // DwarvenFloor open terrain -- Complex downgrades to OpenLane for this profile, the same
+        // mechanism as Barrows' missing-Doorway gap. See BaseGameTilesetProfiles.CryptDwarven.
+        BaseGameTilesetProfiles.CryptDwarven,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

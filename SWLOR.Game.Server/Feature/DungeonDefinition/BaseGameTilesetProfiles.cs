@@ -24,6 +24,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string Dungeon = "dungeon";
         public const string CityInterior = "cityinterior";
 
+        // Palette-variant profiles: recompose an already-onboarded tileset resref against one of its
+        // alternate district/palette families (see DungeonTilesetProfile.IsPaletteVariant). Registered
+        // to close TileCoverageCensusTests' "alternate-palette/decorative vocabulary" exemption bucket --
+        // the census counts a tile reachable if ANY profile sharing its TilesetResref composes it.
+        public const string CryptGrey = "crypt_grey";
+        public const string CryptDwarven = "crypt_dwarven";
+        public const string MinesAndCavernsDesert = "minescaverns_desert";
+        public const string MinesAndCavernsOrganic = "minescaverns_organic";
+        public const string RuinsPlaza = "ruins_plaza";
+
         // Wave-2 (Wave-1 READY-FLAT queue continued): ten more interior base-game tilesets, all
         // resolved to their SWLOR_Haks copy by TilesetSetSource (every one of these ten has been
         // copied into a hak, unlike the pilot three where only Crypt/Dungeon had hak copies and City
@@ -99,6 +109,109 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Tan] Stairs - Up (2x2)")
                 .ExitGroup("[Tan] Exit 1")
                 .ExitGroup("[Tan] Exit 2");
+
+            // Crypt (Grey) -- tdc01's "[Grey]" decorative palette, a PaletteVariant profile recomposing
+            // the SAME tdc01 hak data the base Crypt profile above uses. Verified by direct probe
+            // (VariantProbe against the real SWLOR_Haks-resolved tdc01.set): solid stays "Wall" (the
+            // .set has only ONE wall terrain shared by every district -- Tan/Grey/Dwarven differ purely
+            // in floor/pit coloring, not wall art), PrimaryOpenTerrain("GreyFloor") has full 16/16
+            // simple-tile corner coverage against Wall (same eligible-tile pool/pathnode-A distribution
+            // as Tan's Floor), and PathNodeOpeningWidthAudit confirms MinimumOpeningWidth stays the
+            // default 1. AccentTerrain("GreyPit") mirrors Tan's Pit -- "[Grey] Door - Bridge 1" is an
+            // all-GreyPit-cornered Bridge-gated adapter, the identical shape. "[Grey] Door - Fence 1/2"
+            // and "[Grey] Door - Transition" use the CANONICAL Fence/Doorway crosser names (not a
+            // Grey-prefixed variant), so they compose normally; "[Grey] Door - Big 1/2" and "[Grey]
+            // Stairs - Down/Up" (the 1x1 forms) are excluded -- they carry a "GreyCorridor" edge, a
+            // real district-specific crosser name outside the shared layout carvers' hardcoded Doorway/
+            // Corridor/Alley/Fence/Bridge vocabulary (production carvers write the literal string
+            // "Corridor", never "GreyCorridor"), so no composed layout can ever select them; this is a
+            // genuine capability gap, not a curation omission, and TileCoverageCensusTests'
+            // PilotAlternateVocabCrossers["tdc01"] keeps exempting them for exactly that reason. Every
+            // other Grey group (Platforms, Wall Sections, Pillar, Stairs 2x2, Treasure, Chessboard,
+            // Portal, Mass Grave, Exit 1/2) mirrors Tan's own wired set piece/feature-tile/exit-group
+            // shapes tile-for-tile. IsPaletteVariant() excludes this profile from --matrix's full
+            // tileset x layout cross-product (see SWLOR.ProcgenReview/Program.cs) -- it gets one
+            // showcase area instead.
+            _builder.Create(CryptGrey, "Crypt (Grey)")
+                .Tileset("tdc01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("GreyFloor")
+                .AccentTerrain("GreyPit")
+                .FeatureTile("[Grey] Treasure 1", 2)
+                .FeatureTile("[Grey] Treasure 2", 2)
+                .FeatureTile("[Grey] Pillar 1")
+                .FeatureTile("[Grey] Pillar 2")
+                .FeatureTile("[Grey] Pillar 3")
+                .FeatureTile("[Grey] Portal")
+                .FeatureTile("[Grey] Chessboard")
+                .FeatureTile("[Grey] Mass Grave")
+                .SetPiece("[Grey] Platform 1 (2x2)")
+                .SetPiece("[Grey] Platform 2 (2x2)")
+                .SetPiece("[Grey] Platform 3 (2x2)")
+                .SetPiece("[Grey] Platform 4 (1x2)")
+                .SetPiece("[Grey] Platform 5 (1x2)")
+                .SetPiece("[Grey] Pillar (1x2)", 2)
+                .SetPiece("[Grey] Wall Section 1 (1x2)")
+                .SetPiece("[Grey] Wall Section 2 (1x2)")
+                .SetPiece("[Grey] Door - Bridge 1", 1)
+                .SetPiece("[Grey] Door - Fence 1", 1)
+                .SetPiece("[Grey] Door - Fence 2", 1)
+                .SetPiece("[Grey] Door - Transition", 1)
+                .SetPiece("[Grey] Stairs - Down (2x2)")
+                .SetPiece("[Grey] Stairs - Up (2x2)")
+                .ExitGroup("[Grey] Exit 1")
+                .ExitGroup("[Grey] Exit 2");
+
+            // Crypt (Dwarven) -- tdc01's "[Dwarven]" decorative palette, same PaletteVariant shape as
+            // Crypt (Grey) immediately above. Verified by direct probe: solid "Wall" (shared) vs
+            // PrimaryOpenTerrain("DwarvenFloor") also has full 16/16 simple-tile coverage, and
+            // PathNodeOpeningWidthAudit confirms MinimumOpeningWidth 1. AccentTerrain("DwarvenPit")
+            // mirrors Grey/Tan's Pit-channel Bridge adapter ("[Dwarven] Door - Bridge 1"). Unlike Grey,
+            // BOTH of Dwarven's district crossers are non-canonical -- "DwarvenCorridor" (Door - Big 1/2,
+            // Stairs - Down/Up 1x1) AND "DwarvenDoorway" (Door - Transition) -- so this palette has no
+            // wired corridor-stub or door-transition adapter at all; only the canonical Fence ("[Dwarven]
+            // Door - Fence 1/2") and Bridge crossers compose. This narrower crosser vocabulary is the
+            // same real capability gap as Crypt (Grey)'s GreyCorridor exclusion, just larger here:
+            // because [Dwarven] keeps even its DOOR TRANSITIONS on the non-canonical "DwarvenDoorway"
+            // (where [Grey]/[Tan] use the canonical "Doorway"), no Doorway-port boundary shape exists
+            // against DwarvenFloor at all, TunnelVocabularyCheck.SupportsTunnels is false for this
+            // profile (locked in by TunnelVocabularyCheckTests.ExpectedUnsupported), and
+            // MacroLayoutGenerator downgrades Complex's Tunnel mode to OpenLane before dispatch -- the
+            // same machinery as Barrows' missing-Doorway gap, verified green in
+            // OnboardedTilesetPipelineTests. "[Dwarven] Cave Entrance (2x1)" mixes THREE terrains (DwarvenFloor/DwarvenPit/
+            // Wall) in one group -- outside ClassifyMultiTileSetPiece's two-terrain (Solid/Open or
+            // Solid/Secondary) shape -- and stays exempted, a genuine structural gap shared with the
+            // base Crypt profile's own scope (multi-terrain sets are never wired anywhere in this file).
+            _builder.Create(CryptDwarven, "Crypt (Dwarven)")
+                .Tileset("tdc01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("DwarvenFloor")
+                .AccentTerrain("DwarvenPit")
+                .FeatureTile("[Dwarven] Treasure 1", 2)
+                .FeatureTile("[Dwarven] Treasure 2", 2)
+                .FeatureTile("[Dwarven] Pillar 1")
+                .FeatureTile("[Dwarven] Pillar 2")
+                .FeatureTile("[Dwarven] Pillar 3")
+                .FeatureTile("[Dwarven] Portal")
+                .FeatureTile("[Dwarven] Chessboard")
+                .SetPiece("[Dwarven] Platform 1 (2x2)")
+                .SetPiece("[Dwarven] Platform 2 (2x2)")
+                .SetPiece("[Dwarven] Platform 3 (2x2)")
+                .SetPiece("[Dwarven] Platform 4 (1x2)")
+                .SetPiece("[Dwarven] Platform 5 (1x2)")
+                .SetPiece("[Dwarven] Platform 6 (1x2)")
+                .SetPiece("[Dwarven] Pillar (1x2)", 2)
+                .SetPiece("[Dwarven] Door - Bridge 1", 1)
+                .SetPiece("[Dwarven] Door - Fence 1", 1)
+                .SetPiece("[Dwarven] Door - Fence 2", 1)
+                .SetPiece("[Dwarven] Stairs - Down (2x2)")
+                .SetPiece("[Dwarven] Stairs - Up (2x2)")
+                .ExitGroup("[Dwarven] Exit 1")
+                .ExitGroup("[Dwarven] Exit 2");
 
             // Dungeon (tde01). The SWLOR hak copy (SWLOR_Haks/sw_t_dungeon/tde01.set) is an even
             // larger 1092-tile superset of vanilla tde01: same base Wall/Floor/Lava family as Crypt,
@@ -305,6 +418,121 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("[Cave] Exit 2")
                 .ExitGroup("[Cave] Exit 3");
 
+            // Mines and Caverns (Desert) -- tdm01's "[Desert]" district, a PaletteVariant profile
+            // recomposing the SAME tdm01 hak data the base MinesAndCaverns profile above uses. Verified
+            // by direct probe: solid stays "Wall" (shared across [Cave]/[Desert]/[Organic]/[City], the
+            // same single-wall-texture pattern as Crypt's Tan/Grey/Dwarven), PrimaryOpenTerrain("Desert")
+            // has full 16/16 simple-tile coverage against Wall, and PathNodeOpeningWidthAudit confirms
+            // MinimumOpeningWidth stays the default 1. AccentTerrain("DesertWater") mirrors [Cave]'s own
+            // Water pick among Desert's three Bridge-gated accent variants (DesertWater/DesertPit/
+            // DesertLava) -- "[Desert] Door - Bridge, Water" is an all-DesertWater-cornered Bridge
+            // adapter, the identical shape. "[Desert] Door - Transition" uses the CANONICAL "Doorway"
+            // crosser (composes normally); "[Desert] Door - Fence 1/2" use the canonical "Fence" crosser.
+            // "[Desert] Door - Big 1-4" and "[Desert] Stairs - Down/Up 1/2" (the 1x1 forms) are excluded
+            // -- they carry "DesertCorridor"/"DesertTracks" edges, district-specific crosser names
+            // outside the shared layout carvers' hardcoded vocabulary (the carvers only ever write the
+            // literal "Corridor"), the same real capability gap as Crypt (Grey)'s GreyCorridor exclusion
+            // -- TileCoverageCensusTests.PilotAlternateVocabCrossers["tdm01"] keeps exempting them.
+            // "[Desert] Cave Entrance" and "[Desert] Ramp" are non-flat (HasHeightTransition tiles,
+            // outside this pilot's flat-only classifiers) and excluded, matching [Cave]'s own Ramp/Cave
+            // Entrance exclusion. Every other Desert group (Platforms, Pillar, Stairs 2x2, Treasure,
+            // Crystal Casket/Column/Crypt, Chessboard, Portal, Mineshaft, Wall Section, Exit 1/2/3)
+            // mirrors [Cave]'s own wired set piece/feature-tile/exit-group shapes tile-for-tile.
+            // IsPaletteVariant() excludes this profile from --matrix's full cross-product (see
+            // SWLOR.ProcgenReview/Program.cs) -- it gets one showcase area instead. [Organic] and [City]
+            // remain unwired (left for a future wave; [Organic] mirrors [Desert]'s shape closely but
+            // [City] has a much smaller, differently-shaped tile family and would need its own probe).
+            _builder.Create(MinesAndCavernsDesert, "Mines and Caverns (Desert)")
+                .Tileset("tdm01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Desert")
+                .AccentTerrain("DesertWater")
+                .FeatureTile("[Desert] Treasure 1", 2)
+                .FeatureTile("[Desert] Treasure 2 - Water", 2)
+                .FeatureTile("[Desert] Treasure 2 - Lava", 2)
+                .FeatureTile("[Desert] Pillar 1")
+                .FeatureTile("[Desert] Pillar 2")
+                .FeatureTile("[Desert] Crystal Column")
+                .FeatureTile("[Desert] Crystal Casket 1", 2)
+                .FeatureTile("[Desert] Crystal Casket 2", 2)
+                .FeatureTile("[Desert] Portal")
+                .FeatureTile("[Desert] Chessboard")
+                .FeatureTile("[Desert] Mineshaft")
+                .SetPiece("[Desert] Door - Fence 1", 1)
+                .SetPiece("[Desert] Door - Fence 2", 1)
+                .SetPiece("[Desert] Door - Bridge, Water", 1)
+                .SetPiece("[Desert] Door - Transition", 1)
+                .SetPiece("[Desert] Stairs - Down (2x2)")
+                .SetPiece("[Desert] Stairs - Up, Water (2x2)")
+                .SetPiece("[Desert] Platform 1 (2x2)")
+                .SetPiece("[Desert] Platform 2 (2x2)")
+                .SetPiece("[Desert] Platform 3 (2x2)")
+                .SetPiece("[Desert] Platform 4 (1x2)")
+                .SetPiece("[Desert] Platform 5 (1x2)")
+                .SetPiece("[Desert] Pillar (1x2)", 2)
+                .SetPiece("[Desert] Wall Section 1 - Water (1x2)")
+                .SetPiece("[Desert] Wall Section 2 (1x2)")
+                .SetPiece("[Desert] Portal (2x2)")
+                .SetPiece("[Desert] Crystal Crypt 1")
+                .SetPiece("[Desert] Crystal Crypt 2")
+                .ExitGroup("[Desert] Exit 1")
+                .ExitGroup("[Desert] Exit 2")
+                .ExitGroup("[Desert] Exit 3");
+
+            // Mines and Caverns (Organic) -- tdm01's "[Organic]" district, the same PaletteVariant
+            // shape as Mines and Caverns (Desert) immediately above. Verified by direct probe: solid
+            // "Wall" (shared) vs PrimaryOpenTerrain("Organic") has full 16/16 simple-tile coverage, and
+            // PathNodeOpeningWidthAudit confirms MinimumOpeningWidth 1. AccentTerrain("OrganicWater")
+            // mirrors Desert's own Water pick among Organic's three Bridge-gated accent variants
+            // (OrganicWater/OrganicPit/OrganicSlime). The curation is a name-for-name mirror of Desert's
+            // (this mega-set's four districts are authored in lockstep): canonical-crosser pieces
+            // (Door - Transition on "Doorway", Door - Fence 1/2 on "Fence", Door - Bridge, Water) are
+            // wired; "OrganicCorridor"/"OrganicTracks" pieces (Door - Big 1-4, Stairs - Down/Up 1/2 1x1
+            // forms) stay excluded as non-canonical district crossers, and Cave Entrance/Ramp stay
+            // excluded as non-flat -- see the Desert profile's comment for the full reasoning.
+            _builder.Create(MinesAndCavernsOrganic, "Mines and Caverns (Organic)")
+                .Tileset("tdm01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Organic")
+                .AccentTerrain("OrganicWater")
+                .FeatureTile("[Organic] Treasure 1", 2)
+                .FeatureTile("[Organic] Treasure 2 - Water", 2)
+                .FeatureTile("[Organic] Treasure 2 - Slime", 2)
+                .FeatureTile("[Organic] Pillar 1")
+                .FeatureTile("[Organic] Pillar 2")
+                .FeatureTile("[Organic] Crystal Column")
+                .FeatureTile("[Organic] Crystal Casket 1", 2)
+                .FeatureTile("[Organic] Crystal Casket 2", 2)
+                .FeatureTile("[Organic] Portal")
+                .FeatureTile("[Organic] Chessboard")
+                .FeatureTile("[Organic] Mineshaft")
+                .SetPiece("[Organic] Door - Fence 1", 1)
+                .SetPiece("[Organic] Door - Fence 2", 1)
+                .SetPiece("[Organic] Door - Bridge, Water", 1)
+                .SetPiece("[Organic] Door - Transition", 1)
+                .SetPiece("[Organic] Stairs - Down (2x2)")
+                .SetPiece("[Organic] Stairs - Up, Water (2x2)")
+                .SetPiece("[Organic] Stairs - Up, Slime (2x2)")
+                .SetPiece("[Organic] Platform 1 (2x2)")
+                .SetPiece("[Organic] Platform 2 (2x2)")
+                .SetPiece("[Organic] Platform 3 (2x2)")
+                .SetPiece("[Organic] Platform 4 (1x2)")
+                .SetPiece("[Organic] Platform 5 (1x2)")
+                .SetPiece("[Organic] Pillar (1x2)", 2)
+                .SetPiece("[Organic] Wall Section 1 - Water (1x2)")
+                .SetPiece("[Organic] Wall Section 1 - Slime (1x2)")
+                .SetPiece("[Organic] Wall Section 2 (1x2)")
+                .SetPiece("[Organic] Portal (2x2)")
+                .SetPiece("[Organic] Crystal Crypt 1")
+                .SetPiece("[Organic] Crystal Crypt 2")
+                .ExitGroup("[Organic] Exit 1")
+                .ExitGroup("[Organic] Exit 2")
+                .ExitGroup("[Organic] Exit 3");
+
             // Ruins (tdr01, SWLOR_Haks/sw_t_ruin). PrimaryOpenTerrain left empty (defaults to declared
             // Floor "Floor"; "Plaza" is a second fully-covered open terrain per the census but only one
             // PrimaryOpenTerrain slot exists, matching every other single-terrain profile here).
@@ -351,6 +579,49 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("TurfhouseInterior_2x2")
                 .SetPiece("DesertInterior2_2x2")
                 .SetPiece("DesertInterior3_2x2")
+                .ExitGroup("ExteriorExit01")
+                .ExitGroup("ExteriorExit02");
+
+            // Ruins (Plaza) -- tdr01's "Plaza" exterior-district palette, a PaletteVariant profile
+            // recomposing the SAME tdr01 hak data the base Ruins profile above uses. Verified by direct
+            // probe: solid "Wall" (shared) vs PrimaryOpenTerrain("Plaza") has full 16/16 simple-tile
+            // coverage (the base profile's own comment already noted Plaza as "a second fully-covered
+            // open terrain" that the single PrimaryOpenTerrain slot couldn't hold), and
+            // PathNodeOpeningWidthAudit confirms MinimumOpeningWidth 1. This variant unlocks the
+            // all-Plaza-cornered exterior set pieces the base profile's Floor vocabulary REJECTed
+            // (Mosaic_Plaza_2x2, ExteriorStage_2x2, ExteriorRuinedTower_2x2, ExteriorWalkway_2x2,
+            // Amphitheater_2x2, ExteriorStairsDown/Up_2x2 -- all structurally OpenSetPiece once Plaza IS
+            // the open terrain, verified via corner inspection) plus ExteriorFenceDoor (a canonical
+            // Fence gate on all-Plaza corners, which the Fence CorridorInsert branch accepts only for
+            // the open/secondary terrain -- unreachable under Floor, valid here). The all-Plaza 1x1
+            // feature tiles (ExteriorFountain/OvergrownGarden/Pool/RuinedHouse/Portal/Chessboard) and
+            // the Plaza/Wall ExteriorExit01/02 are wired on the base profile already (FeatureTile/
+            // ExitGroup eligibility is terrain-agnostic) and are re-wired here so the variant is fully
+            // self-sufficient at composition time. No AccentTerrain and no ChannelTerrain: Chasm's
+            // channel/bank coverage was verified against FLOOR banks only (see the base profile's
+            // comment); no Plaza-and-Chasm-mixed crosser-free tile has been verified, so channels stay
+            // off and LayoutAccentChannelCarver's own CanCarve probe keeps any composed channel request
+            // a graceful no-op. Alley/Streets remains out of scope exactly as on the base profile.
+            _builder.Create(RuinsPlaza, "Ruins (Plaza)")
+                .Tileset("tdr01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Plaza")
+                .FeatureTile("ExteriorFountain")
+                .FeatureTile("ExteriorOvergrownGarden")
+                .FeatureTile("ExteriorPool")
+                .FeatureTile("RuinedHouse")
+                .FeatureTile("Portal")
+                .FeatureTile("Chessboard")
+                .SetPiece("ExteriorFenceDoor", 1)
+                .SetPiece("ExteriorStairsDown_2x2")
+                .SetPiece("ExteriorStairsUp_2x2")
+                .SetPiece("Mosaic_Plaza_2x2")
+                .SetPiece("ExteriorStage_2x2")
+                .SetPiece("ExteriorWalkway_2x2")
+                .SetPiece("ExteriorRuinedTower_2x2")
+                .SetPiece("Amphitheater_2x2")
                 .ExitGroup("ExteriorExit01")
                 .ExitGroup("ExteriorExit02");
 

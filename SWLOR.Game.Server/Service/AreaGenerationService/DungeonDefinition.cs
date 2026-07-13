@@ -146,6 +146,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// AccentTerrain is also set.
         /// </summary>
         public int MaxPoolRegions { get; set; } = 0;
+
+        /// <summary>
+        /// True for a profile that recomposes an ALREADY-onboarded tileset resref against a different
+        /// terrain/district palette (e.g. "crypt_grey" recomposing tdc01's Grey palette alongside the
+        /// base "crypt" profile's Tan palette) rather than onboarding a new physical tileset. Palette
+        /// variants exist purely to close tile-coverage census exemptions and offer the palette as a
+        /// composable option -- they are deliberately excluded from SWLOR.ProcgenReview's --matrix
+        /// full cross-product (tileset x layout) to keep the review module's area count from ballooning
+        /// as more palettes are onboarded; each variant instead gets exactly one showcase area appended
+        /// via --extra-areas. See TileCoverageCensusTests, which iterates every profile sharing a
+        /// TilesetResref (variant or not) so a tile counts as reachable if ANY of them composes it.
+        /// </summary>
+        public bool IsPaletteVariant { get; set; } = false;
     }
 
     /// <summary>
@@ -589,6 +602,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder ExitGroup(string groupName)
         {
             _active.ExitGroups.Add(groupName);
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the active profile as a palette/district variant of an already-onboarded tileset
+        /// resref (same .set file, different terrain composition) -- see
+        /// DungeonTilesetProfile.IsPaletteVariant.
+        /// </summary>
+        public DungeonTilesetProfileBuilder PaletteVariant()
+        {
+            _active.IsPaletteVariant = true;
             return this;
         }
 

@@ -49,6 +49,16 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.CityInterior2,
         BaseGameTilesetProfiles.Steamworks,
         BaseGameTilesetProfiles.FortInterior,
+        // Palette-variant profiles (same TilesetResref as an existing entry above, different terrain
+        // composition -- see DungeonTilesetProfile.IsPaletteVariant and the tile-coverage census's
+        // multi-profile reachability rule in TileCoverageCensusTests). These get the SAME full-pipeline
+        // gate as any other onboarded profile: nothing about being a palette variant relaxes generation
+        // correctness, it only exempts the profile from SWLOR.ProcgenReview's --matrix cross-product.
+        BaseGameTilesetProfiles.CryptGrey,
+        BaseGameTilesetProfiles.CryptDwarven,
+        BaseGameTilesetProfiles.MinesAndCavernsDesert,
+        BaseGameTilesetProfiles.MinesAndCavernsOrganic,
+        BaseGameTilesetProfiles.RuinsPlaza,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

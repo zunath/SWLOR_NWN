@@ -243,9 +243,18 @@ try
         if (matrix)
         {
             const int matrixSeed = 4242;
+            // Palette-variant profiles (e.g. "crypt_grey", "minescaverns_desert" -- same TilesetResref
+            // as an already-matrixed entry, different terrain composition; see
+            // DungeonTilesetProfile.IsPaletteVariant) are excluded from the full tileset x layout
+            // cross-product here to keep the review module's area count from growing every time a new
+            // palette is onboarded to close a tile-coverage census exemption. Each variant instead gets
+            // exactly one showcase area, composed via --extra-areas (e.g.
+            // "minecave:crypt_grey:halls:5001:20") -- see the base-game tileset census work.
             foreach (var tilesetEntry in tilesetProfiles.OrderBy(t => t.Key))
             foreach (var layoutEntry in layoutProfiles.OrderBy(l => l.Key))
             {
+                if (tilesetEntry.Value.IsPaletteVariant) continue;
+
                 // Content is irrelevant offline — no creatures/loot/exit/treasure are emitted by
                 // this tool, so matrix compositions carry no theme.
                 var composition = new DungeonComposition

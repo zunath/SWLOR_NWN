@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HighGroundTrait)
-                .Description("Landing an auto-attack on a target afflicted by your Sunder restores 2 FP.")
+                .Description("Landing an auto-attack on any Sundered target restores 2 FP.")
                 .IncreasesStat(StatType.AutoAttackSunderedTargetFPRestore, 2)
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 25)

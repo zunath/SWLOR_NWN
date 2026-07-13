@@ -3072,6 +3072,27 @@
           "type": "resref",
           "value": "pw_ar_czarmrange"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "cz220shipbreaker"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "cz220shipbreakin"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_sc_emfbackr"
+        }
       }
     ]
   },

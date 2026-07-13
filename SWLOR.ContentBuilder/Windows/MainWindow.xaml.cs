@@ -523,7 +523,10 @@ namespace SWLOR.ContentBuilder.Windows
         /// Rebuilds the Layout Profile combo to only the profiles the currently selected tileset can
         /// actually realize. An Alley-corridor profile (City Streets) on a tileset without the Alley
         /// crosser vocabulary silently downgrades to Corridor tunnels — an identical result to the
-        /// Corridor Complex profile — so offering it as a separate choice is misleading.
+        /// Corridor Complex profile — so offering it as a separate choice is misleading. A Tunnel-mode
+        /// profile (Complex or Streets after its own Alley downgrade) on a tileset missing the Doorway
+        /// or Corridor crosser it needs (e.g. Barrows/tbw01) can never resolve at all, so it is hidden
+        /// outright rather than offered and left to fail generation.
         /// </summary>
         private void RepopulateLayoutCombo()
         {
@@ -563,12 +566,19 @@ namespace SWLOR.ContentBuilder.Windows
         private bool TilesetSupportsLayoutProfile(DungeonTilesetProfile tilesetProfile, DungeonLayoutProfile layoutProfile)
         {
             if (tilesetProfile == null) return true;
-            if (layoutProfile.Template.CorridorCrosserType != CorridorCrosserType.Alley) return true;
+            if (layoutProfile.Template.CorridorMode != CorridorMode.Tunnel) return true;
 
             try
             {
                 var model = TilesetModelCache.Get(tilesetProfile.TilesetResref);
-                return model.Crossers.Any(c => string.Equals(c, "Alley", StringComparison.OrdinalIgnoreCase));
+
+                // Alley mode carves the Alley crosser for both the tunnel body and the room port (see
+                // LayoutTunnelCarver) — Doorway/Corridor never come into it.
+                if (layoutProfile.Template.CorridorCrosserType == CorridorCrosserType.Alley)
+                    return model.Crossers.Any(c => string.Equals(c, "Alley", StringComparison.OrdinalIgnoreCase));
+
+                return model.Crossers.Any(c => string.Equals(c, "Doorway", StringComparison.OrdinalIgnoreCase)) &&
+                       model.Crossers.Any(c => string.Equals(c, "Corridor", StringComparison.OrdinalIgnoreCase));
             }
             catch
             {

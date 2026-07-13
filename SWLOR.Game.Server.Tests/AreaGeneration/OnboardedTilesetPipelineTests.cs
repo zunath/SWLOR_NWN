@@ -57,35 +57,48 @@ public class OnboardedTilesetPipelineTests
     // Complex (Tunnel mode), Halls (OpenLane), and Organic are the combos both onboarding waves target
     // as "where coverage allows".
     //
-    // Two (tileset, layout) pairs are genuinely impossible under Complex (Tunnel mode) and are excluded
-    // here rather than left to fail:
-    //   - Barrows (tbw01) / Complex: FAILS on every single seed (verified 50/50). tbw01 has NO
-    //     "Doorway" crosser in its own declared vocabulary at all (only "corridor"/"door_barrow"/
-    //     "door_corridor" -- see the base-game tileset census) -- Tunnel mode's room-wall carving
-    //     always needs a real Doorway-crosser tile at some room/corridor junction, and Barrows can
-    //     never supply one. Complex is skipped entirely for this tileset.
-    //   - Illithid Interior (tii01) / Complex: fails intermittently (verified 3/50 seeds) on a
-    //     Corridor+Corridor+Doorway three-way junction (an all-solid-corner adapter tile joining a
-    //     corridor bend to a room doorway) that this small, 10-group tileset's tile inventory doesn't
-    //     cover for every junction orientation. Complex is skipped entirely for this tileset too, since
-    //     the pipeline gate requires 100% success across its fixed seed range and this gap is real
-    //     (not a flaky test), not something a profile knob (MinimumOpeningWidth, etc.) can fix.
-    //   - Ruins (tdr01) / Organic: Organic's OrganicCave style carves its single accent channel crossing
-    //     (AccentChannels = 1, see StandardLayoutProfiles.Organic) directly through OPEN floor space,
-    //     which needs a crosser-free tile blending Floor and Chasm corners -- verified zero such tiles
-    //     exist in tdr01 (see BaseGameTilesetProfiles.Ruins' ChannelTerrain comment). Complex/Halls
-    //     (Tunnel-mode corridor carving) only ever gate the channel with the wired Bridge door
-    //     (BridgeDoor01, solid-cornered) and never need this blend, so they still pass; only Organic's
-    //     open-space crossing is excluded here.
+    // Barrows (tbw01) / Complex used to be excluded here (tbw01 has NO "Doorway" crosser in its own
+    // declared vocabulary at all -- only "corridor"/"door_barrow"/"door_corridor" -- see the base-game
+    // tileset census -- and Tunnel mode's room-wall carving always needs a real Doorway-crosser tile at
+    // some room/corridor junction). MacroLayoutGenerator now downgrades CorridorMode from Tunnel to
+    // OpenLane before dispatch whenever the tileset lacks a Doorway or Corridor crosser (mirroring the
+    // existing Alley -> Corridor downgrade for Streets), so Barrows/Complex now reads as a
+    // rooms-with-open-lanes layout instead of failing outright -- included below like any other pairing.
+    //
+    // Ruins (tdr01) / Organic used to be excluded here too: Organic's OrganicCave style carves its
+    // single accent channel crossing (AccentChannels = 1, see StandardLayoutProfiles.Organic) directly
+    // through OPEN floor space, which needs a crosser-free tile blending Floor and Chasm corners --
+    // verified zero such tiles exist in tdr01 (see BaseGameTilesetProfiles.Ruins' ChannelTerrain
+    // comment). Complex/Halls never actually hit this gap in practice -- their room-and-corridor open
+    // space is thin/fragmented enough that LayoutAccentChannelCarver's own ValidateBand geometry check
+    // fails on every random attempt, so no channel is ever placed there (a silent no-op both before and
+    // after this fix) -- but Organic's blobbier, larger open regions let ValidateBand succeed often
+    // enough that the carver used to commit a band no physical tile could ever resolve. it now runs a
+    // whole-tileset capability probe (CanCarve, using TileResolver.HasCandidate against the exact
+    // bank/span shapes a channel needs) before ever attempting to carve, and skips channel carving
+    // entirely (falls through with zero channels, generation proceeds normally) when the tileset can't
+    // resolve them -- included below like any other pairing.
+    //
+    // Illithid Interior (tii01) / Complex remains excluded: it fails intermittently on a
+    // Corridor+Corridor+Doorway three-way junction (an all-solid-corner adapter tile joining a corridor
+    // bend to a room doorway) that this small, 10-group tileset's tile inventory doesn't cover for
+    // every junction orientation. The wave-2 onboarding note that verified "3/50 seeds" (~6%) failing
+    // single-attempt, implying the pipeline's 6-attempt seed-derived retry (LayoutSolver.DefaultRetryCount)
+    // would make the overall failure rate negligible, does NOT hold up under a wider re-verification: a
+    // direct probe (single-attempt retryCount:1 across 200 seeds, 9000-9199) measured 58.5% single-seed
+    // failures, and even the full default 6-attempt retry only reached 98.5% (197/200) -- a second probe
+    // over this test's own seed range (6000-6049, 50 seeds) measured 66% single-attempt failures and
+    // 94% (47/50) with retry, still short of the 100% this pipeline gate requires. This is a genuine
+    // tile-inventory gap (not something a profile knob like MinimumOpeningWidth can fix, and not
+    // something the Doorway/Corridor vocabulary-presence check above catches, since Illithid has both
+    // crossers -- it is simply missing one specific junction tile shape), so Complex is still skipped
+    // entirely for this tileset.
     public static IEnumerable<object[]> OnboardedLayoutCases()
     {
         foreach (var tilesetKey in OnboardedTilesetKeys)
         foreach (var layoutKey in new[] { StandardLayoutProfiles.Complex, StandardLayoutProfiles.Halls, StandardLayoutProfiles.Organic })
         {
-            if (layoutKey == StandardLayoutProfiles.Complex &&
-                (tilesetKey == BaseGameTilesetProfiles.Barrows || tilesetKey == BaseGameTilesetProfiles.IllithidInterior))
-                continue;
-            if (layoutKey == StandardLayoutProfiles.Organic && tilesetKey == BaseGameTilesetProfiles.Ruins)
+            if (layoutKey == StandardLayoutProfiles.Complex && tilesetKey == BaseGameTilesetProfiles.IllithidInterior)
                 continue;
 
             yield return new object[] { tilesetKey, layoutKey };
@@ -141,6 +154,101 @@ public class OnboardedTilesetPipelineTests
 
         failures.Should().BeEmpty(
             $"{tilesetKey}/{layoutKey} must generate+resolve successfully with self-consistent edges across every seed");
+    }
+
+    /// <summary>
+    /// Barrows (tbw01) has no "Doorway" crosser in its own declared vocabulary at all, so Complex's
+    /// Tunnel-mode room-wall carving can never place a real port there. MacroLayoutGenerator downgrades
+    /// CorridorMode to OpenLane for this pairing before dispatch (see the Alley -> Corridor precedent
+    /// it mirrors) -- this locks in that the downgrade actually took effect: no Tunnel-only crosser
+    /// (Corridor/Doorway) ever appears in a resolved Barrows/Complex layout, only plain open-terrain
+    /// lanes, across the same seed range the pipeline gate uses.
+    /// </summary>
+    [Test]
+    public void BarrowsComplexDowngradesToOpenLaneWithNoTunnelCrossers()
+    {
+        var tilesetProfile = TilesetProfiles[BaseGameTilesetProfiles.Barrows];
+        var layoutProfile = LayoutProfiles[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        const int size = 20;
+        var seedCount = 0;
+
+        for (var seed = 6000; seed < 6015; seed++)
+        {
+            seedCount++;
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            solved.Success.Should().BeTrue($"seed {seed}: Barrows/Complex must succeed via the OpenLane downgrade -- {solved.FailureReason}");
+
+            for (var y = 0; y < solved.Layout.Corners.Height; y++)
+            for (var x = 0; x < solved.Layout.Corners.Width; x++)
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var edge = solved.Layout.Crossers.GetEdge(x, y, slot);
+                edge.Should().NotBe("Corridor", $"seed {seed}: downgraded Barrows/Complex must never carve a Tunnel-mode Corridor edge");
+                edge.Should().NotBe("Doorway", $"seed {seed}: downgraded Barrows/Complex must never carve a Tunnel-mode Doorway edge");
+            }
+
+            // OpenLane carving never records a TunnelLink (only the Tunnel branch and
+            // LayoutAccentChannelCarver do, and Barrows has no channel-capable terrain at all) -- an
+            // empty list is the strongest available proxy that the plain-open-lane path actually ran
+            // rather than Tunnel mode happening to place zero Corridor/Doorway edges by chance.
+            solved.Layout.TunnelLinks.Should().BeEmpty(
+                $"seed {seed}: downgraded Barrows/Complex must carve plain open lanes (no TunnelLinks), not wall-embedded tunnels");
+        }
+
+        seedCount.Should().Be(15, "the seed loop must actually have run");
+    }
+
+    /// <summary>
+    /// Ruins (tdr01) has no crosser-free tile blending Floor and Chasm corners, so an open-space
+    /// channel crossing (what Organic's AccentChannels=1 carves) can never resolve there.
+    /// LayoutAccentChannelCarver now runs a whole-tileset capability probe before ever attempting to
+    /// carve and skips gracefully when it can't -- this locks in that Ruins/Organic both succeeds
+    /// end-to-end AND never actually emits a Bridge channel edge (the graceful-skip path, not a lucky
+    /// ValidateBand failure), across the same seed range the pipeline gate uses.
+    /// </summary>
+    [Test]
+    public void RuinsOrganicSkipsChannelGracefully()
+    {
+        var tilesetProfile = TilesetProfiles[BaseGameTilesetProfiles.Ruins];
+        var layoutProfile = LayoutProfiles[StandardLayoutProfiles.Organic];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        composition.BuildLayoutParameters().AccentChannels.Should().BeGreaterThan(0,
+            "Organic's template must still request a channel -- this test proves the carver skips it gracefully, not that the knob is off");
+
+        const int size = 20;
+        var sawBridgeEdge = false;
+
+        for (var seed = 6000; seed < 6015; seed++)
+        {
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            solved.Success.Should().BeTrue($"seed {seed}: Ruins/Organic must succeed via the graceful channel skip -- {solved.FailureReason}");
+
+            for (var y = 0; y < solved.Layout.Corners.Height && !sawBridgeEdge; y++)
+            for (var x = 0; x < solved.Layout.Corners.Width && !sawBridgeEdge; x++)
+            for (var slot = 0; slot < 4; slot++)
+            {
+                if (string.Equals(solved.Layout.Crossers.GetEdge(x, y, slot), "Bridge", System.StringComparison.OrdinalIgnoreCase))
+                    sawBridgeEdge = true;
+            }
+        }
+
+        sawBridgeEdge.Should().BeFalse(
+            "tdr01 has no resolvable bank/span shape for Chasm-vs-Floor -- CanCarve must keep every Ruins/Organic layout channel-free");
     }
 
     /// <summary>

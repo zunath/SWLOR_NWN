@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         private const int MaxLength = 6;
         private const int MaxAttempts = 500;
 
-        internal static void CarveChannels(MacroLayout layout, MacroLayoutParameters parameters, System.Random random)
+        internal static void CarveChannels(MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset, System.Random random)
         {
             if (parameters.AccentChannels <= 0) return;
 
@@ -43,6 +43,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // when a tileset never declared one separately — see DungeonTilesetProfile.ChannelTerrain).
             var accent = !string.IsNullOrEmpty(parameters.ChannelTerrain) ? parameters.ChannelTerrain : parameters.AccentTerrain;
             if (string.IsNullOrEmpty(accent)) return;
+
+            // Zero-config capability probe, mirroring LayoutFenceCarver's own tileset != null guard:
+            // some onboarded tilesets configure a ChannelTerrain that has a verified Bridge-gated WALL
+            // crossing (a CorridorInsert SetPiece like BridgeDoor01) but no crosser-free tile blending
+            // the primary open terrain and the channel terrain -- an OPEN-SPACE crossing (what this
+            // carver paints) can never resolve there (e.g. Ruins/tdr01's Chasm, see
+            // BaseGameTilesetProfiles.Ruins). A room-and-corridor layout's thin, fragmented open space
+            // already makes ValidateBand fail every attempt on such tilesets in practice (placed stays
+            // 0, a silent no-op), but a blobbier style (OrganicCave) has plenty of open space for
+            // ValidateBand to succeed and would otherwise commit a band TileResolver can never place a
+            // tile for. tileset is optional (defaults to null for back-compat, matching
+            // MacroLayoutGenerator's own convention) -- callers that never pass one keep the pre-check
+            // blind-carving behavior exactly as before.
+            if (tileset != null && !CanCarve(tileset, parameters.OpenTerrain, accent))
+                return;
 
             var corners = layout.Corners;
             var open = parameters.OpenTerrain;
@@ -108,6 +123,30 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             }
 
             LayoutCornerUtils.RecomputeFullyOpenRoomTiles(layout, open);
+        }
+
+        /// <summary>
+        /// Whole-tileset capability probe: true only when the tileset can resolve BOTH physical shapes
+        /// a channel needs -- mirrors LayoutFenceCarver.CarveFencesForTerrain's own hasStraightRun/
+        /// hasEndCap pair. TileResolver's rotation search means one representative orientation of each
+        /// shape stands in for all four a channel can need (horizontal or vertical, either bank side):
+        /// a span tile rotated 90 degrees moves its Bridge pair from Top/Bottom to Left/Right, and a
+        /// bank tile rotated 180 degrees swaps which half is accent, so checking one orientation each
+        /// is sufficient, not a partial check.
+        /// </summary>
+        private static bool CanCarve(TilesetModel tileset, string open, string accent)
+        {
+            // Span: a full channel cell -- all four corners accent, opposite-edge Bridge crossers (the
+            // straight "pathnode L" span both bank tiles land against).
+            var hasSpan = TileResolver.HasCandidate(
+                tileset, accent, accent, accent, accent, BridgeCrosser, string.Empty, BridgeCrosser, string.Empty);
+
+            // Bank: a landing tile split half-open/half-accent along one axis, with a single Bridge
+            // edge on the accent side.
+            var hasBank = TileResolver.HasCandidate(
+                tileset, accent, accent, open, open, BridgeCrosser, string.Empty, string.Empty, string.Empty);
+
+            return hasSpan && hasBank;
         }
 
         /// <summary>

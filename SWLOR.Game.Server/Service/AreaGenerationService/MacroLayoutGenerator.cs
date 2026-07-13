@@ -43,6 +43,33 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 wasCloned = true;
             }
 
+            // Tunnel mode (Corridor crosser type, post Alley-downgrade above) needs both a Doorway
+            // crosser (room-wall ports) and a Corridor crosser (the wall-embedded body chain) in the
+            // tileset's own declared vocabulary. Some onboarded tilesets (e.g. Barrows/tbw01) carve a
+            // real "corridor" crosser but never declare a "Doorway" crosser at all — Tunnel mode's port
+            // carving always needs one, and RoomsAndCorridorsLayout's own per-edge fallback can't catch
+            // this because LayoutTunnelCarver labels edges purely from corner geometry, so it reports
+            // success even though the label names the resolver can never place a tile for. Downgrading
+            // here — the same "clone on write, check before dispatch" shape as the Alley downgrade
+            // above — turns the pairing into a rooms-with-open-lanes layout instead of a guaranteed
+            // resolution failure. A tileset that downgraded out of Alley above and also lacks Doorway/
+            // Corridor (Barrows/Streets) composes both downgrades in sequence: Alley -> Corridor ->
+            // OpenLane.
+            if (tileset != null &&
+                parameters.CorridorMode == CorridorMode.Tunnel &&
+                parameters.CorridorCrosserType == CorridorCrosserType.Corridor &&
+                (!tileset.Crossers.Contains("Doorway", StringComparer.OrdinalIgnoreCase) ||
+                 !tileset.Crossers.Contains("Corridor", StringComparer.OrdinalIgnoreCase)))
+            {
+                if (!wasCloned)
+                {
+                    parameters = parameters.Clone();
+                    wasCloned = true;
+                }
+
+                parameters.CorridorMode = CorridorMode.OpenLane;
+            }
+
             // Normalize every Advanced Settings knob (room counts/sizes, organic fill, corridor width,
             // entrance/exit counts, size floor) to a combination LayoutParameterConstraints has
             // verified is generation-safe. Content Builder's sliders can otherwise reach combinations
@@ -85,7 +112,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);
-            LayoutAccentChannelCarver.CarveChannels(layout, parameters, random);
+            LayoutAccentChannelCarver.CarveChannels(layout, parameters, tileset, random);
             LayoutTransitionAssignment.AssignTransitions(layout, parameters, random);
 
             // Runs after transitions are anchored (so a fence line can avoid them) and before

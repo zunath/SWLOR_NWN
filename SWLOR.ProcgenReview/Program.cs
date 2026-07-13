@@ -238,6 +238,17 @@ try
             modelCache[tileset.TilesetResref] = model;
         }
 
+        // A layout profile that carves Alley corridors is meaningless on tilesets without the
+        // Alley crosser vocabulary: the generator downgrades it to Corridor tunnels, producing a
+        // duplicate of the equivalent Corridor-profile area. Skip instead of emitting redundancy.
+        if (spec.Composition.Layout.Template.CorridorCrosserType == CorridorCrosserType.Alley &&
+            !model.Crossers.Contains("Alley", StringComparer.OrdinalIgnoreCase))
+        {
+            Console.WriteLine(
+                $"{spec.Resref}: layout '{spec.Composition.Layout.DisplayName}' needs the Alley vocabulary, which '{tileset.TilesetResref}' lacks — skipped (would duplicate Corridor tunnels)");
+            continue;
+        }
+
         var placeholderAre = Path.Combine(root, "Module", "are", tileset.PlaceholderResref + ".are.json");
         var placeholderGit = Path.Combine(root, "Module", "git", tileset.PlaceholderResref + ".git.json");
         if (!File.Exists(placeholderAre) || !File.Exists(placeholderGit))

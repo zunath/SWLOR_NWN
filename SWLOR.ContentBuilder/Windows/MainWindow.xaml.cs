@@ -460,8 +460,7 @@ namespace SWLOR.ContentBuilder.Windows
             foreach (var profile in _catalog.TilesetProfiles.Values.OrderBy(p => p.DisplayName))
                 _tilesetCombo.Items.Add(new KeyedItem(profile.Key, profile.DisplayName));
 
-            foreach (var profile in _catalog.LayoutProfiles.Values.OrderBy(p => p.DisplayName))
-                _layoutCombo.Items.Add(new KeyedItem(profile.Key, profile.DisplayName));
+            RepopulateLayoutCombo();
 
             _suppressEvents = true;
             try
@@ -471,6 +470,65 @@ namespace SWLOR.ContentBuilder.Windows
             finally
             {
                 _suppressEvents = false;
+            }
+        }
+
+        /// <summary>
+        /// Rebuilds the Layout Profile combo to only the profiles the currently selected tileset can
+        /// actually realize. An Alley-corridor profile (City Streets) on a tileset without the Alley
+        /// crosser vocabulary silently downgrades to Corridor tunnels — an identical result to the
+        /// Corridor Complex profile — so offering it as a separate choice is misleading.
+        /// </summary>
+        private void RepopulateLayoutCombo()
+        {
+            var previousKey = (_layoutCombo.SelectedItem as KeyedItem)?.Key;
+            var tilesetProfile = SelectedTilesetProfile();
+
+            _suppressEvents = true;
+            try
+            {
+                _layoutCombo.Items.Clear();
+                foreach (var profile in _catalog.LayoutProfiles.Values.OrderBy(p => p.DisplayName))
+                {
+                    if (TilesetSupportsLayoutProfile(tilesetProfile, profile))
+                        _layoutCombo.Items.Add(new KeyedItem(profile.Key, profile.DisplayName));
+                }
+
+                if (previousKey != null)
+                    SelectComboByKey(_layoutCombo, previousKey);
+                else if (_layoutCombo.Items.Count > 0)
+                    _layoutCombo.SelectedIndex = 0;
+            }
+            finally
+            {
+                _suppressEvents = false;
+            }
+
+            // If the filter dropped the previous selection, the combo fell back to another profile —
+            // its knobs must load like a manual selection would have loaded them.
+            var newKey = (_layoutCombo.SelectedItem as KeyedItem)?.Key;
+            if (previousKey != null && newKey != previousKey)
+            {
+                _overriddenKnobs.Clear();
+                LoadLayoutProfileKnobs(SelectedLayoutProfile());
+            }
+        }
+
+        private bool TilesetSupportsLayoutProfile(DungeonTilesetProfile tilesetProfile, DungeonLayoutProfile layoutProfile)
+        {
+            if (tilesetProfile == null) return true;
+            if (layoutProfile.Template.CorridorCrosserType != CorridorCrosserType.Alley) return true;
+
+            try
+            {
+                var model = TilesetModelCache.Get(tilesetProfile.TilesetResref);
+                return model.Crossers.Any(c => string.Equals(c, "Alley", StringComparison.OrdinalIgnoreCase));
+            }
+            catch
+            {
+                // If the tileset model can't load here, don't hide options — generation itself
+                // reports the real failure and the engine downgrade keeps it safe.
+                return true;
             }
         }
 
@@ -524,6 +582,7 @@ namespace SWLOR.ContentBuilder.Windows
 
         private void OnTilesetChanged()
         {
+            RepopulateLayoutCombo();
             UpdateAccentAvailability();
             UpdateFeatureAvailability();
             RegeneratePreview();
@@ -550,6 +609,7 @@ namespace SWLOR.ContentBuilder.Windows
             try
             {
                 SelectComboByKey(_tilesetCombo, theme.TilesetProfileKey);
+                RepopulateLayoutCombo();
                 SelectComboByKey(_layoutCombo, theme.LayoutProfileKey);
 
                 if (resetDimensionsAndSeed)

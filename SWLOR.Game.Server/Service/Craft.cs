@@ -857,18 +857,28 @@ namespace SWLOR.Game.Server.Service
 
             if (type == ItemPropertyType.WeaponDamageType)
             {
+                var damageTypeMatches = new List<ItemProperty>();
                 for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
                 {
                     if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
                     {
-                        RemoveItemProperty(item, property);
+                        damageTypeMatches.Add(property);
                     }
+                }
+
+                foreach (var property in damageTypeMatches)
+                {
+                    RemoveItemProperty(item, property);
                 }
 
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
                 return;
             }
 
+            // Scan for matches first and remove them in a separate pass afterward -
+            // removing an item property while GetNextItemProperty is still iterating
+            // shifts the underlying list, which silently skips every other match.
+            var matches = new List<ItemProperty>();
             for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
             {
                 if (GetItemPropertyType(property) == type &&
@@ -877,8 +887,13 @@ namespace SWLOR.Game.Server.Service
                      GetItemPropertySubType(property) == subType))
                 {
                     amount += GetItemPropertyCostTableValue(property);
-                    RemoveItemProperty(item, property);
+                    matches.Add(property);
                 }
+            }
+
+            foreach (var property in matches)
+            {
+                RemoveItemProperty(item, property);
             }
 
             var unpacked = ItemPropertyPlugin.UnpackIP(ip);

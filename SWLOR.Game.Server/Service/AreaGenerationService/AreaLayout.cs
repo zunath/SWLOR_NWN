@@ -537,6 +537,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public List<string> ExitGroups { get; set; } = new();
 
+        /// <summary>
+        /// Number of raised-corner regions LayoutElevationPainter attempts to paint after fences are
+        /// carved and before set pieces are stamped (see MacroLayoutGenerator.Generate). 0 = none
+        /// (default; fully back-compat -- every existing caller keeps the flat-only legacy TileResolver
+        /// pools/RNG sequence untouched, see CornerTerrainGrid.HasAnyHeight).
+        ///
+        /// Best-effort: LayoutElevationPainter shape-checks the composed tileset's real tile inventory
+        /// (TileResolver.HasHeightAwareCandidate) before ever touching a corner, and silently paints
+        /// fewer than requested (down to zero) when the tileset lacks rim vocabulary, no candidate
+        /// region fits, or every candidate region conflicts with a transition anchor/crosser cell --
+        /// there is no failure path, only "painted less than asked." Usually clamped down further by
+        /// DungeonComposition.BuildLayoutParameters against DungeonTilesetProfile.MaxElevationRegions,
+        /// the same "layout expresses intent, tileset profile caps to verified support" shape as
+        /// AccentDensity/AccentChannels vs AccentTerrain/ChannelTerrain.
+        /// </summary>
+        public int ElevationRegions { get; set; } = 0;
+
         public MacroLayoutParameters Clone()
         {
             // MemberwiseClone shares the FeatureTiles/SetPieces dictionary references with the

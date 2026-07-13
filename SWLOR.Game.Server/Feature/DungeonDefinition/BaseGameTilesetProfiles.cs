@@ -116,9 +116,23 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // the analogous Water/Sewer/Ice/Pit-suffixed groups (Exit 2, Platform 4, Pillar 1/2, Door
             // - Bridge 1) are the identical shape and are left for a future wave that either extends
             // DungeonTilesetProfile with more accent slots or ships a dedicated profile per palette.
-            // Ramp groups are all non-flat (require height support) and are not wired.
+            // Ramp GROUPS (1x1-wrapped "Ramp - Straight"/"Ramp - Corner, *") and the "Ramp" edge
+            // crosser are still not wired -- LayoutElevationPainter's v1 scope only uses six ungrouped,
+            // blank-edge, all-Floor tiles (TILE500/501/623/737/868/1002) whose normalized corner-height
+            // deltas are a raised rectangle's two rim shapes (one corner raised; two adjacent corners
+            // raised), verified live via TileResolver.HasHeightAwareCandidate rather than hardcoded
+            // here. Confirmed by direct probe: Wall (this profile's solid terrain) NEVER carries a
+            // nonzero corner height anywhere in tde01's 1092-tile inventory, so
+            // LayoutElevationPainter's SolidTerrain-blob mechanism is structurally inert here (its own
+            // shape probe correctly finds no rim vocabulary and paints zero); only the OpenTerrain
+            // ("Floor") room-interior "split-level" mechanism has real support, raising a small floor
+            // patch strictly inside a room via corner-height blending alone (no TunnelLink, no
+            // Stairs-Up/Down group -- see LayoutElevationPainter class doc). MaxElevationRegions(2)
+            // caps how many such patches a composition may request; the pass itself re-verifies every
+            // candidate against the real tileset regardless.
             _builder.Create(Dungeon, "Dungeon")
                 .Tileset("tde01")
+                .MaxElevationRegions(2)
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .AccentTerrain("Lava")

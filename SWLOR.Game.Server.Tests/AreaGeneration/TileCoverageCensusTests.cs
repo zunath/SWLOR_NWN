@@ -147,6 +147,43 @@ public class TileCoverageCensusTests
         return false;
     }
 
+    /// <summary>Mirrors LayoutElevationPainter's rim shapes: a flat-corner-terrain (uniform Solid or
+    /// Open), ungrouped, blank-edge, doorless tile whose normalized corner-height delta profile is
+    /// either a single raised corner (a blob's convex outer corner) or two ADJACENT corners raised to
+    /// the same delta (a blob's straight edge). The blob's own interior/exterior cells are already
+    /// covered by IsCornerEdgeResolverReachable (a ground-level flat tile resolves at any
+    /// placementHeight once height-awareness is active, see TileResolver class doc) -- this classifier
+    /// only needs to add the two NEW rim shapes LayoutElevationPainter actually paints.</summary>
+    private static bool IsElevationBlobReachable(TileRecord tile, TilesetVocabulary vocab)
+    {
+        if (tile.GroupIndex != -1) return false;
+        if (tile.HasAnyCrosser) return false;
+        if (tile.Doors.Count != 0) return false;
+
+        foreach (var terrain in new[] { vocab.Solid, vocab.Open })
+        {
+            if (string.IsNullOrEmpty(terrain)) continue;
+            if (!tile.Corners.All(c => Eq(c, terrain))) continue;
+
+            var heights = tile.CornerHeights;
+            var min = heights.Min();
+            var normalized = heights.Select(h => h - min).ToArray();
+            var nonZero = normalized.Where(h => h != 0).ToArray();
+            if (nonZero.Length == 0) continue; // flat -- already covered by CornerEdgeResolver
+            if (nonZero.Length == 1) return true; // one-corner rim
+
+            if (nonZero.Length == 2 && nonZero.Distinct().Count() == 1)
+            {
+                var tl = normalized[0] != 0; var tr = normalized[1] != 0;
+                var br = normalized[2] != 0; var bl = normalized[3] != 0;
+                var adjacent = (tl && tr) || (tr && br) || (br && bl) || (bl && tl);
+                if (adjacent) return true;
+            }
+        }
+
+        return false;
+    }
+
     // ---------------- group mechanisms ----------------
 
     private enum GroupMechanism
@@ -843,6 +880,7 @@ public class TileCoverageCensusTests
 
             if (IsCornerEdgeResolverReachable(model, tile)) { Cover(tileId, "CornerEdgeResolver"); continue; }
             if (IsDoorTransitionReachable(model, tile)) { Cover(tileId, "DoorTransition"); continue; }
+            if (IsElevationBlobReachable(tile, vocab)) { Cover(tileId, "ElevationBlob"); continue; }
 
             if (!IsFlat(tile)) { Exempt(tileId, $"TILE{tileId}", HeightExemptionReason); continue; }
             if (UsesOnlyAlternateVocab(model, new[] { tile }, tilesetResref)) { Exempt(tileId, $"TILE{tileId}", AlternateVocabExemptionReason); continue; }

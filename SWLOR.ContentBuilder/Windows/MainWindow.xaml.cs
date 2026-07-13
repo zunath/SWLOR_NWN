@@ -61,6 +61,7 @@ namespace SWLOR.ContentBuilder.Windows
         private Slider _organicFillSlider;
         private Slider _accentDensitySlider;
         private Slider _featureDensitySlider;
+        private Slider _elevationRegionsSlider;
         private TextBox _minRoomsValueBox;
         private TextBox _maxRoomsValueBox;
         private TextBox _minRoomSizeValueBox;
@@ -70,6 +71,7 @@ namespace SWLOR.ContentBuilder.Windows
         private TextBox _organicFillValueBox;
         private TextBox _accentDensityValueBox;
         private TextBox _featureDensityValueBox;
+        private TextBox _elevationRegionsValueBox;
         private CheckBox _accentCheckBox;
 
         private Slider _entrancesSlider;
@@ -183,6 +185,13 @@ namespace SWLOR.ContentBuilder.Windows
             // Feature tile SET (treasure mounds, pillars, hot springs, ...) always comes from the
             // tileset profile - only the density is user-tunable here.
             (_featureDensitySlider, _featureDensityValueBox) = AddSliderRow(overrides, "Feature Density", 0, 15, 5, suffix: "%");
+
+            // Elevation Regions: how many raised floor/wall patches LayoutElevationPainter attempts.
+            // Best-effort and shape-gated against the real tileset (see DungeonTilesetProfile.
+            // MaxElevationRegions/LayoutElevationPainter) -- a no-op on any tileset without verified
+            // rim vocabulary, so this stays enabled/at its composed default for every profile rather
+            // than being hidden; UpdateKnobConstraints disables it when the current tileset has none.
+            (_elevationRegionsSlider, _elevationRegionsValueBox) = AddSliderRow(overrides, "Elevation Regions", 0, 3, 0);
 
             var (_, transitions) = AddGroup(LeftStack, "Transitions");
             (_entrancesSlider, _entrancesValueBox) = AddSliderRow(transitions, "Entrances", 1, 3, 1);
@@ -414,6 +423,7 @@ namespace SWLOR.ContentBuilder.Windows
             WireKnobSlider(_organicFillSlider, nameof(_organicFillSlider));
             WireKnobSlider(_accentDensitySlider, nameof(_accentDensitySlider));
             WireKnobSlider(_featureDensitySlider, nameof(_featureDensitySlider));
+            WireKnobSlider(_elevationRegionsSlider, nameof(_elevationRegionsSlider));
             WireKnobSlider(_entrancesSlider, nameof(_entrancesSlider));
             WireKnobSlider(_exitsSlider, nameof(_exitsSlider));
 
@@ -648,6 +658,7 @@ namespace SWLOR.ContentBuilder.Windows
             RepopulateLayoutCombo();
             UpdateAccentAvailability();
             UpdateFeatureAvailability();
+            UpdateElevationAvailability();
             // Composed knob values (e.g. CorridorWidth's tileset-driven floor) depend on the selected
             // tileset, not just the layout profile -- reload so untouched sliders reflect the new
             // tileset's composition even when RepopulateLayoutCombo kept the same layout profile
@@ -695,6 +706,7 @@ namespace SWLOR.ContentBuilder.Windows
             _overriddenKnobs.Clear();
             UpdateAccentAvailability();
             UpdateFeatureAvailability();
+            UpdateElevationAvailability();
             LoadLayoutProfileKnobs(SelectedLayoutProfile());
         }
 
@@ -718,6 +730,12 @@ namespace SWLOR.ContentBuilder.Windows
         {
             var tileset = SelectedTilesetProfile();
             _featureDensitySlider.IsEnabled = tileset != null && tileset.FeatureTiles.Count > 0;
+        }
+
+        private void UpdateElevationAvailability()
+        {
+            var tileset = SelectedTilesetProfile();
+            _elevationRegionsSlider.IsEnabled = tileset != null && tileset.MaxElevationRegions > 0;
         }
 
         private void UpdateOrganicFillEnabled()
@@ -845,6 +863,8 @@ namespace SWLOR.ContentBuilder.Windows
                     _exitsSlider.Value = Clamp(composed.ExitCount, _exitsSlider.Minimum, _exitsSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_doorTransitionsCheckBox)))
                     _doorTransitionsCheckBox.IsChecked = composed.DoorTransitions;
+                if (!_overriddenKnobs.Contains(nameof(_elevationRegionsSlider)))
+                    _elevationRegionsSlider.Value = Clamp(composed.ElevationRegions, _elevationRegionsSlider.Minimum, _elevationRegionsSlider.Maximum);
 
                 var supportsAccent = tilesetProfile != null && !string.IsNullOrEmpty(tilesetProfile.AccentTerrain);
 
@@ -928,7 +948,8 @@ namespace SWLOR.ContentBuilder.Windows
                 DoorTransitions = _doorTransitionsCheckBox.IsChecked == true,
                 AccentEnabled = _accentCheckBox.IsChecked == true,
                 AccentDensityPercent = (int)_accentDensitySlider.Value,
-                FeatureDensityPercent = (int)_featureDensitySlider.Value
+                FeatureDensityPercent = (int)_featureDensitySlider.Value,
+                ElevationRegions = (int)_elevationRegionsSlider.Value
             };
 
             var width = (int)_widthSlider.Value;

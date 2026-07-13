@@ -41,6 +41,7 @@ namespace SWLOR.ContentBuilder.Services
         public bool AccentEnabled { get; init; }
         public int AccentDensityPercent { get; init; }
         public int FeatureDensityPercent { get; init; }
+        public int ElevationRegions { get; init; }
 
         public void ApplyTo(MacroLayoutParameters parameters, DungeonTilesetProfile tileset)
         {
@@ -61,6 +62,13 @@ namespace SWLOR.ContentBuilder.Services
             parameters.AccentDensity = accentActive ? AccentDensityPercent / 100.0 : 0.0;
 
             parameters.FeatureDensity = FeatureDensityPercent / 100.0;
+
+            // Clamp to the tileset's own verified support (mirrors DungeonComposition.
+            // BuildLayoutParameters' identical clamp) -- a slider dragged above what the current
+            // tileset supports is silently capped rather than handed to LayoutElevationPainter raw.
+            parameters.ElevationRegions = tileset != null
+                ? System.Math.Min(ElevationRegions, tileset.MaxElevationRegions)
+                : 0;
         }
     }
 

@@ -131,6 +131,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // group gate into a straight run this pass carves when a tileset profile configures one.
             LayoutFenceCarver.CarveFences(layout, parameters, tileset, random);
 
+            // Runs after fences (so it can see and avoid fence crossers too) and before
+            // LayoutGroupStamper: the stamper's own flat-cell guards read CornerTerrainGrid.Heights
+            // directly (see TileDoorGeometry.IsFlatCell), so painting final heights here first means
+            // those guards correctly refuse to stamp a set piece onto a now-raised cell with zero
+            // extra code on the stamper's side.
+            LayoutElevationPainter.Paint(layout, parameters, tileset, random);
+
             // Runs after transitions are anchored (so set pieces can avoid them) and before invariant
             // validation (so a bad stamp still fails loudly instead of silently corrupting a layout).
             if (tileset != null)

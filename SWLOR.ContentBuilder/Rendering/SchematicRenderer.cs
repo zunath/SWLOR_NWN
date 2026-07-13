@@ -97,6 +97,16 @@ namespace SWLOR.ContentBuilder.Rendering
                         else
                             color = PartialColor;
 
+                        // Subtle elevation cue: any tile touching a raised corner (LayoutElevationPainter
+                        // or any future height-painting pass) is lightened a little so a raised patch
+                        // reads as visually distinct without needing a whole new legend color. Trivial
+                        // and cheap -- CornerTerrainGrid.Heights is always allocated (all-zero by
+                        // default), so this never changes output for any flat (pre-elevation) layout.
+                        var heights = layout.Corners.Heights;
+                        if (heights[tx, ty + 1] != 0 || heights[tx + 1, ty + 1] != 0 ||
+                            heights[tx + 1, ty] != 0 || heights[tx, ty] != 0)
+                            color = Lighten(color, 0.35);
+
                         // Corners.Labels is y-up (y=0 south); the bitmap is drawn top-down, so flip.
                         var screenY = height - 1 - ty;
                         var rect = new Rect(offsetX + tx * cell, offsetY + screenY * cell, cell, cell);
@@ -184,6 +194,13 @@ namespace SWLOR.ContentBuilder.Rendering
             bitmap.Render(visual);
             bitmap.Freeze();
             return bitmap;
+        }
+
+        /// <summary>Blends <paramref name="color"/> toward white by <paramref name="amount"/> (0..1).</summary>
+        private static Color Lighten(Color color, double amount)
+        {
+            byte Blend(byte channel) => (byte)(channel + (255 - channel) * amount);
+            return Color.FromRgb(Blend(color.R), Blend(color.G), Blend(color.B));
         }
 
         private static bool LabelEquals(string label, string terrain) =>

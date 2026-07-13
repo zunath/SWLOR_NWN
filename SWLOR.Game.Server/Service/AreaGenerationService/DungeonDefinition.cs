@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
@@ -121,6 +122,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// has a door slot) at resolve time rather than trusting this list blindly.
         /// </summary>
         public List<string> ExitGroups { get; set; } = new();
+
+        /// <summary>
+        /// Largest MacroLayoutParameters.ElevationRegions value this tileset's real tile inventory has
+        /// verified rim vocabulary for (see LayoutElevationPainter.HasRimVocabulary and the census
+        /// notes on BaseGameTilesetProfiles.Dungeon). 0 = no verified elevation vocabulary; a layout
+        /// profile's own ElevationRegions request is clamped down to this by
+        /// DungeonComposition.BuildLayoutParameters, the same "layout expresses intent, tileset caps to
+        /// verified support" shape as AccentTerrain/ChannelTerrain vs AccentDensity/AccentChannels.
+        /// LayoutElevationPainter re-verifies live against the real TilesetModel regardless -- this cap
+        /// only controls how many regions a composition ASKS for, never whether painting one is safe.
+        /// </summary>
+        public int MaxElevationRegions { get; set; } = 0;
     }
 
     /// <summary>
@@ -219,6 +232,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             parameters.FeatureTiles = Tileset.FeatureTiles;
             parameters.SetPieces = Tileset.SetPieces;
             parameters.ExitGroups = Tileset.ExitGroups;
+            // Layout expresses intent (e.g. StandardLayoutProfiles.Complex's ElevationRegions), the
+            // tileset profile caps it to verified support -- 0 on every profile except
+            // BaseGameTilesetProfiles.Dungeon means this is a no-op everywhere else today.
+            parameters.ElevationRegions = Math.Min(parameters.ElevationRegions, Tileset.MaxElevationRegions);
             return parameters;
         }
     }
@@ -455,6 +472,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder MinimumOpeningWidth(int width)
         {
             _active.MinimumOpeningWidth = width;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the largest MacroLayoutParameters.ElevationRegions request this tileset's real tile
+        /// inventory has verified rim vocabulary for. Only set after verifying with
+        /// LayoutElevationPainter's shape probe (TileResolver.HasHeightAwareCandidate) against the
+        /// composed PrimaryOpenTerrain/solid terrain -- see BaseGameTilesetProfiles.Dungeon.
+        /// </summary>
+        public DungeonTilesetProfileBuilder MaxElevationRegions(int count)
+        {
+            _active.MaxElevationRegions = count;
             return this;
         }
 

@@ -540,5 +540,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
             return lookup.TryGetValue(key, out var set) && set.All.Count > 0;
         }
+
+        /// <summary>
+        /// Test/tooling hook: true if the tileset has at least one (tileId, orientation) candidate for
+        /// the given corner+edge combination AND normalized corner-height delta profile, under the
+        /// same height-aware rules <see cref="TryResolve"/> uses once a layout paints any nonzero
+        /// corner height (see BuildCandidateLookup's heightAware=true lookup). Used by shape-gated
+        /// height-painting passes (e.g. LayoutElevationPainter) to verify a tileset's real tile
+        /// inventory actually covers a rim shape before committing to paint it — mirroring how
+        /// TunnelVocabularyCheck/LayoutFenceCarver/LayoutAccentChannelCarver probe capability before
+        /// carving. Builds the lookup fresh each call — not for use in hot per-cell resolution.
+        /// </summary>
+        public static bool HasHeightAwareCandidate(
+            TilesetModel tileset,
+            string tl, string tr, string br, string bl,
+            string top, string right, string bottom, string left,
+            int dTl, int dTr, int dBr, int dBl)
+        {
+            if (tileset == null) throw new ArgumentNullException(nameof(tileset));
+
+            var lookup = BuildCandidateLookup(tileset, heightAware: true);
+            var key = MakeHeightAwareKey(tl, tr, br, bl, top, right, bottom, left, dTl, dTr, dBr, dBl);
+            return lookup.TryGetValue(key, out var set) && set.All.Count > 0;
+        }
     }
 }

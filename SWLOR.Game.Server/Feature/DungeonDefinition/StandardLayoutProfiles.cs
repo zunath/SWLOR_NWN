@@ -114,6 +114,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     p.MinRoomCornerSize = 3;
                     p.MaxRoomCornerSize = 5;
                     p.LoopFactor = 0.3;
+                    // Requests up to 2 raised floor/wall patches from LayoutElevationPainter; a no-op
+                    // on any tileset profile whose MaxElevationRegions is 0 (every profile today except
+                    // BaseGameTilesetProfiles.Dungeon -- see DungeonComposition.BuildLayoutParameters,
+                    // which clamps this down, and LayoutElevationPainter, which independently re-probes
+                    // the real tileset before ever painting a corner). Not set on Halls/Organic yet --
+                    // Dungeon's own onboarded pairing is Complex/Halls/Organic, but only Complex is
+                    // exercised with elevation this round.
+                    p.ElevationRegions = 2;
                 });
 
             // Exterior city blocks joined by wall-embedded Alley crosser tunnels instead of Corridor

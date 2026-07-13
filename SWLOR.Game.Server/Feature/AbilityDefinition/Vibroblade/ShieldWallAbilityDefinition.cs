@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
     public class ShieldWallAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         private const string ReplacementAnimationName = "Shield_Wall";
+        private const float ChannelSeconds = 30f;
         private const float DurationSeconds = 30f;
         private const int StaminaCost = 10;
 
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 () => new ShieldWallStatusEffect(damageReductionPercent),
                 DurationSeconds,
                 StaminaCost,
-                true);
+                true,
+                ChannelSeconds);
         }
     }
 }

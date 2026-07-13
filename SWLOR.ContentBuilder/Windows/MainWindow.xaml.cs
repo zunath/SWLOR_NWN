@@ -194,7 +194,7 @@ namespace SWLOR.ContentBuilder.Windows
             var seedLabel = new TextBlock { Text = "Seed", VerticalAlignment = VerticalAlignment.Center };
             Grid.SetColumn(seedLabel, 0);
             seedRow.Children.Add(seedLabel);
-            _seedTextBox = new TextBox { Text = "4242", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 4, 0) };
+            _seedTextBox = new TextBox { Text = NewRandomSeedText(), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 4, 0) };
             Grid.SetColumn(_seedTextBox, 1);
             seedRow.Children.Add(_seedTextBox);
             _randomSeedButton = new Button { Content = "Random", Padding = new Thickness(6, 0, 6, 0) };
@@ -383,7 +383,7 @@ namespace SWLOR.ContentBuilder.Windows
             _addToBatchButton.Click += (_, _) => AddToBatch();
             _randomSeedButton.Click += (_, _) =>
             {
-                _seedTextBox.Text = System.Random.Shared.Next(0, MaxSeed + 1).ToString(CultureInfo.InvariantCulture);
+                _seedTextBox.Text = NewRandomSeedText();
             };
 
             _widthSlider.ValueChanged += (_, _) => { if (_suppressEvents) return; UpdateKnobConstraints(); RegeneratePreview(); };
@@ -661,7 +661,7 @@ namespace SWLOR.ContentBuilder.Windows
                 {
                     _widthSlider.Value = 16;
                     _heightSlider.Value = 16;
-                    _seedTextBox.Text = "4242";
+                    _seedTextBox.Text = NewRandomSeedText();
                 }
             }
             finally
@@ -989,6 +989,9 @@ namespace SWLOR.ContentBuilder.Windows
             StatusTextBlock.Text = text;
             AppendLog(text);
         }
+
+        private static string NewRandomSeedText() =>
+            System.Random.Shared.Next(0, MaxSeed + 1).ToString(CultureInfo.InvariantCulture);
 
         private int GetSeedValue()
         {

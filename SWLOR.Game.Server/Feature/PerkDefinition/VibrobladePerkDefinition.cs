@@ -72,19 +72,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike1)
-                .Description("Strike all enemies within 3m for weapon DMG + 15. Enemies hit generate +25% Enmity toward you for 30 seconds.")
+                .Description("Strike all enemies within 5m for weapon DMG + 15. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike2)
-                .Description("Strike all enemies within 3m for weapon DMG + 25. Enemies hit generate +25% Enmity toward you for 30 seconds.")
+                .Description("Strike all enemies within 5m for weapon DMG + 25. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike3)
-                .Description("Strike all enemies within 3m for weapon DMG + 30. Enemies hit generate +25% Enmity toward you for 30 seconds.")
+                .Description("Strike all enemies within 5m for weapon DMG + 30. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }

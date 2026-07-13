@@ -37,7 +37,7 @@ public class LineAbilityTargetingTests
             AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
     }
 
-    [TestCase(FeatType.CoveringStrike1, Spell.CoveringStrike1, typeof(CoveringStrikeAbilityDefinition), 3f)]
+    [TestCase(FeatType.CoveringStrike1, Spell.CoveringStrike1, typeof(CoveringStrikeAbilityDefinition), 5f)]
     public void OriginSphereAbilities_DeclareRadiusTargeting(
         FeatType feat,
         Spell spell,

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly float _rangeMeters;
 
         public override string Name => "Guarded";
-        public override EffectIconType Icon => EffectIconType.IronGuardCoverStatusEffect;
+        public override EffectIconType Icon => EffectIconType.GuardedStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override float Frequency => 1f;
         public override bool PersistsOnLogout => false;

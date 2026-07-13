@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public int Penalty { get; }
 
         public override string Name => "Poison Resistance";
-        public override EffectIconType Icon => EffectIconType.PoisonDefensePenaltyStatusEffect;
+        public override EffectIconType Icon => EffectIconType.PoisonResistancePenaltyStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override ResistanceType ResistanceType => ResistanceType.Poison;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;

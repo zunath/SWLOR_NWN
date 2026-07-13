@@ -463,9 +463,12 @@ static void EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, strin
 /// Builds one waypoint GFF-JSON struct per entrance/exit transition point, so transitions are
 /// visible when reviewing a generated area in the toolset. Struct shape/field set mirrors an
 /// existing hand-built waypoint instance (see Module/git/veles_sewers.git.json), __struct_id 5.
-/// Positioned at the transition tile's center (tile*10+5), Z 0. Named "PG Entrance N"/"PG Exit N"
-/// with tags PG_ENT_N/PG_EXIT_N, numbered separately per kind in transition order (the first
-/// Entrance is always the primary arrival anchor).
+/// Door-bearing transitions (Door/GroupExit) position the waypoint 2m in front of the door — the
+/// anchor tile's exact center may sit inside the decorative geometry many open-floor tile variants
+/// carry (mounds, pipes), which buried waypoints under set dressing in toolset review. Placeable
+/// transitions keep the tile center. Named "PG Entrance N"/"PG Exit N" with tags PG_ENT_N/PG_EXIT_N,
+/// numbered separately per kind in transition order (the first Entrance is always the primary
+/// arrival anchor).
 /// </summary>
 static string BuildWaypointEntries(ResolvedLayout layout)
 {
@@ -480,8 +483,25 @@ static string BuildWaypointEntries(ResolvedLayout layout)
         var label = isEntrance ? "Entrance" : "Exit";
         var tag = (isEntrance ? "PG_ENT_" : "PG_EXIT_") + index;
         var name = $"PG {label} {index}";
-        var x = transition.Tile.X * 10f + 5f;
-        var y = transition.Tile.Y * 10f + 5f;
+
+        var anchorX = transition.Tile.X * 10f + 5f;
+        var anchorY = transition.Tile.Y * 10f + 5f;
+        var x = anchorX;
+        var y = anchorY;
+
+        if (transition.Style != TransitionStyle.Placeable)
+        {
+            // Step from the door position toward the open anchor cell so the waypoint sits just
+            // inside walkable floor, directly in front of the door.
+            var dx = anchorX - transition.DoorX;
+            var dy = anchorY - transition.DoorY;
+            var length = MathF.Sqrt(dx * dx + dy * dy);
+            if (length > 0.01f)
+            {
+                x = transition.DoorX + dx / length * 2f;
+                y = transition.DoorY + dy / length * 2f;
+            }
+        }
 
         entries.Add(WaypointEntry(name, tag, x, y));
     }

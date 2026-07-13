@@ -107,23 +107,35 @@ public class TileDoorPlannerTests
                             transition.Style.Should().Be(TransitionStyle.Door);
 
                             // No duplicate cell claims across transitions.
-                            claimedCells.Should().NotContain(transition.Tile, $"{context}: room-edge cell reused");
+                            claimedCells.Should().NotContain(transition.Tile, $"{context}: anchor cell reused");
+                            claimedCells.Should().NotContain(transition.DoorwayCell, $"{context}: room-edge cell reused");
                             claimedCells.Should().NotContain(transition.DoorCell, $"{context}: solid cell reused");
                             claimedCells.Add(transition.Tile);
+                            claimedCells.Add(transition.DoorwayCell);
                             claimedCells.Add(transition.DoorCell);
 
-                            // (a) the room-edge tile actually has a door slot.
-                            var roomEdgeResolved = resolved.GetTile(transition.Tile.X, transition.Tile.Y);
+                            // The anchor stays on plain open room floor directly in front of the
+                            // doorway — waypoints and arrival jumps use it and must never sit in
+                            // the doorway wall tile or under feature-tile decor.
+                            var anchorDx = Math.Abs(transition.DoorwayCell.X - transition.Tile.X);
+                            var anchorDy = Math.Abs(transition.DoorwayCell.Y - transition.Tile.Y);
+                            (anchorDx + anchorDy).Should().Be(1, $"{context}: anchor must be orthogonally adjacent to the doorway cell");
+                            var anchorResolved = resolved.GetTile(transition.Tile.X, transition.Tile.Y);
+                            tileset.Tiles[anchorResolved.TileId].GroupIndex.Should().Be(-1,
+                                $"{context}: anchor cell must not hold a feature/group tile");
+
+                            // (a) the room-edge doorway tile actually has a door slot.
+                            var roomEdgeResolved = resolved.GetTile(transition.DoorwayCell.X, transition.DoorwayCell.Y);
                             var roomEdgeRecord = tileset.Tiles[roomEdgeResolved.TileId];
                             roomEdgeRecord.Doors.Should().NotBeEmpty($"{context}: room-edge tile must have a door slot");
 
                             // (b) substituted tiles' corners still match the corner grid labels.
-                            AssertCornersMatch(tileset, layout, resolved, transition.Tile, context);
+                            AssertCornersMatch(tileset, layout, resolved, transition.DoorwayCell, context);
                             AssertCornersMatch(tileset, layout, resolved, transition.DoorCell, context);
 
                             // (c) facing edges both Doorway.
-                            var dx = transition.DoorCell.X - transition.Tile.X;
-                            var dy = transition.DoorCell.Y - transition.Tile.Y;
+                            var dx = transition.DoorCell.X - transition.DoorwayCell.X;
+                            var dy = transition.DoorCell.Y - transition.DoorwayCell.Y;
                             var (edgeFromCell, edgeBack) = DirectionToEdgeSlots(dx, dy);
 
                             var edgeFromCellValue = roomEdgeRecord.GetEdgeAt(roomEdgeResolved.Orientation, edgeFromCell);

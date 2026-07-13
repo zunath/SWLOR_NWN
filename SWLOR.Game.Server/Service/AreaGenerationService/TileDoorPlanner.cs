@@ -69,18 +69,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var placed = TryPlaceDoor(
                     tileset, layout, tiles, width, height, room, originalTile,
                     edgeCandidates, terminatorCandidates, claimed,
-                    out var roomEdgeCell, out var solidCell, out var doorX, out var doorY, out var doorZ, out var doorOrientation);
+                    out var roomSideCell, out var roomEdgeCell, out var solidCell,
+                    out var doorX, out var doorY, out var doorZ, out var doorOrientation);
 
                 if (placed)
                 {
                     transition.Style = TransitionStyle.Door;
-                    transition.Tile = roomEdgeCell;
+                    // The anchor stays on open room floor in front of the doorway — waypoints,
+                    // arrival jumps, and preview chevrons all use Tile and must never sit inside
+                    // the doorway wall tile itself.
+                    transition.Tile = roomSideCell;
+                    transition.DoorwayCell = roomEdgeCell;
                     transition.DoorCell = solidCell;
                     transition.DoorX = doorX;
                     transition.DoorY = doorY;
                     transition.DoorZ = doorZ;
                     transition.DoorOrientation = doorOrientation;
 
+                    claimed.Add(roomSideCell);
                     claimed.Add(roomEdgeCell);
                     claimed.Add(solidCell);
                 }
@@ -102,10 +108,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             Dictionary<(string CornerKey, int EdgeFromCell), List<(int TileId, int Orientation)>> edgeCandidates,
             Dictionary<int, List<(int TileId, int Orientation)>> terminatorCandidates,
             HashSet<(int X, int Y)> claimed,
+            out (int X, int Y) roomSideCell,
             out (int X, int Y) roomEdgeCell,
             out (int X, int Y) solidCell,
             out float doorX, out float doorY, out float doorZ, out float doorOrientation)
         {
+            roomSideCell = default;
             roomEdgeCell = default;
             solidCell = default;
             doorX = doorY = doorZ = doorOrientation = 0f;
@@ -114,11 +122,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // where a door tile would actually go, is the ring of cells one step outside that set (its
             // corners are a Floor/Wall mix: open on the room-facing side, solid on the far side). So
             // candidates are enumerated as (innerTile + direction), not innerTile itself.
-            var candidates = new List<((int X, int Y) RoomEdgeCell, (int X, int Y) SolidCell, int EdgeFromCell, int EdgeBack)>();
+            var candidates = new List<((int X, int Y) InnerTile, (int X, int Y) RoomEdgeCell, (int X, int Y) SolidCell, int EdgeFromCell, int EdgeBack)>();
             var roomTileSet = new HashSet<(int X, int Y)>(room.Tiles);
 
             foreach (var innerTile in room.Tiles)
             {
+                // The inner tile becomes the transition's walkable anchor (waypoints, arrival
+                // jumps). Resolution may have sprinkled a feature tile there (treasure mound,
+                // pillar) whose art occupies the tile center — skip those so anchors stay on
+                // plain floor.
+                var innerResolved = tiles[innerTile.Y * width + innerTile.X];
+                if (tileset.Tiles[innerResolved.TileId].GroupIndex != -1)
+                    continue;
+
                 foreach (var (dx, dy, edgeFromCell, edgeBack) in Directions)
                 {
                     var roomEdge = (X: innerTile.X + dx, Y: innerTile.Y + dy);
@@ -142,7 +158,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (layout.PinnedTiles.ContainsKey(roomEdge) || layout.PinnedTiles.ContainsKey(solid))
                         continue;
 
-                    candidates.Add((roomEdge, solid, edgeFromCell, edgeBack));
+                    candidates.Add((innerTile, roomEdge, solid, edgeFromCell, edgeBack));
                 }
             }
 
@@ -153,7 +169,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 .ThenBy(c => c.EdgeFromCell)
                 .ToList();
 
-            foreach (var (candidateCell, neighbor, edgeFromCell, edgeBack) in orderedCandidates)
+            foreach (var (innerTile, candidateCell, neighbor, edgeFromCell, edgeBack) in orderedCandidates)
             {
                 if (claimed.Contains(candidateCell) || claimed.Contains(neighbor))
                     continue; // an earlier candidate in this same search may have just claimed it
@@ -192,6 +208,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 };
 
                 var (wx, wy, wz, worientation) = TileDoorGeometry.DoorWorldTransform(slot, candidateCell.X, candidateCell.Y, edgePick.Orientation);
+                roomSideCell = innerTile;
                 roomEdgeCell = candidateCell;
                 solidCell = neighbor;
                 doorX = wx;

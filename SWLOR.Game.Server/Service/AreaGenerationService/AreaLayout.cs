@@ -184,9 +184,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     {
         public TransitionKind Kind { get; set; }
         /// <summary>
-        /// Tile the transition sits on/arrives at — always fully open. For Door style this is the
-        /// room-side walkable cell adjacent to the door, relocated from the original assignment by
-        /// TileDoorPlanner; for Placeable style it is unchanged from the layout post-pass.
+        /// Tile the transition sits on/arrives at — always a fully open room cell. For Door and
+        /// GroupExit styles this is the room-side walkable cell adjacent to the doorway
+        /// (<see cref="DoorwayCell"/>), relocated from the original assignment by the planners;
+        /// for Placeable style it is unchanged from the layout post-pass.
         /// </summary>
         public (int X, int Y) Tile { get; set; }
         /// <summary>Id of the LayoutRoom hosting this transition.</summary>
@@ -203,6 +204,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// tile carries no crosser edges).
         /// </summary>
         public (int X, int Y) DoorCell { get; set; }
+        /// <summary>
+        /// Door/GroupExit styles: the wall cell whose tile was substituted to host the doorway or
+        /// exit set piece. For Door style this is the room-edge doorway tile (distinct from both
+        /// <see cref="Tile"/>, the open room-side anchor, and <see cref="DoorCell"/>, the solid
+        /// terminator); for GroupExit it equals <see cref="DoorCell"/>.
+        /// </summary>
+        public (int X, int Y) DoorwayCell { get; set; }
         /// <summary>Door/GroupExit style only: world-space X of the door object.</summary>
         public float DoorX { get; set; }
         /// <summary>Door/GroupExit style only: world-space Y of the door object.</summary>

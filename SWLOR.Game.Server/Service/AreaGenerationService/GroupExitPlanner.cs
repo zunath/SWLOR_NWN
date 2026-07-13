@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 }
 
                 var placed = TryPlaceGroupExit(
-                    layout, width, height, room, originalTile, candidateGroups, claimed,
+                    tileset, layout, tiles, width, height, room, originalTile, candidateGroups, claimed,
                     out var cell, out var innerTile, out var tileId, out var orientation,
                     out var doorX, out var doorY, out var doorZ, out var doorOrientation);
 
@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     transition.Style = TransitionStyle.GroupExit;
                     transition.Tile = innerTile;
                     transition.DoorCell = cell;
+                    transition.DoorwayCell = cell;
                     transition.DoorX = doorX;
                     transition.DoorY = doorY;
                     transition.DoorZ = doorZ;
@@ -142,7 +143,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         private static bool TryPlaceGroupExit(
-            MacroLayout layout, int width, int height, LayoutRoom room, (int X, int Y) originalTile,
+            TilesetModel tileset, MacroLayout layout, ResolvedTile[] tiles,
+            int width, int height, LayoutRoom room, (int X, int Y) originalTile,
             List<ExitGroupCandidate> candidateGroups, HashSet<(int X, int Y)> claimed,
             out (int X, int Y) cell, out (int X, int Y) innerTile, out int tileId, out int orientation,
             out float doorX, out float doorY, out float doorZ, out float doorOrientation)
@@ -162,6 +164,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             foreach (var inner in room.Tiles)
             {
+                // The inner tile becomes the transition's walkable anchor (waypoints, arrival
+                // jumps). Resolution may have sprinkled a feature tile there (treasure mound,
+                // pillar) whose art occupies the tile center — skip those so anchors stay on
+                // plain floor.
+                var innerResolved = tiles[inner.Y * width + inner.X];
+                if (tileset.Tiles[innerResolved.TileId].GroupIndex != -1)
+                    continue;
+
                 foreach (var (dx, dy) in Directions)
                 {
                     var wallCell = (X: inner.X + dx, Y: inner.Y + dy);

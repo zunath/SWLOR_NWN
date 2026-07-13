@@ -82,6 +82,7 @@ public class FenceAndAlleyTests
         {
             doorCells.Add(transition.Tile);
             doorCells.Add(transition.DoorCell);
+            doorCells.Add(transition.DoorwayCell);
         }
 
         for (var y = 0; y < resolved.Height; y++)

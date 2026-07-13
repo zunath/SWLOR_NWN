@@ -328716,7 +328716,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "fnote_store"
+          "value": "FNOTE_STORE"
         },
         "WillNotBuy": {
           "type": "list",

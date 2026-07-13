@@ -572,13 +572,20 @@ namespace SWLOR.ContentBuilder.Windows
             {
                 var model = TilesetModelCache.Get(tilesetProfile.TilesetResref);
 
-                // Alley mode carves the Alley crosser for both the tunnel body and the room port (see
-                // LayoutTunnelCarver) — Doorway/Corridor never come into it.
-                if (layoutProfile.Template.CorridorCrosserType == CorridorCrosserType.Alley)
-                    return model.Crossers.Any(c => string.Equals(c, "Alley", StringComparison.OrdinalIgnoreCase));
+                // Shape-aware, not just crosser-name presence: mirrors MacroLayoutGenerator's own
+                // downgrade check (TunnelVocabularyCheck.SupportsTunnels) so the dropdown never offers a
+                // pairing the engine would itself downgrade away from Tunnel mode -- e.g. Illithid
+                // Interior (tii01) declares both "Doorway" and "Corridor" but is missing a junction
+                // shape (Corridor+Corridor+Doorway) Tunnel mode needs for reliable generation, and Ruins
+                // (tdr01) declares "Alley" but has no side-open boundary tile carrying a lone Alley edge
+                // at all.
+                var openTerrain = string.IsNullOrEmpty(tilesetProfile.PrimaryOpenTerrain)
+                    ? model.FloorTerrain
+                    : tilesetProfile.PrimaryOpenTerrain;
 
-                return model.Crossers.Any(c => string.Equals(c, "Doorway", StringComparison.OrdinalIgnoreCase)) &&
-                       model.Crossers.Any(c => string.Equals(c, "Corridor", StringComparison.OrdinalIgnoreCase));
+                return TunnelVocabularyCheck.SupportsTunnels(
+                    model, openTerrain, tilesetProfile.SecondaryOpenTerrain, model.DefaultTerrain,
+                    layoutProfile.Template.CorridorCrosserType);
             }
             catch
             {

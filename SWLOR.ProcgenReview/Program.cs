@@ -310,14 +310,27 @@ try
             effectiveSize = sizeFloor;
         }
 
-        // A layout carving Alley corridors is meaningless on tilesets without the Alley crosser
-        // vocabulary: the generator downgrades it to Corridor tunnels, producing a duplicate of the
-        // equivalent Corridor-profile area. Skip instead of emitting redundancy.
+        // A layout carving Alley corridors needs the full Alley tile-SHAPE inventory (every shape
+        // TunnelVocabularyCheck verifies, not just the crosser name) or MacroLayoutGenerator downgrades
+        // CorridorCrosserType from Alley to Corridor before dispatch — at that point the Streets
+        // composition's remaining parameters (Tunnel mode, Corridor crosser type) are identical to the
+        // equivalent Complex-profile composition for the SAME tileset, so whatever Complex would itself
+        // produce (a real Corridor tunnel, or a further OpenLane downgrade if Corridor is ALSO
+        // incomplete for this tileset — see the second MacroLayoutGenerator downgrade check) is exactly
+        // what Streets produces too. Either way it is a duplicate of an area the matrix already emits
+        // under that tileset's Complex entry, so skip instead of emitting redundancy — this must NOT
+        // additionally require Corridor to be complete (an earlier version of this check did, which
+        // silently regenerated Barrows' Streets/OpenLane result as a duplicate of its own Complex/
+        // OpenLane downgrade). Ruins (tdr01) is the motivating case: it declares an "Alley" crosser (so
+        // a bare name check passes) but has no side-open boundary tile carrying a lone Alley edge, so
+        // every Alley tunnel port fails resolution outright ("No matching tile ... Right=Alley"); the
+        // engine's own downgrade lands on Corridor (verified complete for tdr01).
+        var effectiveOpenTerrain = string.IsNullOrEmpty(tileset.PrimaryOpenTerrain) ? model.FloorTerrain : tileset.PrimaryOpenTerrain;
         if (effectiveCrosserType == CorridorCrosserType.Alley &&
-            !model.Crossers.Contains("Alley", StringComparer.OrdinalIgnoreCase))
+            !TunnelVocabularyCheck.SupportsTunnels(model, effectiveOpenTerrain, tileset.SecondaryOpenTerrain, model.DefaultTerrain, CorridorCrosserType.Alley))
         {
             Console.WriteLine(
-                $"{spec.Resref}: layout '{spec.Composition.Layout.DisplayName}' needs the Alley vocabulary, which '{tileset.TilesetResref}' lacks — skipped (would duplicate Corridor tunnels)");
+                $"{spec.Resref}: layout '{spec.Composition.Layout.DisplayName}' needs the Alley tile-shape inventory, which '{tileset.TilesetResref}' lacks — skipped (would duplicate the Complex-profile pairing for this tileset)");
             continue;
         }
 

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using SWLOR.Game.Server.Service.AreaGenerationService.Layouts;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
@@ -28,38 +27,50 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             if (random == null) throw new ArgumentNullException(nameof(random));
 
-            // The Alley crosser vocabulary exists only in vmr01. Composing an Alley-corridor layout
-            // (Streets) with any other tileset would fail resolution outright ("No matching tile ...
-            // Right=Alley"), so downgrade to the universally-verified Corridor/Doorway vocabulary
-            // instead — Streets then reads as regular tunnels on tilesets without alleys. Adjusted on
-            // a clone so the caller's parameters object is never mutated.
+            // The Alley crosser vocabulary exists only in vmr01, and even there only against Plaza (not
+            // every secondary district terrain -- districts never activate under Alley mode anyway, see
+            // TunnelVocabularyCheck). Composing an Alley-corridor layout (Streets) with a tileset that
+            // lacks the full Alley SHAPE inventory -- not just the crosser name, but every tile shape
+            // the tunnel carver can emit with it (straight/turn/junction bodies, port-adapter cells, and
+            // the side-open boundary tile a port is actually carved onto) -- would fail resolution
+            // outright ("No matching tile ... Right=Alley", Ruins/tdr01's exact gap: it has Alley body/
+            // junction tiles but no boundary tile carrying a lone Alley edge), so downgrade to the
+            // universally-verified Corridor/Doorway vocabulary instead — Streets then reads as regular
+            // tunnels on tilesets without full Alley coverage. Adjusted on a clone so the caller's
+            // parameters object is never mutated.
             var wasCloned = false;
             if (tileset != null &&
                 parameters.CorridorCrosserType == CorridorCrosserType.Alley &&
-                !tileset.Crossers.Contains("Alley", StringComparer.OrdinalIgnoreCase))
+                !TunnelVocabularyCheck.SupportsTunnels(
+                    tileset, parameters.OpenTerrain, parameters.SecondaryOpenTerrain, parameters.SolidTerrain,
+                    CorridorCrosserType.Alley))
             {
                 parameters = parameters.Clone();
                 parameters.CorridorCrosserType = CorridorCrosserType.Corridor;
                 wasCloned = true;
             }
 
-            // Tunnel mode (Corridor crosser type, post Alley-downgrade above) needs both a Doorway
-            // crosser (room-wall ports) and a Corridor crosser (the wall-embedded body chain) in the
-            // tileset's own declared vocabulary. Some onboarded tilesets (e.g. Barrows/tbw01) carve a
-            // real "corridor" crosser but never declare a "Doorway" crosser at all — Tunnel mode's port
-            // carving always needs one, and RoomsAndCorridorsLayout's own per-edge fallback can't catch
-            // this because LayoutTunnelCarver labels edges purely from corner geometry, so it reports
-            // success even though the label names the resolver can never place a tile for. Downgrading
-            // here — the same "clone on write, check before dispatch" shape as the Alley downgrade
-            // above — turns the pairing into a rooms-with-open-lanes layout instead of a guaranteed
-            // resolution failure. A tileset that downgraded out of Alley above and also lacks Doorway/
-            // Corridor (Barrows/Streets) composes both downgrades in sequence: Alley -> Corridor ->
-            // OpenLane.
+            // Tunnel mode (Corridor crosser type, post Alley-downgrade above) needs the full Corridor/
+            // Doorway SHAPE inventory the tunnel carver can emit, not merely both crosser names present
+            // in the tileset's own declared vocabulary. Some onboarded tilesets (e.g. Barrows/tbw01)
+            // carve a real "corridor" crosser but never declare a "Doorway" crosser at all -- Tunnel
+            // mode's port carving always needs one. Others (Illithid Interior/tii01) declare both names
+            // but are missing a specific junction shape (a corridor bend merging directly into a room's
+            // doorway port) that only shows up intermittently, not on every crosser-presence check --
+            // RoomsAndCorridorsLayout's own per-edge fallback can't catch either gap because
+            // LayoutTunnelCarver labels edges purely from corner geometry, so it reports success even
+            // though the label names/shapes the resolver can never place a tile for. Downgrading here —
+            // the same "clone on write, check before dispatch" shape as the Alley downgrade above — turns
+            // the pairing into a rooms-with-open-lanes layout instead of a resolution failure (Barrows) or
+            // an unreliable one (Illithid). A tileset that downgraded out of Alley above and also lacks
+            // full Corridor/Doorway shape coverage (Barrows/Streets) composes both downgrades in
+            // sequence: Alley -> Corridor -> OpenLane.
             if (tileset != null &&
                 parameters.CorridorMode == CorridorMode.Tunnel &&
                 parameters.CorridorCrosserType == CorridorCrosserType.Corridor &&
-                (!tileset.Crossers.Contains("Doorway", StringComparer.OrdinalIgnoreCase) ||
-                 !tileset.Crossers.Contains("Corridor", StringComparer.OrdinalIgnoreCase)))
+                !TunnelVocabularyCheck.SupportsTunnels(
+                    tileset, parameters.OpenTerrain, parameters.SecondaryOpenTerrain, parameters.SolidTerrain,
+                    CorridorCrosserType.Corridor))
             {
                 if (!wasCloned)
                 {

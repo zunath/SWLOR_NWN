@@ -79,28 +79,30 @@ public class OnboardedTilesetPipelineTests
     // entirely (falls through with zero channels, generation proceeds normally) when the tileset can't
     // resolve them -- included below like any other pairing.
     //
-    // Illithid Interior (tii01) / Complex remains excluded: it fails intermittently on a
+    // Illithid Interior (tii01) / Complex used to be excluded here: it fails intermittently on a
     // Corridor+Corridor+Doorway three-way junction (an all-solid-corner adapter tile joining a corridor
     // bend to a room doorway) that this small, 10-group tileset's tile inventory doesn't cover for
     // every junction orientation. The wave-2 onboarding note that verified "3/50 seeds" (~6%) failing
     // single-attempt, implying the pipeline's 6-attempt seed-derived retry (LayoutSolver.DefaultRetryCount)
-    // would make the overall failure rate negligible, does NOT hold up under a wider re-verification: a
+    // would make the overall failure rate negligible, did NOT hold up under a wider re-verification: a
     // direct probe (single-attempt retryCount:1 across 200 seeds, 9000-9199) measured 58.5% single-seed
     // failures, and even the full default 6-attempt retry only reached 98.5% (197/200) -- a second probe
     // over this test's own seed range (6000-6049, 50 seeds) measured 66% single-attempt failures and
-    // 94% (47/50) with retry, still short of the 100% this pipeline gate requires. This is a genuine
-    // tile-inventory gap (not something a profile knob like MinimumOpeningWidth can fix, and not
-    // something the Doorway/Corridor vocabulary-presence check above catches, since Illithid has both
-    // crossers -- it is simply missing one specific junction tile shape), so Complex is still skipped
-    // entirely for this tileset.
+    // 94% (47/50) with retry, still short of the 100% this pipeline gate requires. This was a genuine
+    // tile-inventory gap that a bare Doorway/Corridor crosser-NAME presence check couldn't catch (Illithid
+    // has both crossers -- it was simply missing one specific junction tile shape).
+    // MacroLayoutGenerator now checks TunnelVocabularyCheck.SupportsTunnels (the exact tile-SHAPE
+    // inventory the tunnel carver can emit, not just crosser names) before dispatch and downgrades
+    // CorridorMode from Tunnel to OpenLane whenever a tileset can't resolve every shape -- Illithid fails
+    // that check purely because of the missing T-with-port junction shape, so Complex now downgrades to
+    // OpenLane for this tileset (mirroring Barrows' own Doorway-vocabulary-absence downgrade) instead of
+    // being excluded outright. See IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers below, which
+    // locks in that the downgrade actually took effect.
     public static IEnumerable<object[]> OnboardedLayoutCases()
     {
         foreach (var tilesetKey in OnboardedTilesetKeys)
         foreach (var layoutKey in new[] { StandardLayoutProfiles.Complex, StandardLayoutProfiles.Halls, StandardLayoutProfiles.Organic })
         {
-            if (layoutKey == StandardLayoutProfiles.Complex && tilesetKey == BaseGameTilesetProfiles.IllithidInterior)
-                continue;
-
             yield return new object[] { tilesetKey, layoutKey };
         }
     }
@@ -201,6 +203,55 @@ public class OnboardedTilesetPipelineTests
             // rather than Tunnel mode happening to place zero Corridor/Doorway edges by chance.
             solved.Layout.TunnelLinks.Should().BeEmpty(
                 $"seed {seed}: downgraded Barrows/Complex must carve plain open lanes (no TunnelLinks), not wall-embedded tunnels");
+        }
+
+        seedCount.Should().Be(15, "the seed loop must actually have run");
+    }
+
+    /// <summary>
+    /// Illithid Interior (tii01) declares both "Doorway" and "Corridor" crossers, so the old bare
+    /// crosser-presence check passed, but it has no tile for a solid cell carrying a Doorway edge
+    /// together with two Corridor edges (a "T-with-port" junction: a corridor bend merging directly
+    /// into a room's doorway port) -- confirmed via TunnelVocabularyCheck.SupportsTunnels returning
+    /// false for tii01 purely because of that one shape (every other required shape resolves).
+    /// MacroLayoutGenerator downgrades CorridorMode to OpenLane for this pairing before dispatch, the
+    /// same mechanism BarrowsComplexDowngradesToOpenLaneWithNoTunnelCrossers locks in -- this proves the
+    /// downgrade actually took effect (no Tunnel-only crosser ever appears, no TunnelLinks recorded) and
+    /// that generation succeeds on every seed in the pipeline gate's own seed range.
+    /// </summary>
+    [Test]
+    public void IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers()
+    {
+        var tilesetProfile = TilesetProfiles[BaseGameTilesetProfiles.IllithidInterior];
+        var layoutProfile = LayoutProfiles[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        const int size = 20;
+        var seedCount = 0;
+
+        for (var seed = 6000; seed < 6015; seed++)
+        {
+            seedCount++;
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            solved.Success.Should().BeTrue($"seed {seed}: Illithid/Complex must succeed via the OpenLane downgrade -- {solved.FailureReason}");
+
+            for (var y = 0; y < solved.Layout.Corners.Height; y++)
+            for (var x = 0; x < solved.Layout.Corners.Width; x++)
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var edge = solved.Layout.Crossers.GetEdge(x, y, slot);
+                edge.Should().NotBe("Corridor", $"seed {seed}: downgraded Illithid/Complex must never carve a Tunnel-mode Corridor edge");
+                edge.Should().NotBe("Doorway", $"seed {seed}: downgraded Illithid/Complex must never carve a Tunnel-mode Doorway edge");
+            }
+
+            solved.Layout.TunnelLinks.Should().BeEmpty(
+                $"seed {seed}: downgraded Illithid/Complex must carve plain open lanes (no TunnelLinks), not wall-embedded tunnels");
         }
 
         seedCount.Should().Be(15, "the seed loop must actually have run");

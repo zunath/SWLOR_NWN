@@ -1159,7 +1159,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             return Eq(corners.Labels[cell.X, cell.Y], solidTerrain) &&
                    Eq(corners.Labels[cell.X + 1, cell.Y], solidTerrain) &&
                    Eq(corners.Labels[cell.X, cell.Y + 1], solidTerrain) &&
-                   Eq(corners.Labels[cell.X + 1, cell.Y + 1], solidTerrain);
+                   Eq(corners.Labels[cell.X + 1, cell.Y + 1], solidTerrain) &&
+                   TileDoorGeometry.IsFlatCell(corners, cell.X, cell.Y);
         }
 
         private static bool IsFullyOpenCell(CornerTerrainGrid corners, (int X, int Y) cell, string openTerrain)
@@ -1167,7 +1168,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             return Eq(corners.Labels[cell.X, cell.Y], openTerrain) &&
                    Eq(corners.Labels[cell.X + 1, cell.Y], openTerrain) &&
                    Eq(corners.Labels[cell.X, cell.Y + 1], openTerrain) &&
-                   Eq(corners.Labels[cell.X + 1, cell.Y + 1], openTerrain);
+                   Eq(corners.Labels[cell.X + 1, cell.Y + 1], openTerrain) &&
+                   TileDoorGeometry.IsFlatCell(corners, cell.X, cell.Y);
         }
 
         /// <summary>True when any one of the cell's 4 corners equals the given terrain (as opposed to

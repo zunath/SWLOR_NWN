@@ -75,6 +75,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             return false;
         }
 
+        /// <summary>
+        /// True when all 4 corners of tile cell (x, y) carry height 0 in the layout's corner-height
+        /// grid. Used to defensively gate structural passes (door/exit planners, set-piece stamping,
+        /// room-membership) to flat space: no layout style paints CornerTerrainGrid.Heights yet, so
+        /// this is always true today, but keeps those passes from ever silently mismatching a raised
+        /// cell once a future layout style starts painting elevation.
+        /// </summary>
+        internal static bool IsFlatCell(CornerTerrainGrid corners, int x, int y)
+        {
+            return corners.Heights[x, y] == 0 &&
+                   corners.Heights[x + 1, y] == 0 &&
+                   corners.Heights[x, y + 1] == 0 &&
+                   corners.Heights[x + 1, y + 1] == 0;
+        }
+
         internal static bool Eq(string a, string b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.OrdinalIgnoreCase);
     }
 }

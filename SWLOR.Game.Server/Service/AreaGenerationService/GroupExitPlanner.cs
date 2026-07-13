@@ -190,6 +190,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 .Where(c => !claimed.Contains(c.Cell) && !claimed.Contains(c.InnerTile))
                 .Where(c => !layout.PinnedTiles.ContainsKey(c.Cell))
                 .Where(c => !TileDoorGeometry.HasAnyCrosserEdge(layout.Crossers, c.Cell))
+                // Defensive: no layout style paints CornerTerrainGrid.Heights yet, so this is always
+                // true today, but a raised cell can never structurally match this planner's flat-only
+                // exit-group candidates (see BuildCandidateGroups).
+                .Where(c => TileDoorGeometry.IsFlatCell(layout.Corners, c.Cell.X, c.Cell.Y))
                 .OrderBy(c => ManhattanDistance(c.Cell, originalTile))
                 .ThenBy(c => c.Cell.Y * width + c.Cell.X)
                 .ToList();

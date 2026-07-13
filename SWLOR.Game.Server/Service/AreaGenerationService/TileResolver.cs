@@ -9,13 +9,32 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     /// AND four world edges (<see cref="MacroLayout.Crossers"/>) against the tileset's corner-terrain
     /// and edge-crosser data (the same corner/edge-matching model the toolset terrain brush uses).
     ///
-    /// Scope: ungrouped, flat-cornered (CornerHeights all 0) tiles only. Within that scope, a tile is a
-    /// candidate when it is either (a) crosser-free and door-free — the full v1 tile set, unchanged —
-    /// or (b) has at least one edge crosser. Crosser tiles that ALSO carry door slots are only ever
-    /// registered under keys whose edge part contains a Doorway crosser (a door slot implies a door
-    /// frame, so such a tile must never leak into a blank-edge cell); door-slot tiles with no crosser
-    /// at all remain excluded — they are TileDoorPlanner's post-resolution inventory, not the corner
-    /// resolver's.
+    /// Height (elevation) participates the same way, gated per-layout for ironclad back-compat: when
+    /// <see cref="MacroLayout.Corners"/>' corner-height grid is entirely zero (every caller until a
+    /// layout style paints elevation), TileResolver uses the LEGACY lookup below — flat-cornered
+    /// (CornerHeights all 0) tiles only, exactly the v1 pools/RNG sequence, byte-identical output.
+    /// Only when a layout's corner-height grid carries any nonzero value does TileResolver switch to
+    /// the height-aware lookup, which additionally admits raised tiles: a candidate (tile, orientation)
+    /// matches a cell when terrains/edges match AND there exists an integer placementHeight (the
+    /// eventual Tile_Height) such that placementHeight + tile.GetCornerHeightAt(orientation, slot) ==
+    /// grid height at that corner, for all 4 corners. This is keyed efficiently by normalizing both
+    /// sides' 4 corner heights to a 0-based "delta profile" (subtract the min of the 4) before hashing;
+    /// two height profiles that differ only by a constant collapse to the same delta profile, and that
+    /// shared constant IS placementHeight = gridMin - candidateTileMin (see BuildCandidateLookup).
+    ///
+    /// Empirically pinned: TileRecord.GetCornerHeightAt's existing (slot + orientation) % 4 rotation
+    /// (the same formula corners/edges already use) reproduces zero mismatches across 206,872 adjacent
+    /// world-corner-height comparisons drawn from 25 real hand-built tilesets with nonzero corner
+    /// height content (see HeightResolutionTests). The same sweep found terrain labels are NOT
+    /// height-qualified — every terrain label sampled occurs at multiple heights — so a corner's
+    /// identity for matching purposes is the (terrain, height) pair, not terrain alone.
+    ///
+    /// Scope otherwise unchanged: within a lookup, a tile is a candidate when it is either (a)
+    /// crosser-free and door-free — the full v1 tile set, unchanged — or (b) has at least one edge
+    /// crosser. Crosser tiles that ALSO carry door slots are only ever registered under keys whose edge
+    /// part contains a Doorway crosser (a door slot implies a door frame, so such a tile must never leak
+    /// into a blank-edge cell); door-slot tiles with no crosser at all remain excluded — they are
+    /// TileDoorPlanner's post-resolution inventory, not the corner resolver's.
     /// </summary>
     public static class TileResolver
     {
@@ -33,8 +52,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var width = layout.Corners.Width;
             var height = layout.Corners.Height;
 
-            var candidateLookup = BuildCandidateLookup(tileset);
-            var featureLookup = layout.FeatureTiles.Count > 0
+            // Cheap, once-per-resolve check: every caller until a layout style paints elevation has an
+            // all-zero corner-height grid, so heightAware is false and the legacy flat-only lookup
+            // below runs unchanged (byte-identical pools/RNG sequence to pre-height behavior).
+            var heightAware = layout.Corners.HasAnyHeight();
+
+            var candidateLookup = BuildCandidateLookup(tileset, heightAware);
+            // Feature sprinkling stays scoped to flat layouts for now (v1): no layout style paints
+            // elevation yet, so this is not a behavior change; a future task can extend feature
+            // sprinkling to height-aware cells deliberately.
+            var featureLookup = !heightAware && layout.FeatureTiles.Count > 0
                 ? BuildFeatureLookup(tileset, layout.FeatureTiles)
                 : null;
             var tiles = new ResolvedTile[width * height];
@@ -74,7 +101,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     var bottom = layout.Crossers.GetEdge(x, y, EdgeSlot.Bottom);
                     var left = layout.Crossers.GetEdge(x, y, EdgeSlot.Left);
 
-                    var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
+                    // gridMin is only meaningful (and only computed) in the height-aware path; legacy
+                    // cells are always flat (heightAware false), so this stays 0 and unused there.
+                    var gridMin = 0;
+                    string key;
+
+                    if (heightAware)
+                    {
+                        var hTl = layout.Corners.Heights[x, y + 1];
+                        var hTr = layout.Corners.Heights[x + 1, y + 1];
+                        var hBr = layout.Corners.Heights[x + 1, y];
+                        var hBl = layout.Corners.Heights[x, y];
+                        gridMin = Math.Min(Math.Min(hTl, hTr), Math.Min(hBr, hBl));
+
+                        key = MakeHeightAwareKey(
+                            tl, tr, br, bl, top, right, bottom, left,
+                            hTl - gridMin, hTr - gridMin, hBr - gridMin, hBl - gridMin);
+                    }
+                    else
+                    {
+                        key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
+                    }
 
                     if (!candidateLookup.TryGetValue(key, out var candidates) || candidates.All.Count == 0)
                     {
@@ -86,8 +133,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                                 $" Edges: Top={Describe(top)}, Right={Describe(right)}, Bottom={Describe(bottom)}, Left={Describe(left)}.";
                         }
 
+                        var heightNote = heightAware
+                            ? $" Heights: TL={layout.Corners.Heights[x, y + 1]}, TR={layout.Corners.Heights[x + 1, y + 1]}, BR={layout.Corners.Heights[x + 1, y]}, BL={layout.Corners.Heights[x, y]}."
+                            : string.Empty;
+
                         failureReason =
-                            $"No matching tile for cell ({x},{y}): TL={tl}, TR={tr}, BR={br}, BL={bl}.{edgeNote}";
+                            $"No matching tile for cell ({x},{y}): TL={tl}, TR={tr}, BR={br}, BL={bl}.{edgeNote}{heightNote}";
                         resolved = null;
                         return false;
                     }
@@ -104,7 +155,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     // (every caller until a tileset profile stamps it), featureLookup is null and this
                     // whole block is skipped with zero extra random calls, so existing seeds/tests
                     // resolve with exactly the pre-feature RNG sequence (one random.Next per cell).
-                    var (tileId, orientation) = (pool[0].TileId, pool[0].Orientation);
+                    var (tileId, orientation, tileMin) = (pool[0].TileId, pool[0].Orientation, pool[0].TileMin);
                     var usedNormalPick = false;
 
                     if (featureLookup != null &&
@@ -162,13 +213,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         var pick = pool[random.Next(pool.Count)];
                         tileId = pick.TileId;
                         orientation = pick.Orientation;
+                        tileMin = pick.TileMin;
                     }
 
+                    // placementHeight = gridMin - candidateTileMin (see class doc): the constant that,
+                    // added to the candidate's own corner heights, reproduces the grid's corner
+                    // heights at every one of the 4 corners. Always 0 outside the height-aware path
+                    // (gridMin and tileMin are both 0 there), so legacy output is unchanged.
                     tiles[y * width + x] = new ResolvedTile
                     {
                         TileId = tileId,
                         Orientation = orientation,
-                        Height = 0
+                        Height = heightAware ? gridMin - tileMin : 0
                     };
                 }
             }
@@ -199,13 +255,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
-        /// Builds a lookup from a case-insensitive (TL, TR, BR, BL, Top, Right, Bottom, Left) key to
-        /// every (tileId, orientation) candidate satisfying the resolution rules. Built once per resolve
-        /// call rather than scanning all tiles per cell.
+        /// Builds a lookup from a case-insensitive (TL, TR, BR, BL, Top, Right, Bottom, Left[, height
+        /// delta profile]) key to every (tileId, orientation, tileMin) candidate satisfying the
+        /// resolution rules. Built once per resolve call rather than scanning all tiles per cell.
         ///
-        /// Rotation permutes a tile's fixed Corners/Edges/CornerHeights arrays, so "all corner heights
-        /// zero" and "has any crosser at all" are rotation-invariant — checked once on the raw arrays
-        /// rather than once per orientation. Back-compat with the pre-crosser resolver is by
+        /// Rotation permutes a tile's fixed Corners/Edges/CornerHeights arrays, so "has any crosser at
+        /// all" and a tile's raw min corner height are rotation-invariant — checked/computed once on the
+        /// raw arrays rather than once per orientation. Back-compat with the pre-crosser resolver is by
         /// construction: a crosser-free, door-free tile's oriented edge tuple is "","","","" under every
         /// orientation (rotating four blanks yields four blanks), so it only ever registers under a key
         /// whose edge part is fully blank — exactly the set, order, and per-key grouping the v1 resolver
@@ -213,22 +269,47 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// an all-blank edge tuple (rotation only permutes the existing non-blank value(s), it can't
         /// erase them), so it can never appear under a fully-blank-edge key and therefore never disturbs
         /// the blank-edge candidate pools crosser-free layouts resolve against.
+        ///
+        /// <paramref name="heightAware"/> selects between two disjoint, differently-shaped lookups
+        /// rather than one lookup that happens to include more tiles when true — this is the back-compat
+        /// guard: when false (every existing caller), only flat-cornered (CornerHeights all 0) tiles are
+        /// registered, under the plain (no height suffix) key, EXACTLY reproducing the pre-height
+        /// resolver's pools/iteration-order/RNG sequence bit for bit. When true, EVERY tile (flat or
+        /// raised) is registered, keyed by its rotated corner-height "delta profile" (each of the 4
+        /// rotated corner heights minus their own min, so two tiles/orientations whose corner heights
+        /// differ only by a constant land under the same key) alongside the usual terrain/edge parts.
+        /// This deliberately does NOT reduce to the legacy lookup's flat-key pools when heights happen to
+        /// be all zero: real tilesets contain "plateau-top" tiles (uniform nonzero corner height, e.g.
+        /// wsf10 TILE2316/2318/2452/2454, h=1) whose delta profile also normalizes to all-zero, and admitting
+        /// those under the flat key (at a nonzero placementHeight) would change the legacy flat-key pools
+        /// for every existing caller. Per-layout gating in TryResolve (heightAware = false unless a
+        /// layout actually painted a nonzero corner height somewhere) means this never happens: no
+        /// current caller ever reaches the heightAware=true lookup at all.
         /// </summary>
         private class CandidateSet
         {
-            public List<(int TileId, int Orientation)> All { get; } = new();
-            public List<(int TileId, int Orientation)> FullyPathable { get; } = new();
+            public List<(int TileId, int Orientation, int TileMin)> All { get; } = new();
+            public List<(int TileId, int Orientation, int TileMin)> FullyPathable { get; } = new();
         }
 
-        private static Dictionary<string, CandidateSet> BuildCandidateLookup(TilesetModel tileset)
+        private static Dictionary<string, CandidateSet> BuildCandidateLookup(TilesetModel tileset, bool heightAware)
         {
             var lookup = new Dictionary<string, CandidateSet>();
 
             foreach (var tile in tileset.Tiles)
             {
                 if (tile.GroupIndex != -1) continue;
-                if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
-                    tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) continue;
+
+                var isFlat = tile.CornerHeights[0] == 0 && tile.CornerHeights[1] == 0 &&
+                             tile.CornerHeights[2] == 0 && tile.CornerHeights[3] == 0;
+
+                // Legacy scope: flat-cornered tiles only (unchanged from the pre-height resolver).
+                if (!heightAware && !isFlat) continue;
+
+                var tileMin = isFlat
+                    ? 0
+                    : Math.Min(Math.Min(tile.CornerHeights[0], tile.CornerHeights[1]),
+                        Math.Min(tile.CornerHeights[2], tile.CornerHeights[3]));
 
                 var hasCrosser = tile.HasAnyCrosser;
                 var hasDoors = tile.Doors.Count != 0;
@@ -266,7 +347,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         if (!hasDoorwayEdge && !hasBridgeEdge) continue;
                     }
 
-                    var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
+                    string key;
+                    if (heightAware)
+                    {
+                        var dTl = tile.GetCornerHeightAt(orientation, CornerSlot.TopLeft) - tileMin;
+                        var dTr = tile.GetCornerHeightAt(orientation, CornerSlot.TopRight) - tileMin;
+                        var dBr = tile.GetCornerHeightAt(orientation, CornerSlot.BottomRight) - tileMin;
+                        var dBl = tile.GetCornerHeightAt(orientation, CornerSlot.BottomLeft) - tileMin;
+                        key = MakeHeightAwareKey(tl, tr, br, bl, top, right, bottom, left, dTl, dTr, dBr, dBl);
+                    }
+                    else
+                    {
+                        key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
+                    }
 
                     if (!lookup.TryGetValue(key, out var set))
                     {
@@ -274,9 +367,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         lookup[key] = set;
                     }
 
-                    set.All.Add((tile.TileId, orientation));
+                    set.All.Add((tile.TileId, orientation, tileMin));
                     if (fullyPathable)
-                        set.FullyPathable.Add((tile.TileId, orientation));
+                        set.FullyPathable.Add((tile.TileId, orientation, tileMin));
                 }
             }
 
@@ -414,9 +507,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
-        /// Test/tooling hook: true if the tileset has at least one (tileId, orientation) candidate for
-        /// the given corner+edge combination under the same rules <see cref="TryResolve"/> uses. Builds
-        /// the lookup fresh each call — not for use in hot per-cell resolution.
+        /// Height-aware variant of <see cref="MakeKey"/>: appends the cell/tile's normalized ([TL, TR,
+        /// BR, BL] minus their own min) corner-height delta profile as a third key segment. Two cells or
+        /// candidates whose raw corner heights differ only by a constant land under the same key —
+        /// that shared constant is the placementHeight this candidate must be placed at (see
+        /// BuildCandidateLookup/TryResolve).
+        /// </summary>
+        private static string MakeHeightAwareKey(
+            string tl, string tr, string br, string bl,
+            string top, string right, string bottom, string left,
+            int dTl, int dTr, int dBr, int dBl)
+        {
+            var baseKey = MakeKey(tl, tr, br, bl, top, right, bottom, left);
+            var heightPart = string.Join("|", dTl, dTr, dBr, dBl);
+            return baseKey + "‖" + heightPart;
+        }
+
+        /// <summary>
+        /// Test/tooling hook: true if the tileset has at least one (tileId, orientation) FLAT candidate
+        /// for the given corner+edge combination, under the same legacy rules <see cref="TryResolve"/>
+        /// uses when a layout's corner-height grid is all zero. Builds the lookup fresh each call — not
+        /// for use in hot per-cell resolution.
         /// </summary>
         public static bool HasCandidate(
             TilesetModel tileset,
@@ -425,7 +536,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             if (tileset == null) throw new ArgumentNullException(nameof(tileset));
 
-            var lookup = BuildCandidateLookup(tileset);
+            var lookup = BuildCandidateLookup(tileset, heightAware: false);
             var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
             return lookup.TryGetValue(key, out var set) && set.All.Count > 0;
         }

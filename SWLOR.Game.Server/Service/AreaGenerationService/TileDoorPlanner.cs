@@ -164,6 +164,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             var orderedCandidates = candidates
                 .Where(c => !claimed.Contains(c.RoomEdgeCell) && !claimed.Contains(c.SolidCell))
+                // Defensive: no layout style paints CornerTerrainGrid.Heights yet, so this is always
+                // true today, but a raised cell can never structurally match this planner's flat-only
+                // door/terminator candidate pools (see BuildEdgeCandidates/BuildTerminatorCandidates).
+                .Where(c => TileDoorGeometry.IsFlatCell(layout.Corners, c.RoomEdgeCell.X, c.RoomEdgeCell.Y) &&
+                            TileDoorGeometry.IsFlatCell(layout.Corners, c.SolidCell.X, c.SolidCell.Y))
                 .OrderBy(c => ManhattanDistance(c.RoomEdgeCell, originalTile))
                 .ThenBy(c => c.RoomEdgeCell.Y * width + c.RoomEdgeCell.X)
                 .ThenBy(c => c.EdgeFromCell)

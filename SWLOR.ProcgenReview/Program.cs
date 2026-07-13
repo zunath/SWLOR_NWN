@@ -492,7 +492,7 @@ static void EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, strin
     string placeholderArePath, string placeholderGitPath, string stage)
 {
     var lighting = tileset.Lighting;
-    var tiles = string.Join(",\n", layout.Tiles.Select(t => TileEntry(t.TileId, t.Orientation,
+    var tiles = string.Join(",\n", layout.Tiles.Select(t => TileEntry(t.TileId, t.Orientation, t.Height,
         lighting.MainLight1, lighting.MainLight2, lighting.SourceLight1, lighting.SourceLight2)));
 
     var are = File.ReadAllText(placeholderArePath);
@@ -922,7 +922,7 @@ static string ReplaceFirstIntField(string json, string field, int value)
         .Replace(json, "${1}" + value, 1);
 }
 
-static string TileEntry(int tileId, int orientation, int ml1, int ml2, int sl1, int sl2)
+static string TileEntry(int tileId, int orientation, int tileHeight, int ml1, int ml2, int sl1, int sl2)
 {
     return $$"""
           {
@@ -941,7 +941,7 @@ static string TileEntry(int tileId, int orientation, int ml1, int ml2, int sl1, 
             },
             "Tile_Height": {
               "type": "int",
-              "value": 0
+              "value": {{tileHeight}}
             },
             "Tile_ID": {
               "type": "int",

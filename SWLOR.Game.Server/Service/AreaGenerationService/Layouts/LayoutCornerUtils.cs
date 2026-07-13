@@ -238,7 +238,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             return corners.Labels[tx, ty] == openTerrain &&
                    corners.Labels[tx + 1, ty] == openTerrain &&
                    corners.Labels[tx, ty + 1] == openTerrain &&
-                   corners.Labels[tx + 1, ty + 1] == openTerrain;
+                   corners.Labels[tx + 1, ty + 1] == openTerrain &&
+                   TileDoorGeometry.IsFlatCell(corners, tx, ty);
         }
 
         /// <summary>

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
 namespace SWLOR.ContentBuilder.Services
@@ -17,84 +15,88 @@ namespace SWLOR.ContentBuilder.Services
     }
 
     /// <summary>
-    /// Drives the same seed-derived retry loop as the runtime facade and SWLOR.ProcgenReview:
-    /// MacroLayoutGenerator.Generate can throw InvalidOperationException for an unlucky roll, and
-    /// TileResolver.TryResolve can fail to cover a corner combination — either is worth a retry with
-    /// the next seed before giving up.
+    /// Content Builder's live Advanced-knob state, layered on top of a DungeonComposition's own
+    /// composed MacroLayoutParameters (DungeonComposition.BuildLayoutParameters) -- the identical
+    /// starting point the runtime facade and SWLOR.ProcgenReview use. Every field here is applied
+    /// unconditionally (none are nullable "did the user touch this" flags): MainWindow loads its
+    /// sliders FROM the composed parameters (see MainWindow.LoadLayoutProfileKnobs), so applying every
+    /// current slider value back on top is a no-op for knobs the user never touched and correct by
+    /// construction for the ones they did -- there is no separate partial-override bookkeeping to
+    /// keep in sync. Percent-based knobs are stored as the slider's own integer percent (not a
+    /// pre-divided fraction) so a composed-value -> slider -> parameter round trip is exact.
+    /// </summary>
+    internal sealed class LayoutKnobOverrides
+    {
+        public DungeonLayoutStyle Style { get; init; }
+        public int MinRooms { get; init; }
+        public int MaxRooms { get; init; }
+        public int MinRoomCornerSize { get; init; }
+        public int MaxRoomCornerSize { get; init; }
+        public int CorridorWidth { get; init; }
+        public int LoopFactorPercent { get; init; }
+        public int OpenFillTargetPercent { get; init; }
+        public int EntranceCount { get; init; }
+        public int ExitCount { get; init; }
+        public bool DoorTransitions { get; init; }
+        public bool AccentEnabled { get; init; }
+        public int AccentDensityPercent { get; init; }
+        public int FeatureDensityPercent { get; init; }
+
+        public void ApplyTo(MacroLayoutParameters parameters, DungeonTilesetProfile tileset)
+        {
+            parameters.Style = Style;
+            parameters.MinRooms = MinRooms;
+            parameters.MaxRooms = MaxRooms;
+            parameters.MinRoomCornerSize = MinRoomCornerSize;
+            parameters.MaxRoomCornerSize = MaxRoomCornerSize;
+            parameters.CorridorWidth = CorridorWidth;
+            parameters.LoopFactor = LoopFactorPercent / 100.0;
+            parameters.OpenFillTarget = OpenFillTargetPercent / 100.0;
+            parameters.EntranceCount = EntranceCount;
+            parameters.ExitCount = ExitCount;
+            parameters.DoorTransitions = DoorTransitions;
+
+            var accentActive = AccentEnabled && tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
+            parameters.AccentTerrain = accentActive ? tileset.AccentTerrain : string.Empty;
+            parameters.AccentDensity = accentActive ? AccentDensityPercent / 100.0 : 0.0;
+
+            parameters.FeatureDensity = FeatureDensityPercent / 100.0;
+        }
+    }
+
+    /// <summary>
+    /// Drives Content Builder's preview generation through the exact same composition + retry
+    /// pipeline SWLOR.ProcgenReview and the runtime facade use (DungeonComposition.
+    /// BuildLayoutParameters, then LayoutSolver.Solve's shared seed-derived retry loop). Previously
+    /// this cloned the raw layout-profile Template directly, bypassing BuildLayoutParameters'
+    /// SecondaryOpenTerrain/CorridorWidth-floor/ChannelTerrain/accent-terrain stamping entirely --
+    /// that gap is exactly what caused Preview and the built review module to diverge.
     /// </summary>
     internal static class GenerationEngine
     {
-        private const int RetryCount = 6;
-
         public static GenerationResult Generate(
-            MacroLayoutParameters baseParameters,
+            DungeonComposition composition,
             TilesetModel tileset,
             int width,
             int height,
-            string accentTerrain,
-            double accentDensity,
             int seed,
-            string openTerrainOverride = "",
-            Dictionary<string, int> featureTiles = null,
-            Dictionary<string, int> setPieces = null,
-            double featureDensity = 0.05)
+            LayoutKnobOverrides overrides)
         {
-            var lastFailure = "no attempts made";
+            var baseParameters = composition.BuildLayoutParameters();
+            overrides?.ApplyTo(baseParameters, composition.Tileset);
 
-            for (var attempt = 0; attempt < RetryCount; attempt++)
-            {
-                var trySeed = seed + attempt;
-                var random = new Random(trySeed);
-
-                var parameters = baseParameters.Clone();
-                parameters.Width = width;
-                parameters.Height = height;
-                parameters.SolidTerrain = tileset.DefaultTerrain;
-                parameters.OpenTerrain = string.IsNullOrEmpty(openTerrainOverride)
-                    ? tileset.FloorTerrain
-                    : openTerrainOverride;
-                parameters.AccentTerrain = accentTerrain ?? string.Empty;
-                parameters.AccentDensity = string.IsNullOrEmpty(parameters.AccentTerrain) ? 0.0 : accentDensity;
-                // Feature tile SET always comes from the tileset profile (no UI for that); density is
-                // the only user-tunable knob (Advanced > Feature Density slider).
-                parameters.FeatureTiles = featureTiles ?? new Dictionary<string, int>();
-                parameters.FeatureDensity = featureDensity;
-                // Set pieces likewise ride the tileset profile with no dedicated UI.
-                parameters.SetPieces = setPieces ?? new Dictionary<string, int>();
-
-                MacroLayout macro;
-                try
-                {
-                    macro = MacroLayoutGenerator.Generate(parameters, random, tileset);
-                    macro.Seed = trySeed;
-                }
-                catch (InvalidOperationException ex)
-                {
-                    lastFailure = ex.Message;
-                    continue;
-                }
-
-                if (TileResolver.TryResolve(tileset, macro, random, out var resolved, out var failureReason))
-                {
-                    return new GenerationResult
-                    {
-                        Success = true,
-                        Layout = macro,
-                        Parameters = parameters,
-                        Tileset = tileset,
-                        Resolved = resolved,
-                        AttemptSeed = trySeed
-                    };
-                }
-
-                lastFailure = failureReason;
-            }
+            var openTerrainOverride = composition.Tileset?.PrimaryOpenTerrain ?? string.Empty;
+            var solved = LayoutSolver.Solve(baseParameters, tileset, width, height, seed, openTerrainOverride);
 
             return new GenerationResult
             {
-                Success = false,
-                FailureReason = lastFailure,
-                AttemptSeed = seed
+                Success = solved.Success,
+                Layout = solved.Layout,
+                Parameters = solved.Parameters,
+                Tileset = tileset,
+                Resolved = solved.Resolved,
+                AttemptSeed = solved.AttemptSeed,
+                FailureReason = solved.FailureReason
             };
         }
     }

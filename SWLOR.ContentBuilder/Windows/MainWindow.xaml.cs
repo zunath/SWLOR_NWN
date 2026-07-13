@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -630,6 +631,11 @@ namespace SWLOR.ContentBuilder.Windows
             RepopulateLayoutCombo();
             UpdateAccentAvailability();
             UpdateFeatureAvailability();
+            // Composed knob values (e.g. CorridorWidth's tileset-driven floor) depend on the selected
+            // tileset, not just the layout profile -- reload so untouched sliders reflect the new
+            // tileset's composition even when RepopulateLayoutCombo kept the same layout profile
+            // selected (LoadLayoutProfileKnobs itself skips any knob the user has already overridden).
+            LoadLayoutProfileKnobs(SelectedLayoutProfile());
             RegeneratePreview();
         }
 
@@ -786,43 +792,50 @@ namespace SWLOR.ContentBuilder.Windows
             _currentLayoutProfile = profile;
             if (profile == null) return;
 
-            var template = profile.Template;
+            // Load from the COMPOSED parameters (DungeonComposition.BuildLayoutParameters), not the
+            // raw profile Template, so sliders show the values that actually drive generation --
+            // e.g. Facility's Corridor Width shows the composed 2 (zsf01's MinimumOpeningWidth floor),
+            // not the Complex profile's raw Template value of 1. Falls back to the raw Template when
+            // no tileset is selected yet (BuildLayoutParameters needs a tileset to compose against).
+            var tilesetProfile = SelectedTilesetProfile();
+            var composed = tilesetProfile != null
+                ? new DungeonComposition { Tileset = tilesetProfile, Layout = profile }.BuildLayoutParameters()
+                : profile.Template;
 
             _suppressEvents = true;
             try
             {
                 if (!_overriddenKnobs.Contains(nameof(_styleCombo)))
-                    SelectComboByKey(_styleCombo, template.Style.ToString());
+                    SelectComboByKey(_styleCombo, composed.Style.ToString());
 
                 if (!_overriddenKnobs.Contains(nameof(_minRoomsSlider)))
-                    _minRoomsSlider.Value = Clamp(template.MinRooms, _minRoomsSlider.Minimum, _minRoomsSlider.Maximum);
+                    _minRoomsSlider.Value = Clamp(composed.MinRooms, _minRoomsSlider.Minimum, _minRoomsSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_maxRoomsSlider)))
-                    _maxRoomsSlider.Value = Clamp(template.MaxRooms, _maxRoomsSlider.Minimum, _maxRoomsSlider.Maximum);
+                    _maxRoomsSlider.Value = Clamp(composed.MaxRooms, _maxRoomsSlider.Minimum, _maxRoomsSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_minRoomSizeSlider)))
-                    _minRoomSizeSlider.Value = Clamp(template.MinRoomCornerSize, _minRoomSizeSlider.Minimum, _minRoomSizeSlider.Maximum);
+                    _minRoomSizeSlider.Value = Clamp(composed.MinRoomCornerSize, _minRoomSizeSlider.Minimum, _minRoomSizeSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_maxRoomSizeSlider)))
-                    _maxRoomSizeSlider.Value = Clamp(template.MaxRoomCornerSize, _maxRoomSizeSlider.Minimum, _maxRoomSizeSlider.Maximum);
+                    _maxRoomSizeSlider.Value = Clamp(composed.MaxRoomCornerSize, _maxRoomSizeSlider.Minimum, _maxRoomSizeSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_corridorWidthSlider)))
-                    _corridorWidthSlider.Value = Clamp(template.CorridorWidth, _corridorWidthSlider.Minimum, _corridorWidthSlider.Maximum);
+                    _corridorWidthSlider.Value = Clamp(composed.CorridorWidth, _corridorWidthSlider.Minimum, _corridorWidthSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_loopFactorSlider)))
-                    _loopFactorSlider.Value = Clamp(Math.Round(template.LoopFactor * 100), _loopFactorSlider.Minimum, _loopFactorSlider.Maximum);
+                    _loopFactorSlider.Value = Clamp(Math.Round(composed.LoopFactor * 100), _loopFactorSlider.Minimum, _loopFactorSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_organicFillSlider)))
-                    _organicFillSlider.Value = Clamp(Math.Round(template.OpenFillTarget * 100), _organicFillSlider.Minimum, _organicFillSlider.Maximum);
+                    _organicFillSlider.Value = Clamp(Math.Round(composed.OpenFillTarget * 100), _organicFillSlider.Minimum, _organicFillSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_entrancesSlider)))
-                    _entrancesSlider.Value = Clamp(template.EntranceCount, _entrancesSlider.Minimum, _entrancesSlider.Maximum);
+                    _entrancesSlider.Value = Clamp(composed.EntranceCount, _entrancesSlider.Minimum, _entrancesSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_exitsSlider)))
-                    _exitsSlider.Value = Clamp(template.ExitCount, _exitsSlider.Minimum, _exitsSlider.Maximum);
+                    _exitsSlider.Value = Clamp(composed.ExitCount, _exitsSlider.Minimum, _exitsSlider.Maximum);
                 if (!_overriddenKnobs.Contains(nameof(_doorTransitionsCheckBox)))
-                    _doorTransitionsCheckBox.IsChecked = template.DoorTransitions;
+                    _doorTransitionsCheckBox.IsChecked = composed.DoorTransitions;
 
-                var tileset = SelectedTilesetProfile();
-                var supportsAccent = tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
+                var supportsAccent = tilesetProfile != null && !string.IsNullOrEmpty(tilesetProfile.AccentTerrain);
 
                 if (!_overriddenKnobs.Contains(nameof(_accentCheckBox)))
-                    _accentCheckBox.IsChecked = supportsAccent && template.AccentDensity > 0;
+                    _accentCheckBox.IsChecked = supportsAccent && composed.AccentDensity > 0;
                 if (!_overriddenKnobs.Contains(nameof(_accentDensitySlider)))
                 {
-                    var density = template.AccentDensity > 0 ? Math.Round(template.AccentDensity * 100) : 5;
+                    var density = composed.AccentDensity > 0 ? Math.Round(composed.AccentDensity * 100) : 5;
                     _accentDensitySlider.Value = Clamp(density, _accentDensitySlider.Minimum, _accentDensitySlider.Maximum);
                 }
 
@@ -875,31 +888,37 @@ namespace SWLOR.ContentBuilder.Windows
                 return;
             }
 
-            var baseParameters = _currentLayoutProfile.Template.Clone();
-            baseParameters.Style = SelectedStyle();
-            baseParameters.MinRooms = (int)_minRoomsSlider.Value;
-            baseParameters.MaxRooms = (int)_maxRoomsSlider.Value;
-            baseParameters.MinRoomCornerSize = (int)_minRoomSizeSlider.Value;
-            baseParameters.MaxRoomCornerSize = (int)_maxRoomSizeSlider.Value;
-            baseParameters.CorridorWidth = (int)_corridorWidthSlider.Value;
-            baseParameters.LoopFactor = _loopFactorSlider.Value / 100.0;
-            baseParameters.OpenFillTarget = _organicFillSlider.Value / 100.0;
-            baseParameters.EntranceCount = (int)_entrancesSlider.Value;
-            baseParameters.ExitCount = (int)_exitsSlider.Value;
-            baseParameters.DoorTransitions = _doorTransitionsCheckBox.IsChecked == true;
+            // Composition, not the raw layout Template, is the single source of truth: BuildLayoutParameters
+            // (called inside GenerationEngine.Generate) stamps SecondaryOpenTerrain, the tileset's
+            // CorridorWidth floor, ChannelTerrain, and FeatureTiles/SetPieces/ExitGroups -- exactly what
+            // SWLOR.ProcgenReview composes with. Sliders were themselves loaded FROM these composed values
+            // (see LoadLayoutProfileKnobs), so applying every current slider value on top is lossless for
+            // knobs the user never touched and correct for the ones they did.
+            var composition = new DungeonComposition { Content = theme, Tileset = tilesetProfile, Layout = layoutProfile };
 
-            var accentEnabled = _accentCheckBox.IsChecked == true && !string.IsNullOrEmpty(tilesetProfile.AccentTerrain);
-            var accentTerrain = accentEnabled ? tilesetProfile.AccentTerrain : string.Empty;
-            var accentDensity = accentEnabled ? _accentDensitySlider.Value / 100.0 : 0.0;
-            var featureDensity = _featureDensitySlider.Value / 100.0;
+            var overrides = new LayoutKnobOverrides
+            {
+                Style = SelectedStyle(),
+                MinRooms = (int)_minRoomsSlider.Value,
+                MaxRooms = (int)_maxRoomsSlider.Value,
+                MinRoomCornerSize = (int)_minRoomSizeSlider.Value,
+                MaxRoomCornerSize = (int)_maxRoomSizeSlider.Value,
+                CorridorWidth = (int)_corridorWidthSlider.Value,
+                LoopFactorPercent = (int)_loopFactorSlider.Value,
+                OpenFillTargetPercent = (int)_organicFillSlider.Value,
+                EntranceCount = (int)_entrancesSlider.Value,
+                ExitCount = (int)_exitsSlider.Value,
+                DoorTransitions = _doorTransitionsCheckBox.IsChecked == true,
+                AccentEnabled = _accentCheckBox.IsChecked == true,
+                AccentDensityPercent = (int)_accentDensitySlider.Value,
+                FeatureDensityPercent = (int)_featureDensitySlider.Value
+            };
 
             var width = (int)_widthSlider.Value;
             var height = (int)_heightSlider.Value;
             var seed = GetSeedValue();
 
-            var result = GenerationEngine.Generate(
-                baseParameters, tilesetModel, width, height, accentTerrain, accentDensity, seed,
-                tilesetProfile.PrimaryOpenTerrain, tilesetProfile.FeatureTiles, tilesetProfile.SetPieces, featureDensity);
+            var result = GenerationEngine.Generate(composition, tilesetModel, width, height, seed, overrides);
             _lastResult = result;
 
             RenderPreview();
@@ -1019,6 +1038,18 @@ namespace SWLOR.ContentBuilder.Windows
                           $"only supports square areas, so {width} will be used for both when building.");
             }
 
+            // Force a fresh preview generation so _lastResult.Parameters exactly mirrors the current
+            // UI state (composition + every Advanced-settings knob) before snapshotting it into the
+            // batch item -- this is what guarantees the review module reproduces this exact preview
+            // rather than silently dropping any override, as the old theme:tileset:layout:seed:size
+            // string spec did.
+            GeneratePreview();
+            if (_lastResult is not { Success: true })
+            {
+                AppendLog("Cannot add to batch: the current composition failed to generate.");
+                return;
+            }
+
             var item = new BatchItem
             {
                 ThemeKey = theme.ThemeKey,
@@ -1031,7 +1062,8 @@ namespace SWLOR.ContentBuilder.Windows
                 Size = width,
                 Entrances = (int)_entrancesSlider.Value,
                 Exits = (int)_exitsSlider.Value,
-                DoorTransitions = _doorTransitionsCheckBox.IsChecked == true
+                DoorTransitions = _doorTransitionsCheckBox.IsChecked == true,
+                Parameters = _lastResult.Parameters.Clone()
             };
 
             _batch.Add(item);
@@ -1056,15 +1088,32 @@ namespace SWLOR.ContentBuilder.Windows
             }
 
             _buildModuleButton.IsEnabled = false;
+            string areasFilePath = null;
             try
             {
-                var specs = string.Join(",", _batch.Select(b => b.ToSpec()));
+                // Ships the full effective MacroLayoutParameters for every batch entry (see
+                // BatchItem.Parameters / AreaBatchFile) instead of the lossy theme:tileset:layout:
+                // seed:size string spec, so every Advanced-settings override survives into the built
+                // module. --areas-file entries are consumed verbatim by ProcgenReview.
+                var entries = _batch.Select(b => new AreaBatchFileEntry
+                {
+                    ThemeKey = b.ThemeKey,
+                    TilesetKey = b.TilesetProfileKey,
+                    LayoutKey = b.LayoutProfileKey,
+                    Seed = b.Seed,
+                    Size = b.Size,
+                    Parameters = b.Parameters
+                }).ToList();
+
+                areasFilePath = Path.Combine(Path.GetTempPath(), $"swlor_contentbuilder_areas_{Guid.NewGuid():N}.json");
+                File.WriteAllText(areasFilePath, AreaBatchFile.Serialize(entries));
+
                 var outPath = RepoPaths.ReviewModuleOutputPath;
                 var projectPath = RepoPaths.ProcgenReviewProjectPath;
 
                 AppendLog($"Building review module with {_batch.Count} area(s)...");
 
-                var arguments = $"run --project \"{projectPath}\" -- --areas \"{specs}\" --out \"{outPath}\"";
+                var arguments = $"run --project \"{projectPath}\" -- --areas-file \"{areasFilePath}\" --out \"{outPath}\"";
                 var exitCode = await RunProcessAsync("dotnet", arguments);
 
                 AppendLog(exitCode == 0
@@ -1078,6 +1127,11 @@ namespace SWLOR.ContentBuilder.Windows
             finally
             {
                 _buildModuleButton.IsEnabled = true;
+                if (areasFilePath != null)
+                {
+                    try { File.Delete(areasFilePath); }
+                    catch { /* best-effort scratch-file cleanup */ }
+                }
             }
         }
 

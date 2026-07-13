@@ -28,6 +28,15 @@ using SWLOR.Game.Server.Service.AreaGenerationService;
 // "theme:tileset:layout:seed:size:entrances:exits:doors" form (doors is "door" or "plac"). tileset/
 // layout may be left empty to use the theme's own defaults. When given, ONLY these areas are
 // generated — no default set, no matrix.
+// --areas-file <path>: JSON array of full-fidelity area entries (see AreaBatchFileEntry /
+// AreaBatchFile) — { resref?, themeKey, tilesetKey, layoutKey, seed, size, parameters }, where
+// parameters is a complete MacroLayoutParameters snapshot (post DungeonComposition.
+// BuildLayoutParameters, post any Advanced-settings overrides) consumed VERBATIM instead of being
+// recomposed from the theme/tileset/layout keys. This is what SWLOR.ContentBuilder's "Build Review
+// Module" writes so the built module reproduces the exact preview, including knobs the 5/7/8-segment
+// string spec cannot express (style, room counts/sizes, corridor width, loop factor, organic fill,
+// accent, feature density). Like --areas, ONLY these areas are generated when given — no default
+// set, no matrix. Combines additively with --areas if both are given.
 // --extra-areas: same entry syntax as --areas, but ADDED on top of the default set (and --matrix, if
 // also given) instead of replacing it — useful for appending a few showcase areas (e.g. higher
 // entrance/exit counts to exercise door-style transitions) to the normal review build.
@@ -45,6 +54,7 @@ string outPath = null;
 var matrix = false;
 string areasArg = null;
 string extraAreasArg = null;
+string areasFileArg = null;
 
 for (var i = 0; i < args.Length; i++)
 {
@@ -64,6 +74,9 @@ for (var i = 0; i < args.Length; i++)
             break;
         case "--areas":
             areasArg = args[++i];
+            break;
+        case "--areas-file":
+            areasFileArg = args[++i];
             break;
         case "--extra-areas":
             extraAreasArg = args[++i];
@@ -163,11 +176,55 @@ try
         }
     }
 
+    // --areas-file entries carry the full effective MacroLayoutParameters already (post composition,
+    // post any Content Builder Advanced-settings overrides), so unlike ParseAreaSpecs this uses them
+    // VERBATIM instead of recomposing from the theme/tileset/layout keys — those keys only resolve
+    // which tileset .set/placeholder/lighting and content package to realize the snapshot against.
+    void ParseAreaFileEntries(string path, string resrefPrefix)
+    {
+        List<AreaBatchFileEntry> entries;
+        try
+        {
+            entries = AreaBatchFile.Deserialize(File.ReadAllText(path));
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"--areas-file '{path}': failed to read/parse — {ex.Message}");
+            return;
+        }
+
+        var n = 1;
+        foreach (var entry in entries)
+        {
+            var composition = ResolveComposition(themes, tilesetProfiles, layoutProfiles, entry.ThemeKey, entry.TilesetKey, entry.LayoutKey);
+            if (composition == null)
+            {
+                n++;
+                continue;
+            }
+
+            var resref = UniqueResref(
+                !string.IsNullOrEmpty(entry.Resref) ? entry.Resref : $"{resrefPrefix}{n}_{entry.Seed}",
+                usedResrefs);
+            var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, entry.Seed);
+            specs.Add(new AreaSpec(resref, display, composition, entry.Seed, entry.Size,
+                entry.Parameters.EntranceCount, entry.Parameters.ExitCount, entry.Parameters.DoorTransitions,
+                entry.Parameters));
+            n++;
+        }
+    }
+
     if (areasArg != null)
     {
         ParseAreaSpecs(areasArg, "--areas", "pga");
     }
-    else
+
+    if (areasFileArg != null)
+    {
+        ParseAreaFileEntries(areasFileArg, "pgb");
+    }
+
+    if (areasArg == null && areasFileArg == null)
     {
         foreach (var theme in themes.OrderBy(t => t.Key))
         {
@@ -238,20 +295,27 @@ try
             modelCache[tileset.TilesetResref] = model;
         }
 
+        // A --areas-file entry's OverrideParameters may have a different Style/CorridorCrosserType
+        // than the resolved layout profile's own Template (Content Builder's Style knob is
+        // overridable), so the size floor / Alley check must key off the EFFECTIVE style, not
+        // assume the profile's own default still applies.
+        var effectiveStyle = spec.OverrideParameters?.Style ?? spec.Composition.Layout.Template.Style;
+        var effectiveCrosserType = spec.OverrideParameters?.CorridorCrosserType ?? spec.Composition.Layout.Template.CorridorCrosserType;
+
         // Sizes below the layout style's empirically measured floor fail generation structurally
         // (see LayoutStyleSizeFloor); clamp up with a note instead of burning retries and failing.
-        var sizeFloor = LayoutStyleSizeFloor.For(spec.Composition.Layout.Template.Style);
+        var sizeFloor = LayoutStyleSizeFloor.For(effectiveStyle);
         var effectiveSize = spec.Size;
         if (effectiveSize < sizeFloor)
         {
-            Console.WriteLine($"{spec.Resref}: size {spec.Size} is below the {spec.Composition.Layout.Template.Style} floor of {sizeFloor} — clamped to {sizeFloor}");
+            Console.WriteLine($"{spec.Resref}: size {spec.Size} is below the {effectiveStyle} floor of {sizeFloor} — clamped to {sizeFloor}");
             effectiveSize = sizeFloor;
         }
 
-        // A layout profile that carves Alley corridors is meaningless on tilesets without the
-        // Alley crosser vocabulary: the generator downgrades it to Corridor tunnels, producing a
-        // duplicate of the equivalent Corridor-profile area. Skip instead of emitting redundancy.
-        if (spec.Composition.Layout.Template.CorridorCrosserType == CorridorCrosserType.Alley &&
+        // A layout carving Alley corridors is meaningless on tilesets without the Alley crosser
+        // vocabulary: the generator downgrades it to Corridor tunnels, producing a duplicate of the
+        // equivalent Corridor-profile area. Skip instead of emitting redundancy.
+        if (effectiveCrosserType == CorridorCrosserType.Alley &&
             !model.Crossers.Contains("Alley", StringComparer.OrdinalIgnoreCase))
         {
             Console.WriteLine(
@@ -267,17 +331,28 @@ try
             continue;
         }
 
-        var baseParameters = spec.Composition.BuildLayoutParameters();
-        baseParameters.EntranceCount = spec.Entrances;
-        baseParameters.ExitCount = spec.Exits;
-        baseParameters.DoorTransitions = spec.DoorTransitions;
-        var layout = Generate(model, baseParameters, spec.Seed, effectiveSize, spec.Composition.Tileset.PrimaryOpenTerrain);
-        if (layout == null)
+        // --areas-file entries already carry the full effective parameters (post composition, post
+        // any Content Builder override) and are used verbatim; every other spec kind composes fresh
+        // via DungeonComposition.BuildLayoutParameters and layers its entrance/exit/door segment on
+        // top, exactly as before. Either way, LayoutSolver.Solve is the same shared seed-derived
+        // retry loop SWLOR.ContentBuilder's GenerationEngine uses — the two tools can no longer
+        // independently drift out of parity with each other.
+        var baseParameters = spec.OverrideParameters?.Clone() ?? spec.Composition.BuildLayoutParameters();
+        if (spec.OverrideParameters == null)
         {
-            Console.Error.WriteLine($"{spec.Resref} seed {spec.Seed}: generation failed — skipped");
+            baseParameters.EntranceCount = spec.Entrances;
+            baseParameters.ExitCount = spec.Exits;
+            baseParameters.DoorTransitions = spec.DoorTransitions;
+        }
+
+        var solved = LayoutSolver.Solve(baseParameters, model, effectiveSize, effectiveSize, spec.Seed, spec.Composition.Tileset.PrimaryOpenTerrain);
+        if (!solved.Success)
+        {
+            Console.Error.WriteLine($"{spec.Resref} seed {spec.Seed}: generation failed — skipped ({solved.FailureReason})");
             continue;
         }
 
+        var layout = solved.Resolved;
         EmitArea(layout, tileset, spec.Resref, spec.DisplayName, placeholderAre, placeholderGit, stage);
 
         var entrance = layout.Rooms.First(r => r.Role == RoomRole.Entrance);
@@ -374,41 +449,6 @@ static DungeonComposition ResolveComposition(
         Tileset = tileset,
         Layout = layout
     };
-}
-
-static ResolvedLayout Generate(TilesetModel model, MacroLayoutParameters baseParameters, int seed, int size, string openTerrainOverride = "")
-{
-    // Mirrors AreaGeneration.Generate's seed-derived retry (no path validation offline — that
-    // needs the engine; the review module is for visual inspection, not traversal QA).
-    for (var attempt = 0; attempt < 6; attempt++)
-    {
-        var rng = new Random(seed + attempt);
-        var parameters = baseParameters.Clone();
-        parameters.Width = size;
-        parameters.Height = size;
-        parameters.SolidTerrain = model.DefaultTerrain;
-        parameters.OpenTerrain = string.IsNullOrEmpty(openTerrainOverride) ? model.FloorTerrain : openTerrainOverride;
-
-        MacroLayout macro;
-        try
-        {
-            // Pass the tileset model so LayoutGroupStamper can stamp configured set pieces (wall
-            // rooms, platforms, stairs, gates) and Alley-corridor layouts downgrade to Corridor
-            // tunnels on tilesets without alley vocabulary — matching the runtime facade and
-            // Content Builder exactly.
-            macro = MacroLayoutGenerator.Generate(parameters, rng, model);
-        }
-        catch (InvalidOperationException)
-        {
-            continue;
-        }
-
-        macro.Seed = seed;
-        if (TileResolver.TryResolve(model, macro, rng, out var resolved, out _))
-            return resolved;
-    }
-
-    return null;
 }
 
 static string ComposeDisplayName(string themeDisplayName, string tilesetDisplayName, string layoutDisplayName, int seed)
@@ -990,4 +1030,11 @@ static void Run(string exe, string arguments)
         throw new InvalidOperationException($"{Path.GetFileName(exe)} failed: {stderr}");
 }
 
-record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1, bool DoorTransitions = true);
+/// <summary>
+/// OverrideParameters is non-null only for --areas-file entries: the full effective
+/// MacroLayoutParameters snapshot, used verbatim instead of Composition.BuildLayoutParameters() +
+/// Entrances/Exits/DoorTransitions (see the main generation loop). Entrances/Exits/DoorTransitions
+/// stay meaningful even for those entries (mirrored from the snapshot) for logging/display symmetry
+/// with the string-spec kinds.
+/// </summary>
+record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1, bool DoorTransitions = true, MacroLayoutParameters OverrideParameters = null);

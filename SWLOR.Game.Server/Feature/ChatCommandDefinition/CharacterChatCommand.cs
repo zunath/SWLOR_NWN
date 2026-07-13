@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             _builder.Create("techniques", "tech")
                 .Description("Toggles the techniques menu, where mimicked techniques can be equipped and unequipped.")
-                .Permissions(AuthorizationLevel.Player)
+                .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
                     if (Perk.GetPerkLevel(user, PerkType.CombatAnalyzer) < 1)

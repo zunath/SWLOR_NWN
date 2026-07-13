@@ -215,8 +215,16 @@ public class GeneratedWeaponPerkBehaviorTests
         foreach (var feat in new[] { FeatType.PathogenStrike1, FeatType.PathogenStrike2, FeatType.PathogenStrike3, FeatType.PathogenStrike4 })
         {
             pathogenStrike[feat].IsHostileAbility.Should().BeTrue();
-            pathogenStrike[feat].RequiresTarget.Should().BeTrue();
-            AssertFeatSpellTargeting(featRows, spellRows, feat, "****", "1", "M", "0x03", "0");
+            pathogenStrike[feat].RequiresTarget.Should().BeFalse();
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "M", "0x03", "0");
+        }
+
+        var virulentBlade = new VirulentBladeAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.VirulentBlade1, FeatType.VirulentBlade2, FeatType.VirulentBlade3 })
+        {
+            virulentBlade[feat].IsHostileAbility.Should().BeTrue();
+            virulentBlade[feat].RequiresTarget.Should().BeFalse();
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "M", "0x03", "0");
         }
 
         var cripplingSlice = new CripplingSliceAbilityDefinition().BuildAbilities();

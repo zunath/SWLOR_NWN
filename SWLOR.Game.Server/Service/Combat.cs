@@ -917,7 +917,6 @@ namespace SWLOR.Game.Server.Service
                 Stat.RestoreFP(attacker, skillFpRestore);
             }
 
-            ApplyFirstCombatAttackStaminaRestore(attacker);
             ApplyAutoAttackMasterResourceRestore(attacker);
 
             var accuracyPenaltyChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackTargetAccuracyPercentAdjustmentChance);
@@ -938,6 +937,7 @@ namespace SWLOR.Game.Server.Service
 
             damage += GetDirectDamageToStatusCategoryOrStealthBonus(attacker, defender);
             ApplyAutoAttackHamstringEffect(attacker, defender, skillType, CombatDamageType.Physical);
+            ApplyAutoAttackSunderedTargetFPRestore(attacker, defender);
             ApplySourceStatusStackEffects(attacker, defender);
             ApplyAutoAttackCycleDamage(attacker, defender, skillType);
             ApplySourceStatusAutoAttackCycleDamage(attacker, defender, skillType);
@@ -1146,10 +1146,19 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return;
 
+            var appliesDirectDamageEffects = deliveryType == CombatDamageDeliveryType.Direct;
+
+            // Must run before TrackCombatActivity below updates the "last combat activity"
+            // timestamp, since this checks whether the attacker was already active in combat.
+            // Runs for direct hits only (auto-attacks and ability impacts), not DoT ticks, so
+            // that a hostile ability opener still counts as the "first attack" for Vibroknife's
+            // Venatic Recovery rather than only a raw auto-attack.
+            if (appliesDirectDamageEffects)
+                ApplyFirstCombatAttackStaminaRestore(attacker);
+
             TrackCombatActivity(attacker);
             TrackRecentDamageTarget(attacker, defender);
 
-            var appliesDirectDamageEffects = deliveryType == CombatDamageDeliveryType.Direct;
             if (!appliesDirectDamageEffects)
                 return;
 
@@ -1526,6 +1535,11 @@ namespace SWLOR.Game.Server.Service
         {
             if (criticalRating <= 0 || damage <= 0)
                 return;
+
+            if (GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender) > 0)
+            {
+                FloatingTextStringOnCreature(ColorToken.Combat("Weak Points"), attacker, false);
+            }
 
             var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.CriticalStaminaRestore);
             var staminaRestoreSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalStaminaRestoreSkillType));
@@ -2594,6 +2608,19 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             return GetCurrentHitPoints(attacker) <= maximumHP * (threshold / 100f)
+                ? adjustment
+                : 0;
+        }
+
+        public static int GetLowFPAttackAdjustment(uint attacker)
+        {
+            var threshold = Stat.GetStatAdjustment(attacker, StatType.LowFPAttackThresholdPercent);
+            var adjustment = Stat.GetStatAdjustment(attacker, StatType.LowFPAttackPercentAdjustment);
+            var maximumFP = Stat.GetMaxFP(attacker);
+            if (threshold <= 0 || adjustment == 0 || maximumFP <= 0)
+                return 0;
+
+            return Stat.GetCurrentFP(attacker) <= maximumFP * (threshold / 100f)
                 ? adjustment
                 : 0;
         }
@@ -4115,6 +4142,19 @@ namespace SWLOR.Game.Server.Service
                 maximum,
                 StatType.HostileAbilityUsedAttackPercentAdjustment,
                 1);
+
+            var currentTotal = TemporaryStatModifier.GetStatAdjustment(
+                activator,
+                StatType.AttackPercentAdjustment,
+                StatType.HostileAbilityUsedAttackPercentAdjustment);
+            if (currentTotal > 0)
+            {
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    activator,
+                    new ButchersTempoStatusEffect(currentTotal),
+                    duration);
+            }
         }
 
         private static void ApplyAbilityUsedNearbyAllyDefense(uint activator)
@@ -6663,6 +6703,19 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
+        private static void ApplyAutoAttackSunderedTargetFPRestore(uint attacker, uint defender)
+        {
+            var fpRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackSunderedTargetFPRestore);
+            if (fpRestore <= 0 ||
+                !GetIsObjectValid(defender) ||
+                !StatusEffect.HasStatusEffect(defender, typeof(SunderStatusEffect)))
+            {
+                return;
+            }
+
+            Stat.RestoreFP(attacker, fpRestore);
+        }
+
         private static int GetPhysicalAndForceAbilityHitChanceAdjustment(uint attacker, SkillType skillType)
         {
             return IsWeaponOrForceAbility(skillType)
@@ -8779,12 +8832,12 @@ namespace SWLOR.Game.Server.Service
         /// are clamped to <see cref="MinimumAttackDelayMilliseconds"/>.
         /// </summary>
         /// <param name="attackerDelayMilliseconds">The attacker's calculated delay in milliseconds.</param>
-        /// <param name="useDefaultMinimumDelay">If true, ignore extra weapon delay and use the default engine minimum.</param>
+        /// <param name="useDefaultMinimumDelay">If true, ignore weapon delay and use the engine's fastest possible swing floor.</param>
         /// <returns>The adjusted delay in milliseconds.</returns>
         public static int CalculateEffectiveAttackDelay(int attackerDelayMilliseconds, bool useDefaultMinimumDelay)
         {
             if (useDefaultMinimumDelay)
-                return BaseAttackDelayMilliseconds;
+                return MinimumAttackDelayMilliseconds;
 
             if (attackerDelayMilliseconds <= BaseAttackDelayMilliseconds)
                 return BaseAttackDelayMilliseconds;

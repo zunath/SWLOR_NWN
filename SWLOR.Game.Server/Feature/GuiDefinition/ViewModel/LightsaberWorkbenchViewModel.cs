@@ -526,7 +526,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Transfer the Weapon Submission Token's crafted stats onto the saber. The
             // saber's damage profile stays fixed at tier 5, so DMG, weapon damage type,
             // and attack delay are skipped, as is the token blueprint's own skill
-            // requirement scaffolding.
+            // requirement scaffolding and its anti-equip Use Limitation: Perk lock
+            // (the token is meant to be unusable on its own, not the finished saber).
             if (!string.IsNullOrWhiteSpace(_submissionSerialized))
             {
                 var submissionToken = ObjectPlugin.Deserialize(_submissionSerialized);
@@ -538,7 +539,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         if (type == ItemPropertyType.DMG ||
                             type == ItemPropertyType.Delay ||
                             type == ItemPropertyType.WeaponDamageType ||
-                            type == ItemPropertyType.RequiresSkill)
+                            type == ItemPropertyType.RequiresSkill ||
+                            type == ItemPropertyType.UseLimitationPerk)
                             continue;
 
                         Craft.ApplyCraftedItemProperty(item, ip);

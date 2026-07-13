@@ -8,8 +8,6 @@ namespace SWLOR.Game.Server.Service.DiceService
     public enum DieModifier
     {
         None,
-        Advantage,      // roll each die twice, keep the higher
-        Disadvantage,   // roll each die twice, keep the lower
         Exploding,      // on max, roll again and add (depth-capped)
         Reroll          // reroll (once) any die that rolls <= threshold
     }
@@ -52,7 +50,7 @@ namespace SWLOR.Game.Server.Service.DiceService
     public class DieRoll
     {
         public int Value { get; set; }          // final value this die contributes
-        public int[] Rolls { get; set; }        // raw rolls (adv/dis: 2; exploding: chain; reroll: [old,new]; else [value])
+        public int[] Rolls { get; set; }        // raw rolls (exploding: chain; reroll: [old,new]; else [value])
         public DieModifier Modifier { get; set; }
         public bool Dropped { get; set; }       // dropped by keep-highest / keep-lowest
     }

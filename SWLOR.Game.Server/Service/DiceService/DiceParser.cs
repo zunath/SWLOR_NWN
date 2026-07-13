@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.DiceService
     ///   expression = ['+'|'-'] term ( ('+'|'-') term )*
     ///   term       = dice | integer
     ///   dice       = [count] 'd' sides [dieMod] [keepMod] [multMod]
-    ///   dieMod     = 'adv' | 'dis' | '!' | 'r'&lt;n&gt;   (at most one)
+    ///   dieMod     = '!' | 'r'&lt;n&gt;                    (at most one)
     ///   keepMod    = ('kh'|'kl') [n]                       (at most one; default n = 1)
     ///   multMod    = ('x'|'*')&lt;n&gt;                    (at most one; multiplies this term only)
     /// </summary>
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.DiceService
         public const int MaxFlat = 1_000_000;
         public const int MaxExpressionLength = 100;
 
-        private const string DieModConflict = "A dice group can have only one of adv, dis, ! or rN.";
+        private const string DieModConflict = "A dice group can have only one of ! or rN.";
 
         public static bool TryParse(string expression, out List<DiceTerm> terms, out string error)
         {
@@ -109,17 +109,7 @@ namespace SWLOR.Game.Server.Service.DiceService
 
                     while (i < expr.Length && expr[i] != '+' && expr[i] != '-')
                     {
-                        if (StartsWith(expr, i, "adv"))
-                        {
-                            if (hasDieMod) { error = DieModConflict; return false; }
-                            term.DieModifier = DieModifier.Advantage; hasDieMod = true; i += 3;
-                        }
-                        else if (StartsWith(expr, i, "dis"))
-                        {
-                            if (hasDieMod) { error = DieModConflict; return false; }
-                            term.DieModifier = DieModifier.Disadvantage; hasDieMod = true; i += 3;
-                        }
-                        else if (expr[i] == '!')
+                        if (expr[i] == '!')
                         {
                             if (hasDieMod) { error = DieModConflict; return false; }
                             term.DieModifier = DieModifier.Exploding; hasDieMod = true; i++;

@@ -14,12 +14,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             var builder = new ChatCommandBuilder();
 
             builder.Create("r", "roll")
-                .Description("Rolls dice from a text expression, e.g. /r 1d20+3d6+1d8adv. Supports kh/kl, exploding (!), reroll (rN), multiplier (xN) and adv/dis.")
+                .Description("Rolls dice from a text expression, e.g. /r 1d20+3d6+2d8kh1. Supports keep-highest/lowest (kh/kl), exploding (!), reroll (rN) and multiplier (xN).")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
                     if (args == null || args.Length == 0 || string.IsNullOrWhiteSpace(string.Concat(args)))
-                        return "Usage: /r <expression>   e.g. /r 1d20+3d6+1d8adv";
+                        return "Usage: /r <expression>   e.g. /r 1d20+3d6+2d8kh1";
 
                     return string.Empty;
                 })

@@ -68,22 +68,6 @@ namespace SWLOR.Game.Server.Service.DiceService
             var die = new DieRoll { Modifier = term.DieModifier };
             switch (term.DieModifier)
             {
-                case DieModifier.Advantage:
-                {
-                    var a = Roll(term.Sides);
-                    var b = Roll(term.Sides);
-                    die.Rolls = new[] { a, b };
-                    die.Value = a >= b ? a : b;
-                    break;
-                }
-                case DieModifier.Disadvantage:
-                {
-                    var a = Roll(term.Sides);
-                    var b = Roll(term.Sides);
-                    die.Rolls = new[] { a, b };
-                    die.Value = a <= b ? a : b;
-                    break;
-                }
                 case DieModifier.Exploding:
                 {
                     var rolls = new List<int>();
@@ -150,10 +134,42 @@ namespace SWLOR.Game.Server.Service.DiceService
         private static string Format(DiceRollResult res)
         {
             var label = ColorToken.SkillCheck("Dice Roll [" + res.Expression + "]: ");
-            var message = label + BuildBreakdown(res, false) + " = " + res.Total;
+
+            var message = label + BuildBreakdown(res, false);
+            if (ShouldAppendTotal(res, false))
+                message += " = " + res.Total;
+
             if (message.Length > MaxMessageLength)
-                message = label + BuildBreakdown(res, true) + " = " + res.Total;
+            {
+                message = label + BuildBreakdown(res, true);
+                if (ShouldAppendTotal(res, true))
+                    message += " = " + res.Total;
+            }
+
             return message;
+        }
+
+        /// <summary>
+        /// Whether to append " = total". Omitted when the single-term result already reads as the
+        /// total on its own (a lone die "11", a keep group "10 (3, 2, 3, 4)", or a flat number).
+        /// </summary>
+        private static bool ShouldAppendTotal(DiceRollResult res, bool collapsed)
+        {
+            if (res.Terms.Count != 1)
+                return true;
+            if (collapsed)
+                return false; // the collapsed single-term atom is the subtotal itself
+
+            var term = res.Terms[0].Term;
+            if (term.Multiplier != 1)
+                return true;                             // the product isn't shown by the dice
+            if (term.IsFlat)
+                return false;                            // "5"
+            if (term.KeepMode != KeepMode.None)
+                return false;                            // "10 (3, 2, 3, 4)" leads with the sum
+            if (term.Count == 1 && term.DieModifier == DieModifier.None)
+                return false;                            // "11"
+            return true;                                 // multi-die adds, or explode/reroll chains
         }
 
         private static string BuildBreakdown(DiceRollResult res, bool collapsed)
@@ -174,26 +190,40 @@ namespace SWLOR.Game.Server.Service.DiceService
                 {
                     AppendAtom(sb, ref firstAtom, term.Negative, term.FlatValue.ToString());
                 }
+                else if (term.KeepMode != KeepMode.None)
+                {
+                    AppendAtom(sb, ref firstAtom, term.Negative, KeepSegment(term, termRoll));
+                }
                 else if (term.Multiplier != 1)
                 {
-                    var inner = new StringBuilder();
-                    var firstInner = true;
-                    foreach (var die in termRoll.Dice)
-                    {
-                        if (!firstInner) inner.Append(" + ");
-                        inner.Append(FormatDie(die));
-                        firstInner = false;
-                    }
+                    var inner = string.Join(" + ", termRoll.Dice.Select(FormatDie));
                     AppendAtom(sb, ref firstAtom, term.Negative, "(" + inner + ") x " + term.Multiplier);
                 }
                 else
                 {
+                    // Plain dice group: each die is its own atom so it flattens into the +/- chain.
                     foreach (var die in termRoll.Dice)
                         AppendAtom(sb, ref firstAtom, term.Negative, FormatDie(die));
                 }
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Keep group: "keptSum (r1, r2, ...)" with the dropped rolls greyed, e.g. "10 (3, 2, 3, 4)".
+        /// No misleading '+' between kept and dropped dice.
+        /// </summary>
+        private static string KeepSegment(DiceTerm term, TermRoll termRoll)
+        {
+            var keptSum = termRoll.Dice.Where(x => !x.Dropped).Sum(x => x.Value);
+            var rolls = string.Join(", ", termRoll.Dice.Select(d =>
+                d.Dropped ? ColorToken.Gray(d.Value.ToString()) : d.Value.ToString()));
+
+            var segment = keptSum + " (" + rolls + ")";
+            if (term.Multiplier != 1)
+                segment += " x " + term.Multiplier;
+            return segment;
         }
 
         private static void AppendAtom(StringBuilder sb, ref bool firstAtom, bool negative, string display)
@@ -212,24 +242,15 @@ namespace SWLOR.Game.Server.Service.DiceService
 
         private static string FormatDie(DieRoll die)
         {
-            string s;
             switch (die.Modifier)
             {
-                case DieModifier.Advantage:
-                case DieModifier.Disadvantage:
-                    s = "[" + die.Rolls[0] + " | " + die.Rolls[1] + "] " + die.Value;
-                    break;
                 case DieModifier.Exploding:
-                    s = string.Join("!+", die.Rolls);
-                    break;
+                    return string.Join("!+", die.Rolls);            // "6!+4"
                 case DieModifier.Reroll:
-                    s = die.Rolls.Length == 2 ? die.Rolls[0] + "->" + die.Rolls[1] : die.Value.ToString();
-                    break;
+                    return die.Rolls.Length == 2 ? die.Rolls[0] + "->" + die.Rolls[1] : die.Value.ToString();
                 default:
-                    s = die.Value.ToString();
-                    break;
+                    return die.Value.ToString();
             }
-            return die.Dropped ? ColorToken.Gray(s) : s;
         }
 
         private static string Normalize(string expression)

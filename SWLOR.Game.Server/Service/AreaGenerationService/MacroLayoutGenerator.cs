@@ -33,12 +33,30 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // Right=Alley"), so downgrade to the universally-verified Corridor/Doorway vocabulary
             // instead — Streets then reads as regular tunnels on tilesets without alleys. Adjusted on
             // a clone so the caller's parameters object is never mutated.
+            var wasCloned = false;
             if (tileset != null &&
                 parameters.CorridorCrosserType == CorridorCrosserType.Alley &&
                 !tileset.Crossers.Contains("Alley", StringComparer.OrdinalIgnoreCase))
             {
                 parameters = parameters.Clone();
                 parameters.CorridorCrosserType = CorridorCrosserType.Corridor;
+                wasCloned = true;
+            }
+
+            // Normalize every Advanced Settings knob (room counts/sizes, organic fill, corridor width,
+            // entrance/exit counts, size floor) to a combination LayoutParameterConstraints has
+            // verified is generation-safe. Content Builder's sliders can otherwise reach combinations
+            // that throw outright (e.g. Min Rooms > Max Rooms) or silently degrade into a
+            // near-certain failure (e.g. Min Room Size > Max Room Size, or OrganicCave's Organic Fill
+            // slider floor at a small size) -- see LayoutParameterConstraints.ClampToValid for the
+            // probe evidence behind each bound. NeedsClamping is a pure value check (no allocation) so
+            // the common already-valid case clones nothing beyond what the Alley downgrade above may
+            // already have done; a caller's own object is never mutated either way.
+            if (LayoutParameterConstraints.NeedsClamping(parameters))
+            {
+                if (!wasCloned)
+                    parameters = parameters.Clone();
+                LayoutParameterConstraints.ClampToValid(parameters);
             }
 
             MacroLayout layout = parameters.Style switch

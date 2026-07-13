@@ -386,22 +386,28 @@ namespace SWLOR.ContentBuilder.Windows
                 _seedTextBox.Text = System.Random.Shared.Next(0, MaxSeed + 1).ToString(CultureInfo.InvariantCulture);
             };
 
-            _widthSlider.ValueChanged += (_, _) => { if (_suppressEvents) return; RegeneratePreview(); };
-            _heightSlider.ValueChanged += (_, _) => { if (_suppressEvents) return; RegeneratePreview(); };
+            _widthSlider.ValueChanged += (_, _) => { if (_suppressEvents) return; UpdateKnobConstraints(); RegeneratePreview(); };
+            _heightSlider.ValueChanged += (_, _) => { if (_suppressEvents) return; UpdateKnobConstraints(); RegeneratePreview(); };
 
             _styleCombo.SelectionChanged += (_, _) =>
             {
                 if (_suppressEvents) return;
                 MarkOverride(nameof(_styleCombo));
                 UpdateOrganicFillEnabled();
-                UpdateSizeFloor();
+                UpdateKnobConstraints();
                 RegeneratePreview();
             };
 
-            WireKnobSlider(_minRoomsSlider, nameof(_minRoomsSlider));
-            WireKnobSlider(_maxRoomsSlider, nameof(_maxRoomsSlider));
-            WireKnobSlider(_minRoomSizeSlider, nameof(_minRoomSizeSlider));
-            WireKnobSlider(_maxRoomSizeSlider, nameof(_maxRoomSizeSlider));
+            // Min/Max Rooms and Min/Max Room Size are coupled pairs: each slider's own ValueChanged
+            // immediately tightens the OTHER slider's Minimum/Maximum so Min>Max is unreachable by
+            // dragging at any time, not just right after a profile/style/size change (see
+            // WireCoupledSlider). UpdateKnobConstraints (profile load / style change / Width-Height
+            // change) separately applies the style+size-derived room-size ceiling on top of this.
+            WireCoupledSlider(_minRoomsSlider, _maxRoomsSlider, isMinSide: true);
+            WireCoupledSlider(_maxRoomsSlider, _minRoomsSlider, isMinSide: false);
+            WireCoupledSlider(_minRoomSizeSlider, _maxRoomSizeSlider, isMinSide: true);
+            WireCoupledSlider(_maxRoomSizeSlider, _minRoomSizeSlider, isMinSide: false);
+
             WireKnobSlider(_corridorWidthSlider, nameof(_corridorWidthSlider));
             WireKnobSlider(_loopFactorSlider, nameof(_loopFactorSlider));
             WireKnobSlider(_organicFillSlider, nameof(_organicFillSlider));
@@ -440,6 +446,44 @@ namespace SWLOR.ContentBuilder.Windows
         }
 
         private void MarkOverride(string key) => _overriddenKnobs.Add(key);
+
+        /// <summary>
+        /// Wires one side of a Min/Max slider pair (Min Rooms/Max Rooms, Min Room Size/Max Room Size):
+        /// dragging this slider immediately tightens the PARTNER's Minimum (if this is the min side) or
+        /// Maximum (if this is the max side) to this slider's new value, so Min>Max can never be
+        /// reached by dragging either slider at any time -- not only right after a profile/style/size
+        /// change (UpdateKnobConstraints separately layers the style+size-derived room-size ceiling on
+        /// top of this same coupling). The partner update runs under _suppressEvents so a coercion it
+        /// triggers on the partner's Value never fires a second MarkOverride/RegeneratePreview -- the
+        /// single call at the end of this handler is the only one for the user's actual drag.
+        /// </summary>
+        private void WireCoupledSlider(Slider slider, Slider partner, bool isMinSide)
+        {
+            slider.ValueChanged += (_, _) =>
+            {
+                if (_suppressEvents) return;
+                MarkOverride(slider == _minRoomsSlider ? nameof(_minRoomsSlider)
+                    : slider == _maxRoomsSlider ? nameof(_maxRoomsSlider)
+                    : slider == _minRoomSizeSlider ? nameof(_minRoomSizeSlider)
+                    : nameof(_maxRoomSizeSlider));
+
+                var wasSuppressed = _suppressEvents;
+                _suppressEvents = true;
+                try
+                {
+                    if (isMinSide)
+                        partner.Minimum = slider.Value;
+                    else
+                        partner.Maximum = slider.Value;
+                }
+                finally
+                {
+                    _suppressEvents = wasSuppressed;
+                }
+
+                RegeneratePreview();
+            };
+        }
 
         private void OnAccentCheckChanged()
         {
@@ -675,6 +719,68 @@ namespace SWLOR.ContentBuilder.Windows
             _heightSlider.Minimum = floor;
         }
 
+        /// <summary>
+        /// Room Size slider ceiling never exceeds this, even for styles whose room-size knobs are
+        /// structurally unused (OrganicCave, where LayoutParameterConstraints.RoomSizeBounds returns
+        /// an unbounded Max) -- keeps the slider's own track usable instead of stretching it out to
+        /// int.MaxValue for a style where the value doesn't matter anyway.
+        /// </summary>
+        private const int RoomSizeSliderAbsoluteMax = 12;
+
+        /// <summary>
+        /// Recomputes every Advanced Settings slider bound so no combination the user can reach by
+        /// dragging can fail generation, mirroring LayoutParameterConstraints -- the same engine-side
+        /// authority MacroLayoutGenerator.Generate clamps through as a final safety net. Run whenever
+        /// the layout profile loads, the Style combo changes, or Width/Height change (the coupled
+        /// Min/Max pairs for Rooms and Room Size are additionally kept live on every drag by
+        /// WireCoupledSlider, since a style/size change alone wouldn't re-tighten them against a
+        /// mid-drag Min>Max attempt). Idempotent and safe to call repeatedly: wraps every bound change
+        /// in _suppressEvents (preserving, not clobbering, whatever suppression state the caller was
+        /// already in) so this never triggers its own regeneration -- the caller performs the single
+        /// RegeneratePreview for the change that triggered it.
+        /// </summary>
+        private void UpdateKnobConstraints()
+        {
+            UpdateSizeFloor();
+
+            var style = SelectedStyle();
+            var width = (int)_widthSlider.Value;
+            var height = (int)_heightSlider.Value;
+
+            var (_, maxRoomSize) = LayoutParameterConstraints.RoomSizeBounds(style, width, height);
+            var effectiveMaxRoomSize = Math.Min(maxRoomSize, RoomSizeSliderAbsoluteMax);
+            var minFillPercent = Math.Round(LayoutParameterConstraints.MinSafeOpenFillTarget(width, height) * 100);
+
+            var wasSuppressed = _suppressEvents;
+            _suppressEvents = true;
+            try
+            {
+                // Room size: cap Max first (coerces its Value down if it exceeded the new style+size
+                // ceiling), then re-couple Min<=Max off the post-coercion Max value, then Max>=Min off
+                // the post-coercion Min value -- this order handles cascading coercion correctly
+                // regardless of what the sliders held before (e.g. a style switch that shrinks the
+                // ceiling out from under a previously-valid Min/Max pair).
+                _maxRoomSizeSlider.Maximum = effectiveMaxRoomSize;
+                _minRoomSizeSlider.Maximum = _maxRoomSizeSlider.Value;
+                _maxRoomSizeSlider.Minimum = _minRoomSizeSlider.Value;
+
+                // Rooms: no style/size-derived ceiling, just the Min<=Max coupling.
+                _minRoomsSlider.Maximum = _maxRoomsSlider.Value;
+                _maxRoomsSlider.Minimum = _minRoomsSlider.Value;
+
+                // OrganicCave's Organic Fill has a hard safe floor that rises steeply as the area
+                // shrinks toward its size floor (see LayoutParameterConstraints.MinSafeOpenFillTarget).
+                // Applied regardless of the current style: harmless when the slider is disabled
+                // (UpdateOrganicFillEnabled), and keeps the bound already correct if the user switches
+                // to OrganicCave afterward without touching Width/Height again.
+                _organicFillSlider.Minimum = minFillPercent;
+            }
+            finally
+            {
+                _suppressEvents = wasSuppressed;
+            }
+        }
+
         private void LoadLayoutProfileKnobs(DungeonLayoutProfile profile)
         {
             _currentLayoutProfile = profile;
@@ -724,7 +830,7 @@ namespace SWLOR.ContentBuilder.Windows
                 _accentDensitySlider.IsEnabled = supportsAccent && _accentCheckBox.IsChecked == true;
 
                 UpdateOrganicFillEnabled();
-                UpdateSizeFloor();
+                UpdateKnobConstraints();
             }
             finally
             {

@@ -278,13 +278,23 @@ public class MacroLayoutGeneratorTests
     }
 
     [Test]
-    public void Generate_TooSmallArea_Throws()
+    public void Generate_TooSmallArea_ClampsToSizeFloorInsteadOfThrowing()
     {
+        // Generate now normalizes every parameter (including Width/Height) through
+        // LayoutParameterConstraints.ClampToValid before dispatching to a style, so a
+        // caller-requested area below LayoutStyleSizeFloor no longer throws -- it silently
+        // generates at the floor instead (see LayoutParameterConstraints).
         var parameters = DefaultParameters(width: 4, height: 4, minRooms: 4, maxRooms: 8);
+        var floor = LayoutStyleSizeFloor.For(parameters.Style);
 
-        Action act = () => MacroLayoutGenerator.Generate(parameters, new Random(1));
+        var layout = MacroLayoutGenerator.Generate(parameters, new Random(1));
 
-        act.Should().Throw<InvalidOperationException>();
+        layout.Rooms.Count.Should().BeGreaterOrEqualTo(2);
+        layout.Corners.Width.Should().Be(floor);
+        layout.Corners.Height.Should().Be(floor);
+        // The caller's own object must never be mutated by Generate.
+        parameters.Width.Should().Be(4);
+        parameters.Height.Should().Be(4);
     }
 
     [Test]

@@ -17,6 +17,7 @@
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TilesetModel.cs" Link="Generation\TilesetModel.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TilesetSetParser.cs" Link="Generation\TilesetSetParser.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\AreaLayout.cs" Link="Generation\AreaLayout.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\LayoutParameterConstraints.cs" Link="Generation\LayoutParameterConstraints.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\MacroLayoutGenerator.cs" Link="Generation\MacroLayoutGenerator.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileResolver.cs" Link="Generation\TileResolver.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileDoorPlanner.cs" Link="Generation\TileDoorPlanner.cs" />

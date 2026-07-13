@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.DiceService;
+using SWLOR.Game.Server.Service.LogService;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else
                     {
+                        Log.Write(LogGroup.Chat, $"/r parse failed for '{expression}' from {GetName(user)}: {error}");
                         SendMessageToPC(user, ColorToken.Red(error));
                     }
                 });

@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Service.DiceService
         {
             var keptSum = termRoll.Dice.Where(x => !x.Dropped).Sum(x => x.Value);
             var rolls = string.Join(", ", termRoll.Dice.Select(d =>
-                d.Dropped ? ColorToken.Gray(d.Value.ToString()) : d.Value.ToString()));
+                d.Dropped ? ColorToken.Gray(FormatDie(d)) : FormatDie(d)));
 
             var segment = keptSum + " (" + rolls + ")";
             if (term.Multiplier != 1)

@@ -4,7 +4,7 @@ using System.Linq;
 namespace SWLOR.Game.Server.Service.DiceService
 {
     /// <summary>
-    /// Parses text dice expressions (e.g. "1d20+3d6+1d8adv+2") into a list of <see cref="DiceTerm"/>.
+    /// Parses text dice expressions (e.g. "1d20+3d6+2d8kh1+2") into a list of <see cref="DiceTerm"/>.
     /// Pure and deterministic (no randomness), so it can be unit-tested in isolation.
     ///
     /// Grammar (whitespace ignored, case-insensitive):
@@ -33,14 +33,14 @@ namespace SWLOR.Game.Server.Service.DiceService
 
             if (string.IsNullOrWhiteSpace(expression))
             {
-                error = "Empty dice expression. Example: /r 1d20+3d6+1d8adv";
+                error = "Empty dice expression. Example: /r 1d20+3d6+2d8kh1";
                 return false;
             }
 
             var expr = new string(expression.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToLowerInvariant();
             if (expr.Length == 0)
             {
-                error = "Empty dice expression. Example: /r 1d20+3d6+1d8adv";
+                error = "Empty dice expression. Example: /r 1d20+3d6+2d8kh1";
                 return false;
             }
             if (expr.Length > MaxExpressionLength)
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Service.DiceService
 
             if (terms.Count == 0)
             {
-                error = "Empty dice expression. Example: /r 1d20+3d6+1d8adv";
+                error = "Empty dice expression. Example: /r 1d20+3d6+2d8kh1";
                 return false;
             }
 

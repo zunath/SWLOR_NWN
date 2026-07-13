@@ -70,6 +70,10 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<(uint, uint), TargetHitSequenceState> _areaAbilityTargetHitSequences = new();
         private static readonly Dictionary<uint, float> _attackSwingDebts = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
+        private static readonly Dictionary<SkillType, Action<uint, int>> _repeatedTargetDamageStatusEffectRefreshers = new()
+        {
+            { SkillType.Vibroblade, RundownStatusEffect.Refresh }
+        };
         private static readonly Dictionary<uint, SameTargetPressureState> _sameTargetPressureStates = new();
         private static readonly Dictionary<uint, AbilityStaminaCostState> _lastAbilityStaminaCosts = new();
         private static bool _damageTypesCached;
@@ -3485,6 +3489,7 @@ namespace SWLOR.Game.Server.Service
                 (!hasPercentBonus && !hasFlatBonus))
             {
                 _repeatedTargetDamageStates.Remove(attacker);
+                ClearRepeatedTargetDamageStatusEffects(attacker);
                 return damage;
             }
 
@@ -3506,6 +3511,9 @@ namespace SWLOR.Game.Server.Service
             state.LastHit = now;
             _repeatedTargetDamageStates[attacker] = state;
 
+            if (_repeatedTargetDamageStatusEffectRefreshers.TryGetValue(requiredSkillType, out var refreshStatusEffect))
+                refreshStatusEffect(attacker, state.Stacks);
+
             if (hasPercentBonus)
             {
                 var adjustment = Math.Min(maxPercent, state.Stacks * percentPerHit);
@@ -3518,6 +3526,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             return damage;
+        }
+
+        private static void ClearRepeatedTargetDamageStatusEffects(uint attacker)
+        {
+            foreach (var refreshStatusEffect in _repeatedTargetDamageStatusEffectRefreshers.Values)
+            {
+                refreshStatusEffect(attacker, 0);
+            }
         }
 
         private static void ApplySameTargetPressureDamageEffects(uint attacker, uint defender, SkillType skillType)

@@ -1226,6 +1226,7 @@
 "StatusEffect","ReflectiveBarrier1StatusEffect","Reflective Barrier","Beneficial","1","ief_reflbar1","SWLOR.Game.Server\Feature\StatusEffectDefinition\ReflectiveBarrier1StatusEffect.cs"
 "StatusEffect","RegenerativeHealingStatusEffect","RegenerativeHealing","Beneficial","","ief_regenheal","SWLOR.Game.Server\Feature\StatusEffectDefinition\RegenerativeHealingStatusEffect.cs"
 "StatusEffect","RestStatusEffect","Rest","Utility","","ief_rest","SWLOR.Game.Server\Feature\StatusEffectDefinition\RestStatusEffect.cs"
+"StatusEffect","RundownStatusEffect","Rundown","Beneficial","","ief_rndwn","SWLOR.Game.Server\Feature\StatusEffectDefinition\RundownStatusEffect.cs"
 "StatusEffect","RousingShout1StatusEffect","Rousing Shout I","Beneficial","1","ief_rousshout1","SWLOR.Game.Server\Feature\StatusEffectDefinition\RousingShout1StatusEffect.cs"
 "StatusEffect","RousingShout2StatusEffect","Rousing Shout II","Beneficial","2","ief_rousshout2","SWLOR.Game.Server\Feature\StatusEffectDefinition\RousingShout2StatusEffect.cs"
 "StatusEffect","RousingShout3StatusEffect","Rousing Shout III","Beneficial","3","ief_rousshout3","SWLOR.Game.Server\Feature\StatusEffectDefinition\RousingShout3StatusEffect.cs"

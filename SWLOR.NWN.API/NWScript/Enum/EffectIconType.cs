@@ -442,6 +442,7 @@
         AssassinsStanceStatusEffect = 438,
         ImbuementStanceStatusEffect = 439,
         ImmovableStanceStatusEffect = 440,
+        RundownStatusEffect = 441,
         // End custom status effect icons
     }
 }

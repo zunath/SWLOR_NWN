@@ -277,6 +277,268 @@ public class GroupStamperTests
         totalPins.Should().BeGreaterThan(0, "at least some of 15 seeds on a large open cavern should stamp an OpenSetPiece");
     }
 
+    // ---------------- Platform03_2x2 (hole-tolerant group footprint) ----------------
+
+    /// <summary>
+    /// tdt01/tds01 "Platform03_2x2": an L-shaped 2x2 OpenSetPiece with a genuine hole (one
+    /// group.TileIds slot is -1). Confirms the hole cell is never pinned (no member write ever
+    /// touches it -- see LayoutGroupStamper.TryClassify's hole handling) yet still resolves
+    /// successfully as an ordinary open floor cell once its neighboring real members write their own
+    /// (Floor-cornered) corners around it.
+    /// </summary>
+    [Test]
+    public void Platform03_HoleCellNeverPinnedAndResolvesSuccessfully()
+    {
+        var cases = new (string Tileset, string ProfileKey)[]
+        {
+            ("tdt01", StandardTilesetProfiles.Cavern),
+            ("tds01", StandardTilesetProfiles.Sewers),
+        };
+
+        var failures = new List<string>();
+        var totalInstances = 0;
+
+        foreach (var (tilesetResref, profileKey) in cases)
+        {
+            var model = LoadTileset(tilesetResref);
+            var group = model.Groups.First(g => string.Equals(g.Name, "Platform03_2x2", StringComparison.OrdinalIgnoreCase));
+
+            // (row0, col0) -- TileIds[0] -- must be a real member; used below as the stamped
+            // instance's anchor reference (StampOpenSetPiece always uses orientation 0 -- see
+            // LayoutGroupStamper's class doc comment -- so a member's world cell directly gives the
+            // anchor via a fixed local-row/col offset).
+            group.TileIds[0].Should().BeGreaterThanOrEqualTo(0, $"{tilesetResref} Platform03_2x2's (row0,col0) member must be real");
+            var anchorTileId = group.TileIds[0];
+
+            var holeIndex = group.TileIds.IndexOf(-1);
+            holeIndex.Should().BeGreaterThanOrEqualTo(0, $"{tilesetResref} Platform03_2x2 must have a hole in its .set data");
+            var holeRow = holeIndex / group.Columns;
+            var holeCol = holeIndex % group.Columns;
+
+            var setPieces = new Dictionary<string, int> { ["Platform03_2x2"] = 3 };
+
+            for (var seed = 8600; seed < 8660; seed++)
+            {
+                var rng = new Random(seed);
+                var parameters = BigOrganicCaveParameters(model, model.FloorTerrain, setPieces);
+
+                MacroLayout macro;
+                try
+                {
+                    macro = MacroLayoutGenerator.Generate(parameters, rng, model);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    failures.Add($"{tilesetResref} seed {seed}: generation failed: {ex.Message}");
+                    continue;
+                }
+
+                macro.Seed = seed;
+
+                if (!TileResolver.TryResolve(model, macro, rng, out var resolved, out var reason))
+                {
+                    failures.Add($"{tilesetResref} seed {seed}: resolution failed: {reason}");
+                    continue;
+                }
+
+                foreach (var (cell, pin) in macro.PinnedTiles)
+                {
+                    if (pin.TileId != anchorTileId) continue;
+
+                    totalInstances++;
+                    var holeCell = (X: cell.X + holeCol, Y: cell.Y + holeRow);
+
+                    if (macro.PinnedTiles.ContainsKey(holeCell))
+                    {
+                        failures.Add($"{tilesetResref} seed {seed}: hole cell {holeCell} (anchor {cell}) was pinned -- must stay unwritten");
+                        continue;
+                    }
+
+                    if (holeCell.X < 0 || holeCell.Y < 0 || holeCell.X >= resolved.Width || holeCell.Y >= resolved.Height)
+                    {
+                        failures.Add($"{tilesetResref} seed {seed}: hole cell {holeCell} (anchor {cell}) fell off-grid");
+                        continue;
+                    }
+
+                    var holeResolved = resolved.GetTile(holeCell.X, holeCell.Y);
+                    if (holeResolved == null)
+                        failures.Add($"{tilesetResref} seed {seed}: hole cell {holeCell} (anchor {cell}) did not resolve");
+                }
+            }
+        }
+
+        failures.Should().BeEmpty();
+        totalInstances.Should().BeGreaterThan(0, "at least one Platform03_2x2 instance should stamp across the seed sweep");
+    }
+
+    // ---------------- Doorway-pair CorridorInsert (tdt01 Door_Trans + Complex Tunnel mode) ----------------
+
+    private static MacroLayoutParameters TunnelComplexParameters(TilesetModel model, Dictionary<string, int> setPieces)
+    {
+        return new MacroLayoutParameters
+        {
+            Style = DungeonLayoutStyle.RoomsAndCorridors,
+            CorridorMode = CorridorMode.Tunnel,
+            MinRooms = 6,
+            MaxRooms = 9,
+            MinRoomCornerSize = 3,
+            MaxRoomCornerSize = 5,
+            LoopFactor = 0.3,
+            Width = 24,
+            Height = 24,
+            SolidTerrain = model.DefaultTerrain,
+            OpenTerrain = model.FloorTerrain,
+            SetPieces = setPieces
+        };
+    }
+
+    /// <summary>
+    /// tdt01 "Door_Trans": an all-solid tile with an opposite Doorway PAIR (a pass-through doorway
+    /// segment), spliced into a straight Corridor chain by LayoutGroupStamper.TryPlaceDoorwayCorridorInsert
+    /// rewriting the two flanking plan edges from Corridor to Doorway. Confirms placement actually
+    /// occurs, the insert tile resolves verbatim, both Doorway-axis edges agree with the crosser plan,
+    /// and each flanking (unpinned) neighbor re-keys to a real tile whose facing edge agrees Doorway
+    /// back -- proving the rewritten adapter edges actually resolve, not just get planned.
+    /// </summary>
+    [Test]
+    public void DoorwayPairCorridorInsert_PlacesAndAgreesAcrossSeeds()
+    {
+        var model = LoadTileset("tdt01");
+        var group = model.Groups.First(g => string.Equals(g.Name, "Door_Trans", StringComparison.OrdinalIgnoreCase));
+        var tile = model.Tiles[group.TileIds[0]];
+        var tilesById = model.Tiles.ToDictionary(t => t.TileId);
+
+        var setPieces = new Dictionary<string, int> { ["Door_Trans"] = 3 };
+        var failures = new List<string>();
+        var totalPlacements = 0;
+
+        for (var seed = 8700; seed < 8760; seed++)
+        {
+            var rng = new Random(seed);
+            var parameters = TunnelComplexParameters(model, setPieces);
+
+            MacroLayout macro;
+            try
+            {
+                macro = MacroLayoutGenerator.Generate(parameters, rng, model);
+            }
+            catch (InvalidOperationException)
+            {
+                continue;
+            }
+
+            macro.Seed = seed;
+
+            if (!TileResolver.TryResolve(model, macro, rng, out var resolved, out var reason))
+            {
+                failures.Add($"seed {seed}: resolution failed: {reason}");
+                continue;
+            }
+
+            foreach (var (cell, pin) in macro.PinnedTiles)
+            {
+                if (pin.TileId != tile.TileId) continue;
+
+                totalPlacements++;
+
+                var resolvedTile = resolved.GetTile(cell.X, cell.Y);
+                if (resolvedTile.TileId != pin.TileId || resolvedTile.Orientation != pin.Orientation)
+                    failures.Add($"seed {seed}: Door_Trans pin at {cell} did not resolve verbatim");
+
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    var (dx, dy) = SlotOffsets[slot];
+                    var neighbor = (X: cell.X + dx, Y: cell.Y + dy);
+
+                    var actual = tile.GetEdgeAt(pin.Orientation, slot) ?? string.Empty;
+                    var planned = macro.Crossers.GetEdge(cell.X, cell.Y, slot) ?? string.Empty;
+                    if (!string.Equals(actual, planned, StringComparison.OrdinalIgnoreCase))
+                        failures.Add($"seed {seed}: Door_Trans at {cell} slot {slot}: tile says '{actual}' but crosser plan says '{planned}'");
+
+                    if (actual.Length == 0) continue; // blank edge -- nothing further to check
+
+                    if (macro.PinnedTiles.ContainsKey(neighbor))
+                        failures.Add($"seed {seed}: Door_Trans at {cell} flanking neighbor {neighbor} is unexpectedly pinned");
+
+                    if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.X >= resolved.Width || neighbor.Y >= resolved.Height)
+                    {
+                        failures.Add($"seed {seed}: Door_Trans at {cell} has a Doorway edge facing off-grid");
+                        continue;
+                    }
+
+                    var neighborResolved = resolved.GetTile(neighbor.X, neighbor.Y);
+                    var neighborRecord = tilesById[neighborResolved.TileId];
+                    var oppositeSlot = (slot + 2) % 4;
+                    var neighborEdge = neighborRecord.GetEdgeAt(neighborResolved.Orientation, oppositeSlot) ?? string.Empty;
+                    if (!string.Equals(neighborEdge, "Doorway", StringComparison.OrdinalIgnoreCase))
+                        failures.Add($"seed {seed}: Door_Trans at {cell} slot {slot} neighbor {neighbor} lacks a matching Doorway edge (got '{neighborEdge}')");
+                }
+            }
+        }
+
+        failures.Should().BeEmpty();
+        totalPlacements.Should().BeGreaterThan(0, "at least one Door_Trans Doorway-pair insert should place across the seed sweep");
+    }
+
+    [Test]
+    public void DoorwayPairCorridorInsert_IsDeterministicPerSeed()
+    {
+        var model = LoadTileset("tdt01");
+        var setPieces = new Dictionary<string, int> { ["Door_Trans"] = 3 };
+
+        ResolvedLayout Resolve(out MacroLayout macro)
+        {
+            var rng = new Random(8750);
+            var parameters = TunnelComplexParameters(model, setPieces);
+            macro = MacroLayoutGenerator.Generate(parameters, rng, model);
+            macro.Seed = 8750;
+            TileResolver.TryResolve(model, macro, rng, out var resolved, out var reason).Should().BeTrue(reason);
+            return resolved;
+        }
+
+        var first = Resolve(out var firstMacro);
+        var second = Resolve(out var secondMacro);
+
+        firstMacro.PinnedTiles.Count.Should().Be(secondMacro.PinnedTiles.Count);
+        foreach (var (cell, pin) in firstMacro.PinnedTiles)
+        {
+            secondMacro.PinnedTiles.Should().ContainKey(cell);
+            secondMacro.PinnedTiles[cell].Should().Be(pin);
+        }
+
+        for (var i = 0; i < first.Tiles.Length; i++)
+        {
+            first.Tiles[i].TileId.Should().Be(second.Tiles[i].TileId, $"cell index {i}");
+            first.Tiles[i].Orientation.Should().Be(second.Tiles[i].Orientation, $"cell index {i}");
+        }
+    }
+
+    /// <summary>
+    /// Back-compat: a tileset profile/parameters combination that never configures "Door_Trans" (or
+    /// any SetPieces at all) must never exercise the new Doorway-pair branch and must draw identical
+    /// RNG regardless of whether HasCorridorDoorwayAdapter would otherwise succeed -- proven by
+    /// comparing against the pre-existing EmptySetPieces_ProducesZeroPinsAndUnchangedResolution
+    /// pattern on a different tileset (tdt01) that DOES have a usable adapter tile.
+    /// </summary>
+    [Test]
+    public void EmptySetPieces_Tdt01_ProducesZeroPinsAndUnchangedResolution()
+    {
+        var model = LoadTileset("tdt01");
+
+        var rng = new Random(8770);
+        var parameters = TunnelComplexParameters(model, new Dictionary<string, int>());
+        var macro = MacroLayoutGenerator.Generate(parameters, rng, model);
+        macro.Seed = 8770;
+
+        macro.PinnedTiles.Should().BeEmpty();
+
+        TileResolver.TryResolve(model, macro, rng, out var resolved, out var reason).Should().BeTrue(reason);
+        foreach (var tile in resolved.Tiles)
+        {
+            model.Tiles[tile.TileId].GroupIndex.Should().Be(-1, "empty SetPieces must never place a group tile");
+        }
+    }
+
     // ---------------- Determinism ----------------
 
     [Test]

@@ -249,9 +249,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
-        /// Terminator candidates: flat, ungrouped, all-solid-corner tiles with exactly one rotated
-        /// "Doorway" edge crosser (the other three blank), keyed by the world edge slot the Doorway
-        /// faces. Sorted by (TileId, Orientation) for deterministic selection.
+        /// Terminator candidates: flat, all-solid-corner tiles with exactly one rotated "Doorway" edge
+        /// crosser (the other three blank), keyed by the world edge slot the Doorway faces. Sorted by
+        /// (TileId, Orientation) for deterministic selection.
+        ///
+        /// Ungrouped tiles qualify directly; a tile wrapped in a trivial 1x1 [GROUPn] entry (e.g.
+        /// tds01/vmr01 "Door_Trans", vmr01 "Door_Trans_Exterior" -- shape-identical to a plain
+        /// terminator, just group-wrapped in the .set data) also qualifies -- see
+        /// IsSingleCellGroup's doc comment for why this never races LayoutGroupStamper. Multi-cell
+        /// groups stay excluded (BuildEdgeCandidates' room-edge pool is unaffected and stays
+        /// ungrouped-only: a grouped room-edge tile would need LayoutGroupStamper's own site
+        /// validation, not this planner's).
         /// </summary>
         private static Dictionary<int, List<(int TileId, int Orientation)>> BuildTerminatorCandidates(TilesetModel tileset)
         {
@@ -259,7 +267,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             foreach (var tile in tileset.Tiles)
             {
-                if (tile.GroupIndex != -1) continue;
+                if (tile.GroupIndex != -1 && !IsSingleCellGroup(tileset, tile.GroupIndex)) continue;
                 if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
                     tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) continue;
 
@@ -348,6 +356,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         // Rotation, world-transform, corner-lookup, and crosser-check math shared with
         // GroupExitPlanner lives in TileDoorGeometry (see RotateCcw90Multiple/DoorWorldTransform/
         // CellCorners/HasAnyCrosserEdge/Eq call sites above).
+
+        /// <summary>
+        /// True when <paramref name="groupIndex"/> refers to a 1x1 tileset group -- a tile
+        /// shape-identical to an ungrouped terminator candidate, just wrapped in a trivial single-cell
+        /// [GROUPn] entry. LayoutGroupStamper's group inventory never contests these cells: no shipped
+        /// StandardTilesetProfiles entry references tds01/vmr01's "Door_Trans"/"Door_Trans_Exterior" as
+        /// a SetPiece, and even if one did, LayoutGroupStamper.TryClassify's WallRoom branch rejects any
+        /// door-bearing member outright (its hasAnyDoor check) -- these tiles all carry a door slot, so
+        /// they could never classify as a WallRoom set piece and would simply go unplaced by that path.
+        /// Tolerating them here therefore never creates a placement race between the two passes.
+        /// Multi-cell groups stay excluded -- this planner's terminator pool is strictly single-cell.
+        /// </summary>
+        private static bool IsSingleCellGroup(TilesetModel tileset, int groupIndex)
+        {
+            if (groupIndex < 0 || groupIndex >= tileset.Groups.Count) return false;
+            var group = tileset.Groups[groupIndex];
+            return group.Rows == 1 && group.Columns == 1 && group.TileIds.Count == 1;
+        }
 
         private static bool IsAllSolid(string tl, string tr, string br, string bl, string solidTerrain)
         {

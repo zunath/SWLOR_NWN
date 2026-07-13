@@ -187,20 +187,32 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 if (soloTileId >= 0 && soloTileId < tileset.Tiles.Count)
                 {
                     var soloTile = tileset.Tiles[soloTileId];
-                    if (TryClassifyCorridorInsert(soloTile, group, parameters, out classified))
+                    if (TryClassifyCorridorInsert(tileset, soloTile, group, parameters, out classified))
                         return true;
                     if (TryClassifyCorridorStub(soloTile, group, parameters, out classified))
                         return true;
                 }
             }
 
+            // A -1 TileId is a genuine hole in the group's rectangular footprint (e.g. tdt01/tds01
+            // "Platform03_2x2", an L-shaped 2x2 with one empty corner) -- it is skipped here rather
+            // than rejecting the whole group. Every classification decision below (hasAnyDoorway,
+            // allCornersSolid, hasAnyDoor, matchesPrimary/matchesSecondary) is derived only from
+            // `members`, so it already only ever sees real tiles; the hole is treated as ordinary plan
+            // space the group doesn't own -- ordinary site validation (open/solid/crosser/pinned/
+            // transition checks) still runs against it via the group's full Rows x Columns rectangle
+            // (see IsHole call sites below), and no member write ever touches it (WriteMember only
+            // runs for real members), so its corners resolve from whatever the surrounding plan
+            // (neighboring real members plus, for an OpenSetPiece, the room's own open floor) already
+            // wrote there.
             var members = new List<GroupMember>();
             for (var row = 0; row < group.Rows; row++)
             {
                 for (var col = 0; col < group.Columns; col++)
                 {
                     var tileId = group.TileIds[row * group.Columns + col];
-                    if (tileId < 0 || tileId >= tileset.Tiles.Count) return false; // hole or out of range
+                    if (tileId < 0) continue; // hole
+                    if (tileId >= tileset.Tiles.Count) return false; // out of range -- genuinely bad data
 
                     var tile = tileset.Tiles[tileId];
                     if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
@@ -214,6 +226,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     members.Add(new GroupMember { LocalRow = row, LocalCol = col, Tile = tile });
                 }
             }
+            if (members.Count == 0) return false; // an all-hole "group" is degenerate
 
             var perimeterDoorways = new List<(int, int, int)>();
             foreach (var member in members)
@@ -225,8 +238,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var (dx, dy) = SlotOffsets[slot];
                     var neighborRow = member.LocalRow + dy;
                     var neighborCol = member.LocalCol + dx;
-                    var isPerimeter = neighborRow < 0 || neighborRow >= group.Rows ||
+                    var outOfBounds = neighborRow < 0 || neighborRow >= group.Rows ||
                                        neighborCol < 0 || neighborCol >= group.Columns;
+                    // A Doorway facing a hole cell (in-bounds but no real member there) is also a
+                    // perimeter opening -- the hole isn't another real member that could receive/match
+                    // an interior Doorway edge, so this must face outward like any true perimeter edge.
+                    var isPerimeter = outOfBounds || IsHole(group, neighborRow, neighborCol);
                     if (isPerimeter)
                         perimeterDoorways.Add((member.LocalRow, member.LocalCol, slot));
                 }
@@ -314,8 +331,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// layout's open terrain, a fence-run gate: FenceDoor01/02, Interior/ExteriorFenceDoor) before
         /// Bridge (this layout's accent/channel terrain, a gate spliced into a
         /// LayoutAccentChannelCarver span: tdt01 BridgeDoor, tds01/vmr01 BridgeDoor01).
+        ///
+        /// A fifth, structurally distinct case is tried last: an all-solid, opposite-Doorway-PAIR tile
+        /// (e.g. tdt01 "Door_Trans" TILE151 -- a pass-through doorway segment, not a room/tunnel
+        /// junction opening) can splice into a straight Corridor run too, but unlike the four crosser
+        /// gates above it can never match an existing chain cell directly (the chain's own crosser is
+        /// "Corridor", not "Doorway") -- see TryPlaceCorridorInsert's Doorway branch, which rewrites the
+        /// two flanking plan edges to Doorway so the flanking cells re-key to the tileset's own
+        /// solid-corner Corridor/Doorway adapter tile at ordinary resolution time. Gated on
+        /// HasCorridorDoorwayAdapter so a tileset lacking that adapter tile never enables an insert that
+        /// could leave the flanking cells unresolvable.
         /// </summary>
-        private static bool TryClassifyCorridorInsert(TileRecord tile, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
+        private static bool TryClassifyCorridorInsert(TilesetModel tileset, TileRecord tile, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
         {
             classified = null;
 
@@ -369,6 +396,76 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     InsertCrosser = crosser
                 };
                 return true;
+            }
+
+            // Doorway-pair straight-segment insert (see this method's doc comment). Solid corners
+            // only -- a pass-through doorway segment is always a wall-embedded shape, never an open-
+            // terrain or accent-terrain one.
+            if (allSolid)
+            {
+                var hasDoorwayEdge = new bool[4];
+                var edgesAreDoorwayOnly = true;
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    var edge = tile.Edges[slot] ?? string.Empty;
+                    if (edge.Length == 0) continue;
+                    if (!Eq(edge, DoorwayCrosser)) { edgesAreDoorwayOnly = false; break; }
+                    hasDoorwayEdge[slot] = true;
+                }
+
+                var isVerticalDoorwayPair = hasDoorwayEdge[EdgeSlot.Top] && hasDoorwayEdge[EdgeSlot.Bottom] &&
+                                             !hasDoorwayEdge[EdgeSlot.Left] && !hasDoorwayEdge[EdgeSlot.Right];
+                var isHorizontalDoorwayPair = hasDoorwayEdge[EdgeSlot.Left] && hasDoorwayEdge[EdgeSlot.Right] &&
+                                               !hasDoorwayEdge[EdgeSlot.Top] && !hasDoorwayEdge[EdgeSlot.Bottom];
+
+                if (edgesAreDoorwayOnly && (isVerticalDoorwayPair || isHorizontalDoorwayPair) &&
+                    HasCorridorDoorwayAdapter(tileset, parameters))
+                {
+                    classified = new ClassifiedGroup
+                    {
+                        Group = group,
+                        Members = new List<GroupMember> { new GroupMember { LocalRow = 0, LocalCol = 0, Tile = tile } },
+                        Kind = GroupKind.CorridorInsert,
+                        PerimeterDoorways = new List<(int, int, int)>(),
+                        InsertCrosser = DoorwayCrosser
+                    };
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// True when the tileset carries at least one flat, all-solid-corner tile with exactly one
+        /// Corridor edge and its opposite edge Doorway (the other two blank) -- the corridor-to-doorway
+        /// adapter a Doorway-pair CorridorInsert's flanking cells must re-key to once their shared edge
+        /// is rewritten from Corridor to Doorway (see TryPlaceCorridorInsert's Doorway branch). Verified
+        /// present in tdt01 (TILE46), tds01 (TILE47), zsf01 (TILE20), and vmr01 (TILE45); checked here
+        /// rather than assumed so a future tileset lacking it never enables an unplaceable splice.
+        /// </summary>
+        private static bool HasCorridorDoorwayAdapter(TilesetModel tileset, MacroLayoutParameters parameters)
+        {
+            foreach (var candidate in tileset.Tiles)
+            {
+                if (candidate.CornerHeights[0] != 0 || candidate.CornerHeights[1] != 0 ||
+                    candidate.CornerHeights[2] != 0 || candidate.CornerHeights[3] != 0) continue; // raised
+                if (!candidate.Corners.All(c => Eq(c, parameters.SolidTerrain))) continue;
+
+                var corridorSlot = -1;
+                var doorwaySlot = -1;
+                var onlyThoseTwo = true;
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    var edge = candidate.Edges[slot] ?? string.Empty;
+                    if (edge.Length == 0) continue;
+                    if (Eq(edge, CorridorCrosser)) corridorSlot = slot;
+                    else if (Eq(edge, DoorwayCrosser)) doorwaySlot = slot;
+                    else { onlyThoseTwo = false; break; }
+                }
+
+                if (!onlyThoseTwo || corridorSlot == -1 || doorwaySlot == -1) continue;
+                if (Math.Abs(corridorSlot - doorwaySlot) == 2) return true; // opposite pair
             }
 
             return false;
@@ -438,6 +535,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         {
             var tile = classified.Members[0].Tile;
             var crosser = classified.InsertCrosser;
+
+            if (Eq(crosser, DoorwayCrosser))
+                return TryPlaceDoorwayCorridorInsert(layout, parameters, tile, random);
+
             var corners = layout.Corners;
             var crossers = layout.Crossers;
             var width = corners.Width;
@@ -516,6 +617,114 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var isHorizontal = Eq(left, crosser) && Eq(right, crosser) && top.Length == 0 && bottom.Length == 0;
 
             return isVertical || isHorizontal;
+        }
+
+        /// <summary>
+        /// Places a Doorway-pair CorridorInsert (e.g. tdt01 "Door_Trans"): finds a straight Corridor
+        /// chain cell whose two immediate flanking cells (in the pair's axis) are themselves plain,
+        /// unpinned, non-transition straight-segment cells (their far edge stays Corridor, their other
+        /// two edges blank -- a mid-run cell, never a junction or room port), pins the insert tile at
+        /// the aligned orientation, and rewrites the insert cell's own two Doorway-axis crosser edges
+        /// from Corridor to Doorway. Because EdgeCrosserGrid stores one value per SHARED edge (see its
+        /// doc comment), writing the insert cell's Top/Bottom (or Left/Right) edges simultaneously
+        /// rewrites the two flanking cells' facing edges too, while their OUTWARD edges (toward the
+        /// rest of the chain) are untouched -- so at ordinary TileResolver resolution time each
+        /// flanking cell naturally re-keys to the tileset's own solid-corner Corridor/Doorway adapter
+        /// tile (existence verified once at classify time by HasCorridorDoorwayAdapter). The flanking
+        /// cells are never pinned or otherwise written here; TileDoorPlanner runs afterward and already
+        /// skips any cell carrying a crosser edge, so it never contests this splice.
+        /// </summary>
+        private static bool TryPlaceDoorwayCorridorInsert(
+            MacroLayout layout, MacroLayoutParameters parameters, TileRecord tile, System.Random random)
+        {
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+            var width = corners.Width;
+            var height = corners.Height;
+
+            var transitionTiles = new HashSet<(int X, int Y)>(layout.Transitions.Select(t => t.Tile));
+            var candidates = new List<(int X, int Y)>();
+
+            for (var y = 0; y < height; y++)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    var cell = (X: x, Y: y);
+                    if (layout.PinnedTiles.ContainsKey(cell)) continue;
+                    if (transitionTiles.Contains(cell)) continue;
+                    if (!IsFullySolidCell(corners, cell, parameters.SolidTerrain)) continue;
+                    if (!IsStraightCorridorCell(crossers, cell, CorridorCrosser, out var isVertical)) continue;
+
+                    var (dxA, dyA) = isVertical ? (0, 1) : (1, 0); // Top or Right direction
+                    var neighborA = (X: cell.X + dxA, Y: cell.Y + dyA);
+                    var neighborB = (X: cell.X - dxA, Y: cell.Y - dyA);
+
+                    if (!IsValidFlankingChainCell(layout, parameters, neighborA, isVertical, transitionTiles)) continue;
+                    if (!IsValidFlankingChainCell(layout, parameters, neighborB, isVertical, transitionTiles)) continue;
+
+                    candidates.Add(cell);
+                }
+            }
+
+            Shuffle(candidates, random);
+
+            foreach (var cell in candidates)
+            {
+                IsStraightCorridorCell(crossers, cell, CorridorCrosser, out var isVertical);
+
+                for (var orientation = 0; orientation < 4; orientation++)
+                {
+                    var oTop = tile.GetEdgeAt(orientation, EdgeSlot.Top);
+                    var oRight = tile.GetEdgeAt(orientation, EdgeSlot.Right);
+                    var oBottom = tile.GetEdgeAt(orientation, EdgeSlot.Bottom);
+                    var oLeft = tile.GetEdgeAt(orientation, EdgeSlot.Left);
+
+                    var matches = isVertical
+                        ? Eq(oTop, DoorwayCrosser) && Eq(oBottom, DoorwayCrosser) && (oLeft ?? "").Length == 0 && (oRight ?? "").Length == 0
+                        : Eq(oLeft, DoorwayCrosser) && Eq(oRight, DoorwayCrosser) && (oTop ?? "").Length == 0 && (oBottom ?? "").Length == 0;
+
+                    if (!matches) continue;
+
+                    if (isVertical)
+                    {
+                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Top, DoorwayCrosser);
+                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Bottom, DoorwayCrosser);
+                    }
+                    else
+                    {
+                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Left, DoorwayCrosser);
+                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Right, DoorwayCrosser);
+                    }
+
+                    layout.PinnedTiles[cell] = (tile.TileId, orientation);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// True when <paramref name="neighbor"/> is a legal Doorway-pair-insert flank: in bounds, not
+        /// already pinned, not a transition anchor, fully solid, and itself a pure straight Corridor
+        /// segment on the SAME axis as the candidate insert cell (its far edge keeps Corridor, its
+        /// other two edges stay blank) -- never a dead end, junction, or perpendicular chain cell,
+        /// which would mean the splice sits at a joint rather than mid-run.
+        /// </summary>
+        private static bool IsValidFlankingChainCell(
+            MacroLayout layout, MacroLayoutParameters parameters, (int X, int Y) neighbor, bool axisIsVertical,
+            HashSet<(int X, int Y)> transitionTiles)
+        {
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+
+            if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.X >= corners.Width || neighbor.Y >= corners.Height) return false;
+            if (layout.PinnedTiles.ContainsKey(neighbor)) return false;
+            if (transitionTiles.Contains(neighbor)) return false;
+            if (!IsFullySolidCell(corners, neighbor, parameters.SolidTerrain)) return false;
+
+            return IsStraightCorridorCell(crossers, neighbor, CorridorCrosser, out var neighborIsVertical) &&
+                   neighborIsVertical == axisIsVertical;
         }
 
         // ---------------- CorridorStub ----------------
@@ -662,6 +871,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
                     if (layout.PinnedTiles.ContainsKey(cell)) return false;
                     if (transitionTiles.Contains(cell)) return false;
+                    // A hole slot is ordinary plan space, not a real member -- it carries no solidity
+                    // or crosser-free requirement of its own (see TryClassify's hole handling).
+                    if (IsHole(group, r, c)) continue;
                     if (!IsFullySolidCell(corners, cell, parameters.SolidTerrain)) return false;
 
                     for (var slot = 0; slot < 4; slot++)
@@ -783,6 +995,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
                     if (layout.PinnedTiles.ContainsKey(cell)) return false;
                     if (transitionTiles.Contains(cell)) return false;
+                    // A hole slot is ordinary plan space, not a real member -- it carries no solidity
+                    // or crosser-free requirement of its own (see TryClassify's hole handling).
+                    if (IsHole(group, r, c)) continue;
                     if (!IsFullySolidCell(corners, cell, parameters.SolidTerrain)) return false;
 
                     for (var slot = 0; slot < 4; slot++)
@@ -965,6 +1180,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                    Eq(corners.Labels[cell.X + 1, cell.Y], terrain) ||
                    Eq(corners.Labels[cell.X, cell.Y + 1], terrain) ||
                    Eq(corners.Labels[cell.X + 1, cell.Y + 1], terrain);
+        }
+
+        /// <summary>True when the group's (row, col) local slot is a -1 hole (no real tile there) rather than a real member.</summary>
+        private static bool IsHole(TileGroupRecord group, int row, int col)
+        {
+            return group.TileIds[row * group.Columns + col] < 0;
         }
 
         private static bool Eq(string a, string b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.OrdinalIgnoreCase);

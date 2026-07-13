@@ -33,6 +33,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FeatureTile("Hot_Springs")
                 .SetPiece("Platform01_2x3")
                 .SetPiece("Platform02_2x2")
+                // L-shaped 2x2 with a hole (TileIds contains -1): LayoutGroupStamper's OpenSetPiece
+                // classifier now tolerates a hole slot as ordinary plan space, not a real member (see
+                // TryClassify's hole handling) -- all three real members are Floor-cornered, matching
+                // the primary OpenSetPiece rule the same way Platform01/02 do.
+                .SetPiece("Platform03_2x2")
                 .SetPiece("Pillar_1x2", 2)
                 .SetPiece("WallSection01_1x2")
                 .SetPiece("WallSection02_1x2")
@@ -42,6 +47,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // Water channel span (LayoutAccentChannelCarver, active by default via Organic's
                 // AccentChannels — see StandardLayoutProfiles.Organic).
                 .SetPiece("BridgeDoor", 1)
+                // Doorway-pair pass-through segment: LayoutGroupStamper's CorridorInsert classifier
+                // splices this into a straight Corridor chain by rewriting the two flanking plan edges
+                // to Doorway (see TryPlaceCorridorInsert's Doorway branch); a no-op under Cavern's
+                // default OpenLane (Organic) pairing, exercisable via Complex (Tunnel mode).
+                .SetPiece("Door_Trans", 1)
                 // Corridor-terminal stairs: LayoutGroupStamper's CorridorStub classifier splices these
                 // onto an existing Tunnel-mode chain as a dead-end cap; a no-op under Cavern's default
                 // OpenLane (Organic) pairing, exercisable via Complex (Tunnel mode).
@@ -70,6 +80,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FeatureTile("Camp")
                 .SetPiece("Platform01_2x2")
                 .SetPiece("Platform02_2x2")
+                // L-shaped 2x2 with a hole (TileIds contains -1): see tdt01's Platform03_2x2 note above.
+                .SetPiece("Platform03_2x2")
                 .SetPiece("Pillar_1x2", 2)
                 .SetPiece("WallSection01_2x1")
                 .SetPiece("WallSection02_2x1")

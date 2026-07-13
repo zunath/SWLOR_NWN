@@ -106,6 +106,14 @@ public class FeatureTileTests
             TileResolver.TryResolve(model, macro, rng, out var resolved, out var reason).Should().BeTrue(reason);
 
             var transitionCells = new HashSet<(int X, int Y)>(resolved.Transitions.Select(t => t.Tile));
+
+            // TileDoorPlanner (DoorTransitions defaults true and isn't disabled by this test) may
+            // substitute a solid-side terminator tile at a transition's DoorCell -- since Fix A, a
+            // terminator candidate may be a grouped tile (e.g. vmr01/tds01 "Door_Trans"), so a
+            // GroupIndex != -1 tile can legitimately sit on solid ground there. Exclude those cells
+            // from feature classification below; they are door substitutions, not sprinkled features.
+            var doorSubstitutionCells = new HashSet<(int X, int Y)>(
+                resolved.Transitions.Where(t => t.Style != TransitionStyle.Placeable).Select(t => t.DoorCell));
             var featureCells = new List<(int X, int Y)>();
 
             for (var y = 0; y < resolved.Height; y++)
@@ -116,8 +124,10 @@ public class FeatureTileTests
                     var record = tilesById[tile.TileId];
 
                     // Only feature-configured groups ever register with the resolver, so any group
-                    // tile (GroupIndex != -1) showing up in the resolved output is a placed feature.
+                    // tile (GroupIndex != -1) showing up in the resolved output is a placed feature --
+                    // except a TileDoorPlanner terminator substitution, excluded above.
                     if (record.GroupIndex == -1) continue;
+                    if (doorSubstitutionCells.Contains((x, y))) continue;
 
                     featureCells.Add((x, y));
                     CellFullyOpen(macro, x, y).Should().BeTrue(

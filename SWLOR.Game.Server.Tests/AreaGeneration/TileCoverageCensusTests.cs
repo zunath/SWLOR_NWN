@@ -135,15 +135,26 @@ public class TileCoverageCensusTests
 
     /// <summary>Mirrors TileDoorPlanner's TryGetSingleDoorwaySlot + door-slot requirement, covering both
     /// its room-edge pool (any corner pattern) and terminator pool (all-solid corners) uniformly: a
-    /// flat, ungrouped, door-bearing tile with exactly one rotated Doorway edge (the other three blank)
-    /// is reachable at SOME real room boundary, since boundary corner patterns are produced freely by
+    /// flat, door-bearing tile with exactly one rotated Doorway edge (the other three blank) is
+    /// reachable at SOME real room boundary, since boundary corner patterns are produced freely by
     /// every layout style and TileDoorPlanner's room-edge candidates are keyed purely by corner pattern
-    /// with no restriction of their own.</summary>
-    private static bool IsDoorTransitionReachable(TileRecord tile)
+    /// with no restriction of their own.
+    ///
+    /// A grouped tile only qualifies via the terminator pool (BuildTerminatorCandidates' post-Fix-A
+    /// IsSingleCellGroup tolerance -- see TileDoorPlanner): its own group must be a trivial 1x1 entry
+    /// AND its corners must be all-solid (the room-edge pool stays ungrouped-only regardless of
+    /// corner pattern).</summary>
+    private static bool IsDoorTransitionReachable(TilesetModel model, TileRecord tile)
     {
-        if (tile.GroupIndex != -1) return false;
         if (!IsFlat(tile)) return false;
         if (tile.Doors.Count == 0) return false;
+
+        if (tile.GroupIndex != -1)
+        {
+            var group = model.Groups[tile.GroupIndex];
+            if (group.Rows != 1 || group.Columns != 1) return false;
+            if (!tile.Corners.All(c => Eq(c, model.DefaultTerrain))) return false;
+        }
 
         for (var orientation = 0; orientation < 4; orientation++)
         {
@@ -207,8 +218,9 @@ public class TileCoverageCensusTests
     private static readonly (int Dx, int Dy)[] SlotOffsets = { (0, 1), (1, 0), (0, -1), (-1, 0) };
 
     /// <summary>Mirrors LayoutGroupStamper.TryClassifyCorridorInsert (Corridor/Alley/Fence/Bridge
-    /// opposite-pair 1x1 dead-straight gate).</summary>
-    private static bool IsCorridorInsertEligible(TileRecord tile, TilesetVocabulary vocab)
+    /// opposite-pair 1x1 dead-straight gate, plus the Doorway-pair pass-through-segment branch --
+    /// see IsDoorwayPairCorridorInsertEligible).</summary>
+    private static bool IsCorridorInsertEligible(TilesetModel model, TileRecord tile, TilesetVocabulary vocab)
     {
         if (!IsFlat(tile)) return false;
 
@@ -248,6 +260,62 @@ public class TileCoverageCensusTests
             if (isVerticalPair || isHorizontalPair) return true;
         }
 
+        if (allSolid && IsDoorwayPairCorridorInsertEligible(model, tile, vocab)) return true;
+
+        return false;
+    }
+
+    /// <summary>Mirrors LayoutGroupStamper.TryClassifyCorridorInsert's Doorway-pair branch (e.g. tdt01
+    /// "Door_Trans" TILE151): an all-solid tile with an opposite Doorway edge pair, gated on the
+    /// tileset carrying a genuine solid-corner Corridor/Doorway adapter tile (mirrors
+    /// LayoutGroupStamper.HasCorridorDoorwayAdapter) so a tileset lacking that adapter never counts
+    /// this shape as reachable.</summary>
+    private static bool IsDoorwayPairCorridorInsertEligible(TilesetModel model, TileRecord tile, TilesetVocabulary vocab)
+    {
+        var hasDoorway = new bool[4];
+        var doorwayOnly = true;
+        for (var slot = 0; slot < 4; slot++)
+        {
+            var edge = tile.Edges[slot] ?? string.Empty;
+            if (edge.Length == 0) continue;
+            if (!IsDoorway(edge)) { doorwayOnly = false; break; }
+            hasDoorway[slot] = true;
+        }
+        if (!doorwayOnly) return false;
+
+        var isVerticalPair = hasDoorway[EdgeSlot.Top] && hasDoorway[EdgeSlot.Bottom] && !hasDoorway[EdgeSlot.Left] && !hasDoorway[EdgeSlot.Right];
+        var isHorizontalPair = hasDoorway[EdgeSlot.Left] && hasDoorway[EdgeSlot.Right] && !hasDoorway[EdgeSlot.Top] && !hasDoorway[EdgeSlot.Bottom];
+        if (!isVerticalPair && !isHorizontalPair) return false;
+
+        return HasCorridorDoorwayAdapter(model, vocab);
+    }
+
+    /// <summary>True when the tileset carries at least one flat, all-solid-corner tile with exactly
+    /// one Corridor edge and its opposite edge Doorway (the other two blank) -- mirrors
+    /// LayoutGroupStamper.HasCorridorDoorwayAdapter.</summary>
+    private static bool HasCorridorDoorwayAdapter(TilesetModel model, TilesetVocabulary vocab)
+    {
+        foreach (var candidate in model.Tiles)
+        {
+            if (!IsFlat(candidate)) continue;
+            if (!candidate.Corners.All(c => Eq(c, vocab.Solid))) continue;
+
+            var corridorSlot = -1;
+            var doorwaySlot = -1;
+            var onlyThoseTwo = true;
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var edge = candidate.Edges[slot] ?? string.Empty;
+                if (edge.Length == 0) continue;
+                if (Eq(edge, CorridorCrosser)) corridorSlot = slot;
+                else if (IsDoorway(edge)) doorwaySlot = slot;
+                else { onlyThoseTwo = false; break; }
+            }
+
+            if (!onlyThoseTwo || corridorSlot == -1 || doorwaySlot == -1) continue;
+            if (Math.Abs(corridorSlot - doorwaySlot) == 2) return true;
+        }
+
         return false;
     }
 
@@ -277,7 +345,9 @@ public class TileCoverageCensusTests
 
     /// <summary>Mirrors LayoutGroupStamper.TryClassify's WallRoom/WallAlcove/OpenSetPiece branch (the
     /// multi-tile — and, for OpenSetPiece, also 1x1 — path taken once CorridorInsert/CorridorStub have
-    /// been ruled out).</summary>
+    /// been ruled out). Tolerates a -1 hole slot (e.g. tdt01/tds01 "Platform03_2x2") as ordinary plan
+    /// space, not a real member -- every classification decision below is derived only from `members`,
+    /// mirroring LayoutGroupStamper.TryClassify's hole handling.</summary>
     private static GroupMechanism ClassifyMultiTileSetPiece(TilesetModel model, TileGroupRecord group, TilesetVocabulary vocab)
     {
         if (group.Rows <= 0 || group.Columns <= 0) return GroupMechanism.None;
@@ -286,7 +356,8 @@ public class TileCoverageCensusTests
         var members = new List<TileRecord>();
         foreach (var tileId in group.TileIds)
         {
-            if (tileId < 0 || tileId >= model.Tiles.Count) return GroupMechanism.None; // hole
+            if (tileId < 0) continue; // hole
+            if (tileId >= model.Tiles.Count) return GroupMechanism.None; // out of range -- bad data
             var tile = model.Tiles[tileId];
             if (!IsFlat(tile)) return GroupMechanism.None;
             foreach (var edge in tile.Edges)
@@ -295,6 +366,7 @@ public class TileCoverageCensusTests
             }
             members.Add(tile);
         }
+        if (members.Count == 0) return GroupMechanism.None; // an all-hole "group" is degenerate
 
         var hasAnyDoorway = members.Any(m => m.Edges.Any(e => Eq(e, DoorwayCrosser)));
         var allCornersSolid = members.All(m => m.Corners.All(c => Eq(c, vocab.Solid)));
@@ -331,7 +403,7 @@ public class TileCoverageCensusTests
             if (soloTileId >= 0 && soloTileId < model.Tiles.Count)
             {
                 var soloTile = model.Tiles[soloTileId];
-                if (IsCorridorInsertEligible(soloTile, vocab)) return GroupMechanism.SetPieceCorridorInsert;
+                if (IsCorridorInsertEligible(model, soloTile, vocab)) return GroupMechanism.SetPieceCorridorInsert;
                 if (IsCorridorStubEligible(soloTile, vocab)) return GroupMechanism.SetPieceCorridorStub;
             }
         }
@@ -351,36 +423,21 @@ public class TileCoverageCensusTests
     /// <summary>
     /// The EXACT, named exemption set (asserted as a full set, not a subset): every tile in every
     /// tileset that this census could not structurally place into a mechanism, with a one-line reason.
-    /// Keep this empty or as small as possible -- see the class doc comment.
+    ///
+    /// This is EMPTY: true 100% tile coverage across all four generation tilesets. The three
+    /// mechanisms that used to leave 10 tiles exempted were closed by:
+    /// (A) TileDoorPlanner.BuildTerminatorCandidates tolerating a trivial 1x1 [GROUP]-wrapped
+    ///     terminator tile (tds01 "Door_Trans" TILE174, vmr01 "Door_Trans"/"Door_Trans_Exterior"
+    ///     TILE152/60) -- see IsSingleCellGroup and IsDoorTransitionReachable's grouped-tile branch.
+    /// (B) LayoutGroupStamper.TryClassifyCorridorInsert/TryPlaceCorridorInsert adding a Doorway-pair
+    ///     branch (tdt01 "Door_Trans" TILE151, an opposite-Doorway-edge pass-through segment) that
+    ///     splices into a straight Corridor chain by rewriting the two flanking plan edges to Doorway
+    ///     -- see IsDoorwayPairCorridorInsertEligible/HasCorridorDoorwayAdapter.
+    /// (C) LayoutGroupStamper.TryClassify/site-validation tolerating a -1 hole slot in a group's
+    ///     rectangular footprint (tdt01/tds01 "Platform03_2x2") as ordinary plan space rather than
+    ///     rejecting the whole group -- see ClassifyMultiTileSetPiece's hole handling.
     /// </summary>
-    private static readonly HashSet<(string Tileset, string Label)> ExpectedExemptions = new()
-    {
-        // vmr01 "Door_Trans" (tile 152) / "Door_Trans_Exterior" (tile 60): a single-Doorway-edge,
-        // all-Wall-cornered, 1-door wall segment INSIDE a [GROUP] -- structurally identical to a
-        // TileDoorPlanner terminator, but TileDoorPlanner's candidate scan deliberately excludes every
-        // grouped tile (GroupIndex != -1) so it never fights LayoutGroupStamper for the same cells; no
-        // shipped mechanism reaches into a group's own member tile that way. tdt01's "Door_Trans"
-        // (tile 151) additionally carries an opposite Doorway PAIR (Left+Right) that no shipped
-        // Tunnel-mode carver ever produces as a stand-alone straight segment (Doorway edges are only
-        // ever written as a single edge at a room/tunnel junction, never as a carved straight chain the
-        // way Corridor/Alley/Fence/Bridge are) -- extending CorridorInsert to a fourth, structurally
-        // unverified crosser-pair vocabulary was judged too high-risk for this pass.
-        ("tdt01", "GROUP:Door_Trans"),
-        ("tds01", "GROUP:Door_Trans"),
-        ("vmr01", "GROUP:Door_Trans"),
-        ("vmr01", "GROUP:Door_Trans_Exterior"),
-
-        // tdt01/tds01 "Platform03_2x2": an L-shaped 2x2 group with a HOLE (one Tile slot is -1, no
-        // physical tile there at all). Every shipped set-piece kind (WallRoom/WallAlcove/OpenSetPiece/
-        // CorridorInsert/CorridorStub) requires a complete Rows x Columns rectangle with a real tile in
-        // every slot -- LayoutGroupStamper.TryClassify rejects any group with a -1 member outright, the
-        // same rule every other 2x2/2x3 set piece in these tilesets already relies on for its own
-        // rectangular footprint. Supporting a non-rectangular footprint would need new stamping/site-
-        // validation math (partial corner/edge writes, an irregular margin shape) -- real, unverified
-        // new engineering out of scope for this pass.
-        ("tdt01", "GROUP:Platform03_2x2"),
-        ("tds01", "GROUP:Platform03_2x2"),
-    };
+    private static readonly HashSet<(string Tileset, string Label)> ExpectedExemptions = new();
 
     public static IEnumerable<string> TilesetKeys => new[] { "tdt01", "tds01", "zsf01", "vmr01" };
 
@@ -432,9 +489,10 @@ public class TileCoverageCensusTests
                     exemptions.Add(new Exemption { Tileset = tilesetResref, TileOrGroup = $"TILE{id} (group '{group.Name}')", Reason = "see ExpectedExemptions doc comment" });
             }
             // Groups that neither classify nor carry a pre-declared exemption fall through: their
-            // member tiles are re-evaluated as plain tiles below (harmless -- GroupIndex != -1 makes
-            // both ungrouped-tile checks return false, so an uncovered, unexempted member surfaces as
-            // a genuine failure in the final assertion instead of being silently swallowed here).
+            // member tiles are re-evaluated as plain tiles below. IsCornerEdgeResolverReachable always
+            // returns false for a grouped tile, but IsDoorTransitionReachable now tolerates a trivial
+            // 1x1 all-solid group member (Fix A) -- an uncovered, unexempted member still surfaces as
+            // a genuine failure in the final assertion instead of being silently swallowed here.
         }
 
         // Pass 2: every remaining (ungrouped, or grouped-but-unclassified-and-unexempted) tile.
@@ -446,14 +504,14 @@ public class TileCoverageCensusTests
             var tile = model.Tiles[tileId];
 
             if (IsCornerEdgeResolverReachable(model, tile)) { Cover(tileId, "CornerEdgeResolver"); continue; }
-            if (IsDoorTransitionReachable(tile)) { Cover(tileId, "DoorTransition"); continue; }
+            if (IsDoorTransitionReachable(model, tile)) { Cover(tileId, "DoorTransition"); continue; }
 
             exemptions.Add(new Exemption { Tileset = tilesetResref, TileOrGroup = $"TILE{tileId}", Reason = "UNCLASSIFIED" });
         }
 
         // ---- report ----
-        TestContext.WriteLine($"=== {tilesetResref} ({profileKey}) coverage ===");
-        TestContext.WriteLine($"Total tiles: {model.Tiles.Count}");
+        var coveragePercent = model.Tiles.Count == 0 ? 100.0 : 100.0 * coveredTileIds.Count / model.Tiles.Count;
+        TestContext.WriteLine($"=== {tilesetResref} ({profileKey}) coverage: {coveredTileIds.Count}/{model.Tiles.Count} ({coveragePercent:0.0}%) ===");
         foreach (var kv in mechanismCounts.OrderByDescending(k => k.Value))
             TestContext.WriteLine($"  {kv.Key,-24} {kv.Value,4} tiles");
         TestContext.WriteLine($"  {"Exempted",-24} {exemptions.Count,4} tiles");
@@ -461,6 +519,11 @@ public class TileCoverageCensusTests
             TestContext.WriteLine($"    {e.TileOrGroup}: {e.Reason}");
 
         // ---- assertions ----
+        // The exemption set is EMPTY across all four tilesets (true 100% coverage) -- asserted
+        // directly here as well as via the exact set-equality check below, so a future regression
+        // (a new tile, a shape a mechanism no longer covers) fails loudly in either place.
+        ExpectedExemptions.Should().BeEmpty("100% tile coverage means zero exemptions across all four tilesets");
+
         var unclassified = exemptions.Where(e => e.Reason == "UNCLASSIFIED").Select(e => e.TileOrGroup).ToList();
         unclassified.Should().BeEmpty($"every {tilesetResref} tile must be either reachable or carry a pre-declared, reasoned exemption");
 
@@ -474,7 +537,9 @@ public class TileCoverageCensusTests
 
         actualExemptionLabels.Should().BeEquivalentTo(expectedLabelsForThisTileset,
             $"the {tilesetResref} exemption set must be EXACT -- any drift must be visible here, not silently absorbed");
+        actualExemptionLabels.Should().BeEmpty($"the {tilesetResref} exemption set must be empty -- true 100% coverage");
 
         (coveredTileIds.Count + exemptions.Count).Should().Be(model.Tiles.Count);
+        coveredTileIds.Count.Should().Be(model.Tiles.Count, $"{tilesetResref} must reach 100% tile coverage ({model.Tiles.Count}/{model.Tiles.Count})");
     }
 }

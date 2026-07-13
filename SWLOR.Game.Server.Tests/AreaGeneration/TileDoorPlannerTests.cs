@@ -149,6 +149,166 @@ public class TileDoorPlannerTests
         doorCount.Should().BeGreaterThan(0, "door-capable tilesets should substitute at least some doors across this sweep");
     }
 
+    // ---------------- Grouped terminator tolerance (Fix A: tds01/vmr01 "Door_Trans"/"Door_Trans_Exterior") ----------------
+
+    /// <summary>
+    /// Structural check mirroring TileDoorPlanner.BuildTerminatorCandidates' post-Fix-A rule: a
+    /// tile wrapped in a trivial 1x1 [GROUPn] entry, flat, all-solid-cornered, with at least one
+    /// rotation carrying exactly one Doorway edge, registers as a terminator candidate exactly like
+    /// an ungrouped tile would. Duplicated here (rather than reaching into TileDoorPlanner's
+    /// internals) per this file's existing convention.
+    /// </summary>
+    [TestCase("tds01", "sw_t_sewer", "tds01.set", 174)]
+    [TestCase("vmr01", "sw_t_alienruin", "vmr01.set", 152)]
+    [TestCase("vmr01", "sw_t_alienruin", "vmr01.set", 60)]
+    public void GroupedTerminator_StructurallyEligibleUnderNewGroupTolerance(string resref, string hak, string setFile, int tileId)
+    {
+        var model = LoadTileset(resref, hak, setFile);
+        var tile = model.Tiles[tileId];
+
+        tile.GroupIndex.Should().NotBe(-1, $"{resref} TILE{tileId} is expected to be group-wrapped -- exactly the case Fix A tolerates");
+        var group = model.Groups[tile.GroupIndex];
+        group.Rows.Should().Be(1);
+        group.Columns.Should().Be(1);
+
+        tile.CornerHeights.Should().OnlyContain(h => h == 0);
+        tile.Corners.Should().OnlyContain(c => string.Equals(c, model.DefaultTerrain, StringComparison.OrdinalIgnoreCase));
+
+        var doorwayOnlyOrientations = 0;
+        for (var orientation = 0; orientation < 4; orientation++)
+        {
+            var doorwayCount = 0;
+            var disqualified = false;
+            for (var slot = 0; slot < 4; slot++)
+            {
+                var edge = tile.GetEdgeAt(orientation, slot);
+                if (string.Equals(edge, "Doorway", StringComparison.OrdinalIgnoreCase)) doorwayCount++;
+                else if (!string.IsNullOrEmpty(edge)) disqualified = true;
+            }
+            if (!disqualified && doorwayCount == 1) doorwayOnlyOrientations++;
+        }
+
+        doorwayOnlyOrientations.Should().BeGreaterThan(0,
+            $"{resref} TILE{tileId} must have at least one orientation with exactly one Doorway edge to register as a terminator candidate");
+    }
+
+    /// <summary>
+    /// vmr01 has real ungrouped terminator competitors too, but TILE152/60 win the deterministic
+    /// "smallest TileId per facing direction" pick often enough to observe directly across an
+    /// ordinary seed sweep (empirically ~1200+ hits per 900 attempts) -- so this asserts real,
+    /// unmodified end-to-end usage rather than falling back to a forced scenario.
+    /// </summary>
+    [Test]
+    public void GroupedTerminator_Vmr01_RealSeedSweepProducesAtLeastOneUsage()
+    {
+        var tileset = LoadTileset("vmr01", "sw_t_alienruin", "vmr01.set");
+        var groupedTerminatorIds = new HashSet<int> { 152, 60 };
+        var hits = 0;
+
+        foreach (var style in AllStyles)
+        {
+            for (var seed = 1; seed <= 20 && hits == 0; seed++)
+            {
+                var parameters = Parameters(style, tileset, entrances: 2, exits: 2, doorTransitions: true);
+                MacroLayout layout;
+                try { layout = MacroLayoutGenerator.Generate(parameters, new Random(seed)); }
+                catch (InvalidOperationException) { continue; }
+                layout.Seed = seed;
+
+                if (!TileResolver.TryResolve(tileset, layout, new Random(seed * 31 + 7), out var resolved, out _)) continue;
+
+                foreach (var t in resolved.Transitions)
+                {
+                    if (t.Style != TransitionStyle.Door) continue;
+                    var doorCellTile = resolved.GetTile(t.DoorCell.X, t.DoorCell.Y);
+                    if (groupedTerminatorIds.Contains(doorCellTile.TileId)) hits++;
+                }
+            }
+        }
+
+        hits.Should().BeGreaterThan(0, "vmr01 TILE152/60 should be selected as a real terminator at least once across the seed sweep");
+    }
+
+    /// <summary>
+    /// tds01 TILE174 ("Door_Trans") can never win TileDoorPlanner's deterministic "smallest TileId
+    /// per facing direction" terminator pick over TILE157 (an ungrouped terminator of the identical
+    /// shape with a smaller TileId, verified the sole competitor for all four directions) under
+    /// normal generation -- so real-usage occurrence is zero, not just rare. This forces the real
+    /// pipeline to pick TILE174 anyway by disqualifying a CLONED copy of TILE157 (raised corners,
+    /// so every flat-tile pool -- including BuildTerminatorCandidates -- rejects it), proving TILE174
+    /// really is wired into terminator selection end-to-end, not just structurally eligible per
+    /// GroupedTerminator_StructurallyEligibleUnderNewGroupTolerance above.
+    /// </summary>
+    [Test]
+    public void GroupedTerminator_Tds01_IsSelectedWhenItIsTheOnlyCandidate()
+    {
+        var baseModel = LoadTileset("tds01", "sw_t_sewer", "tds01.set");
+        var forcedModel = new TilesetModel
+        {
+            Resref = baseModel.Resref,
+            Name = baseModel.Name,
+            IsInterior = baseModel.IsInterior,
+            HasHeightTransition = baseModel.HasHeightTransition,
+            HeightTransition = baseModel.HeightTransition,
+            BorderTerrain = baseModel.BorderTerrain,
+            DefaultTerrain = baseModel.DefaultTerrain,
+            FloorTerrain = baseModel.FloorTerrain,
+            Terrains = baseModel.Terrains,
+            Crossers = baseModel.Crossers,
+            Tiles = baseModel.Tiles.Select(CloneTile).ToList(),
+            Groups = baseModel.Groups
+        };
+        // Raised corners disqualify TILE157 from every flat-tile pool (ordinary resolution, feature
+        // lookup, AND terminator candidates) in this isolated clone only -- the shared model other
+        // tests load is unaffected since LoadTileset re-parses the .set file fresh each call.
+        forcedModel.Tiles[157].CornerHeights = new[] { 1, 0, 0, 0 };
+
+        var found = false;
+        var context = string.Empty;
+
+        foreach (var style in AllStyles)
+        {
+            for (var seed = 1; seed <= 40 && !found; seed++)
+            {
+                var parameters = Parameters(style, forcedModel, entrances: 2, exits: 2, doorTransitions: true);
+                MacroLayout layout;
+                try { layout = MacroLayoutGenerator.Generate(parameters, new Random(seed)); }
+                catch (InvalidOperationException) { continue; }
+                layout.Seed = seed;
+
+                if (!TileResolver.TryResolve(forcedModel, layout, new Random(seed * 31 + 7), out var resolved, out _)) continue;
+
+                foreach (var t in resolved.Transitions)
+                {
+                    if (t.Style != TransitionStyle.Door) continue;
+                    var doorCellTile = resolved.GetTile(t.DoorCell.X, t.DoorCell.Y);
+                    if (doorCellTile.TileId == 174)
+                    {
+                        found = true;
+                        context = $"{style} seed {seed}";
+                        break;
+                    }
+                }
+            }
+        }
+
+        found.Should().BeTrue($"with TILE157 disqualified, TILE174 is the sole remaining terminator candidate for every direction; expected a hit, found at [{context}]");
+    }
+
+    private static TileRecord CloneTile(TileRecord t) => new()
+    {
+        TileId = t.TileId,
+        Model = t.Model,
+        WalkMesh = t.WalkMesh,
+        PathNode = t.PathNode,
+        ImageMap2D = t.ImageMap2D,
+        Corners = (string[])t.Corners.Clone(),
+        CornerHeights = (int[])t.CornerHeights.Clone(),
+        Edges = (string[])t.Edges.Clone(),
+        GroupIndex = t.GroupIndex,
+        Doors = t.Doors
+    };
+
     [Test]
     public void Zsf01_AllTransitionsStayPlaceable_GenerationStillSucceeds()
     {

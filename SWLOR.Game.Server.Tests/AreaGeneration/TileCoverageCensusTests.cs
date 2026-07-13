@@ -536,6 +536,24 @@ public class TileCoverageCensusTests
         ["tdc01"] = new(StringComparer.OrdinalIgnoreCase) { "GreyFloor", "GreyPit", "DwarvenFloor", "DwarvenPit" },
         ["tde01"] = new(StringComparer.OrdinalIgnoreCase) { "Water", "Sewer", "Ice", "Pit" },
         ["tin01"] = new(StringComparer.OrdinalIgnoreCase),
+        ["tbw01"] = new(StringComparer.OrdinalIgnoreCase),
+        // tdm01's hak copy carries three entire alternate-district palettes ([Desert]/[Organic]/[City])
+        // beyond the wired "[Cave]" family/accent -- see BaseGameTilesetProfiles.MinesAndCaverns.
+        ["tdm01"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Desert", "DesertWater", "DesertPit", "DesertLava",
+            "Organic", "OrganicWater", "OrganicPit", "OrganicSlime",
+            "CityWater", "CityCastle", "PADDING",
+            "GentleSlope", "GentleDesert", "GentleOrganic",
+        },
+        ["tdr01"] = new(StringComparer.OrdinalIgnoreCase) { "Plaza" },
+        ["tic01"] = new(StringComparer.OrdinalIgnoreCase) { "Storage", "Rich", "Library", "Jail", "Tower", "PADDING" },
+        ["tni02"] = new(StringComparer.OrdinalIgnoreCase) { "storage", "rich", "library", "jail", "round" },
+        ["tid01"] = new(StringComparer.OrdinalIgnoreCase) { "floor", "2x2", "PADDING" },
+        ["tii01"] = new(StringComparer.OrdinalIgnoreCase),
+        ["tni01"] = new(StringComparer.OrdinalIgnoreCase) { "livingroom", "kitchen", "shop" },
+        ["tsw01"] = new(StringComparer.OrdinalIgnoreCase),
+        ["twc03"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     /// <summary>
@@ -549,6 +567,20 @@ public class TileCoverageCensusTests
         ["tdc01"] = new(StringComparer.OrdinalIgnoreCase) { "GreyCorridor", "DwarvenDoorway", "DwarvenCorridor", "ChultDoorway", "ChultCorridor" },
         ["tde01"] = new(StringComparer.OrdinalIgnoreCase) { "MazeMosaic" },
         ["tin01"] = new(StringComparer.OrdinalIgnoreCase),
+        ["tbw01"] = new(StringComparer.OrdinalIgnoreCase) { "door_barrow", "door_corridor" },
+        ["tdm01"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Tracks", "DesertCorridor", "DesertTracks", "DesertFence",
+            "OrganicCorridor", "OrganicTracks", "CityFence",
+        },
+        ["tdr01"] = new(StringComparer.OrdinalIgnoreCase),
+        ["tic01"] = new(StringComparer.OrdinalIgnoreCase) { "Window", "MazeMosaic", "MazeMarble" },
+        ["tni02"] = new(StringComparer.OrdinalIgnoreCase),
+        ["tid01"] = new(StringComparer.OrdinalIgnoreCase) { "MazeMosaic" },
+        ["tii01"] = new(StringComparer.OrdinalIgnoreCase),
+        ["tni01"] = new(StringComparer.OrdinalIgnoreCase),
+        ["tsw01"] = new(StringComparer.OrdinalIgnoreCase),
+        ["twc03"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -583,9 +615,136 @@ public class TileCoverageCensusTests
         ("tin01", "GROUP:ShopRoom01_1x2"),
         ("tin01", "GROUP:ShopRoom02_1x2"),
         ("tin01", "GROUP:Bordello"),
+
+        // Barrows (tbw01): CorridorDown_1x2/Corridor_Up_1x2/Corridor_Up_1x2_02 are 1x2 multi-tile
+        // groups whose shared edge carries the canonical "corridor" (Corridor) crosser rather than
+        // Doorway -- ClassifyMultiTileSetPiece only tolerates Doorway edges on multi-tile members, so
+        // these don't classify despite using in-vocabulary crossers. TILE13/TILE51 are ungrouped tiles
+        // pairing a door slot with, respectively, a bare "corridor" crosser edge (not Doorway/Bridge,
+        // so IsCornerEdgeResolverReachable's crosser+door branch excludes it) and no crosser at all
+        // with partially-open corners (excluded by the "door implies TileDoorPlanner's inventory"
+        // rule, which requires a Doorway edge TileDoorPlanner never finds here) -- genuine authoring
+        // gaps, not currently reachable by any mechanism.
+        ("tbw01", "GROUP:CorridorDown_1x2"),
+        ("tbw01", "GROUP:Corridor_Up_1x2"),
+        ("tbw01", "GROUP:Corridor_Up_1x2_02"),
+        ("tbw01", "TILE13"),
+        ("tbw01", "TILE51"),
+
+        // Mines and Caverns (tdm01): "[Cave] Ship - Docked"/"[Cave] Docks (1x2)" don't structurally
+        // classify under any current mechanism (their corner/edge shapes don't match WallRoom/
+        // WallAlcove/OpenSetPiece/CorridorInsert/CorridorStub). "[Cave] Door - Bridge, Pit"/"Lava" are
+        // the same Bridge-gated door shape as the wired "[Cave] Door - Bridge, Water" but on the two
+        // unwired accent terrains (this profile's single AccentTerrain slot only wires Water) -- see
+        // BaseGameTilesetProfiles.MinesAndCaverns.
+        ("tdm01", "GROUP:[Cave] Ship - Docked"),
+        ("tdm01", "GROUP:[Cave] Docks (1x2)"),
+        ("tdm01", "GROUP:[Cave] Door - Bridge, Pit"),
+        ("tdm01", "GROUP:[Cave] Door - Bridge, Lava"),
+
+        // Castle Interior (tic01): every "Room - <Type> 1/2 (1x2)" door-entrance pair, the "Room -
+        // Storage, Empty (2x1)" pair, the Turret Interior Lit/Dark pair, and the Room - Bath 1/2 pair
+        // all pair a blank Wall tile with a tile carrying BOTH a Doorway edge crosser AND a door slot
+        // on the same tile -- the identical authoring gap as City Interior's own *Room01_1x2/
+        // *Room02_1x2 pilot exemptions (WallRoom classification excludes any door slot, and these
+        // aren't trivial 1x1 groups either).
+        ("tic01", "GROUP:[Castle] Room - Storage 1 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Storage 2 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Bedroom 1 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Bedroom 2 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Library 1 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Library 2 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Jail 1 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Jail 2 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Stone 1 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Stone 2 (1x2)"),
+        ("tic01", "GROUP:[Castle] Room - Storage, Empty (2x1)"),
+        ("tic01", "GROUP:[Castle] Turret Interior - Lit (2x1)"),
+        ("tic01", "GROUP:[Castle] Turret Interior - Dark (2x1)"),
+        ("tic01", "GROUP:[Castle] Room - Bath 1 (2x1)"),
+        ("tic01", "GROUP:[Castle] Room - Bath 2 (2x1)"),
+
+        // Castle Interior 2 (tni02): the same door-entrance-pair gap as Castle Interior, plus
+        // CollapsedRoom2x2 (doorway-shape-mismatch) and Mythallar_3x3 (a multi-tile group whose shared
+        // edges carry the canonical "corridor" crosser, same structural exclusion as Barrows' Corridor
+        // Down/Up 1x2 pairs).
+        ("tni02", "GROUP:StorageRoom01_1x2"),
+        ("tni02", "GROUP:StorageRoom02_1x2"),
+        ("tni02", "GROUP:Bedroom01_1x2"),
+        ("tni02", "GROUP:Bedroom02_1x2"),
+        ("tni02", "GROUP:LibraryRoom01_1x2"),
+        ("tni02", "GROUP:LibraryRoom02_1x2"),
+        ("tni02", "GROUP:JailRoom01_1x2"),
+        ("tni02", "GROUP:JailRoom02_1x2"),
+        ("tni02", "GROUP:StoneRoom01_1x2"),
+        ("tni02", "GROUP:StoneRoom02_1x2"),
+        ("tni02", "GROUP:CollapsedRoom2x2"),
+        ("tni02", "GROUP:Mythallar_3x3"),
+
+        // Illithid Interior (tii01): "Great Brain" (this tileset's signature centerpiece) and
+        // "Resting Pods" each carry a Doorway edge together with a door slot on the same member tile
+        // (doorway-shape-mismatch) -- the same authoring gap as Castle Interior's Room-* families.
+        ("tii01", "GROUP:Great Brain"),
+        ("tii01", "GROUP:Resting Pods"),
+
+        // City Interior 2 (tni01): the same *Room01_1x2/*Room02_1x2 door-entrance-pair gap as City
+        // Interior's own pilot exemptions (this hak copy carries its own separate but structurally
+        // identical Livingroom/Kitchen/Inn/Shop room-entrance tiles), plus Bordello for the same reason.
+        ("tni01", "GROUP:Livingroom01_1x2"),
+        ("tni01", "GROUP:Livingroom02_1x2"),
+        ("tni01", "GROUP:KitchenRoom01_1x2"),
+        ("tni01", "GROUP:KitchenRoom02_1x2"),
+        ("tni01", "GROUP:InnRoom01_1x2"),
+        ("tni01", "GROUP:InnRoom02_1x2"),
+        ("tni01", "GROUP:ShopRoom01_1x2"),
+        ("tni01", "GROUP:ShopRoom02_1x2"),
+        ("tni01", "GROUP:Bordello"),
+
+        // Fort Interior (twc03): a long tail of legacy "OLD_"/superseded furnished-room groups (2x1/
+        // 2x2/2x3/3x3) that carry a Doorway edge together with a door slot on the same member tile, or
+        // (Large_Door/Mythallar_3x3) a shared edge using the canonical "corridor" crosser on a multi-
+        // tile group -- the same two structural gaps seen throughout this wave's authoring. TILE23/29/
+        // 95/105/106/125/127/128 are ungrouped tiles pairing a door slot with either a non-Doorway
+        // crosser ("corridor"/"wall", not in TileDoorPlanner's Doorway-only inventory) or no crosser at
+        // all on partially-open corners -- genuinely unreachable by any current mechanism.
+        ("twc03", "GROUP:Large_Door"),
+        ("twc03", "GROUP:OLD_Smithy_1x2"),
+        ("twc03", "GROUP:OLD_Kitchen_1x2"),
+        ("twc03", "GROUP:OLD_Bedroom_02_2x1"),
+        ("twc03", "GROUP:OLD_Bedroom_03_2x1"),
+        ("twc03", "GROUP:OLD_Barracks_2x2"),
+        ("twc03", "GROUP:Mythallar_3x3"),
+        ("twc03", "GROUP:OLD_Portal_Hall_2x3"),
+        ("twc03", "GROUP:OLD_StoreRoom_2x2L_old"),
+        ("twc03", "GROUP:OLD_Cells_2x2_old"),
+        ("twc03", "GROUP:OLD_Generic_Room_2x1"),
+        ("twc03", "GROUP:OLD_Generic_Room_2x2"),
+        ("twc03", "GROUP:StoreRoom_2x2L"),
+        ("twc03", "GROUP:Cells_2x2"),
+        ("twc03", "GROUP:Kitchen_1x2"),
+        ("twc03", "GROUP:Generic_Room_2x2"),
+        ("twc03", "GROUP:Barracks_2x2"),
+        ("twc03", "GROUP:Generic_Room_2x1"),
+        ("twc03", "GROUP:Bedroom_02_2x2"),
+        ("twc03", "GROUP:Bedroom_03_2x1"),
+        ("twc03", "GROUP:Smithy_1x2"),
+        ("twc03", "GROUP:Portal_Hall_2x3"),
+        ("twc03", "TILE23"),
+        ("twc03", "TILE29"),
+        ("twc03", "TILE95"),
+        ("twc03", "TILE96"),
+        ("twc03", "TILE105"),
+        ("twc03", "TILE106"),
+        ("twc03", "TILE125"),
+        ("twc03", "TILE127"),
+        ("twc03", "TILE128"),
     };
 
-    public static IEnumerable<string> PilotTilesetKeys => new[] { "tdc01", "tde01", "tin01" };
+    public static IEnumerable<string> PilotTilesetKeys => new[]
+    {
+        "tdc01", "tde01", "tin01",
+        "tbw01", "tdm01", "tdr01", "tic01", "tni02", "tid01", "tii01", "tni01", "tsw01", "twc03",
+    };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
     public void PilotEveryTileIsReachableOrExplicitlyExempted(string tilesetResref)
@@ -596,6 +755,16 @@ public class TileCoverageCensusTests
             "tdc01" => BaseGameTilesetProfiles.Crypt,
             "tde01" => BaseGameTilesetProfiles.Dungeon,
             "tin01" => BaseGameTilesetProfiles.CityInterior,
+            "tbw01" => BaseGameTilesetProfiles.Barrows,
+            "tdm01" => BaseGameTilesetProfiles.MinesAndCaverns,
+            "tdr01" => BaseGameTilesetProfiles.Ruins,
+            "tic01" => BaseGameTilesetProfiles.CastleInterior,
+            "tni02" => BaseGameTilesetProfiles.CastleInterior2,
+            "tid01" => BaseGameTilesetProfiles.DrowInterior,
+            "tii01" => BaseGameTilesetProfiles.IllithidInterior,
+            "tni01" => BaseGameTilesetProfiles.CityInterior2,
+            "tsw01" => BaseGameTilesetProfiles.Steamworks,
+            "twc03" => BaseGameTilesetProfiles.FortInterior,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         var profile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[profileKey];
@@ -604,6 +773,17 @@ public class TileCoverageCensusTests
         var coveredTileIds = new HashSet<int>();
         var mechanismCounts = new Dictionary<string, int>();
         var exemptions = new List<Exemption>();
+        // Some Wave-2 hak mega-sets (e.g. tdm01) reuse the SAME physical tile id across two named
+        // groups (an alternate-district variant sharing art with its sibling, e.g. "[Cave] Stairs -
+        // Up, Water (2x2)" / "[Cave] Stairs - Up, Lava (2x2)" both listing tile 126) -- TilesetSetParser
+        // resolves TileRecord.GroupIndex to whichever group claims it FIRST, but this census still walks
+        // every group's OWN declared TileIds regardless of which group "owns" a shared tile per
+        // GroupIndex. Deduplicating exemptions by tile id here (mirroring coveredTileIds' HashSet
+        // idempotency) keeps a shared tile from being counted twice when both of its owning groups
+        // independently exempt it (e.g. both alternate-vocabulary), which would otherwise break the
+        // covered+exempt == total-tiles invariant even though every tile is still honestly accounted
+        // for exactly once.
+        var exemptedTileIds = new HashSet<int>();
 
         void Cover(int tileId, string mechanism)
         {
@@ -613,6 +793,8 @@ public class TileCoverageCensusTests
 
         void Exempt(int tileId, string label, string reason)
         {
+            if (coveredTileIds.Contains(tileId)) return;
+            if (!exemptedTileIds.Add(tileId)) return;
             exemptions.Add(new Exemption { Tileset = tilesetResref, TileOrGroup = label, Reason = reason });
         }
 
@@ -655,7 +837,7 @@ public class TileCoverageCensusTests
         for (var tileId = 0; tileId < model.Tiles.Count; tileId++)
         {
             if (coveredTileIds.Contains(tileId)) continue;
-            if (exemptions.Any(e => e.TileOrGroup.StartsWith($"TILE{tileId} ") || e.TileOrGroup == $"TILE{tileId}")) continue;
+            if (exemptedTileIds.Contains(tileId)) continue;
 
             var tile = model.Tiles[tileId];
 
@@ -698,6 +880,19 @@ public class TileCoverageCensusTests
             .Where(t => IsFlat(t) && !UsesOnlyAlternateVocab(model, new[] { t }, tilesetResref))
             .Select(t => $"TILE{t.TileId} (group '{model.Groups[t.GroupIndex].Name}')")
             .ToHashSet();
+
+        // Ungrouped-tile manual exemptions (e.g. Barrows' TILE13/TILE51, Fort Interior's plain door+
+        // crosser tiles): a bare "TILE{n}" PilotExpectedExemptions key, honored only for a genuinely
+        // ungrouped (GroupIndex == -1), flat, non-alternate-vocab tile -- mirrors the group-keyed
+        // reconstruction above so ungrouped gaps get the same EXACT, no-silent-drift guarantee.
+        foreach (var tile in model.Tiles)
+        {
+            if (tile.GroupIndex != -1) continue;
+            if (!IsFlat(tile)) continue;
+            if (UsesOnlyAlternateVocab(model, new[] { tile }, tilesetResref)) continue;
+            if (PilotExpectedExemptions.Contains((tilesetResref, "TILE" + tile.TileId)))
+                expectedManualLabels.Add($"TILE{tile.TileId}");
+        }
 
         manualExemptionLabels.Should().BeEquivalentTo(expectedManualLabels,
             $"the {tilesetResref} manually-curated pilot exemption set must be EXACT -- any drift must be visible here, not silently absorbed");

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using SWLOR.Game.Server.Service.AreaGenerationService.Layouts;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
@@ -26,6 +27,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             if (random == null) throw new ArgumentNullException(nameof(random));
+
+            // The Alley crosser vocabulary exists only in vmr01. Composing an Alley-corridor layout
+            // (Streets) with any other tileset would fail resolution outright ("No matching tile ...
+            // Right=Alley"), so downgrade to the universally-verified Corridor/Doorway vocabulary
+            // instead — Streets then reads as regular tunnels on tilesets without alleys. Adjusted on
+            // a clone so the caller's parameters object is never mutated.
+            if (tileset != null &&
+                parameters.CorridorCrosserType == CorridorCrosserType.Alley &&
+                !tileset.Crossers.Contains("Alley", StringComparer.OrdinalIgnoreCase))
+            {
+                parameters = parameters.Clone();
+                parameters.CorridorCrosserType = CorridorCrosserType.Corridor;
+            }
 
             MacroLayout layout = parameters.Style switch
             {

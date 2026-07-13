@@ -502,6 +502,77 @@ public class FenceAndAlleyTests
         tunneledLayouts.Should().BeGreaterThan(15, "Alley tunnel carving should succeed for nearly every layout, not constantly fall back to open lanes");
     }
 
+    /// <summary>
+    /// The Alley vocabulary exists only in vmr01. Composing an Alley-corridor layout (Streets) with
+    /// any other tileset must downgrade to Corridor/Doorway tunnels instead of failing resolution
+    /// (Content Builder surfaced exactly that failure: "No matching tile ... Right=Alley" on Cavern).
+    /// The downgrade only happens when the TilesetModel is supplied to Generate, mirroring how the
+    /// production facade, Content Builder, and ProcgenReview all call it.
+    /// </summary>
+    [TestCase("tdt01")]
+    [TestCase("tds01")]
+    [TestCase("zsf01")]
+    public void AlleyMode_TilesetsWithoutAlleyVocabularyDowngradeToCorridorTunnels(string tilesetResref)
+    {
+        var model = LoadTileset(tilesetResref);
+        var failures = new List<string>();
+        var tunneledLayouts = 0;
+
+        for (var seed = 22000; seed < 22015; seed++)
+        {
+            var rng = new Random(seed);
+            var parameters = new MacroLayoutParameters
+            {
+                Style = DungeonLayoutStyle.RoomsAndCorridors,
+                CorridorMode = CorridorMode.Tunnel,
+                CorridorCrosserType = CorridorCrosserType.Alley,
+                MinRooms = 6,
+                MaxRooms = 9,
+                MinRoomCornerSize = 3,
+                MaxRoomCornerSize = 5,
+                LoopFactor = 0.3,
+                Width = 20,
+                Height = 20,
+                SolidTerrain = model.DefaultTerrain,
+                OpenTerrain = tilesetResref == "zsf01" ? "floor" : model.FloorTerrain,
+            };
+
+            MacroLayout macro;
+            try
+            {
+                macro = MacroLayoutGenerator.Generate(parameters, rng, model);
+            }
+            catch (InvalidOperationException ex)
+            {
+                failures.Add($"seed {seed}: generation failed: {ex.Message}");
+                continue;
+            }
+
+            macro.Seed = seed;
+            if (macro.TunnelLinks.Count > 0) tunneledLayouts++;
+
+            if (!TileResolver.TryResolve(model, macro, rng, out _, out var reason))
+            {
+                failures.Add($"seed {seed}: resolution failed: {reason}");
+                continue;
+            }
+
+            // The caller's parameters object must not be mutated by the downgrade.
+            parameters.CorridorCrosserType.Should().Be(CorridorCrosserType.Alley);
+
+            for (var y = 0; y < 20; y++)
+            for (var x = 0; x < 20; x++)
+            for (var slot = 0; slot < 4; slot++)
+            {
+                if (string.Equals(macro.Crossers.GetEdge(x, y, slot), "Alley", StringComparison.OrdinalIgnoreCase))
+                    failures.Add($"seed {seed}: cell ({x},{y}) slot {slot} carries an Alley edge on a tileset with no Alley vocabulary");
+            }
+        }
+
+        failures.Should().BeEmpty();
+        tunneledLayouts.Should().BeGreaterThan(10, "downgraded Streets layouts should still carve corridor tunnels");
+    }
+
     [Test]
     public void AlleyMode_CrosserPlanUsesOnlyAlley()
     {

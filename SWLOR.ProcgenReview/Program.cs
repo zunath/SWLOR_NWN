@@ -371,7 +371,11 @@ static ResolvedLayout Generate(TilesetModel model, MacroLayoutParameters basePar
         MacroLayout macro;
         try
         {
-            macro = MacroLayoutGenerator.Generate(parameters, rng);
+            // Pass the tileset model so LayoutGroupStamper can stamp configured set pieces (wall
+            // rooms, platforms, stairs, gates) and Alley-corridor layouts downgrade to Corridor
+            // tunnels on tilesets without alley vocabulary — matching the runtime facade and
+            // Content Builder exactly.
+            macro = MacroLayoutGenerator.Generate(parameters, rng, model);
         }
         catch (InvalidOperationException)
         {

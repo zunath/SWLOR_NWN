@@ -149,6 +149,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             /// InteriorMosaic_2x2 only ever stamps into a Floor district room, never a Plaza one.
             /// </summary>
             public string OpenSetPieceTerrain;
+
+            /// <summary>
+            /// WallAlcove only: (LocalRow, LocalCol, Slot) for every edge of a door-carrying member
+            /// whose neighbor cell falls outside the group's own footprint (out of bounds OR a hole) --
+            /// the SAME "perimeter" shape PerimeterDoorways/PerimeterBodyCrossers track for
+            /// WallRoom/CorridorStubChain, but scoped to only the member(s) that actually carry the
+            /// group's door slot(s). See IsWallAlcoveSiteValid's own doc comment for why the network
+            /// touch is restricted to these specific edges rather than any footprint cell's any side.
+            /// </summary>
+            public List<(int Row, int Col, int Slot)> DoorMemberPerimeterEdges;
         }
 
         internal static void Stamp(MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset, System.Random random)
@@ -390,14 +400,37 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // but no Doorway crosser vocabulary of its own). Checked before OpenSetPiece so an
             // all-solid group is never misrouted there (see OpenSetPiece's own open-corner requirement
             // below, which independently guards against the same misroute).
+            //
+            // DoorMemberPerimeterEdges records which of the door-carrying member's OWN edges face
+            // outside the footprint (see IsWallAlcoveSiteValid) -- computed the same way
+            // PerimeterDoorways/PerimeterBodyCrossers are above, just scoped to members with
+            // Tile.Doors.Count != 0 instead of a Doorway/body-crosser edge.
             if (allCornersSolid && hasAnyDoor)
             {
+                var doorMemberPerimeterEdges = new List<(int, int, int)>();
+                foreach (var member in members)
+                {
+                    if (member.Tile.Doors.Count == 0) continue;
+
+                    for (var slot = 0; slot < 4; slot++)
+                    {
+                        var (dx, dy) = SlotOffsets[slot];
+                        var neighborRow = member.LocalRow + dy;
+                        var neighborCol = member.LocalCol + dx;
+                        var outOfBounds = neighborRow < 0 || neighborRow >= group.Rows ||
+                                           neighborCol < 0 || neighborCol >= group.Columns;
+                        if (outOfBounds || IsHole(group, neighborRow, neighborCol))
+                            doorMemberPerimeterEdges.Add((member.LocalRow, member.LocalCol, slot));
+                    }
+                }
+
                 classified = new ClassifiedGroup
                 {
                     Group = group,
                     Members = members,
                     Kind = GroupKind.WallAlcove,
-                    PerimeterDoorways = new List<(int, int, int)>()
+                    PerimeterDoorways = new List<(int, int, int)>(),
+                    DoorMemberPerimeterEdges = doorMemberPerimeterEdges
                 };
                 return true;
             }
@@ -1429,14 +1462,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// <summary>
         /// Places a WallAlcove (e.g. vmr01 "Room 1 2x2".."Room 5 2x2"): stamps the group's footprint
         /// into solid space exactly like TryPlaceWallRoom, but since this shape carries no Doorway
-        /// crosser vocabulary of its own (see TryClassify), the site requirement is relaxed to: at
-        /// least one footprint-perimeter cell already touches the reachable network — either a
-        /// fully-open room cell (this layout's OpenTerrain or, when districts are active,
-        /// SecondaryOpenTerrain) or an existing Corridor/Alley tunnel-chain cell. Conservative v1: the
-        /// door slot's own facing is not aligned to that touch point, and no door object is ever
-        /// spawned for it (matching the CorridorInsert/OpenSetPiece-with-tolerated-doors precedent) —
-        /// the alcove is placed as an inert decorative wall chamber wherever the footprint legally
-        /// fits and happens to border the network somewhere.
+        /// crosser vocabulary of its own (see TryClassify), the site requirement is: at least one of
+        /// the DOOR-CARRYING MEMBER'S OWN perimeter edges (see ClassifiedGroup.DoorMemberPerimeterEdges)
+        /// touches the reachable network — either a fully-open room cell across its FULL shared edge
+        /// (this layout's OpenTerrain or, when districts are active, SecondaryOpenTerrain) or an
+        /// existing Corridor/Alley tunnel-chain cell — instead of v1's "any footprint cell, any side"
+        /// rule. See IsWallAlcoveSiteValid's own doc comment for why this is the right (and the most
+        /// this shape can ever support) notion of "aligned": the door slot itself always sits on the
+        /// seam shared with ANOTHER member of the SAME footprint (verified against TileGroupRecord's
+        /// row0=south pin and against the real vmr01 "Room 5 2x2" placement in the hand-built
+        /// spacenarshaddung area), so no orientation or site choice can ever put the door's own local
+        /// facing edge against a cell outside the group -- only the door-carrying MEMBER's position can
+        /// be steered next to real reachable space. No door object is ever spawned here (matching the
+        /// CorridorInsert/OpenSetPiece-with-tolerated-doors precedent, and matching hand-built usage,
+        /// where the slot is instead populated by a bespoke, hand-authored area-transition Door with no
+        /// relationship to grid adjacency -- content this generator has no linked-area counterpart for).
         /// </summary>
         private static bool TryPlaceWallAlcove(
             MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified,
@@ -1467,6 +1507,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             return false;
         }
 
+        /// <summary>
+        /// Validates the footprint exactly like v1 did (legal, unclaimed, fully-solid-and-crosser-free
+        /// space, and the same lenient "neighbor carries at least one corner of the open terrain"
+        /// touch tolerance -- both unchanged below, see CellHasAnyCornerOfTerrain's own doc comment for
+        /// why a single corner is the correct tolerance for a mixed wall-ring boundary), but tightens
+        /// WHICH cell that touch is measured against: instead of accepting ANY footprint member's ANY
+        /// side touching the network (v1 -- which could stamp a real, decorated alcove flush against
+        /// the network by an unrelated bland corner while its OWN door-carrying member sat buried in
+        /// solid mass on every side, reading as a sealed floating box), this requires the DOOR-CARRYING
+        /// MEMBER's OWN perimeter edge (see ClassifiedGroup.DoorMemberPerimeterEdges) specifically to be
+        /// the one touching. This is deliberately NOT "the door slot's own local facing direction
+        /// touches the network" -- that is structurally impossible for every verified WallAlcove shape
+        /// (vmr01's "Room 1-5 2x2": the door-carrying member is always the group's OTHER-row corner
+        /// tile, and its door sits on the seam shared with the group's own opposite-row member, not any
+        /// footprint-external cell, at ANY orientation -- confirmed against the hand-built
+        /// "spacenarshaddung" area, which places "Room 5 2x2" unrotated and populates that exact slot
+        /// with a bespoke area-transition Door object, not a grid-adjacent connector). What IS
+        /// achievable, and what this enforces, is that the SPECIAL member (the one carrying the
+        /// alcove's ornamental door slot) is the one sitting next to real reachable space, rather than
+        /// an arbitrary other member of the same box.
+        /// </summary>
         private static bool IsWallAlcoveSiteValid(
             MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified,
             (int X, int Y) anchor, HashSet<(int X, int Y)> transitionTiles)
@@ -1477,13 +1538,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var width = corners.Width;
             var height = corners.Height;
 
-            var footprint = new HashSet<(int X, int Y)>();
             for (var r = 0; r < group.Rows; r++)
             {
                 for (var c = 0; c < group.Columns; c++)
                 {
                     var cell = (X: anchor.X + c, Y: anchor.Y + r);
-                    footprint.Add(cell);
 
                     if (layout.PinnedTiles.ContainsKey(cell)) return false;
                     if (transitionTiles.Contains(cell)) return false;
@@ -1499,32 +1558,37 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 }
             }
 
-            foreach (var cell in footprint)
+            if (classified.DoorMemberPerimeterEdges == null || classified.DoorMemberPerimeterEdges.Count == 0)
+                return false; // the door-carrying member has no footprint-external edge at all (e.g. a
+                              // fully-interior member of a 3x3+ group) -- no site can ever satisfy this
+                              // group's own shape, so it is correctly never placed rather than guessed at.
+
+            foreach (var (row, col, slot) in classified.DoorMemberPerimeterEdges)
             {
-                foreach (var (dx, dy) in SlotOffsets)
+                var cell = (X: anchor.X + col, Y: anchor.Y + row);
+                var (dx, dy) = SlotOffsets[slot];
+                var neighbor = (X: cell.X + dx, Y: cell.Y + dy);
+                if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.X >= width || neighbor.Y >= height) continue;
+
+                // Matches v1's own touch tolerance (see the class doc comment above): a room's own
+                // interior cells are always separated from untouched solid mass by at least one
+                // "mixed" boundary cell (open on the room-facing side, solid on the far side), so
+                // requiring only that the neighbor carries at least one corner of the open terrain --
+                // not a full matching edge -- correctly matches that mixed boundary ring. The
+                // improvement over v1 is WHICH cell this is checked against (the door-carrying
+                // member's own perimeter neighbor only, not any of the other members'), not how
+                // lenient the terrain match itself is.
+                if (CellHasAnyCornerOfTerrain(corners, neighbor, parameters.OpenTerrain)) return true;
+                if (!string.IsNullOrEmpty(parameters.SecondaryOpenTerrain) &&
+                    CellHasAnyCornerOfTerrain(corners, neighbor, parameters.SecondaryOpenTerrain)) return true;
+
+                for (var s = 0; s < 4; s++)
                 {
-                    var neighbor = (X: cell.X + dx, Y: cell.Y + dy);
-                    if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.X >= width || neighbor.Y >= height) continue;
-                    if (footprint.Contains(neighbor)) continue; // interior to this same footprint
-
-                    // A room's own interior cells are always separated from the untouched solid mass
-                    // by at least one "mixed" boundary cell (open on the room-facing side, solid on the
-                    // far side, mirroring the wall-cell ring TileDoorPlanner/GroupExitPlanner walk) —
-                    // no solid footprint candidate is ever directly adjacent to a FULLY open cell.
-                    // Requiring only that the neighbor carries at least one corner of the open terrain
-                    // correctly matches that mixed boundary ring.
-                    if (CellHasAnyCornerOfTerrain(corners, neighbor, parameters.OpenTerrain)) return true;
-                    if (!string.IsNullOrEmpty(parameters.SecondaryOpenTerrain) &&
-                        CellHasAnyCornerOfTerrain(corners, neighbor, parameters.SecondaryOpenTerrain)) return true;
-
-                    for (var slot = 0; slot < 4; slot++)
-                    {
-                        var edge = crossers.GetEdge(neighbor.X, neighbor.Y, slot);
-                        if (Eq(edge, CorridorCrosser) || Eq(edge, AlleyCrosser)) return true;
-                        if (parameters.CorridorCrosserType == CorridorCrosserType.Custom &&
-                            !string.IsNullOrEmpty(parameters.TunnelBodyCrosser) &&
-                            Eq(edge, parameters.TunnelBodyCrosser)) return true;
-                    }
+                    var edge = crossers.GetEdge(neighbor.X, neighbor.Y, s);
+                    if (Eq(edge, CorridorCrosser) || Eq(edge, AlleyCrosser)) return true;
+                    if (parameters.CorridorCrosserType == CorridorCrosserType.Custom &&
+                        !string.IsNullOrEmpty(parameters.TunnelBodyCrosser) &&
+                        Eq(edge, parameters.TunnelBodyCrosser)) return true;
                 }
             }
 

@@ -42,6 +42,16 @@
     <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\SciFiBaseDungeonDefinition.cs" Link="Definitions\SciFiBaseDungeonDefinition.cs" />
     <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\SewerDungeonDefinition.cs" Link="Definitions\SewerDungeonDefinition.cs" />
     <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\AlienRuinDungeonDefinition.cs" Link="Definitions\AlienRuinDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\TatooineWastesDungeonDefinition.cs" Link="Definitions\TatooineWastesDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\DathomirWildlandsDungeonDefinition.cs" Link="Definitions\DathomirWildlandsDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\NightsisterCovenDungeonDefinition.cs" Link="Definitions\NightsisterCovenDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\QionHiveDungeonDefinition.cs" Link="Definitions\QionHiveDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\DeepMineDungeonDefinition.cs" Link="Definitions\DeepMineDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\MandalorianGarrisonDungeonDefinition.cs" Link="Definitions\MandalorianGarrisonDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\UndercityDenDungeonDefinition.cs" Link="Definitions\UndercityDenDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\DroidFoundryDungeonDefinition.cs" Link="Definitions\DroidFoundryDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\LostRuinsDungeonDefinition.cs" Link="Definitions\LostRuinsDungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Feature\DungeonDefinition\SithAcademyDungeonDefinition.cs" Link="Definitions\SithAcademyDungeonDefinition.cs" />
   </ItemGroup>
 
 </Project>

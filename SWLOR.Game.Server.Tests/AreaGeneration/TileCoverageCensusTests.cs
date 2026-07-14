@@ -70,6 +70,16 @@ public class TileCoverageCensusTests
         /// "door_corridor").
         /// </summary>
         public IReadOnlyCollection<string> ExtraDoorSlotCrossers = Array.Empty<string>();
+
+        /// <summary>Slope-blend terrain LayoutReliefPainter may flip open corners to -- mirrors
+        /// DungeonTilesetProfile.ReliefBlendTerrain (e.g. tdm01's GentleSlope/GentleDesert/
+        /// GentleOrganic). Empty = relief perturbs heights only.</summary>
+        public string Blend = string.Empty;
+
+        /// <summary>Ramp-lane crosser name this profile's lane splicing writes -- mirrors
+        /// DungeonTilesetProfile.RampCrosser, canonical "Ramp" when undeclared (e.g. tdm01's
+        /// "Slope").</summary>
+        public string Ramp = "Ramp";
     }
 
     private static TilesetVocabulary BuildVocabulary(TilesetModel model, DungeonTilesetProfile profile)
@@ -84,6 +94,8 @@ public class TileCoverageCensusTests
             TunnelBody = !string.IsNullOrEmpty(profile.TunnelBodyCrosser) ? profile.TunnelBodyCrosser : CorridorCrosser,
             TunnelPort = !string.IsNullOrEmpty(profile.TunnelPortCrosser) ? profile.TunnelPortCrosser : DoorwayCrosser,
             ExtraDoorSlotCrossers = (IReadOnlyCollection<string>)profile.DoorSlotCrossers ?? Array.Empty<string>(),
+            Blend = profile.ReliefBlendTerrain ?? string.Empty,
+            Ramp = !string.IsNullOrEmpty(profile.RampCrosser) ? profile.RampCrosser : "Ramp",
         };
     }
 
@@ -324,6 +336,129 @@ public class TileCoverageCensusTests
         return false;
     }
 
+    /// <summary>
+    /// Mirrors LayoutReliefPainter's per-corner perturb-and-verify mechanism: an ungrouped, doorless
+    /// tile whose corners all use this vocabulary's Open/Accent/Blend terrains, whose normalized
+    /// corner-height deltas are all 0 or 1 (the painter only ever toggles a corner between the room
+    /// grade and one story up), whose non-blank edges (if any) are ALL this vocabulary's ramp-lane
+    /// crosser (lanes are batch-written/batch-verified -- see LayoutReliefPainter.TrySpliceReliefLane
+    /// -- so multi-ramp-edge cells need no one-edge intermediate), and -- the honesty core -- whose
+    /// corner (terrain, height) field is REACHABLE from a flat painted base through single-corner
+    /// mutations where EVERY intermediate cell state has a real height-aware candidate in this
+    /// tileset's inventory (a breadth-first search over the at-most-256 per-cell states, probing the
+    /// same TileResolver.HasHeightAwareCandidate the production painter's CellResolves verification
+    /// uses). The base state is the tile's own labels with Blend corners replaced by Open, all flat --
+    /// exactly what the accent/pool painters leave behind before relief runs; mutations are the
+    /// painter's own two corner proposals (height 0&lt;-&gt;1 toggle, Open&lt;-&gt;Blend label flip).
+    /// A shape with no resolving mutation order stays unreachable and must remain exempt (e.g. tdm01
+    /// TILE1452/1453, whose diagonal CityWater/Floor field has no resolving intermediate chain).
+    /// </summary>
+    private static bool IsTerrainReliefReachable(TileRecord tile, TilesetVocabulary vocab, TileResolver.HeightAwareProbeCache cache)
+    {
+        if (tile.GroupIndex != -1) return false;
+        if (tile.Doors.Count != 0) return false;
+        if (string.IsNullOrEmpty(vocab.Open)) return false;
+
+        bool InPalette(string c) =>
+            Eq(c, vocab.Open) ||
+            (!string.IsNullOrEmpty(vocab.Accent) && Eq(c, vocab.Accent)) ||
+            (!string.IsNullOrEmpty(vocab.Blend) && Eq(c, vocab.Blend));
+
+        if (!tile.Corners.All(InPalette)) return false;
+
+        var min = tile.CornerHeights.Min();
+        var target = tile.CornerHeights.Select(h => h - min).ToArray();
+        if (target.Any(h => h != 0 && h != 1)) return false;
+
+        var usesBlend = !string.IsNullOrEmpty(vocab.Blend) && tile.Corners.Any(c => Eq(c, vocab.Blend));
+        if (target.All(h => h == 0) && !usesBlend) return false; // flat, no blend -- CornerEdgeResolver's bucket
+
+        foreach (var edge in tile.Edges)
+        {
+            if (string.IsNullOrEmpty(edge)) continue;
+            if (!Eq(edge, vocab.Ramp)) return false;
+        }
+
+        return IsReliefFieldReachable(tile.Corners, target, vocab, cache);
+    }
+
+    /// <summary>Breadth-first search over per-cell (labels, heights) states -- see
+    /// IsTerrainReliefReachable's doc comment. Shared with the ReliefPiece group classifier, whose
+    /// stamping site must be producible by the same painter.</summary>
+    private static bool IsReliefFieldReachable(
+        IReadOnlyList<string> targetCorners, int[] targetDeltas, TilesetVocabulary vocab, TileResolver.HeightAwareProbeCache cache)
+    {
+        var baseLabels = new string[4];
+        for (var i = 0; i < 4; i++)
+        {
+            baseLabels[i] = !string.IsNullOrEmpty(vocab.Blend) && Eq(targetCorners[i], vocab.Blend)
+                ? vocab.Open
+                : targetCorners[i];
+        }
+
+        bool Resolves(string[] labels, int[] heights)
+        {
+            var m = Math.Min(Math.Min(heights[0], heights[1]), Math.Min(heights[2], heights[3]));
+            return TileResolver.HasHeightAwareCandidate(
+                cache, labels[0], labels[1], labels[2], labels[3], "", "", "", "",
+                heights[0] - m, heights[1] - m, heights[2] - m, heights[3] - m);
+        }
+
+        string KeyOf(string[] labels, int[] heights) =>
+            string.Join("|", labels.Select(l => l.ToUpperInvariant())) + "‖" + string.Join("|", heights);
+
+        var startHeights = new[] { 0, 0, 0, 0 };
+        if (!Resolves(baseLabels, startHeights)) return false;
+
+        var goalKey = KeyOf(targetCorners.ToArray(), targetDeltas);
+        var startKey = KeyOf(baseLabels, startHeights);
+        if (startKey == goalKey) return true;
+
+        var seen = new HashSet<string> { startKey };
+        var frontier = new Queue<(string[] Labels, int[] Heights)>();
+        frontier.Enqueue((baseLabels, startHeights));
+        var found = false;
+
+        void TryVisit(string[] nl, int[] nh)
+        {
+            if (found) return;
+            var key = KeyOf(nl, nh);
+            if (!seen.Add(key)) return;
+            if (!Resolves(nl, nh)) return;
+            if (key == goalKey) { found = true; return; }
+            frontier.Enqueue((nl, nh));
+        }
+
+        while (frontier.Count > 0 && !found)
+        {
+            var (labels, heights) = frontier.Dequeue();
+
+            for (var i = 0; i < 4; i++)
+            {
+                // height toggle
+                var toggled = (int[])heights.Clone();
+                toggled[i] = heights[i] == 0 ? 1 : 0;
+                TryVisit(labels, toggled);
+
+                // blend flip
+                if (!string.IsNullOrEmpty(vocab.Blend))
+                {
+                    string flippedTo = null;
+                    if (Eq(labels[i], vocab.Open)) flippedTo = vocab.Blend;
+                    else if (Eq(labels[i], vocab.Blend)) flippedTo = vocab.Open;
+                    if (flippedTo != null)
+                    {
+                        var flipped = (string[])labels.Clone();
+                        flipped[i] = flippedTo;
+                        TryVisit(flipped, heights);
+                    }
+                }
+            }
+        }
+
+        return found;
+    }
+
     // ---------------- group mechanisms ----------------
 
     private enum GroupMechanism
@@ -337,6 +472,7 @@ public class TileCoverageCensusTests
         SetPieceCorridorInsert,
         SetPieceCorridorStub,
         SetPieceCorridorStubChain,
+        SetPieceReliefPiece,
     }
 
     /// <summary>Mirrors TileResolver.BuildFeatureLookup's structural eligibility check.</summary>
@@ -613,7 +749,34 @@ public class TileCoverageCensusTests
         return GroupMechanism.None;
     }
 
-    private static GroupMechanism ClassifySetPiece(TilesetModel model, TileGroupRecord group, TilesetVocabulary vocab)
+    /// <summary>Mirrors LayoutGroupStamper.TryClassifyReliefPiece + TryPlaceReliefPiece's site
+    /// requirement: a RAISED (non-flat, non-uniform-delta), doorless, crosser-free 1x1 group piece
+    /// whose corner (terrain, height) field the relief painter can actually paint (the same
+    /// BFS reachability check IsTerrainReliefReachable uses -- production stamps a piece only onto a
+    /// cell whose PAINTED field exactly matches, so a field the painter can never produce means the
+    /// piece can never place).</summary>
+    private static bool IsReliefPieceEligible(TileRecord tile, TilesetVocabulary vocab, TileResolver.HeightAwareProbeCache cache)
+    {
+        if (IsFlat(tile)) return false;
+        if (tile.HasAnyCrosser) return false;
+        if (tile.Doors.Count != 0) return false;
+        if (string.IsNullOrEmpty(vocab.Open)) return false;
+
+        var min = tile.CornerHeights.Min();
+        var target = tile.CornerHeights.Select(h => h - min).ToArray();
+        if (target.All(h => h == 0)) return false; // uniform raised -- normalizes flat, not a step piece
+        if (target.Any(h => h != 0 && h != 1)) return false;
+
+        bool InPalette(string c) =>
+            Eq(c, vocab.Open) ||
+            (!string.IsNullOrEmpty(vocab.Accent) && Eq(c, vocab.Accent)) ||
+            (!string.IsNullOrEmpty(vocab.Blend) && Eq(c, vocab.Blend));
+        if (!tile.Corners.All(InPalette)) return false;
+
+        return IsReliefFieldReachable(tile.Corners, target, vocab, cache);
+    }
+
+    private static GroupMechanism ClassifySetPiece(TilesetModel model, TileGroupRecord group, TilesetVocabulary vocab, TileResolver.HeightAwareProbeCache cache)
     {
         if (group.Rows == 1 && group.Columns == 1 && group.TileIds.Count == 1)
         {
@@ -623,6 +786,7 @@ public class TileCoverageCensusTests
                 var soloTile = model.Tiles[soloTileId];
                 if (IsCorridorInsertEligible(model, soloTile, vocab)) return GroupMechanism.SetPieceCorridorInsert;
                 if (IsCorridorStubEligible(soloTile, vocab)) return GroupMechanism.SetPieceCorridorStub;
+                if (IsReliefPieceEligible(soloTile, vocab, cache)) return GroupMechanism.SetPieceReliefPiece;
             }
         }
 
@@ -673,6 +837,7 @@ public class TileCoverageCensusTests
         };
         var profile = new StandardTilesetProfiles().BuildTilesetProfiles()[profileKey];
         var vocab = BuildVocabulary(model, profile);
+        var probeCache = TileResolver.BuildHeightAwareProbeCache(model);
 
         var coveredTileIds = new HashSet<int>();
         var mechanismCounts = new Dictionary<string, int>();
@@ -693,7 +858,7 @@ public class TileCoverageCensusTests
             var mechanism = GroupMechanism.None;
             if (IsFeatureTileEligible(model, group)) mechanism = GroupMechanism.FeatureTile;
             else if (IsExitGroupEligible(model, group)) mechanism = GroupMechanism.ExitGroup;
-            else mechanism = ClassifySetPiece(model, group, vocab);
+            else mechanism = ClassifySetPiece(model, group, vocab, probeCache);
 
             if (mechanism != GroupMechanism.None)
             {
@@ -917,6 +1082,24 @@ public class TileCoverageCensusTests
         // the same Bridge-gated door shape as the wired "[Cave] Door - Bridge, Water" but on the two
         // unwired accent terrains (this profile's single AccentTerrain slot only wires Water) -- see
         // BaseGameTilesetProfiles.MinesAndCaverns.
+        //
+        // tdm01's residual auto-tagged "requires height support" bucket (14 tiles) is evidence-backed
+        // unreachable, not a mechanism gap the relief pass could close:
+        //   - TILE1452/1453 ("half-and-half" CityWater/Floor diagonal-grade banks): the relief BFS
+        //     mirror (IsTerrainReliefReachable) finds NO resolving single-corner mutation chain from
+        //     the flat CityWater/Floor base -- the tileset carries no intermediate tile for any
+        //     construction order, so perturb-and-verify can never commit its way there.
+        //   - TILE1427/1471/1472/1590 (Stream-crossered waterfalls) and TILE1591/1592 (Bridge-crossered
+        //     raised CityWater banks): their crossers are outside the relief lane vocabulary ("Slope"
+        //     here) -- Stream is an unwired one-off family (3 Floor tiles + 1 CityWater tile, no
+        //     carver writes it), and Bridge lanes are only ever written by LayoutAccentChannelCarver's
+        //     flat channel spans.
+        //   - TILE1613 (Road+Slope junction): mixes a second unwired crosser family (Road) into its
+        //     Slope lane, so an all-Slope lane splice can never produce it.
+        //   - TILE1619: its corners use the literal terrain name "UNUSED" -- authored dead content.
+        //   - TILE1456/1665/1695/1758 ("[City]/[Cave]/[Desert]/[Organic] Cave Entrance" 1x1 groups):
+        //     raised AND door-slot-bearing -- ReliefPiece stamping is doorless-only and
+        //     GroupExitPlanner is flat-only, so no mechanism can place a raised door group.
         ("tdm01", "GROUP:[Cave] Ship - Docked"),
         ("tdm01", "GROUP:[Cave] Docks (1x2)"),
         ("tdm01", "GROUP:[Cave] Door - Bridge, Pit"),
@@ -1002,6 +1185,9 @@ public class TileCoverageCensusTests
             .Where(p => Eq(p.TilesetResref, tilesetResref))
             .Select(p => BuildVocabulary(model, p))
             .ToList();
+        // Built once per tileset and shared by every relief BFS probe below -- see
+        // TileResolver.HeightAwareProbeCache's own doc comment on why per-probe rebuilds are not ok.
+        var probeCache = TileResolver.BuildHeightAwareProbeCache(model);
 
         var coveredTileIds = new HashSet<int>();
         var mechanismCounts = new Dictionary<string, int>();
@@ -1044,7 +1230,7 @@ public class TileCoverageCensusTests
             {
                 foreach (var candidateVocab in allVocabs)
                 {
-                    mechanism = ClassifySetPiece(model, group, candidateVocab);
+                    mechanism = ClassifySetPiece(model, group, candidateVocab, probeCache);
                     if (mechanism != GroupMechanism.None) break;
                 }
             }
@@ -1091,6 +1277,7 @@ public class TileCoverageCensusTests
                 if (IsElevationBlobReachable(tile, candidateVocab)) { vocabMechanism = "ElevationBlob"; break; }
                 if (IsElevationRampReachable(tile, candidateVocab)) { vocabMechanism = "ElevationRamp"; break; }
                 if (IsPoolBankReachable(tile, candidateVocab)) { vocabMechanism = "PoolBank"; break; }
+                if (IsTerrainReliefReachable(tile, candidateVocab, probeCache)) { vocabMechanism = "TerrainRelief"; break; }
             }
             if (vocabMechanism.Length != 0) { Cover(tileId, vocabMechanism); continue; }
 

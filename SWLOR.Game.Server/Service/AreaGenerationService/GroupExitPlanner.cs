@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                 if (placed)
                 {
-                    layout.PinnedTiles[cell] = (tileId, orientation);
+                    layout.PinnedTiles[cell] = (tileId, orientation, 0);
                     tiles[cell.Y * width + cell.X] = new ResolvedTile
                     {
                         TileId = tileId,

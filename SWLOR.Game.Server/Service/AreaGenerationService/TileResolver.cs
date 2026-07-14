@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         {
                             TileId = pin.TileId,
                             Orientation = pin.Orientation,
-                            Height = 0
+                            Height = pin.Height
                         };
                         continue;
                     }

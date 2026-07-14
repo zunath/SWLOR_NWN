@@ -148,6 +148,37 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int MaxPoolRegions { get; set; } = 0;
 
         /// <summary>
+        /// Largest MacroLayoutParameters.ReliefRegions value this tileset's real tile inventory has
+        /// verified per-corner relief vocabulary for (see LayoutReliefPainter's capability gate and
+        /// the census notes on BaseGameTilesetProfiles.Dungeon/MinesAndCaverns). 0 = no verified
+        /// relief vocabulary; a layout profile's own ReliefRegions request is clamped down to this by
+        /// DungeonComposition.BuildLayoutParameters, the same "layout expresses intent, tileset caps
+        /// to verified support" shape as MaxElevationRegions/MaxPoolRegions. LayoutReliefPainter
+        /// re-verifies every individual perturbation live against the real TilesetModel regardless.
+        /// </summary>
+        public int MaxReliefRegions { get; set; } = 0;
+
+        /// <summary>
+        /// Optional "slope blend" terrain LayoutReliefPainter may flip individual open-terrain
+        /// corners to while painting relief -- the terrain this tileset uses to render a gradual
+        /// walkable slope between two floor grades (e.g. tdm01's GentleSlope against its [Cave]
+        /// Floor, GentleDesert against Desert, GentleOrganic against Organic). Empty = no blend
+        /// terrain (relief perturbs heights only). Only set after verifying full flat
+        /// (open, blend) corner coverage among resolver-usable tiles -- the same verification bar as
+        /// AccentTerrain -- since every blend flip's neighbors resolve from that flat vocabulary.
+        /// </summary>
+        public string ReliefBlendTerrain { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Alternate ramp-lane edge-crosser name this tileset's raised-tile family carries instead of
+        /// the canonical "Ramp" (e.g. tdm01's "Slope"). Empty = canonical "Ramp". Consumed by both
+        /// LayoutElevationPainter.TryAddRampLane and LayoutReliefPainter's lane proposals; both
+        /// re-verify every spliced lane live against the real TilesetModel regardless, so this only
+        /// selects which name is tried, never whether a lane is safe.
+        /// </summary>
+        public string RampCrosser { get; set; } = string.Empty;
+
+        /// <summary>
         /// Alternate Tunnel-mode body crosser this tileset's district/palette carves instead of the
         /// canonical "Corridor" (e.g. tdc01's "[Grey]" district uses "GreyCorridor") -- mechanically
         /// identical vocabulary, just a different string the tileset's own art was authored under.
@@ -324,6 +355,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             parameters.PoolRegions = parameters.PoolTerrain.Length == 0
                 ? 0
                 : Math.Min(parameters.PoolRegions, Tileset.MaxPoolRegions);
+            // Per-corner relief mirrors the elevation/pool clamp shape exactly; the blend terrain and
+            // ramp-crosser name are pure tileset vocabulary (stamped unconditionally -- both are inert
+            // whenever the passes that read them are inactive or the names never resolve).
+            parameters.ReliefRegions = Math.Min(parameters.ReliefRegions, Tileset.MaxReliefRegions);
+            parameters.ReliefBlendTerrain = Tileset.ReliefBlendTerrain ?? string.Empty;
+            parameters.RampCrosser = Tileset.RampCrosser ?? string.Empty;
             // A pool's own room-scoped rim+interior+rim footprint (LayoutElevationPoolPainter's
             // MinOuterSpan, 3 tiles) needs a room at least MinOuterSpan+2 tiles wide/tall on the
             // placement axis (the mechanism's own 1-corner-inset room-boundary margin on top of that).
@@ -655,6 +692,40 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder ExitGroup(string groupName)
         {
             _active.ExitGroups.Add(groupName);
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the largest MacroLayoutParameters.ReliefRegions request this tileset's real tile
+        /// inventory has verified per-corner relief vocabulary for. Only set after verifying with
+        /// LayoutReliefPainter's capability probes (TileResolver.HasHeightAwareCandidate for a lone
+        /// raised open corner, or a flat open/blend flip) -- see BaseGameTilesetProfiles.Dungeon.
+        /// </summary>
+        public DungeonTilesetProfileBuilder MaxReliefRegions(int count)
+        {
+            _active.MaxReliefRegions = count;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the "slope blend" terrain LayoutReliefPainter may flip individual open corners to
+        /// -- see DungeonTilesetProfile.ReliefBlendTerrain. Only set after verifying full flat
+        /// (open, blend) corner coverage among resolver-usable tiles.
+        /// </summary>
+        public DungeonTilesetProfileBuilder ReliefBlendTerrain(string terrainName)
+        {
+            _active.ReliefBlendTerrain = terrainName;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the alternate ramp-lane edge-crosser name this tileset's raised-tile family
+        /// carries instead of the canonical "Ramp" (e.g. tdm01's "Slope") -- see
+        /// DungeonTilesetProfile.RampCrosser.
+        /// </summary>
+        public DungeonTilesetProfileBuilder RampCrosser(string crosserName)
+        {
+            _active.RampCrosser = crosserName;
             return this;
         }
 

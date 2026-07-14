@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                         // (tde01) that has Ramp vocabulary at all -- see TryAddRampLane's own live probe,
                         // which no-ops harmlessly on every other tileset/terrain pairing).
                         if (parameters.ElevationRamps)
-                            TryAddRampLane(layout, cache, terrain, x0, y0, x0 + spanX, y0 + spanY, random);
+                            TryAddRampLane(layout, cache, RampCrosserFor(parameters), x0, y0, x0 + spanX, y0 + spanY, random);
 
                         return true;
                     }
@@ -457,8 +457,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// (see class doc) -- forward-looking parity with outdoor Slope-tileset use, where a Ramp lane
         /// may one day be the only walkable link between two otherwise-severed regions.
         /// </summary>
+        /// <summary>Effective ramp-lane crosser name: the composition's own declared alternate (e.g.
+        /// tdm01's "Slope") or the canonical "Ramp" when none is declared -- shared with
+        /// LayoutReliefPainter's lane proposals so both mechanisms splice the same vocabulary.</summary>
+        internal static string RampCrosserFor(MacroLayoutParameters parameters)
+        {
+            return string.IsNullOrEmpty(parameters.RampCrosser) ? "Ramp" : parameters.RampCrosser;
+        }
+
         private static void TryAddRampLane(
-            MacroLayout layout, TileResolver.HeightAwareProbeCache cache, string terrain, int x0, int y0, int x1, int y1, System.Random random)
+            MacroLayout layout, TileResolver.HeightAwareProbeCache cache, string rampCrosser, int x0, int y0, int x1, int y1, System.Random random)
         {
             // Each candidate: the column/row of rim CELLS just outside the raised rectangle on that
             // side, whether the lane runs along Y (east/west edges, Ramp on Top/Bottom) or along X
@@ -482,17 +490,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             {
                 if (count < 2) continue; // no interior boundary to carry the shared Ramp edge
 
-                if (TryCommitRampLane(layout, cache, cellX, cellY, alongY, count, groundCorner, raisedCorner))
+                if (TryCommitRampLane(layout, cache, rampCrosser, cellX, cellY, alongY, count, groundCorner, raisedCorner))
                     return; // one lane per blob is plenty; first success wins
             }
         }
 
         private static bool TryCommitRampLane(
-            MacroLayout layout, TileResolver.HeightAwareProbeCache cache,
+            MacroLayout layout, TileResolver.HeightAwareProbeCache cache, string rampCrosser,
             int cellX, int cellY, bool alongY, int count,
             (int X, int Y) groundCorner, (int X, int Y) raisedCorner)
         {
-            const string RampCrosser = "Ramp";
             var corners = layout.Corners;
             var crossers = layout.Crossers;
 
@@ -522,7 +529,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             for (var i = 0; i < count - 1; i++)
             {
                 var (cx, cy) = cells[i];
-                crossers.SetEdge(cx, cy, innerSlot, RampCrosser);
+                crossers.SetEdge(cx, cy, innerSlot, rampCrosser);
             }
 
             var allResolve = true;

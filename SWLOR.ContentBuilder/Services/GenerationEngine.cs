@@ -69,6 +69,16 @@ namespace SWLOR.ContentBuilder.Services
             parameters.ElevationRegions = tileset != null
                 ? System.Math.Min(ElevationRegions, tileset.MaxElevationRegions)
                 : 0;
+
+            // Per-corner relief rides the same "Elevation Regions" slider intent (one raised-terrain
+            // knob in the UI), clamped independently to the tileset's own verified relief support --
+            // a tileset with elevation-blob vocabulary but no per-corner relief vocabulary (or vice
+            // versa) gets exactly the passes its caps declare, mirroring DungeonComposition.
+            // BuildLayoutParameters. The blend-terrain/ramp-crosser names were already stamped by
+            // BuildLayoutParameters and are never slider-driven, so nothing re-applies them here.
+            parameters.ReliefRegions = tileset != null
+                ? System.Math.Min(ElevationRegions, tileset.MaxReliefRegions)
+                : 0;
         }
     }
 

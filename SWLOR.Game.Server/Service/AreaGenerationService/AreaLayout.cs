@@ -350,11 +350,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>Carried from MacroLayoutParameters.SetPieces by MacroLayoutGenerator.Generate.</summary>
         public Dictionary<string, int> SetPieces { get; set; } = new();
         /// <summary>
-        /// Cells LayoutGroupStamper has stamped verbatim with a specific (tileId, orientation) from a
-        /// tileset group. TileResolver places these tiles directly, bypassing corner/edge candidate
-        /// lookup entirely; TileDoorPlanner must never claim a pinned cell for a transition door.
+        /// Cells LayoutGroupStamper has stamped verbatim with a specific (tileId, orientation, height)
+        /// from a tileset group. TileResolver places these tiles directly, bypassing corner/edge
+        /// candidate lookup entirely; TileDoorPlanner must never claim a pinned cell for a transition
+        /// door. Height is the final Tile_Height the pinned tile is placed at -- always 0 for the flat
+        /// group kinds (exit groups, corridor inserts/stubs), and the height-aware placementHeight
+        /// (site's grid min minus the tile's own corner-height min, exactly TileResolver's own
+        /// convention) for a relief piece stamped onto painted non-flat corners (see
+        /// LayoutGroupStamper's ReliefPiece kind).
         /// </summary>
-        public Dictionary<(int X, int Y), (int TileId, int Orientation)> PinnedTiles { get; set; } = new();
+        public Dictionary<(int X, int Y), (int TileId, int Orientation, int Height)> PinnedTiles { get; set; } = new();
 
         /// <summary>
         /// Carried from MacroLayoutParameters.ExitGroups by MacroLayoutGenerator.Generate — themed
@@ -633,6 +638,42 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// verified pool-bank vocabulary or no candidate room fits.
         /// </summary>
         public int PoolRegions { get; set; } = 0;
+
+        /// <summary>
+        /// Number of room-scoped "terrain relief" passes LayoutReliefPainter runs after elevation
+        /// blobs and depth pools are painted (see MacroLayoutGenerator.Generate): per-corner
+        /// perturb-and-verify height painting that raises/lowers INDIVIDUAL corners (open or accent
+        /// terrain alike) wherever the tileset's real inventory can still tile every touched cell --
+        /// the mechanism that reaches per-corner-independent height content (same-terrain diagonal
+        /// saddles, accent banks at mixed grades, raised accent corners) no uniform region-growth pass
+        /// can produce. 0 = none (default; fully back-compat -- zero extra RNG draws). Best-effort and
+        /// probe-gated exactly like ElevationRegions: every single perturbation is verified live via
+        /// TileResolver's height-aware lookup and reverted when unsupported, so this is safe to
+        /// request on any tileset (it silently does nothing where there is no relief vocabulary).
+        /// Usually clamped by DungeonComposition.BuildLayoutParameters against
+        /// DungeonTilesetProfile.MaxReliefRegions.
+        /// </summary>
+        public int ReliefRegions { get; set; } = 0;
+
+        /// <summary>
+        /// Optional "slope blend" terrain LayoutReliefPainter may flip individual open-terrain corners
+        /// to (at either grade) while painting relief -- the terrain some tilesets use to render a
+        /// gradual walkable slope between two floor heights instead of a sheer step (e.g. tdm01's
+        /// GentleSlope/GentleDesert/GentleOrganic families). Empty = no blend terrain (default; relief
+        /// perturbs heights only). Usually stamped from DungeonTilesetProfile.ReliefBlendTerrain by
+        /// DungeonComposition.BuildLayoutParameters. Every flip is probe-verified and additionally
+        /// guarded by a room-scoped open-corner connectivity check (a label flip removes the corner
+        /// from the open graph, unlike a pure height change which never does).
+        /// </summary>
+        public string ReliefBlendTerrain { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Crosser name ramp/slope lane splicing uses (LayoutElevationPainter.TryAddRampLane and
+        /// LayoutReliefPainter's lane proposals) when it differs from the canonical "Ramp" (e.g.
+        /// tdm01's "Slope" family). Empty = canonical "Ramp" (default; fully back-compat). Usually
+        /// stamped from DungeonTilesetProfile.RampCrosser by DungeonComposition.BuildLayoutParameters.
+        /// </summary>
+        public string RampCrosser { get; set; } = string.Empty;
 
         public MacroLayoutParameters Clone()
         {

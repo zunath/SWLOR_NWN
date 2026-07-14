@@ -130,6 +130,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     // tileset profile whose MaxPoolRegions is 0 or AccentTerrain is empty (see
                     // DungeonComposition.BuildLayoutParameters).
                     p.PoolRegions = 2;
+                    // Requests up to 2 per-corner relief regions from LayoutReliefPainter (heights
+                    // refined corner-by-corner on top of whatever the two passes above painted); a
+                    // no-op on any tileset profile whose MaxReliefRegions is 0 (see
+                    // DungeonComposition.BuildLayoutParameters and LayoutReliefPainter's own
+                    // capability gate).
+                    p.ReliefRegions = 2;
                 });
 
             // Exterior city blocks joined by wall-embedded Alley crosser tunnels instead of Corridor

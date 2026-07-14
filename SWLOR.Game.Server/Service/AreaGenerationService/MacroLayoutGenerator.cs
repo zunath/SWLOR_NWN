@@ -152,6 +152,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // rectangle/rim machinery for the raised Floor bank around each pool.
             LayoutElevationPoolPainter.Paint(layout, parameters, tileset, random);
 
+            // Runs after both height passes above have settled their uniform regions: per-corner
+            // relief perturbation reads (and refines) the height/terrain fields they painted, and the
+            // stamper below both respects the final heights via its flat-cell guards and actively
+            // searches them for ReliefPiece sites (non-flat 1x1 group pieces stamped onto matching
+            // painted corners -- see LayoutGroupStamper).
+            LayoutReliefPainter.Paint(layout, parameters, tileset, random);
+
             // Runs after transitions are anchored (so set pieces can avoid them) and before invariant
             // validation (so a bad stamp still fails loudly instead of silently corrupting a layout).
             if (tileset != null)

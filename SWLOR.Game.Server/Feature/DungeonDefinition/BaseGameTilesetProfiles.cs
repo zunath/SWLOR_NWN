@@ -48,6 +48,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // composition carries only one Tunnel body/port slot, already claimed by Corridor/DesertCorridor/
         // OrganicCorridor in the profiles above).
         public const string MinesAndCavernsTracks = "minescaverns_tracks";
+        // [City]'s CityWater accent family -- see the MinesAndCavernsCity profile's own doc comment.
+        public const string MinesAndCavernsCity = "minescaverns_city";
         public const string MinesAndCavernsDesertTracks = "minescaverns_desert_tracks";
         public const string MinesAndCavernsOrganicTracks = "minescaverns_organic_tracks";
 
@@ -268,8 +270,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // the analogous Water/Sewer/Ice/Pit-suffixed groups (Exit 2, Platform 4, Pillar 1/2, Door
             // - Bridge 1) are the identical shape and are left for a future wave that either extends
             // DungeonTilesetProfile with more accent slots or ships a dedicated profile per palette.
-            // The 1x1-GROUPed "Ramp - Straight"/"Ramp - Corner, *" pieces are still not wired (non-flat,
-            // so LayoutGroupStamper rejects them outright -- a separate, still-unclaimed mechanism).
+            // The 1x1-GROUPed "Ramp - Straight"/"Ramp - Corner, *" pieces are now wired via
+            // LayoutGroupStamper's ReliefPiece kind (non-flat 1x1 pieces stamped onto painted
+            // height-matching cells -- see the SetPiece calls below and the accent variants' own
+            // "Ramp - Corner, <Accent>" analogs).
             // Confirmed by direct probe: Wall (this profile's solid terrain) NEVER carries a nonzero
             // corner height anywhere in tde01's 1092-tile inventory, so LayoutElevationPainter's
             // SolidTerrain-blob mechanism is structurally inert here (its own shape probe correctly
@@ -289,6 +293,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Tileset("tde01")
                 .MaxElevationRegions(2)
                 .MaxPoolRegions(2)
+                // Per-corner relief (LayoutReliefPainter): tde01's raised inventory is dominated by
+                // per-corner-independent (terrain, height) content -- mixed Floor/accent cells at
+                // mixed grades, accent corners at two different heights within one cell, same-terrain
+                // diagonal saddles -- verified reachable corner-by-corner via the painter's own
+                // perturb-and-verify probes (see TileCoverageCensusTests.IsTerrainReliefReachable's
+                // BFS mirror, which closes this tileset's entire former height-exemption bucket).
+                .MaxReliefRegions(2)
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .AccentTerrain("Lava")
@@ -317,6 +328,15 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Stairs - Up", 1)
                 .SetPiece("Stairs - Down, Lava (2x2)")
                 .SetPiece("Stairs - Up (2x2)")
+                // Baked-mesh ramp pieces (1x1 GROUPs, non-flat): stamped by LayoutGroupStamper's
+                // ReliefPiece kind onto cells whose PAINTED corner (terrain, height) field exactly
+                // matches each piece's own profile -- "Ramp - Straight" straddles a raised patch's
+                // straight rim edge ([Floor 0,0,1,1]), "Ramp - Corner, Floor" its convex corner, and
+                // "Ramp - Corner, Lava" a raised Lava corner against flat Floor. Sites are produced by
+                // the elevation/pool/relief passes above.
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Lava", 1)
                 .ExitGroup("Exit 1")
                 .ExitGroup("Exit 2 - Lava");
 
@@ -333,11 +353,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // structurally reachable regardless of any profile's AccentTerrain declaration (FeatureTile/
             // ExitGroup/OpenSetPiece eligibility don't depend on it), but are re-wired here too so each
             // variant is fully self-sufficient at composition time, mirroring RuinsPlaza's own precedent.
-            // "Ramp - Corner, <Accent>" is a raised (HasHeightTransition) tile, excluded the same way the
-            // base profile's own Ramp pieces are. PaletteVariant() excludes each from --matrix's full
-            // cross-product -- one showcase area each instead.
+            // "Ramp - Corner, <Accent>" is a raised (HasHeightTransition) 1x1 piece, wired via
+            // LayoutGroupStamper's ReliefPiece kind the same way the base profile's own Ramp pieces
+            // now are; each variant also declares the full MaxElevationRegions/MaxPoolRegions/
+            // MaxReliefRegions(2) trio the base profile carries -- the vocabulary is per-accent
+            // symmetric (verified by the same probes: every accent family carries the identical
+            // rim/pool-bank/relief shapes, see TileCoverageCensusTests). PaletteVariant() excludes
+            // each from --matrix's full cross-product -- one showcase area each instead.
             _builder.Create(DungeonWater, "Dungeon (Water)")
                 .Tileset("tde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .PaletteVariant()
@@ -366,11 +393,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Stairs - Down", 1)
                 .SetPiece("Stairs - Up", 1)
                 .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Water", 1)
                 .ExitGroup("Exit 1")
                 .ExitGroup("Exit 2 - Water");
 
             _builder.Create(DungeonSewer, "Dungeon (Sewer)")
                 .Tileset("tde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .PaletteVariant()
@@ -399,11 +432,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Stairs - Down", 1)
                 .SetPiece("Stairs - Up", 1)
                 .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Sewer", 1)
                 .ExitGroup("Exit 1")
                 .ExitGroup("Exit 2 - Sewer");
 
             _builder.Create(DungeonIce, "Dungeon (Ice)")
                 .Tileset("tde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .PaletteVariant()
@@ -432,11 +471,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Stairs - Down", 1)
                 .SetPiece("Stairs - Up", 1)
                 .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Ice", 1)
                 .ExitGroup("Exit 1")
                 .ExitGroup("Exit 2 - Ice");
 
             _builder.Create(DungeonPit, "Dungeon (Pit)")
                 .Tileset("tde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .PaletteVariant()
@@ -462,6 +507,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Stairs - Down", 1)
                 .SetPiece("Stairs - Up", 1)
                 .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Pit", 1)
                 .ExitGroup("Exit 1");
 
             // City Interior (tin01). Multi-room-type interior (Livingroom/Kitchen/Inn/Shop), each with
@@ -604,12 +652,27 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // profiles per palette -- see TileCoverageCensusTests.PilotAlternateVocabTerrains["tdm01"].
             // AccentTerrain("Water") is the one wired accent channel of [Cave]'s Water/Pit/Lava/Ice
             // quartet (mirrors Dungeon/tde01's single-accent-slot precedent); "[Cave] Door - Bridge,
-            // Pit"/"Lava" are the same shape on the two unwired accents and excluded. "Ramp"/"Cave
-            // Entrance" groups are raised (HasHeightTransition tiles) and excluded. "[Cave] Door -
+            // Pit"/"Lava" are the same shape on the two unwired accents and excluded. "[Cave] Ramp" is
+            // now wired via LayoutGroupStamper's ReliefPiece kind (see the SetPiece below); "Cave
+            // Entrance" stays excluded -- a raised 1x1 group WITH a door slot, which no mechanism
+            // (ReliefPiece is doorless-only, GroupExitPlanner is flat-only) can place. "[Cave] Door -
             // Transition", "[Cave] Ship - Docked", "[Cave] Docks (1x2)" don't structurally classify
             // under any current mechanism and are excluded.
             _builder.Create(MinesAndCaverns, "Mines and Caverns")
                 .Tileset("tdm01")
+                // Raised-terrain support (probed directly against the .set data): Floor carries the
+                // one-corner/two-adjacent-raised rim shapes LayoutElevationPainter needs (so
+                // MaxElevationRegions(2)), and the [Cave] family's height content -- Slope-crossered
+                // lanes, GentleSlope blend corners, same-terrain diagonal saddles -- is per-corner
+                // relief vocabulary (MaxReliefRegions(2), RampCrosser("Slope"),
+                // ReliefBlendTerrain("GentleSlope"); GentleSlope has full 16/16 flat coverage against
+                // Floor). NO MaxPoolRegions: tdm01 has no raised pool-bank vocabulary at all (a Floor
+                // corner one story above an adjacent Water corner never occurs -- banks sit at grade),
+                // so depth pools stay off for every tdm01 profile.
+                .MaxElevationRegions(2)
+                .MaxReliefRegions(2)
+                .RampCrosser("Slope")
+                .ReliefBlendTerrain("GentleSlope")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .AccentTerrain("Water")
@@ -646,6 +709,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Cave] Portal (2x2)")
                 .SetPiece("[Cave] Crystal Crypt 1")
                 .SetPiece("[Cave] Crystal Crypt 2")
+                // Baked-mesh ramp piece (1x1 GROUP, non-flat [Floor 0,1,1,0]) -- stamped by
+                // LayoutGroupStamper's ReliefPiece kind onto a painted raised rim edge.
+                .SetPiece("[Cave] Ramp", 1)
                 .ExitGroup("[Cave] Exit 1")
                 .ExitGroup("[Cave] Exit 2")
                 .ExitGroup("[Cave] Exit 3");
@@ -672,9 +738,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // body/port slot, so wiring DesertCorridor here leaves DesertTracks's own four pieces
             // exempt; closing that second family needs a dedicated profile (same "one body crosser per
             // composition" constraint LayoutTunnelCarver enforces), left for a future wave.
-            // "[Desert] Cave Entrance" and "[Desert] Ramp" are non-flat (HasHeightTransition tiles,
-            // outside this pilot's flat-only classifiers) and excluded, matching [Cave]'s own Ramp/Cave
-            // Entrance exclusion. Every other Desert group (Platforms, Pillar, Stairs 2x2, Treasure,
+            // "[Desert] Ramp" is non-flat and wired via LayoutGroupStamper's ReliefPiece kind
+            // (matching [Cave]'s own Ramp piece); "[Desert] Cave Entrance" stays excluded -- raised
+            // AND door-bearing, which no mechanism can place (see the base profile's comment). Every other Desert group (Platforms, Pillar, Stairs 2x2, Treasure,
             // Crystal Casket/Column/Crypt, Chessboard, Portal, Mineshaft, Wall Section, Exit 1/2/3)
             // mirrors [Cave]'s own wired set piece/feature-tile/exit-group shapes tile-for-tile.
             // IsPaletteVariant() excludes this profile from --matrix's full cross-product (see
@@ -683,6 +749,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // [City] has a much smaller, differently-shaped tile family and would need its own probe).
             _builder.Create(MinesAndCavernsDesert, "Mines and Caverns (Desert)")
                 .Tileset("tdm01")
+                // Same raised-terrain trio as the base [Cave] profile, on the Desert family's own
+                // names (GentleDesert has full 16/16 flat coverage against Desert; the Slope crosser
+                // is shared district-wide). No pools -- see the base profile's own comment.
+                .MaxElevationRegions(2)
+                .MaxReliefRegions(2)
+                .RampCrosser("Slope")
+                .ReliefBlendTerrain("GentleDesert")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .PaletteVariant()
@@ -721,6 +794,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Desert] Portal (2x2)")
                 .SetPiece("[Desert] Crystal Crypt 1")
                 .SetPiece("[Desert] Crystal Crypt 2")
+                .SetPiece("[Desert] Ramp", 1)
                 .ExitGroup("[Desert] Exit 1")
                 .ExitGroup("[Desert] Exit 2")
                 .ExitGroup("[Desert] Exit 3");
@@ -739,10 +813,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // (TILE1123/1204) and "[Organic] Stairs - Down/Up 1" (TILE1127/1128) as
             // SetPieceCorridorInsert/SetPieceCorridorStub; "OrganicTracks" (Door - Big 3/4, Stairs -
             // Down/Up 2) is the same second independent alternate family as Desert's own DesertTracks and
-            // stays unwired for the same one-body-crosser-per-profile reason, and Cave Entrance/Ramp stay
-            // excluded as non-flat -- see the Desert profile's comment for the full reasoning.
+            // stays unwired for the same one-body-crosser-per-profile reason; "[Organic] Ramp" is wired
+            // via ReliefPiece and "[Organic] Cave Entrance" stays excluded (raised AND door-bearing) --
+            // see the Desert profile's comment for the full reasoning.
             _builder.Create(MinesAndCavernsOrganic, "Mines and Caverns (Organic)")
                 .Tileset("tdm01")
+                // Same raised-terrain trio as [Cave]/[Desert], on the Organic family's own names
+                // (GentleOrganic has full 16/16 flat coverage against Organic). No pools.
+                .MaxElevationRegions(2)
+                .MaxReliefRegions(2)
+                .RampCrosser("Slope")
+                .ReliefBlendTerrain("GentleOrganic")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .PaletteVariant()
@@ -783,9 +864,41 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Organic] Portal (2x2)")
                 .SetPiece("[Organic] Crystal Crypt 1")
                 .SetPiece("[Organic] Crystal Crypt 2")
+                .SetPiece("[Organic] Ramp", 1)
                 .ExitGroup("[Organic] Exit 1")
                 .ExitGroup("[Organic] Exit 2")
                 .ExitGroup("[Organic] Exit 3");
+
+            // Mines and Caverns (City Water) -- tdm01's [City] canal/water accent family composed
+            // against the shared [Cave] Floor. Unlike Desert/Organic, [City] is NOT a full district
+            // (its own open-terrain family is tiny and differently shaped -- see the tdm01 census
+            // notes on PilotAlternateVocabTerrains), but its CityWater ACCENT vocabulary is complete
+            // and probe-verified: full 16/16 flat (Floor, CityWater) corner coverage, a fully-CityWater
+            // interior tile, AND -- uniquely among tdm01's accent families -- the raised pool-bank
+            // shapes (a Floor rim one story above an adjacent CityWater corner), so this is the one
+            // tdm01 profile that declares MaxPoolRegions. MaxReliefRegions(2) additionally reaches the
+            // CityWater bank tiles whose Floor/CityWater corners sit at per-corner-independent mixed
+            // grades. No blend terrain ([City] has none), no alternate Tunnel family wired (the
+            // canonical Corridor/Doorway family composes normally on the shared solid/Floor terrain).
+            // PaletteVariant() -- one showcase area, excluded from --matrix.
+            _builder.Create(MinesAndCavernsCity, "Mines and Caverns (City Water)")
+                .Tileset("tdm01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .AccentTerrain("CityWater")
+                .FeatureTile("[Cave] Treasure 1", 2)
+                .FeatureTile("[Cave] Pillar 1")
+                .FeatureTile("[Cave] Pillar 2")
+                .SetPiece("[Cave] Door - Big 1", 1)
+                .SetPiece("[Cave] Door - Big 2", 1)
+                .SetPiece("[Cave] Ramp", 1)
+                .ExitGroup("[Cave] Exit 1")
+                .ExitGroup("[Cave] Exit 2")
+                .ExitGroup("[Cave] Exit 3");
 
             // Mines and Caverns ([Cave] Tracks) -- tdm01's [Cave] district again, but declaring the
             // SECOND, independent alternate Tunnel body family "Tracks" (paired with the canonical

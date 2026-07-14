@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTitle("HP Tracker")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 430f, 320f)
+                .SetInitialGeometry(0, 0, 430f, 360f)
                 .AddColumn(col =>
                 {
                     // Top controls: HP value + Add-by-target.
@@ -116,6 +116,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                         })
                             .BindRowCount(model => model.Names);
+
+                        // The list row needs an explicit height or the column can't size itself and the
+                        // whole window collapses to a thin line (see DMTools, which sets the same).
+                        row.SetHeight(268f);
                     });
                 });
 

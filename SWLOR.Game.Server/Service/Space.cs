@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             if (dbPlayer != null)
             {
-                RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTrigger.Logout);
+                RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTriggerType.Logout);
             }
 
             if (_playersInSpace.Contains(player))
@@ -889,7 +889,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player whose appearance will be restored.</param>
         /// <param name="dbPlayer">The player entity. Mutated if the stored appearance needs repair.</param>
         /// <param name="trigger">Which exit path requested the restore. Used for logging.</param>
-        private static void RestoreCharacterAppearance(uint player, Player dbPlayer, AppearanceRestoreTrigger trigger)
+        private static void RestoreCharacterAppearance(uint player, Player dbPlayer, AppearanceRestoreTriggerType trigger)
         {
             var appearance = dbPlayer.OriginalAppearanceType;
 
@@ -939,7 +939,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             Log.Write(LogGroup.Space, $"Player {GetName(player)} ({dbPlayer.Id}) entered an area with a ship appearance while not in space mode. Restoring character appearance.");
-            RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTrigger.AreaEnter);
+            RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTriggerType.AreaEnter);
         }
 
         /// <summary>
@@ -959,7 +959,7 @@ namespace SWLOR.Game.Server.Service
             var dbShip = DB.Get<PlayerShip>(shipId);
 
             ClearCurrentTarget(player);
-            RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTrigger.SpaceExit);
+            RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTriggerType.SpaceExit);
             Stat.ApplyCreatureMovementRate(player);
             Enmity.RemoveCreatureEnmity(player);
 
@@ -1928,7 +1928,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Exit space mode
                 ClearCurrentTarget(creature);
-                RestoreCharacterAppearance(creature, dbPlayer, AppearanceRestoreTrigger.SpaceDeath);
+                RestoreCharacterAppearance(creature, dbPlayer, AppearanceRestoreTriggerType.SpaceDeath);
                 Stat.ApplyCreatureMovementRate(creature);
                 Enmity.RemoveCreatureEnmity(creature);
 

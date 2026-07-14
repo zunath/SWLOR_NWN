@@ -57,8 +57,29 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetScale();
             ShipStats();
             RepairShip();
+            LearnAllTechniques();
 
             return _builder.Build();
+        }
+
+        private void LearnAllTechniques()
+        {
+            _builder.Create("learntechniques")
+                .Description("Grants (learns) every Mimicry technique to yourself. Testing tool.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        SendMessageToPC(user, "Only players may learn Mimicry techniques.");
+                        return;
+                    }
+
+                    var learnedCount = Mimicry.GrantAllTechniques(user);
+                    SendMessageToPC(user,
+                        $"Learned {learnedCount} new Mimicry technique(s). Open the Techniques window to equip them.");
+                });
         }
 
         private void CopyTargetItem()

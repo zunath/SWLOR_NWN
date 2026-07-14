@@ -334,6 +334,36 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Grants every registered technique to a player as learned, bypassing the witness/roll flow.
+        /// Intended for tester and DM tooling (e.g. the learn-all chat command). Does not equip the
+        /// techniques or grant the Combat Analyzer perk; the player still equips them through the
+        /// Techniques window. Returns the number of techniques newly added to the player's learned set.
+        /// </summary>
+        public static int GrantAllTechniques(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return 0;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            var learnedCount = 0;
+            foreach (var feat in _techniques.Keys)
+            {
+                if (dbPlayer.LearnedTechniques.ContainsKey(feat))
+                    continue;
+
+                dbPlayer.LearnedTechniques[feat] = DateTime.UtcNow;
+                learnedCount++;
+            }
+
+            if (learnedCount > 0)
+                DB.Set(dbPlayer);
+
+            return learnedCount;
+        }
+
+        /// <summary>
         /// Returns the maximum number of technique slots available to a player.
         /// Zero if the player does not have the Combat Analyzer perk.
         /// </summary>

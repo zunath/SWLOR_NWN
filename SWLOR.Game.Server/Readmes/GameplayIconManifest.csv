@@ -681,7 +681,7 @@
 "Ability","WristRocket3","WristRocket3","Harmful","3","ife_wristrocket3","SWLOR_Haks\sw_2da\feat.2da"
 "Feat","AccessoryBlueprints1","AccessoryBlueprints1","Passive","1","ife_bp_ring","SWLOR_Haks\sw_2da\feat.2da"
 "Feat","AdaptivePrecisionStrikeTrait","AdaptivePrecisionStrikeTrait","Passive",,"ife_adptprecstrk","SWLOR_Haks\sw_2da\feat.2da"
-"Feat","AegisEternal1","AegisEternal1","Harmful","1","ife_aegisetern","SWLOR_Haks\sw_2da\feat.2da;SWLOR_Haks\sw_2da\spells.2da"
+"Feat","AegisEternal1","AegisEternal1","Self","1","ife_aegisetern","SWLOR_Haks\sw_2da\feat.2da;SWLOR_Haks\sw_2da\spells.2da"
 "Feat","AfflictionMasteryTrait","AfflictionMasteryTrait","Passive",,"ife_affl_mstry","SWLOR_Haks\sw_2da\feat.2da"
 "Feat","AlacrityTrait","AlacrityTrait","Passive",,"ife_alac","SWLOR_Haks\sw_2da\feat.2da"
 "Feat","AmbushTacticsTrait","AmbushTacticsTrait","Passive",,"ife_amb_tacti","SWLOR_Haks\sw_2da\feat.2da"

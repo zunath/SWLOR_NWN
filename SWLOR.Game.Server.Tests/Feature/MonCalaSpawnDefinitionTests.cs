@@ -108,9 +108,12 @@ public class MonCalaSpawnDefinitionTests
 
             var rareTable = tables[spec.RareLootTableId];
             rareTable.IsRare.Should().BeTrue();
-            rareTable.Should().HaveCount(expectedRecipeResrefs.Length);
-            rareTable.Should().OnlyContain(item => item.IsRare && item.MaxQuantity == 1 && item.Weight == 1);
-            rareTable.Select(item => item.Resref).Should().BeEquivalentTo(expectedRecipeResrefs);
+
+            // Incubation field notes ride along in world-boss rare tables; the recipe pool contract below ignores them.
+            var recipeItems = rareTable.Where(item => !item.Resref.StartsWith("fnote_")).ToArray();
+            recipeItems.Should().HaveCount(expectedRecipeResrefs.Length);
+            recipeItems.Should().OnlyContain(item => item.IsRare && item.MaxQuantity == 1 && item.Weight == 1);
+            recipeItems.Select(item => item.Resref).Should().BeEquivalentTo(expectedRecipeResrefs);
 
             var componentTable = tables[spec.ComponentLootTableId];
             componentTable.IsRare.Should().BeFalse();

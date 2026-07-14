@@ -89,9 +89,58 @@ Use this checklist when building the next capstone quest line.
    - Run focused tests covering quest definitions, dialogue snippets, encounter activators, NPC ability packages, Bible rows, icon coverage, and spawn placement.
    - Update this plan with manual toolset steps, unresolved area-builder follow-ups, and an in-game progression pass checklist.
 
+## Quest Giver Placements
+
+All 40 capstone quest givers (39 lines plus Blood Frenzy's Sera Vonn) are hand-placed, each in its **own distinct** safe, non-dungeon area on the package's planet — one giver per area, never bunched. The only exception is the three Dathomir hubs: Dathomir has just three non-dungeon areas (everything else is beast wilderness with spawn tables) for its six beast-mastery givers, so those hubs carry two each. Givers must never stand in an `IS_DUNGEON` area, a `CREATURE_SPAWN_TABLE_ID` area, or a sub-space that is part of a dungeon/restricted flow (the casino backroom, for example). Each giver keeps its unique name and a distinct `Appearance_Head`, and wears a themed outfit (Unit KX-17 is a droid). Journal delivery text (Return/Bring/Deliver/Report) names the giver's specific area. Coverage: `CapstoneQuestGiverPlacementTests` (placement + one-per-area spread + non-dungeon + uniqueness), plus `DathomirGrottoApexDenPlacementTests` and `FightClubBackroomsPlacementTests`. Positions were set from module coordinates near existing area NPCs; verify on valid walkmesh in the toolset. Placement changes need a module repack on deploy.
+
+| Content Package | Quest Giver (resref) | Placed Area (git) |
+| --- | --- | --- |
+| Veles Militia Annex | Captain Tov Renn (`cq_invinc`) | Viscara - Veles - Sheriff/Clinic (`veles_sheriff`) |
+| Veles Militia Annex | Mikka Varn (`cq_vitrupt`) | Viscara - Veles - Racin' Jims (`veles_cantina`) |
+| Veles Militia Annex | Dalen Orso (`cq_sysshut`) | Viscara - Veles - Czerka Tower (`veles_cz_tower`) |
+| Viscara Republic Engineering Bunker | Aric Jorr (`cq_killbeacon`) | Viscara - Republic Base - Entrance (`v_repubbase_1`) |
+| Viscara Republic Engineering Bunker | Nella Voss (`cq_embunker`) | Viscara - Republic Base - Exterior (`v_repubbase_ext`) |
+| Viscara Republic Engineering Bunker | Varen Kell (`cq_deccommand`) | Viscara - Republic Base - Combat Deck (`v_repubbase_cd`) |
+| Dantooine Jedi Enclave Trial Halls | Talan Rees (`cq_sabstorm`) | Dantooine - Jedi Enclave (`dan_jedienclave`) |
+| Dantooine Jedi Enclave Trial Halls | Miris Aven (`cq_guardmst`) | Dantooine - Jedi Library (`dan_jedlibrary`) |
+| Dantooine Jedi Enclave Trial Halls | Jora Sel (`cq_sabcycl`) | Dantooine - Interior (`dan_interiors`) |
+| Dantooine Medical Sublevel | Kavi Dorn (`cq_emcocktail`) | Dantooine - Republic Med Center (`dan_repubmed`) |
+| Dantooine Medical Sublevel | Edda Maln (`cq_holdline`) | Dantooine - Republic Garrison (`dan_repgarrison`) |
+| Dantooine Medical Sublevel | Tessa Quell (`cq_infconduit`) | Dantooine - Medical Interior (`dan_medinterior`) |
+| Korriban Forge Caverns | Valis Korr (`cq_absdef`) | Korriban - Sith Academy (`ar_scor_kacademy`) |
+| Korriban Forge Caverns | Senn Dralok (`cq_soulasc`) | Korriban - Wasteland Interiors (`scor_knwinterior`) |
+| Korriban Forge Caverns | Maar Veth (`cq_forcebane`) | Korriban - Valley Temples (`ar_scor_kortemp`) |
+| Korriban Sith Crypt Depths | Seris Nahl (`cq_lightstand`) | Korriban - Starport (`korribanlandingp`) |
+| Korriban Sith Crypt Depths | Neth Kyr (`cq_darkhung`) | Korriban - Starport - Cantina (`ar_scor_korrcan`) |
+| Korriban Sith Crypt Depths | Acolyte Varn (`cq_eclipse`) | Korriban - Wastelands Tunnels (`scor_kscaves`) |
+| CZ-220 Breaker Yard | Tressa Kade (`cq_adamguard`) | CZ-220 - Offices & Labs (`nanostation015`) |
+| CZ-220 Breaker Yard | Borrik Sen (`cq_scraplock`) | CZ-220 - Hangar (`czs220_hangar`) |
+| CZ-220 Breaker Yard | Unit KX-17 (`cq_worldbrk`, droid) | CZ-220 - Maintenance Level (`czs220_maintlvl`) |
+| Anchorhead Canyon Range | Marda Voss (`cq_unmovctr`) | Tatooine - Anchorhead - Cantina (`tat_anc_cantina`) |
+| Anchorhead Canyon Range | Jek Talin (`cq_lastword`) | Tatooine - Anchorhead - Smuggler's Den (`tosche_cantina_s`) |
+| Anchorhead Canyon Range | Pavo Orrel (`cq_deadhand`) | Tatooine - Anchorhead - Club d'Ash (`tochee_cantina`) |
+| Czerka Arms Test Range | Ressa Vale (`cq_killbox`) | Smuggler's Moon - Czerka Arms, Store (`pw_ar_nsczgnstr`) |
+| Czerka Arms Test Range | Orin Tal (`cq_oneshot`) | Smuggler's Moon - Czerka Shipyard Office (`pw_ar_czoffice`) |
+| Czerka Arms Test Range | Varik Dane (`cq_rainsteel`) | Smuggler's Moon - Fabrication Facility (`pw_ar_nscrafting`) |
+| Hutlar Qion Test Site | Ruk Halven (`cq_thermdet`) | Hutlar - Outpost (`hutlar_outpost`) |
+| Hutlar Qion Test Site | Miri Koss (`cq_overbarr`) | Hutlar - Fort Ka'ra (`sol_mandaloriani`) |
+| Hutlar Qion Test Site | Selka Vorn (`cq_perflurry`) | Hutlar - Qion Box Canyon (`sol_hutlarqcanyo`) |
+| Dathomir Grotto Apex Den | Nalka Rinn (`cq_primover`) | Dathomir - Jungle Landing (`dath_landingpad`) |
+| Dathomir Grotto Apex Den | Voro Thane (`cq_untinst`) | Dathomir - Czerka Base (`dath_cz_baseok`) |
+| Dathomir Grotto Apex Den | Eshka Korr (`cq_forcebeast`) | Dathomir - Waterfall Ruins (`dath_waterfallru`) |
+| Dathomir Tarn Jungle Preserve | Talra Venn (`cq_apexbite`) | Dathomir - Jungle Landing (`dath_landingpad`) |
+| Dathomir Tarn Jungle Preserve | Oren Krast (`cq_unbrbeast`) | Dathomir - Czerka Base (`dath_cz_baseok`) |
+| Dathomir Tarn Jungle Preserve | Mira Syth (`cq_alpharhy`) | Dathomir - Waterfall Ruins (`dath_waterfallru`) |
+| Smuggler's Moon Fight Club Backrooms | Dax Rell (`cq_cripdef`) | Smuggler's Moon - Hyper Dive Cantina (`pw_ar_nars_canhd`) |
+| Smuggler's Moon Fight Club Backrooms | Iven Brask (`cq_tempbloom`) | Smuggler's Moon - The Tilted Visor (`pw_ar_bhbar`) |
+| Smuggler's Moon Fight Club Backrooms | Nyra Tane (`cq_redbloom`) | Smuggler's Moon - Casino (`pw_ar_nscasino`) |
+| Viscara Sewers Depths (Blood Frenzy) | Sera Vonn (`sera_vonn`) | Viscara - Veles - Shops (`veles_shops`) |
+
 ## Remaining Capstone Quest Setup
 
 The skill-owned capstone quest definitions define the 39 remaining capstone quest lines after Blood Frenzy. Each line has five quests, rank prerequisites on every step, proof key items granted from quest credit, a final quest achievement, NPC group identifiers for every objective, deterministic enemy/waypoint/spawn/loot asset IDs, and a final quest ID used by the matching capstone perk requirement.
+
+All 40 quest givers are now placed (see the Quest Giver Placements table above); the earlier "placed quest givers" gate is met. What remains per package is the dungeon/boss-arena content: gated dungeon areas, general spawn waypoints, and `quest_enc` boss activator instances.
 
 The reusable setup exists now: quest definitions, dedicated quest giver UTC/DLG files, creature palette entries for those quest givers, enemy UTCs, stat skins, weapons, spawn table definitions, loot table definitions, and waypoint palette blueprints. These lines are not ready for in-game progression testing until their areas, gated access objects, placed quest givers, placed spawn waypoints, and `quest_enc` boss activator instances are created.
 
@@ -107,7 +156,9 @@ The 13 content packages below therefore represent 26 physical areas to build: 13
 Current build state (2026-07-11):
 
 - **Dathomir Grotto Apex Den** is fully placed and wired (see the dedicated section below). Its three lines await only an in-game progression pass and a position review.
-- **Czerka Arms Test Range** has an imported dungeon area (`pw_ar_czarmrange`, `[KA] Czerka Weapons Testing Facility`) that is decoration-only: no boss arena, no transitions into it, and no capstone wiring. Do not wire its three lines until the attached boss arena exists.
+- **Czerka Arms Test Range** has an imported dungeon area (`pw_ar_czarmrange`, `Smuggler's Moon - Czerka Weapons Testing Facility`) that is decoration-only: no boss arena, no transitions into it, and no capstone wiring. Do not wire its three lines until the attached boss arena exists.
+- **Smuggler's Moon Fight Club Backrooms** now has its dungeon area imported and live (2026-07-13): `pw_sc_emfbackr` (`Smuggler's Moon - Fight Club Backrooms`) carries `CREATURE_SPAWN_TABLE_ID = CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS`, `IS_DUNGEON`, `MINI_MAP_DISABLED`, `MAP_KEY_ITEM_ID = 89`, `PLANET_TYPE_ID = 256`, and a `STUCK_WAYPOINT`. The `[Back Rooms]` tele_obj in `pw_ar_nsficlub` is key-gated with `KEY_ITEM_ID = 110` and `TELEPORT_PARTY_MEMBERS = 1`. The three quest givers are placed in `Smuggler's Moon - Hyper Dive Cantina` (`pw_ar_nars_canhd`), a safe, freely reachable social hub off The Hub with no enemy spawns: Dax Rell (`cq_cripdef`), Iven Brask (`cq_tempbloom`), and Nyra Tane (`cq_redbloom`) stand as a fixers' huddle on the south-central floor. Neither the Fight Club floor (arena-fighter spawn waypoints) nor the casino backroom (part of the casino's dungeon/restricted flow) may host them. Quest journal "return to" text names the Hyper Dive Cantina. Covered by `FightClubBackroomsPlacementTests`. Still missing: the attached Private Pit boss arena (warden/master `quest_enc` activators and boss spawn waypoints go there, not in the dungeon).
+- **Smuggler's Moon Fight Club Backrooms** has a Blood Frenzy-style rare loot layer (2026-07-13): six `NARSHADDAA_FIGHT_CLUB_*_RARES` tables in `NarShaddaaLootTableDefinition` with 39 new fight-club-themed items, wired as `LOOT_TABLE_2` at 5% on the adept/specialist/inner-circle/warden enemies (masters drop ordinary boss loot only, matching Kess). `LOOT_TABLE_1` still points at the generic lesson/boss tables the tests pin. Other packages can copy this pattern when their areas are built. The new items require a module repack on deploy.
 - The remaining 11 packages have no physical areas yet.
 
 ### Generated Reusable Content

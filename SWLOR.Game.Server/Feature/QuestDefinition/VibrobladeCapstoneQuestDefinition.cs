@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible Veles Drill Ledger is secured. Return it to Captain Tov Renn.")
+                    "The Invincible Veles Drill Ledger is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible Militia Range Relay is secured. Return it to Captain Tov Renn.")
+                    "The Invincible Militia Range Relay is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Invincible Scored Challenge Badge is secured. Return it to Captain Tov Renn.")
+                    "The warden is defeated and the Invincible Scored Challenge Badge is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The inner circle is broken and the Invincible Captain's Challenge Chit is secured. Return it to Captain Tov Renn.")
+                    "The inner circle is broken and the Invincible Captain's Challenge Chit is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible master is defeated and the annex is quiet. Report to Captain Tov Renn.")
+                    "The Invincible master is defeated and the annex is quiet. Report to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

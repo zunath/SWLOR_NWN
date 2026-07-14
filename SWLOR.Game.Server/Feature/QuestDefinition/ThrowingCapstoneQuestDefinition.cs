@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Rain of Steel Czerka Test Docket. Deliver it to Varik Dane on Smuggler's Moon.")
+                    "You recovered the Rain of Steel Czerka Test Docket. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Rain of Steel Blast-Cell Regulator. Deliver it to Varik Dane on Smuggler's Moon.")
+                    "You recovered the Rain of Steel Blast-Cell Regulator. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Rain of Steel Scored Range Crest from the warden. Deliver it to Varik Dane on Smuggler's Moon.")
+                    "You took the Rain of Steel Scored Range Crest from the warden. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Rain of Steel Czerka Clearance Chit. Deliver it to Varik Dane on Smuggler's Moon.")
+                    "You recovered the Rain of Steel Czerka Clearance Chit. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Rain of Steel master is defeated. Report to Varik Dane on Smuggler's Moon.")
+                    "The Rain of Steel master is defeated. Report to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Perfect Flurry Qion Test Log. Deliver it to Selka Vorn on Hutlar.")
+                    "You recovered the Perfect Flurry Qion Test Log. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Perfect Flurry Cryo-Range Regulator. Deliver it to Selka Vorn on Hutlar.")
+                    "You recovered the Perfect Flurry Cryo-Range Regulator. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Perfect Flurry Frostburned Test Crest from the warden. Deliver it to Selka Vorn on Hutlar.")
+                    "You took the Perfect Flurry Frostburned Test Crest from the warden. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Perfect Flurry Site Chief's Override Chip. Deliver it to Selka Vorn on Hutlar.")
+                    "You recovered the Perfect Flurry Site Chief's Override Chip. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Perfect Flurry master is defeated. Report to Selka Vorn on Hutlar.")
+                    "The Perfect Flurry master is defeated. Report to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

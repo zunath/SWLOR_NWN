@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Cyclone Enclave Trial Slate. Return it to Jora Sel.")
+                    "You secured the Saber Cyclone Enclave Trial Slate. Return it to Jora Sel at the colony interior on Dantooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Saber Cyclone Fractured Trial Sigil secured. Return to Jora Sel.")
+                    "The warden is defeated and the Saber Cyclone Fractured Trial Sigil secured. Return to Jora Sel at the colony interior on Dantooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Council Trial Chit is recovered. Return it to Jora Sel.")
+                    "The Saber Cyclone Council Trial Chit is recovered. Return it to Jora Sel at the colony interior on Dantooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone master is defeated. Return to Jora Sel.")
+                    "The Saber Cyclone master is defeated. Return to Jora Sel at the colony interior on Dantooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Infinite Conduit Triage Ward Ledger. Bring it to Tessa Quell.")
+                    "You recovered the Infinite Conduit Triage Ward Ledger. Bring it to Tessa Quell at the Dantooine medical center.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit Kolto Conduit Coupler is recovered. Return it to Tessa Quell.")
+                    "The Infinite Conduit Kolto Conduit Coupler is recovered. Return it to Tessa Quell at the Dantooine medical center.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Infinite Conduit Fractured Ward Sigil secured. Return to Tessa Quell.")
+                    "The warden is defeated and the Infinite Conduit Fractured Ward Sigil secured. Return to Tessa Quell at the Dantooine medical center.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit Matron's Ward Token is recovered. Bring it to Tessa Quell.")
+                    "The Infinite Conduit Matron's Ward Token is recovered. Bring it to Tessa Quell at the Dantooine medical center.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit master is defeated. Return to Tessa Quell.")
+                    "The Infinite Conduit master is defeated. Return to Tessa Quell at the Dantooine medical center.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

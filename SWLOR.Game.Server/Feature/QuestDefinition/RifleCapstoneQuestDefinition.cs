@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box Czerka Test Docket is secured. Deliver it to Ressa Vale.")
+                    "The Kill Box Czerka Test Docket is secured. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box Blast-Cell Regulator is recovered. Deliver it to Ressa Vale.")
+                    "The Kill Box Blast-Cell Regulator is recovered. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box Scored Range Crest is taken from the warden. Return it to Ressa Vale.")
+                    "The Kill Box Scored Range Crest is taken from the warden. Return it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box Czerka Clearance Chit is secured. Deliver it to Ressa Vale.")
+                    "The Kill Box Czerka Clearance Chit is secured. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box master is defeated. Return to Ressa Vale.")
+                    "The Kill Box master is defeated. Return to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Czerka Test Docket is secured. Return it to Orin Tal.")
+                    "The One Shot Czerka Test Docket is secured. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Blast-Cell Regulator is recovered. Return it to Orin Tal.")
+                    "The One Shot Blast-Cell Regulator is recovered. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Scored Range Crest is taken from the warden. Return it to Orin Tal.")
+                    "The One Shot Scored Range Crest is taken from the warden. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Czerka Clearance Chit is secured. Return it to Orin Tal.")
+                    "The One Shot Czerka Clearance Chit is secured. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot master is defeated. Return to Orin Tal.")
+                    "The One Shot master is defeated. Return to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

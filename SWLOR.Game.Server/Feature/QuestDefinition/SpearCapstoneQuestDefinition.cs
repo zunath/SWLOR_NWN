@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Forge Heat Ledger is secured. Return it to Maar Veth on Korriban.")
+                    "The Forcebane Forge Heat Ledger is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Sith Tempering Matrix is secured. Return it to Maar Veth on Korriban.")
+                    "The Forcebane Sith Tempering Matrix is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Cracked Anvil Sigil is secured. Return it to Maar Veth on Korriban.")
+                    "The Forcebane Cracked Anvil Sigil is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Overseer's Clearance Token is secured. Return it to Maar Veth on Korriban.")
+                    "The Forcebane Overseer's Clearance Token is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane master is defeated. Return to Maar Veth on Korriban to complete the lesson.")
+                    "The Forcebane master is defeated. Return to Maar Veth at the Valley of the Dark Lords on Korriban to complete the lesson.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense Backroom Bout Ledger is secured. Return it to Dax Rell on Nar Shaddaa.")
+                    "The Crippling Defense Backroom Bout Ledger is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense Ring Shock Regulator is secured. Return it to Dax Rell on Nar Shaddaa.")
+                    "The Crippling Defense Ring Shock Regulator is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense Cracked Pit Sigil is secured. Return it to Dax Rell on Nar Shaddaa.")
+                    "The Crippling Defense Cracked Pit Sigil is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense Promoter's Payout Chit is secured. Return it to Dax Rell on Nar Shaddaa.")
+                    "The Crippling Defense Promoter's Payout Chit is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense master is defeated. Return to Dax Rell on Nar Shaddaa to complete the lesson.")
+                    "The Crippling Defense master is defeated. Return to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa to complete the lesson.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

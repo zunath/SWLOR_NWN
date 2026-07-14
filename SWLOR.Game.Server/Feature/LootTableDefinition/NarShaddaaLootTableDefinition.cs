@@ -24,8 +24,69 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			SlaverCaptain();
 			GreatArkanianDragon();
 			DragonLoot();
+			FightClubBackroomsRares();
 
 			return _builder.Build();
+		}
+
+		private void FightClubBackroomsRares()
+		{
+			_builder.Create("NARSHADDAA_FIGHT_CLUB_LANCER_RARES")
+				.IsRare()
+				.AddItem("pit_shockpike", 1, 1, true)
+				.AddItem("gatehook_spear", 1, 1, true)
+				.AddItem("pitguard_wraps", 1, 1, true)
+				.AddItem("ringside_belt", 1, 1, true)
+				.AddItem("oddsman_mantle", 1, 1, true)
+				.AddItem("pit_signet", 1, 1, true)
+				.AddItem("lowblow_visor", 1, 1, true)
+				.AddItem("sawdust_boots", 1, 1, true);
+
+			_builder.Create("NARSHADDAA_FIGHT_CLUB_STORM_DANCER_RARES")
+				.IsRare()
+				.AddItem("squall_blades", 1, 1, true)
+				.AddItem("crosswind_edge", 1, 1, true)
+				.AddItem("dancer_wraps", 1, 1, true)
+				.AddItem("galewalk_boots", 1, 1, true)
+				.AddItem("updraft_mantle", 1, 1, true)
+				.AddItem("surge_band", 1, 1, true)
+				.AddItem("stormbet_charm", 1, 1, true)
+				.AddItem("headwind_visor", 1, 1, true);
+
+			_builder.Create("NARSHADDAA_FIGHT_CLUB_CRIMSON_DUELIST_RARES")
+				.IsRare()
+				.AddItem("scarlet_blades", 1, 1, true)
+				.AddItem("lastcall_edge", 1, 1, true)
+				.AddItem("crimson_wraps", 1, 1, true)
+				.AddItem("redline_boots", 1, 1, true)
+				.AddItem("victor_mantle", 1, 1, true)
+				.AddItem("bloodpact_ring", 1, 1, true)
+				.AddItem("lastbet_charm", 1, 1, true)
+				.AddItem("redrule_belt", 1, 1, true);
+
+			_builder.Create("NARSHADDAA_FIGHT_CLUB_LANCER_WARDEN_RARES")
+				.IsRare()
+				.AddItem("pitwarden_pike", 1, 1, true)
+				.AddItem("gatekeep_plate", 1, 1, true)
+				.AddItem("lockdown_belt", 1, 1, true)
+				.AddItem("holdfast_bracer", 1, 1, true)
+				.AddItem("pitkeeper_mask", 1, 1, true);
+
+			_builder.Create("NARSHADDAA_FIGHT_CLUB_STORM_DANCER_WARDEN_RARES")
+				.IsRare()
+				.AddItem("stormcall_blades", 1, 1, true)
+				.AddItem("eyewall_harness", 1, 1, true)
+				.AddItem("stillair_gloves", 1, 1, true)
+				.AddItem("pressure_belt", 1, 1, true)
+				.AddItem("eyestorm_bracer", 1, 1, true);
+
+			_builder.Create("NARSHADDAA_FIGHT_CLUB_CRIMSON_DUELIST_WARDEN_RARES")
+				.IsRare()
+				.AddItem("bloodprice_edge", 1, 1, true)
+				.AddItem("redcrown_plate", 1, 1, true)
+				.AddItem("bleddry_gloves", 1, 1, true)
+				.AddItem("tithe_belt", 1, 1, true)
+				.AddItem("housecut_mask", 1, 1, true);
 		}
 
 		private void RedBlades()

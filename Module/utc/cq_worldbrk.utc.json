@@ -6,7 +6,7 @@
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 6
+    "value": 10098
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -179,15 +179,7 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 2,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "cologarb4"
-        }
-      }
-    ]
+    "value": []
   },
   "FactionID": {
     "type": "word",
@@ -364,7 +356,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 314
+    "value": 4150
   },
   "Race": {
     "type": "byte",

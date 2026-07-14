@@ -70379,6 +70379,435 @@
                             "type": "resref",
                             "value": "vet_trnsaber"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pit Shockpike"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pit_shockpike"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gate-Hook Spear"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gatehook_spear"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pit Guard Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pitguard_wraps"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ringside Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ringside_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Oddsman's Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "oddsman_mantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pit Circuit Signet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pit_signet"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Low-Blow Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lowblow_visor"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sawdust Ring Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sawdust_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Squall Twin Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "squall_blades"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Crosswind Twin Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "crosswind_edge"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ring Dancer Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dancer_wraps"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Galewalk Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "galewalk_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Updraft Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "updraft_mantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Surge Band"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "surge_band"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Storm-Bet Charm"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "stormbet_charm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Headwind Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "headwind_visor"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Scarlet Twin Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "scarlet_blades"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Last-Call Twin Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lastcall_edge"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Crimson Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "crimson_wraps"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Redline Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "redline_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Victor's Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "victor_mantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blood-Pact Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bloodpact_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Last-Bet Charm"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lastbet_charm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Red-Rule Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "redrule_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pit Warden's Pike"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pitwarden_pike"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gatekeeper's Plate"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gatekeep_plate"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lockdown Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lockdown_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Holdfast Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "holdfast_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pit Keeper's Mask"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pitkeeper_mask"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Stormcall Twin Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "stormcall_blades"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eyewall Harness"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eyewall_harness"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Still-Air Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "stillair_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pressure Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pressure_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eye-of-Storm Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eyestorm_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blood-Price Twin Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bloodprice_edge"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Red Crown Plate"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "redcrown_plate"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bled-Dry Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bleddry_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tithe Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tithe_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "House-Cut Mask"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "housecut_mask"
+                          }
                         }
                       ]
                     },

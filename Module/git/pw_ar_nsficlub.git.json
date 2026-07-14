@@ -40,6 +40,26 @@
       "MusicNight": {
         "type": "int",
         "value": 333
+      },
+      "VarTable": {
+        "type": "list",
+        "value": [
+          {
+            "__struct_id": 0,
+            "Name": {
+              "type": "cexostring",
+              "value": "PLANET_TYPE_ID"
+            },
+            "Type": {
+              "type": "dword",
+              "value": 1
+            },
+            "Value": {
+              "type": "int",
+              "value": 256
+            }
+          }
+        ]
       }
     }
   },
@@ -49648,6 +49668,21 @@
                 "type": "int",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
             }
           ]
         },
@@ -59353,6 +59388,21 @@
                 "type": "int",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
             }
           ]
         },
@@ -59668,6 +59718,21 @@
               "Name": {
                 "type": "cexostring",
                 "value": "VISIBILITY_HIDDEN_DEFAULT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
               },
               "Type": {
                 "type": "dword",
@@ -60181,7 +60246,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": ""
+                "value": "The backroom door does not move. A Smuggler's Moon Fight Club Backrooms key from one of the trainers is required."
               }
             },
             {
@@ -60196,7 +60261,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 110
               }
             },
             {
@@ -60227,6 +60292,21 @@
               "Value": {
                 "type": "int",
                 "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
               }
             }
           ]

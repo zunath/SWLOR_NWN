@@ -65,22 +65,10 @@ public class DathomirGrottoApexDenPlacementTests
     }
 
     [Test]
-    public void ApexDenQuestGivers_ArePlacedAtTheSafeJungleLanding()
+    public void GrottoCaverns_HoldNoQuestGivers()
     {
-        using var landing = LoadModuleJson("git", "dath_landingpad.git.json");
-
-        var creatureResrefs = landing.RootElement
-            .GetProperty("Creature List")
-            .GetProperty("value")
-            .EnumerateArray()
-            .Select(creature => GetString(creature, "TemplateResRef"))
-            .ToArray();
-
-        creatureResrefs.Should().ContainSingle(resref => resref == "cq_primover");
-        creatureResrefs.Should().ContainSingle(resref => resref == "cq_untinst");
-        creatureResrefs.Should().ContainSingle(resref => resref == "cq_forcebeast");
-
-        // The Grotto Caverns have ambient enemy spawns, so the trainers must not stand there.
+        // Quest giver placement is owned by CapstoneQuestGiverPlacementTests; the spawn-bearing
+        // Grotto Caverns (the gate camp) must never host a trainer.
         using var cavern = LoadModuleJson("git", CavernAreaFile);
         cavern.RootElement
             .GetProperty("Creature List")

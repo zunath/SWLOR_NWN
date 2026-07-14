@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 7.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -108,28 +108,28 @@
         }
       },
       {
-        "__struct_id": 1,
+        "__struct_id": 2,
         "Feat": {
           "type": "word",
           "value": 1823
         }
       },
       {
-        "__struct_id": 1,
+        "__struct_id": 3,
         "Feat": {
           "type": "word",
           "value": 1820
         }
       },
       {
-        "__struct_id": 1,
+        "__struct_id": 4,
         "Feat": {
           "type": "word",
           "value": 1824
         }
       },
       {
-        "__struct_id": 1,
+        "__struct_id": 5,
         "Feat": {
           "type": "word",
           "value": 1768
@@ -191,7 +191,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 201
+    "value": 193
   },
   "NaturalAC": {
     "type": "byte",

@@ -36,9 +36,27 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, _, _, _) =>
                 {
-                    // Pass uiTarget = user so the window also opens for DM clients (TogglePlayerWindow
-                    // requires a uiTarget for non-PCs).
-                    Gui.TogglePlayerWindow(user, GuiWindowType.HpTracker, null, OBJECT_INVALID, user);
+                    // Standard window-open pattern (mirrors /dice, /dmtools). A regular PC opens it directly.
+                    // A DM must be possessing a creature: the window then renders on that creature's client
+                    // (uiTarget) while its state lives under the master DM. A bare, unpossessed DM avatar
+                    // cannot host a NUI window, so nothing opens for it — same as every SWLOR NUI window.
+                    var player = user;
+                    var uiTarget = OBJECT_INVALID;
+                    if (GetIsDMPossessed(player))
+                    {
+                        uiTarget = player;
+                        player = GetMaster(player);
+                    }
+
+                    // A bare (unpossessed) DM avatar can't host a NUI window (this is the same guard
+                    // TogglePlayerWindow uses). Explain how to proceed instead of silently doing nothing.
+                    if (!GetIsPC(player) && uiTarget == OBJECT_INVALID)
+                    {
+                        SendMessageToPC(user, ColorToken.Red("The HP Tracker window can't open for an unpossessed DM. Possess a creature first, or use a player character."));
+                        return;
+                    }
+
+                    Gui.TogglePlayerWindow(player, GuiWindowType.HpTracker, null, OBJECT_INVALID, uiTarget);
                 });
         }
 

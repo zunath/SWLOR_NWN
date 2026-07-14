@@ -308,11 +308,13 @@ namespace SWLOR.ContentBuilder.Windows
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Doors", Binding = new Binding(nameof(BatchItem.DoorTransitions)), Width = new DataGridLength(48) });
             batchGroup.Children.Add(_batchGrid);
 
-            var batchButtons = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 6, 0, 0) };
-            _removeSelectedButton = new Button { Content = "Remove Selected", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(6, 2, 6, 2) };
-            _clearBatchButton = new Button { Content = "Clear", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(6, 2, 6, 2) };
-            _buildModuleButton = new Button { Content = "Build Review Module", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(6, 2, 6, 2) };
-            _buildErfButton = new Button { Content = "Build ERF", Padding = new Thickness(6, 2, 6, 2) };
+            // WrapPanel, not horizontal StackPanel: four buttons exceed the left panel's width at the
+            // default window size, and a StackPanel just clips the overflow off the panel edge.
+            var batchButtons = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 6, 0, 0) };
+            _removeSelectedButton = new Button { Content = "Remove Selected", Margin = new Thickness(0, 0, 6, 4), Padding = new Thickness(6, 2, 6, 2) };
+            _clearBatchButton = new Button { Content = "Clear", Margin = new Thickness(0, 0, 6, 4), Padding = new Thickness(6, 2, 6, 2) };
+            _buildModuleButton = new Button { Content = "Build Review Module", Margin = new Thickness(0, 0, 6, 4), Padding = new Thickness(6, 2, 6, 2) };
+            _buildErfButton = new Button { Content = "Build ERF", Margin = new Thickness(0, 0, 0, 4), Padding = new Thickness(6, 2, 6, 2) };
             batchButtons.Children.Add(_removeSelectedButton);
             batchButtons.Children.Add(_clearBatchButton);
             batchButtons.Children.Add(_buildModuleButton);

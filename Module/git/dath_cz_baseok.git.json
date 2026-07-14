@@ -40,26 +40,6 @@
       "MusicNight": {
         "type": "int",
         "value": 0
-      },
-      "VarTable": {
-        "type": "list",
-        "value": [
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "PLANET_TYPE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 1
-            },
-            "Value": {
-              "type": "int",
-              "value": 64
-            }
-          }
-        ]
       }
     }
   },
@@ -3694,7 +3674,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 6.445972935894159e-44
+                "value": 6.445972935894159e-044
               },
               "XPosition": {
                 "type": "float",
@@ -4279,23 +4259,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.7071066498756409
         },
         "XPosition": {
           "type": "float",
-          "value": 58.630
+          "value": 78.46215057373047
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.70710688829422
         },
         "YPosition": {
           "type": "float",
-          "value": 42.780
+          "value": 54.1015510559082
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.000
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -5303,23 +5283,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.707
+          "value": -0.7071066498756409
         },
         "XPosition": {
           "type": "float",
-          "value": 61.230
+          "value": 61.22999954223633
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.70710688829422
         },
         "YPosition": {
           "type": "float",
-          "value": 42.780
+          "value": 42.77999877929688
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.000
+          "value": 0.0
         }
       }
     ]

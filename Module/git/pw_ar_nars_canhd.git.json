@@ -8377,7 +8377,7 @@
               },
               "ArmorPart_Belt": {
                 "type": "byte",
-                "value": 25
+                "value": 0
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
@@ -8433,7 +8433,7 @@
               },
               "ArmorPart_Robe": {
                 "type": "byte",
-                "value": 10
+                "value": 200
               },
               "ArmorPart_RShin": {
                 "type": "byte",
@@ -8449,7 +8449,7 @@
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 102
+                "value": 54
               },
               "BaseItem": {
                 "type": "int",
@@ -8461,11 +8461,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 22
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 22
               },
               "Cost": {
                 "type": "dword",
@@ -8491,7 +8491,7 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 45
               },
               "Leather2Color": {
                 "type": "byte",
@@ -8501,16 +8501,16 @@
                 "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "NPC Smuggler Outfit Male"
+                  "0": "[NPC] Smuggler Outfit Female"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 6
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 58
+                "value": 6
               },
               "Plot": {
                 "type": "byte",
@@ -8530,15 +8530,15 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "npc_smuggler_m"
+                "value": "npc_smuggler_f"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "npc_smuggler_m"
+                "value": "npc_smuggler_f"
               },
               "xArmorPart_Belt": {
                 "type": "word",
-                "value": 25
+                "value": 0
               },
               "xArmorPart_LBice": {
                 "type": "word",
@@ -8594,7 +8594,7 @@
               },
               "xArmorPart_Robe": {
                 "type": "word",
-                "value": 10
+                "value": 200
               },
               "xArmorPart_RShin": {
                 "type": "word",
@@ -8610,11 +8610,11 @@
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 102
+                "value": 54
               },
               "XOrientation": {
                 "type": "float",
-                "value": 7.538985738067516e-43
+                "value": 7.538985738067516e-043
               },
               "XPosition": {
                 "type": "float",
@@ -9199,23 +9199,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.7071066498756409
         },
         "XPosition": {
           "type": "float",
-          "value": 47.200
+          "value": 52.85742950439453
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.70710688829422
         },
         "YPosition": {
           "type": "float",
-          "value": 45.500
+          "value": 47.46882629394531
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.000
+          "value": -5.7220458984375e-006
         }
       }
     ]

@@ -40,26 +40,6 @@
       "MusicNight": {
         "type": "int",
         "value": 510
-      },
-      "VarTable": {
-        "type": "list",
-        "value": [
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "PLANET_TYPE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 1
-            },
-            "Value": {
-              "type": "int",
-              "value": 2
-            }
-          }
-        ]
       }
     }
   },
@@ -12631,7 +12611,7 @@
         },
         "BodyPart_RFArm": {
           "type": "byte",
-          "value": 1
+          "value": 4
         },
         "BodyPart_RHand": {
           "type": "byte",
@@ -12753,15 +12733,15 @@
               },
               "ArmorPart_Belt": {
                 "type": "byte",
-                "value": 25
+                "value": 0
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 4
+                "value": 1
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 16
+                "value": 1
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
@@ -12769,7 +12749,7 @@
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 1
+                "value": 9
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -12777,11 +12757,11 @@
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 15
+                "value": 0
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 51
+                "value": 241
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -12789,15 +12769,15 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 50
+                "value": 237
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 4
+                "value": 1
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 16
+                "value": 1
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
@@ -12805,11 +12785,11 @@
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 1
+                "value": 9
               },
               "ArmorPart_Robe": {
                 "type": "byte",
-                "value": 10
+                "value": 0
               },
               "ArmorPart_RShin": {
                 "type": "byte",
@@ -12817,15 +12797,15 @@
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 15
+                "value": 0
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 51
+                "value": 241
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 102
+                "value": 61
               },
               "BaseItem": {
                 "type": "int",
@@ -12837,11 +12817,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 131
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 165
               },
               "Cost": {
                 "type": "dword",
@@ -12877,16 +12857,16 @@
                 "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "NPC Smuggler Outfit Male"
+                  "0": "[NPC] Smuggler Outfit 4 Female"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 6
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 58
+                "value": 6
               },
               "Plot": {
                 "type": "byte",
@@ -12906,23 +12886,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "npc_smuggler_m"
+                "value": "npc_smuggler4_f"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "npc_smuggler_m"
+                "value": "npc_smuggler4_f"
               },
               "xArmorPart_Belt": {
                 "type": "word",
-                "value": 25
+                "value": 0
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 4
+                "value": 1
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 16
+                "value": 1
               },
               "xArmorPart_LFoot": {
                 "type": "word",
@@ -12930,7 +12910,7 @@
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 1
+                "value": 9
               },
               "xArmorPart_LShin": {
                 "type": "word",
@@ -12938,11 +12918,11 @@
               },
               "xArmorPart_LShou": {
                 "type": "word",
-                "value": 15
+                "value": 0
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 51
+                "value": 241
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -12950,15 +12930,15 @@
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 50
+                "value": 237
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 4
+                "value": 1
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 16
+                "value": 1
               },
               "xArmorPart_RFoot": {
                 "type": "word",
@@ -12966,11 +12946,11 @@
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 1
+                "value": 9
               },
               "xArmorPart_Robe": {
                 "type": "word",
-                "value": 10
+                "value": 0
               },
               "xArmorPart_RShin": {
                 "type": "word",
@@ -12978,19 +12958,19 @@
               },
               "xArmorPart_RShou": {
                 "type": "word",
-                "value": 15
+                "value": 0
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 51
+                "value": 241
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 102
+                "value": 61
               },
               "XOrientation": {
                 "type": "float",
-                "value": 7.538985738067516e-43
+                "value": 7.538985738067516e-043
               },
               "XPosition": {
                 "type": "float",
@@ -13551,7 +13531,7 @@
         },
         "xBodyPart_RFArm": {
           "type": "word",
-          "value": 1
+          "value": 4
         },
         "xBodyPart_RHand": {
           "type": "word",
@@ -13575,23 +13555,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": -0.7071069478988648
         },
         "XPosition": {
           "type": "float",
-          "value": 13.690
+          "value": 14.82419109344482
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": -0.7071065902709961
         },
         "YPosition": {
           "type": "float",
-          "value": 9.970
+          "value": 10.11564064025879
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.200
+          "value": 0.2000014781951904
         }
       }
     ]

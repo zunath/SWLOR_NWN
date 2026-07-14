@@ -40,26 +40,6 @@
       "MusicNight": {
         "type": "int",
         "value": 442
-      },
-      "VarTable": {
-        "type": "list",
-        "value": [
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "PLANET_TYPE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 1
-            },
-            "Value": {
-              "type": "int",
-              "value": 64
-            }
-          }
-        ]
       }
     }
   },
@@ -489,7 +469,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.363116314379561e-43
+                "value": 3.363116314379561e-043
               },
               "XPosition": {
                 "type": "float",
@@ -1074,23 +1054,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.7071066498756409
         },
         "XPosition": {
           "type": "float",
-          "value": 53.460
+          "value": 12.69720077514648
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.70710688829422
         },
         "YPosition": {
           "type": "float",
-          "value": 5.860
+          "value": 39.17119598388672
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.640
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -1513,7 +1493,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.373272495038321e-43
+                "value": 1.373272495038321e-043
               },
               "XPosition": {
                 "type": "float",
@@ -2098,23 +2078,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.707
+          "value": -0.7071066498756409
         },
         "XPosition": {
           "type": "float",
-          "value": 56.060
+          "value": 56.06000137329102
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.70710688829422
         },
         "YPosition": {
           "type": "float",
-          "value": 5.860
+          "value": 5.860000133514404
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.640
+          "value": -0.6399999856948853
         }
       }
     ]

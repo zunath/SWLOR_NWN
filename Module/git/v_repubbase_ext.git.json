@@ -40,26 +40,6 @@
       "MusicNight": {
         "type": "int",
         "value": 396
-      },
-      "VarTable": {
-        "type": "list",
-        "value": [
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "PLANET_TYPE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 1
-            },
-            "Value": {
-              "type": "int",
-              "value": 1
-            }
-          }
-        ]
       }
     }
   },
@@ -43938,23 +43918,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.7071066498756409
         },
         "XPosition": {
           "type": "float",
-          "value": 53.000
+          "value": 47.68025588989258
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.707
+          "value": 0.70710688829422
         },
         "YPosition": {
           "type": "float",
-          "value": 73.000
+          "value": 50.60551071166992
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.000
+          "value": -5.7220458984375e-006
         }
       }
     ]

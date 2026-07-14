@@ -21,6 +21,7 @@ namespace SWLOR.ContentBuilder.Rendering
         private static readonly Color EntranceColor = Color.FromRgb(46, 139, 87);
         private static readonly Color BossColor = Color.FromRgb(178, 34, 34);
         private static readonly Color StandardRoomColor = Color.FromRgb(70, 105, 140);
+        private static readonly Color SetPieceBadgeColor = Color.FromArgb(200, 200, 200, 200);
         private static readonly Color OpenNonRoomColor = Color.FromRgb(150, 140, 120);
         private static readonly Color PartialColor = Color.FromRgb(120, 100, 70);
         private static readonly Color AccentColor = Color.FromRgb(20, 70, 90);
@@ -122,6 +123,29 @@ namespace SWLOR.ContentBuilder.Rendering
                     var centerX = offsetX + roomX * cell + cell / 2.0;
                     var centerY = offsetY + screenY * cell + cell / 2.0;
                     var radius = Math.Max(6.0, cell / 2.0 - 2.0);
+
+                    // Set-piece rooms (decorative wall chambers/alcoves stamped by LayoutGroupStamper)
+                    // are not gameplay rooms: no spawns, objectives, or transitions ever land in them.
+                    // Render a smaller hollow gray badge so previews don't imply a reachability problem.
+                    if (room.IsSetPiece)
+                    {
+                        var decoRadius = radius * 0.6;
+                        var decoPen = new Pen(new SolidColorBrush(SetPieceBadgeColor), Math.Max(1.0, cell * 0.06));
+                        context.DrawEllipse(null, decoPen, new Point(centerX, centerY), decoRadius, decoRadius);
+
+                        var decoText = new FormattedText(
+                            "D",
+                            CultureInfo.InvariantCulture,
+                            FlowDirection.LeftToRight,
+                            typeface,
+                            Math.Max(8.0, decoRadius),
+                            new SolidColorBrush(SetPieceBadgeColor),
+                            1.0);
+                        context.DrawText(
+                            decoText,
+                            new Point(centerX - decoText.Width / 2.0, centerY - decoText.Height / 2.0));
+                        continue;
+                    }
 
                     context.DrawEllipse(Brushes.White, null, new Point(centerX, centerY), radius, radius);
 

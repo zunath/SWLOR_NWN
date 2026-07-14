@@ -53,6 +53,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// stamps Width/Height/terrain labels, so the template itself is never mutated.
         /// </summary>
         public MacroLayoutParameters Layout { get; set; }
+
+        /// <summary>
+        /// Whether DungeonContentPlacer.Populate runs its placeable decoration pass (streetlights,
+        /// planters, crates, wall clutter, ...) after ambient/boss/treasure content. Default true.
+        /// </summary>
+        public bool EnableDecorations { get; set; } = true;
+
+        /// <summary>
+        /// Decoration density as a percent of the theme's curated DungeonDetail.DecorationBaseDensity
+        /// (0 = no decorations even when EnableDecorations is true; 100 = as-authored; up to 200 for a
+        /// denser pass). See DungeonDecorationPlanner.Plan.
+        /// </summary>
+        public int DecorationDensityPercent { get; set; } = 100;
     }
 
     public class AreaGenerationResult

@@ -48,6 +48,11 @@ namespace SWLOR.ContentBuilder.Services
         public const int ExitsMin = 1;
         public const int ExitsMax = 3;
 
+        /// <summary>Percent of DungeonDetail.DecorationBaseDensity applied by the decoration pass;
+        /// matches AreaGenerationRequest.DecorationDensityPercent's own 0-200 contract.</summary>
+        public const int DecorationDensityPercentMin = 0;
+        public const int DecorationDensityPercentMax = 200;
+
         /// <summary>Same ceiling MainWindow applies to the Max Room Size slider (RoomSizeSliderAbsoluteMax).</summary>
         public const int RoomSizeSliderAbsoluteMax = 12;
 

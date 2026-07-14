@@ -190,7 +190,61 @@ public class DungeonDefinitionTests
                 $"{themeKey}'s treasure placeable renders incorrectly");
             KnownBadPlaceableResrefs.Should().NotContain(detail.ExitPlaceableResref,
                 $"{themeKey}'s exit placeable renders incorrectly");
+
+            foreach (var decoration in detail.Decorations)
+            {
+                KnownBadPlaceableResrefs.Should().NotContain(decoration.Resref,
+                    $"{themeKey}'s '{decoration.Context}' decoration '{decoration.Resref}' renders incorrectly");
+            }
         }
+    }
+
+    /// <summary>
+    /// Validates every theme's curated decoration palette at the DATA level: each resref must have
+    /// a real utp blueprint in the module palette and a placeables.2da appearance row whose ModelName
+    /// is not blank. Unlike exit/treasure placeables, decorations are NOT required to be
+    /// Useable/non-Static (most hand-built decorative placeables are Static — see decoration_evidence
+    /// mining notes), so this only checks visibility, not interactivity flags.
+    /// </summary>
+    [Test]
+    public void AllDungeonDefinitions_DecorationsExistAndAreVisible()
+    {
+        var root = FindRepositoryRoot();
+        var modelNamesByRow = ReadPlaceableAppearanceModelNames(root);
+        var failures = new List<string>();
+
+        foreach (var (themeKey, detail) in BuildAllDungeons())
+        {
+            if (detail.Decorations.Count == 0)
+                continue;
+
+            detail.DecorationBaseDensity.Should().BeGreaterThan(0,
+                $"{themeKey} declares decorations but has a zero/negative DecorationBaseDensity");
+
+            foreach (var decoration in detail.Decorations)
+            {
+                var utpPath = Path.Combine(root.FullName, "Module", "utp", $"{decoration.Resref}.utp.json");
+                if (!File.Exists(utpPath))
+                {
+                    failures.Add($"{themeKey} {decoration.Context}: '{decoration.Resref}' has no utp blueprint.");
+                    continue;
+                }
+
+                using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(utpPath));
+                var rootElement = document.RootElement;
+                var appearance = rootElement.TryGetProperty("Appearance", out var f) &&
+                                  f.TryGetProperty("value", out var v)
+                    ? v.GetInt32()
+                    : 0;
+
+                if (!modelNamesByRow.TryGetValue(appearance, out var modelName))
+                    failures.Add($"{themeKey} {decoration.Context}: '{decoration.Resref}' appearance row {appearance} does not exist in placeables.2da.");
+                else if (string.IsNullOrEmpty(modelName) || modelName == "****")
+                    failures.Add($"{themeKey} {decoration.Context}: '{decoration.Resref}' appearance row {appearance} has a blank ModelName — it renders invisible.");
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
     [Test]

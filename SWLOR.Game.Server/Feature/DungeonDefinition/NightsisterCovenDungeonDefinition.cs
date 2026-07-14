@@ -33,6 +33,20 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_bars")
                 .TreasurePlaceable("korrduntemple", "Coven Reliquary")
 
+                // Decoration palette curated by proxy: no hand-built area exists yet on tid01 (Drow
+                // Interior), so this draws from the closest thematic reference — Dathomir Grotto
+                // Caverns/Grotto Apex Den (ritual/witch-adjacent natural chambers). Revisit once a
+                // real Nightsister interior area exists in the hand-built module.
+                .DecorationDensity(0.2)
+                .Decoration("zep_pillrmrbl002", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_tno_cliff_1", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_boulder003", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_grasstuft001", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_shrub036", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_geiser002", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_boulder003", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+
                 // Tier 1 — coven initiates and their winged familiars (CR ~53 ambient). Boss: Kwi
                 // Tribal (CR 60).
                 .Tier(1)

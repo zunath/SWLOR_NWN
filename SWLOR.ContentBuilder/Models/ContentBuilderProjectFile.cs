@@ -60,6 +60,13 @@ namespace SWLOR.ContentBuilder.Models
         public int Exits { get; set; }
         public bool DoorTransitions { get; set; }
 
+        /// <summary>Optional, defaults true/100: a v1 project file saved before decorations existed
+        /// has neither property in its JSON and loads with these same defaults (see
+        /// ProjectFileService.ValidateAndClampAreaSettings) -- the project file format version does
+        /// not need to change for this addition.</summary>
+        public bool DecorationsEnabled { get; set; } = true;
+        public int DecorationDensityPercent { get; set; } = 100;
+
         public int Seed { get; set; }
 
         /// <summary>"schematic" or "mapgraphics" -- MainWindow.SchematicModeKey/MapGraphicsModeKey.</summary>

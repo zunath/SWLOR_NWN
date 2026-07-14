@@ -20,4 +20,26 @@
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
   </ItemGroup>
 
+  <!--
+    Content Builder's project-file save/load/validate stack (ProjectFileService,
+    ContentBuilderProjectFile, DefinitionCatalog, AreaSettingsBounds, LayoutSupportRules) is plain,
+    engine-free JSON round-tripping with no actual WPF dependency; only the enclosing
+    SWLOR.ContentBuilder.csproj declares UseWPF/net8.0-windows for its OTHER (MainWindow etc.) files,
+    which makes a normal ProjectReference from this net8.0 test project fail restore (NU1201). Linking
+    these specific files directly mirrors the same "link the pure sources" convention
+    SWLOR.ContentBuilder.csproj/SWLOR.ProcgenReview.csproj already use for the AreaGenerationService
+    files, and lets ContentBuilderProjectFileTests exercise the real production types instead of a
+    parallel copy.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="..\SWLOR.ContentBuilder\Models\ContentBuilderProjectFile.cs" Link="ContentBuilder\ContentBuilderProjectFile.cs" />
+    <Compile Include="..\SWLOR.ContentBuilder\Services\ProjectFileService.cs" Link="ContentBuilder\ProjectFileService.cs" />
+    <Compile Include="..\SWLOR.ContentBuilder\Services\AreaSettingsBounds.cs" Link="ContentBuilder\AreaSettingsBounds.cs" />
+    <Compile Include="..\SWLOR.ContentBuilder\Services\DefinitionCatalog.cs" Link="ContentBuilder\DefinitionCatalog.cs" />
+    <Compile Include="..\SWLOR.ContentBuilder\Services\LayoutSupportRules.cs" Link="ContentBuilder\LayoutSupportRules.cs" />
+    <Compile Include="..\SWLOR.ContentBuilder\Services\TilesetModelCache.cs" Link="ContentBuilder\TilesetModelCache.cs" />
+    <Compile Include="..\SWLOR.ContentBuilder\Services\RepoPaths.cs" Link="ContentBuilder\RepoPaths.cs" />
+  </ItemGroup>
+
 </Project>

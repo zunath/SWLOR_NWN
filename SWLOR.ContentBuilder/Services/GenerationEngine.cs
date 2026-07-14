@@ -12,6 +12,14 @@ namespace SWLOR.ContentBuilder.Services
         public ResolvedLayout Resolved { get; init; }
         public int AttemptSeed { get; init; }
         public string FailureReason { get; init; }
+
+        /// <summary>
+        /// Count of DungeonDecorationPlanner.Plan's output for this generation (0 when decorations are
+        /// disabled, the theme has no curated palette, or density rolled zero this seed). Decorations
+        /// are placeables, not tiles, so they never render in the schematic/map preview -- this is the
+        /// only place their effect is surfaced, via MainWindow's status/log line.
+        /// </summary>
+        public int PlannedDecorationCount { get; init; }
     }
 
     /// <summary>
@@ -42,6 +50,15 @@ namespace SWLOR.ContentBuilder.Services
         public int AccentDensityPercent { get; init; }
         public int FeatureDensityPercent { get; init; }
         public int ElevationRegions { get; init; }
+
+        /// <summary>
+        /// Decorations are theme content (DungeonDetail.Decorations/DecorationBaseDensity), not a
+        /// layout knob -- they never feed MacroLayoutParameters/ApplyTo below, so they can't affect
+        /// map geometry. GenerationEngine.Generate reads these two directly to compute
+        /// GenerationResult.PlannedDecorationCount from the resolved layout.
+        /// </summary>
+        public bool EnableDecorations { get; init; } = true;
+        public int DecorationDensityPercent { get; init; } = 100;
 
         public void ApplyTo(MacroLayoutParameters parameters, DungeonTilesetProfile tileset)
         {
@@ -106,6 +123,17 @@ namespace SWLOR.ContentBuilder.Services
             var openTerrainOverride = composition.Tileset?.PrimaryOpenTerrain ?? string.Empty;
             var solved = LayoutSolver.Solve(baseParameters, tileset, width, height, seed, openTerrainOverride);
 
+            // Decorations are pure/engine-free (DungeonDecorationPlanner.Plan) exactly like the layout
+            // solver itself, so the preview can compute the SAME plan the runtime facade/ProcgenReview
+            // would produce for this composition+seed -- without ever touching the schematic/map
+            // render, which stays tile-only (see GenerationResult.PlannedDecorationCount doc comment).
+            var plannedDecorationCount = 0;
+            if (solved.Success && composition.Content != null && (overrides?.EnableDecorations ?? true))
+            {
+                var densityPercent = overrides?.DecorationDensityPercent ?? 100;
+                plannedDecorationCount = DungeonDecorationPlanner.Plan(solved.Resolved, composition.Content, densityPercent).Count;
+            }
+
             return new GenerationResult
             {
                 Success = solved.Success,
@@ -114,7 +142,8 @@ namespace SWLOR.ContentBuilder.Services
                 Tileset = tileset,
                 Resolved = solved.Resolved,
                 AttemptSeed = solved.AttemptSeed,
-                FailureReason = solved.FailureReason
+                FailureReason = solved.FailureReason,
+                PlannedDecorationCount = plannedDecorationCount
             };
         }
     }

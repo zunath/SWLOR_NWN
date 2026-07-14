@@ -13,6 +13,36 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     }
 
     /// <summary>
+    /// Placement context a curated decoration entry is eligible for, chosen from the evidence mined
+    /// against hand-built reference areas (see scratchpad decoration_evidence/ mining notes referenced
+    /// in the DungeonDecorationPlanner doc comment): most hand-built decorative placeables hug a room's
+    /// perimeter (streetlights, planters, crates, wall clutter), a minority sit as room centerpieces,
+    /// long/narrow "corridor-like" rooms get a lighter lining, and small clutter clusters near doorways.
+    /// </summary>
+    public enum DecorationContext
+    {
+        /// <summary>Hugs a room's perimeter, offset toward the wall and facing back into the room.</summary>
+        WallAdjacent = 0,
+        /// <summary>A rare centerpiece placed near (never on) a large room's CenterTile.</summary>
+        RoomCenter = 1,
+        /// <summary>Lines the perimeter of a long/narrow "corridor-like" room.</summary>
+        CorridorSide = 2,
+        /// <summary>Small clutter near a transition's doorway.</summary>
+        DoorwayFlank = 3
+    }
+
+    /// <summary>
+    /// A single weighted decorative placeable choice for one <see cref="DecorationContext"/> bucket
+    /// within a theme's curated palette. See <see cref="DungeonDetail.Decorations"/>.
+    /// </summary>
+    public class DungeonDecorationEntry
+    {
+        public string Resref { get; set; } = string.Empty;
+        public int Weight { get; set; } = 1;
+        public DecorationContext Context { get; set; } = DecorationContext.WallAdjacent;
+    }
+
+    /// <summary>
     /// Tier-specific content for one difficulty tier of a dungeon theme: ambient spawn pool,
     /// per-room spawn counts, boss, and treasure. Consumed by DungeonContentPlacer.Populate.
     /// </summary>
@@ -309,6 +339,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string TreasurePlaceableResref { get; set; } = "structure_rubble";
         public string TreasureDisplayName { get; set; } = "Treasure Cache";
 
+        /// <summary>
+        /// Weighted "set dressing" placeable palette curated from hand-built reference areas of this
+        /// theme's family (see decoration_evidence/ mining notes), grouped by <see cref="DecorationContext"/>.
+        /// Empty = no decoration pass for this theme (DungeonDecorationPlanner.Plan returns nothing).
+        /// </summary>
+        public List<DungeonDecorationEntry> Decorations { get; set; } = new();
+
+        /// <summary>
+        /// Fraction of eligible tiles (see DungeonDecorationPlanner) that receive a decoration at
+        /// 100% request density — evidence-derived per theme from the mined decorative-placeable
+        /// density of its hand-built reference areas. Scaled by
+        /// AreaGenerationRequest.DecorationDensityPercent (0-200, default 100).
+        /// </summary>
+        public double DecorationBaseDensity { get; set; } = 0.2;
+
         public Dictionary<int, DungeonTierDetail> Tiers { get; set; } = new();
     }
 
@@ -500,6 +545,32 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             _activeDungeon.TreasurePlaceableResref = resref;
             _activeDungeon.TreasureDisplayName = displayName;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a weighted decorative placeable to the theme's curated palette for one placement
+        /// context. Call repeatedly to build out each <see cref="DecorationContext"/> bucket.
+        /// </summary>
+        public DungeonDefinitionBuilder Decoration(string resref, int weight, DecorationContext context)
+        {
+            _activeDungeon.Decorations.Add(new DungeonDecorationEntry
+            {
+                Resref = resref,
+                Weight = weight,
+                Context = context
+            });
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the theme's base decoration density (fraction of eligible tiles decorated at 100%
+        /// request density). See <see cref="DungeonDetail.DecorationBaseDensity"/>.
+        /// </summary>
+        public DungeonDefinitionBuilder DecorationDensity(double baseDensity)
+        {
+            _activeDungeon.DecorationBaseDensity = baseDensity;
             return this;
         }
 

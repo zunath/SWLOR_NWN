@@ -28,6 +28,7 @@
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileDoorGeometry.cs" Link="Generation\TileDoorGeometry.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\GroupExitPlanner.cs" Link="Generation\GroupExitPlanner.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\DungeonDefinition.cs" Link="Generation\DungeonDefinition.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\DungeonDecorationPlanner.cs" Link="Generation\DungeonDecorationPlanner.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\Layouts\*.cs" Link="Generation\Layouts\%(Filename)%(Extension)" />
   </ItemGroup>
 

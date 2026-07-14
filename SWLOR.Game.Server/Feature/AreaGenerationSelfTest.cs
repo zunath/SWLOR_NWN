@@ -230,9 +230,29 @@ namespace SWLOR.Game.Server.Feature
                 throw new InvalidOperationException(
                     $"{themeKey}: {doorTransitions} door-style transition(s) but only {population.DoorsCreated} door(s) created.");
 
+            // Decorations default on (AreaGenerationRequest.EnableDecorations = true). A fixed test
+            // seed's per-tile RNG rolls (see DungeonDecorationPlanner.Plan) can legitimately produce
+            // zero decorations at low base densities even though the theme curates a real palette, so
+            // asserting DecorationsPlaced > 0 outright would be a false-failure risk, not a real
+            // invariant. What IS a real, RNG-independent invariant is that whatever the planner
+            // decided gets spawned exactly — re-running the same deterministic Plan() against this
+            // same resolved layout/request must match DungeonContentPlacer's own spawn count 1:1;
+            // any mismatch means CreateObject/spawn tracking broke, not that RNG rolled unluckily.
+            var detail = DungeonContentPlacer.GetDungeonDetail(themeKey);
+            var decorationDensityPercent = instance.Request?.DecorationDensityPercent ?? 100;
+            var expectedDecorations = DungeonDecorationPlanner.Plan(instance.Layout, detail, decorationDensityPercent);
+            if (population.DecorationsPlaced != expectedDecorations.Count)
+                throw new InvalidOperationException(
+                    $"{themeKey}: decoration spawn count {population.DecorationsPlaced} does not match the " +
+                    $"deterministic plan count {expectedDecorations.Count} — spawning likely failed for some planned decoration(s).");
+
+            if (expectedDecorations.Count == 0 && detail.Decorations.Count > 0 && detail.DecorationBaseDensity > 0)
+                Report($"{themeKey}: decoration pass planned zero placeables this run (RNG); palette and density are both non-empty, so this is not treated as a failure.");
+
             Report($"{themeKey}: content placed — {population.CreaturesSpawned} creatures in {population.RoomsPopulated} rooms, " +
                    $"boss '{population.BossResref}', treasure container present, exit present, " +
-                   $"{population.DoorsCreated}/{doorTransitions} transition doors created.");
+                   $"{population.DoorsCreated}/{doorTransitions} transition doors created, " +
+                   $"{population.DecorationsPlaced} decoration(s) placed.");
 
             // The treasure fill happens on a later tick (placeable inventories reject items in
             // their creation script context), so its assertion and teardown defer once more.

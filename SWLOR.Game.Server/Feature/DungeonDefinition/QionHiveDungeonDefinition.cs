@@ -31,6 +31,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_slid001")
                 .TreasurePlaceable("cz220_cache", "Larval Cache")
 
+                // Decoration palette curated by name-matched proxy: no hand-built area exists yet on
+                // tii01 (Illithid Interior), so this draws from the hand-built "Hutlar - Qion Hive"
+                // approach/ziggurat/outer-hive/broodmother sequence (different tilesets, same named
+                // location) — bone/blood/hive-slime clutter and ambient rubble.
+                .DecorationDensity(0.2)
+                .Decoration("zep_blood_004", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_blood_005", 2, DecorationContext.WallAdjacent)
+                .Decoration("qionhiveslime001", 2, DecorationContext.CorridorSide)
+                .Decoration("qionhiveslime002", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_firepillr003", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_blood_002", 2, DecorationContext.DoorwayFlank)
+
                 // Tier 1 — hive vermin (CR ~17-32 ambient). Boss: Qion Hive Tunneler (CR 45).
                 .Tier(1)
                 .AddCreature("qion_slug001", 30)

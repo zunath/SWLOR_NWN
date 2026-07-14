@@ -34,6 +34,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_stneint")
                 .TreasurePlaceable("korrduntemple", "Sith Archive Vault")
 
+                // Decoration palette curated from hand-built Korriban Sith Academy evidence
+                // (ar_scor_kacademy, vrotrkorracsacad, korr_crypt_zil — different tilesets than tic01,
+                // same named academy family) — wall banners, pillars, academy furniture.
+                .DecorationDensity(0.25)
+                .Decoration("swd3_wall001", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall25", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall17", 2, DecorationContext.WallAdjacent)
+                .Decoration("swd3_walld01", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_grasstuft001", 3, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_hwall28", 1, DecorationContext.CorridorSide)
+                .Decoration("swd2_pilr005", 2, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_pillr19", 2, DecorationContext.RoomCenter)
+                .Decoration("swp_banner0001", 3, DecorationContext.DoorwayFlank)
+                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+
                 // Tier 1 — academy vermin and rogue initiates (CR ~7-10 ambient). Boss: Possessed
                 // Apprentice (CR 15).
                 .Tier(1)

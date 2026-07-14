@@ -32,6 +32,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_rough")
                 .TreasurePlaceable("structure_rubble", "Ore Vein Cache")
 
+                // Decoration palette curated from hand-built tdm01/mine evidence (Dantooine Smuggler
+                // Caverns, Old Mine, Arkania Crystal Mines, Tibanna Gas Mine).
+                .DecorationDensity(0.3)
+                .Decoration("swd3_wall001", 2, DecorationContext.WallAdjacent)
+                .Decoration("swd3_wall002", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_conta39", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_conta38", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_lightshft008", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_fissure_017", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_crgc4b", 2, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_crate08", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_sndbglp", 1, DecorationContext.DoorwayFlank)
+                .Decoration("zep_vinesh", 1, DecorationContext.DoorwayFlank)
+
                 // Tier 1 — nesting mynocks and burrowing nashtah (CR ~1-5 ambient). Boss: Valley
                 // Cairnmog (CR 6).
                 .Tier(1)

@@ -27,6 +27,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_stneint")
                 .TreasurePlaceable("korrduntemple", "Ancient Reliquary")
 
+                // Decoration palette curated from hand-built vmr01 ruin evidence (Korriban Sith
+                // Crypt, Valley Temples/Interiors, Dathomir Cave/Waterfall Ruins).
+                .DecorationDensity(0.3)
+                .Decoration("swd3_wall001", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_walls06", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall11", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall06", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_grasstuft001", 3, DecorationContext.CorridorSide)
+                .Decoration("zep_shrub036", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_giantfern", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_pillr18", 2, DecorationContext.RoomCenter)
+                .Decoration("swd_conta002", 1, DecorationContext.RoomCenter)
+                .Decoration("swp_banner0001", 2, DecorationContext.DoorwayFlank)
+                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+
                 // Tier 1 — dark side cultists haunting the outer crypt (CR ~10-15 ambient).
                 // Boss: Sith Temple Guard (CR 83).
                 .Tier(1)

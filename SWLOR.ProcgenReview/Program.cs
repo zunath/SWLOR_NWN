@@ -24,20 +24,24 @@ using SWLOR.ProcgenReview;
 // Content is irrelevant offline (no creatures/loot/exit/treasure are ever emitted by this tool), so
 // matrix compositions carry no theme.
 // --areas: comma-separated batch entries, either the 5-segment "theme:tileset:layout:seed:size"
-// form (entrances/exits default to 1/1, doors defaults to "door"), the 7-segment
-// "theme:tileset:layout:seed:size:entrances:exits" form, or the 8-segment
-// "theme:tileset:layout:seed:size:entrances:exits:doors" form (doors is "door" or "plac"). tileset/
-// layout may be left empty to use the theme's own defaults. When given, ONLY these areas are
-// generated — no default set, no matrix.
+// form (entrances/exits default to 1/1, doors defaults to "door", decorations default to "dec"/100),
+// the 7-segment "theme:tileset:layout:seed:size:entrances:exits" form, the 8-segment
+// "theme:tileset:layout:seed:size:entrances:exits:doors" form (doors is "door" or "plac"), the
+// 9-segment "...:doors:decorations" form (decorations is "dec" or "nodec"), or the 10-segment
+// "...:decorations:densitypercent" form (an integer percent of the theme's curated base density,
+// 0-200; only meaningful when the decorations segment is "dec"). tileset/layout may be left empty to
+// use the theme's own defaults. When given, ONLY these areas are generated — no default set, no
+// matrix.
 // --areas-file <path>: JSON array of full-fidelity area entries (see AreaBatchFileEntry /
-// AreaBatchFile) — { resref?, themeKey, tilesetKey, layoutKey, seed, size, parameters }, where
-// parameters is a complete MacroLayoutParameters snapshot (post DungeonComposition.
-// BuildLayoutParameters, post any Advanced-settings overrides) consumed VERBATIM instead of being
-// recomposed from the theme/tileset/layout keys. This is what SWLOR.ContentBuilder's "Build Review
-// Module" writes so the built module reproduces the exact preview, including knobs the 5/7/8-segment
-// string spec cannot express (style, room counts/sizes, corridor width, loop factor, organic fill,
-// accent, feature density). Like --areas, ONLY these areas are generated when given — no default
-// set, no matrix. Combines additively with --areas if both are given.
+// AreaBatchFile) — { resref?, themeKey, tilesetKey, layoutKey, seed, size, enableDecorations,
+// decorationDensityPercent, parameters }, where parameters is a complete MacroLayoutParameters
+// snapshot (post DungeonComposition.BuildLayoutParameters, post any Advanced-settings overrides)
+// consumed VERBATIM instead of being recomposed from the theme/tileset/layout keys. This is what
+// SWLOR.ContentBuilder's "Build Review Module" writes so the built module reproduces the exact
+// preview, including knobs the 5/7/8/9/10-segment string spec cannot express (style, room
+// counts/sizes, corridor width, loop factor, organic fill, accent, feature density). Like --areas,
+// ONLY these areas are generated when given — no default set, no matrix. Combines additively with
+// --areas if both are given.
 // --extra-areas: same entry syntax as --areas, but ADDED on top of the default set (and --matrix, if
 // also given) instead of replacing it — useful for appending a few showcase areas (e.g. higher
 // entrance/exit counts to exercise door-style transitions) to the normal review build.
@@ -50,6 +54,12 @@ using SWLOR.ProcgenReview;
 // Each generated area also gets one waypoint per entrance/exit transition point (tags PG_ENT_N /
 // PG_EXIT_N, names "PG Entrance N" / "PG Exit N"), so transitions are visible when reviewing the
 // area in the toolset.
+//
+// When the area's composition carries a theme (Content != null — never true for --matrix entries)
+// and decorations are enabled (default: on, 100%), the SAME deterministic DungeonDecorationPlanner.
+// Plan the runtime facade uses is run offline against the resolved layout and emitted as real
+// Placeable List entries (tags PG_DEC_N, Static/non-useable "set dressing"), so a reviewed area looks
+// furnished like a hand-built one instead of bare geometry.
 //
 // --out defaults to <repoRoot>/Module/SWLOR Procgen Review.mod ONLY when neither --out nor --erf is
 // given — point nwn.ini's MODULES directory at <repoRoot>/Module (the SWLOR dev convention) and the
@@ -136,9 +146,9 @@ try
         foreach (var entry in argValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             var parts = entry.Split(':');
-            if (parts.Length != 5 && parts.Length != 7 && parts.Length != 8)
+            if (parts.Length != 5 && parts.Length != 7 && parts.Length != 8 && parts.Length != 9 && parts.Length != 10)
             {
-                Console.Error.WriteLine($"{flagName} entry '{entry}': expected theme:tileset:layout:seed:size, theme:tileset:layout:seed:size:entrances:exits, or theme:tileset:layout:seed:size:entrances:exits:doors — skipped");
+                Console.Error.WriteLine($"{flagName} entry '{entry}': expected theme:tileset:layout:seed:size, theme:tileset:layout:seed:size:entrances:exits, theme:tileset:layout:seed:size:entrances:exits:doors, theme:tileset:layout:seed:size:entrances:exits:doors:decorations, or theme:tileset:layout:seed:size:entrances:exits:doors:decorations:densitypercent — skipped");
                 continue;
             }
 
@@ -154,6 +164,8 @@ try
             var entryEntrances = 1;
             var entryExits = 1;
             var entryDoors = true;
+            var entryDecorations = true;
+            var entryDecorationDensity = 100;
             if (parts.Length >= 7 &&
                 (!int.TryParse(parts[5], out entryEntrances) || !int.TryParse(parts[6], out entryExits)))
             {
@@ -162,7 +174,7 @@ try
                 continue;
             }
 
-            if (parts.Length == 8)
+            if (parts.Length >= 8)
             {
                 if (string.Equals(parts[7], "door", StringComparison.OrdinalIgnoreCase)) entryDoors = true;
                 else if (string.Equals(parts[7], "plac", StringComparison.OrdinalIgnoreCase)) entryDoors = false;
@@ -174,6 +186,25 @@ try
                 }
             }
 
+            if (parts.Length >= 9)
+            {
+                if (string.Equals(parts[8], "dec", StringComparison.OrdinalIgnoreCase)) entryDecorations = true;
+                else if (string.Equals(parts[8], "nodec", StringComparison.OrdinalIgnoreCase)) entryDecorations = false;
+                else
+                {
+                    Console.Error.WriteLine($"{flagName} entry '{entry}': decorations segment must be 'dec' or 'nodec' — skipped");
+                    n++;
+                    continue;
+                }
+            }
+
+            if (parts.Length == 10 && !int.TryParse(parts[9], out entryDecorationDensity))
+            {
+                Console.Error.WriteLine($"{flagName} entry '{entry}': decoration density percent must be an integer — skipped");
+                n++;
+                continue;
+            }
+
             var composition = ResolveComposition(themes, tilesetProfiles, layoutProfiles, themeKey, tilesetOverride, layoutOverride);
             if (composition == null)
             {
@@ -183,7 +214,8 @@ try
 
             var resref = UniqueResref($"{resrefPrefix}{n}_{entrySeed}", usedResrefs);
             var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, entrySeed);
-            specs.Add(new AreaSpec(resref, display, composition, entrySeed, entrySize, entryEntrances, entryExits, entryDoors));
+            specs.Add(new AreaSpec(resref, display, composition, entrySeed, entrySize, entryEntrances, entryExits, entryDoors,
+                EnableDecorations: entryDecorations, DecorationDensityPercent: entryDecorationDensity));
             n++;
         }
     }
@@ -221,7 +253,7 @@ try
             var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, entry.Seed);
             specs.Add(new AreaSpec(resref, display, composition, entry.Seed, entry.Size,
                 entry.Parameters.EntranceCount, entry.Parameters.ExitCount, entry.Parameters.DoorTransitions,
-                entry.Parameters));
+                entry.Parameters, entry.EnableDecorations, entry.DecorationDensityPercent));
             n++;
         }
     }
@@ -386,11 +418,14 @@ try
         }
 
         var layout = solved.Resolved;
-        EmitArea(layout, tileset, spec.Resref, spec.DisplayName, placeholderAre, placeholderGit, stage);
+        var decorationsPlaced = EmitArea(layout, tileset, spec.Resref, spec.DisplayName, placeholderAre, placeholderGit, stage,
+            spec.Composition.Content, spec.EnableDecorations, spec.DecorationDensityPercent);
 
         var entrance = layout.Rooms.First(r => r.Role == RoomRole.Entrance);
         areas.Add((spec.Resref, entrance.CenterTile.X * 10f + 5f, entrance.CenterTile.Y * 10f + 5f));
-        Console.WriteLine($"area: {spec.Resref}  \"{spec.DisplayName}\"");
+        Console.WriteLine(decorationsPlaced > 0
+            ? $"area: {spec.Resref}  \"{spec.DisplayName}\"  ({decorationsPlaced} decoration(s))"
+            : $"area: {spec.Resref}  \"{spec.DisplayName}\"");
     }
 
     if (areas.Count == 0)
@@ -524,8 +559,9 @@ static string UniqueResref(string baseResref, HashSet<string> used)
     return candidate;
 }
 
-static void EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string resref, string display,
-    string placeholderArePath, string placeholderGitPath, string stage)
+static int EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string resref, string display,
+    string placeholderArePath, string placeholderGitPath, string stage,
+    DungeonDetail detail, bool enableDecorations, int decorationDensityPercent)
 {
     var lighting = tileset.Lighting;
     var tiles = string.Join(",\n", layout.Tiles.Select(t => TileEntry(t.TileId, t.Orientation, t.Height,
@@ -573,11 +609,34 @@ static void EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, strin
         git = git[..(doorOpen + 1)] + "\n" + doors + "\n  " + git[doorClose..];
     }
 
+    // Content is null for --matrix entries (no theme composed — see the main generation loop's
+    // "Content is irrelevant offline" note); those never get a decoration pass. Uses the SAME
+    // pure/engine-free DungeonDecorationPlanner.Plan the runtime facade and SWLOR.ContentBuilder's
+    // preview call, so a reviewed area's furniture matches exactly what a live server would place for
+    // this theme/layout/seed/density.
+    var decorationsPlaced = 0;
+    if (detail != null && enableDecorations)
+    {
+        var plan = DungeonDecorationPlanner.Plan(layout, detail, decorationDensityPercent);
+        var placeables = BuildPlaceableEntries(plan);
+        if (!string.IsNullOrEmpty(placeables))
+        {
+            var placeableStart = git.IndexOf("\"Placeable List\"", StringComparison.Ordinal);
+            var placeableOpen = git.IndexOf('[', placeableStart);
+            var placeableClose = git.IndexOf(']', placeableOpen);
+            git = git[..(placeableOpen + 1)] + "\n" + placeables + "\n    " + git[placeableClose..];
+        }
+
+        decorationsPlaced = plan.Count;
+    }
+
     File.WriteAllText(Path.Combine(stage, resref + ".git.json"), git);
 
     // sanity: must remain valid JSON
     _ = JsonNode.Parse(File.ReadAllText(Path.Combine(stage, resref + ".are.json")));
     _ = JsonNode.Parse(File.ReadAllText(Path.Combine(stage, resref + ".git.json")));
+
+    return decorationsPlaced;
 }
 
 /// <summary>
@@ -953,6 +1012,263 @@ static string DoorEntry(string tag, string locName, float x, float y, float z, d
     """;
 }
 
+/// <summary>
+/// Builds one Placeable GFF-JSON struct per planned decoration (see DungeonDecorationPlanner.Plan /
+/// PlannedDecoration). Field shape mirrors a hand-built decorative placeable instance (Module/git/
+/// vrotrnsrooftops2.git.json, __struct_id 9): Static=1/Useable=0/Plot=0 and every Trap* field
+/// disabled — pure "set dressing", matching DungeonContentPlacer.PlaceDecorations' own runtime
+/// contract ("no scripts, plot flag, or useable override"). PlannedDecoration.Position is flat
+/// (Z=0) — real ground height needs the live engine's GetGroundHeight, unavailable offline — matching
+/// BuildWaypointEntries' identical convention for this same reason. Facing is degrees; Bearing is
+/// radians (matches BuildDoorEntries' conversion).
+/// </summary>
+static string BuildPlaceableEntries(List<PlannedDecoration> plan)
+{
+    var entries = new List<string>();
+    var index = 0;
+
+    foreach (var planned in plan)
+    {
+        index++;
+        var tag = $"PG_DEC_{index}";
+        var bearingRadians = planned.Facing * Math.PI / 180.0;
+        entries.Add(PlaceableEntry(tag, planned.Resref, planned.Position.X, planned.Position.Y, planned.Position.Z, bearingRadians));
+    }
+
+    return string.Join(",\n", entries);
+}
+
+static string PlaceableEntry(string tag, string templateResref, float x, float y, float z, double bearingRadians)
+{
+    return $$"""
+          {
+            "__struct_id": 9,
+            "AnimationState": {
+              "type": "byte",
+              "value": 0
+            },
+            "Appearance": {
+              "type": "dword",
+              "value": 0
+            },
+            "AutoRemoveKey": {
+              "type": "byte",
+              "value": 0
+            },
+            "Bearing": {
+              "type": "float",
+              "value": {{FormatFloat(bearingRadians)}}
+            },
+            "BodyBag": {
+              "type": "byte",
+              "value": 0
+            },
+            "CloseLockDC": {
+              "type": "byte",
+              "value": 0
+            },
+            "Conversation": {
+              "type": "resref",
+              "value": ""
+            },
+            "CurrentHP": {
+              "type": "short",
+              "value": 10
+            },
+            "Description": {
+              "type": "cexolocstring",
+              "value": {}
+            },
+            "DisarmDC": {
+              "type": "byte",
+              "value": 0
+            },
+            "Faction": {
+              "type": "dword",
+              "value": 3
+            },
+            "Fort": {
+              "type": "byte",
+              "value": 5
+            },
+            "Hardness": {
+              "type": "byte",
+              "value": 5
+            },
+            "HasInventory": {
+              "type": "byte",
+              "value": 0
+            },
+            "HP": {
+              "type": "short",
+              "value": 10
+            },
+            "Interruptable": {
+              "type": "byte",
+              "value": 1
+            },
+            "KeyName": {
+              "type": "cexostring",
+              "value": ""
+            },
+            "KeyRequired": {
+              "type": "byte",
+              "value": 0
+            },
+            "Lockable": {
+              "type": "byte",
+              "value": 0
+            },
+            "Locked": {
+              "type": "byte",
+              "value": 0
+            },
+            "LocName": {
+              "type": "cexolocstring",
+              "value": {
+                "0": "{{templateResref}}"
+              }
+            },
+            "OnClick": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnClosed": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnDamaged": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnDeath": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnDisarm": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnHeartbeat": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnInvDisturbed": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnLock": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnMeleeAttacked": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnOpen": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnSpellCastAt": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnTrapTriggered": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnUnlock": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnUsed": {
+              "type": "resref",
+              "value": ""
+            },
+            "OnUserDefined": {
+              "type": "resref",
+              "value": ""
+            },
+            "OpenLockDC": {
+              "type": "byte",
+              "value": 0
+            },
+            "Plot": {
+              "type": "byte",
+              "value": 0
+            },
+            "PortraitId": {
+              "type": "word",
+              "value": 0
+            },
+            "Ref": {
+              "type": "byte",
+              "value": 0
+            },
+            "Static": {
+              "type": "byte",
+              "value": 1
+            },
+            "Tag": {
+              "type": "cexostring",
+              "value": "{{tag}}"
+            },
+            "TemplateResRef": {
+              "type": "resref",
+              "value": "{{templateResref}}"
+            },
+            "TrapDetectable": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapDetectDC": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapDisarmable": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapFlag": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapOneShot": {
+              "type": "byte",
+              "value": 0
+            },
+            "TrapType": {
+              "type": "byte",
+              "value": 0
+            },
+            "Type": {
+              "type": "byte",
+              "value": 0
+            },
+            "Useable": {
+              "type": "byte",
+              "value": 0
+            },
+            "Will": {
+              "type": "byte",
+              "value": 0
+            },
+            "X": {
+              "type": "float",
+              "value": {{FormatFloat(x)}}
+            },
+            "Y": {
+              "type": "float",
+              "value": {{FormatFloat(y)}}
+            },
+            "Z": {
+              "type": "float",
+              "value": {{FormatFloat(z)}}
+            }
+          }
+    """;
+}
+
 /// <summary>nwn_gff requires float lexemes ("5.0"); a bare integer-valued double round-trips as "5".</summary>
 static string FormatFloat(double value)
 {
@@ -1069,4 +1385,4 @@ static void ConvertJsonToGff(string stage, string gffTool)
 /// stay meaningful even for those entries (mirrored from the snapshot) for logging/display symmetry
 /// with the string-spec kinds.
 /// </summary>
-record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1, bool DoorTransitions = true, MacroLayoutParameters OverrideParameters = null);
+record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1, bool DoorTransitions = true, MacroLayoutParameters OverrideParameters = null, bool EnableDecorations = true, int DecorationDensityPercent = 100);

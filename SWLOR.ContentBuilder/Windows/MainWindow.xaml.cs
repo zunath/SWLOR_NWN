@@ -89,6 +89,10 @@ namespace SWLOR.ContentBuilder.Windows
         private TextBox _exitsValueBox;
         private CheckBox _doorTransitionsCheckBox;
 
+        private CheckBox _decorationsCheckBox;
+        private Slider _decorationDensitySlider;
+        private TextBox _decorationDensityValueBox;
+
         private TextBox _seedTextBox;
         private Button _randomSeedButton;
 
@@ -248,6 +252,18 @@ namespace SWLOR.ContentBuilder.Windows
             _themeCombo = AddComboRow(contentGroup, "Theme");
             _themeCombo.ToolTip = ThemeTooltip;
 
+            // Decorations are placeable "set dressing" (streetlights, planters, crates, wall clutter)
+            // from the theme's own curated palette (DungeonDetail.Decorations) -- content, not layout,
+            // so they live here rather than in "Layout overrides". They never affect map geometry and
+            // never render in the schematic/map preview (see GenerationResult.PlannedDecorationCount);
+            // the only preview feedback is the planned count appended to the status/log line.
+            _decorationsCheckBox = AddCheckBoxRow(contentGroup, "Decorations");
+            _decorationsCheckBox.IsChecked = true;
+            (_decorationDensitySlider, _decorationDensityValueBox) = AddSliderRow(
+                contentGroup, "Decoration Density",
+                AreaSettingsBounds.DecorationDensityPercentMin, AreaSettingsBounds.DecorationDensityPercentMax,
+                100, suffix: "%");
+
             var (_, overrides) = AddGroup(advancedContent, "Layout overrides");
             _styleCombo = AddComboRow(overrides, "Style");
             foreach (DungeonLayoutStyle style in Enum.GetValues(typeof(DungeonLayoutStyle)))
@@ -324,6 +340,8 @@ namespace SWLOR.ContentBuilder.Windows
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Ent", Binding = new Binding(nameof(BatchItem.Entrances)), Width = new DataGridLength(36) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Exit", Binding = new Binding(nameof(BatchItem.Exits)), Width = new DataGridLength(36) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Doors", Binding = new Binding(nameof(BatchItem.DoorTransitions)), Width = new DataGridLength(48) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Dec", Binding = new Binding(nameof(BatchItem.EnableDecorations)), Width = new DataGridLength(40) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Dec%", Binding = new Binding(nameof(BatchItem.DecorationDensityPercent)), Width = new DataGridLength(42) });
             batchGroup.Children.Add(_batchGrid);
 
             // Two rows: list-management actions on top, build outputs below. The build buttons split
@@ -524,6 +542,10 @@ namespace SWLOR.ContentBuilder.Windows
             _accentCheckBox.Checked += (_, _) => OnAccentCheckChanged();
             _accentCheckBox.Unchecked += (_, _) => OnAccentCheckChanged();
 
+            _decorationsCheckBox.Checked += (_, _) => OnDecorationsCheckChanged();
+            _decorationsCheckBox.Unchecked += (_, _) => OnDecorationsCheckChanged();
+            WireKnobSlider(_decorationDensitySlider, nameof(_decorationDensitySlider));
+
             _doorTransitionsCheckBox.Checked += (_, _) => { if (_suppressEvents) return; MarkOverride(nameof(_doorTransitionsCheckBox)); RegeneratePreview(); };
             _doorTransitionsCheckBox.Unchecked += (_, _) => { if (_suppressEvents) return; MarkOverride(nameof(_doorTransitionsCheckBox)); RegeneratePreview(); };
 
@@ -596,6 +618,14 @@ namespace SWLOR.ContentBuilder.Windows
             _accentDensitySlider.IsEnabled = _accentCheckBox.IsChecked == true;
             if (_suppressEvents) return;
             MarkOverride(nameof(_accentCheckBox));
+            RegeneratePreview();
+        }
+
+        private void OnDecorationsCheckChanged()
+        {
+            _decorationDensitySlider.IsEnabled = _decorationsCheckBox.IsChecked == true;
+            if (_suppressEvents) return;
+            MarkOverride(nameof(_decorationsCheckBox));
             RegeneratePreview();
         }
 
@@ -997,6 +1027,14 @@ namespace SWLOR.ContentBuilder.Windows
                 _accentCheckBox.IsEnabled = supportsAccent;
                 _accentDensitySlider.IsEnabled = supportsAccent && _accentCheckBox.IsChecked == true;
 
+                // Decorations are theme content, not a composed layout knob (no DungeonComposition
+                // value to load) -- their "default" is simply on/100%, same as a fresh theme pick.
+                if (!_overriddenKnobs.Contains(nameof(_decorationsCheckBox)))
+                    _decorationsCheckBox.IsChecked = true;
+                if (!_overriddenKnobs.Contains(nameof(_decorationDensitySlider)))
+                    _decorationDensitySlider.Value = 100;
+                _decorationDensitySlider.IsEnabled = _decorationsCheckBox.IsChecked == true;
+
                 UpdateOrganicFillEnabled();
                 UpdateKnobConstraints();
             }
@@ -1076,7 +1114,9 @@ namespace SWLOR.ContentBuilder.Windows
                 AccentEnabled = _accentCheckBox.IsChecked == true,
                 AccentDensityPercent = (int)_accentDensitySlider.Value,
                 FeatureDensityPercent = (int)_featureDensitySlider.Value,
-                ElevationRegions = (int)_elevationRegionsSlider.Value
+                ElevationRegions = (int)_elevationRegionsSlider.Value,
+                EnableDecorations = _decorationsCheckBox.IsChecked == true,
+                DecorationDensityPercent = (int)_decorationDensitySlider.Value
             };
 
             var width = (int)_widthSlider.Value;
@@ -1095,7 +1135,7 @@ namespace SWLOR.ContentBuilder.Windows
             }
 
             var openPercent = ComputeOpenPercent(result.Layout, result.Parameters.OpenTerrain);
-            SetStatus($"rooms: {result.Layout.Rooms.Count} | open corners: {openPercent:0}% | attempt seed: {result.AttemptSeed}");
+            SetStatus($"rooms: {result.Layout.Rooms.Count} | open corners: {openPercent:0}% | attempt seed: {result.AttemptSeed} | decorations: {result.PlannedDecorationCount}");
         }
 
         /// <summary>
@@ -1228,6 +1268,8 @@ namespace SWLOR.ContentBuilder.Windows
                 Entrances = (int)_entrancesSlider.Value,
                 Exits = (int)_exitsSlider.Value,
                 DoorTransitions = _doorTransitionsCheckBox.IsChecked == true,
+                EnableDecorations = _decorationsCheckBox.IsChecked == true,
+                DecorationDensityPercent = (int)_decorationDensitySlider.Value,
                 Parameters = _lastResult.Parameters.Clone()
             };
 
@@ -1268,6 +1310,8 @@ namespace SWLOR.ContentBuilder.Windows
                     LayoutKey = b.LayoutProfileKey,
                     Seed = b.Seed,
                     Size = b.Size,
+                    EnableDecorations = b.EnableDecorations,
+                    DecorationDensityPercent = b.DecorationDensityPercent,
                     Parameters = b.Parameters
                 }).ToList();
 
@@ -1349,6 +1393,8 @@ namespace SWLOR.ContentBuilder.Windows
                     LayoutKey = b.LayoutProfileKey,
                     Seed = b.Seed,
                     Size = b.Size,
+                    EnableDecorations = b.EnableDecorations,
+                    DecorationDensityPercent = b.DecorationDensityPercent,
                     Parameters = b.Parameters
                 }).ToList();
 
@@ -1660,6 +1706,8 @@ namespace SWLOR.ContentBuilder.Windows
                     Entrances = (int)_entrancesSlider.Value,
                     Exits = (int)_exitsSlider.Value,
                     DoorTransitions = _doorTransitionsCheckBox.IsChecked == true,
+                    DecorationsEnabled = _decorationsCheckBox.IsChecked == true,
+                    DecorationDensityPercent = (int)_decorationDensitySlider.Value,
                     Seed = GetSeedValue(),
                     PreviewMode = (PreviewModeCombo.SelectedItem as KeyedItem)?.Key ?? SchematicModeKey,
                     RoomOverlay = RoomOverlayCheckBox.IsChecked == true
@@ -1671,6 +1719,8 @@ namespace SWLOR.ContentBuilder.Windows
                     LayoutKey = b.LayoutProfileKey,
                     Seed = b.Seed,
                     Size = b.Size,
+                    EnableDecorations = b.EnableDecorations,
+                    DecorationDensityPercent = b.DecorationDensityPercent,
                     Parameters = b.Parameters?.Clone() ?? new MacroLayoutParameters()
                 }).ToList()
             };
@@ -1739,6 +1789,8 @@ namespace SWLOR.ContentBuilder.Windows
                 _entrancesSlider.Value = s.Entrances;
                 _exitsSlider.Value = s.Exits;
                 _doorTransitionsCheckBox.IsChecked = s.DoorTransitions;
+                _decorationsCheckBox.IsChecked = s.DecorationsEnabled;
+                _decorationDensitySlider.Value = s.DecorationDensityPercent;
                 _seedTextBox.Text = s.Seed.ToString(CultureInfo.InvariantCulture);
 
                 // Re-derive the tightened/coupled bounds now that every real value is in place.
@@ -1748,6 +1800,7 @@ namespace SWLOR.ContentBuilder.Windows
                 UpdateAccentAvailability();
                 UpdateFeatureAvailability();
                 UpdateElevationAvailability();
+                _decorationDensitySlider.IsEnabled = _decorationsCheckBox.IsChecked == true;
 
                 // Loaded values are explicit user data, not profile defaults -- mark every knob
                 // overridden so a subsequent tileset-only change (OnTilesetChanged calls
@@ -1768,6 +1821,8 @@ namespace SWLOR.ContentBuilder.Windows
                 _overriddenKnobs.Add(nameof(_exitsSlider));
                 _overriddenKnobs.Add(nameof(_doorTransitionsCheckBox));
                 _overriddenKnobs.Add(nameof(_elevationRegionsSlider));
+                _overriddenKnobs.Add(nameof(_decorationsCheckBox));
+                _overriddenKnobs.Add(nameof(_decorationDensitySlider));
 
                 SelectComboByKey(PreviewModeCombo, s.PreviewMode);
                 RoomOverlayCheckBox.IsChecked = s.RoomOverlay;
@@ -1809,6 +1864,8 @@ namespace SWLOR.ContentBuilder.Windows
                     Entrances = entry.Parameters.EntranceCount,
                     Exits = entry.Parameters.ExitCount,
                     DoorTransitions = entry.Parameters.DoorTransitions,
+                    EnableDecorations = entry.EnableDecorations,
+                    DecorationDensityPercent = entry.DecorationDensityPercent,
                     Parameters = entry.Parameters
                 });
             }

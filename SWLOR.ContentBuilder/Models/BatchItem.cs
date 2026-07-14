@@ -33,6 +33,8 @@ namespace SWLOR.ContentBuilder.Models
         public int Entrances { get; init; } = 1;
         public int Exits { get; init; } = 1;
         public bool DoorTransitions { get; init; } = true;
+        public bool EnableDecorations { get; init; } = true;
+        public int DecorationDensityPercent { get; init; } = 100;
         public MacroLayoutParameters Parameters { get; init; }
     }
 }

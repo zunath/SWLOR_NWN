@@ -25,6 +25,20 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_rough")
                 .TreasurePlaceable("structure_rubble", "Ore-Strewn Cache")
 
+                // Decoration palette curated from hand-built tdt01 cave evidence (Dathomir Grotto
+                // Caverns, Korriban Caverns, Dantooine Smuggler Caverns; see scratchpad
+                // decoration_evidence/evidence_by_tileset.json + evidence_by_theme_keyword.json).
+                .DecorationDensity(0.15)
+                .Decoration("zep_fireflies001", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_tno_rockldg2", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_conta39", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_fireflies001", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_debri20", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_altar002", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_debri20", 1, DecorationContext.DoorwayFlank)
+
                 // Tier 1 — low-level cave vermin (CR ~3-7 ambient). Boss: Shyrack (CR 14).
                 .Tier(1)
                 .AddCreature("crystalspider", 40)

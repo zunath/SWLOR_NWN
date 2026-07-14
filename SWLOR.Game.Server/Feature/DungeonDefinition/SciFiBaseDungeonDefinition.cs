@@ -26,6 +26,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_slid001")
                 .TreasurePlaceable("cz220_cache", "Supply Cache")
 
+                // Decoration palette curated from hand-built zsf01 facility evidence (CZ-220 Offices
+                // & Labs, Czerka Lab floors, Facility Dark, Mandalorian Facility).
+                .DecorationDensity(0.17)
+                .Decoration("_mdrn_pl_contpan", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall33", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_conso23", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_contr01", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_clntnke", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_divider", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_engctr1", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_cryotk2", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_fac13xe", 1, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_divider", 1, DecorationContext.DoorwayFlank)
+
                 // Tier 1 — malfunctioning junkyard droids and lab escapees (CR ~1-4 ambient).
                 // Boss: Republic Trooper (CR 10), a security patrol that never left the facility.
                 .Tier(1)

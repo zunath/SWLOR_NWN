@@ -172,6 +172,9 @@ namespace SWLOR.ContentBuilder.Services
             s.Entrances = Math.Clamp(s.Entrances, AreaSettingsBounds.EntrancesMin, AreaSettingsBounds.EntrancesMax);
             s.Exits = Math.Clamp(s.Exits, AreaSettingsBounds.ExitsMin, AreaSettingsBounds.ExitsMax);
 
+            if (s.DecorationDensityPercent < 0) return $"Decoration Density must not be negative (found {s.DecorationDensityPercent}).";
+            s.DecorationDensityPercent = Math.Clamp(s.DecorationDensityPercent, AreaSettingsBounds.DecorationDensityPercentMin, AreaSettingsBounds.DecorationDensityPercentMax);
+
             if (s.Seed < 0) return $"Seed must not be negative (found {s.Seed}).";
             s.Seed = Math.Clamp(s.Seed, 0, AreaSettingsBounds.MaxSeed);
 
@@ -213,6 +216,10 @@ namespace SWLOR.ContentBuilder.Services
 
             if (entry.Size <= 0)
                 return $"{label}: size must be a positive integer (found {entry.Size}).";
+
+            if (entry.DecorationDensityPercent < 0)
+                return $"{label}: decoration density must not be negative (found {entry.DecorationDensityPercent}).";
+            entry.DecorationDensityPercent = Math.Clamp(entry.DecorationDensityPercent, AreaSettingsBounds.DecorationDensityPercentMin, AreaSettingsBounds.DecorationDensityPercentMax);
 
             if (entry.Parameters == null)
                 return $"{label}: missing generation parameters.";

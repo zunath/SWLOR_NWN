@@ -26,6 +26,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public bool ExitPlaced => ExitsPlaced > 0;
         /// <summary>How many transitions were realized as real door objects (vs exit placeables).</summary>
         public int DoorsCreated { get; set; }
+        /// <summary>How many "set dressing" decoration placeables were spawned (0 when the request
+        /// disabled decorations, the theme has no curated palette, or density rolled zero).</summary>
+        public int DecorationsPlaced { get; set; }
     }
 
     /// <summary>
@@ -252,7 +255,43 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     PlaceExit(area, transition, detail, instance, result);
             }
 
+            PlaceDecorations(area, instance, detail, result);
+
             return result;
+        }
+
+        /// <summary>
+        /// Spawns the theme's curated "set dressing" decoration pass (see DungeonDecorationPlanner),
+        /// gated by the generating request's EnableDecorations/DecorationDensityPercent (defaults:
+        /// on, 100%). Decorations are plain CreateObject spawns of curated blueprints — no scripts,
+        /// plot flag, or useable override — tracked in instance.SpawnedObjects for teardown exactly
+        /// like every other content-population spawn.
+        /// </summary>
+        private static void PlaceDecorations(
+            uint area,
+            RuntimeAreaInstance instance,
+            DungeonDetail detail,
+            DungeonPopulationResult result)
+        {
+            var enabled = instance.Request?.EnableDecorations ?? true;
+            if (!enabled)
+                return;
+
+            var densityPercent = instance.Request?.DecorationDensityPercent ?? 100;
+            var plan = DungeonDecorationPlanner.Plan(instance.Layout, detail, densityPercent);
+
+            foreach (var planned in plan)
+            {
+                var position = GroundedPosition(area, planned.Position.X, planned.Position.Y);
+                var location = Location(area, position, planned.Facing);
+
+                var placeable = CreateObject(ObjectType.Placeable, planned.Resref, location);
+                if (!GetIsObjectValid(placeable))
+                    continue;
+
+                instance.SpawnedObjects.Add(placeable);
+                result.DecorationsPlaced++;
+            }
         }
 
         private static void PopulateStandardRoom(

@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
+                        // Learned list column: no fixed width, so it flexes to fill the space left
+                        // by the fixed-width button column and shares it evenly with the Equipped column.
                         row.AddColumn(col2 =>
                         {
                             col2.AddRow(row2 =>
@@ -42,20 +44,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 })
                                 .SetRowHeight(30f)
                                 .SetScrollbars(NuiScrollbars.Both)
-                                .BindRowCount(model => model.UnequippedNames)
-                                .SetWidth(220f);
+                                .BindRowCount(model => model.UnequippedNames);
                             });
                         });
 
+                        // Fixed-width control column between the two lists. Pinning its width keeps
+                        // the buttons compact and lets the flanking lists claim the rest of the row.
                         row.AddColumn(col2 =>
                         {
+                            col2.SetWidth(120f);
                             col2.AddRow(row2 => row2.AddSpacer());
                             col2.AddRow(row2 =>
                             {
                                 row2.AddButton()
                                     .SetText("Equip ->")
                                     .SetHeight(32f)
-                                    .SetWidth(96f)
                                     .BindIsEnabled(model => model.IsEquipEnabled)
                                     .BindOnClicked(model => model.OnClickEquip());
                             });
@@ -64,13 +67,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddButton()
                                     .SetText("<- Unequip")
                                     .SetHeight(32f)
-                                    .SetWidth(96f)
                                     .BindIsEnabled(model => model.IsUnequipEnabled)
                                     .BindOnClicked(model => model.OnClickUnequip());
                             });
                             col2.AddRow(row2 => row2.AddSpacer());
                         });
 
+                        // Equipped list column: also flexes to fill the remaining space.
                         row.AddColumn(col2 =>
                         {
                             col2.AddRow(row2 =>
@@ -93,17 +96,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 })
                                 .SetRowHeight(30f)
                                 .SetScrollbars(NuiScrollbars.Both)
-                                .BindRowCount(model => model.EquippedNames)
-                                .SetWidth(220f);
+                                .BindRowCount(model => model.EquippedNames);
                             });
                         });
                     });
 
+                    // Fixed-height details pane so the lists above take all the flexible vertical space.
                     col.AddRow(row =>
                     {
+                        row.SetHeight(140f);
                         row.AddText()
-                            .BindText(model => model.SelectedDetails)
-                            .SetHeight(140f);
+                            .BindText(model => model.SelectedDetails);
                     });
 
                     col.AddRow(row =>

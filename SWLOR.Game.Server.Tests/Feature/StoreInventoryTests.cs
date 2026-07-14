@@ -116,10 +116,13 @@ public class StoreInventoryTests
 
                 foundStores[storeResref]++;
                 var placedItems = ReadPlacedStoreItems(store).ToArray();
-                if (!placedItems.SequenceEqual(expectedItems, StringComparer.OrdinalIgnoreCase))
+
+                // Compare inventory as multisets, not sequences: the toolset reshuffles store panes
+                // on every save, so pane/item order is not stable, but the set of items sold must match.
+                var missing = expectedItems.Where(item => !placedItems.Contains(item, StringComparer.OrdinalIgnoreCase)).ToArray();
+                var extra = placedItems.Where(item => !expectedItems.Contains(item, StringComparer.OrdinalIgnoreCase)).ToArray();
+                if (missing.Length > 0 || extra.Length > 0 || placedItems.Length != expectedItems.Length)
                 {
-                    var missing = expectedItems.Where(item => !placedItems.Contains(item, StringComparer.OrdinalIgnoreCase));
-                    var extra = placedItems.Where(item => !expectedItems.Contains(item, StringComparer.OrdinalIgnoreCase));
                     findings.Add(
                         $"{Path.GetRelativePath(root.FullName, file)} store[{storeIndex}] {storeResref} does not match its UTM blueprint. " +
                         $"Missing: {string.Join(", ", missing)}. Extra: {string.Join(", ", extra)}.");

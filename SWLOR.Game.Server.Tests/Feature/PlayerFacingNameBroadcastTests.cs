@@ -566,14 +566,34 @@ public class PlayerFacingNameBroadcastTests
     private static int? GitLocalInt(string gitPath, string variableName)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(gitPath));
-        var areaProperties = document.RootElement
-            .GetProperty("AreaProperties")
-            .GetProperty("value");
+        var root = document.RootElement;
 
-        if (!areaProperties.TryGetProperty("VarTable", out var varTable) ||
-            !varTable.TryGetProperty("value", out var variables))
+        // The runtime reads this with GetLocalInt(area, ...), i.e. the area instance's top-level
+        // VarTable, which is also where the toolset writes area locals. Older hand-authored areas
+        // keep it under AreaProperties, so accept either location.
+        if (TryReadIntLocal(root, variableName, out var topLevel))
         {
-            return null;
+            return topLevel;
+        }
+
+        if (root.TryGetProperty("AreaProperties", out var areaProperties) &&
+            areaProperties.TryGetProperty("value", out var areaPropertiesValue) &&
+            TryReadIntLocal(areaPropertiesValue, variableName, out var nested))
+        {
+            return nested;
+        }
+
+        return null;
+    }
+
+    private static bool TryReadIntLocal(JsonElement container, string variableName, out int result)
+    {
+        result = 0;
+        if (!container.TryGetProperty("VarTable", out var varTable) ||
+            !varTable.TryGetProperty("value", out var variables) ||
+            variables.ValueKind != JsonValueKind.Array)
+        {
+            return false;
         }
 
         foreach (var variable in variables.EnumerateArray())
@@ -589,13 +609,14 @@ public class PlayerFacingNameBroadcastTests
                 !variable.TryGetProperty("Value", out var value) ||
                 value.GetProperty("type").GetString() != "int")
             {
-                return null;
+                return false;
             }
 
-            return value.GetProperty("value").GetInt32();
+            result = value.GetProperty("value").GetInt32();
+            return true;
         }
 
-        return null;
+        return false;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

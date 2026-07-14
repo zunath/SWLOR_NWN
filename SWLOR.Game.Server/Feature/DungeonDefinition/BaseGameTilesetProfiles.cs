@@ -119,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string Desert = "desert";
         public const string Forest = "forest";
         public const string ForestFacelift = "forest_facelift";
+        public const string ForestPlatform = "forest_platform";
 
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
@@ -1843,9 +1844,20 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Alternate palettes (auto-exempted via PilotAlternateVocabTerrains, each verified
             // directly): GoodCastle/EvilCastle and RuralTrees/RuralWater are full separate district
             // palettes (out of this wave's scope -- the tni01 room-palette precedent); Marsh reaches
-            // only 14/16; Platform and HighForest blend ONLY with Pit (2/16 against both Forest and
-            // Cliff), and no composition can make Pit its solid, so they are structurally out of
-            // reach for ANY profile. Unwired crosser families (PilotAlternateVocabCrossers):
+            // only 14/16 against Forest. Platform and HighForest blend only 2/16 against Forest, and
+            // HighForest only 2/16 against Cliff too -- but Platform reaches 16/16 against Cliff AND
+            // 16/16 against Pit, and HighForest also reaches 16/16 against Pit (verified directly by
+            // 16-combo probe): see the "Forest (Platform)" PaletteVariant below, which declares
+            // SolidTerrainOverride("Pit") + PrimaryOpenTerrain("Platform") to close the Platform
+            // GROUPS that need a Solid+Open pair covering Pit and Platform simultaneously (every
+            // ungrouped Platform/HighForest-cornered simple tile was ALREADY CornerEdgeResolver-
+            // reachable regardless of vocab, so only the groups needed a dedicated variant; a
+            // dedicated HighForest variant would add no additional coverage since no group uses
+            // HighForest corners). Still exempt after that variant, still terrain-listed here:
+            // "Platform - Cliff Door" and "Platform - Cliff Section" mix Platform+Cliff+Pit (three
+            // terrains on one group -- no two-terrain classifier reaches it), and the four remaining
+            // GoodCastle/EvilCastle/RuralTrees/RuralWater tiles. Unwired crosser families
+            // (PilotAlternateVocabCrossers):
             // DlaEdgeFix, StoneBridge, RuralStream, MossWall, CityWall, RuinWall, RuralWallOne/Two --
             // their flat door-free tiles all resolve via CornerEdgeResolver regardless; the entries
             // exempt the few flat door/group tiles (e.g. "Bridge - Footbridge, Rural Stream",
@@ -1949,6 +1961,77 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("House - Turf")
                 .ExitGroup("House - Ruined")
                 .ExitGroup("Tower - Stone");
+
+            // Forest (Platform) -- ttf01's "Platform" chasm-bridge district, a PaletteVariant profile
+            // recomposing the SAME ttf01 hak data the base Forest profile above uses, closing part of
+            // the "Platform and HighForest blend ONLY with Pit... no composition can make Pit its
+            // solid" assumption in the base profile's own doc comment above -- that assumption
+            // predates SolidTerrainOverride's ability to pick an INVERTED solid per PaletteVariant
+            // (verified false by direct 16-combo probe: PrimaryOpenTerrain("Platform") +
+            // SolidTerrainOverride("Pit") gives full 16/16 flat corner coverage, same as
+            // Platform-vs-Cliff; HighForest also reaches 16/16 against Pit, but every ungrouped
+            // HighForest-cornered tile (TILE906/907/921-924/928-945, mixed freely with Platform/Pit/
+            // Cliff) was ALREADY CornerEdgeResolver-reachable under the base profile regardless of
+            // vocab -- IsCornerEdgeResolverReachable resolves a flat, door-free (or Doorway/Bridge-
+            // door-bearing) tile against its own raw corners, independent of any profile's declared
+            // Open/Solid pair -- so no dedicated HighForest variant is needed; this profile exists to
+            // close the GROUPS that fail ClassifySetPiece's two-terrain (Solid/Open) binary under the
+            // base Cliff/Forest vocab because they use Platform+Pit corners instead.
+            // Closes (Solid=Pit, Open=Platform, all corners verified in {Pit, Platform} only):
+            // "Platform - Building (2x3)" (all-Platform), "Platform - Elevator, Upper" (all-Platform),
+            // "Platform - House 1/2", "Platform - Pillar 1/2", "Platform - Plaza"/"Plaza (1x2)"
+            // (Pit/Platform mixes), "Tower - Guard, Pit (1x2)" (one Platform-cornered member, one
+            // all-Pit member -- the group-wide "at least one Open corner somewhere in the group"
+            // rule). Stay exempt (genuinely unmodeled, verified directly): "Platform - Cliff Door"
+            // (TILE966, [Platform,Cliff,Cliff,Platform] -- Cliff isn't in this variant's vocab, and
+            // making Cliff the solid instead reopens the base profile's own Platform-vs-Cliff 16/16
+            // pairing but abandons Pit, which "Platform - Cliff Section" below still needs); "Platform
+            // - Cliff Section (2x3)" (TILE949-954, genuinely THREE terrains -- Platform, Cliff, AND
+            // Pit -- on one group's members; ClassifySetPiece's matchesPrimary/matchesSecondary each
+            // only ever admit a Solid+ONE-other-terrain pair, never three simultaneously, so no single
+            // profile composition can close a true three-terrain group). "Portal - Platform"/"Platform
+            // - Elevator, Lower"/"Crystal - Platform"/"Tower - Archer Platform" are misleadingly named
+            // but physically all-Forest -- already reachable under the base profile, untouched by this
+            // variant. "Tower - Guard, Pit" (solo, TILE963, all-Pit) is a separate, pre-existing
+            // "uniform accent terrain, no Open/Solid corner at all" gap (see PilotExpectedExemptions --
+            // ClassifySetPiece's matchesPrimary requires at least one Open corner even when every
+            // corner is otherwise a valid Solid), unrelated to Platform/HighForest and unchanged here.
+            // Bonus closure this SAME SolidTerrainOverride("Pit") composition unlocks for free: "Ship -
+            // Air, Above Pit (3x1)" (TILE987-989, uniform Pit, WITH a door slot) now satisfies
+            // ClassifyMultiTileSetPiece's allCornersSolid+hasAnyDoor rule -> SetPieceWallAlcove (a
+            // supported LayoutGroupStamper production kind, not census-only) -- wired below so this is
+            // a real placement, not just a passive census credit -- verified via direct seed sweeps: it
+            // places in 100/100 real generations. The doorless uniform-Pit siblings ("Tower - Guard,
+            // Pit" solo, "Island (3x3)") still lack a door slot and stay exempt (see
+            // TileCoverageCensusTests.PilotExpectedExemptions's updated ttf01 comment).
+            // Caveat on the OpenSetPiece groups above (House/Pillar/Plaza/Building/TowerGuardPit): a
+            // direct reflection probe confirms TryClassify correctly resolves them to Kind=OpenSetPiece
+            // and TryPlaceOpenSetPiece correctly stamps them given an adequately roomy, off-center
+            // site, but real Halls/Complex-carved rooms at typical sizes (16-60) essentially never
+            // offer a site clear of the room's reserved-CenterTile margin -- a PRE-EXISTING
+            // TryPlaceOpenSetPiece site-search gap reproduced identically on tdm01 (interior) and this
+            // same base Forest profile's own long-shipped "Ruin 1 (2x2)" (0/90 seed hits each, verified
+            // directly), not introduced by this variant. The census credit is honest (these shapes are
+            // genuinely reachable, matching every other OpenSetPiece in every other profile), but real
+            // placement frequency is low until that shared gap is fixed separately.
+            // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
+            _builder.Create(ForestPlatform, "Forest (Platform)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Platform")
+                .SolidTerrainOverride("Pit")
+                .SetPiece("Platform - Building (2x3)", 1)
+                .SetPiece("Platform - Elevator, Upper", 1)
+                .SetPiece("Platform - House 1", 1)
+                .SetPiece("Platform - House 2", 1)
+                .SetPiece("Platform - Pillar 1")
+                .SetPiece("Platform - Pillar 2")
+                .SetPiece("Platform - Plaza")
+                .SetPiece("Platform - Plaza (1x2)")
+                .SetPiece("Tower - Guard, Pit (1x2)", 1)
+                .SetPiece("Ship - Air, Above Pit (3x1)", 1);
 
             // Forest - Facelift (ttf02, BIF-only: no hak copy exists anywhere under SWLOR_Haks --
             // verified directly -- so TilesetSetSource's hak-first lookup falls through to the

@@ -127,6 +127,10 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.Desert,
         BaseGameTilesetProfiles.Forest,
         BaseGameTilesetProfiles.ForestFacelift,
+        // Forest (Platform): the same "no crosser family crosses the composed solid" gap, this time
+        // against SolidTerrainOverride("Pit") -- none of Wall/Road/Stream/etc. cross Pit either. See
+        // BaseGameTilesetProfiles.ForestPlatform's own doc comment.
+        BaseGameTilesetProfiles.ForestPlatform,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

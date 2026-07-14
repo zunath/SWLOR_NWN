@@ -988,10 +988,12 @@ public class TileCoverageCensusTests
         // ttf01's hak copy (sw_t_forest) carries four full unwired district palettes (GoodCastle/
         // EvilCastle and RuralTrees/RuralWater, each blending only with the walkable Forest terrain
         // -- out of this wave's scope, the tni01 livingroom/kitchen/shop precedent), one
-        // under-covered palette (Marsh, 14/16 against Forest), and two palettes that blend ONLY with
-        // Pit (Platform/HighForest, 2/16 against both Forest and Cliff -- no composition can make
-        // Pit its solid, so they are structurally out of reach for ANY profile). See
-        // BaseGameTilesetProfiles.Forest's own doc comment.
+        // under-covered palette (Marsh, 14/16 against Forest). Platform/HighForest are MOSTLY closed
+        // by BaseGameTilesetProfiles.ForestPlatform's SolidTerrainOverride("Pit") +
+        // PrimaryOpenTerrain("Platform") variant (16/16 against Pit, verified directly), leaving only
+        // the genuinely three-terrain "Platform - Cliff Door"/"Platform - Cliff Section" groups
+        // (Platform+Cliff+Pit on one group, outside any two-terrain classifier) still tagged via this
+        // dictionary. See BaseGameTilesetProfiles.Forest's own doc comment.
         ["ttf01"] = new(StringComparer.OrdinalIgnoreCase)
         {
             "GoodCastle", "EvilCastle", "Marsh", "Platform", "HighForest", "RuralTrees", "RuralWater",
@@ -1208,16 +1210,21 @@ public class TileCoverageCensusTests
         // shapes require all-SOLID corners (and the composed solid is Cliff, which no crosser family
         // crosses -- see the wave comment in BaseGameTilesetProfiles), and 677's adjacent-pair turn
         // shape is one CorridorInsert never matches under ANY family regardless. "Tower - Guard,
-        // Pit" (TILE963, uniform Pit, doorless, pathnode-restricted), "Island (3x3)" and "Ship -
-        // Air, Above Pit (3x1)" (uniform Pit), and "Temple - Elven 2 (3x3)" (Pit+Forest mixed) sit
-        // on accent/channel terrain -- no mechanism stamps groups onto accent territory
-        // (OpenSetPiece/WallAlcove pools are Solid/Open/Secondary only; the same gap as tdm01's
-        // Ship - Docked/Docks). "Bridge - Pit/Log/Rickety (1x3)" (Forest|Pit|Forest) and "Bridge -
-        // Forest Water (1x3)" (Forest|Water) are crosser-FREE channel-spanning decor -- nothing
-        // carves the fixed 3-cell accent span they'd need to straddle. "Cave - Cliff (2x3)" mixes
-        // THREE terrains (Cliff/Water/Forest), outside every two-terrain classifier (the Crypt
-        // Dwarven Cave Entrance gap). "House - Treehouse 3 (2x2)" mixes Water+Forest (accent-mixed
-        // corners).
+        // Pit" (TILE963, uniform Pit, doorless, pathnode-restricted) and "Island (3x3)" (uniform
+        // Pit, doorless) sit on accent/channel terrain with no door slot: matchesPrimary requires at
+        // least one Open corner even under BaseGameTilesetProfiles.ForestPlatform's own
+        // SolidTerrainOverride("Pit") composition (see that profile's doc comment -- it closed the
+        // sibling "Ship - Air, Above Pit (3x1)" group precisely because THAT group has a door slot,
+        // reaching WallAlcove's allCornersSolid+hasAnyDoor branch instead), so a doorless uniform-Pit
+        // group stays genuinely unreachable (the same gap as tdm01's Ship - Docked/Docks).
+        // "Temple - Elven 2 (3x3)" (Pit+Forest mixed, still no single Solid+Open pair covers both
+        // since Forest is Open under the base profile but Pit is Open under ForestPlatform -- neither
+        // profile's Solid matches the other's Open on the same group). "Bridge - Pit/Log/Rickety
+        // (1x3)" (Forest|Pit|Forest) and "Bridge - Forest Water (1x3)" (Forest|Water) are crosser-
+        // FREE channel-spanning decor -- nothing carves the fixed 3-cell accent span they'd need to
+        // straddle. "Cave - Cliff (2x3)" mixes THREE terrains (Cliff/Water/Forest), outside every
+        // two-terrain classifier (the Crypt Dwarven Cave Entrance gap). "House - Treehouse 3 (2x2)"
+        // mixes Water+Forest (accent-mixed corners).
         ("ttf01", "GROUP:Wall - Gate 1, Forest"),
         ("ttf01", "GROUP:Wall - Gate 2, Forest"),
         ("ttf01", "GROUP:Bridge - Stream 1, Forest"),
@@ -1226,7 +1233,6 @@ public class TileCoverageCensusTests
         ("ttf01", "GROUP:Tower - Archer, Forest Wall Corner"),
         ("ttf01", "GROUP:Tower - Guard, Pit"),
         ("ttf01", "GROUP:Island (3x3)"),
-        ("ttf01", "GROUP:Ship - Air, Above Pit (3x1)"),
         ("ttf01", "GROUP:Temple - Elven 2 (3x3)"),
         ("ttf01", "GROUP:Bridge - Pit (1x3)"),
         ("ttf01", "GROUP:Bridge - Log (1x3)"),

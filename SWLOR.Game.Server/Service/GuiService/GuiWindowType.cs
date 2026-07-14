@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         MusicPicker = 55,
         Dice = 56,
         GuildTasks = 57,
+        HpTracker = 58,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

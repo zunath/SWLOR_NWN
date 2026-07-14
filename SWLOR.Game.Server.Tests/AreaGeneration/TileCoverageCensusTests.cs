@@ -985,15 +985,23 @@ public class TileCoverageCensusTests
         // bare door slots with no crosser -- TileDoorPlanner's single-Doorway-edge rule can never
         // place them regardless).
         ["ttd01"] = new(StringComparer.OrdinalIgnoreCase) { "Svirfneblin", "Poor" },
-        // ttf01's hak copy (sw_t_forest) carries four full unwired district palettes (GoodCastle/
-        // EvilCastle and RuralTrees/RuralWater, each blending only with the walkable Forest terrain
-        // -- out of this wave's scope, the tni01 livingroom/kitchen/shop precedent), one
-        // under-covered palette (Marsh, 14/16 against Forest). Platform/HighForest are MOSTLY closed
-        // by BaseGameTilesetProfiles.ForestPlatform's SolidTerrainOverride("Pit") +
-        // PrimaryOpenTerrain("Platform") variant (16/16 against Pit, verified directly), leaving only
-        // the genuinely three-terrain "Platform - Cliff Door"/"Platform - Cliff Section" groups
-        // (Platform+Cliff+Pit on one group, outside any two-terrain classifier) still tagged via this
-        // dictionary. See BaseGameTilesetProfiles.Forest's own doc comment.
+        // ttf01's hak copy (sw_t_forest) carries two full unwired district palettes (GoodCastle/
+        // EvilCastle, each blending only with the walkable Forest terrain -- out of this wave's scope,
+        // the tni01 livingroom/kitchen/shop precedent), one under-covered palette (Marsh, 14/16
+        // against Forest). Platform/HighForest are MOSTLY closed by BaseGameTilesetProfiles.
+        // ForestPlatform's SolidTerrainOverride("Pit") + PrimaryOpenTerrain("Platform") variant
+        // (16/16 against Pit, verified directly), leaving only the genuinely three-terrain "Platform -
+        // Cliff Door"/"Platform - Cliff Section" groups (Platform+Cliff+Pit on one group, outside any
+        // two-terrain classifier) still tagged via this dictionary. RuralTrees/RuralWater are now
+        // MOSTLY closed too by BaseGameTilesetProfiles.ForestRural's AccentTerrain/ReliefBlendTerrain
+        // variant (PoolBank/TerrainRelief, verified directly and via a real-generation placement
+        // proof) -- but TILE849 (uniform RuralWater, door-bearing, Road-crossered) and TILE1114
+        // (Forest/RuralTrees mixed, door-bearing, Road-crossered) still need the TERRAIN entries here:
+        // "Road" is deliberately NOT in PilotAlternateVocabCrossers["ttf01"] below (it's the base
+        // wired crossroads-gate family, not an alternate one), and a door-bearing tile fails
+        // CornerEdgeResolver's Doorway/Bridge/extra-only admission gate regardless of vocab -- verified
+        // directly that removing RuralTrees/RuralWater from this set turns exactly these two tiles
+        // UNCLASSIFIED. See BaseGameTilesetProfiles.Forest's own doc comment.
         ["ttf01"] = new(StringComparer.OrdinalIgnoreCase)
         {
             "GoodCastle", "EvilCastle", "Marsh", "Platform", "HighForest", "RuralTrees", "RuralWater",
@@ -1450,5 +1458,4 @@ public class TileCoverageCensusTests
 
         (coveredTileIds.Count + exemptions.Count).Should().Be(model.Tiles.Count);
     }
-
 }

@@ -495,4 +495,60 @@ public class LayoutReliefPainterTests
         rampPiecePinCount.Should().BeGreaterThan(0,
             $"across 60 seeds LayoutGroupStamper's ReliefPiece kind must stamp the baked-mesh Ramp group at least once in a real {tilesetProfile.TilesetResref} layout");
     }
+
+    /// <summary>
+    /// Positive placement proof for BaseGameTilesetProfiles.ForestRural (ttf01's PaletteVariant
+    /// closing the previously-unwired RuralWater/RuralTrees raised-bank census bucket): a real
+    /// Complex composition (which requests PoolRegions=2/ReliefRegions=2, matching this profile's own
+    /// MaxPoolRegions(2)/MaxReliefRegions(2) caps) must actually paint RuralWater corners via
+    /// LayoutElevationPoolPainter's irregular pool-bank grower (AccentTerrain) AND RuralTrees corners
+    /// via LayoutReliefPainter's blend flip (ReliefBlendTerrain) in real generated layouts -- not just
+    /// theoretically reachable per TileCoverageCensusTests' PoolBank/TerrainRelief shape mirrors.
+    /// </summary>
+    [Test]
+    public void RealForestRuralComplexComposition_PaintsRuralWaterAndRuralTreesBanks()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.ForestRural];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = TilesetTestSource.LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        var resolvedCount = 0;
+        var ruralWaterSeeds = 0;
+        var ruralTreesSeeds = 0;
+        const int size = 24;
+
+        for (var seed = 9400; seed < 9460; seed++)
+        {
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            parameters.PoolRegions.Should().BeGreaterThan(0, "ForestRural/Complex must actually request pool regions");
+            parameters.ReliefRegions.Should().BeGreaterThan(0, "ForestRural/Complex must actually request relief regions");
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            if (!solved.Success) continue;
+            resolvedCount++;
+
+            var corners = solved.Layout.Corners;
+            var sawWater = false;
+            var sawTrees = false;
+            for (var x = 0; x <= corners.Width && !(sawWater && sawTrees); x++)
+            for (var y = 0; y <= corners.Height && !(sawWater && sawTrees); y++)
+            {
+                if (string.Equals(corners.Labels[x, y], "RuralWater", StringComparison.Ordinal)) sawWater = true;
+                if (string.Equals(corners.Labels[x, y], "RuralTrees", StringComparison.Ordinal)) sawTrees = true;
+            }
+            if (sawWater) ruralWaterSeeds++;
+            if (sawTrees) ruralTreesSeeds++;
+        }
+
+        resolvedCount.Should().BeGreaterThan(0, "at least some seeds must generate successfully");
+        ruralWaterSeeds.Should().BeGreaterThan(0,
+            $"across 60 seeds the pool-bank pass must paint at least one RuralWater corner in a real {tilesetProfile.TilesetResref}/ForestRural layout (got 0/{resolvedCount})");
+        ruralTreesSeeds.Should().BeGreaterThan(0,
+            $"across 60 seeds the relief-blend pass must paint at least one RuralTrees corner in a real {tilesetProfile.TilesetResref}/ForestRural layout (got 0/{resolvedCount})");
+    }
 }

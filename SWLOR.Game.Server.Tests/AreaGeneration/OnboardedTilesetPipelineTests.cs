@@ -91,6 +91,9 @@ public class OnboardedTilesetPipelineTests
         // ttf01's "Platform" chasm-bridge district, a PaletteVariant profile -- see
         // BaseGameTilesetProfiles.ForestPlatform's own doc comment.
         BaseGameTilesetProfiles.ForestPlatform,
+        // ttf01's unwired RuralWater/RuralTrees raised-bank district, a PaletteVariant profile -- see
+        // BaseGameTilesetProfiles.ForestRural's own doc comment.
+        BaseGameTilesetProfiles.ForestRural,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

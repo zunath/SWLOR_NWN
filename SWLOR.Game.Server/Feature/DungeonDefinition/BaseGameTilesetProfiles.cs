@@ -120,6 +120,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string Forest = "forest";
         public const string ForestFacelift = "forest_facelift";
         public const string ForestPlatform = "forest_platform";
+        public const string ForestRural = "forest_rural";
 
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
@@ -2037,6 +2038,68 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Platform - Plaza (1x2)")
                 .SetPiece("Tower - Guard, Pit (1x2)", 1)
                 .SetPiece("Ship - Air, Above Pit (3x1)", 1);
+
+            // Forest (Rural) -- ttf01's unwired RuralWater/RuralTrees raised-bank district (see
+            // BaseGameTilesetProfiles.Forest's own doc comment, "unwired RuralWater/RuralTrees" note),
+            // a PaletteVariant profile recomposing the SAME ttf01 hak data the base Forest profile
+            // uses. Direct probe (TileResolver.HasCandidate over all 16 flat corner masks) confirms
+            // RuralWater and RuralTrees each blend 16/16 against Solid=Forest -- i.e. they are walkable
+            // "ground cover" terrains layered onto Forest, not a Cliff-style solid mass, matching the
+            // hak's own raised-bank tile inventory (TILE500-529/541-546/563-573/600-601): every
+            // non-flat RuralWater/RuralTrees tile mixes ONLY {Forest, RuralWater} or {Forest,
+            // RuralTrees} corners (never Cliff), one-step height deltas, blank edges, doorless,
+            // ungrouped -- the exact shape LayoutElevationPoolPainter's irregular pool-bank grower
+            // (IsPoolBankReachable's mirror) and LayoutReliefPainter's relief-blend flip
+            // (IsTerrainReliefReachable's mirror) already carve for a (PrimaryOpenTerrain,
+            // AccentTerrain)/(PrimaryOpenTerrain, ReliefBlendTerrain) pair -- so RuralWater is wired as
+            // this variant's pool AccentTerrain (banks around an irregular water-pool patch) and
+            // RuralTrees as its ReliefBlendTerrain (a gentle grade blend, the same "walkable slope"
+            // role tdm01's GentleSlope/GentleDesert/GentleOrganic play), both against the SAME base
+            // Solid=Cliff/Open=Forest pair the base Forest profile already verified 16/16. (The flat,
+            // door-free RuralStream/RuralWallOne/RuralWallTwo/Road/CityWall-crossered siblings on
+            // these same corners were ALREADY CornerEdgeResolver-reachable before this variant --
+            // TileResolver.HasCandidate matches a tile's own raw corners/edges regardless of any
+            // profile's declared vocabulary -- so CornerEdgeResolver's count is unchanged by this
+            // profile; verified directly via the census re-run below.)
+            // Closes: 52 of ttf01's 150 previously height-exempt tiles (PoolBank +6: TILE510/511/513/
+            // 541/542/544, single-corner RuralWater rim-bank shapes; TerrainRelief +46). Since
+            // IsTerrainReliefReachable's InPalette check accepts Open, Accent, OR Blend independently
+            // per corner (not just a two-terrain pair), this ALSO closes two shapes beyond the single-
+            // terrain-pair case its own doc comment anticipated -- both re-verified directly, not
+            // assumed: (1) genuine three-terrain ADJACENT mixes, e.g. TILE514-519 (Forest+RuralWater+
+            // RuralTrees corners sharing an edge each); (2) blank-edge, ALL-FOREST diagonal saddles
+            // (two NON-adjacent raised corners, the same shape IsElevationBlobReachable's adjacency
+            // check alone would reject) -- TILE507/538, closed via the BFS field search
+            // (IsReliefFieldReachable) finding an intermediate Forest/RuralTrees-blended construction
+            // path even though the FINAL tile itself never shows a RuralTrees corner. Real-generation
+            // placement proof: LayoutReliefPainterTests.
+            // RealForestRuralComplexComposition_PaintsRuralWaterAndRuralTreesBanks (Complex composition,
+            // 60 seeds, both RuralWater pool-bank corners and RuralTrees relief-blend corners actually
+            // painted). Stays exempt (genuinely unmodeled, verified directly): blank-edge DIAGONAL
+            // two-terrain splits, e.g. TILE512/528/543/747/896 (Forest+RuralWater or Forest+RuralTrees
+            // on NON-adjacent corners -- the BFS construction path that closes the single-terrain
+            // diagonal case above never finds one for a two-terrain diagonal); the uniform-RuralWater
+            // rim blob TILE884 (IsElevationBlobReachable only ever checks vocab.Solid/vocab.Open
+            // uniformity, never vocab.Accent); and every crosser-bearing raised tile whose crosser
+            // isn't the declared Ramp ("Slope") -- CityWall/MossWall/RuralWallOne/RuralWallTwo/
+            // RuralStream/Road/StoneBridge raised lanes (the bulk of the remaining exempt bucket) stay
+            // a SEPARATE gap (a composition carries only one RampCrosser slot, already claimed by
+            // "Slope" here -- see the closure toolkit's "additional families = additional variants"
+            // note).
+            // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
+            _builder.Create(ForestRural, "Forest (Rural)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .AccentTerrain("RuralWater")
+                .ReliefBlendTerrain("RuralTrees")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
+                .RampCrosser("Slope");
 
             // Forest - Facelift (ttf02, BIF-only: no hak copy exists anywhere under SWLOR_Haks --
             // verified directly -- so TilesetSetSource's hak-first lookup falls through to the

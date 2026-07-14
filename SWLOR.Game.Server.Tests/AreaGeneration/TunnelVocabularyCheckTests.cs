@@ -131,6 +131,10 @@ public class TunnelVocabularyCheckTests
         // against SolidTerrainOverride("Pit") -- none of Wall/Road/Stream/etc. cross Pit either. See
         // BaseGameTilesetProfiles.ForestPlatform's own doc comment.
         BaseGameTilesetProfiles.ForestPlatform,
+        // Forest (Rural): same SolidTerrainOverride("Cliff") as the base Forest profile above (only
+        // AccentTerrain/ReliefBlendTerrain differ) -- identical "no crosser family crosses Cliff" gap.
+        // See BaseGameTilesetProfiles.ForestRural's own doc comment.
+        BaseGameTilesetProfiles.ForestRural,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

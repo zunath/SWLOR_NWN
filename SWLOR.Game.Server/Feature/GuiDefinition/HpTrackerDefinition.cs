@@ -17,8 +17,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.HpTracker)
                 .SetTitle("HP Tracker")
-                .SetIsResizable(true)
-                .SetIsCollapsible(true)
+                // Fixed size (not resizable): the framework then forces the default width/height on every
+                // open (forceResize in Gui.cs), which also keeps a stale/degenerate saved geometry from
+                // ever reopening the window as a collapsed sliver. The list scrolls, so a fixed size is fine.
+                .SetIsResizable(false)
+                .SetIsCollapsible(false)
                 .SetInitialGeometry(0, 0, 430f, 360f)
                 .AddColumn(col =>
                 {

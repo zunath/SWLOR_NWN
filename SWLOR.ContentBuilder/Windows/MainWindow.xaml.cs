@@ -244,8 +244,8 @@ namespace SWLOR.ContentBuilder.Windows
 
             // Theme is content-only (spawns/loot/lighting), not map geometry, so it lives here
             // rather than in the primary Composition group -- see ThemeTooltip.
-            var (_, contentGroup) = AddGroup(advancedContent, "Content");
-            _themeCombo = AddComboRow(contentGroup, "Theme (spawns / loot / lighting)");
+            var (_, contentGroup) = AddGroup(advancedContent, "Content (spawns / loot / lighting)");
+            _themeCombo = AddComboRow(contentGroup, "Theme");
             _themeCombo.ToolTip = ThemeTooltip;
 
             var (_, overrides) = AddGroup(advancedContent, "Layout overrides");
@@ -442,15 +442,16 @@ namespace SWLOR.ContentBuilder.Windows
                 VerticalAlignment = VerticalAlignment.Center
             };
             valuePanel.Children.Add(valueBox);
-            if (!string.IsNullOrEmpty(suffix))
+            // Every row gets a fixed-width suffix slot (blank when the row has no suffix) so the
+            // value boxes share one right-aligned column; a conditional suffix would push only the
+            // "%" rows' boxes left and break the column alignment.
+            valuePanel.Children.Add(new TextBlock
             {
-                valuePanel.Children.Add(new TextBlock
-                {
-                    Text = suffix,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(2, 0, 0, 0)
-                });
-            }
+                Text = suffix,
+                Width = 14,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(2, 0, 0, 0)
+            });
             Grid.SetColumn(valuePanel, 2);
             row.Children.Add(valuePanel);
 

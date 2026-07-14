@@ -17,7 +17,7 @@ public class CapstoneQuestGiverPlacementTests
         ("cq_emcocktail", "dan_repubmed"), ("cq_holdline", "dan_repgarrison"), ("cq_infconduit", "dan_medinterior"),
         ("cq_absdef", "ar_scor_kacademy"), ("cq_soulasc", "scor_knwinterior"), ("cq_forcebane", "ar_scor_kortemp"),
         ("cq_lightstand", "korribanlandingp"), ("cq_darkhung", "ar_scor_korrcan"), ("cq_eclipse", "scor_kscaves"),
-        ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "czs220_maintlvl"),
+        ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "dan_battlemon"),
         ("cq_unmovctr", "tat_anc_cantina"), ("cq_lastword", "tosche_cantina_s"), ("cq_deadhand", "tochee_cantina"),
         ("cq_killbox", "pw_ar_nsczgnstr"), ("cq_oneshot", "pw_ar_czoffice"), ("cq_rainsteel", "pw_ar_nscrafting"),
         ("cq_thermdet", "hutlar_outpost"), ("cq_overbarr", "sol_mandaloriani"), ("cq_perflurry", "sol_hutlarqcanyo"),

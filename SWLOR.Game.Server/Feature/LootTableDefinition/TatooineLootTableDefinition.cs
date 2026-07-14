@@ -19,7 +19,65 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             TuskenCrate();
             AncientWorm();
 
+            CapstoneTatooineDungeonRares();
             return _builder.Build();
+        }
+
+        private void CapstoneTatooineDungeonRares()
+        {
+            _builder.Create("CAPSTONE_UNMOVCTR_RARES")
+                .IsRare()
+                .AddItem("unmovctr_l1", 1, 1, true)
+                .AddItem("unmovctr_l2", 1, 1, true)
+                .AddItem("unmovctr_l3", 1, 1, true)
+                .AddItem("unmovctr_l4", 1, 1, true)
+                .AddItem("unmovctr_l5", 1, 1, true)
+                .AddItem("unmovctr_l6", 1, 1, true)
+                .AddItem("unmovctr_l7", 1, 1, true)
+                .AddItem("unmovctr_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_UNMOVCTR_WD_RARES")
+                .IsRare()
+                .AddItem("unmovctr_w1", 1, 1, true)
+                .AddItem("unmovctr_w2", 1, 1, true)
+                .AddItem("unmovctr_w3", 1, 1, true)
+                .AddItem("unmovctr_w4", 1, 1, true)
+                .AddItem("unmovctr_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_LASTWORD_RARES")
+                .IsRare()
+                .AddItem("lastword_l1", 1, 1, true)
+                .AddItem("lastword_l2", 1, 1, true)
+                .AddItem("lastword_l3", 1, 1, true)
+                .AddItem("lastword_l4", 1, 1, true)
+                .AddItem("lastword_l5", 1, 1, true)
+                .AddItem("lastword_l6", 1, 1, true)
+                .AddItem("lastword_l7", 1, 1, true)
+                .AddItem("lastword_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_LASTWORD_WD_RARES")
+                .IsRare()
+                .AddItem("lastword_w1", 1, 1, true)
+                .AddItem("lastword_w2", 1, 1, true)
+                .AddItem("lastword_w3", 1, 1, true)
+                .AddItem("lastword_w4", 1, 1, true)
+                .AddItem("lastword_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_DEADHAND_RARES")
+                .IsRare()
+                .AddItem("deadhand_l1", 1, 1, true)
+                .AddItem("deadhand_l2", 1, 1, true)
+                .AddItem("deadhand_l3", 1, 1, true)
+                .AddItem("deadhand_l4", 1, 1, true)
+                .AddItem("deadhand_l5", 1, 1, true)
+                .AddItem("deadhand_l6", 1, 1, true)
+                .AddItem("deadhand_l7", 1, 1, true)
+                .AddItem("deadhand_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_DEADHAND_WD_RARES")
+                .IsRare()
+                .AddItem("deadhand_w1", 1, 1, true)
+                .AddItem("deadhand_w2", 1, 1, true)
+                .AddItem("deadhand_w3", 1, 1, true)
+                .AddItem("deadhand_w4", 1, 1, true)
+                .AddItem("deadhand_w5", 1, 1, true);
         }
 
         private void Womprat()

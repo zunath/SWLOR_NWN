@@ -18,7 +18,65 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             ColicoidExperiment();
             ColicoidExperimentRares();
 
+            CapstoneCZ220DungeonRares();
             return _builder.Build();
+        }
+
+        private void CapstoneCZ220DungeonRares()
+        {
+            _builder.Create("CAPSTONE_ADAMGUARD_RARES")
+                .IsRare()
+                .AddItem("adamguard_l1", 1, 1, true)
+                .AddItem("adamguard_l2", 1, 1, true)
+                .AddItem("adamguard_l3", 1, 1, true)
+                .AddItem("adamguard_l4", 1, 1, true)
+                .AddItem("adamguard_l5", 1, 1, true)
+                .AddItem("adamguard_l6", 1, 1, true)
+                .AddItem("adamguard_l7", 1, 1, true)
+                .AddItem("adamguard_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_ADAMGUARD_WD_RARES")
+                .IsRare()
+                .AddItem("adamguard_w1", 1, 1, true)
+                .AddItem("adamguard_w2", 1, 1, true)
+                .AddItem("adamguard_w3", 1, 1, true)
+                .AddItem("adamguard_w4", 1, 1, true)
+                .AddItem("adamguard_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_SCRAPLOCK_RARES")
+                .IsRare()
+                .AddItem("scraplock_l1", 1, 1, true)
+                .AddItem("scraplock_l2", 1, 1, true)
+                .AddItem("scraplock_l3", 1, 1, true)
+                .AddItem("scraplock_l4", 1, 1, true)
+                .AddItem("scraplock_l5", 1, 1, true)
+                .AddItem("scraplock_l6", 1, 1, true)
+                .AddItem("scraplock_l7", 1, 1, true)
+                .AddItem("scraplock_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_SCRAPLOCK_WD_RARES")
+                .IsRare()
+                .AddItem("scraplock_w1", 1, 1, true)
+                .AddItem("scraplock_w2", 1, 1, true)
+                .AddItem("scraplock_w3", 1, 1, true)
+                .AddItem("scraplock_w4", 1, 1, true)
+                .AddItem("scraplock_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_WORLDBRK_RARES")
+                .IsRare()
+                .AddItem("worldbrk_l1", 1, 1, true)
+                .AddItem("worldbrk_l2", 1, 1, true)
+                .AddItem("worldbrk_l3", 1, 1, true)
+                .AddItem("worldbrk_l4", 1, 1, true)
+                .AddItem("worldbrk_l5", 1, 1, true)
+                .AddItem("worldbrk_l6", 1, 1, true)
+                .AddItem("worldbrk_l7", 1, 1, true)
+                .AddItem("worldbrk_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_WORLDBRK_WD_RARES")
+                .IsRare()
+                .AddItem("worldbrk_w1", 1, 1, true)
+                .AddItem("worldbrk_w2", 1, 1, true)
+                .AddItem("worldbrk_w3", 1, 1, true)
+                .AddItem("worldbrk_w4", 1, 1, true)
+                .AddItem("worldbrk_w5", 1, 1, true);
         }
 
         private void Credits()

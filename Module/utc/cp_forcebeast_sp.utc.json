@@ -557,6 +557,21 @@
           "type": "cexostring",
           "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_LESSON_LOOT,100,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "CAPSTONE_FORCEBEAST_RARES,5,1"
+        }
       }
     ]
   },

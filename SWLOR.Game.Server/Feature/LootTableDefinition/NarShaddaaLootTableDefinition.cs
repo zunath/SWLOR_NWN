@@ -26,7 +26,65 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			DragonLoot();
 			FightClubBackroomsRares();
 
+			CapstoneSmugglersMoonDungeonRares();
 			return _builder.Build();
+		}
+
+		private void CapstoneSmugglersMoonDungeonRares()
+		{
+			_builder.Create("CAPSTONE_KILLBOX_RARES")
+				.IsRare()
+				.AddItem("killbox_l1", 1, 1, true)
+				.AddItem("killbox_l2", 1, 1, true)
+				.AddItem("killbox_l3", 1, 1, true)
+				.AddItem("killbox_l4", 1, 1, true)
+				.AddItem("killbox_l5", 1, 1, true)
+				.AddItem("killbox_l6", 1, 1, true)
+				.AddItem("killbox_l7", 1, 1, true)
+				.AddItem("killbox_l8", 1, 1, true);
+			_builder.Create("CAPSTONE_KILLBOX_WD_RARES")
+				.IsRare()
+				.AddItem("killbox_w1", 1, 1, true)
+				.AddItem("killbox_w2", 1, 1, true)
+				.AddItem("killbox_w3", 1, 1, true)
+				.AddItem("killbox_w4", 1, 1, true)
+				.AddItem("killbox_w5", 1, 1, true);
+
+			_builder.Create("CAPSTONE_ONESHOT_RARES")
+				.IsRare()
+				.AddItem("oneshot_l1", 1, 1, true)
+				.AddItem("oneshot_l2", 1, 1, true)
+				.AddItem("oneshot_l3", 1, 1, true)
+				.AddItem("oneshot_l4", 1, 1, true)
+				.AddItem("oneshot_l5", 1, 1, true)
+				.AddItem("oneshot_l6", 1, 1, true)
+				.AddItem("oneshot_l7", 1, 1, true)
+				.AddItem("oneshot_l8", 1, 1, true);
+			_builder.Create("CAPSTONE_ONESHOT_WD_RARES")
+				.IsRare()
+				.AddItem("oneshot_w1", 1, 1, true)
+				.AddItem("oneshot_w2", 1, 1, true)
+				.AddItem("oneshot_w3", 1, 1, true)
+				.AddItem("oneshot_w4", 1, 1, true)
+				.AddItem("oneshot_w5", 1, 1, true);
+
+			_builder.Create("CAPSTONE_RAINSTEEL_RARES")
+				.IsRare()
+				.AddItem("rainsteel_l1", 1, 1, true)
+				.AddItem("rainsteel_l2", 1, 1, true)
+				.AddItem("rainsteel_l3", 1, 1, true)
+				.AddItem("rainsteel_l4", 1, 1, true)
+				.AddItem("rainsteel_l5", 1, 1, true)
+				.AddItem("rainsteel_l6", 1, 1, true)
+				.AddItem("rainsteel_l7", 1, 1, true)
+				.AddItem("rainsteel_l8", 1, 1, true);
+			_builder.Create("CAPSTONE_RAINSTEEL_WD_RARES")
+				.IsRare()
+				.AddItem("rainsteel_w1", 1, 1, true)
+				.AddItem("rainsteel_w2", 1, 1, true)
+				.AddItem("rainsteel_w3", 1, 1, true)
+				.AddItem("rainsteel_w4", 1, 1, true)
+				.AddItem("rainsteel_w5", 1, 1, true);
 		}
 
 		private void FightClubBackroomsRares()

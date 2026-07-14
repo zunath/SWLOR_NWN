@@ -22,7 +22,119 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             JungleBug();
             GapingSpider();
 
+            CapstoneDathomirDungeonRares();
             return _builder.Build();
+        }
+
+        private void CapstoneDathomirDungeonRares()
+        {
+            _builder.Create("CAPSTONE_PRIMOVER_RARES")
+                .IsRare()
+                .AddItem("primover_l1", 1, 1, true)
+                .AddItem("primover_l2", 1, 1, true)
+                .AddItem("primover_l3", 1, 1, true)
+                .AddItem("primover_l4", 1, 1, true)
+                .AddItem("primover_l5", 1, 1, true)
+                .AddItem("primover_l6", 1, 1, true)
+                .AddItem("primover_l7", 1, 1, true)
+                .AddItem("primover_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_PRIMOVER_WD_RARES")
+                .IsRare()
+                .AddItem("primover_w1", 1, 1, true)
+                .AddItem("primover_w2", 1, 1, true)
+                .AddItem("primover_w3", 1, 1, true)
+                .AddItem("primover_w4", 1, 1, true)
+                .AddItem("primover_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_UNTINST_RARES")
+                .IsRare()
+                .AddItem("untinst_l1", 1, 1, true)
+                .AddItem("untinst_l2", 1, 1, true)
+                .AddItem("untinst_l3", 1, 1, true)
+                .AddItem("untinst_l4", 1, 1, true)
+                .AddItem("untinst_l5", 1, 1, true)
+                .AddItem("untinst_l6", 1, 1, true)
+                .AddItem("untinst_l7", 1, 1, true)
+                .AddItem("untinst_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_UNTINST_WD_RARES")
+                .IsRare()
+                .AddItem("untinst_w1", 1, 1, true)
+                .AddItem("untinst_w2", 1, 1, true)
+                .AddItem("untinst_w3", 1, 1, true)
+                .AddItem("untinst_w4", 1, 1, true)
+                .AddItem("untinst_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_FORCEBEAST_RARES")
+                .IsRare()
+                .AddItem("forcebeast_l1", 1, 1, true)
+                .AddItem("forcebeast_l2", 1, 1, true)
+                .AddItem("forcebeast_l3", 1, 1, true)
+                .AddItem("forcebeast_l4", 1, 1, true)
+                .AddItem("forcebeast_l5", 1, 1, true)
+                .AddItem("forcebeast_l6", 1, 1, true)
+                .AddItem("forcebeast_l7", 1, 1, true)
+                .AddItem("forcebeast_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_FORCEBEAST_WD_RARES")
+                .IsRare()
+                .AddItem("forcebeast_w1", 1, 1, true)
+                .AddItem("forcebeast_w2", 1, 1, true)
+                .AddItem("forcebeast_w3", 1, 1, true)
+                .AddItem("forcebeast_w4", 1, 1, true)
+                .AddItem("forcebeast_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_APEXBITE_RARES")
+                .IsRare()
+                .AddItem("apexbite_l1", 1, 1, true)
+                .AddItem("apexbite_l2", 1, 1, true)
+                .AddItem("apexbite_l3", 1, 1, true)
+                .AddItem("apexbite_l4", 1, 1, true)
+                .AddItem("apexbite_l5", 1, 1, true)
+                .AddItem("apexbite_l6", 1, 1, true)
+                .AddItem("apexbite_l7", 1, 1, true)
+                .AddItem("apexbite_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_APEXBITE_WD_RARES")
+                .IsRare()
+                .AddItem("apexbite_w1", 1, 1, true)
+                .AddItem("apexbite_w2", 1, 1, true)
+                .AddItem("apexbite_w3", 1, 1, true)
+                .AddItem("apexbite_w4", 1, 1, true)
+                .AddItem("apexbite_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_UNBRBEAST_RARES")
+                .IsRare()
+                .AddItem("unbrbeast_l1", 1, 1, true)
+                .AddItem("unbrbeast_l2", 1, 1, true)
+                .AddItem("unbrbeast_l3", 1, 1, true)
+                .AddItem("unbrbeast_l4", 1, 1, true)
+                .AddItem("unbrbeast_l5", 1, 1, true)
+                .AddItem("unbrbeast_l6", 1, 1, true)
+                .AddItem("unbrbeast_l7", 1, 1, true)
+                .AddItem("unbrbeast_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_UNBRBEAST_WD_RARES")
+                .IsRare()
+                .AddItem("unbrbeast_w1", 1, 1, true)
+                .AddItem("unbrbeast_w2", 1, 1, true)
+                .AddItem("unbrbeast_w3", 1, 1, true)
+                .AddItem("unbrbeast_w4", 1, 1, true)
+                .AddItem("unbrbeast_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_ALPHARHY_RARES")
+                .IsRare()
+                .AddItem("alpharhy_l1", 1, 1, true)
+                .AddItem("alpharhy_l2", 1, 1, true)
+                .AddItem("alpharhy_l3", 1, 1, true)
+                .AddItem("alpharhy_l4", 1, 1, true)
+                .AddItem("alpharhy_l5", 1, 1, true)
+                .AddItem("alpharhy_l6", 1, 1, true)
+                .AddItem("alpharhy_l7", 1, 1, true)
+                .AddItem("alpharhy_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_ALPHARHY_WD_RARES")
+                .IsRare()
+                .AddItem("alpharhy_w1", 1, 1, true)
+                .AddItem("alpharhy_w2", 1, 1, true)
+                .AddItem("alpharhy_w3", 1, 1, true)
+                .AddItem("alpharhy_w4", 1, 1, true)
+                .AddItem("alpharhy_w5", 1, 1, true);
         }
 
         private void Chirodactyl()

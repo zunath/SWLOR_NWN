@@ -20,7 +20,119 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             RogueSith();
             Tukata();
             FrogBoss();
+            CapstoneKorribanDungeonRares();
             return _builder.Build();
+        }
+
+        private void CapstoneKorribanDungeonRares()
+        {
+            _builder.Create("CAPSTONE_ABSDEF_RARES")
+                .IsRare()
+                .AddItem("absdef_l1", 1, 1, true)
+                .AddItem("absdef_l2", 1, 1, true)
+                .AddItem("absdef_l3", 1, 1, true)
+                .AddItem("absdef_l4", 1, 1, true)
+                .AddItem("absdef_l5", 1, 1, true)
+                .AddItem("absdef_l6", 1, 1, true)
+                .AddItem("absdef_l7", 1, 1, true)
+                .AddItem("absdef_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_ABSDEF_WD_RARES")
+                .IsRare()
+                .AddItem("absdef_w1", 1, 1, true)
+                .AddItem("absdef_w2", 1, 1, true)
+                .AddItem("absdef_w3", 1, 1, true)
+                .AddItem("absdef_w4", 1, 1, true)
+                .AddItem("absdef_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_SOULASC_RARES")
+                .IsRare()
+                .AddItem("soulasc_l1", 1, 1, true)
+                .AddItem("soulasc_l2", 1, 1, true)
+                .AddItem("soulasc_l3", 1, 1, true)
+                .AddItem("soulasc_l4", 1, 1, true)
+                .AddItem("soulasc_l5", 1, 1, true)
+                .AddItem("soulasc_l6", 1, 1, true)
+                .AddItem("soulasc_l7", 1, 1, true)
+                .AddItem("soulasc_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_SOULASC_WD_RARES")
+                .IsRare()
+                .AddItem("soulasc_w1", 1, 1, true)
+                .AddItem("soulasc_w2", 1, 1, true)
+                .AddItem("soulasc_w3", 1, 1, true)
+                .AddItem("soulasc_w4", 1, 1, true)
+                .AddItem("soulasc_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_FORCEBANE_RARES")
+                .IsRare()
+                .AddItem("forcebane_l1", 1, 1, true)
+                .AddItem("forcebane_l2", 1, 1, true)
+                .AddItem("forcebane_l3", 1, 1, true)
+                .AddItem("forcebane_l4", 1, 1, true)
+                .AddItem("forcebane_l5", 1, 1, true)
+                .AddItem("forcebane_l6", 1, 1, true)
+                .AddItem("forcebane_l7", 1, 1, true)
+                .AddItem("forcebane_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_FORCEBANE_WD_RARES")
+                .IsRare()
+                .AddItem("forcebane_w1", 1, 1, true)
+                .AddItem("forcebane_w2", 1, 1, true)
+                .AddItem("forcebane_w3", 1, 1, true)
+                .AddItem("forcebane_w4", 1, 1, true)
+                .AddItem("forcebane_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_LIGHTSTAND_RARES")
+                .IsRare()
+                .AddItem("lightstand_l1", 1, 1, true)
+                .AddItem("lightstand_l2", 1, 1, true)
+                .AddItem("lightstand_l3", 1, 1, true)
+                .AddItem("lightstand_l4", 1, 1, true)
+                .AddItem("lightstand_l5", 1, 1, true)
+                .AddItem("lightstand_l6", 1, 1, true)
+                .AddItem("lightstand_l7", 1, 1, true)
+                .AddItem("lightstand_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_LIGHTSTAND_WD_RARES")
+                .IsRare()
+                .AddItem("lightstand_w1", 1, 1, true)
+                .AddItem("lightstand_w2", 1, 1, true)
+                .AddItem("lightstand_w3", 1, 1, true)
+                .AddItem("lightstand_w4", 1, 1, true)
+                .AddItem("lightstand_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_DARKHUNG_RARES")
+                .IsRare()
+                .AddItem("darkhung_l1", 1, 1, true)
+                .AddItem("darkhung_l2", 1, 1, true)
+                .AddItem("darkhung_l3", 1, 1, true)
+                .AddItem("darkhung_l4", 1, 1, true)
+                .AddItem("darkhung_l5", 1, 1, true)
+                .AddItem("darkhung_l6", 1, 1, true)
+                .AddItem("darkhung_l7", 1, 1, true)
+                .AddItem("darkhung_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_DARKHUNG_WD_RARES")
+                .IsRare()
+                .AddItem("darkhung_w1", 1, 1, true)
+                .AddItem("darkhung_w2", 1, 1, true)
+                .AddItem("darkhung_w3", 1, 1, true)
+                .AddItem("darkhung_w4", 1, 1, true)
+                .AddItem("darkhung_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_ECLIPSE_RARES")
+                .IsRare()
+                .AddItem("eclipse_l1", 1, 1, true)
+                .AddItem("eclipse_l2", 1, 1, true)
+                .AddItem("eclipse_l3", 1, 1, true)
+                .AddItem("eclipse_l4", 1, 1, true)
+                .AddItem("eclipse_l5", 1, 1, true)
+                .AddItem("eclipse_l6", 1, 1, true)
+                .AddItem("eclipse_l7", 1, 1, true)
+                .AddItem("eclipse_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_ECLIPSE_WD_RARES")
+                .IsRare()
+                .AddItem("eclipse_w1", 1, 1, true)
+                .AddItem("eclipse_w2", 1, 1, true)
+                .AddItem("eclipse_w3", 1, 1, true)
+                .AddItem("eclipse_w4", 1, 1, true)
+                .AddItem("eclipse_w5", 1, 1, true);
         }
 
         private void Klorslug()

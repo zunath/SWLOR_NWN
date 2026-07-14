@@ -14,7 +14,65 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             QionTigers();
             QionHiveLoot();
 
+            CapstoneHutlarDungeonRares();
             return _builder.Build();
+        }
+
+        private void CapstoneHutlarDungeonRares()
+        {
+            _builder.Create("CAPSTONE_THERMDET_RARES")
+                .IsRare()
+                .AddItem("thermdet_l1", 1, 1, true)
+                .AddItem("thermdet_l2", 1, 1, true)
+                .AddItem("thermdet_l3", 1, 1, true)
+                .AddItem("thermdet_l4", 1, 1, true)
+                .AddItem("thermdet_l5", 1, 1, true)
+                .AddItem("thermdet_l6", 1, 1, true)
+                .AddItem("thermdet_l7", 1, 1, true)
+                .AddItem("thermdet_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_THERMDET_WD_RARES")
+                .IsRare()
+                .AddItem("thermdet_w1", 1, 1, true)
+                .AddItem("thermdet_w2", 1, 1, true)
+                .AddItem("thermdet_w3", 1, 1, true)
+                .AddItem("thermdet_w4", 1, 1, true)
+                .AddItem("thermdet_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_OVERBARR_RARES")
+                .IsRare()
+                .AddItem("overbarr_l1", 1, 1, true)
+                .AddItem("overbarr_l2", 1, 1, true)
+                .AddItem("overbarr_l3", 1, 1, true)
+                .AddItem("overbarr_l4", 1, 1, true)
+                .AddItem("overbarr_l5", 1, 1, true)
+                .AddItem("overbarr_l6", 1, 1, true)
+                .AddItem("overbarr_l7", 1, 1, true)
+                .AddItem("overbarr_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_OVERBARR_WD_RARES")
+                .IsRare()
+                .AddItem("overbarr_w1", 1, 1, true)
+                .AddItem("overbarr_w2", 1, 1, true)
+                .AddItem("overbarr_w3", 1, 1, true)
+                .AddItem("overbarr_w4", 1, 1, true)
+                .AddItem("overbarr_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_PERFLURRY_RARES")
+                .IsRare()
+                .AddItem("perflurry_l1", 1, 1, true)
+                .AddItem("perflurry_l2", 1, 1, true)
+                .AddItem("perflurry_l3", 1, 1, true)
+                .AddItem("perflurry_l4", 1, 1, true)
+                .AddItem("perflurry_l5", 1, 1, true)
+                .AddItem("perflurry_l6", 1, 1, true)
+                .AddItem("perflurry_l7", 1, 1, true)
+                .AddItem("perflurry_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_PERFLURRY_WD_RARES")
+                .IsRare()
+                .AddItem("perflurry_w1", 1, 1, true)
+                .AddItem("perflurry_w2", 1, 1, true)
+                .AddItem("perflurry_w3", 1, 1, true)
+                .AddItem("perflurry_w4", 1, 1, true)
+                .AddItem("perflurry_w5", 1, 1, true);
         }
 
         private void Byysk()

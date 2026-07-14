@@ -117,10 +117,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // combos carry pathnode-A candidates) -- locked in by
         // OnboardedTilesetPipelineTests.MinimumOpeningWidth_MatchesFreshPathNodeAudit.
         public const string Desert = "desert";
+        public const string DesertRoad = "desert_road";
         public const string Forest = "forest";
         public const string ForestFacelift = "forest_facelift";
         public const string ForestPlatform = "forest_platform";
         public const string ForestRural = "forest_rural";
+        public const string ForestCityWall = "forest_citywall";
+        public const string ForestMossWall = "forest_mosswall";
+        public const string ForestRuralWallOne = "forest_ruralwallone";
+        public const string ForestRuralWallTwo = "forest_ruralwalltwo";
+        public const string ForestRuralStream = "forest_ruralstream";
+        public const string ForestRoad = "forest_road";
+        public const string ForestStoneBridge = "forest_stonebridge";
 
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
@@ -1809,6 +1817,27 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("ChasmStairs")
                 .ExitGroup("CaveEntrance");
 
+            // Desert (Road) -- ttd01's second raised-lane crosser family (round 3 of exterior tail
+            // closure; see the ttf01 wave-level comment below for the shared "one RampCrosser slot
+            // per composition" argument this mirrors). The base Desert profile above declares
+            // RampCrosser("Dunes"); TILE239-241 are raised, ungrouped, doorless Road-edged lanes (all
+            // pure-Desert-cornered) that stay height-exempt under that vocabulary because
+            // IsTerrainReliefReachable requires every non-blank edge to equal the declared Ramp name.
+            // Direct probe (mirroring IsTerrainReliefReachable) confirms all 3 resolve under
+            // RampCrosser("Road"). TILE255 (Dunes AND Road edges on the SAME tile) stays exempt: a
+            // dual-crosser conflict no single composition can express, the same shape as ttf01's
+            // TILE606-609 (Slope+Road). PaletteVariant() excludes this from --matrix's full
+            // cross-product -- one showcase area.
+            _builder.Create(DesertRoad, "Desert (Road)")
+                .Tileset("ttd01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Desert")
+                .MaxReliefRegions(2)
+                .RampCrosser("Road");
+
             // Forest (ttf01, SWLOR_Haks/sw_t_forest -- a 1148-tile HasHeightTransition=1 mega-set, an
             // 11-terrain/13-crosser superset of the 168-tile vanilla version). Same INVERTED
             // composition as Desert above: SolidTerrainOverride("Cliff") + PrimaryOpenTerrain
@@ -2100,6 +2129,148 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .MaxPoolRegions(2)
                 .MaxReliefRegions(2)
                 .RampCrosser("Slope");
+
+            // Forest raised-lane crosser families (round 3 of exterior tail closure) -- ttf01's base
+            // Forest profile above and ForestRural both declare RampCrosser("Slope"), but a
+            // composition carries only ONE RampCrosser slot (LayoutReliefPainter.TrySpliceReliefLane
+            // writes a single declared crosser name per composition -- see MinesAndCavernsTracks'
+            // identical "second family needs its own profile" precedent for Tunnel body crossers).
+            // ttf01 carries SEVEN more raised-lane crosser families beyond Slope: CityWall, MossWall,
+            // RuralWallOne, RuralWallTwo, RuralStream, Road, and StoneBridge, each with its own
+            // ungrouped, doorless, one-story raised tile family (e.g. TILE741-775/801-804 for
+            // CityWall) previously stuck in the "requires height support" bucket because
+            // IsTerrainReliefReachable requires every non-blank edge to equal the composition's
+            // declared Ramp name. One dedicated PaletteVariant per family, each recomposing the same
+            // base Solid=Cliff/Open=Forest pair (+ AccentTerrain("RuralWater") where the family's
+            // raised tiles mix in RuralWater corners, verified per-family below), closes each family's
+            // ungrouped raised lanes the same way ForestRural closed the Slope/RuralWater case.
+            //
+            // Every family was shape-probed first (direct IsTerrainReliefReachable BFS probe against
+            // this tileset's real data, mirroring the census's own mechanism) before being wired here;
+            // numbers below are the probe's actual counts, not estimates. Remaining gaps after each
+            // variant are genuinely unmodeled, not missed:
+            //   - raised GROUPS on these families (City Gate (2x2), Wall - Breach/Door/Tower,
+            //     Ramp - City Wall/Moss Wall, City Gate - Cobbles (2x2)) stay height-exempt: an
+            //     unconditional rule in ClassifyMultiTileSetPiece/LayoutGroupStamper.TryClassify
+            //     rejects ANY group with a non-flat member before vocabulary is even consulted, so no
+            //     PaletteVariant can close a raised group regardless of RampCrosser/AccentTerrain --
+            //     see that method's own `if (!IsFlat(tile)) return GroupMechanism.None;` gate.
+            //   - dual-crosser cells (TILE606-609, Slope AND Road edges on the SAME tile) stay exempt:
+            //     IsTerrainReliefReachable requires every edge to match ONE declared Ramp name, and a
+            //     composition can never declare two Ramp crossers at once -- a genuine "crossroads
+            //     cell" gap, the same shape as the two-crosser-family crossroads GATE groups elsewhere
+            //     in this tileset (WallGate/StreamBridge-style, unrelated mechanism).
+            //   - TILE747 (CityWall, corners [RuralWater,Forest,RuralWater,Forest] -- a diagonal,
+            //     NON-adjacent two-terrain split) stays exempt: the same diagonal-split gap ForestRural
+            //     already documented for TILE512/528/543/896 (IsReliefFieldReachable's BFS never finds
+            //     a resolving intermediate chain for a diagonal split, only adjacent-corner splits).
+            // PaletteVariant() excludes each from --matrix's full cross-product -- one showcase area
+            // apiece.
+
+            // Forest (City Wall) -- closes CityWall's 31 raised ungrouped lanes (TILE741-744/759/763-
+            // 765/772-775/801-804, pure-Forest-cornered, 16 tiles; TILE745/746/748-754/766-771,
+            // RuralWater-mixed, 15 more via AccentTerrain("RuralWater")) of 49 total CityWall-edged
+            // tiles. Verified directly via probe.
+            _builder.Create(ForestCityWall, "Forest (City Wall)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .AccentTerrain("RuralWater")
+                .MaxReliefRegions(2)
+                .RampCrosser("CityWall");
+
+            // Forest (Moss Wall) -- closes MossWall's 11 raised ungrouped lanes (TILE814-824, all
+            // pure-Forest-cornered -- no RuralWater mixing on this family, verified directly) of 14
+            // total MossWall-edged tiles; the remaining 3 (TILE825-827) are the "Ramp - Moss Wall"/
+            // "Wall - Breach, Moss"/"Wall - Door, Moss" raised GROUPS, unreachable per this profile
+            // family's own doc comment above.
+            _builder.Create(ForestMossWall, "Forest (Moss Wall)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .MaxReliefRegions(2)
+                .RampCrosser("MossWall");
+
+            // Forest (Rural Wall One) -- closes all 4 RuralWallOne-edged raised tiles (TILE724-726
+            // pure-Forest, TILE727 RuralWater-mixed via AccentTerrain). TILE776-779/812 (RuralWallOne
+            // edges paired with a SECOND crosser, CityWall, on the same tile) are a dual-crosser
+            // conflict, same shape/gap as TILE606-609's Slope+Road conflict above.
+            _builder.Create(ForestRuralWallOne, "Forest (Rural Wall One)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .AccentTerrain("RuralWater")
+                .MaxReliefRegions(2)
+                .RampCrosser("RuralWallOne");
+
+            // Forest (Rural Wall Two) -- closes all 4 RuralWallTwo-edged raised tiles (TILE728-730
+            // pure-Forest, TILE731 RuralWater-mixed via AccentTerrain). Verified directly.
+            _builder.Create(ForestRuralWallTwo, "Forest (Rural Wall Two)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .AccentTerrain("RuralWater")
+                .MaxReliefRegions(2)
+                .RampCrosser("RuralWallTwo");
+
+            // Forest (Rural Stream) -- closes all 4 RuralStream-edged raised tiles (TILE719-721
+            // pure-Forest, TILE722 RuralWater-mixed via AccentTerrain). The family's remaining
+            // RuralStream-edged tiles (TILE850/865-871/881/882) are all flat -- already
+            // CornerEdgeResolver-reachable regardless of this variant, unaffected either way.
+            _builder.Create(ForestRuralStream, "Forest (Rural Stream)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .AccentTerrain("RuralWater")
+                .MaxReliefRegions(2)
+                .RampCrosser("RuralStream");
+
+            // Forest (Road) -- closes 6 of Road's raised ungrouped lanes (TILE530-532 pure-Forest,
+            // TILE732-734 RuralWater-mixed via AccentTerrain); the other Road-edged raised tiles
+            // (TILE606-609) carry a second crosser (Slope) on the SAME tile, the dual-crosser gap
+            // documented above. Every other Road-edged tile in the family is flat -- already
+            // CornerEdgeResolver-reachable regardless of this variant (TILE849/1114's RuralWater/
+            // RuralTrees door tiles are additionally closed by ForestRural's own AccentTerrain).
+            _builder.Create(ForestRoad, "Forest (Road)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .AccentTerrain("RuralWater")
+                .MaxReliefRegions(2)
+                .RampCrosser("Road");
+
+            // Forest (Stone Bridge) -- closes both raised StoneBridge-edged tiles (TILE896/898, both
+            // RuralWater-mixed, via AccentTerrain). TILE897 (flat, all-RuralWater-cornered,
+            // door-free) is unaffected by this variant either way -- already CornerEdgeResolver-
+            // reachable regardless of RampCrosser vocabulary.
+            _builder.Create(ForestStoneBridge, "Forest (Stone Bridge)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .AccentTerrain("RuralWater")
+                .MaxReliefRegions(2)
+                .RampCrosser("StoneBridge");
 
             // Forest - Facelift (ttf02, BIF-only: no hak copy exists anywhere under SWLOR_Haks --
             // verified directly -- so TilesetSetSource's hak-first lookup falls through to the

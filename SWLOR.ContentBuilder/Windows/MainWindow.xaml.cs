@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -8,7 +10,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Win32;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 
@@ -28,7 +32,7 @@ namespace SWLOR.ContentBuilder.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const int MaxSeed = int.MaxValue - 1000;
+        private const int MaxSeed = AreaSettingsBounds.MaxSeed;
 
         private const string SchematicModeKey = "schematic";
         private const string MapGraphicsModeKey = "mapgraphics";
@@ -40,6 +44,9 @@ namespace SWLOR.ContentBuilder.Windows
         private bool _suppressEvents;
         private GenerationResult _lastResult;
         private DungeonLayoutProfile _currentLayoutProfile;
+
+        private string _currentFilePath;
+        private bool _isDirty;
 
         private ComboBox _themeCombo;
         private ComboBox _tilesetCombo;
@@ -100,6 +107,7 @@ namespace SWLOR.ContentBuilder.Windows
             BuildLeftPanel();
             PopulateCombos();
             SetUpPreviewToolbar();
+            WireMenu();
             // Size renders off PreviewHost, never PreviewImage: a WPF Image with a null Source
             // measures/arranges to 0x0 regardless of its layout slot, so the Image's own
             // ActualWidth/SizeChanged never deliver a usable size for the FIRST render — sizing
@@ -108,6 +116,59 @@ namespace SWLOR.ContentBuilder.Windows
 
             ApplyThemeDefaults(resetDimensionsAndSeed: true);
             RegeneratePreview();
+
+            // The setup above (theme defaults, initial preview generation) runs through the same
+            // GeneratePreview() path MarkDirty hooks into, so it leaves _isDirty set even though a
+            // freshly opened window has nothing unsaved yet -- clear it once construction settles.
+            _isDirty = false;
+            UpdateTitle();
+        }
+
+        /// <summary>
+        /// File menu: Save/Save As/Open/Exit. Keyboard shortcuts are handled directly in
+        /// <see cref="MainWindow_PreviewKeyDown"/> rather than RoutedCommand bindings, since every
+        /// action here already has a plain method to call; InputGestureText in the XAML is only the
+        /// cosmetic display text for the same shortcuts. Exit and the window's own title-bar close
+        /// button both funnel through <see cref="MainWindow_Closing"/> so unsaved-changes handling is
+        /// identical either way.
+        /// </summary>
+        private void WireMenu()
+        {
+            SaveMenuItem.Click += (_, _) => SaveProject();
+            SaveAsMenuItem.Click += (_, _) => SaveProjectAs();
+            OpenMenuItem.Click += (_, _) => OpenProject();
+            ExitMenuItem.Click += (_, _) => Close();
+
+            PreviewKeyDown += MainWindow_PreviewKeyDown;
+            Closing += MainWindow_Closing;
+        }
+
+        private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            var ctrl = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
+            var shift = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift);
+
+            if (ctrl && shift && e.Key == Key.S)
+            {
+                SaveProjectAs();
+                e.Handled = true;
+            }
+            else if (ctrl && e.Key == Key.S)
+            {
+                SaveProject();
+                e.Handled = true;
+            }
+            else if (ctrl && e.Key == Key.O)
+            {
+                OpenProject();
+                e.Handled = true;
+            }
+        }
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (!ConfirmDiscardUnsavedChanges("closing Content Builder"))
+                e.Cancel = true;
         }
 
         /// <summary>
@@ -125,10 +186,11 @@ namespace SWLOR.ContentBuilder.Windows
             PreviewModeCombo.SelectionChanged += (_, _) =>
             {
                 RoomOverlayCheckBox.IsEnabled = IsMapGraphicsMode;
+                MarkDirty();
                 RenderPreview();
             };
-            RoomOverlayCheckBox.Checked += (_, _) => RenderPreview();
-            RoomOverlayCheckBox.Unchecked += (_, _) => RenderPreview();
+            RoomOverlayCheckBox.Checked += (_, _) => { MarkDirty(); RenderPreview(); };
+            RoomOverlayCheckBox.Unchecked += (_, _) => { MarkDirty(); RenderPreview(); };
             RoomOverlayCheckBox.IsEnabled = IsMapGraphicsMode;
         }
 
@@ -149,8 +211,8 @@ namespace SWLOR.ContentBuilder.Windows
             composition.Children.Add(_resetDefaultsButton);
 
             var (_, dimensions) = AddGroup(LeftStack, "Dimensions");
-            (_widthSlider, _widthValueBox) = AddSliderRow(dimensions, "Width", 8, 32, 16);
-            (_heightSlider, _heightValueBox) = AddSliderRow(dimensions, "Height", 8, 32, 16);
+            (_widthSlider, _widthValueBox) = AddSliderRow(dimensions, "Width", AreaSettingsBounds.WidthMin, AreaSettingsBounds.WidthMax, 16);
+            (_heightSlider, _heightValueBox) = AddSliderRow(dimensions, "Height", AreaSettingsBounds.HeightMin, AreaSettingsBounds.HeightMax, 16);
 
             // Advanced: everything below is fine-grained layout tuning most users won't touch, so it
             // lives collapsed behind an Expander rather than always taking up left-panel space. The
@@ -171,31 +233,31 @@ namespace SWLOR.ContentBuilder.Windows
             foreach (DungeonLayoutStyle style in Enum.GetValues(typeof(DungeonLayoutStyle)))
                 _styleCombo.Items.Add(new KeyedItem(style.ToString(), style.ToString()));
 
-            (_minRoomsSlider, _minRoomsValueBox) = AddSliderRow(overrides, "Min Rooms", 2, 12, 4);
-            (_maxRoomsSlider, _maxRoomsValueBox) = AddSliderRow(overrides, "Max Rooms", 2, 16, 8);
-            (_minRoomSizeSlider, _minRoomSizeValueBox) = AddSliderRow(overrides, "Min Room Size", 2, 10, 3);
-            (_maxRoomSizeSlider, _maxRoomSizeValueBox) = AddSliderRow(overrides, "Max Room Size", 3, 12, 7);
-            (_corridorWidthSlider, _corridorWidthValueBox) = AddSliderRow(overrides, "Corridor Width", 1, 3, 1);
-            (_loopFactorSlider, _loopFactorValueBox) = AddSliderRow(overrides, "Loop Factor", 0, 100, 25, suffix: "%");
-            (_organicFillSlider, _organicFillValueBox) = AddSliderRow(overrides, "Organic Fill", 30, 60, 45, suffix: "%");
+            (_minRoomsSlider, _minRoomsValueBox) = AddSliderRow(overrides, "Min Rooms", AreaSettingsBounds.MinRoomsMin, AreaSettingsBounds.MinRoomsMax, 4);
+            (_maxRoomsSlider, _maxRoomsValueBox) = AddSliderRow(overrides, "Max Rooms", AreaSettingsBounds.MaxRoomsMin, AreaSettingsBounds.MaxRoomsMax, 8);
+            (_minRoomSizeSlider, _minRoomSizeValueBox) = AddSliderRow(overrides, "Min Room Size", AreaSettingsBounds.MinRoomSizeMin, AreaSettingsBounds.MinRoomSizeMax, 3);
+            (_maxRoomSizeSlider, _maxRoomSizeValueBox) = AddSliderRow(overrides, "Max Room Size", AreaSettingsBounds.MaxRoomSizeMin, AreaSettingsBounds.MaxRoomSizeMax, 7);
+            (_corridorWidthSlider, _corridorWidthValueBox) = AddSliderRow(overrides, "Corridor Width", AreaSettingsBounds.CorridorWidthMin, AreaSettingsBounds.CorridorWidthMax, 1);
+            (_loopFactorSlider, _loopFactorValueBox) = AddSliderRow(overrides, "Loop Factor", AreaSettingsBounds.LoopFactorPercentMin, AreaSettingsBounds.LoopFactorPercentMax, 25, suffix: "%");
+            (_organicFillSlider, _organicFillValueBox) = AddSliderRow(overrides, "Organic Fill", AreaSettingsBounds.OrganicFillPercentMin, AreaSettingsBounds.OrganicFillPercentMax, 45, suffix: "%");
 
             _accentCheckBox = AddCheckBoxRow(overrides, "Accent terrain");
-            (_accentDensitySlider, _accentDensityValueBox) = AddSliderRow(overrides, "Accent Density", 1, 20, 5, suffix: "%");
+            (_accentDensitySlider, _accentDensityValueBox) = AddSliderRow(overrides, "Accent Density", AreaSettingsBounds.AccentDensityPercentMin, AreaSettingsBounds.AccentDensityPercentMax, 5, suffix: "%");
 
             // Feature tile SET (treasure mounds, pillars, hot springs, ...) always comes from the
             // tileset profile - only the density is user-tunable here.
-            (_featureDensitySlider, _featureDensityValueBox) = AddSliderRow(overrides, "Feature Density", 0, 15, 5, suffix: "%");
+            (_featureDensitySlider, _featureDensityValueBox) = AddSliderRow(overrides, "Feature Density", AreaSettingsBounds.FeatureDensityPercentMin, AreaSettingsBounds.FeatureDensityPercentMax, 5, suffix: "%");
 
             // Elevation Regions: how many raised floor/wall patches LayoutElevationPainter attempts.
             // Best-effort and shape-gated against the real tileset (see DungeonTilesetProfile.
             // MaxElevationRegions/LayoutElevationPainter) -- a no-op on any tileset without verified
             // rim vocabulary, so this stays enabled/at its composed default for every profile rather
             // than being hidden; UpdateKnobConstraints disables it when the current tileset has none.
-            (_elevationRegionsSlider, _elevationRegionsValueBox) = AddSliderRow(overrides, "Elevation Regions", 0, 3, 0);
+            (_elevationRegionsSlider, _elevationRegionsValueBox) = AddSliderRow(overrides, "Elevation Regions", AreaSettingsBounds.ElevationRegionsMin, AreaSettingsBounds.ElevationRegionsMax, 0);
 
             var (_, transitions) = AddGroup(LeftStack, "Transitions");
-            (_entrancesSlider, _entrancesValueBox) = AddSliderRow(transitions, "Entrances", 1, 3, 1);
-            (_exitsSlider, _exitsValueBox) = AddSliderRow(transitions, "Exits", 1, 3, 1);
+            (_entrancesSlider, _entrancesValueBox) = AddSliderRow(transitions, "Entrances", AreaSettingsBounds.EntrancesMin, AreaSettingsBounds.EntrancesMax, 1);
+            (_exitsSlider, _exitsValueBox) = AddSliderRow(transitions, "Exits", AreaSettingsBounds.ExitsMin, AreaSettingsBounds.ExitsMax, 1);
             _doorTransitionsCheckBox = AddCheckBoxRow(transitions, "Door transitions (fallback: placeable)");
             _doorTransitionsCheckBox.IsChecked = true;
 
@@ -437,7 +499,7 @@ namespace SWLOR.ContentBuilder.Windows
             _seedTextBox.TextChanged += (_, _) => { if (_suppressEvents) return; RegeneratePreview(); };
 
             _removeSelectedButton.Click += (_, _) => RemoveSelectedBatchItems();
-            _clearBatchButton.Click += (_, _) => _batch.Clear();
+            _clearBatchButton.Click += (_, _) => { _batch.Clear(); MarkDirty(); };
             _buildModuleButton.Click += async (_, _) => await BuildReviewModuleAsync();
         }
 
@@ -549,7 +611,7 @@ namespace SWLOR.ContentBuilder.Windows
                 _layoutCombo.Items.Clear();
                 foreach (var profile in _catalog.LayoutProfiles.Values.OrderBy(p => p.DisplayName))
                 {
-                    if (TilesetSupportsLayoutProfile(tilesetProfile, profile))
+                    if (LayoutSupportRules.Supports(tilesetProfile, profile))
                         _layoutCombo.Items.Add(new KeyedItem(profile.Key, profile.DisplayName));
                 }
 
@@ -570,41 +632,6 @@ namespace SWLOR.ContentBuilder.Windows
             {
                 _overriddenKnobs.Clear();
                 LoadLayoutProfileKnobs(SelectedLayoutProfile());
-            }
-        }
-
-        private bool TilesetSupportsLayoutProfile(DungeonTilesetProfile tilesetProfile, DungeonLayoutProfile layoutProfile)
-        {
-            if (tilesetProfile == null) return true;
-            if (layoutProfile.Template.CorridorMode != CorridorMode.Tunnel) return true;
-
-            try
-            {
-                var model = TilesetModelCache.Get(tilesetProfile.TilesetResref);
-
-                // Shape-aware, not just crosser-name presence: mirrors MacroLayoutGenerator's own
-                // downgrade check (TunnelVocabularyCheck.SupportsTunnels) so the dropdown never offers a
-                // pairing the engine would itself downgrade away from Tunnel mode -- e.g. Illithid
-                // Interior (tii01) declares both "Doorway" and "Corridor" but is missing a junction
-                // shape (Corridor+Corridor+Doorway) Tunnel mode needs for reliable generation, and Ruins
-                // (tdr01) declares "Alley" but has no side-open boundary tile carrying a lone Alley edge
-                // at all.
-                var openTerrain = string.IsNullOrEmpty(tilesetProfile.PrimaryOpenTerrain)
-                    ? model.FloorTerrain
-                    : tilesetProfile.PrimaryOpenTerrain;
-                var solidTerrain = string.IsNullOrEmpty(tilesetProfile.SolidTerrainOverride)
-                    ? model.DefaultTerrain
-                    : tilesetProfile.SolidTerrainOverride;
-
-                return TunnelVocabularyCheck.SupportsTunnels(
-                    model, openTerrain, tilesetProfile.SecondaryOpenTerrain, solidTerrain,
-                    layoutProfile.Template.CorridorCrosserType);
-            }
-            catch
-            {
-                // If the tileset model can't load here, don't hide options — generation itself
-                // reports the real failure and the engine downgrade keeps it safe.
-                return true;
             }
         }
 
@@ -769,7 +796,7 @@ namespace SWLOR.ContentBuilder.Windows
         /// an unbounded Max) -- keeps the slider's own track usable instead of stretching it out to
         /// int.MaxValue for a style where the value doesn't matter anyway.
         /// </summary>
-        private const int RoomSizeSliderAbsoluteMax = 12;
+        private const int RoomSizeSliderAbsoluteMax = AreaSettingsBounds.RoomSizeSliderAbsoluteMax;
 
         /// <summary>
         /// Recomputes every Advanced Settings slider bound so no combination the user can reach by
@@ -905,6 +932,15 @@ namespace SWLOR.ContentBuilder.Windows
 
         private void GeneratePreview()
         {
+            // Cheapest common hook for dirty tracking: nearly every settings-changing handler in
+            // WireEvents (sliders, combos, checkboxes, seed text) already funnels into either
+            // RegeneratePreview() (which calls this when not suppressed) or, for AddToBatch, directly
+            // into this method -- so marking dirty here covers all of them in one place rather than
+            // duplicating a MarkDirty() call at every individual handler. Guarded by _suppressEvents
+            // exactly like MarkOverride/RegeneratePreview so programmatic state (theme defaults reset,
+            // ApplyState on Open) never marks the freshly loaded state as dirty.
+            MarkDirty();
+
             var theme = SelectedTheme();
             var tilesetProfile = SelectedTilesetProfile();
             var layoutProfile = SelectedLayoutProfile();
@@ -1114,6 +1150,7 @@ namespace SWLOR.ContentBuilder.Windows
         {
             foreach (var item in _batchGrid.SelectedItems.Cast<BatchItem>().ToList())
                 _batch.Remove(item);
+            MarkDirty();
         }
 
         // ------------------------------------------------------------------
@@ -1215,6 +1252,299 @@ namespace SWLOR.ContentBuilder.Windows
 
             _logTextBox.AppendText(line + Environment.NewLine);
             _logTextBox.ScrollToEnd();
+        }
+
+        // ------------------------------------------------------------------
+        // Project file (Save / Save As / Open) -- ProjectFileService does the actual
+        // serialization/validation; everything here is dialogs + state capture/apply.
+        // ------------------------------------------------------------------
+
+        private void UpdateTitle()
+        {
+            var name = string.IsNullOrEmpty(_currentFilePath) ? "Untitled" : Path.GetFileName(_currentFilePath);
+            Title = $"Content Builder - {name}{(_isDirty ? " *" : "")}";
+        }
+
+        private void MarkDirty()
+        {
+            if (_suppressEvents) return;
+            _isDirty = true;
+            UpdateTitle();
+        }
+
+        /// <summary>Prompts Save/Discard/Cancel when there are unsaved changes. Returns true if the
+        /// caller may proceed (nothing to save, user discarded, or the save succeeded); false if the
+        /// caller should abort (user cancelled, or a prompted Save was itself cancelled/failed).</summary>
+        private bool ConfirmDiscardUnsavedChanges(string actionDescription)
+        {
+            if (!_isDirty) return true;
+
+            var result = MessageBox.Show(
+                this,
+                $"You have unsaved changes. Save before {actionDescription}?",
+                "Unsaved Changes",
+                MessageBoxButton.YesNoCancel,
+                MessageBoxImage.Warning);
+
+            return result switch
+            {
+                MessageBoxResult.Yes => SaveProject(),
+                MessageBoxResult.No => true,
+                _ => false
+            };
+        }
+
+        /// <summary>First save of a new/never-saved project behaves as Save As; otherwise writes back
+        /// to the remembered path.</summary>
+        private bool SaveProject()
+        {
+            if (string.IsNullOrEmpty(_currentFilePath))
+                return SaveProjectAs();
+
+            return WriteProjectFile(_currentFilePath);
+        }
+
+        private bool SaveProjectAs()
+        {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "Content Builder project (*.json)|*.json|All files (*.*)|*.*",
+                DefaultExt = ".json",
+                AddExtension = true,
+                FileName = string.IsNullOrEmpty(_currentFilePath) ? "area-project.json" : Path.GetFileName(_currentFilePath)
+            };
+
+            return dialog.ShowDialog(this) == true && WriteProjectFile(dialog.FileName);
+        }
+
+        private bool WriteProjectFile(string path)
+        {
+            try
+            {
+                ProjectFileService.Save(CaptureState(), path);
+                _currentFilePath = path;
+                _isDirty = false;
+                UpdateTitle();
+                SetStatus($"Saved: {path}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Could not save file:\n{ex.Message}", "Save Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
+        private void OpenProject()
+        {
+            if (!ConfirmDiscardUnsavedChanges("opening another project")) return;
+
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Content Builder project (*.json)|*.json|All files (*.*)|*.*",
+                DefaultExt = ".json"
+            };
+            if (dialog.ShowDialog(this) != true) return;
+
+            // All-or-nothing: ValidateJson parses and checks the ENTIRE file (area settings + every
+            // batch entry, clamping through the same authoritative sources the UI itself uses) before
+            // returning anything. On failure nothing below runs, so no control is ever touched.
+            var result = ProjectFileService.LoadAndValidate(dialog.FileName, _catalog);
+            if (!result.Success)
+            {
+                MessageBox.Show(this, result.Error, "Could Not Open Project", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            ApplyState(result.File);
+
+            _currentFilePath = dialog.FileName;
+            _isDirty = false;
+            UpdateTitle();
+            SetStatus($"Loaded: {dialog.FileName}");
+        }
+
+        /// <summary>Snapshots every user-editable Areas-tab control plus the batch queue into the flat
+        /// save-file DTO. UI-free on the far side: ProjectFileService only ever sees this plain object.</summary>
+        private ContentBuilderProjectFile CaptureState()
+        {
+            return new ContentBuilderProjectFile
+            {
+                Version = ProjectFileService.CurrentVersion,
+                AreaSettings = new AreaSettingsFile
+                {
+                    ThemeKey = SelectedTheme()?.ThemeKey ?? string.Empty,
+                    TilesetProfileKey = SelectedTilesetProfile()?.Key ?? string.Empty,
+                    LayoutProfileKey = SelectedLayoutProfile()?.Key ?? string.Empty,
+                    Width = (int)_widthSlider.Value,
+                    Height = (int)_heightSlider.Value,
+                    Style = SelectedStyle().ToString(),
+                    MinRooms = (int)_minRoomsSlider.Value,
+                    MaxRooms = (int)_maxRoomsSlider.Value,
+                    MinRoomSize = (int)_minRoomSizeSlider.Value,
+                    MaxRoomSize = (int)_maxRoomSizeSlider.Value,
+                    CorridorWidth = (int)_corridorWidthSlider.Value,
+                    LoopFactorPercent = (int)_loopFactorSlider.Value,
+                    OrganicFillPercent = (int)_organicFillSlider.Value,
+                    AccentEnabled = _accentCheckBox.IsChecked == true,
+                    AccentDensityPercent = (int)_accentDensitySlider.Value,
+                    FeatureDensityPercent = (int)_featureDensitySlider.Value,
+                    ElevationRegions = (int)_elevationRegionsSlider.Value,
+                    Entrances = (int)_entrancesSlider.Value,
+                    Exits = (int)_exitsSlider.Value,
+                    DoorTransitions = _doorTransitionsCheckBox.IsChecked == true,
+                    Seed = GetSeedValue(),
+                    PreviewMode = (PreviewModeCombo.SelectedItem as KeyedItem)?.Key ?? SchematicModeKey,
+                    RoomOverlay = RoomOverlayCheckBox.IsChecked == true
+                },
+                Batch = _batch.Select(b => new AreaBatchFileEntry
+                {
+                    ThemeKey = b.ThemeKey,
+                    TilesetKey = b.TilesetProfileKey,
+                    LayoutKey = b.LayoutProfileKey,
+                    Seed = b.Seed,
+                    Size = b.Size,
+                    Parameters = b.Parameters?.Clone() ?? new MacroLayoutParameters()
+                }).ToList()
+            };
+        }
+
+        /// <summary>
+        /// Applies an already-validated project file onto every live control. Runs entirely under
+        /// _suppressEvents so no intermediate assignment fires a stray regenerate/dirty-mark, and
+        /// follows the same ordering constraint coupling depends on elsewhere in this file: tileset
+        /// selected before layout (RepopulateLayoutCombo filters on the tileset), and every dynamic
+        /// slider bound (Width/Height Minimum, Room Size ceiling, Organic Fill floor, the Rooms/Room
+        /// Size Min&lt;=Max coupling) is temporarily widened to its absolute static extreme before any
+        /// Value is assigned, then re-tightened by a single UpdateKnobConstraints() call once every
+        /// real value is already in place -- otherwise a bound left over from whatever state was on
+        /// screen before Open could silently coerce an incoming value during assignment. Validated
+        /// file data already satisfies every constraint UpdateKnobConstraints re-derives, so that final
+        /// tightening only moves bounds, never the Values themselves.
+        /// </summary>
+        private void ApplyState(ContentBuilderProjectFile file)
+        {
+            var s = file.AreaSettings;
+
+            _suppressEvents = true;
+            try
+            {
+                SelectComboByKey(_themeCombo, s.ThemeKey);
+                SelectComboByKey(_tilesetCombo, s.TilesetProfileKey);
+                RepopulateLayoutCombo();
+                // RepopulateLayoutCombo (and the LoadLayoutProfileKnobs it can call internally when
+                // the previous layout selection doesn't survive the tileset's filter) unconditionally
+                // reset _suppressEvents to false in their own finally blocks rather than restoring
+                // whatever it was on entry -- re-affirm suppression here so every assignment below
+                // stays silent instead of firing real ValueChanged/SelectionChanged handlers against
+                // knob values that haven't been assigned their target yet.
+                _suppressEvents = true;
+                SelectComboByKey(_layoutCombo, s.LayoutProfileKey);
+                SelectComboByKey(_styleCombo, s.Style);
+
+                // Widen every dynamically-tightened bound to its absolute static extreme so the
+                // assignments below can never be clamped by a bound left over from the prior state.
+                _widthSlider.Minimum = AreaSettingsBounds.WidthMin;
+                _heightSlider.Minimum = AreaSettingsBounds.HeightMin;
+                _minRoomsSlider.Minimum = AreaSettingsBounds.MinRoomsMin;
+                _minRoomsSlider.Maximum = AreaSettingsBounds.MinRoomsMax;
+                _maxRoomsSlider.Minimum = AreaSettingsBounds.MaxRoomsMin;
+                _maxRoomsSlider.Maximum = AreaSettingsBounds.MaxRoomsMax;
+                _minRoomSizeSlider.Minimum = AreaSettingsBounds.MinRoomSizeMin;
+                _minRoomSizeSlider.Maximum = AreaSettingsBounds.MinRoomSizeMax;
+                _maxRoomSizeSlider.Minimum = AreaSettingsBounds.MaxRoomSizeMin;
+                _maxRoomSizeSlider.Maximum = AreaSettingsBounds.MaxRoomSizeMax;
+                _organicFillSlider.Minimum = AreaSettingsBounds.OrganicFillPercentMin;
+
+                _widthSlider.Value = s.Width;
+                _heightSlider.Value = s.Height;
+                _minRoomsSlider.Value = s.MinRooms;
+                _maxRoomsSlider.Value = s.MaxRooms;
+                _minRoomSizeSlider.Value = s.MinRoomSize;
+                _maxRoomSizeSlider.Value = s.MaxRoomSize;
+                _corridorWidthSlider.Value = s.CorridorWidth;
+                _loopFactorSlider.Value = s.LoopFactorPercent;
+                _organicFillSlider.Value = s.OrganicFillPercent;
+                _accentCheckBox.IsChecked = s.AccentEnabled;
+                _accentDensitySlider.Value = s.AccentDensityPercent;
+                _featureDensitySlider.Value = s.FeatureDensityPercent;
+                _elevationRegionsSlider.Value = s.ElevationRegions;
+                _entrancesSlider.Value = s.Entrances;
+                _exitsSlider.Value = s.Exits;
+                _doorTransitionsCheckBox.IsChecked = s.DoorTransitions;
+                _seedTextBox.Text = s.Seed.ToString(CultureInfo.InvariantCulture);
+
+                // Re-derive the tightened/coupled bounds now that every real value is in place.
+                UpdateOrganicFillEnabled();
+                UpdateKnobConstraints();
+
+                UpdateAccentAvailability();
+                UpdateFeatureAvailability();
+                UpdateElevationAvailability();
+
+                // Loaded values are explicit user data, not profile defaults -- mark every knob
+                // overridden so a subsequent tileset-only change (OnTilesetChanged calls
+                // LoadLayoutProfileKnobs directly, without clearing overrides) won't silently reload
+                // composed defaults over them.
+                _overriddenKnobs.Clear();
+                _overriddenKnobs.Add(nameof(_styleCombo));
+                _overriddenKnobs.Add(nameof(_minRoomsSlider));
+                _overriddenKnobs.Add(nameof(_maxRoomsSlider));
+                _overriddenKnobs.Add(nameof(_minRoomSizeSlider));
+                _overriddenKnobs.Add(nameof(_maxRoomSizeSlider));
+                _overriddenKnobs.Add(nameof(_corridorWidthSlider));
+                _overriddenKnobs.Add(nameof(_loopFactorSlider));
+                _overriddenKnobs.Add(nameof(_organicFillSlider));
+                _overriddenKnobs.Add(nameof(_accentCheckBox));
+                _overriddenKnobs.Add(nameof(_accentDensitySlider));
+                _overriddenKnobs.Add(nameof(_entrancesSlider));
+                _overriddenKnobs.Add(nameof(_exitsSlider));
+                _overriddenKnobs.Add(nameof(_doorTransitionsCheckBox));
+                _overriddenKnobs.Add(nameof(_elevationRegionsSlider));
+
+                SelectComboByKey(PreviewModeCombo, s.PreviewMode);
+                RoomOverlayCheckBox.IsChecked = s.RoomOverlay;
+                RoomOverlayCheckBox.IsEnabled = IsMapGraphicsMode;
+
+                ApplyBatch(file.Batch);
+            }
+            finally
+            {
+                _suppressEvents = false;
+            }
+
+            GeneratePreview();
+        }
+
+        private void ApplyBatch(List<AreaBatchFileEntry> entries)
+        {
+            _batch.Clear();
+            foreach (var entry in entries)
+            {
+                var theme = _catalog.Themes.FirstOrDefault(t => t.ThemeKey == entry.ThemeKey);
+                if (theme == null) continue; // ValidateAndClampBatchEntry already guaranteed this exists.
+
+                var tilesetKey = string.IsNullOrEmpty(entry.TilesetKey) ? theme.TilesetProfileKey : entry.TilesetKey;
+                var layoutKey = string.IsNullOrEmpty(entry.LayoutKey) ? theme.LayoutProfileKey : entry.LayoutKey;
+                if (!_catalog.TilesetProfiles.TryGetValue(tilesetKey, out var tileset)) continue;
+                if (!_catalog.LayoutProfiles.TryGetValue(layoutKey, out var layout)) continue;
+
+                _batch.Add(new BatchItem
+                {
+                    ThemeKey = entry.ThemeKey,
+                    ThemeDisplayName = theme.DisplayName,
+                    TilesetProfileKey = entry.TilesetKey,
+                    TilesetDisplayName = tileset.DisplayName,
+                    LayoutProfileKey = entry.LayoutKey,
+                    LayoutDisplayName = layout.DisplayName,
+                    Seed = entry.Seed,
+                    Size = entry.Size,
+                    Entrances = entry.Parameters.EntranceCount,
+                    Exits = entry.Parameters.ExitCount,
+                    DoorTransitions = entry.Parameters.DoorTransitions,
+                    Parameters = entry.Parameters
+                });
+            }
         }
     }
 }

@@ -14,11 +14,30 @@
     -->
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TabControl x:Name="MainTabControl" Grid.Row="0">
+        <!--
+            Standard File menu: Save/Save As write the current Areas-tab settings + batch queue to a
+            JSON project file; Open loads one back (fully validated before anything on screen
+            changes; see ProjectFileService); Exit closes the app. Keyboard shortcuts (Ctrl+S,
+            Ctrl+Shift+S, Ctrl+O) are wired in code-behind (MainWindow_PreviewKeyDown) rather than
+            RoutedCommand bindings, since every action here already has a plain method to call
+            directly; InputGestureText below is cosmetic display text for the same shortcuts.
+        -->
+        <Menu x:Name="MainMenu" Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem x:Name="SaveMenuItem" Header="_Save" InputGestureText="Ctrl+S" />
+                <MenuItem x:Name="SaveAsMenuItem" Header="Save _As..." InputGestureText="Ctrl+Shift+S" />
+                <MenuItem x:Name="OpenMenuItem" Header="_Open..." InputGestureText="Ctrl+O" />
+                <Separator />
+                <MenuItem x:Name="ExitMenuItem" Header="E_xit" />
+            </MenuItem>
+        </Menu>
+
+        <TabControl x:Name="MainTabControl" Grid.Row="1">
             <TabItem Header="Areas">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -69,7 +88,7 @@
             </TabItem>
         </TabControl>
 
-        <StatusBar Grid.Row="1">
+        <StatusBar Grid.Row="2">
             <StatusBarItem>
                 <TextBlock x:Name="StatusTextBlock" Text="Ready" />
             </StatusBarItem>

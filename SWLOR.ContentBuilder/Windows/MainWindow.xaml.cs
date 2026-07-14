@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -308,17 +309,24 @@ namespace SWLOR.ContentBuilder.Windows
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Doors", Binding = new Binding(nameof(BatchItem.DoorTransitions)), Width = new DataGridLength(48) });
             batchGroup.Children.Add(_batchGrid);
 
-            // WrapPanel, not horizontal StackPanel: four buttons exceed the left panel's width at the
-            // default window size, and a StackPanel just clips the overflow off the panel edge.
-            var batchButtons = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 6, 0, 0) };
-            _removeSelectedButton = new Button { Content = "Remove Selected", Margin = new Thickness(0, 0, 6, 4), Padding = new Thickness(6, 2, 6, 2) };
-            _clearBatchButton = new Button { Content = "Clear", Margin = new Thickness(0, 0, 6, 4), Padding = new Thickness(6, 2, 6, 2) };
-            _buildModuleButton = new Button { Content = "Build Review Module", Margin = new Thickness(0, 0, 6, 4), Padding = new Thickness(6, 2, 6, 2) };
-            _buildErfButton = new Button { Content = "Build ERF", Margin = new Thickness(0, 0, 0, 4), Padding = new Thickness(6, 2, 6, 2) };
-            batchButtons.Children.Add(_removeSelectedButton);
-            batchButtons.Children.Add(_clearBatchButton);
-            batchButtons.Children.Add(_buildModuleButton);
-            batchButtons.Children.Add(_buildErfButton);
+            // Two rows: list-management actions on top, build outputs below. The build buttons split
+            // the full panel width evenly so they read as the primary actions of the group.
+            var batchButtons = new StackPanel { Margin = new Thickness(0, 6, 0, 0) };
+
+            var listActions = new StackPanel { Orientation = Orientation.Horizontal };
+            _removeSelectedButton = new Button { Content = "Remove Selected", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(8, 3, 8, 3) };
+            _clearBatchButton = new Button { Content = "Clear", Padding = new Thickness(8, 3, 8, 3) };
+            listActions.Children.Add(_removeSelectedButton);
+            listActions.Children.Add(_clearBatchButton);
+            batchButtons.Children.Add(listActions);
+
+            var buildActions = new UniformGrid { Rows = 1, Columns = 2, Margin = new Thickness(0, 6, 0, 0) };
+            _buildModuleButton = new Button { Content = "Build Review Module", Margin = new Thickness(0, 0, 3, 0), Padding = new Thickness(8, 4, 8, 4) };
+            _buildErfButton = new Button { Content = "Build ERF", Margin = new Thickness(3, 0, 0, 0), Padding = new Thickness(8, 4, 8, 4) };
+            buildActions.Children.Add(_buildModuleButton);
+            buildActions.Children.Add(_buildErfButton);
+            batchButtons.Children.Add(buildActions);
+
             batchGroup.Children.Add(batchButtons);
 
             var (_, logGroup) = AddGroup(LeftStack, "Log");

@@ -263,7 +263,14 @@ namespace SWLOR.Game.Server.Service
                 var chance = CalculateLearnChance(skillRank, tierMinRank, patternRecognitionLevel, perception);
 
                 if (Random.D100(1) > chance)
+                {
+                    // Give explicit feedback on a failed roll so a miss is distinguishable from
+                    // "no roll happened". The witness entry for this creature is cleared on its
+                    // death, so the player must analyze the technique again on another creature.
+                    SendMessageToPC(player, ColorToken.Orange(
+                        $"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry."));
                     continue;
+                }
 
                 dbPlayer.LearnedTechniques[feat] = DateTime.UtcNow;
                 learnedDetails.Add(detail);

@@ -185,12 +185,24 @@ public class TileCoverageCensusTests
     }
 
     /// <summary>Mirrors LayoutElevationPainter's rim shapes: a flat-corner-terrain (uniform Solid or
-    /// Open), ungrouped, blank-edge, doorless tile whose normalized corner-height delta profile is
-    /// either a single raised corner (a blob's convex outer corner) or two ADJACENT corners raised to
-    /// the same delta (a blob's straight edge). The blob's own interior/exterior cells are already
-    /// covered by IsCornerEdgeResolverReachable (a ground-level flat tile resolves at any
-    /// placementHeight once height-awareness is active, see TileResolver class doc) -- this classifier
-    /// only needs to add the two NEW rim shapes LayoutElevationPainter actually paints.</summary>
+    /// Open), ungrouped, blank-edge, doorless tile whose normalized corner-height delta profile is a
+    /// single raised corner (a rectangle blob's convex outer corner), two ADJACENT corners raised to
+    /// the same delta (a rectangle blob's straight edge), or three corners raised to the same delta (a
+    /// CONCAVE notch -- reachable only via LayoutElevationPainter.TryGrowIrregularOpenBlob's
+    /// corner-by-corner irregular growth, e.g. an L-shaped region's inner bend; a plain filled rectangle
+    /// can never produce this shape, see TryPlaceRectangle's own doc comment). The blob's own
+    /// interior/exterior cells are already covered by IsCornerEdgeResolverReachable (a ground-level flat
+    /// tile resolves at any placementHeight once height-awareness is active, see TileResolver class doc)
+    /// -- this classifier only needs to add the rim shapes the painter actually paints.
+    ///
+    /// Deliberately does NOT accept a 2-corner DIAGONAL delta profile (opposite corners raised, same
+    /// terrain): TryGrowIrregularOpenBlob only ever grows ONE 4-connected region per placement, and
+    /// reaching a diagonal corner from its neighbor necessarily passes through one of the two shared
+    /// ADJACENT corners first, which would already be a region member -- making that cell's shape
+    /// 3-of-4 (or 4-of-4), never exactly the 2 diagonal corners with the other 2 still flat. A true
+    /// diagonal-only tile (e.g. tdm01 TILE503, all-Floor h=[1,0,1,0]) would require two entirely
+    /// separate regions to coincidentally meet at one cell's diagonal -- not a shape either painter
+    /// mechanism can reliably produce, so it stays a genuine exemption.</summary>
     private static bool IsElevationBlobReachable(TileRecord tile, TilesetVocabulary vocab)
     {
         if (tile.GroupIndex != -1) return false;
@@ -208,6 +220,7 @@ public class TileCoverageCensusTests
             var nonZero = normalized.Where(h => h != 0).ToArray();
             if (nonZero.Length == 0) continue; // flat -- already covered by CornerEdgeResolver
             if (nonZero.Length == 1) return true; // one-corner rim
+            if (nonZero.Length == 3 && nonZero.Distinct().Count() == 1) return true; // concave notch (irregular growth only)
 
             if (nonZero.Length == 2 && nonZero.Distinct().Count() == 1)
             {
@@ -255,13 +268,19 @@ public class TileCoverageCensusTests
         return sawRamp;
     }
 
-    /// <summary>Mirrors LayoutElevationPoolPainter.TryPlacePool's boundary shapes: a raised (non-flat),
-    /// blank-edge, doorless tile whose corners mix EXACTLY two terrains -- this layout's OpenTerrain and
-    /// the tileset's Accent (pool) terrain, with at least one corner of each -- where every Open corner
-    /// shares one height and every Accent corner shares a height exactly RaiseDelta (1) below it, and the
-    /// Accent corners form either a single corner (one Accent corner, three Open) or a straight edge
-    /// (two ADJACENT Accent corners) -- never a 3-corner or diagonal split, which the mechanism's
-    /// axis-aligned rectangle boundary never generates.</summary>
+    /// <summary>Mirrors LayoutElevationPoolPainter.TryGrowIrregularPoolInterior's boundary shapes: a
+    /// raised (non-flat), blank-edge, doorless tile whose corners mix EXACTLY two terrains -- this
+    /// layout's OpenTerrain and the tileset's Accent (pool) terrain, with at least one corner of each --
+    /// where every Open corner shares one height and every Accent corner shares a height exactly
+    /// RaiseDelta (1) below it, and the Accent corners form a single corner (one Accent corner, three
+    /// Open), a straight edge (two ADJACENT Accent corners), or a CONCAVE notch (three Accent corners,
+    /// one Open) -- the last reachable only via the irregular corner-by-corner interior grower (a
+    /// blanket rectangle fill can never leave a single Open corner poking into an otherwise-filled
+    /// interior). Never a 2-corner DIAGONAL split: the interior grower only ever grows ONE 4-connected
+    /// region from a single seed, so reaching a diagonal corner without first passing through (and thus
+    /// including) one of the two shared adjacent corners is topologically impossible -- see
+    /// IsElevationBlobReachable's own doc comment for the identical reasoning on the single-terrain
+    /// blob case.</summary>
     private static bool IsPoolBankReachable(TileRecord tile, TilesetVocabulary vocab)
     {
         if (tile.GroupIndex != -1) return false;
@@ -294,6 +313,7 @@ public class TileCoverageCensusTests
 
         var accentCount = 4 - openCount;
         if (accentCount == 1) return true;
+        if (accentCount == 3) return true; // concave notch (irregular interior growth only)
         if (accentCount == 2)
         {
             bool tlA = Eq(corners[0], vocab.Accent), trA = Eq(corners[1], vocab.Accent),
@@ -1129,4 +1149,5 @@ public class TileCoverageCensusTests
 
         (coveredTileIds.Count + exemptions.Count).Should().Be(model.Tiles.Count);
     }
+
 }

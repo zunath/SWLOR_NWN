@@ -582,7 +582,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// height-painting passes (e.g. LayoutElevationPainter) to verify a tileset's real tile
         /// inventory actually covers a rim shape before committing to paint it — mirroring how
         /// TunnelVocabularyCheck/LayoutFenceCarver/LayoutAccentChannelCarver probe capability before
-        /// carving. Builds the lookup fresh each call — not for use in hot per-cell resolution.
+        /// carving. Builds the lookup fresh each call — not for use in hot per-cell resolution or any
+        /// mechanism issuing more than a handful of probes per Paint() call; see
+        /// <see cref="BuildHeightAwareProbeCache"/> for that case.
         /// </summary>
         public static bool HasHeightAwareCandidate(
             TilesetModel tileset,
@@ -595,6 +597,63 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var lookup = BuildCandidateLookup(tileset, heightAware: true);
             var key = MakeHeightAwareKey(tl, tr, br, bl, top, right, bottom, left, dTl, dTr, dBr, dBl);
             return lookup.TryGetValue(key, out var set) && set.All.Count > 0;
+        }
+
+        /// <summary>
+        /// Opaque, reusable wrapper around a height-aware candidate lookup, built once and probed many
+        /// times via <see cref="HasHeightAwareCandidate(HeightAwareProbeCache,string,string,string,string,string,string,string,string,int,int,int,int)"/>.
+        /// <see cref="BuildCandidateLookup"/> scans every tile in the tileset and is not free (tdm01's
+        /// 1810-tile inventory takes low-single-digit milliseconds) — cheap for the couple of upfront
+        /// probes <see cref="Layouts.LayoutElevationPainter"/>/<see cref="Layouts.LayoutElevationPoolPainter"/>
+        /// used to make per Paint() call, but any mechanism issuing dozens of probes per placement
+        /// attempt (e.g. corner-by-corner irregular region growth, re-verifying several touching cells
+        /// on every grown corner) must build this ONCE per Paint() call and reuse it, or generation time
+        /// regresses badly across many placement attempts.
+        /// </summary>
+        public sealed class HeightAwareProbeCache
+        {
+            // private (not internal): CandidateSet itself is a private nested type of TileResolver, so
+            // this field's accessibility must not exceed it. Only ever set by BuildHeightAwareProbeCache
+            // and read by the cache-based HasHeightAwareCandidate overload below -- both members of the
+            // enclosing TileResolver class, which (like any enclosing type) can see this nested class's
+            // private members directly.
+            private Dictionary<string, CandidateSet> Lookup;
+
+            private static HeightAwareProbeCache From(Dictionary<string, CandidateSet> lookup)
+            {
+                return new HeightAwareProbeCache { Lookup = lookup };
+            }
+
+            private bool TryGetSet(string key, out CandidateSet set) => Lookup.TryGetValue(key, out set);
+
+            internal static HeightAwareProbeCache Build(TilesetModel tileset) =>
+                From(BuildCandidateLookup(tileset, heightAware: true));
+
+            internal bool HasCandidate(string key) => TryGetSet(key, out var set) && set.All.Count > 0;
+        }
+
+        /// <summary>Builds a <see cref="HeightAwareProbeCache"/> for repeated height-aware probes against
+        /// <paramref name="tileset"/> within a single post-pass invocation.</summary>
+        public static HeightAwareProbeCache BuildHeightAwareProbeCache(TilesetModel tileset)
+        {
+            if (tileset == null) throw new ArgumentNullException(nameof(tileset));
+            return HeightAwareProbeCache.Build(tileset);
+        }
+
+        /// <summary>Cache-based twin of <see cref="HasHeightAwareCandidate(TilesetModel,string,string,string,string,string,string,string,string,int,int,int,int)"/>
+        /// — identical matching rules, but reads a lookup built once via <see cref="BuildHeightAwareProbeCache"/>
+        /// instead of rebuilding it on every call. Use this for any mechanism that probes more than a
+        /// handful of candidates per Paint() call.</summary>
+        public static bool HasHeightAwareCandidate(
+            HeightAwareProbeCache cache,
+            string tl, string tr, string br, string bl,
+            string top, string right, string bottom, string left,
+            int dTl, int dTr, int dBr, int dBl)
+        {
+            if (cache == null) throw new ArgumentNullException(nameof(cache));
+
+            var key = MakeHeightAwareKey(tl, tr, br, bl, top, right, bottom, left, dTl, dTr, dBr, dBl);
+            return cache.HasCandidate(key);
         }
     }
 }

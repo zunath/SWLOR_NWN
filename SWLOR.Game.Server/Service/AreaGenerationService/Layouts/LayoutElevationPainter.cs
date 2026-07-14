@@ -78,6 +78,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var openRimOk = HasRimVocabulary(tileset, parameters.OpenTerrain);
             if (!solidRimOk && !openRimOk) return; // fully inert -- no elevation vocabulary at all
 
+            // Built ONCE per Paint() call and reused for every placement attempt's CellResolves calls:
+            // TileResolver.HasHeightAwareCandidate(TilesetModel, ...) rebuilds its whole candidate
+            // lookup from scratch on every invocation, so probing it per-cell (a rectangle attempt) or,
+            // worse, per-corner-growth-step (TryGrowIrregularOpenBlob below) would recompute the same
+            // lookup dozens of times per attempt -- see TileResolver.HeightAwareProbeCache's own doc
+            // comment.
+            var cache = TileResolver.BuildHeightAwareProbeCache(tileset);
+
             var forbidden = BuildForbiddenCorners(layout, corners);
             var touchedThisPass = new HashSet<(int X, int Y)>();
 
@@ -89,13 +97,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             {
                 attempts++;
 
-                if (solidRimOk && TryPaintSolidBlob(layout, tileset, parameters.SolidTerrain, forbidden, touchedThisPass, random))
+                if (solidRimOk && TryPaintSolidBlob(layout, cache, parameters.SolidTerrain, forbidden, touchedThisPass, random))
                 {
                     painted++;
                     continue;
                 }
 
-                if (openRimOk && TryPaintOpenRoomBlob(layout, parameters, tileset, parameters.OpenTerrain, forbidden, touchedThisPass, random))
+                if (openRimOk && TryPaintOpenRoomBlob(layout, parameters, cache, parameters.OpenTerrain, forbidden, touchedThisPass, random))
                 {
                     painted++;
                 }
@@ -171,7 +179,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// See TryPlaceRectangle for the shape rationale and commit/verify/revert mechanics.
         /// </summary>
         private static bool TryPaintSolidBlob(
-            MacroLayout layout, TilesetModel tileset, string terrain,
+            MacroLayout layout, TileResolver.HeightAwareProbeCache cache, string terrain,
             HashSet<(int X, int Y)> forbidden, HashSet<(int X, int Y)> touchedThisPass, System.Random random)
         {
             var corners = layout.Corners;
@@ -191,7 +199,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 var x0 = random.Next(1, maxX0 + 1);
                 var y0 = random.Next(1, maxY0 + 1);
 
-                if (TryPlaceRectangle(layout, tileset, terrain, forbidden, touchedThisPass, x0, y0, x0 + spanX, y0 + spanY))
+                if (TryPlaceRectangle(layout, cache, terrain, forbidden, touchedThisPass, x0, y0, x0 + spanX, y0 + spanY))
                     return true;
             }
 
@@ -209,7 +217,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// see TryPlaceRectangle's margin requirement.
         /// </summary>
         private static bool TryPaintOpenRoomBlob(
-            MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset, string terrain,
+            MacroLayout layout, MacroLayoutParameters parameters, TileResolver.HeightAwareProbeCache cache, string terrain,
             HashSet<(int X, int Y)> forbidden, HashSet<(int X, int Y)> touchedThisPass, System.Random random)
         {
             var roomOrder = new int[layout.Rooms.Count];
@@ -242,8 +250,25 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 var ry0 = minY;
                 var ry1 = maxY + 1;
 
+                // Alternates between the two independent strategies each attempt: a plain rectangle
+                // (fast, and the only shape that ever needs a Ramp lane spliced in -- see below) and an
+                // irregular corner-by-corner grown blob (TryGrowIrregularOpenBlob), which can additionally
+                // reach concave "3 corners raised" notches and other non-rectangular rim shapes a real
+                // tileset happens to carry (e.g. tde01/tdm01's Floor family -- see
+                // TileCoverageCensusTests.IsElevationBlobReachable's own concave-shape doc comment).
+                // Irregular growth is strictly more expensive per attempt (one cache probe per grown
+                // corner instead of one batch probe for the whole rectangle), so it only gets a fraction
+                // of this room's attempt budget, not all of it.
                 for (var placementAttempt = 0; placementAttempt < RoomPlacementAttempts; placementAttempt++)
                 {
+                    var tryIrregular = placementAttempt % 2 == 1;
+                    if (tryIrregular)
+                    {
+                        if (TryGrowIrregularOpenBlob(layout, cache, terrain, forbidden, touchedThisPass, rx0, ry0, rx1, ry1, random))
+                            return true;
+                        continue;
+                    }
+
                     var spanX = random.Next(MinBlobSpan, MaxBlobSpan + 1);
                     var spanY = random.Next(MinBlobSpan, MaxBlobSpan + 1);
 
@@ -259,7 +284,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var x0 = random.Next(minX0, maxX0 + 1);
                     var y0 = random.Next(minY0, maxY0 + 1);
 
-                    if (TryPlaceRectangle(layout, tileset, terrain, forbidden, touchedThisPass, x0, y0, x0 + spanX, y0 + spanY))
+                    if (TryPlaceRectangle(layout, cache, terrain, forbidden, touchedThisPass, x0, y0, x0 + spanX, y0 + spanY))
                     {
                         // Best-effort, purely additive: a Ramp lane is a bonus on top of an already-
                         // successfully-placed blob, never a precondition for it. Only attempted for
@@ -267,7 +292,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                         // (tde01) that has Ramp vocabulary at all -- see TryAddRampLane's own live probe,
                         // which no-ops harmlessly on every other tileset/terrain pairing).
                         if (parameters.ElevationRamps)
-                            TryAddRampLane(layout, tileset, terrain, x0, y0, x0 + spanX, y0 + spanY, random);
+                            TryAddRampLane(layout, cache, terrain, x0, y0, x0 + spanX, y0 + spanY, random);
 
                         return true;
                     }
@@ -275,6 +300,136 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             }
 
             return false;
+        }
+
+        // Irregular growth footprint bounds, in CORNERS: small enough to stay cheap (each accepted
+        // corner costs up to 4 cache probes; MaxIrregularCorners * MaxGrowStepAttempts bounds the worst
+        // case for a single TryGrowIrregularOpenBlob call), large enough to reach the concave "3 of 4
+        // corners raised" notch shape (needs at least 3 accepted corners: two adjacent-to-the-seed plus
+        // the seed itself, arranged in an L).
+        private const int MinIrregularCorners = 1;
+        private const int MaxIrregularCorners = 6;
+        private const int MaxGrowStepAttempts = 12;
+        private const int MaxSeedAttempts = 6;
+
+        /// <summary>
+        /// Grows a connected, irregular set of raised corners strictly inside a room's own bounding box
+        /// (same 1-corner margin as <see cref="TryPlaceRectangle"/>'s rim requirement), one corner at a
+        /// time: seed a random interior corner, then repeatedly try a random orthogonal neighbor of the
+        /// current region, tentatively raising it and re-verifying only the (up to 4) cells THAT corner
+        /// touches via <see cref="CellResolves"/> before keeping it. This is sound incrementally --
+        /// a cell's resolution depends only on its own 4 corners' current (terrain, height), so adding
+        /// one corner can only ever change the cells that corner itself touches, never a cell touching
+        /// none of the just-added corners -- so no whole-footprint re-verification is needed the way
+        /// <see cref="TryPlaceRectangle"/>'s batch rectangle commit needs one.
+        ///
+        /// Unlike TryPlaceRectangle's forced-rectangle boundary (always exactly the two verified rim
+        /// shapes), an irregular region's own boundary can include a concave notch (a rim cell whose
+        /// OTHER three corners all happen to be region members) wherever the tileset's real inventory
+        /// happens to carry that specific "3 corners raised" tile -- CellResolves' live probe is the
+        /// only thing standing between a candidate corner and rejection, so no shape is ever assumed,
+        /// only ever actually placed after the real tileset confirms it.
+        /// </summary>
+        private static bool TryGrowIrregularOpenBlob(
+            MacroLayout layout, TileResolver.HeightAwareProbeCache cache, string terrain,
+            HashSet<(int X, int Y)> forbidden, HashSet<(int X, int Y)> touchedThisPass,
+            int rx0, int ry0, int rx1, int ry1, System.Random random)
+        {
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+
+            // Strictly inside the room, 1-corner margin on every side (mirrors TryPaintOpenRoomBlob's
+            // rectangle inset -- that margin ring is what makes every touched cell's OTHER corners
+            // ordinary flat open-terrain, exactly like the rectangle case's padding ring).
+            var minX = rx0 + 1;
+            var maxX = rx1 - 1;
+            var minY = ry0 + 1;
+            var maxY = ry1 - 1;
+            if (maxX < minX || maxY < minY) return false;
+
+            (int X, int Y)? seed = null;
+            for (var seedAttempt = 0; seedAttempt < MaxSeedAttempts && seed == null; seedAttempt++)
+            {
+                var sx = random.Next(minX, maxX + 1);
+                var sy = random.Next(minY, maxY + 1);
+                if (IsCornerSafe(corners, touchedThisPass, terrain, sx, sy) && !forbidden.Contains((sx, sy)))
+                    seed = (sx, sy);
+            }
+            if (seed == null) return false;
+
+            var region = new List<(int X, int Y)> { seed.Value };
+            var regionSet = new HashSet<(int X, int Y)> { seed.Value };
+
+            if (!TryRaiseCorner(corners, crossers, cache, seed.Value))
+                return false; // the lone seed corner itself doesn't resolve -- never expected given HasRimVocabulary, but defensive
+
+            var targetSize = random.Next(MinIrregularCorners, MaxIrregularCorners + 1);
+
+            for (var step = 0; step < MaxGrowStepAttempts && region.Count < targetSize; step++)
+            {
+                var candidates = new List<(int X, int Y)>();
+                foreach (var member in region)
+                {
+                    foreach (var (dx, dy) in LayoutCornerUtils.Ortho4)
+                    {
+                        var candidate = (member.X + dx, member.Y + dy);
+                        if (candidate.Item1 < minX || candidate.Item1 > maxX || candidate.Item2 < minY || candidate.Item2 > maxY) continue;
+                        if (regionSet.Contains(candidate)) continue;
+                        if (forbidden.Contains(candidate)) continue;
+                        if (!IsCornerSafe(corners, touchedThisPass, terrain, candidate.Item1, candidate.Item2)) continue;
+                        candidates.Add(candidate);
+                    }
+                }
+                if (candidates.Count == 0) break;
+
+                Shuffle(candidates, random);
+
+                var grew = false;
+                foreach (var candidate in candidates)
+                {
+                    if (TryRaiseCorner(corners, crossers, cache, candidate))
+                    {
+                        region.Add(candidate);
+                        regionSet.Add(candidate);
+                        grew = true;
+                        break;
+                    }
+                }
+                if (!grew) break; // every remaining candidate this round failed CellResolves -- stop, keep what grew so far
+            }
+
+            foreach (var member in region)
+                touchedThisPass.Add(member);
+
+            return true; // region.Count is always >= 1 (the seed) once we reach here
+        }
+
+        /// <summary>
+        /// Tentatively raises a single corner by <see cref="RaiseDelta"/> and verifies every cell that
+        /// corner touches (up to 4) still resolves; reverts and returns false on any failure. See
+        /// <see cref="TryGrowIrregularOpenBlob"/>'s doc comment for why only the touching cells (not the
+        /// whole footprint) need re-checking.
+        /// </summary>
+        private static bool TryRaiseCorner(
+            CornerTerrainGrid corners, EdgeCrosserGrid crossers, TileResolver.HeightAwareProbeCache cache, (int X, int Y) corner)
+        {
+            corners.Heights[corner.X, corner.Y] = RaiseDelta;
+
+            var allResolve = true;
+            for (var cx = corner.X - 1; cx <= corner.X && allResolve; cx++)
+            for (var cy = corner.Y - 1; cy <= corner.Y && allResolve; cy++)
+            {
+                if (cx < 0 || cy < 0 || cx >= corners.Width || cy >= corners.Height) continue;
+                if (!CellResolves(corners, crossers, cache, cx, cy)) allResolve = false;
+            }
+
+            if (!allResolve)
+            {
+                corners.Heights[corner.X, corner.Y] = 0;
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -303,7 +458,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// may one day be the only walkable link between two otherwise-severed regions.
         /// </summary>
         private static void TryAddRampLane(
-            MacroLayout layout, TilesetModel tileset, string terrain, int x0, int y0, int x1, int y1, System.Random random)
+            MacroLayout layout, TileResolver.HeightAwareProbeCache cache, string terrain, int x0, int y0, int x1, int y1, System.Random random)
         {
             // Each candidate: the column/row of rim CELLS just outside the raised rectangle on that
             // side, whether the lane runs along Y (east/west edges, Ramp on Top/Bottom) or along X
@@ -327,13 +482,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             {
                 if (count < 2) continue; // no interior boundary to carry the shared Ramp edge
 
-                if (TryCommitRampLane(layout, tileset, cellX, cellY, alongY, count, groundCorner, raisedCorner))
+                if (TryCommitRampLane(layout, cache, cellX, cellY, alongY, count, groundCorner, raisedCorner))
                     return; // one lane per blob is plenty; first success wins
             }
         }
 
         private static bool TryCommitRampLane(
-            MacroLayout layout, TilesetModel tileset,
+            MacroLayout layout, TileResolver.HeightAwareProbeCache cache,
             int cellX, int cellY, bool alongY, int count,
             (int X, int Y) groundCorner, (int X, int Y) raisedCorner)
         {
@@ -373,7 +528,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var allResolve = true;
             foreach (var (cx, cy) in cells)
             {
-                if (!CellResolves(corners, crossers, tileset, cx, cy)) { allResolve = false; break; }
+                if (!CellResolves(corners, crossers, cache, cx, cy)) { allResolve = false; break; }
             }
 
             if (!allResolve)
@@ -413,7 +568,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// violation.
         /// </summary>
         internal static bool TryPlaceRectangle(
-            MacroLayout layout, TilesetModel tileset, string terrain,
+            MacroLayout layout, TileResolver.HeightAwareProbeCache cache, string terrain,
             HashSet<(int X, int Y)> forbidden, HashSet<(int X, int Y)> touchedThisPass,
             int x0, int y0, int x1, int y1)
         {
@@ -449,7 +604,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             for (var cx = padX0; cx <= padX1 - 1 && allResolve; cx++)
             for (var cy = padY0; cy <= padY1 - 1 && allResolve; cy++)
             {
-                if (!CellResolves(corners, layout.Crossers, tileset, cx, cy))
+                if (!CellResolves(corners, layout.Crossers, cache, cx, cy))
                     allResolve = false;
             }
 
@@ -502,7 +657,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// checks TileResolver.HasHeightAwareCandidate against it -- the same computation TryResolve
         /// itself performs per cell, used here purely as a pre-commit verification (no tile is actually
         /// picked or placed).</summary>
-        internal static bool CellResolves(CornerTerrainGrid corners, EdgeCrosserGrid crossers, TilesetModel tileset, int x, int y)
+        internal static bool CellResolves(CornerTerrainGrid corners, EdgeCrosserGrid crossers, TileResolver.HeightAwareProbeCache cache, int x, int y)
         {
             var tl = corners.Labels[x, y + 1];
             var tr = corners.Labels[x + 1, y + 1];
@@ -521,7 +676,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var min = Math.Min(Math.Min(hTl, hTr), Math.Min(hBr, hBl));
 
             return TileResolver.HasHeightAwareCandidate(
-                tileset, tl, tr, br, bl, top, right, bottom, left,
+                cache, tl, tr, br, bl, top, right, bottom, left,
                 hTl - min, hTr - min, hBr - min, hBl - min);
         }
 

@@ -61,6 +61,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             if (!HasPoolVocabulary(tileset, parameters.OpenTerrain, parameters.PoolTerrain)) return;
 
+            // Built ONCE per Paint() call -- see TileResolver.HeightAwareProbeCache's own doc comment.
+            // TryPaintIrregularPoolInterior issues one cache probe per grown interior corner, so reusing
+            // a single cache here (instead of each CellResolves call rebuilding its own lookup) keeps a
+            // multi-region pool pass from recomputing the same tileset-wide lookup dozens of times.
+            var cache = TileResolver.BuildHeightAwareProbeCache(tileset);
+
             var forbidden = BuildForbiddenCorners(layout);
             var touchedThisPass = new HashSet<(int X, int Y)>();
 
@@ -71,7 +77,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             while (painted < parameters.PoolRegions && attempts < maxAttempts)
             {
                 attempts++;
-                if (TryPaintPool(layout, parameters, tileset, forbidden, touchedThisPass, random))
+                if (TryPaintPool(layout, parameters, cache, forbidden, touchedThisPass, random))
                     painted++;
             }
 
@@ -136,7 +142,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         }
 
         private static bool TryPaintPool(
-            MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset,
+            MacroLayout layout, MacroLayoutParameters parameters, TileResolver.HeightAwareProbeCache cache,
             HashSet<(int X, int Y)> forbidden, HashSet<(int X, int Y)> touchedThisPass, System.Random random)
         {
             var openTerrain = parameters.OpenTerrain;
@@ -183,7 +189,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var x0 = random.Next(minX0, maxX0 + 1);
                     var y0 = random.Next(minY0, maxY0 + 1);
 
-                    if (TryPlacePool(layout, parameters, tileset, forbidden, touchedThisPass, rx0, ry0, rx1, ry1, x0, y0, x0 + spanX, y0 + spanY))
+                    if (TryPlacePool(layout, parameters, cache, forbidden, touchedThisPass, rx0, ry0, rx1, ry1, x0, y0, x0 + spanX, y0 + spanY, random))
                         return true;
                 }
             }
@@ -217,16 +223,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// Dungeon/Complex pools place successfully.
         /// </summary>
         private static bool TryPlacePool(
-            MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset,
+            MacroLayout layout, MacroLayoutParameters parameters, TileResolver.HeightAwareProbeCache cache,
             HashSet<(int X, int Y)> forbidden, HashSet<(int X, int Y)> touchedThisPass,
             int rx0, int ry0, int rx1, int ry1,
-            int x0, int y0, int x1, int y1)
+            int x0, int y0, int x1, int y1, System.Random random)
         {
             var openTerrain = parameters.OpenTerrain;
             var poolTerrain = parameters.PoolTerrain;
             var corners = layout.Corners;
 
-            if (!LayoutElevationPainter.TryPlaceRectangle(layout, tileset, openTerrain, forbidden, touchedThisPass, x0, y0, x1, y1))
+            if (!LayoutElevationPainter.TryPlaceRectangle(layout, cache, openTerrain, forbidden, touchedThisPass, x0, y0, x1, y1))
                 return false;
 
             var ix0 = x0 + 1;
@@ -247,20 +253,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             for (var y = iy0; y <= iy1; y++)
                 savedLabels[x - ix0, y - iy0] = corners.Labels[x, y];
 
-            for (var x = ix0; x <= ix1; x++)
-            for (var y = iy0; y <= iy1; y++)
-            {
-                corners.Labels[x, y] = poolTerrain;
-                corners.Heights[x, y] = 0;
-            }
+            // Grows an irregular accent-terrain shape strictly inside the inset [ix0..ix1] x [iy0..iy1]
+            // instead of blanket-filling the whole rectangle -- see TryGrowIrregularPoolInterior's own
+            // doc comment. A rectangle-filling pool (accentCount==4 on every interior cell) is still
+            // exactly what this produces when every candidate corner happens to resolve (the common
+            // case for a small inset), so this is a strict superset of the old behavior, not a
+            // regression: whatever shape the tileset can't support, growth simply stops early and
+            // leaves those corners as ordinary raised Open floor (already a verified, independent shape).
+            var grew = TryGrowIrregularPoolInterior(corners, layout.Crossers, cache, poolTerrain, ix0, iy0, ix1, iy1, random);
 
-            var allResolve = true;
-            for (var cx = ix0 - 1; cx <= ix1 && allResolve; cx++)
-            for (var cy = iy0 - 1; cy <= iy1 && allResolve; cy++)
-            {
-                if (!LayoutElevationPainter.CellResolves(corners, layout.Crossers, tileset, cx, cy))
-                    allResolve = false;
-            }
+            var allResolve = grew.Count > 0;
 
             if (allResolve && !IsRoomStillConnected(corners, openTerrain, rx0, ry0, rx1, ry1))
                 allResolve = false;
@@ -275,6 +277,110 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 }
 
                 RevertOuterRaise(corners, touchedThisPass, x0, y0, x1, y1);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Grows an irregular accent-terrain (pool) shape strictly inside [ix0..ix1] x [iy0..iy1] --
+        /// the raised-Open inset TryPlacePool's outer rectangle just verified -- one corner at a time,
+        /// mirroring LayoutElevationPainter.TryGrowIrregularOpenBlob's own incremental-verify approach:
+        /// each candidate corner is tentatively flipped to (poolTerrain, height 0) and only the (up to 4)
+        /// cells it touches are re-verified via LayoutElevationPainter.CellResolves before keeping it, so
+        /// no whole-footprint re-check is needed after the first corner. This is what lets the resulting
+        /// pool boundary include shapes TryPlacePool's old blanket-fill could never produce -- a concave
+        /// notch (3 of 4 corners pool, the 4th still the raised rim) wherever the tileset's real
+        /// inventory happens to carry that specific "3 accent corners" tile (see
+        /// TileCoverageCensusTests.IsPoolBankReachable's own doc comment) -- while a full rectangle fill
+        /// remains exactly what this produces whenever every candidate happens to resolve (the common,
+        /// small-inset case), so this is a strict superset of the previous behavior.
+        ///
+        /// Returns every corner successfully flipped (in growth order); an empty list means even the
+        /// seed corner failed to resolve, which the caller treats as total pool failure (reverts the
+        /// outer raise too) exactly like the old blanket-fill's "no candidate resolves" case.
+        /// </summary>
+        private static List<(int X, int Y)> TryGrowIrregularPoolInterior(
+            CornerTerrainGrid corners, EdgeCrosserGrid crossers, TileResolver.HeightAwareProbeCache cache,
+            string poolTerrain, int ix0, int iy0, int ix1, int iy1, System.Random random)
+        {
+            var region = new List<(int X, int Y)>();
+
+            var seed = (random.Next(ix0, ix1 + 1), random.Next(iy0, iy1 + 1));
+            if (!TryFlipCornerToPool(corners, crossers, cache, poolTerrain, seed))
+                return region; // empty -- even the seed corner doesn't resolve, a total failure
+
+            region.Add(seed);
+            var regionSet = new HashSet<(int X, int Y)> { seed };
+
+            // Upper bound only -- the loop below stops naturally once no candidate resolves, well before
+            // this is ever reached for a real, tightly-bounded inset (see MaxOuterSpan).
+            var targetSize = (ix1 - ix0 + 1) * (iy1 - iy0 + 1);
+
+            while (region.Count < targetSize)
+            {
+                var candidates = new List<(int X, int Y)>();
+                foreach (var member in region)
+                {
+                    foreach (var (dx, dy) in LayoutCornerUtils.Ortho4)
+                    {
+                        var candidate = (member.X + dx, member.Y + dy);
+                        if (candidate.Item1 < ix0 || candidate.Item1 > ix1 || candidate.Item2 < iy0 || candidate.Item2 > iy1) continue;
+                        if (regionSet.Contains(candidate)) continue;
+                        candidates.Add(candidate);
+                    }
+                }
+                if (candidates.Count == 0) break;
+
+                for (var i = candidates.Count - 1; i > 0; i--)
+                {
+                    var j = random.Next(i + 1);
+                    (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
+                }
+
+                var grew = false;
+                foreach (var candidate in candidates)
+                {
+                    if (TryFlipCornerToPool(corners, crossers, cache, poolTerrain, candidate))
+                    {
+                        region.Add(candidate);
+                        regionSet.Add(candidate);
+                        grew = true;
+                        break;
+                    }
+                }
+                if (!grew) break; // every remaining candidate this round failed CellResolves -- stop, keep what grew so far
+            }
+
+            return region;
+        }
+
+        /// <summary>Tentatively flips one inset corner from (Open, raised) to (poolTerrain, 0) and
+        /// verifies every cell it touches (up to 4) still resolves; reverts and returns false on any
+        /// failure. See <see cref="TryGrowIrregularPoolInterior"/>'s doc comment.</summary>
+        private static bool TryFlipCornerToPool(
+            CornerTerrainGrid corners, EdgeCrosserGrid crossers, TileResolver.HeightAwareProbeCache cache,
+            string poolTerrain, (int X, int Y) corner)
+        {
+            var savedLabel = corners.Labels[corner.X, corner.Y];
+            var savedHeight = corners.Heights[corner.X, corner.Y];
+
+            corners.Labels[corner.X, corner.Y] = poolTerrain;
+            corners.Heights[corner.X, corner.Y] = 0;
+
+            var allResolve = true;
+            for (var cx = corner.X - 1; cx <= corner.X && allResolve; cx++)
+            for (var cy = corner.Y - 1; cy <= corner.Y && allResolve; cy++)
+            {
+                if (cx < 0 || cy < 0 || cx >= corners.Width || cy >= corners.Height) continue;
+                if (!LayoutElevationPainter.CellResolves(corners, crossers, cache, cx, cy)) allResolve = false;
+            }
+
+            if (!allResolve)
+            {
+                corners.Labels[corner.X, corner.Y] = savedLabel;
+                corners.Heights[corner.X, corner.Y] = savedHeight;
                 return false;
             }
 

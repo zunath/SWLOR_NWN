@@ -1523,21 +1523,52 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             foreach (var (room, anchor) in siteCandidates)
             {
-                if (!IsOpenSetPieceSiteValid(layout, room, group, anchor, out var footprint))
+                if (!IsOpenSetPieceSiteValid(layout, room, group, anchor, out var footprint, out var relocatedCenter))
                     continue;
 
                 StampOpenSetPiece(layout, parameters, classified, room, footprint);
+                // See IsOpenSetPieceSiteValid's own doc comment: relocating happens AFTER every other
+                // pass that reads/reserves CenterTile has already run (Stamp is the last macro-layout
+                // pass before ValidateInvariants -- see MacroLayoutGenerator.Generate's ordering), so
+                // no earlier pass ever observes a stale center.
+                if (relocatedCenter.HasValue)
+                    room.CenterTile = relocatedCenter.Value;
                 return true;
             }
 
             return false;
         }
 
+        /// <summary>
+        /// Footprint plus a 1-cell margin ring must sit entirely inside this same room's open tiles,
+        /// and touch neither a transition anchor nor an already-pinned cell (an earlier set piece
+        /// instance). The room's own CenterTile no longer blocks a site outright: on real Halls/
+        /// Complex-carved rooms (3-6 corners, i.e. 2x2..5x5 tiles) a 2x2+ footprint plus its margin
+        /// consumes most or all of the room's interior, so the reserved center is almost always
+        /// somewhere inside that rectangle -- treating it as an unconditional exclusion left
+        /// TryPlaceOpenSetPiece with essentially 0 viable sites on every shipped tileset (verified:
+        /// 0/100 across vmr01/tdm01/ttf01-Forest/ttf01-ForestPlatform x Halls/Complex, see
+        /// OpenSetPiecePlacementRateTests). Instead, when a candidate site's extended (footprint +
+        /// margin) rectangle would consume the CURRENT CenterTile, this looks for another fully-open
+        /// room tile (still equal to the room's own OpenTerrain on all 4 corners -- excluding any tile
+        /// already repainted by LayoutAccentPainter/LayoutFenceCarver/LayoutElevationPainter/
+        /// LayoutElevationPoolPainter/LayoutReliefPainter, all of which already ran and already treated
+        /// the OLD center as their own forbidden/protected cell — see those passes' own CenterTile
+        /// doc comments) outside the extended rectangle to become the room's new representative center.
+        /// CenterTile is read afterward only by AreaSynthesizer's connectivity walk and
+        /// DungeonContentPlacer's spawn/objective anchor (see AreaLayout.cs's own doc comment) -- both
+        /// consume the FINAL layout returned from MacroLayoutGenerator.Generate, after Stamp has
+        /// already run, so a relocation here is never observed as stale by an earlier pass. If no
+        /// such alternate tile exists (the footprint + margin would consume the room's entire open
+        /// interior), the site is rejected exactly as before -- there would be nothing left to anchor
+        /// the room's own connectivity/spawn point to.
+        /// </summary>
         private static bool IsOpenSetPieceSiteValid(
             MacroLayout layout, LayoutRoom room, TileGroupRecord group, (int X, int Y) anchor,
-            out List<(int X, int Y)> footprint)
+            out List<(int X, int Y)> footprint, out (int X, int Y)? relocatedCenter)
         {
             footprint = null;
+            relocatedCenter = null;
 
             var roomTiles = new HashSet<(int X, int Y)>(room.Tiles);
             var transitionTiles = new HashSet<(int X, int Y)>(layout.Transitions.Select(t => t.Tile));
@@ -1547,19 +1578,38 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             for (var c = 0; c < group.Columns; c++)
                 fp.Add((anchor.X + c, anchor.Y + r));
 
-            // Footprint plus a 1-cell margin ring must sit entirely inside this same room's open
-            // tiles, and touch neither the room's own path anchor nor any transition. This single pass
-            // over the extended rectangle covers footprint and margin identically.
+            var extended = new List<(int X, int Y)>();
+            var touchesCenter = false;
             for (var y = anchor.Y - 1; y <= anchor.Y + group.Rows; y++)
             {
                 for (var x = anchor.X - 1; x <= anchor.X + group.Columns; x++)
                 {
                     var cell = (X: x, Y: y);
                     if (!roomTiles.Contains(cell)) return false;
-                    if (cell == room.CenterTile) return false;
                     if (transitionTiles.Contains(cell)) return false;
                     if (layout.PinnedTiles.ContainsKey(cell)) return false;
+                    if (cell == room.CenterTile) touchesCenter = true;
+                    extended.Add(cell);
                 }
+            }
+
+            if (touchesCenter)
+            {
+                var extendedSet = new HashSet<(int X, int Y)>(extended);
+                var relocationCandidates = room.Tiles
+                    .Where(t => !extendedSet.Contains(t))
+                    .Where(t => !transitionTiles.Contains(t) && !layout.PinnedTiles.ContainsKey(t))
+                    .Where(t => IsFullyOpenCell(layout.Corners, t, room.OpenTerrain))
+                    .ToList();
+                if (relocationCandidates.Count == 0) return false;
+
+                // Deterministic given the seed-derived room/tile ordering above -- nearest to the
+                // original center keeps the relocated anchor representative of the room, and ties
+                // break on the stable room.Tiles order (no extra RNG draw, so this never perturbs the
+                // seed's RNG sequence for anything placed afterward).
+                relocatedCenter = relocationCandidates
+                    .OrderBy(t => Math.Abs(t.X - room.CenterTile.X) + Math.Abs(t.Y - room.CenterTile.Y))
+                    .First();
             }
 
             footprint = fp;

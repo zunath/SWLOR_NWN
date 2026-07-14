@@ -2007,13 +2007,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Caveat on the OpenSetPiece groups above (House/Pillar/Plaza/Building/TowerGuardPit): a
             // direct reflection probe confirms TryClassify correctly resolves them to Kind=OpenSetPiece
             // and TryPlaceOpenSetPiece correctly stamps them given an adequately roomy, off-center
-            // site, but real Halls/Complex-carved rooms at typical sizes (16-60) essentially never
-            // offer a site clear of the room's reserved-CenterTile margin -- a PRE-EXISTING
-            // TryPlaceOpenSetPiece site-search gap reproduced identically on tdm01 (interior) and this
-            // same base Forest profile's own long-shipped "Ruin 1 (2x2)" (0/90 seed hits each, verified
-            // directly), not introduced by this variant. The census credit is honest (these shapes are
-            // genuinely reachable, matching every other OpenSetPiece in every other profile), but real
-            // placement frequency is low until that shared gap is fixed separately.
+            // site. This USED TO be rare in practice -- real Halls/Complex-carved rooms at typical
+            // sizes essentially never offered a site clear of the room's unconditionally-reserved
+            // CenterTile, a gap reproduced identically on tdm01 (interior) and this same base Forest
+            // profile's own long-shipped "Ruin 1 (2x2)" (0/90 seed hits each, verified directly), not
+            // introduced by this variant. LayoutGroupStamper.IsOpenSetPieceSiteValid now relocates
+            // CenterTile to another still-open room tile when a candidate site would otherwise consume
+            // it, instead of rejecting the site outright (see OpenSetPiecePlacementRateTests) -- Halls-
+            // paired compositions (MaxRoomCornerSize=6, one tile of slack beyond a 2x2 footprint's
+            // margin) now place at a real, measured, nonzero rate (e.g. "Ruin 1 (2x2)" isolated on
+            // Forest/Halls: 35.7%, 107/300). Complex-paired compositions (MaxRoomCornerSize=5, zero
+            // slack) remain a genuine, separate geometric ceiling this fix cannot address -- see
+            // OpenSetPiecePlacementRateTests' own doc comment for the full before/after accounting.
             // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
             _builder.Create(ForestPlatform, "Forest (Platform)")
                 .Tileset("ttf01")

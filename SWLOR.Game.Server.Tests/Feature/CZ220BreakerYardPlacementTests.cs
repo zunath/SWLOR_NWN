@@ -18,27 +18,51 @@ public class CZ220BreakerYardPlacementTests
         GetLocalInt(dungeon.RootElement, "IS_DUNGEON").Should().Be(1);
     }
 
+    // Warden mini-bosses (quest step 3) spawn on demand inside the dungeon; final masters
+    // (quest step 5) spawn in the boss arena.
+    private static readonly (string Resref, string Quest, string Enemy, string Waypoint)[] Wardens =
+    {
+        ("adamg_wd_call", "adamantine_guard_breach", "cp_adamguard_wd", "CAPSTONE_ADAMGUARD_WD_SPAWN"),
+        ("scrapl_wd_call", "scrapheap_lockdown_breach", "cp_scraplock_wd", "CAPSTONE_SCRAPLOCK_WD_SPAWN"),
+        ("wbrk_wd_call", "worldbreaker_breach", "cp_worldbrk_wd", "CAPSTONE_WORLDBRK_WD_SPAWN"),
+    };
+
+    private static readonly (string Resref, string Quest, string Enemy, string Waypoint)[] Masters =
+    {
+        ("adamg_ms_call", "adamantine_guard_mastery", "cp_adamguard_ms", "CAPSTONE_ADAMGUARD_MS_SPAWN"),
+        ("scrapl_ms_call", "scrapheap_lockdown_mastery", "cp_scraplock_ms", "CAPSTONE_SCRAPLOCK_MS_SPAWN"),
+        ("wbrk_ms_call", "worldbreaker_mastery", "cp_worldbrk_ms", "CAPSTONE_WORLDBRK_MS_SPAWN"),
+    };
+
     [Test]
-    public void BreakerYardArena_HasQuestEncounterActivatorsForEveryWardenAndMaster()
+    public void BreakerYardArena_HoldsOnlyTheThreeFinalMasters()
     {
         using var arena = LoadModuleJson("git", ArenaArea);
+        AssertEncounters(arena, Masters);
 
-        var expected = new[]
-        {
-            ("adamg_wd_call", "adamantine_guard_breach", "cp_adamguard_wd", "CAPSTONE_ADAMGUARD_WD_SPAWN"),
-            ("adamg_ms_call", "adamantine_guard_mastery", "cp_adamguard_ms", "CAPSTONE_ADAMGUARD_MS_SPAWN"),
-            ("scrapl_wd_call", "scrapheap_lockdown_breach", "cp_scraplock_wd", "CAPSTONE_SCRAPLOCK_WD_SPAWN"),
-            ("scrapl_ms_call", "scrapheap_lockdown_mastery", "cp_scraplock_ms", "CAPSTONE_SCRAPLOCK_MS_SPAWN"),
-            ("wbrk_wd_call", "worldbreaker_breach", "cp_worldbrk_wd", "CAPSTONE_WORLDBRK_WD_SPAWN"),
-            ("wbrk_ms_call", "worldbreaker_mastery", "cp_worldbrk_ms", "CAPSTONE_WORLDBRK_MS_SPAWN"),
-        };
+        // The wardens (mini-bosses) must NOT be in the arena.
+        var arenaActivators = EnumerateObjects(arena.RootElement)
+            .Where(e => GetString(e, "OnUsed") == "quest_enc")
+            .Select(e => GetString(e, "TemplateResRef"))
+            .ToArray();
+        arenaActivators.Should().BeEquivalentTo(Masters.Select(m => m.Resref));
+    }
 
-        var waypointTags = arena.RootElement.GetProperty("WaypointList").GetProperty("value")
+    [Test]
+    public void BreakerBayDungeon_HoldsTheThreeWardenMiniBosses()
+    {
+        using var dungeon = LoadModuleJson("git", DungeonArea);
+        AssertEncounters(dungeon, Wardens);
+    }
+
+    private static void AssertEncounters(JsonDocument area, (string Resref, string Quest, string Enemy, string Waypoint)[] expected)
+    {
+        var waypointTags = area.RootElement.GetProperty("WaypointList").GetProperty("value")
             .EnumerateArray().Select(w => GetString(w, "Tag")).ToArray();
 
         foreach (var (resref, quest, enemy, waypoint) in expected)
         {
-            var activator = EnumerateObjects(arena.RootElement)
+            var activator = EnumerateObjects(area.RootElement)
                 .Single(e => GetString(e, "TemplateResRef") == resref);
 
             GetString(activator, "OnUsed").Should().Be("quest_enc");
@@ -52,7 +76,6 @@ public class CZ220BreakerYardPlacementTests
             waypointTags.Should().Contain(waypoint, $"boss spawn waypoint for {resref} must be placed");
         }
 
-        // Activators are area-instance-only, never palette blueprints.
         using var palette = LoadModuleJson("itp", "placeablepalcus.itp.json");
         var paletteResrefs = EnumerateResrefs(palette.RootElement).ToArray();
         var root = FindRepositoryRoot();

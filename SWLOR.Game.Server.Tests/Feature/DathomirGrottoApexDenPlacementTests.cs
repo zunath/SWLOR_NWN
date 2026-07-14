@@ -79,34 +79,51 @@ public class DathomirGrottoApexDenPlacementTests
             .NotContain(new[] { "cq_primover", "cq_untinst", "cq_forcebeast" });
     }
 
+    // Warden mini-bosses (step 3) spawn on demand in the dungeon; final masters (step 5) in the arena.
+    private static readonly (string Resref, string Quest, string Encounter, string Enemy, string Waypoint)[] Wardens =
+    {
+        ("primov_wd_call", "primal_overrun_breach", "primal_overrun_breach_warden", "cp_primover_wd", "CAPSTONE_PRIMOVER_WD_SPAWN"),
+        ("untinst_wd_call", "untouchable_instinct_breach", "untouchable_instinct_breach_warden", "cp_untinst_wd", "CAPSTONE_UNTINST_WD_SPAWN"),
+        ("fbeast_wd_call", "force_bonded_beast_breach", "force_bonded_beast_breach_warden", "cp_forcebeast_wd", "CAPSTONE_FORCEBEAST_WD_SPAWN"),
+    };
+
+    private static readonly (string Resref, string Quest, string Encounter, string Enemy, string Waypoint)[] Masters =
+    {
+        ("primov_ms_call", "primal_overrun_mastery", "primal_overrun_mastery_master", "cp_primover_ms", "CAPSTONE_PRIMOVER_MS_SPAWN"),
+        ("untinst_ms_call", "untouchable_instinct_mastery", "untouchable_instinct_mastery_master", "cp_untinst_ms", "CAPSTONE_UNTINST_MS_SPAWN"),
+        ("fbeast_ms_call", "force_bonded_beast_mastery", "force_bonded_beast_mastery_master", "cp_forcebeast_ms", "CAPSTONE_FORCEBEAST_MS_SPAWN"),
+    };
+
     [Test]
-    public void ApexDenBossActivators_UseGenericQuestEncounterWiring()
+    public void ApexDenWardenActivators_AreInTheDungeon()
+    {
+        using var dungeon = LoadModuleJson("git", DungeonAreaFile);
+        AssertActivators(dungeon, Wardens);
+    }
+
+    [Test]
+    public void ApexDenMasterActivators_AreInTheBossArena()
     {
         using var arena = LoadModuleJson("git", ArenaAreaFile);
+        AssertActivators(arena, Masters);
 
-        var expectedActivators = new[]
-        {
-            ("primov_wd_call", "primal_overrun_breach", "primal_overrun_breach_warden",
-                "cp_primover_wd", "CAPSTONE_PRIMOVER_WD_SPAWN"),
-            ("primov_ms_call", "primal_overrun_mastery", "primal_overrun_mastery_master",
-                "cp_primover_ms", "CAPSTONE_PRIMOVER_MS_SPAWN"),
-            ("untinst_wd_call", "untouchable_instinct_breach", "untouchable_instinct_breach_warden",
-                "cp_untinst_wd", "CAPSTONE_UNTINST_WD_SPAWN"),
-            ("untinst_ms_call", "untouchable_instinct_mastery", "untouchable_instinct_mastery_master",
-                "cp_untinst_ms", "CAPSTONE_UNTINST_MS_SPAWN"),
-            ("fbeast_wd_call", "force_bonded_beast_breach", "force_bonded_beast_breach_warden",
-                "cp_forcebeast_wd", "CAPSTONE_FORCEBEAST_WD_SPAWN"),
-            ("fbeast_ms_call", "force_bonded_beast_mastery", "force_bonded_beast_mastery_master",
-                "cp_forcebeast_ms", "CAPSTONE_FORCEBEAST_MS_SPAWN"),
-        };
+        var arenaActivators = EnumerateObjects(arena.RootElement)
+            .Where(e => GetString(e, "OnUsed") == "quest_enc")
+            .Select(e => GetString(e, "TemplateResRef"));
+        arenaActivators.Should().BeEquivalentTo(Masters.Select(m => m.Resref));
+    }
 
-        foreach (var (resref, questId, encounterId, creatureResref, spawnWaypoint) in expectedActivators)
+    private static void AssertActivators(System.Text.Json.JsonDocument area, (string Resref, string Quest, string Encounter, string Enemy, string Waypoint)[] expected)
+    {
+        var waypoints = area.RootElement.GetProperty("WaypointList").GetProperty("value")
+            .EnumerateArray().ToDictionary(w => GetString(w, "Tag"), w => GetString(w, "TemplateResRef"));
+
+        foreach (var (resref, questId, encounterId, creatureResref, spawnWaypoint) in expected)
         {
-            var activator = EnumerateObjects(arena.RootElement)
+            var activator = EnumerateObjects(area.RootElement)
                 .Single(element => GetString(element, "TemplateResRef") == resref);
 
-            activator.GetProperty("LocName").GetProperty("value").GetProperty("0").GetString()
-                .Should().Be("???");
+            activator.GetProperty("LocName").GetProperty("value").GetProperty("0").GetString().Should().Be("???");
             GetString(activator, "OnUsed").Should().Be("quest_enc");
             GetString(activator, "OnHeartbeat").Should().BeEmpty();
             GetLocalString(activator, "QUEST_ID").Should().Be(questId);
@@ -118,38 +135,18 @@ public class DathomirGrottoApexDenPlacementTests
             GetLocalString(activator, "QUEST_ENCOUNTER_WAYPOINT").Should().Be(spawnWaypoint);
             GetLocalInt(activator, "QUEST_ENCOUNTER_COOLDOWN_MINUTES").Should().Be(60);
             GetLocalInt(activator, "QUEST_ENCOUNTER_IDLE_MINUTES").Should().Be(10);
+
+            waypoints.Should().ContainKey(spawnWaypoint, $"boss spawn waypoint for {resref} must be co-located");
         }
 
         using var palette = LoadModuleJson("itp", "placeablepalcus.itp.json");
         var paletteResrefs = EnumerateResrefs(palette.RootElement).ToArray();
         var root = FindRepositoryRoot();
-
-        foreach (var (resref, _, _, _, _) in expectedActivators)
+        foreach (var (resref, _, _, _, _) in expected)
         {
             paletteResrefs.Should().NotContain(resref);
             File.Exists(Path.Combine(root.FullName, "Module", "utp", $"{resref}.utp.json")).Should().BeFalse();
         }
-    }
-
-    [Test]
-    public void ApexDenBossSpawnWaypoints_ArePlacedInTheSealedDen()
-    {
-        using var arena = LoadModuleJson("git", ArenaAreaFile);
-
-        var waypoints = arena.RootElement
-            .GetProperty("WaypointList")
-            .GetProperty("value")
-            .EnumerateArray()
-            .ToDictionary(
-                waypoint => GetString(waypoint, "Tag"),
-                waypoint => GetString(waypoint, "TemplateResRef"));
-
-        waypoints.Should().Contain("CAPSTONE_PRIMOVER_WD_SPAWN", "wp_primover_wd");
-        waypoints.Should().Contain("CAPSTONE_PRIMOVER_MS_SPAWN", "wp_primover_ms");
-        waypoints.Should().Contain("CAPSTONE_UNTINST_WD_SPAWN", "wp_untinst_wd");
-        waypoints.Should().Contain("CAPSTONE_UNTINST_MS_SPAWN", "wp_untinst_ms");
-        waypoints.Should().Contain("CAPSTONE_FORCEBEAST_WD_SPAWN", "wp_forcebeast_wd");
-        waypoints.Should().Contain("CAPSTONE_FORCEBEAST_MS_SPAWN", "wp_forcebeast_ms");
     }
 
     [Test]

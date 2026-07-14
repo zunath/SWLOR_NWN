@@ -674,21 +674,38 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Grants the technique's feat (if missing) and adds it to the player's hotbar.
-        /// Mirrors the minimal grant + hotbar logic used by the perk system's active ability feats.
-        /// Trait techniques instead apply their passive status effect for as long as they stay
-        /// equipped; <see cref="AddFeatToHotBar"/> no-ops for them since they have no impact action.
+        /// Applies an equipped technique to the player. Active techniques grant the underlying feat
+        /// (if missing) and add it to the hotbar, mirroring the grant + hotbar logic used by the perk
+        /// system's active ability feats. Trait techniques are passive and are never granted as a
+        /// usable feat: they only apply their status effect for as long as they stay equipped, and any
+        /// stale feat/hotbar entry is stripped so a trait can never end up castable or on the quickbar.
         /// </summary>
         private static void GrantTechniqueFeat(uint player, FeatType feat)
         {
             if (!GetIsObjectValid(player))
                 return;
 
+            var detail = GetTechniqueDetail(feat);
+            if (detail != null && detail.IsMimicryTrait)
+            {
+                // Passive traits are never usable: they must not be granted as a castable feat nor
+                // placed on the hotbar. Strip any feat/hotbar entry an earlier grant (or a prior
+                // version that granted the feat unconditionally) left behind, then apply the trait's
+                // status effect for as long as it stays equipped.
+                if (GetHasFeat(feat, player))
+                    CreaturePlugin.RemoveFeat(player, feat);
+
+                RemoveFeatFromHotBar(player, feat);
+                ApplyTraitStatusEffect(player, feat);
+                return;
+            }
+
+            // Active technique: grant the feat and add it to the hotbar, using the same rules as a
+            // perk-purchased active ability (register + ImpactAction gate, first empty auto-add slot).
             if (!GetHasFeat(feat, player))
                 CreaturePlugin.AddFeat(player, feat);
 
             AddFeatToHotBar(player, feat);
-            ApplyTraitStatusEffect(player, feat);
         }
 
         /// <summary>

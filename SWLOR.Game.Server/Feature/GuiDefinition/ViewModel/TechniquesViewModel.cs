@@ -162,21 +162,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var detail = Mimicry.GetTechniqueDetail(feat);
 
-            var staminaCost = detail.Requirements
-                .OfType<AbilityRequirementStamina>()
-                .Select(x => x.RequiredSTM)
-                .DefaultIfEmpty(0)
-                .First();
+            var text = $"{detail.Name}\n\n";
 
-            var recastSeconds = detail.RecastDelay != null
-                ? detail.RecastDelay(Player)
-                : 0f;
+            var description = GetTechniqueDescription(feat);
+            if (!string.IsNullOrWhiteSpace(description))
+                text += $"{description}\n\n";
 
-            SelectedDetails = $"{detail.Name}\n\n" +
-                               $"Tier: {detail.MimicryTier}\n" +
-                               $"Slot Cost: {detail.MimicrySlotCost}\n" +
-                               $"Stamina Cost: {staminaCost}\n" +
-                               $"Recast: {recastSeconds:0.#}s";
+            text += $"Tier: {detail.MimicryTier}\n" +
+                    $"Slot Cost: {detail.MimicrySlotCost}\n";
+
+            if (detail.IsMimicryTrait)
+            {
+                // Traits are passive: they are never cast, so stamina/recast do not apply.
+                text += "Type: Passive Trait";
+            }
+            else
+            {
+                var staminaCost = detail.Requirements
+                    .OfType<AbilityRequirementStamina>()
+                    .Select(x => x.RequiredSTM)
+                    .DefaultIfEmpty(0)
+                    .First();
+
+                var recastSeconds = detail.RecastDelay != null
+                    ? detail.RecastDelay(Player)
+                    : 0f;
+
+                text += $"Stamina Cost: {staminaCost}\n" +
+                        $"Recast: {recastSeconds:0.#}s";
+            }
+
+            SelectedDetails = text;
+        }
+
+        // Techniques carry no description in their AbilityDetail; the player-facing text lives in the
+        // feat.2da DESCRIPTION strref (a custom TLK entry). Resolve it on demand for the details pane.
+        private static string GetTechniqueDescription(FeatType feat)
+        {
+            var strRefText = Get2DAString("feat", "DESCRIPTION", (int)feat);
+            if (!int.TryParse(strRefText, out var strRef) || strRef <= 0)
+                return string.Empty;
+
+            return GetStringByStrRef(strRef);
         }
 
         public Action OnSelectUnequipped() => () =>

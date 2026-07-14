@@ -1308,10 +1308,10 @@ namespace SWLOR.ContentBuilder.Windows
         {
             var dialog = new SaveFileDialog
             {
-                Filter = "Content Builder project (*.json)|*.json|All files (*.*)|*.*",
-                DefaultExt = ".json",
+                Filter = "SWLOR Content Builder project (*.swproj)|*.swproj|All files (*.*)|*.*",
+                DefaultExt = ".swproj",
                 AddExtension = true,
-                FileName = string.IsNullOrEmpty(_currentFilePath) ? "area-project.json" : Path.GetFileName(_currentFilePath)
+                FileName = string.IsNullOrEmpty(_currentFilePath) ? "area-project.swproj" : Path.GetFileName(_currentFilePath)
             };
 
             return dialog.ShowDialog(this) == true && WriteProjectFile(dialog.FileName);
@@ -1341,8 +1341,8 @@ namespace SWLOR.ContentBuilder.Windows
 
             var dialog = new OpenFileDialog
             {
-                Filter = "Content Builder project (*.json)|*.json|All files (*.*)|*.*",
-                DefaultExt = ".json"
+                Filter = "SWLOR Content Builder project (*.swproj)|*.swproj|All files (*.*)|*.*",
+                DefaultExt = ".swproj"
             };
             if (dialog.ShowDialog(this) != true) return;
 

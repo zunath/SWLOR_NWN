@@ -5,7 +5,9 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -14,6 +16,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         // Parallel to the bound lists: row index -> tracked creature.
         private readonly List<uint> _creatures = new();
+
+        // The creature this viewer has "located" by clicking its name: a looping glow applied only to this
+        // player (others don't see it), or OBJECT_INVALID. Cleared when it leaves range or the window closes.
+        private uint _highlightedCreature = OBJECT_INVALID;
 
         public string AddHpText
         {
@@ -86,6 +92,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 canManage.Add(HpTrackerWindow.CanManage(Player, creature));
             }
 
+            // Drop the highlight if its creature is no longer tracked in range (avoids a stuck glow).
+            if (_highlightedCreature != OBJECT_INVALID && !_creatures.Contains(_highlightedCreature))
+                ClearHighlight();
+
             Names = names;
             HpProgresses = progresses;
             HpColors = colors;
@@ -120,6 +130,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
         };
 
+        /// <summary>
+        /// Clicking a row's name "locates" that creature: a glow is applied to it that only this viewer can
+        /// see (a per-player looping VFX). Clicking the same name again clears it; clicking another name
+        /// moves the glow. Locating is a view action, so it needs no manage permission.
+        /// </summary>
+        public Action OnClickName() => () =>
+        {
+            var creature = CreatureAtEventRow();
+            if (creature == OBJECT_INVALID)
+                return;
+
+            if (creature == _highlightedCreature)
+            {
+                ClearHighlight();
+                return;
+            }
+
+            ClearHighlight();
+            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, creature, VisualEffect.Vfx_Dur_Aura_Green);
+            _highlightedCreature = creature;
+        };
+
         public Action OnClickIncrease() => () => AdjustAtRow(1);
 
         public Action OnClickDecrease() => () => AdjustAtRow(-1);
@@ -152,5 +184,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             return _creatures[index];
         }
+
+        /// <summary>Removes this viewer's locate-glow, if any. Passing VisualEffect.None clears it per-player.</summary>
+        private void ClearHighlight()
+        {
+            if (_highlightedCreature == OBJECT_INVALID)
+                return;
+
+            if (GetIsObjectValid(_highlightedCreature))
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, _highlightedCreature, VisualEffect.None);
+
+            _highlightedCreature = OBJECT_INVALID;
+        }
+
+        /// <summary>Clear the locate-glow so it never outlives the window.</summary>
+        public override Action OnWindowClosed() => () =>
+        {
+            ClearHighlight();
+        };
     }
 }

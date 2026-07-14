@@ -65,9 +65,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             template.AddCell(cell =>
                             {
-                                cell.AddLabel()
+                                // The name doubles as a "locate" button: clicking it glows the creature in
+                                // the world for the clicker only (click again to clear). See OnClickName.
+                                cell.AddButton()
                                     .BindText(model => model.Names)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                    .SetTooltip("Click to highlight this creature in the world (only you see the glow).")
+                                    .BindOnClicked(model => model.OnClickName());
                             });
                             template.AddCell(cell =>
                             {

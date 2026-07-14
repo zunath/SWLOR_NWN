@@ -22,6 +22,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
     {
         public const string Crypt = "crypt";
         public const string Dungeon = "dungeon";
+
+        // tde01's Water/Sewer/Ice/Pit accent-slot palettes -- PaletteVariant profiles recomposing the
+        // SAME tde01 hak data the base Dungeon profile above uses (same Wall/Floor, a different single
+        // AccentTerrain slot -- see DungeonWater's own doc comment).
+        public const string DungeonWater = "dungeon_water";
+        public const string DungeonSewer = "dungeon_sewer";
+        public const string DungeonIce = "dungeon_ice";
+        public const string DungeonPit = "dungeon_pit";
         public const string CityInterior = "cityinterior";
 
         // Palette-variant profiles: recompose an already-onboarded tileset resref against one of its
@@ -33,6 +41,15 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string MinesAndCavernsDesert = "minescaverns_desert";
         public const string MinesAndCavernsOrganic = "minescaverns_organic";
         public const string RuinsPlaza = "ruins_plaza";
+
+        // Second, independent alternate Tunnel body/port families on the SAME tdm01 districts as the
+        // three profiles above -- see MinesAndCavernsTracks/MinesAndCavernsDesertTracks/
+        // MinesAndCavernsOrganicTracks's own doc comments for why a dedicated profile is required (a
+        // composition carries only one Tunnel body/port slot, already claimed by Corridor/DesertCorridor/
+        // OrganicCorridor in the profiles above).
+        public const string MinesAndCavernsTracks = "minescaverns_tracks";
+        public const string MinesAndCavernsDesertTracks = "minescaverns_desert_tracks";
+        public const string MinesAndCavernsOrganicTracks = "minescaverns_organic_tracks";
 
         // Wave-2 (Wave-1 READY-FLAT queue continued): ten more interior base-game tilesets, all
         // resolved to their SWLOR_Haks copy by TilesetSetSource (every one of these ten has been
@@ -46,11 +63,20 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string Ruins = "ruins";
         public const string CastleInterior = "castleinterior";
         public const string CastleInterior2 = "castleinterior2";
+
+        // tic01's Storage/Rich/Library/Jail district palettes -- PaletteVariant profiles recomposing the
+        // SAME tic01 hak data the base CastleInterior profile above uses. See CastleInteriorStorage's own
+        // doc comment.
+        public const string CastleInteriorStorage = "castleinterior_storage";
+        public const string CastleInteriorRich = "castleinterior_rich";
+        public const string CastleInteriorLibrary = "castleinterior_library";
+        public const string CastleInteriorJail = "castleinterior_jail";
         public const string DrowInterior = "drowinterior";
         public const string IllithidInterior = "illithidinterior";
         public const string CityInterior2 = "cityinterior2";
         public const string Steamworks = "steamworks";
         public const string FortInterior = "fortinterior";
+        public const string FortInteriorLegacy = "fortinterior_legacy";
 
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
@@ -294,6 +320,150 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit 1")
                 .ExitGroup("Exit 2 - Lava");
 
+            // Dungeon (Water/Sewer/Ice/Pit) -- tde01's four other accent-slot palettes, PaletteVariant
+            // profiles recomposing the SAME tde01 hak data the base Dungeon profile above uses: identical
+            // Wall/Floor (no PrimaryOpenTerrain override needed), just a different single AccentTerrain.
+            // "Door - Bridge 1, <Accent>" (all-<Accent>-cornered, an opposite Bridge-crosser pair,
+            // verified directly against the .set data for all four) is this bucket's actual gap: it only
+            // classifies as SetPieceCorridorInsert(Bridge) when vocab.Channel/Accent equals that specific
+            // accent, which the base profile's single AccentTerrain("Lava") slot can't also be. Water/
+            // Sewer/Ice additionally have their own "Platform 4 - <Accent> (1x2)"/"Exit 2 - <Accent>"/
+            // "Pillar 1/2 - <Accent>" analogs of the base profile's own Lava-specific pieces (Pit has
+            // neither -- verified directly, only its Door - Bridge piece exists); these were already
+            // structurally reachable regardless of any profile's AccentTerrain declaration (FeatureTile/
+            // ExitGroup/OpenSetPiece eligibility don't depend on it), but are re-wired here too so each
+            // variant is fully self-sufficient at composition time, mirroring RuinsPlaza's own precedent.
+            // "Ramp - Corner, <Accent>" is a raised (HasHeightTransition) tile, excluded the same way the
+            // base profile's own Ramp pieces are. PaletteVariant() excludes each from --matrix's full
+            // cross-product -- one showcase area each instead.
+            _builder.Create(DungeonWater, "Dungeon (Water)")
+                .Tileset("tde01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .AccentTerrain("Water")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .FeatureTile("Pillar 1 - Water")
+                .FeatureTile("Pillar 2 - Water")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 4 - Water (1x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Water", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Up (2x2)")
+                .ExitGroup("Exit 1")
+                .ExitGroup("Exit 2 - Water");
+
+            _builder.Create(DungeonSewer, "Dungeon (Sewer)")
+                .Tileset("tde01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .AccentTerrain("Sewer")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .FeatureTile("Pillar 1 - Sewer")
+                .FeatureTile("Pillar 2 - Sewer")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 4 - Sewer (1x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Sewer", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Up (2x2)")
+                .ExitGroup("Exit 1")
+                .ExitGroup("Exit 2 - Sewer");
+
+            _builder.Create(DungeonIce, "Dungeon (Ice)")
+                .Tileset("tde01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .AccentTerrain("Ice")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .FeatureTile("Pillar 1 - Ice")
+                .FeatureTile("Pillar 2 - Ice")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 4 - Ice (1x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Ice", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Up (2x2)")
+                .ExitGroup("Exit 1")
+                .ExitGroup("Exit 2 - Ice");
+
+            _builder.Create(DungeonPit, "Dungeon (Pit)")
+                .Tileset("tde01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .AccentTerrain("Pit")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Pit", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Up (2x2)")
+                .ExitGroup("Exit 1");
+
             // City Interior (tin01). Multi-room-type interior (Livingroom/Kitchen/Inn/Shop), each with
             // its own single-tile WallAlcove door group plus a themed furnished-room set piece.
             // PrimaryOpenTerrain left empty (defaults to the declared Floor terrain, "Inn" -- tied for
@@ -358,28 +528,42 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // break every corner/edge classification. No AccentTerrain: the only two terrains are
             // black/barrow, no third channel-capable terrain exists.
             //
-            // TunnelCrossers("corridor", "door_corridor") + DoorSlotCrossers("door_corridor"): tbw01's
-            // real "wall-embedded tunnel" vocabulary renames BOTH halves of the canonical Corridor/
-            // Doorway pair (body "corridor", port "door_corridor"), and every single tile that carries
-            // either crosser also carries a door slot -- TileResolver's crosser+door admission gate
-            // used to hardcode literal "Doorway"/"Bridge" and silently exclude every one of these tiles
-            // from candidate lookup regardless of shape, so TunnelVocabularyCheck.SupportsTunnels always
-            // read false for this pair no matter what was declared. Declaring "door_corridor" via
+            // TunnelCrossers("corridor", "door_corridor") + DoorSlotCrossers("door_corridor", "corridor",
+            // "door_barrow"): tbw01's real "wall-embedded tunnel" vocabulary renames BOTH halves of the canonical
+            // Corridor/Doorway pair (body "corridor", port "door_corridor"), and every single tile that
+            // carries either crosser also carries a door slot -- TileResolver's crosser+door admission
+            // gate used to hardcode literal "Doorway"/"Bridge" and silently exclude every one of these
+            // tiles from candidate lookup regardless of shape, so TunnelVocabularyCheck.SupportsTunnels
+            // always read false for this pair no matter what was declared. Declaring "door_corridor" via
             // DoorSlotCrossers closes that gate (see TileResolver's class doc comment) and
             // TunnelVocabularyCheck.SupportsTunnels now verifies the full body/port shape inventory
             // (straight/turn/T/X body, straight/turn/T/X-with-port, double-port, and the boundary port
             // shape against "barrow") all resolve -- confirmed directly via ProbeBarrowsTunnelVocabulary
-            // during development. CorridorDown_1x2/Corridor_Up_1x2/Corridor_Up_1x2_02 remain excluded:
-            // they are multi-tile GROUPs whose shared edge carries the plain "corridor" body crosser,
-            // which LayoutGroupStamper's WallRoom/WallAlcove/OpenSetPiece member-edge check only ever
-            // tolerates as "Doorway", not any Tunnel body crosser -- a genuinely different, unwired
-            // authoring gap (see TileCoverageCensusTests.PilotExpectedExemptions). SideChamber1 (a 1x1
-            // group, TILE60) and its ungrouped boundary partner TILE39 both carry a THIRD crosser name,
-            // "door_barrow", used nowhere else in the tileset -- MacroLayoutParameters only carries one
-            // Tunnel port crosser slot per composition (already claimed by "door_corridor" above), and
+            // during development. "corridor" is ALSO declared as a DoorSlotCrosser (beyond "door_corridor"):
+            // TILE13 (ungrouped) is a boundary tile pairing a door slot with a bare "corridor" edge
+            // instead of "door_corridor" -- the body crosser itself doubling as this one boundary tile's
+            // port -- which the admission gate would otherwise still exclude even with "door_corridor"
+            // declared. CorridorDown_1x2/Corridor_Up_1x2/Corridor_Up_1x2_02 are multi-tile GROUPs whose
+            // outer member carries a lone perimeter "corridor" body-crosser edge (not a Doorway/
+            // "door_corridor" port) with the inner member a blank, door-bearing dead end -- structurally
+            // a two-cell CorridorStub, not a WallRoom (no port pairing). LayoutGroupStamper now has a
+            // dedicated CorridorStubChain classification/placement for exactly this shape (splices onto
+            // an existing "corridor" chain the same way TryPlaceCorridorStub's single-cell version does,
+            // via IsCorridorStubChainSiteValid) -- wired below via three SetPiece calls; verified placing
+            // via OnboardedTilesetPipelineTests.CorridorStubChainFamily_ComplexActuallyPlacesTheGroup.
+            // TILE51 (ungrouped) stays exempt: a diagonal-split-corner door tile with NO crosser at all
+            // (TileDoorPlanner's TryGetSingleDoorwaySlot requires exactly one Doorway edge, which this
+            // tile has zero of) -- a genuinely different, unaddressed door mechanism, left exempt (see
+            // TileCoverageCensusTests.PilotExpectedExemptions). "door_barrow" (a THIRD crosser name, used
+            // nowhere else in the tileset) is declared as a THIRD DoorSlotCrosser: TILE39 (ungrouped) is
+            // the identical boundary-tile shape as TILE13 above (a door slot paired with a bare
+            // "door_barrow" edge instead of "door_corridor"/"corridor"), closed the same way. SideChamber1
+            // (a 1x1 group, TILE60) stays exempt: MacroLayoutParameters only carries one Tunnel port
+            // crosser slot per composition (already claimed by "door_corridor" above), and
             // LayoutGroupStamper.TryPlaceCorridorStub's site search requires an already-carved matching-
             // crosser neighbor that can never exist for a port name nothing ever carves -- a genuinely
-            // unreachable family, left exempt (see TileCoverageCensusTests.PilotExpectedExemptions).
+            // unreachable single tile (auto-tagged alternate-vocabulary; see
+            // TileCoverageCensusTests.PilotAlternateVocabCrossers["tbw01"]).
             // FinalArea_7x7 is a large (49-tile), fully solid-or-barrow decorative set piece (a boss/
             // finale chamber) -- structurally a valid OpenSetPiece like any smaller one, included at
             // maxPerArea 1.
@@ -389,7 +573,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .TileLighting(0, 0, 8, 8)
                 .PrimaryOpenTerrain("barrow")
                 .TunnelCrossers("corridor", "door_corridor")
-                .DoorSlotCrossers("door_corridor")
+                .DoorSlotCrossers("door_corridor", "corridor", "door_barrow")
                 .FeatureTile("Platform01_1x1")
                 .FeatureTile("Depression1x1")
                 .FeatureTile("Platform03_1x1")
@@ -401,6 +585,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("ExitDown_2x1")
                 .SetPiece("SecretPassage")
                 .SetPiece("FinalArea_7x7")
+                .SetPiece("CorridorDown_1x2")
+                .SetPiece("Corridor_Up_1x2")
+                .SetPiece("Corridor_Up_1x2_02")
                 .ExitGroup("Exit_01");
 
             // Mines and Caverns (tdm01, SWLOR_Haks/sw_t_mine). The hak copy is a massive 1810-tile
@@ -600,6 +787,174 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("[Organic] Exit 2")
                 .ExitGroup("[Organic] Exit 3");
 
+            // Mines and Caverns ([Cave] Tracks) -- tdm01's [Cave] district again, but declaring the
+            // SECOND, independent alternate Tunnel body family "Tracks" (paired with the canonical
+            // "Doorway" port -- "[Cave] Door - Transition" carries a lone Doorway edge on all-solid
+            // corners, the same port shape [Desert]/[Organic]'s own Door - Transition pieces use)
+            // instead of the base MinesAndCaverns profile's plain "Corridor". Verified via
+            // TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom, "Tracks", "Doorway")
+            // returning true. A tileset profile carries only one Tunnel body/port slot
+            // (MacroLayoutParameters.TunnelBodyCrosser/TunnelPortCrosser), so this is a dedicated
+            // PaletteVariant rather than added to the base [Cave] profile -- "[Cave] Door - Big 3"
+            // (TILE115)/"Door - Big 4" (TILE196) are an all-solid opposite-Tracks-edge-pair-with-door
+            // shape (SetPieceCorridorInsert); "[Cave] Stairs - Down 2" (TILE120)/"Stairs - Up 2" (TILE121)
+            // are an all-solid single-Tracks-edge dead end with a door slot (SetPieceCorridorStub) --
+            // both verified directly against the .set data. Everything else mirrors the base
+            // MinesAndCaverns profile's own wiring (same solid/open terrain, same feature tiles/other set
+            // pieces/exit groups); PaletteVariant() excludes this from --matrix's full cross-product, one
+            // showcase area instead -- closing TileCoverageCensusTests.PilotAlternateVocabCrossers["tdm01"]'s
+            // "Tracks" entry.
+            _builder.Create(MinesAndCavernsTracks, "Mines and Caverns (Tracks)")
+                .Tileset("tdm01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .AccentTerrain("Water")
+                .TunnelCrossers("Tracks", "Doorway")
+                .FeatureTile("[Cave] Treasure 1", 2)
+                .FeatureTile("[Cave] Treasure 2 - Water", 2)
+                .FeatureTile("[Cave] Treasure 2 - Lava", 2)
+                .FeatureTile("[Cave] Pillar 1")
+                .FeatureTile("[Cave] Pillar 2")
+                .FeatureTile("[Cave] Ice Column")
+                .FeatureTile("[Cave] Crystal Casket 1", 2)
+                .FeatureTile("[Cave] Crystal Casket 2", 2)
+                .FeatureTile("[Cave] Portal")
+                .FeatureTile("[Cave] Chessboard")
+                .FeatureTile("[Cave] Mineshaft")
+                .SetPiece("[Cave] Door - Big 3", 1)
+                .SetPiece("[Cave] Door - Big 4", 1)
+                .SetPiece("[Cave] Door - Fence 1", 1)
+                .SetPiece("[Cave] Door - Fence 2", 1)
+                .SetPiece("[Cave] Door - Bridge, Water", 1)
+                .SetPiece("[Cave] Stairs - Down 2", 1)
+                .SetPiece("[Cave] Stairs - Up 2", 1)
+                .SetPiece("[Cave] Stairs - Down (2x2)")
+                .SetPiece("[Cave] Stairs - Up, Water (2x2)")
+                .SetPiece("[Cave] Stairs - Up, Lava (2x2)")
+                .SetPiece("[Cave] Platform 1 (2x2)")
+                .SetPiece("[Cave] Platform 2 (2x2)")
+                .SetPiece("[Cave] Platform 3 (2x2)")
+                .SetPiece("[Cave] Platform 4 (1x2)")
+                .SetPiece("[Cave] Platform 5 (1x2)")
+                .SetPiece("[Cave] Pillar (1x2)", 2)
+                .SetPiece("[Cave] Wall Section 1 - Water (1x2)")
+                .SetPiece("[Cave] Wall Section 2 (1x2)")
+                .SetPiece("[Cave] Wall Section 1 - Lava (1x2)")
+                .SetPiece("[Cave] Portal (2x2)")
+                .SetPiece("[Cave] Crystal Crypt 1")
+                .SetPiece("[Cave] Crystal Crypt 2")
+                .ExitGroup("[Cave] Exit 1")
+                .ExitGroup("[Cave] Exit 2")
+                .ExitGroup("[Cave] Exit 3");
+
+            // Mines and Caverns (Desert Tracks) -- tdm01's [Desert] district again, declaring the SECOND,
+            // independent alternate body family "DesertTracks" (paired with the canonical "Doorway" port,
+            // same as the base Desert profile's own Door - Transition) instead of "DesertCorridor".
+            // Verified via TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom,
+            // "DesertTracks", "Doorway") returning true. "[Desert] Door - Big 3" (TILE771)/"Door - Big 4"
+            // (TILE852) are the CorridorInsert opposite-DesertTracks-pair-with-door shape; "[Desert]
+            // Stairs - Down 2" (TILE776)/"Stairs - Up 2" (TILE777) are the CorridorStub single-edge dead
+            // end -- verified directly against the .set data, mirroring [Cave] Tracks' own shapes.
+            // Everything else mirrors the base MinesAndCavernsDesert profile's own wiring.
+            _builder.Create(MinesAndCavernsDesertTracks, "Mines and Caverns (Desert Tracks)")
+                .Tileset("tdm01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Desert")
+                .AccentTerrain("DesertWater")
+                .TunnelCrossers("DesertTracks", "Doorway")
+                .FeatureTile("[Desert] Treasure 1", 2)
+                .FeatureTile("[Desert] Treasure 2 - Water", 2)
+                .FeatureTile("[Desert] Treasure 2 - Lava", 2)
+                .FeatureTile("[Desert] Pillar 1")
+                .FeatureTile("[Desert] Pillar 2")
+                .FeatureTile("[Desert] Crystal Column")
+                .FeatureTile("[Desert] Crystal Casket 1", 2)
+                .FeatureTile("[Desert] Crystal Casket 2", 2)
+                .FeatureTile("[Desert] Portal")
+                .FeatureTile("[Desert] Chessboard")
+                .FeatureTile("[Desert] Mineshaft")
+                .SetPiece("[Desert] Door - Fence 1", 1)
+                .SetPiece("[Desert] Door - Fence 2", 1)
+                .SetPiece("[Desert] Door - Bridge, Water", 1)
+                .SetPiece("[Desert] Door - Transition", 1)
+                .SetPiece("[Desert] Door - Big 3", 1)
+                .SetPiece("[Desert] Door - Big 4", 1)
+                .SetPiece("[Desert] Stairs - Down 2", 1)
+                .SetPiece("[Desert] Stairs - Up 2", 1)
+                .SetPiece("[Desert] Stairs - Down (2x2)")
+                .SetPiece("[Desert] Stairs - Up, Water (2x2)")
+                .SetPiece("[Desert] Platform 1 (2x2)")
+                .SetPiece("[Desert] Platform 2 (2x2)")
+                .SetPiece("[Desert] Platform 3 (2x2)")
+                .SetPiece("[Desert] Platform 4 (1x2)")
+                .SetPiece("[Desert] Platform 5 (1x2)")
+                .SetPiece("[Desert] Pillar (1x2)", 2)
+                .SetPiece("[Desert] Wall Section 1 - Water (1x2)")
+                .SetPiece("[Desert] Wall Section 2 (1x2)")
+                .SetPiece("[Desert] Portal (2x2)")
+                .SetPiece("[Desert] Crystal Crypt 1")
+                .SetPiece("[Desert] Crystal Crypt 2")
+                .ExitGroup("[Desert] Exit 1")
+                .ExitGroup("[Desert] Exit 2")
+                .ExitGroup("[Desert] Exit 3");
+
+            // Mines and Caverns (Organic Tracks) -- tdm01's [Organic] district again, declaring the
+            // SECOND, independent alternate body family "OrganicTracks" (paired with the canonical
+            // "Doorway" port) instead of "OrganicCorridor". Verified via
+            // TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom, "OrganicTracks",
+            // "Doorway") returning true. "[Organic] Door - Big 3"/"Door - Big 4" are the CorridorInsert
+            // opposite-OrganicTracks-pair-with-door shape; "[Organic] Stairs - Down 2"/"Stairs - Up 2" are
+            // the CorridorStub single-edge dead end -- mirroring [Cave] Tracks/Desert Tracks' own shapes.
+            // Everything else mirrors the base MinesAndCavernsOrganic profile's own wiring.
+            _builder.Create(MinesAndCavernsOrganicTracks, "Mines and Caverns (Organic Tracks)")
+                .Tileset("tdm01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Organic")
+                .AccentTerrain("OrganicWater")
+                .TunnelCrossers("OrganicTracks", "Doorway")
+                .FeatureTile("[Organic] Treasure 1", 2)
+                .FeatureTile("[Organic] Treasure 2 - Water", 2)
+                .FeatureTile("[Organic] Treasure 2 - Slime", 2)
+                .FeatureTile("[Organic] Pillar 1")
+                .FeatureTile("[Organic] Pillar 2")
+                .FeatureTile("[Organic] Crystal Column")
+                .FeatureTile("[Organic] Crystal Casket 1", 2)
+                .FeatureTile("[Organic] Crystal Casket 2", 2)
+                .FeatureTile("[Organic] Portal")
+                .FeatureTile("[Organic] Chessboard")
+                .FeatureTile("[Organic] Mineshaft")
+                .SetPiece("[Organic] Door - Fence 1", 1)
+                .SetPiece("[Organic] Door - Fence 2", 1)
+                .SetPiece("[Organic] Door - Bridge, Water", 1)
+                .SetPiece("[Organic] Door - Transition", 1)
+                .SetPiece("[Organic] Door - Big 3", 1)
+                .SetPiece("[Organic] Door - Big 4", 1)
+                .SetPiece("[Organic] Stairs - Down 2", 1)
+                .SetPiece("[Organic] Stairs - Up 2", 1)
+                .SetPiece("[Organic] Stairs - Down (2x2)")
+                .SetPiece("[Organic] Stairs - Up, Water (2x2)")
+                .SetPiece("[Organic] Stairs - Up, Slime (2x2)")
+                .SetPiece("[Organic] Platform 1 (2x2)")
+                .SetPiece("[Organic] Platform 2 (2x2)")
+                .SetPiece("[Organic] Platform 3 (2x2)")
+                .SetPiece("[Organic] Platform 4 (1x2)")
+                .SetPiece("[Organic] Platform 5 (1x2)")
+                .SetPiece("[Organic] Pillar (1x2)", 2)
+                .SetPiece("[Organic] Wall Section 1 - Water (1x2)")
+                .SetPiece("[Organic] Wall Section 1 - Slime (1x2)")
+                .SetPiece("[Organic] Wall Section 2 (1x2)")
+                .SetPiece("[Organic] Portal (2x2)")
+                .SetPiece("[Organic] Crystal Crypt 1")
+                .SetPiece("[Organic] Crystal Crypt 2")
+                .ExitGroup("[Organic] Exit 1")
+                .ExitGroup("[Organic] Exit 2")
+                .ExitGroup("[Organic] Exit 3");
+
             // Ruins (tdr01, SWLOR_Haks/sw_t_ruin). PrimaryOpenTerrain left empty (defaults to declared
             // Floor "Floor"; "Plaza" is a second fully-covered open terrain per the census but only one
             // PrimaryOpenTerrain slot exists, matching every other single-terrain profile here).
@@ -745,6 +1100,76 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Castle] Room - Bath 1 (2x1)")
                 .SetPiece("[Castle] Room - Bath 2 (2x1)");
 
+            // Castle Interior (Storage/Rich/Library/Jail) -- tic01's four alternate room-type district
+            // palettes, PaletteVariant profiles recomposing the SAME tic01 hak data the base
+            // CastleInterior profile above uses. Each district's own terrain has full simple-tile
+            // coverage against the shared "Wall" solid (verified via direct TileResolver.HasCandidate
+            // boundary-shape probe: 31/50/42/36 ungrouped tiles respectively reference Storage/Rich/
+            // Library/Jail corners) -- PrimaryOpenTerrain(<district>) alone closes all of them via
+            // CornerEdgeResolver, the same "declare the terrain, the ordinary resolver does the rest"
+            // pattern as every other PaletteVariant here. "Door - <District> 1/2" (corners [AltTerrain,
+            // Wall, Wall, AltTerrain], a door slot, no crosser) were excluded from the base profile purely
+            // because only "Stone" was wired as PrimaryOpenTerrain there -- once each district's own
+            // terrain is wired, they classify as OpenSetPiece (matchesPrimary now true for that terrain).
+            // Rich additionally has "Bath" (ALL four corners the district's own open terrain, no
+            // crosser -- an OpenSetPiece, not a WallAlcove, since matchesPrimary's "every corner solid-
+            // or-open" check is trivially satisfied with zero solid corners) and "Round Corner -
+            // Empty/Decorated, Rich"/"Stairs - Up/Down, Rich Corner" (OpenSetPiece, a mostly-solid corner
+            // mix with one district-terrain corner); Library has the same Round Corner/Stairs Corner
+            // quartet. "Round Corner - Window, Library" is NOT wired: its tile carries a genuine "Window"
+            // edge crosser -- outside this pilot's wired vocabulary, the same exclusion as every other
+            // Window-* piece on the base profile -- so it fails even the relaxed member-edge gate and
+            // stays unclassified. The base profile's own terrain-agnostic pieces (Stairs - Up/Down,
+            // Exit - Corridor/Big, Round Corner - Empty/Decorated Stone, Stairs - Up/Down Stone Corner,
+            // Dais, every Room-* WallRoom family) already work regardless of which PrimaryOpenTerrain is
+            // composed, so they are NOT re-wired here -- these variants add ONLY their own
+            // district-specific pieces. PaletteVariant() excludes each from --matrix's full
+            // cross-product -- one showcase area each instead.
+            _builder.Create(CastleInteriorStorage, "Castle Interior (Storage)")
+                .Tileset("tic01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Storage")
+                .SetPiece("[Castle] Door - Storage 1", 1)
+                .SetPiece("[Castle] Door - Storage 2", 1);
+
+            _builder.Create(CastleInteriorRich, "Castle Interior (Rich)")
+                .Tileset("tic01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Rich")
+                .SetPiece("[Castle] Door - Rich 1", 1)
+                .SetPiece("[Castle] Door - Rich 2", 1)
+                .SetPiece("[Castle] Bath")
+                .SetPiece("[Castle] Round Corner - Empty, Rich")
+                .SetPiece("[Castle] Round Corner - Decorated, Rich")
+                .SetPiece("[Castle] Stairs - Up, Rich Corner")
+                .SetPiece("[Castle] Stairs - Down, Rich Corner");
+
+            _builder.Create(CastleInteriorLibrary, "Castle Interior (Library)")
+                .Tileset("tic01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Library")
+                .SetPiece("[Castle] Door - Library 1", 1)
+                .SetPiece("[Castle] Door - Library 2", 1)
+                .SetPiece("[Castle] Round Corner - Empty, Library")
+                .SetPiece("[Castle] Round Corner - Decorated, Library")
+                .SetPiece("[Castle] Stairs - Up, Library Corner")
+                .SetPiece("[Castle] Stairs - Down, Library Corner");
+
+            _builder.Create(CastleInteriorJail, "Castle Interior (Jail)")
+                .Tileset("tic01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Jail")
+                .SetPiece("[Castle] Door - Jail 1", 1)
+                .SetPiece("[Castle] Door - Jail 2", 1);
+
             // Castle Interior 2 / TNO: Castle Interior (tni02, SWLOR_Haks/sw_t_tnocastle). Same family
             // as Castle Interior (tic01) -- Storage/Rich/Library/Jail/Stone room districts, lowercase
             // terrain/group naming, plus a "round" tower-stair sub-district (Round_1/Round_1st1-3/
@@ -759,9 +1184,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // StorageRoom01/02_1x2, Bedroom01/02_1x2, LibraryRoom01/02_1x2, JailRoom01/02_1x2,
             // StoneRoom01/02_1x2, and CollapsedRoom2x2 are the same door-entrance-pair shape as Castle
             // Interior's own Room-* families -- LayoutGroupStamper's WallRoom relaxation now covers
-            // them, wired here accordingly. Mythallar_3x3 stays unreachable: its shared member edges
-            // carry the plain "corridor" crosser, not Doorway, the same exclusion as Barrows' Corridor
-            // Down/Up 1x2 pairs (see TileCoverageCensusTests.PilotExpectedExemptions).
+            // them, wired here accordingly. Mythallar_3x3's shared member edges carry the plain
+            // "corridor" crosser, not Doorway -- LayoutGroupStamper's dedicated CorridorStubChain
+            // classification/placement now reaches this shape (a multi-tile CorridorStub splice, not a
+            // WallRoom port pairing -- see that class's TryPlaceCorridorStubChain and
+            // BaseGameTilesetProfiles.FortInterior's own doc comment for the equivalent twc03 family),
+            // so it's wired here too.
             _builder.Create(CastleInterior2, "Castle Interior 2")
                 .Tileset("tni02")
                 .Placeholder("gen_placeholder1")
@@ -786,7 +1214,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("JailRoom02_1x2")
                 .SetPiece("StoneRoom01_1x2")
                 .SetPiece("StoneRoom02_1x2")
-                .SetPiece("CollapsedRoom2x2");
+                .SetPiece("CollapsedRoom2x2")
+                .SetPiece("Mythallar_3x3");
 
             // Drow Interior (tid01, SWLOR_Haks/sw_t_drowint). PrimaryOpenTerrain left empty (defaults to
             // declared Floor "Floor2"; a separate "floor" terrain and a "2x2"-named terrain also exist
@@ -823,18 +1252,22 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // structurally verify a real PERIMETER Doorway opening (not merely an interior one shared
             // between two members of the same group), so all five are wired here too, matching this
             // codebase's "structurally-valid config counts even if not currently exercised" convention
-            // (see TileCoverageCensusTests' own class doc comment). NOTE: unlike WallAlcove (whose site
-            // check only needs an adjacent OPEN-terrain cell, which OpenLane mode carves fine), WallRoom
-            // strictly requires an adjacent already-carved "Corridor" crosser cell -- and tii01 fails
+            // (see TileCoverageCensusTests' own class doc comment). tii01 fails
             // TunnelVocabularyCheck.SupportsTunnels purely on its missing T-with-port junction shape
             // (see IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers in OnboardedTilesetPipelineTests),
             // so Complex -- this tileset's only Tunnel-mode-composed layout -- always downgrades to
-            // OpenLane before dispatch and these five WallRoom groups can never actually place today
-            // (confirmed via direct 200-seed isolated probe: zero placements). They become live the
-            // moment a future task closes that separate, pre-existing T-with-port gap; until then this
-            // is inert-but-correct configuration, deliberately excluded from
-            // OnboardedTilesetPipelineTests.DoorSlotWallRoomFamily_ComplexActuallyPlacesTheGroup's
-            // placement-proof sweep (which only asserts what's provably reachable today). "Transporter"
+            // OpenLane before dispatch, and tii01 has no other declared crosser pair (only the canonical
+            // "Doorway"/"Corridor" exist in this tileset's vocabulary at all -- verified directly against
+            // the .set data), so the T-with-port gap itself is out of scope here (a separate, pre-existing
+            // issue). Instead LayoutGroupStamper.IsWallRoomSiteValid now ALSO accepts an OpenLane-adjacent
+            // site: a solid WallRoom cell whose perimeter Doorway edge borders a genuine open-lane/room
+            // boundary cell (near corners shared with the WallRoom, guaranteed solid; far corners this
+            // layout's own OpenTerrain), guarded by SupportsWallRoomOpenLaneBoundary's whole-tileset
+            // capability probe (the same boundary shape TunnelVocabularyCheck.SupportsBoundaryShape
+            // already verifies for every ordinary room door) so it can never stamp an unresolvable cell.
+            // Confirmed via direct 200-seed isolated probe: 200/200 placements (see
+            // OnboardedTilesetPipelineTests.DoorSlotWallRoomFamily_ComplexActuallyPlacesTheGroup, which
+            // now covers Illithid alongside every other tileset in that sweep). "Transporter"
             // is the tileset's only FeatureTile-eligible group (1x1, flat, crosser-free, doorless,
             // pathnode A). No ExitGroup candidate exists in this tileset.
             _builder.Create(IllithidInterior, "Illithid Interior")
@@ -982,21 +1415,38 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // same member tile -- LayoutGroupStamper's WallRoom classification now tolerates this shape
             // (see that method's own doc comment, the same relaxation that closed Castle Interior/
             // Illithid Interior/City Interior/City Interior 2's own equivalent families), so all ten are
-            // wired here. The legacy "OLD_"-prefixed superseded groups, Large_Door, and Mythallar_3x3
-            // stay unreachable: they use the plain "corridor" body crosser directly on their entrance/
-            // wall tile instead of a Doorway-family port (Large_Door's TILE36 also has mixed floor/
-            // black corners) -- see TileCoverageCensusTests.PilotExpectedExemptions. No FeatureTile-
+            // wired here. The legacy "OLD_"-prefixed superseded groups and Mythallar_3x3 use the plain
+            // "corridor" body crosser directly on their entrance/wall tile instead of a Doorway-family
+            // port -- LayoutGroupStamper now has a dedicated CorridorStubChain classification/placement
+            // for exactly this shape (a multi-tile CorridorStub splice, not a WallRoom port pairing --
+            // see that class's TryPlaceCorridorStubChain), so they're structurally reachable too, but
+            // NOT wired into this live profile: they are superseded by the non-"OLD_" replacements
+            // already wired above, and mixing both would place near-duplicate furnished rooms in the
+            // same generated area. See FortInteriorLegacy immediately below for a dedicated showcase
+            // that wires them instead of the current replacements. Large_Door stays genuinely
+            // unreachable regardless: its TILE36 has mixed floor/black corners, so it fails the
+            // all-solid CorridorStubChain/CorridorInsert/CorridorStub checks too -- see
+            // TileCoverageCensusTests.PilotExpectedExemptions. No FeatureTile-
             // eligible group exists in this tileset. "Exit_1x1"/"Exit_Down_1x1"/"Exit_CollapsedWall" are
             // the genuine crosser-free door-bearing ExitGroup candidates; "Storage_1x1_1"/"Stairway_up"/
             // "Stairway_down" carry the identical structural shape (floor/floor/black/black corners, a
             // door slot, no crosser) but read as furnished-room decor by name, so they are wired as
-            // SetPieces instead.
+            // SetPieces instead. DoorSlotCrossers("corridor", "wall") closes six ungrouped boundary/gate
+            // tiles that pair a door slot with a non-Doorway crosser the admission gate would otherwise
+            // exclude: TILE23/29 (a solid or mixed boundary tile with a bare "corridor" edge, the same
+            // shape as Barrows' own TILE13/39 fix) and TILE95/96/105/106 (an open-floor gate tile with
+            // one or three "wall" edges cutting straight through the room, plus a door). TILE125/127/128
+            // stay exempt: diagonal-split or single-corner-cut door tiles with NO crosser at all
+            // (TileDoorPlanner's TryGetSingleDoorwaySlot requires a genuine Doorway edge, which none of
+            // these three have) -- a genuinely different, unaddressed door mechanism, left exempt (see
+            // TileCoverageCensusTests.PilotExpectedExemptions).
             _builder.Create(FortInterior, "Fort Interior")
                 .Tileset("twc03")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .PrimaryOpenTerrain("floor")
                 .AccentTerrain("water")
+                .DoorSlotCrossers("corridor", "wall")
                 .SetPiece("Arena_1x2")
                 .SetPiece("Storage_1x1_1")
                 .SetPiece("Dais_1x2")
@@ -1026,6 +1476,64 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Bedroom_03_2x1")
                 .SetPiece("Smithy_1x2")
                 .SetPiece("Portal_Hall_2x3")
+                .ExitGroup("Exit_1x1")
+                .ExitGroup("Exit_Down_1x1")
+                .ExitGroup("Exit_CollapsedWall");
+
+            // Fort Interior (Legacy) -- twc03's "OLD_"-prefixed superseded furnished-room family, a
+            // PaletteVariant profile recomposing the SAME twc03 hak data the base FortInterior profile
+            // above uses. Same solid/open/accent terrain, same base-shape pieces (Arena/Storage/Dais/
+            // Stairway/Corr_SpiralStair/OLD_*_1x1/Corridor_Exit/Room_1x2/LargeGate/Fireplace/Platform),
+            // but swaps the CURRENT non-"OLD_" furnished-room replacements for their "OLD_"-prefixed
+            // originals (OLD_StoreRoom_2x2L_old, OLD_Cells_2x2_old, OLD_Kitchen_1x2, OLD_Generic_Room_2x1/
+            // 2x2, OLD_Barracks_2x2, OLD_Bedroom_02_2x1, OLD_Bedroom_03_2x1, OLD_Smithy_1x2,
+            // OLD_Portal_Hall_2x3) plus Mythallar_3x3 -- each carries the plain "corridor" body crosser
+            // directly on its entrance/wall tile instead of a Doorway-family port, which
+            // LayoutGroupStamper's CorridorStubChain classification/placement now reaches (see
+            // FortInterior's own doc comment above and TryPlaceCorridorStubChain). Verified via direct
+            // pipeline sweep (OnboardedTilesetPipelineTests.CorridorStubChainFamily_ComplexActuallyPlacesTheGroup).
+            // Large_Door is NOT wired here either: its TILE36 has mixed floor/black corners and never
+            // classifies under any mechanism (see TileCoverageCensusTests.PilotExpectedExemptions).
+            // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area
+            // instead.
+            _builder.Create(FortInteriorLegacy, "Fort Interior (Legacy)")
+                .Tileset("twc03")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("floor")
+                .AccentTerrain("water")
+                .DoorSlotCrossers("corridor", "wall")
+                .SetPiece("Arena_1x2")
+                .SetPiece("Storage_1x1_1")
+                .SetPiece("Dais_1x2")
+                .SetPiece("Stairway_up")
+                .SetPiece("Stairway_down")
+                .SetPiece("Corr_SpiralStair_updown", 1)
+                .SetPiece("Corr_SpiralStair_up", 1)
+                .SetPiece("Corr_SpiralStair_down", 1)
+                .SetPiece("OLD_Bedroom_01_1x1", 1)
+                .SetPiece("OLD_Cells_1x1", 1)
+                .SetPiece("OLD_Library_1x1", 1)
+                .SetPiece("OLD_Storage_1x1", 1)
+                .SetPiece("OLD_Generic_Room_1x1", 1)
+                .SetPiece("Corridor_Exit", 1)
+                .SetPiece("Room_1x2")
+                .SetPiece("LargeGate_1x2")
+                .SetPiece("LargeGate_Exit")
+                .SetPiece("Fireplace")
+                .SetPiece("Platform_1x2_01")
+                .SetPiece("OLD_StoreRoom_2x2L_old")
+                .SetPiece("OLD_Cells_2x2_old")
+                .SetPiece("OLD_Kitchen_1x2")
+                .SetPiece("OLD_Generic_Room_2x1")
+                .SetPiece("OLD_Generic_Room_2x2")
+                .SetPiece("OLD_Barracks_2x2")
+                .SetPiece("OLD_Bedroom_02_2x1")
+                .SetPiece("OLD_Bedroom_03_2x1")
+                .SetPiece("OLD_Smithy_1x2")
+                .SetPiece("OLD_Portal_Hall_2x3")
+                .SetPiece("Mythallar_3x3")
                 .ExitGroup("Exit_1x1")
                 .ExitGroup("Exit_Down_1x1")
                 .ExitGroup("Exit_CollapsedWall");

@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             public TileRecord Tile;
         }
 
-        private enum GroupKind { WallRoom, OpenSetPiece, CorridorInsert, WallAlcove, CorridorStub }
+        private enum GroupKind { WallRoom, OpenSetPiece, CorridorInsert, WallAlcove, CorridorStub, CorridorStubChain }
 
         private sealed class ClassifiedGroup
         {
@@ -114,6 +114,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             /// WallRoom only.
             /// </summary>
             public List<(int Row, int Col, int Slot)> PerimeterDoorways;
+
+            /// <summary>
+            /// CorridorStubChain only: (LocalRow, LocalCol, Slot) for every body-crosser (Corridor/
+            /// Alley/Custom-body) edge whose neighbor cell falls outside the group's own footprint --
+            /// the SAME shape PerimeterDoorways tracks for WallRoom, but for a multi-tile group that
+            /// splices directly onto an existing Tunnel-mode chain using its OWN body crosser as the
+            /// opening (e.g. Barrows/tbw01's CorridorDown_1x2, whose outer member carries a lone
+            /// "corridor" edge instead of a Doorway port) rather than a Doorway/port pairing -- see
+            /// TryPlaceCorridorStubChain.
+            /// </summary>
+            public List<(int Row, int Col, int Slot)> PerimeterBodyCrossers;
 
             /// <summary>
             /// CorridorInsert/CorridorStub only: which crosser name ("Corridor", "Alley", "Fence", or
@@ -146,6 +157,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 return;
 
             var nextRoomId = layout.Rooms.Count == 0 ? 0 : layout.Rooms.Max(r => r.Id) + 1;
+            // Computed once per Stamp call (TileResolver.HasCandidate rebuilds its lookup fresh each
+            // call, so this must not run per placement attempt) -- see
+            // SupportsWallRoomOpenLaneBoundary's own doc comment.
+            var openLaneWallRoomSupported = SupportsWallRoomOpenLaneBoundary(tileset, parameters);
 
             foreach (var groupName in parameters.SetPieces.Keys.OrderBy(k => k, StringComparer.Ordinal))
             {
@@ -162,11 +177,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 {
                     var placed = classified.Kind switch
                     {
-                        GroupKind.WallRoom => TryPlaceWallRoom(layout, parameters, classified, random, ref nextRoomId),
+                        GroupKind.WallRoom => TryPlaceWallRoom(layout, parameters, classified, random, ref nextRoomId, openLaneWallRoomSupported),
                         GroupKind.OpenSetPiece => TryPlaceOpenSetPiece(layout, parameters, classified, random),
                         GroupKind.CorridorInsert => TryPlaceCorridorInsert(layout, parameters, classified, random),
                         GroupKind.WallAlcove => TryPlaceWallAlcove(layout, parameters, classified, random, ref nextRoomId),
                         GroupKind.CorridorStub => TryPlaceCorridorStub(layout, parameters, classified, random),
+                        GroupKind.CorridorStubChain => TryPlaceCorridorStubChain(layout, parameters, tileset, classified, random, ref nextRoomId),
                         _ => false
                     };
 
@@ -244,6 +260,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // runs for real members), so its corners resolve from whatever the surrounding plan
             // (neighboring real members plus, for an OpenSetPiece, the room's own open floor) already
             // wrote there.
+            // A group whose members carry a body crosser (Corridor/Alley/Custom-body -- the SAME
+            // vocabulary TryClassifyCorridorStub splices a single cell onto) instead of Doorway is
+            // tolerated here too (e.g. Barrows/tbw01's CorridorDown_1x2, whose outer member carries a
+            // lone "corridor" edge rather than a Doorway port) -- see the CorridorStubChain branch
+            // below. Anything else (Fence/Bridge/an unrecognized name) still rejects the whole group.
+            var stubCrossers = CorridorStubCrossersFor(parameters);
+            bool IsAllowedMemberEdge(string edge) =>
+                string.IsNullOrEmpty(edge) || Eq(edge, DoorwayCrosser) || stubCrossers.Any(c => Eq(edge, c));
+
             var members = new List<GroupMember>();
             for (var row = 0; row < group.Rows; row++)
             {
@@ -259,7 +284,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
                     foreach (var edge in tile.Edges)
                     {
-                        if (!string.IsNullOrEmpty(edge) && !Eq(edge, DoorwayCrosser)) return false;
+                        if (!IsAllowedMemberEdge(edge)) return false;
                     }
 
                     members.Add(new GroupMember { LocalRow = row, LocalCol = col, Tile = tile });
@@ -268,29 +293,75 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (members.Count == 0) return false; // an all-hole "group" is degenerate
 
             var perimeterDoorways = new List<(int, int, int)>();
+            var perimeterBodyCrossers = new List<(int, int, int)>();
+            var hasInteriorBodyCrosser = false;
             foreach (var member in members)
             {
                 for (var slot = 0; slot < 4; slot++)
                 {
-                    if (!Eq(member.Tile.GetEdgeAt(0, slot), DoorwayCrosser)) continue;
+                    var edge = member.Tile.GetEdgeAt(0, slot);
+                    var isDoorway = Eq(edge, DoorwayCrosser);
+                    var isBodyCrosser = !isDoorway && stubCrossers.Any(c => Eq(edge, c));
+                    if (!isDoorway && !isBodyCrosser) continue;
 
                     var (dx, dy) = SlotOffsets[slot];
                     var neighborRow = member.LocalRow + dy;
                     var neighborCol = member.LocalCol + dx;
                     var outOfBounds = neighborRow < 0 || neighborRow >= group.Rows ||
                                        neighborCol < 0 || neighborCol >= group.Columns;
-                    // A Doorway facing a hole cell (in-bounds but no real member there) is also a
-                    // perimeter opening -- the hole isn't another real member that could receive/match
-                    // an interior Doorway edge, so this must face outward like any true perimeter edge.
+                    // A Doorway/body-crosser edge facing a hole cell (in-bounds but no real member
+                    // there) is also a perimeter opening -- the hole isn't another real member that
+                    // could receive/match an interior edge, so this must face outward like any true
+                    // perimeter edge.
                     var isPerimeter = outOfBounds || IsHole(group, neighborRow, neighborCol);
-                    if (isPerimeter)
-                        perimeterDoorways.Add((member.LocalRow, member.LocalCol, slot));
+
+                    if (isDoorway)
+                    {
+                        if (isPerimeter) perimeterDoorways.Add((member.LocalRow, member.LocalCol, slot));
+                    }
+                    else if (isPerimeter)
+                    {
+                        perimeterBodyCrossers.Add((member.LocalRow, member.LocalCol, slot));
+                    }
+                    else
+                    {
+                        // An interior body-crosser seam (two real members facing each other with a
+                        // body crosser between them) is a shape no verified data uses and CorridorStub-
+                        // Chain's site/write logic doesn't handle -- reject the whole group rather than
+                        // guess.
+                        hasInteriorBodyCrosser = true;
+                    }
                 }
             }
 
             var hasAnyDoorway = members.Any(m => m.Tile.Edges.Any(e => Eq(e, DoorwayCrosser)));
+            var hasAnyBodyCrosser = members.Any(m => m.Tile.Edges.Any(e => !Eq(e, DoorwayCrosser) && stubCrossers.Any(c => Eq(e, c))));
             var allCornersSolid = members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain)));
             var hasAnyDoor = members.Any(m => m.Tile.Doors.Count != 0);
+
+            // CorridorStubChain: a multi-tile, all-solid-cornered group that splices directly onto an
+            // existing Tunnel-mode chain using its own body crosser (Corridor/Alley/Custom-body) as the
+            // opening, rather than pairing a Doorway port against a body-crossered neighbor the way
+            // WallRoom does -- see TryPlaceCorridorStubChain. Checked ahead of the WallRoom/WallAlcove/
+            // OpenSetPiece branches below (mutually exclusive in every verified shape: real data never
+            // mixes a body-crosser edge with a Doorway edge on the same group).
+            if (hasAnyBodyCrosser)
+            {
+                if (hasAnyDoorway || !allCornersSolid || hasInteriorBodyCrosser || perimeterBodyCrossers.Count == 0)
+                    return false;
+
+                var bodyCrosserEdge = members.SelectMany(m => m.Tile.Edges).First(e => !string.IsNullOrEmpty(e) && !Eq(e, DoorwayCrosser));
+
+                classified = new ClassifiedGroup
+                {
+                    Group = group,
+                    Members = members,
+                    Kind = GroupKind.CorridorStubChain,
+                    PerimeterBodyCrossers = perimeterBodyCrossers,
+                    InsertCrosser = stubCrossers.First(c => Eq(c, bodyCrosserEdge))
+                };
+                return true;
+            }
 
             if (hasAnyDoorway)
             {
@@ -866,7 +937,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
         private static bool TryPlaceWallRoom(
             MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified,
-            System.Random random, ref int nextRoomId)
+            System.Random random, ref int nextRoomId, bool openLaneBoundarySupported)
         {
             var group = classified.Group;
             var width = layout.Corners.Width;
@@ -883,7 +954,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             foreach (var anchor in anchors)
             {
-                if (!IsWallRoomSiteValid(layout, parameters, classified, anchor, transitionTiles))
+                if (!IsWallRoomSiteValid(layout, parameters, classified, anchor, transitionTiles, openLaneBoundarySupported))
                     continue;
 
                 StampWallRoom(layout, parameters, classified, anchor, ref nextRoomId);
@@ -893,9 +964,35 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             return false;
         }
 
+        /// <summary>
+        /// Whole-tileset capability probe (see <see cref="TileResolver.HasCandidate"/>'s own "not for
+        /// hot per-cell resolution" note -- this must be computed once per Stamp call, never per
+        /// placement attempt) for whether a WallRoom's perimeter Doorway edge can resolve when it
+        /// borders an OpenLane corridor/room cell instead of a Tunnel-mode chain cell (see
+        /// IsWallRoomSiteValid's OpenLane branch below). This is the SAME boundary-tile shape
+        /// TunnelVocabularyCheck.SupportsBoundaryShape already verifies for every ordinary room
+        /// entrance door: near corners (shared with the WallRoom's own fully-solid footprint cell,
+        /// guaranteed solid by IsWallRoomSiteValid's own IsFullySolidCell check) solid, far corners
+        /// this layout's OpenTerrain (or SecondaryOpenTerrain) uniformly, port edge Doorway. Guards the
+        /// OpenLane WallRoom site check from ever stamping a group next to a boundary shape TileResolver
+        /// could never place a real tile for.
+        /// </summary>
+        private static bool SupportsWallRoomOpenLaneBoundary(TilesetModel tileset, MacroLayoutParameters parameters)
+        {
+            if (string.IsNullOrEmpty(parameters.SolidTerrain)) return false;
+
+            bool Supports(string openTerrain) =>
+                !string.IsNullOrEmpty(openTerrain) &&
+                TileResolver.HasCandidate(
+                    tileset, parameters.SolidTerrain, openTerrain, openTerrain, parameters.SolidTerrain,
+                    string.Empty, string.Empty, string.Empty, DoorwayCrosser, parameters.DoorSlotCrossers);
+
+            return Supports(parameters.OpenTerrain) || Supports(parameters.SecondaryOpenTerrain);
+        }
+
         private static bool IsWallRoomSiteValid(
             MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified,
-            (int X, int Y) anchor, HashSet<(int X, int Y)> transitionTiles)
+            (int X, int Y) anchor, HashSet<(int X, int Y)> transitionTiles, bool openLaneBoundarySupported)
         {
             var group = classified.Group;
             var corners = layout.Corners;
@@ -940,13 +1037,217 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     if (Eq(edge, DoorwayCrosser)) neighborHasDoorway = true;
                 }
 
-                // Strict v1: every Doorway perimeter edge must face a plain tunnel-corridor cell.
-                // Requiring it not already carry a Doorway keeps two different WallRoom instances from
-                // ever claiming the same corridor adapter cell from different sides.
-                if (!neighborHasCorridor || neighborHasDoorway) return false;
+                if (neighborHasDoorway) return false; // keeps two WallRoom instances from claiming the same adapter cell
+
+                // v1 site: a plain Tunnel-mode corridor chain cell (see LayoutTunnelCarver).
+                if (neighborHasCorridor) continue;
+
+                // OpenLane site: no wall-embedded tunnel chain exists in this mode (see
+                // RoomsAndCorridorsLayout.CarveAllEdges' downgrade), so the network touch is instead a
+                // solid-cornered WallRoom cell bordering a genuine open-lane/room boundary -- the same
+                // shape SupportsWallRoomOpenLaneBoundary already verified the tileset can resolve.
+                if (openLaneBoundarySupported && IsOpenLaneBoundaryNeighbor(corners, crossers, neighbor, slot, parameters))
+                    continue;
+
+                return false;
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// True when <paramref name="neighbor"/> (the cell across a WallRoom's perimeter Doorway edge,
+        /// in the direction of <paramref name="slot"/>) is a genuine OpenLane boundary cell: currently
+        /// crosser-free (so no other structure has already claimed it), and its two corners FAR from
+        /// the WallRoom (its near corners are shared grid vertices with the WallRoom's own footprint
+        /// cell, already guaranteed solid by the caller's IsFullySolidCell check) are both this
+        /// layout's OpenTerrain, or both SecondaryOpenTerrain -- the exact shape
+        /// SupportsWallRoomOpenLaneBoundary's capability probe verified is resolvable. A partial/mixed
+        /// far side (e.g. only one far corner open, or the two far corners split across two different
+        /// open terrains) is rejected: that is not the clean axis-aligned boundary shape the probe
+        /// checked, and stamping it could leave an unresolvable cell for TileResolver later.
+        /// </summary>
+        private static bool IsOpenLaneBoundaryNeighbor(
+            CornerTerrainGrid corners, EdgeCrosserGrid crossers, (int X, int Y) neighbor, int slot,
+            MacroLayoutParameters parameters)
+        {
+            for (var s = 0; s < 4; s++)
+            {
+                if (crossers.GetEdge(neighbor.X, neighbor.Y, s).Length != 0) return false;
+            }
+
+            var (farA, farB) = FarCorners(corners, neighbor, slot);
+            if (Eq(farA, parameters.OpenTerrain) && Eq(farB, parameters.OpenTerrain)) return true;
+            if (!string.IsNullOrEmpty(parameters.SecondaryOpenTerrain) &&
+                Eq(farA, parameters.SecondaryOpenTerrain) && Eq(farB, parameters.SecondaryOpenTerrain)) return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// The two corner-grid vertices of <paramref name="neighbor"/> NOT shared with the adjacent
+        /// cell across <paramref name="slot"/> (e.g. slot == Right means neighbor sits to that cell's
+        /// east, so neighbor's own east-side TR/BR vertices are "far" -- its west-side TL/BL vertices
+        /// are the shared boundary with the caller). Mirrors WriteMember's own
+        /// cell -> (TL, TR, BR, BL) = ((x,y+1), (x+1,y+1), (x+1,y), (x,y)) vertex convention.
+        /// </summary>
+        private static (string A, string B) FarCorners(CornerTerrainGrid corners, (int X, int Y) neighbor, int slot)
+        {
+            var nx = neighbor.X;
+            var ny = neighbor.Y;
+            return slot switch
+            {
+                EdgeSlot.Right => (corners.Labels[nx + 1, ny + 1], corners.Labels[nx + 1, ny]), // TR, BR
+                EdgeSlot.Left => (corners.Labels[nx, ny + 1], corners.Labels[nx, ny]), // TL, BL
+                EdgeSlot.Top => (corners.Labels[nx, ny + 1], corners.Labels[nx + 1, ny + 1]), // TL, TR
+                EdgeSlot.Bottom => (corners.Labels[nx, ny], corners.Labels[nx + 1, ny]), // BL, BR
+                _ => (string.Empty, string.Empty)
+            };
+        }
+
+        // ---------------- CorridorStubChain ----------------
+
+        /// <summary>
+        /// Places a CorridorStubChain (e.g. Barrows/tbw01's CorridorDown_1x2/Corridor_Up_1x2/
+        /// Corridor_Up_1x2_02, or Castle Interior 2/Fort Interior's Mythallar_3x3 4-way junction chamber):
+        /// stamps the group's footprint into solid space exactly like TryPlaceWallRoom (same
+        /// anchor-search/footprint-solid-and-crosser-free/StampWallRoom write path -- see StampWallRoom,
+        /// which is generic and unaware of WHY a member carries an edge), but unlike WallRoom's
+        /// Doorway-port-facing-a-body-crosser-neighbor pairing, this group's own perimeter opening(s)
+        /// carry the composition's body crosser (Corridor/Alley/Custom-body) directly.
+        ///
+        /// A group can carry MORE than one perimeter body-crosser edge (Mythallar_3x3 offers all four
+        /// cardinal sides as potential connections, unlike Barrows' single-anchor 1x2 groups) -- only
+        /// ONE needs to actually splice onto an existing chain cell for the group to be reachable at
+        /// all; the site search still requires every OTHER perimeter edge's own neighbor cell to be a
+        /// real, available (solid/crosser-free/unpinned/non-transition) cell, so WriteMember's shared-
+        /// edge write never lands on an already-claimed or out-of-bounds cell. Those OTHER edges are
+        /// left "dangling" (no matching chain), which is only safe when SupportsAmbientCorridorDeadEnd's
+        /// capability probe confirms the tileset has a genuine ordinary ungrouped, doorless, all-solid,
+        /// single-crosser-edge tile for this exact body crosser -- the same shape every ordinary
+        /// uncarved Tunnel-mode dead end already resolves via, so TileResolver can place a real tile for
+        /// that neighbor cell later without this group ever having reserved/pinned it. A no-op (returns
+        /// false, no grid mutation) when no chain of the required crosser exists yet, same as
+        /// TryPlaceCorridorStub.
+        /// </summary>
+        private static bool TryPlaceCorridorStubChain(
+            MacroLayout layout, MacroLayoutParameters parameters, TilesetModel tileset, ClassifiedGroup classified,
+            System.Random random, ref int nextRoomId)
+        {
+            var group = classified.Group;
+            var width = layout.Corners.Width;
+            var height = layout.Corners.Height;
+
+            // Computed once per call (TileResolver.HasCandidate rebuilds its lookup fresh each call, so
+            // this must not run per placement attempt) -- see SupportsAmbientCorridorDeadEnd.
+            var ambientDeadEndSupported = SupportsAmbientCorridorDeadEnd(tileset, parameters, classified.InsertCrosser);
+
+            var anchors = new List<(int X, int Y)>();
+            for (var ay = 0; ay <= height - group.Rows; ay++)
+            for (var ax = 0; ax <= width - group.Columns; ax++)
+                anchors.Add((ax, ay));
+
+            Shuffle(anchors, random);
+
+            var transitionTiles = new HashSet<(int X, int Y)>(layout.Transitions.Select(t => t.Tile));
+
+            foreach (var anchor in anchors)
+            {
+                if (!IsCorridorStubChainSiteValid(layout, parameters, classified, anchor, transitionTiles, ambientDeadEndSupported))
+                    continue;
+
+                StampWallRoom(layout, parameters, classified, anchor, ref nextRoomId);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Whole-tileset capability probe: true when the tileset has at least one ordinary ungrouped,
+        /// doorless, all-solid-corner tile carrying exactly <paramref name="crosser"/> on ONE edge (the
+        /// other three blank) -- the generic "not-yet-carved dead end" shape every plain uncarved
+        /// Tunnel-mode chain cell already resolves via (LayoutTunnelCarver's own straight/turn/T/X
+        /// vocabulary implies at least the crosser-presence half of this; this additionally confirms the
+        /// specific single-edge dead-end shape TileResolver can actually place a tile for). Used by
+        /// TryPlaceCorridorStubChain to allow a multi-opening group (e.g. Mythallar_3x3) to leave its
+        /// UNCONNECTED perimeter openings dangling rather than requiring every one to already face an
+        /// existing chain cell.
+        /// </summary>
+        private static bool SupportsAmbientCorridorDeadEnd(TilesetModel tileset, MacroLayoutParameters parameters, string crosser)
+        {
+            if (string.IsNullOrEmpty(crosser)) return false;
+            return TileResolver.HasCandidate(
+                tileset, parameters.SolidTerrain, parameters.SolidTerrain, parameters.SolidTerrain, parameters.SolidTerrain,
+                crosser, string.Empty, string.Empty, string.Empty);
+        }
+
+        private static bool IsCorridorStubChainSiteValid(
+            MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified,
+            (int X, int Y) anchor, HashSet<(int X, int Y)> transitionTiles, bool ambientDeadEndSupported)
+        {
+            var group = classified.Group;
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+            var width = corners.Width;
+            var height = corners.Height;
+
+            for (var r = 0; r < group.Rows; r++)
+            {
+                for (var c = 0; c < group.Columns; c++)
+                {
+                    var cell = (X: anchor.X + c, Y: anchor.Y + r);
+
+                    if (layout.PinnedTiles.ContainsKey(cell)) return false;
+                    if (transitionTiles.Contains(cell)) return false;
+                    if (IsHole(group, r, c)) continue; // ordinary plan space, not a real member
+                    if (!IsFullySolidCell(corners, cell, parameters.SolidTerrain)) return false;
+
+                    for (var slot = 0; slot < 4; slot++)
+                    {
+                        if (crossers.GetEdge(cell.X, cell.Y, slot).Length != 0) return false;
+                    }
+                }
+            }
+
+            var connectedAny = false;
+            foreach (var (row, col, slot) in classified.PerimeterBodyCrossers)
+            {
+                var cell = (X: anchor.X + col, Y: anchor.Y + row);
+                var (dx, dy) = SlotOffsets[slot];
+                var neighbor = (X: cell.X + dx, Y: cell.Y + dy);
+
+                if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.X >= width || neighbor.Y >= height) return false;
+
+                var backSlot = OppositeSlot(slot);
+                if (crossers.GetEdge(neighbor.X, neighbor.Y, backSlot).Length != 0) return false; // shared edge must still be blank
+
+                var neighborHasChain = false;
+                for (var s = 0; s < 4; s++)
+                {
+                    if (s == backSlot) continue;
+                    if (Eq(crossers.GetEdge(neighbor.X, neighbor.Y, s), classified.InsertCrosser)) { neighborHasChain = true; break; }
+                }
+
+                if (neighborHasChain)
+                {
+                    connectedAny = true;
+                    continue;
+                }
+
+                // Not an existing chain -- this opening would dangle. Only safe when the tileset can
+                // resolve an ordinary ambient dead end for this crosser AND the neighbor cell itself is
+                // still real, untouched plan space (never claimed by anything else) -- see
+                // SupportsAmbientCorridorDeadEnd's own doc comment.
+                if (!ambientDeadEndSupported) return false;
+                if (layout.PinnedTiles.ContainsKey(neighbor)) return false;
+                if (transitionTiles.Contains(neighbor)) return false;
+                if (!IsFullySolidCell(corners, neighbor, parameters.SolidTerrain)) return false;
+            }
+
+            // At least one real connection to the existing network is required -- an all-dangling group
+            // would be an isolated, unreachable pocket.
+            return connectedAny;
         }
 
         private static void StampWallRoom(

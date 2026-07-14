@@ -59,6 +59,27 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.MinesAndCavernsDesert,
         BaseGameTilesetProfiles.MinesAndCavernsOrganic,
         BaseGameTilesetProfiles.RuinsPlaza,
+        // Second, independent alternate Tunnel body/port families on tdm01 -- see
+        // BaseGameTilesetProfiles.MinesAndCavernsTracks/MinesAndCavernsDesertTracks/
+        // MinesAndCavernsOrganicTracks's own doc comments.
+        BaseGameTilesetProfiles.MinesAndCavernsTracks,
+        BaseGameTilesetProfiles.MinesAndCavernsDesertTracks,
+        BaseGameTilesetProfiles.MinesAndCavernsOrganicTracks,
+        // twc03's "OLD_"-prefixed superseded furnished-room family, a dedicated showcase for
+        // LayoutGroupStamper's CorridorStubChain kind -- see BaseGameTilesetProfiles.FortInteriorLegacy.
+        BaseGameTilesetProfiles.FortInteriorLegacy,
+        // tic01's Storage/Rich/Library/Jail district palettes -- see
+        // BaseGameTilesetProfiles.CastleInteriorStorage's own doc comment.
+        BaseGameTilesetProfiles.CastleInteriorStorage,
+        BaseGameTilesetProfiles.CastleInteriorRich,
+        BaseGameTilesetProfiles.CastleInteriorLibrary,
+        BaseGameTilesetProfiles.CastleInteriorJail,
+        // tde01's Water/Sewer/Ice/Pit accent-slot palettes -- see
+        // BaseGameTilesetProfiles.DungeonWater's own doc comment.
+        BaseGameTilesetProfiles.DungeonWater,
+        BaseGameTilesetProfiles.DungeonSewer,
+        BaseGameTilesetProfiles.DungeonIce,
+        BaseGameTilesetProfiles.DungeonPit,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a
@@ -234,8 +255,13 @@ public class OnboardedTilesetPipelineTests
     /// false for tii01 purely because of that one shape (every other required shape resolves).
     /// MacroLayoutGenerator downgrades CorridorMode to OpenLane for this pairing before dispatch, the
     /// same mechanism BarrowsComplexDowngradesToOpenLaneWithNoTunnelCrossers locks in -- this proves the
-    /// downgrade actually took effect (no Tunnel-only crosser ever appears, no TunnelLinks recorded) and
-    /// that generation succeeds on every seed in the pipeline gate's own seed range.
+    /// downgrade actually took effect (no Tunnel-mode "Corridor" chain edge or TunnelLink ever appears)
+    /// and that generation succeeds on every seed in the pipeline gate's own seed range. A "Doorway" edge
+    /// CAN legitimately appear despite the downgrade: LayoutGroupStamper's WallRoom stamping runs
+    /// regardless of CorridorMode, and its OpenLane-adjacent site (see
+    /// DoorSlotWallRoomFamily_ComplexActuallyPlacesTheGroup's Illithid case) writes the group's own
+    /// Doorway edge onto an open-lane boundary cell, not a Tunnel-chain one -- so this test only asserts
+    /// the Tunnel-mode-specific signals (Corridor edges, TunnelLinks) are absent, not Doorway itself.
     /// </summary>
     [Test]
     public void IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers()
@@ -265,7 +291,6 @@ public class OnboardedTilesetPipelineTests
             {
                 var edge = solved.Layout.Crossers.GetEdge(x, y, slot);
                 edge.Should().NotBe("Corridor", $"seed {seed}: downgraded Illithid/Complex must never carve a Tunnel-mode Corridor edge");
-                edge.Should().NotBe("Doorway", $"seed {seed}: downgraded Illithid/Complex must never carve a Tunnel-mode Doorway edge");
             }
 
             solved.Layout.TunnelLinks.Should().BeEmpty(
@@ -334,6 +359,9 @@ public class OnboardedTilesetPipelineTests
     [TestCase(BaseGameTilesetProfiles.MinesAndCavernsDesert, "DesertCorridor")]
     [TestCase(BaseGameTilesetProfiles.MinesAndCavernsOrganic, "OrganicCorridor")]
     [TestCase(BaseGameTilesetProfiles.Barrows, "corridor")]
+    [TestCase(BaseGameTilesetProfiles.MinesAndCavernsTracks, "Tracks")]
+    [TestCase(BaseGameTilesetProfiles.MinesAndCavernsDesertTracks, "DesertTracks")]
+    [TestCase(BaseGameTilesetProfiles.MinesAndCavernsOrganicTracks, "OrganicTracks")]
     public void CustomCrosserProfile_ComplexActuallyCarvesTheDeclaredBodyCrosser(string tilesetKey, string expectedBodyCrosser)
     {
         var tilesetProfile = TilesetProfiles[tilesetKey];
@@ -384,16 +412,22 @@ public class OnboardedTilesetPipelineTests
     /// competing families, so any individual one's per-seed placement odds are low (confirmed via
     /// direct 200-seed isolated probe: ~10% for StoreRoom_2x2L alone, lower still with nine siblings
     /// competing for the same limited room-perimeter sites in a real composition) even though the
-    /// mechanism itself is unconditionally correct. Illithid Interior is deliberately NOT covered here:
-    /// see BaseGameTilesetProfiles.IllithidInterior's own doc comment for why its five newly-wired
-    /// WallRoom groups can never actually place under Complex today (a separate, pre-existing Tunnel-
-    /// vocabulary gap, not anything the door-slot relaxation itself could fix).
+    /// mechanism itself is unconditionally correct. Illithid Interior's own five newly-wired WallRoom
+    /// groups (Great Brain/Resting Pods/Resting Pod/Cell/Transition Door) used to be excluded here: they
+    /// could never place under Complex because Complex downgrades to OpenLane for this tileset (see
+    /// IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers), and WallRoom's v1 site check only
+    /// recognized a Tunnel-mode Corridor-chain neighbor. LayoutGroupStamper.IsWallRoomSiteValid now also
+    /// accepts an OpenLane-adjacent site (a solid WallRoom cell whose perimeter Doorway edge borders a
+    /// genuine open-lane/room boundary cell, guarded by SupportsWallRoomOpenLaneBoundary's whole-tileset
+    /// capability probe) -- confirmed via direct 200-seed isolated probe: 200/200 placements (up from 0
+    /// before this fix), so Illithid is included below like every other tileset in this test.
     /// </summary>
     [TestCase(BaseGameTilesetProfiles.CityInterior, new[] { 24, 26, 268 })]
     [TestCase(BaseGameTilesetProfiles.CastleInterior, new[] { 24, 42, 60, 78, 80, 96, 98, 521, 676 })]
     [TestCase(BaseGameTilesetProfiles.CastleInterior2, new[] { 24, 42, 60, 78, 96, 200 })]
     [TestCase(BaseGameTilesetProfiles.CityInterior2, new[] { 24, 26, 268 })]
     [TestCase(BaseGameTilesetProfiles.FortInterior, new[] { 195, 199, 202, 205, 207, 211, 213, 215, 217, 219, 222, 224 })]
+    [TestCase(BaseGameTilesetProfiles.IllithidInterior, new[] { 27, 39, 40, 41, 42, 43, 44, 45, 46, 47, 66, 67, 68, 69, 70, 71, 72, 73, 74, 77, 78 })]
     public void DoorSlotWallRoomFamily_ComplexActuallyPlacesTheGroup(string tilesetKey, int[] candidateTileIds)
     {
         var tilesetProfile = TilesetProfiles[tilesetKey];
@@ -423,6 +457,55 @@ public class OnboardedTilesetPipelineTests
         seedCount.Should().Be(30, "the seed loop must actually have run");
         sawAnyCandidateTile.Should().BeTrue(
             $"{tilesetKey}/Complex must actually place at least one of [{string.Join(",", candidateTileIds)}] (members of the newly-wired door-slot WallRoom families) somewhere across the seed range");
+    }
+
+    /// <summary>
+    /// Locks in that LayoutGroupStamper.TryClassify's CorridorStubChain kind (a multi-tile group whose
+    /// outer member carries a lone perimeter body crosser -- Corridor/Alley/Custom-body -- instead of a
+    /// Doorway port, splicing directly onto an existing Tunnel-mode chain the same way the single-cell
+    /// CorridorStub does -- see TryPlaceCorridorStubChain) actually places real tiles in a generated
+    /// layout. Barrows/tbw01's CorridorDown_1x2/Corridor_Up_1x2/Corridor_Up_1x2_02 (body crosser
+    /// "corridor", the composition's own declared Custom body); Castle Interior 2/tni02's Mythallar_3x3
+    /// and Fort Interior (Legacy)/fortinterior_legacy's OLD_*/Mythallar_3x3 families (body crosser the
+    /// canonical "Corridor", matched case-insensitively against their "corridor"/"Corridor"-cased data).
+    /// </summary>
+    [TestCase(BaseGameTilesetProfiles.Barrows, new[] { 68, 69, 71, 72, 133, 134 })]
+    [TestCase(BaseGameTilesetProfiles.CastleInterior2, new[] { 201, 202, 203, 204, 205, 206, 207, 208, 209 })]
+    [TestCase(BaseGameTilesetProfiles.FortInteriorLegacy, new[]
+    {
+        81, 82, 83, 84, 85, 86, 44, 45, 116, 117, 119, 120, 121, 122,
+        51, 52, 53, 54, 47, 48, 49, 50, 42, 43, 73, 74, 75, 76, 77, 78,
+        59, 60, 61, 62, 63, 64, 65, 66, 67,
+    })]
+    public void CorridorStubChainFamily_ComplexActuallyPlacesTheGroup(string tilesetKey, int[] candidateTileIds)
+    {
+        var tilesetProfile = TilesetProfiles[tilesetKey];
+        var layoutProfile = LayoutProfiles[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        const int size = 20;
+        var seedCount = 0;
+        var sawAnyCandidateTile = false;
+
+        for (var seed = 6000; seed < 6030; seed++)
+        {
+            seedCount++;
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            solved.Success.Should().BeTrue($"seed {seed}: {tilesetKey}/Complex must succeed -- {solved.FailureReason}");
+
+            if (solved.Resolved.Tiles.Any(t => candidateTileIds.Contains(t.TileId)))
+                sawAnyCandidateTile = true;
+        }
+
+        seedCount.Should().Be(30, "the seed loop must actually have run");
+        sawAnyCandidateTile.Should().BeTrue(
+            $"{tilesetKey}/Complex must actually place at least one of [{string.Join(",", candidateTileIds)}] (members of the newly-wired CorridorStubChain families) somewhere across the seed range");
     }
 
     /// <summary>

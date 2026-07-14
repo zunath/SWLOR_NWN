@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
 {
@@ -69,12 +70,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // below runs unchanged (byte-identical pools/RNG sequence to pre-height behavior).
             var heightAware = layout.Corners.HasAnyHeight();
 
-            var candidateLookup = BuildCandidateLookup(tileset, heightAware, layout.DoorSlotCrossers);
+            var candidateLookup = BuildCandidateLookup(tileset, heightAware, layout.DoorSlotCrossers, layout.ExcludedTiles);
             // Feature sprinkling stays scoped to flat layouts for now (v1): no layout style paints
             // elevation yet, so this is not a behavior change; a future task can extend feature
             // sprinkling to height-aware cells deliberately.
             var featureLookup = !heightAware && layout.FeatureTiles.Count > 0
-                ? BuildFeatureLookup(tileset, layout.FeatureTiles)
+                ? BuildFeatureLookup(tileset, layout.FeatureTiles, layout.ExcludedTiles)
                 : null;
             var tiles = new ResolvedTile[width * height];
 
@@ -305,13 +306,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         private static Dictionary<string, CandidateSet> BuildCandidateLookup(
-            TilesetModel tileset, bool heightAware, IReadOnlyCollection<string> extraDoorSlotCrossers = null)
+            TilesetModel tileset, bool heightAware, IReadOnlyCollection<string> extraDoorSlotCrossers = null,
+            IReadOnlyCollection<int> excludedTiles = null)
         {
             var lookup = new Dictionary<string, CandidateSet>();
 
             foreach (var tile in tileset.Tiles)
             {
                 if (tile.GroupIndex != -1) continue;
+
+                // Confirmed placeholder/stub art (see DungeonTilesetProfile.ExcludedTiles) -- excluded
+                // at this single shared candidate-building level so every placement path that draws
+                // from this lookup (legacy flat, height-aware) skips it uniformly. Checked before the
+                // heightAware/isFlat gate below so it applies regardless of which lookup shape is being
+                // built. Does NOT affect LayoutGroupStamper's pinned-tile path (bypasses this lookup
+                // entirely) -- see ExcludedTileRegressionTests for the static guarantee that no excluded
+                // ID is ever a wired SetPieces/ExitGroups group member.
+                if (excludedTiles != null && excludedTiles.Count > 0 && excludedTiles.Contains(tile.TileId))
+                    continue;
 
                 var isFlat = tile.CornerHeights[0] == 0 && tile.CornerHeights[1] == 0 &&
                              tile.CornerHeights[2] == 0 && tile.CornerHeights[3] == 0;
@@ -415,7 +427,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// was written.
         /// </summary>
         private static Dictionary<string, FeatureCandidateSet> BuildFeatureLookup(
-            TilesetModel tileset, IReadOnlyDictionary<string, int> featureTiles)
+            TilesetModel tileset, IReadOnlyDictionary<string, int> featureTiles,
+            IReadOnlyCollection<int> excludedTiles = null)
         {
             var lookup = new Dictionary<string, FeatureCandidateSet>();
 
@@ -438,6 +451,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                 var tileId = group.TileIds[0];
                 if (tileId < 0 || tileId >= tileset.Tiles.Count) continue;
+                // Confirmed placeholder/stub art (see DungeonTilesetProfile.ExcludedTiles) -- excluded
+                // from feature sprinkling too, the third of the three placement paths this mechanism
+                // must cover uniformly (legacy flat / height-aware candidate lookup above, feature
+                // sprinkling here).
+                if (excludedTiles != null && excludedTiles.Count > 0 && excludedTiles.Contains(tileId)) continue;
 
                 var tile = tileset.Tiles[tileId];
 

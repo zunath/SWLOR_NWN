@@ -378,6 +378,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public List<string> DoorSlotCrossers { get; set; } = new();
 
+        /// <summary>
+        /// Carried from MacroLayoutParameters.ExcludedTiles by MacroLayoutGenerator.Generate --
+        /// physical tile IDs TileResolver must never place for this composition (confirmed
+        /// placeholder/stub art, see DungeonTilesetProfile.ExcludedTiles). Empty = no exclusions for
+        /// this tileset (default; every tileset profile except twc03/fortinterior_legacy).
+        /// </summary>
+        public HashSet<int> ExcludedTiles { get; set; } = new();
+
         public MacroLayout(CornerTerrainGrid corners)
         {
             Corners = corners;
@@ -585,6 +593,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// same way a canonical Doorway/Bridge door-slot tile always has.
         /// </summary>
         public List<string> DoorSlotCrossers { get; set; } = new();
+
+        /// <summary>
+        /// Physical tile IDs TileResolver must never place for this composition -- usually stamped
+        /// from DungeonTilesetProfile.ExcludedTiles by DungeonComposition.BuildLayoutParameters. Empty
+        /// = no exclusions (default; fully back-compat -- see DungeonTilesetProfile.ExcludedTiles for
+        /// when a tileset profile declares this).
+        /// </summary>
+        public HashSet<int> ExcludedTiles { get; set; } = new();
 
         /// <summary>
         /// Number of raised-corner regions LayoutElevationPainter attempts to paint after fences are

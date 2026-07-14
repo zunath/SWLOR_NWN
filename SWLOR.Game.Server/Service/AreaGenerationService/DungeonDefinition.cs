@@ -229,6 +229,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public List<string> DoorSlotCrossers { get; set; } = new();
 
         /// <summary>
+        /// Physical tile IDs this tileset's real .set data resolves to structurally (real, non-PADDING
+        /// corners -- the resolver would legitimately place them), but whose MODEL is confirmed
+        /// placeholder/stub art that renders wrong in-game (e.g. twc03's "xyz" family: 15 tile IDs
+        /// whose models are literal ASCII stubs with an untextured -- bitmap NULL -- rendered trimesh
+        /// node sitting on real geometry, verified directly by dumping the raw .mdl content; they
+        /// render as flat white tiles in Fort Complex generations). Empty = no exclusions (default;
+        /// every existing tileset profile). Consumed by DungeonComposition.BuildLayoutParameters,
+        /// threaded through MacroLayoutParameters/MacroLayout, and enforced by TileResolver at the
+        /// lowest shared candidate-lookup level so every placement path (legacy flat, height-aware,
+        /// feature sprinkling) skips them uniformly. Does NOT affect LayoutGroupStamper's pinned-tile
+        /// path (set pieces/exit groups bypass candidate lookup entirely) -- see
+        /// ExcludedTileRegressionTests, which statically asserts none of these IDs are members of any
+        /// SetPieces/ExitGroups group this profile wires, so that bypass never matters in practice.
+        /// </summary>
+        public HashSet<int> ExcludedTiles { get; set; } = new();
+
+        /// <summary>
         /// True for a profile that recomposes an ALREADY-onboarded tileset resref against a different
         /// terrain/district palette (e.g. "crypt_grey" recomposing tdc01's Grey palette alongside the
         /// base "crypt" profile's Tan palette) rather than onboarding a new physical tileset. Palette
@@ -360,6 +377,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             parameters.SetPieces = Tileset.SetPieces;
             parameters.ExitGroups = Tileset.ExitGroups;
             parameters.DoorSlotCrossers = Tileset.DoorSlotCrossers;
+            parameters.ExcludedTiles = Tileset.ExcludedTiles;
             // Layout expresses intent (e.g. StandardLayoutProfiles.Complex's ElevationRegions), the
             // tileset profile caps it to verified support -- 0 on every profile except
             // BaseGameTilesetProfiles.Dungeon means this is a no-op everywhere else today.
@@ -785,6 +803,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder DoorSlotCrossers(params string[] crossers)
         {
             _active.DoorSlotCrossers.AddRange(crossers);
+            return this;
+        }
+
+        /// <summary>
+        /// Declares one or more physical tile IDs this profile must never place, regardless of how
+        /// structurally valid the corner/edge/group data looks -- see
+        /// DungeonTilesetProfile.ExcludedTiles for when to use this (confirmed placeholder/stub art,
+        /// not a structural gap). Only call this after confirming the model itself is broken (dump
+        /// the raw .mdl and verify a rendered mesh node has no real texture) -- TileResolver still
+        /// trusts every OTHER tile's shape data blindly, so this is a deliberate art-only override,
+        /// not a structural re-verification.
+        /// </summary>
+        public DungeonTilesetProfileBuilder ExcludedTiles(params int[] tileIds)
+        {
+            foreach (var tileId in tileIds)
+                _active.ExcludedTiles.Add(tileId);
             return this;
         }
 

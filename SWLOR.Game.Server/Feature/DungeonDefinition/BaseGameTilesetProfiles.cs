@@ -1583,9 +1583,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // matching the tileset's own actual door inventory. Many groups are prefixed "OLD_" (legacy
             // authored content the tileset keeps for back-compat) but still structurally classify as
             // CorridorStub (all-solid-cornered, single Corridor edge, e.g. OLD_Bedroom_01_1x1/
-            // OLD_Library_1x1/OLD_Storage_1x1/OLD_Generic_Room_1x1/OLD_Cells_1x1) -- included per this
-            // profile's own precedent of registering structurally-valid pieces regardless of a
-            // "legacy"-sounding name. Their non-"OLD_" *_2x1/*_2x2/*_1x2 replacements (StoreRoom_2x2L,
+            // OLD_Library_1x1/OLD_Storage_1x1/OLD_Generic_Room_1x1/OLD_Cells_1x1) -- these five USED to
+            // be wired per this profile's own precedent of registering structurally-valid pieces
+            // regardless of a "legacy"-sounding name, but are REMOVED below: each one's sole
+            // floor/entrance tile turned out to be one of twc03's 15 confirmed-placeholder "xyz"-family
+            // models (see the PLACEHOLDER ART note further down and FortInteriorLegacy's own doc
+            // comment for the full evidence). Their non-"OLD_" *_2x1/*_2x2/*_1x2 replacements (StoreRoom_2x2L,
             // Cells_2x2, Kitchen_1x2, Generic_Room_2x1/2x2, Barracks_2x2, Bedroom_02_2x2/03_2x1,
             // Smithy_1x2, Portal_Hall_2x3) each carry a Doorway edge together with a door slot on the
             // same member tile -- LayoutGroupStamper's WallRoom classification now tolerates this shape
@@ -1616,6 +1619,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // (TileDoorPlanner's TryGetSingleDoorwaySlot requires a genuine Doorway edge, which none of
             // these three have) -- a genuinely different, unaddressed door mechanism, left exempt (see
             // TileCoverageCensusTests.PilotExpectedExemptions).
+            //
+            // PLACEHOLDER ART: ExcludedTiles(...) below declares the 15 "xyz"-family physical tile IDs
+            // (twc03_xyz_01 through _15) confirmed to be placeholder-art stubs -- see
+            // FortInteriorLegacy's doc comment for the full evidence. FIVE of the "OLD_"-prefixed
+            // groups those IDs belong to have no non-"OLD_" replacement at all (a 1x1 room has no
+            // "OLD_"/current pair the way the 2x1/2x2/1x2 families do) and so USED to be wired directly
+            // here too -- OLD_Bedroom_01_1x1, OLD_Cells_1x1, OLD_Library_1x1, OLD_Storage_1x1,
+            // OLD_Generic_Room_1x1 (tiles 46/58/107/111/118) -- and are REMOVED below for the same
+            // reason FortInteriorLegacy dropped its whole "OLD_" family. The other ten "OLD_"-prefixed
+            // groups (the ones WITH a non-"OLD_" replacement) were never wired in this base profile to
+            // begin with (superseded by the replacements above).
             _builder.Create(FortInterior, "Fort Interior")
                 .Tileset("twc03")
                 .Placeholder("gen_placeholder1")
@@ -1623,6 +1637,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PrimaryOpenTerrain("floor")
                 .AccentTerrain("water")
                 .DoorSlotCrossers("corridor", "wall")
+                .ExcludedTiles(42, 44, 46, 47, 49, 51, 58, 73, 81, 84, 107, 111, 116, 118, 119)
                 .SetPiece("Arena_1x2")
                 .SetPiece("Storage_1x1_1")
                 .SetPiece("Dais_1x2")
@@ -1631,11 +1646,6 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Corr_SpiralStair_updown", 1)
                 .SetPiece("Corr_SpiralStair_up", 1)
                 .SetPiece("Corr_SpiralStair_down", 1)
-                .SetPiece("OLD_Bedroom_01_1x1", 1)
-                .SetPiece("OLD_Cells_1x1", 1)
-                .SetPiece("OLD_Library_1x1", 1)
-                .SetPiece("OLD_Storage_1x1", 1)
-                .SetPiece("OLD_Generic_Room_1x1", 1)
                 .SetPiece("Corridor_Exit", 1)
                 .SetPiece("Room_1x2")
                 .SetPiece("LargeGate_1x2")
@@ -1659,15 +1669,30 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Fort Interior (Legacy) -- twc03's "OLD_"-prefixed superseded furnished-room family, a
             // PaletteVariant profile recomposing the SAME twc03 hak data the base FortInterior profile
             // above uses. Same solid/open/accent terrain, same base-shape pieces (Arena/Storage/Dais/
-            // Stairway/Corr_SpiralStair/OLD_*_1x1/Corridor_Exit/Room_1x2/LargeGate/Fireplace/Platform),
-            // but swaps the CURRENT non-"OLD_" furnished-room replacements for their "OLD_"-prefixed
-            // originals (OLD_StoreRoom_2x2L_old, OLD_Cells_2x2_old, OLD_Kitchen_1x2, OLD_Generic_Room_2x1/
-            // 2x2, OLD_Barracks_2x2, OLD_Bedroom_02_2x1, OLD_Bedroom_03_2x1, OLD_Smithy_1x2,
-            // OLD_Portal_Hall_2x3) plus Mythallar_3x3 -- each carries the plain "corridor" body crosser
-            // directly on its entrance/wall tile instead of a Doorway-family port, which
-            // LayoutGroupStamper's CorridorStubChain classification/placement now reaches (see
-            // FortInterior's own doc comment above and TryPlaceCorridorStubChain). Verified via direct
-            // pipeline sweep (OnboardedTilesetPipelineTests.CorridorStubChainFamily_ComplexActuallyPlacesTheGroup).
+            // Stairway/Corr_SpiralStair/Corridor_Exit/Room_1x2/LargeGate/Fireplace/Platform/
+            // Mythallar_3x3).
+            //
+            // PLACEHOLDER ART: every "OLD_"-prefixed furnished-room group this profile used to swap in
+            // (OLD_Bedroom_01_1x1, OLD_Cells_1x1, OLD_Library_1x1, OLD_Storage_1x1,
+            // OLD_Generic_Room_1x1, OLD_StoreRoom_2x2L_old, OLD_Cells_2x2_old, OLD_Kitchen_1x2,
+            // OLD_Generic_Room_2x1/2x2, OLD_Barracks_2x2, OLD_Bedroom_02_2x1, OLD_Bedroom_03_2x1,
+            // OLD_Smithy_1x2, OLD_Portal_Hall_2x3) has its floor/entrance tile as one of twc03's 15
+            // "xyz"-family models (twc03_xyz_01 through _15, one per group, a 1:1 mapping verified
+            // directly against the raw .set group data). Those models are literal Tyrants-of-the-
+            // Moonsea (xp3.bif) placeholder stubs: 1.8-4.7KB hand-written ASCII .mdl files whose visible
+            // render trimesh has "bitmap NULL" (no texture at all) sitting on top of or instead of the
+            // room's floor -- confirmed by dumping the raw model text (see
+            // audit_placeholder_art.py in the procedural-areas scratchpad) -- and they render as flat
+            // white tiles in-game. All 15 groups are removed here (not just their broken tile) since a
+            // furnished room missing its own floor/entrance tile isn't a usable set piece regardless.
+            // ExcludedTiles(...) below declares the 15 physical IDs so TileResolver's shared candidate
+            // lookup also refuses them if a future change ever makes one reachable outside group
+            // stamping; TileCoverageCensusTests' new PlaceholderArtExemptionReason category accounts for
+            // these 15 tiles AND their now-unwired sibling group members (e.g. OLD_Bedroom_02_2x1's
+            // second tile) instead of counting them "covered". See
+            // ExcludedTileRegressionTests for the static group-membership assertion and the
+            // Complex-layout placement sweep.
+            //
             // Large_Door is NOT wired here either: its TILE36 has mixed floor/black corners and never
             // classifies under any mechanism (see TileCoverageCensusTests.PilotExpectedExemptions).
             // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area
@@ -1680,6 +1705,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PrimaryOpenTerrain("floor")
                 .AccentTerrain("water")
                 .DoorSlotCrossers("corridor", "wall")
+                .ExcludedTiles(42, 44, 46, 47, 49, 51, 58, 73, 81, 84, 107, 111, 116, 118, 119)
                 .SetPiece("Arena_1x2")
                 .SetPiece("Storage_1x1_1")
                 .SetPiece("Dais_1x2")
@@ -1688,27 +1714,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Corr_SpiralStair_updown", 1)
                 .SetPiece("Corr_SpiralStair_up", 1)
                 .SetPiece("Corr_SpiralStair_down", 1)
-                .SetPiece("OLD_Bedroom_01_1x1", 1)
-                .SetPiece("OLD_Cells_1x1", 1)
-                .SetPiece("OLD_Library_1x1", 1)
-                .SetPiece("OLD_Storage_1x1", 1)
-                .SetPiece("OLD_Generic_Room_1x1", 1)
                 .SetPiece("Corridor_Exit", 1)
                 .SetPiece("Room_1x2")
                 .SetPiece("LargeGate_1x2")
                 .SetPiece("LargeGate_Exit")
                 .SetPiece("Fireplace")
                 .SetPiece("Platform_1x2_01")
-                .SetPiece("OLD_StoreRoom_2x2L_old")
-                .SetPiece("OLD_Cells_2x2_old")
-                .SetPiece("OLD_Kitchen_1x2")
-                .SetPiece("OLD_Generic_Room_2x1")
-                .SetPiece("OLD_Generic_Room_2x2")
-                .SetPiece("OLD_Barracks_2x2")
-                .SetPiece("OLD_Bedroom_02_2x1")
-                .SetPiece("OLD_Bedroom_03_2x1")
-                .SetPiece("OLD_Smithy_1x2")
-                .SetPiece("OLD_Portal_Hall_2x3")
                 .SetPiece("Mythallar_3x3")
                 .ExitGroup("Exit_1x1")
                 .ExitGroup("Exit_Down_1x1")

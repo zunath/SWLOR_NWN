@@ -493,17 +493,19 @@ public class OnboardedTilesetPipelineTests
     /// CorridorStub does -- see TryPlaceCorridorStubChain) actually places real tiles in a generated
     /// layout. Barrows/tbw01's CorridorDown_1x2/Corridor_Up_1x2/Corridor_Up_1x2_02 (body crosser
     /// "corridor", the composition's own declared Custom body); Castle Interior 2/tni02's Mythallar_3x3
-    /// and Fort Interior (Legacy)/fortinterior_legacy's OLD_*/Mythallar_3x3 families (body crosser the
-    /// canonical "Corridor", matched case-insensitively against their "corridor"/"Corridor"-cased data).
+    /// and Fort Interior (Legacy)/fortinterior_legacy's Mythallar_3x3 (body crosser the canonical
+    /// "Corridor", matched case-insensitively against their "corridor"/"Corridor"-cased data).
+    /// fortinterior_legacy's candidate list used to also cover its whole "OLD_"-prefixed furnished-room
+    /// family (StoreRoom_2x2L_old/Cells_2x2_old/Kitchen_1x2/Generic_Room_2x1/2x2/Barracks_2x2/
+    /// Bedroom_02/03_2x1/Smithy_1x2/Portal_Hall_2x3) -- that family's SetPiece wiring was REMOVED
+    /// (BaseGameTilesetProfiles.FortInteriorLegacy) once every one of those groups' floor/entrance
+    /// tiles turned out to be confirmed placeholder art (twc03's 15 "xyz"-family models, see that
+    /// profile's own doc comment and DungeonTilesetProfile.ExcludedTiles), so only Mythallar_3x3
+    /// remains as this profile's CorridorStubChain showcase.
     /// </summary>
     [TestCase(BaseGameTilesetProfiles.Barrows, new[] { 68, 69, 71, 72, 133, 134 })]
     [TestCase(BaseGameTilesetProfiles.CastleInterior2, new[] { 201, 202, 203, 204, 205, 206, 207, 208, 209 })]
-    [TestCase(BaseGameTilesetProfiles.FortInteriorLegacy, new[]
-    {
-        81, 82, 83, 84, 85, 86, 44, 45, 116, 117, 119, 120, 121, 122,
-        51, 52, 53, 54, 47, 48, 49, 50, 42, 43, 73, 74, 75, 76, 77, 78,
-        59, 60, 61, 62, 63, 64, 65, 66, 67,
-    })]
+    [TestCase(BaseGameTilesetProfiles.FortInteriorLegacy, new[] { 59, 60, 61, 62, 63, 64, 65, 66, 67 })]
     public void CorridorStubChainFamily_ComplexActuallyPlacesTheGroup(string tilesetKey, int[] candidateTileIds)
     {
         var tilesetProfile = TilesetProfiles[tilesetKey];

@@ -941,6 +941,16 @@ public class TileCoverageCensusTests
     private const string HeightExemptionReason = "requires height support";
     private const string AlternateVocabExemptionReason =
         "alternate-palette/decorative vocabulary (terrain or crosser name outside this pilot's wired vocabulary); out of scope for this pilot";
+    /// <summary>
+    /// Auto-tagged, evidence-backed exemption for a tile a tileset profile has declared in
+    /// DungeonTilesetProfile.ExcludedTiles (confirmed placeholder/stub art -- e.g. twc03's 15 "xyz"-
+    /// family tiles, see BaseGameTilesetProfiles.FortInteriorLegacy's own doc comment). Applied to the
+    /// excluded tile itself AND every sibling member of the same group (a furnished room missing its
+    /// own floor/entrance tile is not a usable set piece regardless of whether its OTHER member tiles
+    /// are individually fine) -- mirroring HeightExemptionReason/AlternateVocabExemptionReason's own
+    /// "tag the whole group" shape.
+    /// </summary>
+    private const string PlaceholderArtExemptionReason = "confirmed placeholder/stub art (see DungeonTilesetProfile.ExcludedTiles)";
 
     /// <summary>
     /// Per-tileset terrain names that exist ONLY as an alternate decorative palette or an extra
@@ -1311,10 +1321,15 @@ public class TileCoverageCensusTests
         // exactly as reachable as a currently-wired one per this class's own doc comment. The primary
         // profile is always included (a resref with no variants yields a single-entry list, unchanged
         // behavior from before this loop existed).
-        var allVocabs = new BaseGameTilesetProfiles().BuildTilesetProfiles().Values
+        var profilesForResref = new BaseGameTilesetProfiles().BuildTilesetProfiles().Values
             .Where(p => Eq(p.TilesetResref, tilesetResref))
-            .Select(p => BuildVocabulary(model, p))
             .ToList();
+        var allVocabs = profilesForResref.Select(p => BuildVocabulary(model, p)).ToList();
+        // Union across every profile sharing this TilesetResref, mirroring allVocabs' own "any variant
+        // profile" reachability rule in reverse: a tile confirmed as placeholder/stub art (see
+        // DungeonTilesetProfile.ExcludedTiles) is never genuinely reachable regardless of which profile
+        // variant a future change might wire it through.
+        var excludedTiles = profilesForResref.SelectMany(p => p.ExcludedTiles).ToHashSet();
         // Built once per tileset and shared by every relief BFS probe below -- see
         // TileResolver.HeightAwareProbeCache's own doc comment on why per-probe rebuilds are not ok.
         var probeCache = TileResolver.BuildHeightAwareProbeCache(model);
@@ -1352,6 +1367,17 @@ public class TileCoverageCensusTests
             var members = group.TileIds.Where(id => id >= 0 && id < model.Tiles.Count).Select(id => model.Tiles[id]).ToList();
             if (members.Count == 0) continue;
             var memberIds = members.Select(m => m.TileId).ToList();
+
+            // Confirmed placeholder/stub art: checked BEFORE mechanism classification (not merely as a
+            // fallback) -- a group whose signature tile is broken art is never a usable set piece
+            // regardless of whether its shape would otherwise classify, and no profile still wires it
+            // (see BaseGameTilesetProfiles.FortInteriorLegacy, which removed these groups' SetPiece
+            // calls entirely).
+            if (memberIds.Any(excludedTiles.Contains))
+            {
+                foreach (var id in memberIds) Exempt(id, $"TILE{id} (group '{group.Name}')", PlaceholderArtExemptionReason);
+                continue;
+            }
 
             var mechanism = GroupMechanism.None;
             if (IsFeatureTileEligible(model, group)) mechanism = GroupMechanism.FeatureTile;
@@ -1396,6 +1422,8 @@ public class TileCoverageCensusTests
             if (exemptedTileIds.Contains(tileId)) continue;
 
             var tile = model.Tiles[tileId];
+
+            if (excludedTiles.Contains(tileId)) { Exempt(tileId, $"TILE{tileId}", PlaceholderArtExemptionReason); continue; }
 
             if (allVocabs.Any(candidateVocab => IsCornerEdgeResolverReachable(model, tile, candidateVocab)))
             { Cover(tileId, "CornerEdgeResolver"); continue; }

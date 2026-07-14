@@ -128,6 +128,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             layout.SetPieces = parameters.SetPieces;
             layout.ExitGroups = parameters.ExitGroups;
             layout.DoorSlotCrossers = parameters.DoorSlotCrossers;
+            layout.ExcludedTiles = parameters.ExcludedTiles;
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);

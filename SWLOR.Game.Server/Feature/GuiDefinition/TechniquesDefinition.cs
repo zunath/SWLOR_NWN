@@ -50,25 +50,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         // Fixed-width control column between the two lists. Pinning its width keeps
                         // the buttons compact and lets the flanking lists claim the rest of the row.
+                        // The buttons carry their own fixed width and are centered with spacers so
+                        // they never overflow into the Equipped list on the right.
                         row.AddColumn(col2 =>
                         {
-                            col2.SetWidth(120f);
+                            col2.SetWidth(130f);
                             col2.AddRow(row2 => row2.AddSpacer());
                             col2.AddRow(row2 =>
                             {
+                                row2.AddSpacer();
                                 row2.AddButton()
                                     .SetText("Equip ->")
                                     .SetHeight(32f)
+                                    .SetWidth(110f)
                                     .BindIsEnabled(model => model.IsEquipEnabled)
                                     .BindOnClicked(model => model.OnClickEquip());
+                                row2.AddSpacer();
                             });
                             col2.AddRow(row2 =>
                             {
+                                row2.AddSpacer();
                                 row2.AddButton()
                                     .SetText("<- Unequip")
                                     .SetHeight(32f)
+                                    .SetWidth(110f)
                                     .BindIsEnabled(model => model.IsUnequipEnabled)
                                     .BindOnClicked(model => model.OnClickUnequip());
+                                row2.AddSpacer();
                             });
                             col2.AddRow(row2 => row2.AddSpacer());
                         });

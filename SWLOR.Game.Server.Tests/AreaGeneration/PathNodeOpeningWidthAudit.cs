@@ -22,13 +22,15 @@ internal static class PathNodeOpeningWidthAudit
     /// Returns 2 if every partially-open corner combo's candidates lack a pathnode-'A' tile (a 1-wide
     /// opening can never path through), otherwise 1 (some partial combo is fully pathable, so 1-wide
     /// openings work). <paramref name="openTerrain"/> defaults to the tileset's declared floor terrain
-    /// when empty, matching DungeonTilesetProfile.PrimaryOpenTerrain's own empty-means-floor default.
+    /// when empty, matching DungeonTilesetProfile.PrimaryOpenTerrain's own empty-means-floor default;
+    /// <paramref name="solidTerrain"/> defaults to the tileset's declared Default terrain, matching
+    /// DungeonTilesetProfile.SolidTerrainOverride's own empty-means-Default (the exterior inversion).
     /// </summary>
-    public static int DetermineMinimumOpeningWidth(TilesetModel model, string openTerrain = null)
+    public static int DetermineMinimumOpeningWidth(TilesetModel model, string openTerrain = null, string solidTerrain = null)
     {
         if (model == null) throw new ArgumentNullException(nameof(model));
 
-        var solid = model.DefaultTerrain;
+        var solid = string.IsNullOrEmpty(solidTerrain) ? model.DefaultTerrain : solidTerrain;
         var open = string.IsNullOrEmpty(openTerrain) ? model.FloorTerrain : openTerrain;
 
         // Bit 0=TopLeft, 1=TopRight, 2=BottomRight, 3=BottomLeft; 1 = open, 0 = solid.

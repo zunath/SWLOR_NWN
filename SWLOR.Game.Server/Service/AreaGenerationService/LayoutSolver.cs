@@ -32,6 +32,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// caller-specific overrides apply) -- everything except Width/Height/SolidTerrain/OpenTerrain,
         /// which this method stamps itself every attempt from <paramref name="width"/>/
         /// <paramref name="height"/>/<paramref name="tileset"/>/<paramref name="openTerrainOverride"/>.
+        /// SolidTerrain is only stamped when the base parameters carry none: a tileset profile may
+        /// declare an explicit solid (the exterior inversion, stamped by BuildLayoutParameters -- see
+        /// DungeonTilesetProfile.SolidTerrainOverride), which wins over the tileset's GENERAL Default.
         /// </summary>
         public static LayoutSolverResult Solve(
             MacroLayoutParameters baseParameters,
@@ -57,7 +60,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var parameters = baseParameters.Clone();
                 parameters.Width = width;
                 parameters.Height = height;
-                parameters.SolidTerrain = tileset.DefaultTerrain;
+                if (string.IsNullOrEmpty(parameters.SolidTerrain))
+                    parameters.SolidTerrain = tileset.DefaultTerrain;
                 parameters.OpenTerrain = string.IsNullOrEmpty(openTerrainOverride)
                     ? tileset.FloorTerrain
                     : openTerrainOverride;

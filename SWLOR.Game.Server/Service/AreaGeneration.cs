@@ -108,7 +108,11 @@ namespace SWLOR.Game.Server.Service
                 };
                 layoutParameters.Width = request.Width;
                 layoutParameters.Height = request.Height;
-                layoutParameters.SolidTerrain = model.DefaultTerrain;
+                // A composed layout may already carry an explicit solid (the exterior inversion --
+                // see DungeonTilesetProfile.SolidTerrainOverride); only default to the tileset's
+                // GENERAL Default terrain when none was declared, mirroring LayoutSolver.Solve.
+                if (string.IsNullOrEmpty(layoutParameters.SolidTerrain))
+                    layoutParameters.SolidTerrain = model.DefaultTerrain;
                 layoutParameters.OpenTerrain = string.IsNullOrEmpty(request.OpenTerrainOverride)
                     ? model.FloorTerrain
                     : request.OpenTerrainOverride;

@@ -432,4 +432,67 @@ public class LayoutReliefPainterTests
         slopeLaneSeeds.Should().BeGreaterThan(0,
             "across 60 seeds the relief pass must splice at least one Slope lane in a real tdm01 layout");
     }
+
+    /// <summary>
+    /// The exterior twin (Desert/ttd01 and Forest/ttf01, the wave that motivated profile-declared
+    /// ramp crossers on OUTDOOR ground): each profile declares its own ramp-lane vocabulary
+    /// (RampCrosser("Dunes") / RampCrosser("Slope")) plus MaxElevationRegions/MaxReliefRegions(2),
+    /// and the real Complex composition must actually write at least one declared ramp-crosser lane
+    /// AND stamp the tileset's baked-mesh 1x1 raised "Ramp" group (a ReliefPiece pin -- it can never
+    /// arrive via the corner/edge resolver) across the seed sweep. This is the placement proof
+    /// behind the census's TerrainRelief/ReliefPiece credits for these tilesets.
+    /// </summary>
+    [TestCase(BaseGameTilesetProfiles.Desert, "Dunes")]
+    [TestCase(BaseGameTilesetProfiles.Forest, "Slope")]
+    public void RealExteriorComplexComposition_SplicesRampLanesAndStampsRampPieces(string tilesetKey, string rampCrosser)
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[tilesetKey];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = TilesetTestSource.LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        var rampPieceTileIds = model.Groups
+            .Where(g => g.Name == "Ramp")
+            .SelectMany(g => g.TileIds.Where(id => id >= 0))
+            .ToHashSet();
+        rampPieceTileIds.Should().NotBeEmpty($"{tilesetProfile.TilesetResref} must carry the configured Ramp group");
+
+        var resolvedCount = 0;
+        var rampLaneSeeds = 0;
+        var rampPiecePinCount = 0;
+        const int size = 24;
+
+        for (var seed = 9300; seed < 9360; seed++)
+        {
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            parameters.RampCrosser.Should().Be(rampCrosser, $"the {tilesetKey} profile declares its ramp crosser");
+            parameters.ReliefRegions.Should().BeGreaterThan(0, $"{tilesetKey}/Complex must actually request relief regions");
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            if (!solved.Success) continue;
+            resolvedCount++;
+
+            var crossers = solved.Layout.Crossers;
+            var anyLane = false;
+            for (var x = 0; x < crossers.Width && !anyLane; x++)
+            for (var y = 0; y < crossers.Height && !anyLane; y++)
+            for (var slot = 0; slot < 4 && !anyLane; slot++)
+            {
+                if (string.Equals(crossers.GetEdge(x, y, slot), rampCrosser, StringComparison.Ordinal)) anyLane = true;
+            }
+            if (anyLane) rampLaneSeeds++;
+
+            rampPiecePinCount += solved.Resolved.Tiles.Count(t => rampPieceTileIds.Contains(t.TileId));
+        }
+
+        resolvedCount.Should().BeGreaterThan(0, "at least some seeds must generate successfully");
+        rampLaneSeeds.Should().BeGreaterThan(0,
+            $"across 60 seeds the elevation/relief passes must write at least one {rampCrosser} lane in a real {tilesetProfile.TilesetResref} layout");
+        rampPiecePinCount.Should().BeGreaterThan(0,
+            $"across 60 seeds LayoutGroupStamper's ReliefPiece kind must stamp the baked-mesh Ramp group at least once in a real {tilesetProfile.TilesetResref} layout");
+    }
 }

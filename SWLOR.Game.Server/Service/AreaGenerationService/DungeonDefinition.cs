@@ -79,6 +79,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int MinimumOpeningWidth { get; set; } = 1;
 
         /// <summary>
+        /// Terrain used for the SOLID (wall/impassable) mass. Empty = the tileset's declared Default
+        /// terrain, which is correct for every interior tileset (their GENERAL Default IS the wall).
+        /// EXTERIOR tilesets invert this: ttd01/ttf01/ttf02 declare Default==Floor=="Desert"/"Forest"
+        /// (the WALKABLE ground -- their fully-open Desert/Forest tiles are pathnode A) while the
+        /// impassable enclosure terrain is "Cliff" (whose fully-Cliff tile is pathnode-restricted), so
+        /// composing with the default solid would carve unwalkable rock "rooms" out of a walkable
+        /// "wall" mass. Declaring SolidTerrainOverride("Cliff") + PrimaryOpenTerrain("Desert") gives
+        /// real dungeon-style enclosure: cliff-walled canyons with walkable clearings. Consumed by
+        /// DungeonComposition.BuildLayoutParameters; LayoutSolver.Solve/AreaGeneration keep stamping
+        /// the tileset Default whenever the composed parameters carry no explicit solid.
+        /// </summary>
+        public string SolidTerrainOverride { get; set; } = string.Empty;
+
+        /// <summary>
         /// Terrain used for open/walkable space. Empty = the tileset's declared Floor terrain.
         /// Some tilesets keep their richest room vocabulary on a different terrain: zsf01's declared
         /// floor has a single fully-open tile while its 'floor' terrain carries the hand-built room
@@ -297,6 +311,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public MacroLayoutParameters BuildLayoutParameters()
         {
             var parameters = Layout.Template.Clone();
+            // Exterior solid inversion (see DungeonTilesetProfile.SolidTerrainOverride): stamp the
+            // profile's declared solid so LayoutSolver.Solve/AreaGeneration keep it instead of
+            // defaulting to the tileset's GENERAL Default terrain. Empty for every interior profile --
+            // Solve's own empty-means-Default stamp is unchanged there.
+            parameters.SolidTerrain = Tileset.SolidTerrainOverride ?? string.Empty;
             parameters.AccentTerrain =
                 parameters.AccentDensity > 0 && !string.IsNullOrEmpty(Tileset.AccentTerrain)
                     ? Tileset.AccentTerrain
@@ -642,6 +661,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// Overrides the terrain used for open space. Only set after verifying full (open, solid)
         /// corner coverage for that terrain among resolver-usable tiles.
         /// </summary>
+        /// <summary>
+        /// Overrides the SOLID (wall) terrain for tilesets whose GENERAL Default is actually the
+        /// walkable ground (the exterior inversion) -- see DungeonTilesetProfile.SolidTerrainOverride.
+        /// Only set after verifying full 16/16 simple-tile coverage of PrimaryOpenTerrain against this
+        /// solid AND that the fully-open terrain tile is pathnode A.
+        /// </summary>
+        public DungeonTilesetProfileBuilder SolidTerrainOverride(string terrainName)
+        {
+            _active.SolidTerrainOverride = terrainName;
+            return this;
+        }
+
         public DungeonTilesetProfileBuilder PrimaryOpenTerrain(string terrainName)
         {
             _active.PrimaryOpenTerrain = terrainName;

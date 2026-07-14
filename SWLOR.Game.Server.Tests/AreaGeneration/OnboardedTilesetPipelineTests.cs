@@ -80,6 +80,14 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.DungeonSewer,
         BaseGameTilesetProfiles.DungeonIce,
         BaseGameTilesetProfiles.DungeonPit,
+        // Wave-3: the first EXTERIOR base-game tilesets (Desert/ttd01, Forest/ttf01 -- both resolved
+        // to their SWLOR hak copies -- and the BIF-only Forest - Facelift/ttf02). Each declares the
+        // INVERTED composition (SolidTerrainOverride("Cliff") + walkable Desert/Forest as the open
+        // terrain) and no Tunnel vocabulary exists through the cliff mass, so Complex downgrades to
+        // OpenLane -- see the wave comment in BaseGameTilesetProfiles.
+        BaseGameTilesetProfiles.Desert,
+        BaseGameTilesetProfiles.Forest,
+        BaseGameTilesetProfiles.ForestFacelift,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a
@@ -159,7 +167,7 @@ public class OnboardedTilesetPipelineTests
         var profile = TilesetProfiles[tilesetKey];
         var model = LoadTileset(profile.TilesetResref);
 
-        var audited = PathNodeOpeningWidthAudit.DetermineMinimumOpeningWidth(model, profile.PrimaryOpenTerrain);
+        var audited = PathNodeOpeningWidthAudit.DetermineMinimumOpeningWidth(model, profile.PrimaryOpenTerrain, profile.SolidTerrainOverride);
 
         audited.Should().Be(profile.MinimumOpeningWidth,
             $"{tilesetKey}'s configured MinimumOpeningWidth must match the pathnode audit computed fresh from '{profile.TilesetResref}'");
@@ -506,6 +514,85 @@ public class OnboardedTilesetPipelineTests
         seedCount.Should().Be(30, "the seed loop must actually have run");
         sawAnyCandidateTile.Should().BeTrue(
             $"{tilesetKey}/Complex must actually place at least one of [{string.Join(",", candidateTileIds)}] (members of the newly-wired CorridorStubChain families) somewhere across the seed range");
+    }
+
+    /// <summary>
+    /// Locks in that the exterior wave's inverted composition (SolidTerrainOverride("Cliff") +
+    /// PrimaryOpenTerrain("Desert"/"Forest") -- see the wave comment in BaseGameTilesetProfiles)
+    /// actually places its all-walkable-ground decorative groups as OpenSetPieces INSIDE the carved
+    /// clearings -- ttd01 Ruin01_2x2/Marketplace/Oasis_3x3/Camp02_1x2/Barge/Dowager, ttf01 Ruin 1
+    /// (2x2)/Grove 1 (3x3)/Graveyard (1x2)/Plaza - Elven (3x3)/Tree - Giant (2x2)/..., ttf02's
+    /// vanilla equivalents -- not merely that TileCoverageCensusTests' structural probe agrees.
+    /// Candidate ids cover a representative member from every doorless decorative family per tileset
+    /// (any one placing proves that whole group stamped, since group writes are all-or-nothing).
+    /// Uses the generous large-room RoomsAndCorridors composition the OpenSetPiece precedent tests
+    /// established (StairsWallAlcoveAndBridgeInsertTests.OpenSetPieceDoorTolerance_*): OpenSetPiece
+    /// siting needs the footprint PLUS a 1-cell margin ring entirely inside one room's open tiles
+    /// while avoiding the room's own center anchor (IsOpenSetPieceSiteValid), which the standard
+    /// Complex/Halls room-size knobs rarely clear even for a 1x2 -- same mechanism, larger rooms.
+    /// </summary>
+    [TestCase(BaseGameTilesetProfiles.Desert, new[]
+    {
+        82, 83, 84, 85, 86, 87, 108, 109, 145, 146,
+        155, 156, 157, 158, 159, 160, 161, 162, 163, 371, 372, 386, 387,
+    })]
+    [TestCase(BaseGameTilesetProfiles.Forest, new[]
+    {
+        82, 83, 84, 85, 86, 87, 108, 109, 111, 112, 145, 146,
+        155, 156, 157, 158, 159, 160, 161, 162, 163, 828, 829, 836, 837,
+        1063, 1064, 1065, 1066, 1067, 1068, 1069, 1070, 1071,
+        1106, 1107, 1119, 1120, 1125, 1126, 1127, 1128,
+    })]
+    [TestCase(BaseGameTilesetProfiles.ForestFacelift, new[]
+    {
+        82, 83, 84, 85, 86, 87, 108, 109, 111, 112, 145, 146,
+        155, 156, 157, 158, 159, 160, 161, 162, 163,
+    })]
+    public void ExteriorOpenSetPieceFamily_LargeRoomCompositionActuallyPlacesTheGroup(string tilesetKey, int[] candidateTileIds)
+    {
+        var tilesetProfile = TilesetProfiles[tilesetKey];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var failures = new List<string>();
+        var placed = 0;
+
+        for (var seed = 6000; seed < 6040; seed++)
+        {
+            var rng = new Random(seed);
+            var parameters = new MacroLayoutParameters
+            {
+                Style = DungeonLayoutStyle.RoomsAndCorridors,
+                MinRooms = 4,
+                MaxRooms = 6,
+                MinRoomCornerSize = 6,
+                MaxRoomCornerSize = 9,
+                CorridorWidth = 2,
+                LoopFactor = 0.3,
+                Width = 30,
+                Height = 30,
+                SolidTerrain = tilesetProfile.SolidTerrainOverride,
+                OpenTerrain = tilesetProfile.PrimaryOpenTerrain,
+                SetPieces = tilesetProfile.SetPieces,
+            };
+
+            MacroLayout macro;
+            try { macro = MacroLayoutGenerator.Generate(parameters, rng, model); }
+            catch (InvalidOperationException ex) { failures.Add($"seed {seed}: generation failed: {ex.Message}"); continue; }
+            macro.Seed = seed;
+
+            if (!TileResolver.TryResolve(model, macro, rng, out var resolved, out var reason))
+            {
+                failures.Add($"seed {seed}: resolution failed: {reason}");
+                continue;
+            }
+
+            foreach (var tile in resolved.Tiles)
+                if (candidateTileIds.Contains(tile.TileId)) placed++;
+        }
+
+        failures.Should().BeEmpty();
+        placed.Should().BeGreaterThan(0,
+            $"a generous large-room RoomsAndCorridors composition must stamp at least one of [{string.Join(",", candidateTileIds)}] (the exterior decorative OpenSetPiece families) for {tilesetKey} across 40 seeds");
     }
 
     /// <summary>

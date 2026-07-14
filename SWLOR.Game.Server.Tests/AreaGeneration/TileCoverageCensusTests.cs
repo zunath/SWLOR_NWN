@@ -86,7 +86,9 @@ public class TileCoverageCensusTests
     {
         return new TilesetVocabulary
         {
-            Solid = model.DefaultTerrain,
+            // Mirrors LayoutSolver.Solve's empty-means-Default solid stamp: an exterior profile may
+            // invert solid/open (see DungeonTilesetProfile.SolidTerrainOverride).
+            Solid = string.IsNullOrEmpty(profile.SolidTerrainOverride) ? model.DefaultTerrain : profile.SolidTerrainOverride,
             Open = string.IsNullOrEmpty(profile.PrimaryOpenTerrain) ? model.FloorTerrain : profile.PrimaryOpenTerrain,
             Secondary = profile.SecondaryOpenTerrain ?? string.Empty,
             Accent = profile.AccentTerrain ?? string.Empty,
@@ -975,6 +977,26 @@ public class TileCoverageCensusTests
         ["tni01"] = new(StringComparer.OrdinalIgnoreCase) { "livingroom", "kitchen", "shop" },
         ["tsw01"] = new(StringComparer.OrdinalIgnoreCase),
         ["twc03"] = new(StringComparer.OrdinalIgnoreCase),
+        // ttd01's hak copy (sw_t_tatooine) adds two village-hut ground palettes, "Svirfneblin" and
+        // "Poor": each blends ONLY with the walkable Desert terrain (best coverage 14/16, verified
+        // directly -- two missing combos -- and no Cliff blending at all), so no profile can wire
+        // either as an open terrain against the composed Cliff solid. This also auto-exempts the
+        // eight ungrouped Svirfneblin/Poor door-slot tiles (TILE203/205/207/208/211/212/221/223,
+        // bare door slots with no crosser -- TileDoorPlanner's single-Doorway-edge rule can never
+        // place them regardless).
+        ["ttd01"] = new(StringComparer.OrdinalIgnoreCase) { "Svirfneblin", "Poor" },
+        // ttf01's hak copy (sw_t_forest) carries four full unwired district palettes (GoodCastle/
+        // EvilCastle and RuralTrees/RuralWater, each blending only with the walkable Forest terrain
+        // -- out of this wave's scope, the tni01 livingroom/kitchen/shop precedent), one
+        // under-covered palette (Marsh, 14/16 against Forest), and two palettes that blend ONLY with
+        // Pit (Platform/HighForest, 2/16 against both Forest and Cliff -- no composition can make
+        // Pit its solid, so they are structurally out of reach for ANY profile). See
+        // BaseGameTilesetProfiles.Forest's own doc comment.
+        ["ttf01"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "GoodCastle", "EvilCastle", "Marsh", "Platform", "HighForest", "RuralTrees", "RuralWater",
+        },
+        ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     /// <summary>
@@ -1031,6 +1053,23 @@ public class TileCoverageCensusTests
         ["tni01"] = new(StringComparer.OrdinalIgnoreCase),
         ["tsw01"] = new(StringComparer.OrdinalIgnoreCase),
         ["twc03"] = new(StringComparer.OrdinalIgnoreCase),
+        // ttd01: "Dunes" is the profile's declared RampCrosser (raised dune-face lanes, credited via
+        // the relief/ramp classifiers), and Wall/Road/Trench are unwired same-name tunnel families
+        // whose flat, door-free tiles all resolve via CornerEdgeResolver regardless (the resolver
+        // registers every non-door crosser tile) -- no entries needed.
+        ["ttd01"] = new(StringComparer.OrdinalIgnoreCase),
+        // ttf01's hak copy carries eight crosser families beyond the wired Bridge channel, the
+        // declared Slope ramp crosser, and the resolver-covered Wall/Road/Stream: DlaEdgeFix,
+        // StoneBridge, RuralStream, MossWall, CityWall, RuinWall, RuralWallOne/Two. Entries here
+        // exempt the few flat door/group tiles on these families (e.g. "Bridge - Footbridge, Rural
+        // Stream", "Wall - Gate, Ruin"); their flat door-free tiles resolve via CornerEdgeResolver
+        // regardless.
+        ["ttf01"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "DlaEdgeFix", "StoneBridge", "RuralStream", "MossWall", "CityWall", "RuinWall",
+            "RuralWallOne", "RuralWallTwo",
+        },
+        ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -1144,12 +1183,78 @@ public class TileCoverageCensusTests
         ("twc03", "TILE125"),
         ("twc03", "TILE127"),
         ("twc03", "TILE128"),
+
+        // Desert (ttd01, hak copy) -- see BaseGameTilesetProfiles.Desert's own doc comment for the
+        // full reasoning. WallGate01/02 and TrenchBridge01/02 each carry TWO independent crosser
+        // families (Wall+Road / Trench+Road) on perpendicular opposite-edge pairs of the SAME tile --
+        // a "crossroads" gate shape no current mechanism models (both IsCorridorInsertEligible and
+        // ClassifyMultiTileSetPiece's IsAllowedMemberEdge require a single recognized crosser family
+        // per tile), and under the inverted composition their corners are OPEN (Desert) anyway, where
+        // no crosser-bearing group shape exists at all. Everything else in the hak's flat inventory
+        // classifies -- the all-Desert building/decor groups as OpenSetPieces, the ChasmStairs/Exit/
+        // CliffStairs/CaveEntrance door tiles as ExitGroups, and the Svirfneblin/Poor door tiles +
+        // the residual raised content via the two auto-tagged buckets (see
+        // PilotAlternateVocabTerrains["ttd01"] and the profile's own height-evidence comment).
+        ("ttd01", "GROUP:WallGate01"),
+        ("ttd01", "GROUP:WallGate02"),
+        ("ttd01", "GROUP:TrenchBridge01"),
+        ("ttd01", "GROUP:TrenchBridge02"),
+
+        // Forest (ttf01, hak copy) -- see BaseGameTilesetProfiles.Forest's own doc comment.
+        // "Wall - Gate 1/2, Forest" (Wall+Road) and "Bridge - Stream 1/2, Forest" (Stream+Road) are
+        // the identical two-crosser-family crossroads cells as Desert's. "Tower - Archer, Forest
+        // Wall" (TILE678, an opposite-Wall pair) and "Tower - Archer, Forest Wall Corner" (TILE677,
+        // an ADJACENT-Wall pair) sit on all-OPEN (Forest) corners: CorridorInsert's body-crosser
+        // shapes require all-SOLID corners (and the composed solid is Cliff, which no crosser family
+        // crosses -- see the wave comment in BaseGameTilesetProfiles), and 677's adjacent-pair turn
+        // shape is one CorridorInsert never matches under ANY family regardless. "Tower - Guard,
+        // Pit" (TILE963, uniform Pit, doorless, pathnode-restricted), "Island (3x3)" and "Ship -
+        // Air, Above Pit (3x1)" (uniform Pit), and "Temple - Elven 2 (3x3)" (Pit+Forest mixed) sit
+        // on accent/channel terrain -- no mechanism stamps groups onto accent territory
+        // (OpenSetPiece/WallAlcove pools are Solid/Open/Secondary only; the same gap as tdm01's
+        // Ship - Docked/Docks). "Bridge - Pit/Log/Rickety (1x3)" (Forest|Pit|Forest) and "Bridge -
+        // Forest Water (1x3)" (Forest|Water) are crosser-FREE channel-spanning decor -- nothing
+        // carves the fixed 3-cell accent span they'd need to straddle. "Cave - Cliff (2x3)" mixes
+        // THREE terrains (Cliff/Water/Forest), outside every two-terrain classifier (the Crypt
+        // Dwarven Cave Entrance gap). "House - Treehouse 3 (2x2)" mixes Water+Forest (accent-mixed
+        // corners).
+        ("ttf01", "GROUP:Wall - Gate 1, Forest"),
+        ("ttf01", "GROUP:Wall - Gate 2, Forest"),
+        ("ttf01", "GROUP:Bridge - Stream 1, Forest"),
+        ("ttf01", "GROUP:Bridge - Stream 2, Forest"),
+        ("ttf01", "GROUP:Tower - Archer, Forest Wall"),
+        ("ttf01", "GROUP:Tower - Archer, Forest Wall Corner"),
+        ("ttf01", "GROUP:Tower - Guard, Pit"),
+        ("ttf01", "GROUP:Island (3x3)"),
+        ("ttf01", "GROUP:Ship - Air, Above Pit (3x1)"),
+        ("ttf01", "GROUP:Temple - Elven 2 (3x3)"),
+        ("ttf01", "GROUP:Bridge - Pit (1x3)"),
+        ("ttf01", "GROUP:Bridge - Log (1x3)"),
+        ("ttf01", "GROUP:Bridge - Rickety (1x3)"),
+        ("ttf01", "GROUP:Bridge - Forest Water (1x3)"),
+        ("ttf01", "GROUP:Cave - Cliff (2x3)"),
+        ("ttf01", "GROUP:House - Treehouse 3 (2x2)"),
+
+        // Forest - Facelift (ttf02, BIF-only vanilla) -- see BaseGameTilesetProfiles.ForestFacelift's
+        // own doc comment. WallGate01/02 (Wall+Road) and StreamBridge01/02 (Stream+Road) are the
+        // same crossroads cells; Island_Tree (uniform-Pit 3x3 with one Bridge edge that never
+        // triggers CorridorStubChain, Bridge not being a body crosser) and Island_Connector (1x1,
+        // Forest+Pit mixed) are accent-terrain groups no mechanism stamps -- the same gap as ttf01's
+        // Island (3x3). The all-Forest decor (Ruin01/02, Camp02, Graveyard_1x2, Meeting_Area,
+        // Grove01_3x3) classifies as OpenSetPieces under the inverted composition.
+        ("ttf02", "GROUP:WallGate01"),
+        ("ttf02", "GROUP:WallGate02"),
+        ("ttf02", "GROUP:StreamBridge01"),
+        ("ttf02", "GROUP:StreamBridge02"),
+        ("ttf02", "GROUP:Island_Tree"),
+        ("ttf02", "GROUP:Island_Connector"),
     };
 
     public static IEnumerable<string> PilotTilesetKeys => new[]
     {
         "tdc01", "tde01", "tin01",
         "tbw01", "tdm01", "tdr01", "tic01", "tni02", "tid01", "tii01", "tni01", "tsw01", "twc03",
+        "ttd01", "ttf01", "ttf02",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -1171,6 +1276,9 @@ public class TileCoverageCensusTests
             "tni01" => BaseGameTilesetProfiles.CityInterior2,
             "tsw01" => BaseGameTilesetProfiles.Steamworks,
             "twc03" => BaseGameTilesetProfiles.FortInterior,
+            "ttd01" => BaseGameTilesetProfiles.Desert,
+            "ttf01" => BaseGameTilesetProfiles.Forest,
+            "ttf02" => BaseGameTilesetProfiles.ForestFacelift,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

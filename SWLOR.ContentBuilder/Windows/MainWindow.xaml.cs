@@ -592,9 +592,12 @@ namespace SWLOR.ContentBuilder.Windows
                 var openTerrain = string.IsNullOrEmpty(tilesetProfile.PrimaryOpenTerrain)
                     ? model.FloorTerrain
                     : tilesetProfile.PrimaryOpenTerrain;
+                var solidTerrain = string.IsNullOrEmpty(tilesetProfile.SolidTerrainOverride)
+                    ? model.DefaultTerrain
+                    : tilesetProfile.SolidTerrainOverride;
 
                 return TunnelVocabularyCheck.SupportsTunnels(
-                    model, openTerrain, tilesetProfile.SecondaryOpenTerrain, model.DefaultTerrain,
+                    model, openTerrain, tilesetProfile.SecondaryOpenTerrain, solidTerrain,
                     layoutProfile.Template.CorridorCrosserType);
             }
             catch

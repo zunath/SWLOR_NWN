@@ -335,8 +335,9 @@ try
         // every Alley tunnel port fails resolution outright ("No matching tile ... Right=Alley"); the
         // engine's own downgrade lands on Corridor (verified complete for tdr01).
         var effectiveOpenTerrain = string.IsNullOrEmpty(tileset.PrimaryOpenTerrain) ? model.FloorTerrain : tileset.PrimaryOpenTerrain;
+        var effectiveSolidTerrain = string.IsNullOrEmpty(tileset.SolidTerrainOverride) ? model.DefaultTerrain : tileset.SolidTerrainOverride;
         if (effectiveCrosserType == CorridorCrosserType.Alley &&
-            !TunnelVocabularyCheck.SupportsTunnels(model, effectiveOpenTerrain, tileset.SecondaryOpenTerrain, model.DefaultTerrain, CorridorCrosserType.Alley))
+            !TunnelVocabularyCheck.SupportsTunnels(model, effectiveOpenTerrain, tileset.SecondaryOpenTerrain, effectiveSolidTerrain, CorridorCrosserType.Alley))
         {
             Console.WriteLine(
                 $"{spec.Resref}: layout '{spec.Composition.Layout.DisplayName}' needs the Alley tile-shape inventory, which '{tileset.TilesetResref}' lacks — skipped (would duplicate the Complex-profile pairing for this tileset)");

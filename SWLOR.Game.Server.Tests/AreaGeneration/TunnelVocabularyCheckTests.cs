@@ -119,6 +119,14 @@ public class TunnelVocabularyCheckTests
         // DwarvenFloor open terrain -- Complex downgrades to OpenLane for this profile, the same
         // mechanism as Barrows' missing-Doorway gap. See BaseGameTilesetProfiles.CryptDwarven.
         BaseGameTilesetProfiles.CryptDwarven,
+        // The exterior wave: ttd01/ttf01/ttf02 declare NO canonical "Corridor"/"Doorway" crosser at
+        // all, and under the composed INVERTED solid (SolidTerrainOverride("Cliff") -- see the wave
+        // comment in BaseGameTilesetProfiles) no crosser family of any name crosses the cliff mass
+        // either (see ExteriorTilesets_CrosserFamiliesOnlyCrossTheWalkableGround below), so Complex
+        // genuinely downgrades to OpenLane for all three -- the Barrows/Crypt-Dwarven fallback.
+        BaseGameTilesetProfiles.Desert,
+        BaseGameTilesetProfiles.Forest,
+        BaseGameTilesetProfiles.ForestFacelift,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]
@@ -127,9 +135,10 @@ public class TunnelVocabularyCheckTests
         var profile = OnboardedProfiles[tilesetKey];
         var model = LoadTileset(profile.TilesetResref);
         var openTerrain = OpenTerrainFor(profile, model);
+        var solidTerrain = string.IsNullOrEmpty(profile.SolidTerrainOverride) ? model.DefaultTerrain : profile.SolidTerrainOverride;
 
         var supports = TunnelVocabularyCheck.SupportsTunnels(
-            model, openTerrain, profile.SecondaryOpenTerrain, model.DefaultTerrain, CorridorCrosserType.Corridor);
+            model, openTerrain, profile.SecondaryOpenTerrain, solidTerrain, CorridorCrosserType.Corridor);
 
         var shouldSupport = System.Array.IndexOf(ExpectedUnsupported, tilesetKey) < 0;
         supports.Should().Be(shouldSupport,
@@ -229,5 +238,36 @@ public class TunnelVocabularyCheckTests
         TunnelVocabularyCheck.SupportsTunnels(
                 model, "Desert", string.Empty, model.DefaultTerrain, CorridorCrosserType.Custom, "DesertTracks", "Doorway")
             .Should().BeTrue("DesertTracks is a second, fully shape-verified alternate body family alongside DesertCorridor -- a tileset profile carries only one Tunnel body/port slot, so this stays unwired (see BaseGameTilesetProfiles.MinesAndCavernsDesert)");
+    }
+
+    /// <summary>
+    /// The exterior wave's crosser families (Road/Wall/Trench/Stream, each a same-name body/port
+    /// pair) all run across the WALKABLE Desert/Forest ground and never cross the Cliff mass:
+    /// SupportsTunnels resolves the full shape inventory when the walkable terrain plays the solid
+    /// role (a data fact about where the crossers live -- the .set's degenerate Default==walkable
+    /// declaration), and fails under the composition's ACTUAL solid (SolidTerrainOverride("Cliff") --
+    /// see the wave comment in BaseGameTilesetProfiles), which is why no exterior profile declares
+    /// TunnelCrossers and Complex downgrades to OpenLane for all three (ExpectedUnsupported above).
+    /// </summary>
+    [TestCase("ttd01", "Desert", "Road")]
+    [TestCase("ttd01", "Desert", "Wall")]
+    [TestCase("ttd01", "Desert", "Trench")]
+    [TestCase("ttf01", "Forest", "Road")]
+    [TestCase("ttf01", "Forest", "Wall")]
+    [TestCase("ttf01", "Forest", "Stream")]
+    [TestCase("ttf02", "Forest", "Road")]
+    [TestCase("ttf02", "Forest", "Wall")]
+    [TestCase("ttf02", "Forest", "Stream")]
+    public void ExteriorTilesets_CrosserFamiliesOnlyCrossTheWalkableGround(string tilesetResref, string walkableTerrain, string family)
+    {
+        var model = LoadTileset(tilesetResref);
+
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, "Cliff", string.Empty, walkableTerrain, CorridorCrosserType.Custom, family, family)
+            .Should().BeTrue($"{tilesetResref}'s {family}/{family} family fully resolves when the walkable {walkableTerrain} plays the solid role -- the crossers all run across the ground");
+
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, walkableTerrain, string.Empty, "Cliff", CorridorCrosserType.Custom, family, family)
+            .Should().BeFalse($"no {family} shape crosses the Cliff mass, the composition's actual solid -- this is why the exterior profiles declare no TunnelCrossers");
     }
 }

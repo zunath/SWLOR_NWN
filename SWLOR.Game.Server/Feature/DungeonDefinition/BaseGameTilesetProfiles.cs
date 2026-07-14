@@ -80,6 +80,46 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string FortInterior = "fortinterior";
         public const string FortInteriorLegacy = "fortinterior_legacy";
 
+        // Wave-3: the first EXTERIOR base-game tilesets (ttd01/ttf01/ttf02) -- see the base-game tileset
+        // census (TileCoverageCensusTests.PilotTilesetKeys) for coverage numbers and
+        // TileCoverageCensusTests.PilotExpectedExemptions for the exact accounting. Resolution note:
+        // ttd01 and ttf01 have SWLOR hak copies (SWLOR_Haks/sw_t_tatooine/ttd01.set, 388 tiles, and
+        // SWLOR_Haks/sw_t_forest/ttf01.set, 1148 tiles -- both HasHeightTransition=1 supersets of the
+        // 212/168-tile vanilla versions the 2026-07-12 census was run against), and TilesetSetSource
+        // resolves hak copies FIRST, so these two profiles are curated against the hak data. ttf02 is
+        // genuinely BIF-only (no hak copy exists); it resolves from basegame_sets/ttf02.set, the
+        // committed vanilla extraction (HasHeightTransition=0, fully flat).
+        //
+        // All three share the SAME degenerate GENERAL quirk: Default and Floor are declared as the
+        // SAME terrain (Desert/Forest) -- and, worse than Barrows' variant of it, that shared terrain
+        // is the WALKABLE ground, not the wall: the fully-Desert/fully-Forest tiles are pathnode A,
+        // while the fully-Cliff tile is pathnode-restricted ('T') in all three (verified directly
+        // against the raw .set pathnode data). Composing with the engine's usual SolidTerrain=Default
+        // rule would therefore carve UNWALKABLE cliff "rooms" out of a walkable "wall" mass --
+        // inverted for gameplay. These profiles are the reason
+        // DungeonTilesetProfile.SolidTerrainOverride exists: each declares SolidTerrainOverride
+        // ("Cliff") + PrimaryOpenTerrain("Desert"/"Forest"), giving real dungeon-style enclosure --
+        // impassable cliff walls (including the area's forced solid border ring) around walkable
+        // desert/forest clearings. Coverage is symmetric (the Desert/Forest-vs-Cliff simple-tile pool
+        // covers all 16 combos under either orientation of the pair, verified directly), so the
+        // inversion costs nothing structurally.
+        //
+        // Tunnel vocabulary: NONE under the Cliff solid. Every crosser family in all three tilesets
+        // (Wall/Road/Trench/Stream/..., each a same-name body/port pair) resolves its full shape
+        // inventory ONLY against Solid=Desert/Forest compositions (verified directly via
+        // TunnelVocabularyCheck.SupportsTunnels over every ordered crosser pairing) -- roads, walls
+        // and streams all run across the walkable ground, and nothing crosses the cliff mass -- so
+        // Complex's Tunnel mode downgrades to OpenLane for all three (the Barrows/Crypt-Dwarven
+        // fallback, locked in by TunnelVocabularyCheckTests.ExpectedUnsupported).
+        //
+        // PathNodeOpeningWidthAudit (with the profile's own solid/open pair) confirms
+        // MinimumOpeningWidth stays the default 1 for all three (partial Cliff-vs-Desert/Forest
+        // combos carry pathnode-A candidates) -- locked in by
+        // OnboardedTilesetPipelineTests.MinimumOpeningWidth_MatchesFreshPathNodeAudit.
+        public const string Desert = "desert";
+        public const string Forest = "forest";
+        public const string ForestFacelift = "forest_facelift";
+
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
         public Dictionary<string, DungeonTilesetProfile> BuildTilesetProfiles()
@@ -1650,6 +1690,325 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit_1x1")
                 .ExitGroup("Exit_Down_1x1")
                 .ExitGroup("Exit_CollapsedWall");
+
+            // Desert (ttd01, SWLOR_Haks/sw_t_tatooine -- a 388-tile HasHeightTransition=1 superset of
+            // the 212-tile vanilla version; hak copies win TilesetSetSource resolution). See the
+            // wave-level comment at the Desert/Forest/ForestFacelift constants above for the shared
+            // INVERTED composition: SolidTerrainOverride("Cliff") + PrimaryOpenTerrain("Desert"),
+            // because the GENERAL Default ("Desert") is the WALKABLE ground here, not the wall.
+            //
+            // AccentTerrain("Chasm") is the Bridge-gated third terrain (BridgeDoor01 is an
+            // all-Chasm-cornered opposite-Bridge-pair -- the same CorridorInsert(Bridge)/allAccent
+            // shape Dungeon/MinesAndCaverns's own "Door - Bridge" pieces use). No Tunnel vocabulary:
+            // every crosser family (Wall/Road/Trench, each a same-name body/port pair) resolves ONLY
+            // against Solid=Desert compositions (verified directly via TunnelVocabularyCheck, every
+            // ordered crosser pairing) -- i.e. the roads/walls/trenches all run through what is now
+            // the OPEN walkable ground, and no crosser family exists through the Cliff solid at all,
+            // so Complex's Tunnel mode downgrades to OpenLane (the Barrows/Crypt-Dwarven fallback).
+            // Ungrouped flat Road/Wall/Trench tiles (no door slots) all still resolve via the corner/
+            // edge resolver regardless.
+            //
+            // Heights (30 non-flat tiles of 388, all on the Desert open terrain -- Cliff never carries
+            // a nonzero corner height anywhere in the inventory, verified directly):
+            // MaxElevationRegions(2) -- the 7 crosser-free raised-Desert rim tiles support the open
+            // split-level mechanism; RampCrosser("Dunes") -- the tileset's dune-face lanes are its
+            // ramp vocabulary (raised Desert tiles carrying Dunes edges, e.g. TILE244-252/256-261),
+            // spliced by LayoutElevationPainter.TryAddRampLane and batch-verified by
+            // LayoutReliefPainter; MaxReliefRegions(2) -- the census's relief BFS mirror
+            // (IsTerrainReliefReachable) verifies 17 raised tiles reachable corner-by-corner under
+            // this vocabulary, and the 1x1 raised "Ramp" group (TILE242, all-Desert [0,1,1,0])
+            // classifies as a ReliefPiece stamped onto painted rim edges (wired below). No pools:
+            // no raised open-vs-Chasm bank shape exists (Chasm banks sit at grade).
+            // Residual height exemptions, each shape-verified unreachable: TILE239-241 are
+            // Road-crossered raised lanes and TILE255 mixes Dunes+Road on one cell (ramp lanes carry
+            // ONE declared crosser name -- "Dunes" -- and no mechanism splices a second family);
+            // "SmallCave" (TILE243) is raised AND door-slot-bearing -- no mechanism places a raised
+            // door group (ReliefPiece is doorless-only, GroupExitPlanner flat-only; the tdm01 Cave
+            // Entrance gap).
+            //
+            // The hak adds two extra terrains, "Svirfneblin" and "Poor" (village-hut ground palettes):
+            // best coverage against the Desert open is 14/16 with no Cliff blending at all (verified
+            // directly), so both are auto-exempted via TileCoverageCensusTests.
+            // PilotAlternateVocabTerrains -- this also covers the eight ungrouped door-slot tiles on
+            // those palettes (TILE203/205/207/208/211/212/221/223, bare door slots with no crosser,
+            // which TileDoorPlanner's single-Doorway-edge rule could never place anyway).
+            //
+            // Groups: the four "crossroads" gates (WallGate01/02 = Wall+Road, TrenchBridge01/02 =
+            // Trench+Road -- TWO independent crosser families on perpendicular opposite-edge pairs of
+            // ONE tile) stay exempt: no mechanism models a two-family intersection cell. Everything
+            // else classifies: the all-Desert building/decor families (Temple/AdobeBuilding/
+            // DesertCityBlock/Oasis_3x3/Marketplace/obi_hutt/palais_jabba/Astroport/Maison_1/2/
+            // Barge/Dowager/...) as OpenSetPieces standing in the walkable desert clearings,
+            // Desert+Cliff mixed groups (Carved_Exit_2x2, CarvedCorner) as OpenSetPieces too, and the
+            // 1x1 door-bearing exits (Exit/CliffStairs/CaveEntrance/ChasmStairs) as ExitGroups.
+            // Star Wars-specific hak additions (palais_jabba 6x6, Astroport 8x8) are wired at
+            // maxPerArea 1, mirroring Barrows' FinalArea_7x7 large-set-piece precedent (placement
+            // requires a room large enough for the footprint; smaller rooms simply never site them).
+            _builder.Create(Desert, "Desert")
+                .Tileset("ttd01")
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Desert")
+                .MaxElevationRegions(2)
+                .MaxReliefRegions(2)
+                .RampCrosser("Dunes")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .AccentTerrain("Chasm")
+                .FeatureTile("Ruin")
+                .FeatureTile("Camp")
+                .FeatureTile("Camp 2")
+                .FeatureTile("GiantHead")
+                .FeatureTile("CaravanWagon2")
+                .FeatureTile("Chessboard")
+                .FeatureTile("Well")
+                .FeatureTile("Sarlacc")
+                .FeatureTile("Grande_tour")
+                .FeatureTile("tour_oblong")
+                .FeatureTile("boutique")
+                .FeatureTile("element")
+                // "Portal" is deliberately NOT a FeatureTile: a semantic teleporter tile, excluded
+                // from random sprinkling and wired as a rare set piece instead.
+                .SetPiece("Portal", 1)
+                .SetPiece("BridgeDoor01", 1)
+                .SetPiece("Ruin01_2x2")
+                .SetPiece("Ruin02_1x2")
+                .SetPiece("Temple_3x2")
+                .SetPiece("DesertCityBlock_2x2")
+                .SetPiece("DesertCityBlock_2_2x2")
+                .SetPiece("AdobeBuilding_1x2")
+                .SetPiece("AdobeBuilding_2x2")
+                .SetPiece("Camp01_2x2")
+                .SetPiece("Camp02_1x2")
+                .SetPiece("SmallTent", 1)
+                .SetPiece("Marketplace")
+                .SetPiece("Oasis_3x3")
+                .SetPiece("Carved_Exit_2x2")
+                .SetPiece("CarvedCorner", 1)
+                .SetPiece("NeutralTemple_2x2")
+                .SetPiece("GoodTemple_3x3")
+                .SetPiece("EvilTemple_2x3")
+                .SetPiece("TurfHouse", 1)
+                .SetPiece("RuinedTowers_2x3")
+                .SetPiece("CaravanWagon1", 1)
+                .SetPiece("Minaret", 1)
+                .SetPiece("LargeTent_2x2")
+                .SetPiece("obi_hutt")
+                .SetPiece("palais_jabba", 1)
+                .SetPiece("Astroport", 1)
+                .SetPiece("Barge")
+                .SetPiece("Maison_1")
+                .SetPiece("Maison_2")
+                .SetPiece("Dowager")
+                // Baked-mesh dune ramp (1x1 raised GROUP, all-Desert [0,1,1,0]) -- stamped by
+                // LayoutGroupStamper's ReliefPiece kind onto a painted raised rim edge.
+                .SetPiece("Ramp", 1)
+                .ExitGroup("Exit")
+                .ExitGroup("CliffStairs")
+                .ExitGroup("ChasmStairs")
+                .ExitGroup("CaveEntrance");
+
+            // Forest (ttf01, SWLOR_Haks/sw_t_forest -- a 1148-tile HasHeightTransition=1 mega-set, an
+            // 11-terrain/13-crosser superset of the 168-tile vanilla version). Same INVERTED
+            // composition as Desert above: SolidTerrainOverride("Cliff") + PrimaryOpenTerrain
+            // ("Forest") -- the GENERAL Default ("Forest") is the walkable ground (its fully-open
+            // tile is pathnode A; Cliff's is pathnode-restricted).
+            //
+            // AccentTerrain("Water") (full 16/16 flat coverage against BOTH Forest and Cliff, zero
+            // combos lacking pathnode-A) gives LayoutAccentPainter blob lakes; ChannelTerrain("Pit")
+            // keeps the Bridge-gated chasm channel separate (vmr01's own Chasm-channel precedent) --
+            // "Door - Bridge, Pit" is the all-Pit opposite-Bridge-pair CorridorInsert. No Tunnel
+            // vocabulary under the Cliff solid: every crosser family (Wall/Road/Stream/RuralStream/
+            // ..., same-name pairs) resolves only against Solid=Forest compositions (verified
+            // directly) -- they all run through the walkable open ground -- so Complex downgrades to
+            // OpenLane, and "Tower - Archer, Forest Wall/Corner" (the Wall family's insert tiles)
+            // stays exempt (see PilotExpectedExemptions).
+            //
+            // Heights (192 non-flat tiles of 1148; Cliff never carries a nonzero corner height,
+            // verified directly): MaxElevationRegions(2) (crosser-free raised-Forest rim tiles),
+            // RampCrosser("Slope") -- the ubiquitous outdoor slope lanes (raised Forest tiles
+            // carrying Slope edges, e.g. TILE547-562/602-622) are this tileset's ramp vocabulary --
+            // and MaxReliefRegions(2) (the census relief BFS verifies 32 raised tiles reachable under
+            // this vocabulary, including the multi-Slope-edge lane cells; the 1x1 raised "Ramp" group
+            // classifies as a ReliefPiece, wired below). No pools: no raised open-vs-Water bank shape
+            // exists at the RaiseDelta the pool painter needs. Residual height exemptions,
+            // bucket-verified unreachable: (a) raised banks mixing the unwired RuralWater/RuralTrees
+            // palettes (TILE500-529/541-546/563-573/600-601/623-628/883-887); (b) raised lanes on the
+            // unwired Road/RuralStream/RuralWallOne/Two/CityWall/MossWall crosser families
+            // (TILE530-532/606-609/719-734/741-779/801-824 -- ramp lanes carry ONE declared crosser
+            // name, "Slope"); (c) raised Bridge/StoneBridge banks (TILE895/896/898); (d) raised
+            // GROUPS: "Cave" (raised AND door-bearing -- the tdm01 Cave Entrance gap), the City
+            // Gate/Wall - Breach/Door/Tower/Ramp - City Wall/Moss Wall families (raised wall-top
+            // content on unwired crosser families).
+            //
+            // Alternate palettes (auto-exempted via PilotAlternateVocabTerrains, each verified
+            // directly): GoodCastle/EvilCastle and RuralTrees/RuralWater are full separate district
+            // palettes (out of this wave's scope -- the tni01 room-palette precedent); Marsh reaches
+            // only 14/16; Platform and HighForest blend ONLY with Pit (2/16 against both Forest and
+            // Cliff), and no composition can make Pit its solid, so they are structurally out of
+            // reach for ANY profile. Unwired crosser families (PilotAlternateVocabCrossers):
+            // DlaEdgeFix, StoneBridge, RuralStream, MossWall, CityWall, RuinWall, RuralWallOne/Two --
+            // their flat door-free tiles all resolve via CornerEdgeResolver regardless; the entries
+            // exempt the few flat door/group tiles (e.g. "Bridge - Footbridge, Rural Stream",
+            // "Wall - Gate, Ruin").
+            //
+            // FeatureTile curation: semantic/functional tiles are deliberately NOT sprinkled --
+            // "Portal - Forest"/"Portal - Platform" (teleporters), "Entrance - Dungeon" (a transition
+            // mouth), "Platform - Elevator, Upper/Lower" (paired elevators) are wired as maxPerArea-1
+            // set pieces instead ("Portal - Platform" and the elevators are additionally
+            // Platform-palette content and stay unwired entirely).
+            _builder.Create(Forest, "Forest")
+                .Tileset("ttf01")
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .MaxElevationRegions(2)
+                .MaxReliefRegions(2)
+                .RampCrosser("Slope")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .AccentTerrain("Water")
+                .ChannelTerrain("Pit")
+                .FeatureTile("Ruin")
+                .FeatureTile("Camp")
+                .FeatureTile("Graveyard")
+                .FeatureTile("Webbed Forest")
+                .FeatureTile("Tree - Big 1")
+                .FeatureTile("Tree - Big 2")
+                .FeatureTile("Tree - Hollow 1")
+                .FeatureTile("Tree - Hollow 2")
+                .FeatureTile("Tree - Giant")
+                .FeatureTile("Chessboard")
+                .FeatureTile("Tower - Archer")
+                .FeatureTile("Wagon - Caravan 1")
+                .FeatureTile("Wagon - Caravan 2")
+                .FeatureTile("Wall Chunk")
+                .FeatureTile("Building - Destroyed 1")
+                .FeatureTile("Building - Burned")
+                .FeatureTile("Rock Formation")
+                .FeatureTile("Cobbles")
+                .FeatureTile("Crystal - Big")
+                .FeatureTile("Fountain")
+                .FeatureTile("Menhir")
+                .FeatureTile("Market")
+                .SetPiece("Portal - Forest", 1)
+                .SetPiece("Entrance - Dungeon", 1)
+                .SetPiece("Door - Bridge, Pit", 1)
+                .SetPiece("Ruin 1 (2x2)")
+                .SetPiece("Ruin 2 (1x2)")
+                .SetPiece("Temple - Forest (3x2)")
+                .SetPiece("House - Shack 1 (2x2)")
+                .SetPiece("House - Shack 2 (1x2)")
+                .SetPiece("Lodge (2x2)")
+                .SetPiece("Camp 1 - Deciduous (2x2)")
+                .SetPiece("Camp 2 - Deciduous (1x2)")
+                .SetPiece("Camp 1 - Coniferous (2x2)")
+                .SetPiece("Camp 2 - Coniferous (1x2)")
+                .SetPiece("Graveyard (1x2)")
+                .SetPiece("Meeting Area (1x2)")
+                .SetPiece("Grove 1 (3x3)")
+                .SetPiece("Exit 1 (2x3)")
+                .SetPiece("Exit 2 (2x2)")
+                .SetPiece("Webbed Corner", 1)
+                .SetPiece("Temple - Good (3x3)")
+                .SetPiece("Temple - Neutral (2x2)")
+                .SetPiece("Temple - Evil (2x3)")
+                .SetPiece("Tower - Cloak (2x2)")
+                .SetPiece("House - Turf (2x2)")
+                .SetPiece("Tower - Ruined (2x2)")
+                .SetPiece("Barracks (2x2)")
+                .SetPiece("Barracks (1x2)")
+                .SetPiece("Tower - Guard, Forest (1x2)")
+                .SetPiece("Tower - Wizard (1x2)")
+                .SetPiece("Ruined Park (1x2)")
+                .SetPiece("House - Small (1x2)")
+                .SetPiece("Ship - Air, Docked (3x1)", 1)
+                .SetPiece("House - Elven 1 (3x3)")
+                .SetPiece("House - Elven 2 (2x2)")
+                .SetPiece("House - Elven 3 (2x2)")
+                .SetPiece("House - Elven 4 (2x2)")
+                .SetPiece("House - Treehouse 1 (1x2)")
+                .SetPiece("House - Treehouse 2 (2x2)")
+                .SetPiece("Cave - Hill (2x2)")
+                .SetPiece("Temple - Elven 1 (2x2)")
+                .SetPiece("Tower - Elven (3x3)")
+                .SetPiece("Plaza - Elven (3x3)")
+                .SetPiece("Gate - Cliff (1x3)")
+                .SetPiece("Building - State, Ruined (2x3)")
+                .SetPiece("Building - Destroyed 2 (1x2)")
+                .SetPiece("Tower - Archer Platform (1x2)")
+                .SetPiece("Smithy (1x2)")
+                .SetPiece("Tree - Giant (2x2)")
+                // Baked-mesh slope ramp (1x1 raised GROUP, all-Forest) -- ReliefPiece kind, stamped
+                // onto a painted raised rim edge.
+                .SetPiece("Ramp", 1)
+                .ExitGroup("Exit")
+                .ExitGroup("Stairs - Cliff")
+                .ExitGroup("Stairs - Pit")
+                .ExitGroup("House - Small 1")
+                .ExitGroup("House - Small 2")
+                .ExitGroup("House - Small 3")
+                .ExitGroup("House - Turf")
+                .ExitGroup("House - Ruined")
+                .ExitGroup("Tower - Stone");
+
+            // Forest - Facelift (ttf02, BIF-only: no hak copy exists anywhere under SWLOR_Haks --
+            // verified directly -- so TilesetSetSource's hak-first lookup falls through to the
+            // committed basegame_sets/ttf02.set vanilla extraction, 211 tiles, fully flat). A
+            // DIFFERENT tileset resref from Forest (ttf01) above, not a PaletteVariant of it, even
+            // though its GENERAL/terrain/crosser vocabulary is identical (Default==Floor=="Forest",
+            // same Cliff/Pit terrains, same Wall/Road/Stream/Bridge crossers) and it shares most of
+            // vanilla ttf01's group inventory tile-for-tile. Same INVERTED composition:
+            // SolidTerrainOverride("Cliff") + PrimaryOpenTerrain("Forest"); AccentTerrain("Pit") is
+            // the Bridge-gated channel (BridgeDoor01). No Tunnel vocabulary under the Cliff solid
+            // (Wall/Road/Stream all resolve only against Solid=Forest, verified directly) -- Complex
+            // downgrades to OpenLane. No height content at all (HasHeightTransition=0, zero non-flat
+            // tiles), so every height knob correctly stays off.
+            //
+            // ttf02 adds a facelift-only decorative family beyond vanilla ttf01's inventory: Monument
+            // (1x1 pathnode-A FeatureTile) and three all-Forest log groups (SideLog1 3x4, UpgrightLog1
+            // 4x4, UprightLog2 2x2) that classify as OpenSetPieces like the rest of the all-Forest
+            // building/decor families.
+            //
+            // Exemptions (PilotExpectedExemptions, verified directly): WallGate01/02 (Wall+Road) and
+            // StreamBridge01/02 (Stream+Road) are the same two-crosser-family crossroads cells as
+            // Desert's; Island_Tree (3x3, uniform-Pit corners with one Bridge edge that never
+            // triggers CorridorStubChain since Bridge is not a body crosser) and Island_Connector
+            // (1x1, Forest+Pit mixed corners) are accent-terrain groups no mechanism stamps (the same
+            // gap as ttf01's Island (3x3), on this tileset's own smaller island family).
+            _builder.Create(ForestFacelift, "Forest - Facelift")
+                .Tileset("ttf02")
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .AccentTerrain("Pit")
+                .FeatureTile("Ruin")
+                .FeatureTile("Camp")
+                .FeatureTile("Graveyard")
+                .FeatureTile("WebbedForest")
+                .FeatureTile("BigTree")
+                .FeatureTile("Chessboard")
+                .FeatureTile("Monument")
+                .SetPiece("Portal", 1)
+                .SetPiece("BridgeDoor01", 1)
+                .SetPiece("Ruin01_2x2")
+                .SetPiece("Ruin02_1x2")
+                .SetPiece("Temple_3x2")
+                .SetPiece("Shack01_2x2")
+                .SetPiece("Shack02_1x2")
+                .SetPiece("Lodge_2x2")
+                .SetPiece("Camp01_2x2")
+                .SetPiece("Camp02_1x2")
+                .SetPiece("Graveyard_1x2")
+                .SetPiece("Meeting_Area")
+                .SetPiece("Grove01_3x3")
+                .SetPiece("Exit01_2x3")
+                .SetPiece("Exit02_2x2")
+                .SetPiece("WebbedCorner", 1)
+                .SetPiece("SideLog1")
+                .SetPiece("UpgrightLog1")
+                .SetPiece("UprightLog2")
+                .ExitGroup("Exit")
+                .ExitGroup("Tower");
 
             return _builder.Build();
         }

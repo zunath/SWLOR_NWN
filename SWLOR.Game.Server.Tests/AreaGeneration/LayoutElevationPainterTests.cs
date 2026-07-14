@@ -381,6 +381,50 @@ public class LayoutElevationPainterTests
         paintedCount.Should().BeGreaterThan(0, "the real Dungeon/Complex composition must paint elevation on at least one of 30 seeds");
     }
 
+    /// <summary>
+    /// Same "actually paints, not merely declared" gate for the exterior wave's two height-capable
+    /// tilesets (Desert/ttd01 and Forest/ttf01, both resolved to their SWLOR hak copies -- see
+    /// BaseGameTilesetProfiles' wave comment): each declares MaxElevationRegions(2) on the strength
+    /// of its crosser-free raised-ground rim inventory (7 tiles in ttd01, 9 in ttf01 -- all on the
+    /// walkable Desert/Forest OPEN terrain of the inverted composition, verified via the census's
+    /// structural ElevationBlob classifier), and this locks in that LayoutElevationPainter's own
+    /// runtime rim-vocabulary probe agrees often enough to paint raised desert hillocks/forest
+    /// knolls on at least one of 30 seeds. Best-effort by design, so "sometimes", not "every seed".
+    /// </summary>
+    [TestCase(BaseGameTilesetProfiles.Desert)]
+    [TestCase(BaseGameTilesetProfiles.Forest)]
+    public void RealExteriorComplexComposition_SometimesPaintsElevation(string tilesetKey)
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[tilesetKey];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = TilesetTestSource.LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        var paintedCount = 0;
+        var resolvedCount = 0;
+        const int size = 24;
+
+        for (var seed = 9000; seed < 9030; seed++)
+        {
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            parameters.ElevationRegions.Should().BeGreaterThan(0, $"{tilesetKey}/Complex must actually request elevation regions");
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            if (!solved.Success) continue;
+
+            resolvedCount++;
+            if (solved.Layout.Corners.HasAnyHeight())
+                paintedCount++;
+        }
+
+        resolvedCount.Should().BeGreaterThan(0, "at least some seeds must generate successfully to evaluate elevation painting");
+        paintedCount.Should().BeGreaterThan(0, $"the real {tilesetKey}/Complex composition must paint elevation on at least one of 30 seeds");
+    }
+
     // ------------------------------------------------------------------
     // Ramp lane (MacroLayoutParameters.ElevationRamps / TryAddRampLane)
     // ------------------------------------------------------------------

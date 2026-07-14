@@ -92,7 +92,6 @@ namespace SWLOR.ContentBuilder.Windows
         private TextBox _seedTextBox;
         private Button _randomSeedButton;
 
-        private Button _generateButton;
         private Button _addToBatchButton;
 
         private DataGrid _batchGrid;
@@ -279,10 +278,11 @@ namespace SWLOR.ContentBuilder.Windows
             seedRow.Children.Add(_randomSeedButton);
             seedGroup.Children.Add(seedRow);
 
+            // No explicit "Generate Preview" button: every setting change already regenerates the
+            // preview (see WireEvents), and generation is deterministic per seed, so a manual
+            // trigger with unchanged settings could never produce a different result.
             var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 4, 0, 8) };
-            _generateButton = new Button { Content = "Generate Preview", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(8, 4, 8, 4) };
             _addToBatchButton = new Button { Content = "Add to Batch", Padding = new Thickness(8, 4, 8, 4) };
-            buttonPanel.Children.Add(_generateButton);
             buttonPanel.Children.Add(_addToBatchButton);
             LeftStack.Children.Add(buttonPanel);
 
@@ -466,7 +466,6 @@ namespace SWLOR.ContentBuilder.Windows
             _layoutCombo.SelectionChanged += (_, _) => { if (_suppressEvents) return; OnLayoutProfileChanged(); };
             _resetDefaultsButton.Click += (_, _) => { ApplyThemeDefaults(resetDimensionsAndSeed: true); RegeneratePreview(); };
 
-            _generateButton.Click += (_, _) => GeneratePreview();
             _addToBatchButton.Click += (_, _) => AddToBatch();
             _randomSeedButton.Click += (_, _) =>
             {

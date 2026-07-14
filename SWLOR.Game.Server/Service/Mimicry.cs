@@ -48,6 +48,8 @@ namespace SWLOR.Game.Server.Service
         private const int BaseLearnChancePercent = 20;
         private const int LearnChancePerRankDelta = 2;
         private const int LearnChancePerPatternRecognitionLevel = 10;
+        private const int LearnChancePerPerceptionPoint = 1;
+        private const int PerceptionLearnChanceBaseline = 10;
         private const int MaxLearnChancePercent = 75;
         private const int LearnTechniqueXP = 400;
         private const string LearnTechniqueSound = "gui_prompt";
@@ -243,6 +245,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
             var patternRecognitionLevel = Perk.GetPerkLevel(player, PerkType.PatternRecognition);
+            var perception = GetAbilityScore(player, AbilityType.Perception);
             var learnedDetails = new List<AbilityDetail>();
 
             foreach (var feat in witnessedTechniques)
@@ -257,12 +260,7 @@ namespace SWLOR.Game.Server.Service
                 if (skillRank < tierMinRank)
                     continue;
 
-                var chance = BaseLearnChancePercent +
-                             LearnChancePerRankDelta * (skillRank - tierMinRank) +
-                             LearnChancePerPatternRecognitionLevel * patternRecognitionLevel;
-
-                if (chance > MaxLearnChancePercent)
-                    chance = MaxLearnChancePercent;
+                var chance = CalculateLearnChance(skillRank, tierMinRank, patternRecognitionLevel, perception);
 
                 if (Random.D100(1) > chance)
                     continue;
@@ -306,6 +304,26 @@ namespace SWLOR.Game.Server.Service
                 case 4: return 45;
                 default: return 0;
             }
+        }
+
+        /// <summary>
+        /// Computes the percent chance to learn a witnessed technique when the source creature dies.
+        /// Scales off Mimicry skill rank above the technique's tier floor, the Pattern Recognition
+        /// perk, and the player's Perception attribute (each point above <see cref="PerceptionLearnChanceBaseline"/>
+        /// adds <see cref="LearnChancePerPerceptionPoint"/> percent, rewarding perceptive characters).
+        /// The result is clamped to <see cref="MaxLearnChancePercent"/>.
+        /// </summary>
+        public static int CalculateLearnChance(int skillRank, int tierMinRank, int patternRecognitionLevel, int perception)
+        {
+            var chance = BaseLearnChancePercent +
+                         LearnChancePerRankDelta * (skillRank - tierMinRank) +
+                         LearnChancePerPatternRecognitionLevel * patternRecognitionLevel +
+                         LearnChancePerPerceptionPoint * Math.Max(0, perception - PerceptionLearnChanceBaseline);
+
+            if (chance > MaxLearnChancePercent)
+                chance = MaxLearnChancePercent;
+
+            return chance;
         }
 
         /// <summary>

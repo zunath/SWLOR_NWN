@@ -434,6 +434,26 @@ public class MimicryTests
     }
 
     [Test]
+    public void Mimicry_LearnChanceScalesWithSkillRankPatternRecognitionAndPerception()
+    {
+        // Baseline: Mimicry rank at the tier floor, no Pattern Recognition, Perception at the
+        // baseline (10) contributes nothing beyond the flat 20% base chance.
+        Mimicry.CalculateLearnChance(0, 0, 0, 10).Should().Be(20, "base chance with no bonuses");
+
+        // Perception above the baseline adds 1% per point.
+        Mimicry.CalculateLearnChance(0, 0, 0, 17).Should().Be(27, "7 Perception above baseline adds 7%");
+
+        // Perception below the baseline never reduces the chance below the other contributions.
+        Mimicry.CalculateLearnChance(0, 0, 0, 5).Should().Be(20, "Perception below baseline is floored at 0 contribution");
+
+        // Skill rank above the tier floor adds 2% per rank; Pattern Recognition adds 10% per level.
+        Mimicry.CalculateLearnChance(20, 15, 2, 10).Should().Be(20 + 2 * 5 + 20, "rank delta and pattern recognition stack");
+
+        // Everything is capped at the maximum learn chance.
+        Mimicry.CalculateLearnChance(45, 0, 2, 60).Should().Be(75, "combined bonuses are clamped to the cap");
+    }
+
+    [Test]
     public void Mimicry_IsACombatPointEarningSkill()
     {
         // Mimicry combat points come from two sources: casting techniques, and the Combat Analyzer

@@ -116,7 +116,7 @@ namespace SWLOR.ContentBuilder.Windows
             // off the Image left the preview permanently blank at startup.
             PreviewHost.SizeChanged += (_, _) => RenderPreview();
 
-            ApplyThemeDefaults(resetDimensionsAndSeed: true);
+            ApplyCompositionDefaults(resetDimensionsAndSeed: true);
             RegeneratePreview();
 
             // The setup above (theme defaults, initial preview generation) runs through the same
@@ -204,13 +204,24 @@ namespace SWLOR.ContentBuilder.Windows
         // Left panel construction
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// Tooltip for the Advanced "Theme" picker: Theme is content-only (spawns/loot/lighting) --
+        /// it must not read as affecting map geometry, which is entirely Tileset Profile + Layout
+        /// Profile + the Advanced knobs.
+        /// </summary>
+        private const string ThemeTooltip =
+            "The content package applied when the server generates the area at runtime, plus the " +
+            "tile lighting baked into exports. Does not affect map geometry.";
+
         private void BuildLeftPanel()
         {
+            // Tileset Profile is the primary composition axis (drives Layout Profile's filtered
+            // choices and every composed knob default); Layout Profile is secondary. Theme lives in
+            // Advanced below -- see WireEvents/OnTilesetChanged for the auto-default relationship.
             var (_, composition) = AddGroup(LeftStack, "Composition");
-            _themeCombo = AddComboRow(composition, "Theme");
             _tilesetCombo = AddComboRow(composition, "Tileset Profile");
             _layoutCombo = AddComboRow(composition, "Layout Profile");
-            _resetDefaultsButton = new Button { Content = "Reset to theme defaults", Margin = new Thickness(0, 6, 0, 0) };
+            _resetDefaultsButton = new Button { Content = "Reset to defaults", Margin = new Thickness(0, 6, 0, 0) };
             composition.Children.Add(_resetDefaultsButton);
 
             var (_, dimensions) = AddGroup(LeftStack, "Dimensions");
@@ -230,6 +241,12 @@ namespace SWLOR.ContentBuilder.Windows
                 Content = advancedContent
             };
             LeftStack.Children.Add(advancedExpander);
+
+            // Theme is content-only (spawns/loot/lighting), not map geometry, so it lives here
+            // rather than in the primary Composition group -- see ThemeTooltip.
+            var (_, contentGroup) = AddGroup(advancedContent, "Content");
+            _themeCombo = AddComboRow(contentGroup, "Theme (spawns / loot / lighting)");
+            _themeCombo.ToolTip = ThemeTooltip;
 
             var (_, overrides) = AddGroup(advancedContent, "Layout overrides");
             _styleCombo = AddComboRow(overrides, "Style");
@@ -299,9 +316,9 @@ namespace SWLOR.ContentBuilder.Windows
                 HeadersVisibility = DataGridHeadersVisibility.Column,
                 SelectionMode = DataGridSelectionMode.Extended
             };
-            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Theme", Binding = new Binding(nameof(BatchItem.ThemeDisplayName)), Width = new DataGridLength(1, DataGridLengthUnitType.Star) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Tileset", Binding = new Binding(nameof(BatchItem.TilesetDisplayName)), Width = new DataGridLength(1, DataGridLengthUnitType.Star) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Layout", Binding = new Binding(nameof(BatchItem.LayoutDisplayName)), Width = new DataGridLength(1, DataGridLengthUnitType.Star) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Theme", Binding = new Binding(nameof(BatchItem.ThemeDisplayName)), Width = new DataGridLength(1, DataGridLengthUnitType.Star) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Seed", Binding = new Binding(nameof(BatchItem.Seed)), Width = new DataGridLength(50) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Size", Binding = new Binding(nameof(BatchItem.Size)), Width = new DataGridLength(50) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Ent", Binding = new Binding(nameof(BatchItem.Entrances)), Width = new DataGridLength(36) });
@@ -464,7 +481,7 @@ namespace SWLOR.ContentBuilder.Windows
             _themeCombo.SelectionChanged += (_, _) => { if (_suppressEvents) return; OnThemeChanged(); };
             _tilesetCombo.SelectionChanged += (_, _) => { if (_suppressEvents) return; OnTilesetChanged(); };
             _layoutCombo.SelectionChanged += (_, _) => { if (_suppressEvents) return; OnLayoutProfileChanged(); };
-            _resetDefaultsButton.Click += (_, _) => { ApplyThemeDefaults(resetDimensionsAndSeed: true); RegeneratePreview(); };
+            _resetDefaultsButton.Click += (_, _) => { ApplyCompositionDefaults(resetDimensionsAndSeed: true); RegeneratePreview(); };
 
             _addToBatchButton.Click += (_, _) => AddToBatch();
             _randomSeedButton.Click += (_, _) =>
@@ -593,12 +610,26 @@ namespace SWLOR.ContentBuilder.Windows
             foreach (var profile in _catalog.TilesetProfiles.Values.OrderBy(p => p.DisplayName))
                 _tilesetCombo.Items.Add(new KeyedItem(profile.Key, profile.DisplayName));
 
-            RepopulateLayoutCombo();
-
             _suppressEvents = true;
             try
             {
-                if (_themeCombo.Items.Count > 0) _themeCombo.SelectedIndex = 0;
+                // Tileset is the primary axis, so it's selected first; Layout Profile's choices are
+                // filtered against it (RepopulateLayoutCombo).
+                if (_tilesetCombo.Items.Count > 0) _tilesetCombo.SelectedIndex = 0;
+                RepopulateLayoutCombo();
+
+                // Seed the initial Theme from the tileset's own matching theme (see
+                // AutoDefaultThemeForTileset) when one exists. There is no prior user-set Theme to
+                // preserve yet at startup, so fall back to the first catalog Theme when none matches.
+                var tilesetKey = (_tilesetCombo.SelectedItem as KeyedItem)?.Key;
+                var matchingTheme = tilesetKey != null
+                    ? _catalog.Themes.FirstOrDefault(t => t.TilesetProfileKey == tilesetKey)
+                    : null;
+
+                if (matchingTheme != null)
+                    SelectComboByKey(_themeCombo, matchingTheme.ThemeKey);
+                else if (_themeCombo.Items.Count > 0)
+                    _themeCombo.SelectedIndex = 0;
             }
             finally
             {
@@ -692,14 +723,29 @@ namespace SWLOR.ContentBuilder.Windows
         // Theme / tileset / layout profile change handling
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// Theme (Advanced) is content-only -- spawns/loot/lighting applied at generation time --
+        /// and, per BuildLayoutParameters, never feeds map geometry (see the Tileset+Layout-only
+        /// DungeonComposition.BuildLayoutParameters call in LoadLayoutProfileKnobs/GeneratePreview).
+        /// Selecting one must NOT touch the Tileset/Layout pickers or any Advanced knob; it only
+        /// changes what the next generated preview composes as content.
+        /// </summary>
         private void OnThemeChanged()
         {
-            ApplyThemeDefaults(resetDimensionsAndSeed: false);
             RegeneratePreview();
         }
 
+        /// <summary>
+        /// Tileset Profile is the primary composition axis: changing it re-filters Layout Profile,
+        /// reloads composed knob defaults, and -- new for the Tileset-primary hierarchy -- auto-picks
+        /// whichever Theme's own default pairing (DungeonDetail.TilesetProfileKey) matches this
+        /// tileset, so a coherent Theme still gets selected for tilesets a user has never touched in
+        /// Advanced. See AutoDefaultThemeForTileset for the "only fires on an actual match, otherwise
+        /// leaves a user-set Theme alone" rule.
+        /// </summary>
         private void OnTilesetChanged()
         {
+            AutoDefaultThemeForTileset();
             RepopulateLayoutCombo();
             UpdateAccentAvailability();
             UpdateFeatureAvailability();
@@ -712,6 +758,37 @@ namespace SWLOR.ContentBuilder.Windows
             RegeneratePreview();
         }
 
+        /// <summary>
+        /// Selects the first Theme whose OWN default TilesetProfileKey equals the newly selected
+        /// tileset (the catalog's inverse of DungeonDetail.TilesetProfileKey), so e.g. picking the
+        /// Sewers tileset auto-selects the Sewer theme. Only 4 themes exist against 18 tileset
+        /// profiles, so most tileset changes have no matching theme at all -- when none matches, the
+        /// current Theme selection (whether a prior auto-default or a deliberate user choice made in
+        /// Advanced) is left completely untouched, never reset to a fallback. This is what lets a
+        /// user-set Theme "stick" until the tileset changes to one with its own matching theme.
+        /// </summary>
+        private void AutoDefaultThemeForTileset()
+        {
+            var tilesetKey = (_tilesetCombo.SelectedItem as KeyedItem)?.Key;
+            if (tilesetKey == null) return;
+
+            var matchingTheme = _catalog.Themes.FirstOrDefault(t => t.TilesetProfileKey == tilesetKey);
+            if (matchingTheme == null) return;
+
+            if ((_themeCombo.SelectedItem as KeyedItem)?.Key == matchingTheme.ThemeKey) return;
+
+            var wasSuppressed = _suppressEvents;
+            _suppressEvents = true;
+            try
+            {
+                SelectComboByKey(_themeCombo, matchingTheme.ThemeKey);
+            }
+            finally
+            {
+                _suppressEvents = wasSuppressed;
+            }
+        }
+
         private void OnLayoutProfileChanged()
         {
             _overriddenKnobs.Clear();
@@ -720,32 +797,27 @@ namespace SWLOR.ContentBuilder.Windows
         }
 
         /// <summary>
-        /// Selects the theme's default tileset/layout profiles (Composition group) and, when
-        /// requested, resets Width/Height/Seed too — used both by the explicit "Reset to theme
-        /// defaults" button and by picking a new Theme.
+        /// Resets the Advanced layout knobs to the composed defaults for the CURRENT Tileset +
+        /// Layout selection (Theme never affects knob composition -- BuildLayoutParameters only reads
+        /// Tileset+Layout) and, when requested, Width/Height/Seed too. Used by the "Reset to defaults"
+        /// button. Unlike the old theme-driven reset, this never changes the Tileset/Layout/Theme
+        /// picker selections themselves -- only the tunable knobs underneath them.
         /// </summary>
-        private void ApplyThemeDefaults(bool resetDimensionsAndSeed)
+        private void ApplyCompositionDefaults(bool resetDimensionsAndSeed)
         {
-            var theme = SelectedTheme();
-            if (theme == null) return;
-
-            _suppressEvents = true;
-            try
+            if (resetDimensionsAndSeed)
             {
-                SelectComboByKey(_tilesetCombo, theme.TilesetProfileKey);
-                RepopulateLayoutCombo();
-                SelectComboByKey(_layoutCombo, theme.LayoutProfileKey);
-
-                if (resetDimensionsAndSeed)
+                _suppressEvents = true;
+                try
                 {
                     _widthSlider.Value = 16;
                     _heightSlider.Value = 16;
                     _seedTextBox.Text = NewRandomSeedText();
                 }
-            }
-            finally
-            {
-                _suppressEvents = false;
+                finally
+                {
+                    _suppressEvents = false;
+                }
             }
 
             _overriddenKnobs.Clear();

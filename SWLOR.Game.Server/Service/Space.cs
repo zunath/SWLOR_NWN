@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             if (dbPlayer != null)
             {
-                RestoreCharacterAppearance(player, dbPlayer, "logout");
+                RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTrigger.Logout);
             }
 
             if (_playersInSpace.Contains(player))
@@ -888,15 +888,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player whose appearance will be restored.</param>
         /// <param name="dbPlayer">The player entity. Mutated if the stored appearance needs repair.</param>
-        /// <param name="context">Which exit path requested the restore. Used for logging.</param>
-        private static void RestoreCharacterAppearance(uint player, Player dbPlayer, string context)
+        /// <param name="trigger">Which exit path requested the restore. Used for logging.</param>
+        private static void RestoreCharacterAppearance(uint player, Player dbPlayer, AppearanceRestoreTrigger trigger)
         {
             var appearance = dbPlayer.OriginalAppearanceType;
 
             if (appearance == AppearanceType.Invalid || IsShipAppearance(appearance))
             {
                 appearance = Race.GetDefaultAppearance(GetRacialType(player), GetGender(player)).AppearanceType;
-                Log.Write(LogGroup.Space, $"Stored appearance of player {GetName(player)} ({dbPlayer.Id}) was unusable ({dbPlayer.OriginalAppearanceType}). Repaired to racial default {appearance}. Context: {context}");
+                Log.Write(LogGroup.Space, $"Stored appearance of player {GetName(player)} ({dbPlayer.Id}) was unusable ({dbPlayer.OriginalAppearanceType}). Repaired to racial default {appearance}. Trigger: {trigger}");
                 dbPlayer.OriginalAppearanceType = appearance;
                 DB.Set(dbPlayer);
             }
@@ -912,7 +912,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (GetAppearanceType(player) != appearance)
                 {
-                    Log.Write(LogGroup.Space, $"Appearance restore did not apply for player {GetName(player)} ({dbPlayer.Id}). Re-applying. Context: {context}");
+                    Log.Write(LogGroup.Space, $"Appearance restore did not apply for player {GetName(player)} ({dbPlayer.Id}). Re-applying. Trigger: {trigger}");
                     SetCreatureAppearanceType(player, appearance);
                 }
             });
@@ -939,7 +939,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             Log.Write(LogGroup.Space, $"Player {GetName(player)} ({dbPlayer.Id}) entered an area with a ship appearance while not in space mode. Restoring character appearance.");
-            RestoreCharacterAppearance(player, dbPlayer, "area-enter");
+            RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTrigger.AreaEnter);
         }
 
         /// <summary>
@@ -959,7 +959,7 @@ namespace SWLOR.Game.Server.Service
             var dbShip = DB.Get<PlayerShip>(shipId);
 
             ClearCurrentTarget(player);
-            RestoreCharacterAppearance(player, dbPlayer, "space-exit");
+            RestoreCharacterAppearance(player, dbPlayer, AppearanceRestoreTrigger.SpaceExit);
             Stat.ApplyCreatureMovementRate(player);
             Enmity.RemoveCreatureEnmity(player);
 
@@ -1928,7 +1928,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Exit space mode
                 ClearCurrentTarget(creature);
-                RestoreCharacterAppearance(creature, dbPlayer, "space-death");
+                RestoreCharacterAppearance(creature, dbPlayer, AppearanceRestoreTrigger.SpaceDeath);
                 Stat.ApplyCreatureMovementRate(creature);
                 Enmity.RemoveCreatureEnmity(creature);
 

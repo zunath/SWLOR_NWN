@@ -254,7 +254,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 184
+    "value": 231
   },
   "Race": {
     "type": "byte",

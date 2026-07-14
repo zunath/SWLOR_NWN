@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 2121
+    "value": 10021
   },
   "BodyBag": {
     "type": "byte",
@@ -226,7 +226,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 623
+    "value": 302
   },
   "Race": {
     "type": "byte",

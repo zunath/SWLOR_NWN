@@ -33,6 +33,8 @@
                 <MenuItem x:Name="SaveAsMenuItem" Header="Save _As..." InputGestureText="Ctrl+Shift+S" />
                 <MenuItem x:Name="OpenMenuItem" Header="_Open..." InputGestureText="Ctrl+O" />
                 <Separator />
+                <MenuItem x:Name="SettingsMenuItem" Header="_Settings..." />
+                <Separator />
                 <MenuItem x:Name="ExitMenuItem" Header="E_xit" />
             </MenuItem>
         </Menu>

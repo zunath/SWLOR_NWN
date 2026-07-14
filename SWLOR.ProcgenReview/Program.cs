@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json.Nodes;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
+using SWLOR.ProcgenReview;
 
 // Builds a standalone review module ("SWLOR Procgen Review.mod") containing offline-generated
 // areas, using the production solver and the real content-theme / tileset-profile / layout-profile
@@ -40,17 +41,24 @@ using SWLOR.Game.Server.Service.AreaGenerationService;
 // --extra-areas: same entry syntax as --areas, but ADDED on top of the default set (and --matrix, if
 // also given) instead of replacing it — useful for appending a few showcase areas (e.g. higher
 // entrance/exit counts to exercise door-style transitions) to the normal review build.
+// --erf <path>: additionally (or instead of --out) packs the SAME generated areas into a standalone
+// ERF containing only .are/.git (no module.ifo) — importable directly via the Aurora toolset's
+// File -> Import, unlike the review module which needs nwn.ini's MODULES alias. Usable together with
+// --out (both containers built from one generation pass) or alone (no --out given: no .mod is built
+// at all). See ErfPacker.cs for the shared MOD/ERF packing code.
 //
 // Each generated area also gets one waypoint per entrance/exit transition point (tags PG_ENT_N /
 // PG_EXIT_N, names "PG Entrance N" / "PG Exit N"), so transitions are visible when reviewing the
 // area in the toolset.
 //
-// Output defaults to <repoRoot>/Module/SWLOR Procgen Review.mod — point nwn.ini's MODULES
-// directory at <repoRoot>/Module (the SWLOR dev convention) and the toolset sees it directly.
+// --out defaults to <repoRoot>/Module/SWLOR Procgen Review.mod ONLY when neither --out nor --erf is
+// given — point nwn.ini's MODULES directory at <repoRoot>/Module (the SWLOR dev convention) and the
+// toolset sees it directly. Passing --erf alone (no --out) skips the .mod entirely.
 
 var seeds = new List<int> { 4242, 777, 1337 };
 var size = 16;
 string outPath = null;
+string erfPath = null;
 var matrix = false;
 string areasArg = null;
 string extraAreasArg = null;
@@ -68,6 +76,9 @@ for (var i = 0; i < args.Length; i++)
             break;
         case "--out":
             outPath = args[++i];
+            break;
+        case "--erf":
+            erfPath = args[++i];
             break;
         case "--matrix":
             matrix = true;
@@ -88,7 +99,8 @@ for (var i = 0; i < args.Length; i++)
 }
 
 var root = FindRepositoryRoot();
-outPath ??= Path.Combine(root, "Module", "SWLOR Procgen Review.mod");
+if (outPath == null && erfPath == null)
+    outPath = Path.Combine(root, "Module", "SWLOR Procgen Review.mod");
 var gffTool = Path.Combine(root, "tools", "SWLOR.CLI", "nwn_gff.exe");
 var erfTool = Path.Combine(root, "tools", "SWLOR.CLI", "nwn_erf.exe");
 
@@ -387,11 +399,25 @@ try
         return 1;
     }
 
-    EmitModuleIfo(root, areas, stage);
-    ConvertJsonToGff(stage, gffTool);
-    PackModule(stage, erfTool, outPath);
+    // module.ifo is only needed (and only emitted) when a .mod is actually being built — the --erf
+    // export deliberately carries no module-only resources (see ErfPacker.PackErf).
+    if (outPath != null)
+        EmitModuleIfo(root, areas, stage);
 
-    Console.WriteLine($"packed: {outPath} ({new FileInfo(outPath).Length / 1024} KB, {areas.Count} areas)");
+    ConvertJsonToGff(stage, gffTool);
+
+    if (outPath != null)
+    {
+        ErfPacker.PackMod(stage, erfTool, outPath);
+        Console.WriteLine($"packed: {outPath} ({new FileInfo(outPath).Length / 1024} KB, {areas.Count} areas)");
+    }
+
+    if (erfPath != null)
+    {
+        ErfPacker.PackErf(stage, erfTool, erfPath);
+        Console.WriteLine($"packed: {erfPath} ({new FileInfo(erfPath).Length / 1024} KB, {areas.Count} areas)");
+    }
+
     return 0;
 }
 finally
@@ -1031,33 +1057,9 @@ static void ConvertJsonToGff(string stage, string gffTool)
     foreach (var jsonFile in Directory.GetFiles(stage, "*.json"))
     {
         var gffFile = jsonFile[..^5]; // strip .json -> pg_x.are / module.ifo
-        Run(gffTool, $"-i \"{jsonFile}\" -o \"{gffFile}\"");
+        ErfPacker.Run(gffTool, $"-i \"{jsonFile}\" -o \"{gffFile}\"");
         File.Delete(jsonFile);
     }
-}
-
-static void PackModule(string stage, string erfTool, string outPath)
-{
-    if (File.Exists(outPath))
-        File.Delete(outPath);
-
-    var entries = string.Join(" ", Directory.GetFiles(stage).Select(f => $"\"{f}\""));
-    Run(erfTool, $"-e MOD -c -f \"{outPath}\" {entries}");
-}
-
-static void Run(string exe, string arguments)
-{
-    var psi = new ProcessStartInfo(exe, arguments)
-    {
-        RedirectStandardError = true,
-        RedirectStandardOutput = true,
-        UseShellExecute = false
-    };
-    using var proc = Process.Start(psi);
-    var stderr = proc.StandardError.ReadToEnd();
-    proc.WaitForExit();
-    if (proc.ExitCode != 0)
-        throw new InvalidOperationException($"{Path.GetFileName(exe)} failed: {stderr}");
 }
 
 /// <summary>

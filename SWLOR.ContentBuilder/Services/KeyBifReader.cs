@@ -33,14 +33,19 @@ namespace SWLOR.ContentBuilder.Services
         }
 
         /// <summary>
-        /// Probes the well-known NWN:EE install locations (Steam x86/x64, GOG) plus a
-        /// CONTENTBUILDER_NWN_PATH environment variable override, and parses nwn_base.key from the
-        /// first one found. Returns null (with a reason) rather than throwing so the map-graphics
-        /// preview mode can degrade gracefully when the base game isn't installed on this machine.
+        /// Probes, in order: the Content Builder Settings dialog's configured NWN game install
+        /// directory (<paramref name="settingsInstallDirectory"/>), a CONTENTBUILDER_NWN_PATH
+        /// environment variable override, then the well-known NWN:EE install locations (Steam
+        /// x86/x64, GOG) -- and parses nwn_base.key from the first one found. Returns null (with a
+        /// reason) rather than throwing so the map-graphics preview mode can degrade gracefully when
+        /// the base game isn't installed on this machine.
         /// </summary>
-        public static KeyBifReader TryCreate(out string errorOrNull)
+        public static KeyBifReader TryCreate(out string errorOrNull, string settingsInstallDirectory = null)
         {
             var candidates = new List<string>();
+
+            if (!string.IsNullOrEmpty(settingsInstallDirectory))
+                candidates.Add(settingsInstallDirectory);
 
             var envOverride = Environment.GetEnvironmentVariable("CONTENTBUILDER_NWN_PATH");
             if (!string.IsNullOrEmpty(envOverride))
@@ -64,7 +69,7 @@ namespace SWLOR.ContentBuilder.Services
 
             if (installRoot == null)
             {
-                errorOrNull = "No NWN:EE install found (checked Steam x86/x64, GOG, CONTENTBUILDER_NWN_PATH).";
+                errorOrNull = "No NWN:EE install found (checked Settings install directory, CONTENTBUILDER_NWN_PATH, Steam x86/x64, GOG).";
                 return null;
             }
 

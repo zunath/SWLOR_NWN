@@ -40,6 +40,7 @@ namespace SWLOR.ContentBuilder.Windows
         private readonly DefinitionCatalog _catalog = new();
         private readonly ObservableCollection<BatchItem> _batch = new();
         private readonly System.Collections.Generic.HashSet<string> _overriddenKnobs = new();
+        private Models.ContentBuilderSettings _settings = SettingsService.Current;
 
         private bool _suppressEvents;
         private GenerationResult _lastResult;
@@ -97,6 +98,7 @@ namespace SWLOR.ContentBuilder.Windows
         private Button _removeSelectedButton;
         private Button _clearBatchButton;
         private Button _buildModuleButton;
+        private Button _buildErfButton;
 
         private TextBox _logTextBox;
 
@@ -137,6 +139,7 @@ namespace SWLOR.ContentBuilder.Windows
             SaveMenuItem.Click += (_, _) => SaveProject();
             SaveAsMenuItem.Click += (_, _) => SaveProjectAs();
             OpenMenuItem.Click += (_, _) => OpenProject();
+            SettingsMenuItem.Click += (_, _) => OpenSettingsDialog();
             ExitMenuItem.Click += (_, _) => Close();
 
             PreviewKeyDown += MainWindow_PreviewKeyDown;
@@ -308,10 +311,12 @@ namespace SWLOR.ContentBuilder.Windows
             var batchButtons = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 6, 0, 0) };
             _removeSelectedButton = new Button { Content = "Remove Selected", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(6, 2, 6, 2) };
             _clearBatchButton = new Button { Content = "Clear", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(6, 2, 6, 2) };
-            _buildModuleButton = new Button { Content = "Build Review Module", Padding = new Thickness(6, 2, 6, 2) };
+            _buildModuleButton = new Button { Content = "Build Review Module", Margin = new Thickness(0, 0, 6, 0), Padding = new Thickness(6, 2, 6, 2) };
+            _buildErfButton = new Button { Content = "Build ERF", Padding = new Thickness(6, 2, 6, 2) };
             batchButtons.Children.Add(_removeSelectedButton);
             batchButtons.Children.Add(_clearBatchButton);
             batchButtons.Children.Add(_buildModuleButton);
+            batchButtons.Children.Add(_buildErfButton);
             batchGroup.Children.Add(batchButtons);
 
             var (_, logGroup) = AddGroup(LeftStack, "Log");
@@ -501,6 +506,7 @@ namespace SWLOR.ContentBuilder.Windows
             _removeSelectedButton.Click += (_, _) => RemoveSelectedBatchItems();
             _clearBatchButton.Click += (_, _) => { _batch.Clear(); MarkDirty(); };
             _buildModuleButton.Click += async (_, _) => await BuildReviewModuleAsync();
+            _buildErfButton.Click += async (_, _) => await BuildErfAsync();
         }
 
         /// <summary>
@@ -1194,9 +1200,19 @@ namespace SWLOR.ContentBuilder.Windows
                 var arguments = $"run --project \"{projectPath}\" -- --areas-file \"{areasFilePath}\" --out \"{outPath}\"";
                 var exitCode = await RunProcessAsync("dotnet", arguments);
 
-                AppendLog(exitCode == 0
-                    ? $"Build succeeded: {outPath}"
-                    : $"Build failed (exit code {exitCode}).");
+                if (exitCode == 0)
+                {
+                    AppendLog($"Build succeeded: {outPath}");
+                    // Copies into the resolved MODULES folder (from Settings' NWN user directory /
+                    // nwn.ini [Alias] parsing) so the module shows up where the toolset/game actually
+                    // look, instead of relying on the dev convention of manually pointing nwn.ini's
+                    // MODULES alias at the repo's own Module folder.
+                    PublishBuiltFile(outPath, "MODULES", "NWN module (*.mod)|*.mod", "SWLOR Procgen Review.mod");
+                }
+                else
+                {
+                    AppendLog($"Build failed (exit code {exitCode}).");
+                }
             }
             catch (Exception ex)
             {
@@ -1211,6 +1227,175 @@ namespace SWLOR.ContentBuilder.Windows
                     catch { /* best-effort scratch-file cleanup */ }
                 }
             }
+        }
+
+        // ------------------------------------------------------------------
+        // Build ERF
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Same batch pipeline as "Build Review Module", but invokes SWLOR.ProcgenReview's --erf
+        /// path instead of --out: a standalone .erf containing only the generated areas' .are/.git
+        /// (no module.ifo), importable directly via the Aurora toolset's File -> Import. The output
+        /// path is resolved up front (resolved ERF folder, or a save dialog) rather than built-then-
+        /// copied like the module, since there is no repo-convention default location for a
+        /// standalone ERF the way there is for the review module.
+        /// </summary>
+        private async Task BuildErfAsync()
+        {
+            if (_batch.Count == 0)
+            {
+                AppendLog("Batch is empty; nothing to build.");
+                return;
+            }
+
+            var outPath = ResolveErfOutputPath();
+            if (outPath == null)
+            {
+                AppendLog("Build ERF cancelled: no output path selected.");
+                return;
+            }
+
+            _buildErfButton.IsEnabled = false;
+            string areasFilePath = null;
+            try
+            {
+                var entries = _batch.Select(b => new AreaBatchFileEntry
+                {
+                    ThemeKey = b.ThemeKey,
+                    TilesetKey = b.TilesetProfileKey,
+                    LayoutKey = b.LayoutProfileKey,
+                    Seed = b.Seed,
+                    Size = b.Size,
+                    Parameters = b.Parameters
+                }).ToList();
+
+                areasFilePath = Path.Combine(Path.GetTempPath(), $"swlor_contentbuilder_areas_{Guid.NewGuid():N}.json");
+                File.WriteAllText(areasFilePath, AreaBatchFile.Serialize(entries));
+
+                var projectPath = RepoPaths.ProcgenReviewProjectPath;
+
+                AppendLog($"Building ERF with {_batch.Count} area(s)...");
+
+                var arguments = $"run --project \"{projectPath}\" -- --areas-file \"{areasFilePath}\" --erf \"{outPath}\"";
+                var exitCode = await RunProcessAsync("dotnet", arguments);
+
+                AppendLog(exitCode == 0
+                    ? $"Build succeeded: {outPath}"
+                    : $"Build failed (exit code {exitCode}).");
+            }
+            catch (Exception ex)
+            {
+                AppendLog($"Build failed: {ex.Message}");
+            }
+            finally
+            {
+                _buildErfButton.IsEnabled = true;
+                if (areasFilePath != null)
+                {
+                    try { File.Delete(areasFilePath); }
+                    catch { /* best-effort scratch-file cleanup */ }
+                }
+            }
+        }
+
+        /// <summary>Resolves the ERF alias folder from Settings for the default output path; falls
+        /// back to a SaveFileDialog (defaulting to the same file name) when it can't be resolved --
+        /// no NWN user directory configured, or the resolved folder can't be created.</summary>
+        private string ResolveErfOutputPath()
+        {
+            const string defaultFileName = "SWLOR Procgen Review.erf";
+
+            var resolvedDir = NwnIniAliasResolver.ResolveSingle(_settings.NwnUserDirectory, "ERF");
+            if (!string.IsNullOrEmpty(resolvedDir))
+            {
+                try
+                {
+                    Directory.CreateDirectory(resolvedDir);
+                    return Path.Combine(resolvedDir, defaultFileName);
+                }
+                catch
+                {
+                    // Fall through to the save dialog below.
+                }
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                Title = "Build ERF",
+                Filter = "NWN ERF (*.erf)|*.erf|All files (*.*)|*.*",
+                DefaultExt = ".erf",
+                AddExtension = true,
+                FileName = defaultFileName
+            };
+
+            return dialog.ShowDialog(this) == true ? dialog.FileName : null;
+        }
+
+        /// <summary>
+        /// After a successful build, copies the packed file into the resolved nwn.ini alias folder
+        /// (e.g. MODULES for the review module) so the toolset/game sees it without the user having
+        /// to know the repo's own build output path. Falls back to a SaveFileDialog when the alias
+        /// can't be resolved (no NWN user directory configured in Settings, or nwn.ini doesn't
+        /// define/imply it) -- if the user cancels that dialog, the built file simply stays at its
+        /// original build path and nothing is copied.
+        /// </summary>
+        private void PublishBuiltFile(string builtPath, string alias, string dialogFilter, string defaultFileName)
+        {
+            var resolvedDir = NwnIniAliasResolver.ResolveSingle(_settings.NwnUserDirectory, alias);
+            if (!string.IsNullOrEmpty(resolvedDir))
+            {
+                try
+                {
+                    Directory.CreateDirectory(resolvedDir);
+                    var destination = Path.Combine(resolvedDir, Path.GetFileName(builtPath));
+                    File.Copy(builtPath, destination, overwrite: true);
+                    AppendLog($"Copied to {alias} folder: {destination}");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    AppendLog($"Could not copy to {alias} folder ({resolvedDir}): {ex.Message}");
+                }
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                Title = $"Copy built file to ({alias} folder not resolved)",
+                Filter = dialogFilter,
+                FileName = defaultFileName
+            };
+
+            if (dialog.ShowDialog(this) == true)
+            {
+                try
+                {
+                    File.Copy(builtPath, dialog.FileName, overwrite: true);
+                    AppendLog($"Copied to: {dialog.FileName}");
+                }
+                catch (Exception ex)
+                {
+                    AppendLog($"Copy failed: {ex.Message}");
+                }
+            }
+            else
+            {
+                AppendLog($"{alias} folder not resolved; copy skipped. Built file remains at {builtPath}.");
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // Settings
+        // ------------------------------------------------------------------
+
+        private void OpenSettingsDialog()
+        {
+            var dialog = new SettingsWindow(_settings) { Owner = this };
+            if (dialog.ShowDialog() != true) return;
+
+            _settings = dialog.Result;
+            SettingsService.UpdateCurrent(_settings);
+            AppendLog("Settings saved.");
         }
 
         private Task<int> RunProcessAsync(string fileName, string arguments)

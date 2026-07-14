@@ -129,7 +129,7 @@ namespace SWLOR.ContentBuilder.Services
             if (_baseGameArchiveAttempted) return _baseGameArchive;
 
             _baseGameArchiveAttempted = true;
-            _baseGameArchive = KeyBifReader.TryCreate(out _baseGameArchiveError);
+            _baseGameArchive = KeyBifReader.TryCreate(out _baseGameArchiveError, SettingsService.Current.NwnGameInstallDirectory);
             return _baseGameArchive;
         }
     }

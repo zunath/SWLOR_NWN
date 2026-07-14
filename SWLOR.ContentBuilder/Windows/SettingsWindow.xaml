@@ -1,0 +1,14 @@
+<Window x:Class="SWLOR.ContentBuilder.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Width="680" Height="560" MinWidth="560" MinHeight="480"
+        WindowStartupLocation="CenterOwner">
+    <!--
+        All content is built in code-behind (see MainWindow's BuildLeftPanel convention) since it's a
+        handful of repetitive labeled path rows plus a read-only derived-paths grid; this file only
+        holds the window shell.
+    -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel x:Name="RootStack" Margin="12" />
+    </ScrollViewer>
+</Window>

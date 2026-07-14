@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
@@ -78,9 +79,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// LayoutSolver.Solve stamps onto MacroLayoutParameters.SolidTerrain every attempt).
         /// </summary>
         public static bool SupportsTunnels(
-            TilesetModel tileset, string openTerrain, string solidTerrain, CorridorCrosserType crosserType)
+            TilesetModel tileset, string openTerrain, string solidTerrain, CorridorCrosserType crosserType,
+            IReadOnlyCollection<string> extraDoorSlotCrossers = null)
         {
-            return SupportsTunnels(tileset, openTerrain, string.Empty, solidTerrain, crosserType);
+            return SupportsTunnels(tileset, openTerrain, string.Empty, solidTerrain, crosserType,
+                extraDoorSlotCrossers: extraDoorSlotCrossers);
         }
 
         /// <summary>
@@ -99,10 +102,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// profile's declared TunnelBodyCrosser/TunnelPortCrosser (see
         /// MacroLayoutParameters.TunnelBodyCrosser doc comment) to probe an alternate district-scoped
         /// crosser family (e.g. tdc01's "GreyCorridor" body paired with the canonical "Doorway" port).
+        ///
+        /// <paramref name="extraDoorSlotCrossers"/> is passed straight through to every
+        /// TileResolver.HasCandidate probe below (see MacroLayoutParameters.DoorSlotCrossers) so a port
+        /// crosser family whose real tiles all carry door slots (e.g. Barrows/tbw01's "door_corridor")
+        /// registers as a candidate the same way a canonical Doorway/Bridge door-slot tile always has --
+        /// without this, every probed shape that happens to land on a door-slot tile would report a
+        /// false negative purely because TileResolver's admission gate excluded it, not because the
+        /// tileset genuinely lacks the shape.
         /// </summary>
         public static bool SupportsTunnels(
             TilesetModel tileset, string openTerrain, string secondaryOpenTerrain, string solidTerrain,
-            CorridorCrosserType crosserType, string customBodyCrosser = null, string customPortCrosser = null)
+            CorridorCrosserType crosserType, string customBodyCrosser = null, string customPortCrosser = null,
+            IReadOnlyCollection<string> extraDoorSlotCrossers = null)
         {
             if (tileset == null) throw new ArgumentNullException(nameof(tileset));
 
@@ -116,20 +128,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (!tileset.Crossers.Contains(body, StringComparer.OrdinalIgnoreCase)) return false;
             if (!tileset.Crossers.Contains(port, StringComparer.OrdinalIgnoreCase)) return false;
 
-            if (!SupportsBodyAndPortShapes(tileset, solidTerrain, body, port)) return false;
-            if (!SupportsBoundaryShape(tileset, openTerrain, solidTerrain, port)) return false;
+            if (!SupportsBodyAndPortShapes(tileset, solidTerrain, body, port, extraDoorSlotCrossers)) return false;
+            if (!SupportsBoundaryShape(tileset, openTerrain, solidTerrain, port, extraDoorSlotCrossers)) return false;
 
             if (!isAlley && !string.IsNullOrEmpty(secondaryOpenTerrain) &&
-                !SupportsBoundaryShape(tileset, secondaryOpenTerrain, solidTerrain, port))
+                !SupportsBoundaryShape(tileset, secondaryOpenTerrain, solidTerrain, port, extraDoorSlotCrossers))
                 return false;
 
             return true;
         }
 
-        private static bool SupportsBodyAndPortShapes(TilesetModel tileset, string solid, string body, string port)
+        private static bool SupportsBodyAndPortShapes(
+            TilesetModel tileset, string solid, string body, string port,
+            IReadOnlyCollection<string> extraDoorSlotCrossers)
         {
             bool Body(string top, string right, string bottom, string left) =>
-                TileResolver.HasCandidate(tileset, solid, solid, solid, solid, top, right, bottom, left);
+                TileResolver.HasCandidate(tileset, solid, solid, solid, solid, top, right, bottom, left, extraDoorSlotCrossers);
 
             if (!Body(body, "", body, "")) return false; // straight
             if (!Body(body, body, "", "")) return false; // turn (L)
@@ -154,9 +168,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// far/Left side. Corresponds to TL=solid, TR=open, BR=open, BL=solid in TileResolver's own
         /// corner-slot convention (cell (cx,cy): bl=(cx,cy), tl=(cx,cy+1), br=(cx+1,cy), tr=(cx+1,cy+1)).
         /// </summary>
-        private static bool SupportsBoundaryShape(TilesetModel tileset, string open, string solid, string port)
+        private static bool SupportsBoundaryShape(
+            TilesetModel tileset, string open, string solid, string port,
+            IReadOnlyCollection<string> extraDoorSlotCrossers = null)
         {
-            return TileResolver.HasCandidate(tileset, solid, open, open, solid, "", "", "", port);
+            return TileResolver.HasCandidate(tileset, solid, open, open, solid, "", "", "", port, extraDoorSlotCrossers);
         }
     }
 }

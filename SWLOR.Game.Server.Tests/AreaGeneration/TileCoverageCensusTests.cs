@@ -60,6 +60,16 @@ public class TileCoverageCensusTests
         /// </summary>
         public string TunnelBody = CorridorCrosser;
         public string TunnelPort = DoorwayCrosser;
+
+        /// <summary>
+        /// Crosser names (beyond canonical Doorway/Bridge) this profile declares as door-implying for
+        /// TileResolver's crosser+door-slot admission gate -- mirrors
+        /// DungeonTilesetProfile.DoorSlotCrossers/MacroLayoutParameters.DoorSlotCrossers, so
+        /// IsCornerEdgeResolverReachable credits the SAME alternate vocabulary TileResolver.
+        /// BuildCandidateLookup actually admits for a real composition (e.g. Barrows/tbw01's
+        /// "door_corridor").
+        /// </summary>
+        public IReadOnlyCollection<string> ExtraDoorSlotCrossers = Array.Empty<string>();
     }
 
     private static TilesetVocabulary BuildVocabulary(TilesetModel model, DungeonTilesetProfile profile)
@@ -73,6 +83,7 @@ public class TileCoverageCensusTests
             Channel = !string.IsNullOrEmpty(profile.ChannelTerrain) ? profile.ChannelTerrain : (profile.AccentTerrain ?? string.Empty),
             TunnelBody = !string.IsNullOrEmpty(profile.TunnelBodyCrosser) ? profile.TunnelBodyCrosser : CorridorCrosser,
             TunnelPort = !string.IsNullOrEmpty(profile.TunnelPortCrosser) ? profile.TunnelPortCrosser : DoorwayCrosser,
+            ExtraDoorSlotCrossers = (IReadOnlyCollection<string>)profile.DoorSlotCrossers ?? Array.Empty<string>(),
         };
     }
 
@@ -83,9 +94,10 @@ public class TileCoverageCensusTests
 
     /// <summary>Mirrors TileResolver.BuildCandidateLookup's registration rule for a single tile: flat,
     /// ungrouped, and either crosser-free, or crosser-bearing with any door slot facing a Doorway/Bridge
-    /// edge. Uses the real public TileResolver.HasCandidate hook so this is checking actual production
-    /// behavior, not a re-guessed copy of it.</summary>
-    private static bool IsCornerEdgeResolverReachable(TilesetModel model, TileRecord tile)
+    /// edge (or one of the profile's own declared extra door-slot crossers -- see
+    /// TilesetVocabulary.ExtraDoorSlotCrossers). Uses the real public TileResolver.HasCandidate hook so
+    /// this is checking actual production behavior, not a re-guessed copy of it.</summary>
+    private static bool IsCornerEdgeResolverReachable(TilesetModel model, TileRecord tile, TilesetVocabulary vocab)
     {
         if (tile.GroupIndex != -1) return false;
         if (!IsFlat(tile)) return false;
@@ -109,13 +121,25 @@ public class TileCoverageCensusTests
             {
                 var hasDoorwayEdge = IsDoorway(top) || IsDoorway(right) || IsDoorway(bottom) || IsDoorway(left);
                 var hasBridgeEdge = IsBridge(top) || IsBridge(right) || IsBridge(bottom) || IsBridge(left);
-                if (!hasDoorwayEdge && !hasBridgeEdge) continue;
+                var hasExtraEdge = vocab.ExtraDoorSlotCrossers.Count > 0 &&
+                    (IsExtra(top, vocab) || IsExtra(right, vocab) || IsExtra(bottom, vocab) || IsExtra(left, vocab));
+                if (!hasDoorwayEdge && !hasBridgeEdge && !hasExtraEdge) continue;
             }
 
-            if (TileResolver.HasCandidate(model, tl, tr, br, bl, top, right, bottom, left))
+            if (TileResolver.HasCandidate(model, tl, tr, br, bl, top, right, bottom, left, vocab.ExtraDoorSlotCrossers))
                 return true;
         }
 
+        return false;
+    }
+
+    private static bool IsExtra(string edge, TilesetVocabulary vocab)
+    {
+        if (string.IsNullOrEmpty(edge)) return false;
+        foreach (var candidate in vocab.ExtraDoorSlotCrossers)
+        {
+            if (Eq(edge, candidate)) return true;
+        }
         return false;
     }
 
@@ -323,6 +347,13 @@ public class TileCoverageCensusTests
 
     private static readonly (int Dx, int Dy)[] SlotOffsets = { (0, 1), (1, 0), (0, -1), (-1, 0) };
 
+    /// <summary>Mirrors LayoutGroupStamper.IsHole: true when the group's (row, col) local slot is a -1
+    /// hole (no real tile there) rather than a real member.</summary>
+    private static bool IsHoleAt(TileGroupRecord group, int row, int col)
+    {
+        return group.TileIds[row * group.Columns + col] < 0;
+    }
+
     /// <summary>Mirrors LayoutGroupStamper.TryClassifyCorridorInsert (Corridor/Alley/Fence/Bridge
     /// opposite-pair 1x1 dead-straight gate, plus the Doorway-pair pass-through-segment branch --
     /// see IsDoorwayPairCorridorInsertEligible).</summary>
@@ -458,26 +489,61 @@ public class TileCoverageCensusTests
     /// multi-tile — and, for OpenSetPiece, also 1x1 — path taken once CorridorInsert/CorridorStub have
     /// been ruled out). Tolerates a -1 hole slot (e.g. tdt01/tds01 "Platform03_2x2") as ordinary plan
     /// space, not a real member -- every classification decision below is derived only from `members`,
-    /// mirroring LayoutGroupStamper.TryClassify's hole handling.</summary>
+    /// mirroring LayoutGroupStamper.TryClassify's hole handling. A door slot is tolerated on a WallRoom
+    /// candidate too (production's own hasAnyDoor relaxation -- see LayoutGroupStamper.TryClassify's
+    /// own doc comment) -- WriteMember/StampWallRoom never write door data, so an unpopulated slot on a
+    /// stamped WallRoom member renders exactly like any other unpopulated Doorway-keyed door-slot tile
+    /// already does today.</summary>
     private static GroupMechanism ClassifyMultiTileSetPiece(TilesetModel model, TileGroupRecord group, TilesetVocabulary vocab)
     {
         if (group.Rows <= 0 || group.Columns <= 0) return GroupMechanism.None;
         if (group.TileIds.Count != group.Rows * group.Columns) return GroupMechanism.None;
 
         var members = new List<TileRecord>();
-        foreach (var tileId in group.TileIds)
+        var positioned = new List<(int Row, int Col, TileRecord Tile)>();
+        for (var row = 0; row < group.Rows; row++)
         {
-            if (tileId < 0) continue; // hole
-            if (tileId >= model.Tiles.Count) return GroupMechanism.None; // out of range -- bad data
-            var tile = model.Tiles[tileId];
-            if (!IsFlat(tile)) return GroupMechanism.None;
-            foreach (var edge in tile.Edges)
+            for (var col = 0; col < group.Columns; col++)
             {
-                if (!string.IsNullOrEmpty(edge) && !Eq(edge, DoorwayCrosser)) return GroupMechanism.None;
+                var tileId = group.TileIds[row * group.Columns + col];
+                if (tileId < 0) continue; // hole
+                if (tileId >= model.Tiles.Count) return GroupMechanism.None; // out of range -- bad data
+                var tile = model.Tiles[tileId];
+                if (!IsFlat(tile)) return GroupMechanism.None;
+                foreach (var edge in tile.Edges)
+                {
+                    if (!string.IsNullOrEmpty(edge) && !Eq(edge, DoorwayCrosser)) return GroupMechanism.None;
+                }
+                members.Add(tile);
+                positioned.Add((row, col, tile));
             }
-            members.Add(tile);
         }
         if (members.Count == 0) return GroupMechanism.None; // an all-hole "group" is degenerate
+
+        // Mirrors LayoutGroupStamper.TryClassify's perimeterDoorways computation: a Doorway edge whose
+        // neighbor cell falls outside the group's own footprint (out of bounds OR a hole) is a real
+        // perimeter opening; a Doorway edge shared between two real members of the SAME group (e.g.
+        // tic01 "Turret Interior - Lit/Dark (2x1)", where each member's lone Doorway edge faces the
+        // other member) is interior only and does not count.
+        var hasAnyPerimeterDoorway = false;
+        foreach (var (row, col, tile) in positioned)
+        {
+            for (var slot = 0; slot < 4; slot++)
+            {
+                if (!Eq(tile.GetEdgeAt(0, slot), DoorwayCrosser)) continue;
+                var (dx, dy) = SlotOffsets[slot];
+                var neighborRow = row + dy;
+                var neighborCol = col + dx;
+                var outOfBounds = neighborRow < 0 || neighborRow >= group.Rows ||
+                                   neighborCol < 0 || neighborCol >= group.Columns;
+                if (outOfBounds || IsHoleAt(group, neighborRow, neighborCol))
+                {
+                    hasAnyPerimeterDoorway = true;
+                    break;
+                }
+            }
+            if (hasAnyPerimeterDoorway) break;
+        }
 
         var hasAnyDoorway = members.Any(m => m.Edges.Any(e => Eq(e, DoorwayCrosser)));
         var allCornersSolid = members.All(m => m.Corners.All(c => Eq(c, vocab.Solid)));
@@ -485,10 +551,7 @@ public class TileCoverageCensusTests
 
         if (hasAnyDoorway)
         {
-            if (!allCornersSolid || hasAnyDoor) return GroupMechanism.None;
-            // At least one Doorway edge must be a perimeter opening (face outward) -- true for every
-            // real WallRoom shape in the verified inventory (a fully interior Doorway edge, shared
-            // between two members, would be unusual and isn't relied on here).
+            if (!allCornersSolid || !hasAnyPerimeterDoorway) return GroupMechanism.None;
             return GroupMechanism.SetPieceWallRoom;
         }
 
@@ -614,7 +677,7 @@ public class TileCoverageCensusTests
 
             var tile = model.Tiles[tileId];
 
-            if (IsCornerEdgeResolverReachable(model, tile)) { Cover(tileId, "CornerEdgeResolver"); continue; }
+            if (IsCornerEdgeResolverReachable(model, tile, vocab)) { Cover(tileId, "CornerEdgeResolver"); continue; }
             if (IsDoorTransitionReachable(model, tile)) { Cover(tileId, "DoorTransition"); continue; }
 
             exemptions.Add(new Exemption { Tileset = tilesetResref, TileOrGroup = $"TILE{tileId}", Reason = "UNCLASSIFIED" });
@@ -713,7 +776,16 @@ public class TileCoverageCensusTests
         ["tdc01"] = new(StringComparer.OrdinalIgnoreCase) { "DwarvenDoorway", "DwarvenCorridor", "ChultDoorway", "ChultCorridor" },
         ["tde01"] = new(StringComparer.OrdinalIgnoreCase) { "MazeMosaic" },
         ["tin01"] = new(StringComparer.OrdinalIgnoreCase),
-        ["tbw01"] = new(StringComparer.OrdinalIgnoreCase) { "door_barrow", "door_corridor" },
+        // "door_corridor" is no longer here: BaseGameTilesetProfiles.Barrows declares it as
+        // DoorSlotCrossers (paired with TunnelCrossers("corridor", "door_corridor")), a verified
+        // both-halves-renamed Tunnel body/port family (unlike Crypt Grey's body-only rename) -- the
+        // census now credits it the same way TileResolver's generalized crosser+door-slot admission
+        // gate does for a real composition. "door_barrow" (SideChamber1's 1x1 group, TILE60, and its
+        // ungrouped boundary partner TILE39) stays unwired: MacroLayoutParameters only carries one
+        // Tunnel port crosser slot per composition (already claimed by "door_corridor"), and no carver
+        // ever writes a "door_barrow" edge for LayoutGroupStamper's CorridorStub site search to attach
+        // to -- see BaseGameTilesetProfiles.Barrows' own doc comment.
+        ["tbw01"] = new(StringComparer.OrdinalIgnoreCase) { "door_barrow" },
         // "DesertCorridor"/"OrganicCorridor" are no longer here: BaseGameTilesetProfiles.
         // MinesAndCavernsDesert/MinesAndCavernsOrganic declare them as TunnelBodyCrosser (paired with
         // the canonical "Doorway" port), verified body-only-renamed families mirroring Crypt Grey's own
@@ -752,33 +824,33 @@ public class TileCoverageCensusTests
     /// BaseGameTilesetProfiles) that are NEITHER height-dependent (tagged automatically, see
     /// HeightExemptionReason) NOR alternate-vocabulary (tagged automatically, see
     /// PilotAlternateVocabTerrains/Crossers): a genuine gap in the shared classification mechanisms
-    /// themselves. Currently just tin01's five "*Room01_1x2"/"*Room02_1x2" door-entrance pairs (see
-    /// the doc comment on BaseGameTilesetProfiles.CityInterior) -- each pairs a blank wall tile with a
-    /// tile carrying BOTH a Doorway edge crosser AND a door slot on the same tile, which
-    /// LayoutGroupStamper's WallRoom classification excludes (requires no door slot) and which isn't a
-    /// trivial 1x1 group either (so the door-transition tolerance doesn't apply).
+    /// themselves.
+    ///
+    /// The "*Room01_1x2"/"*Room02_1x2" door-entrance-pair family that used to fill most of this list
+    /// (tin01/tic01/tii01/tni01/twc03's blank-wall-tile-plus-Doorway-and-door-slot-entrance-tile
+    /// groups) is CLOSED: LayoutGroupStamper.TryClassify's WallRoom branch now tolerates a door slot
+    /// the same way WallAlcove/OpenSetPiece already did (see that method's own doc comment) -- a
+    /// door-entrance group classifies as SetPieceWallRoom as long as it's still all-solid-cornered with
+    /// at least one real PERIMETER Doorway opening (an interior-only Doorway edge shared between two
+    /// members of the SAME group, e.g. tic01's Turret Interior Lit/Dark pair, still correctly fails and
+    /// stays exempt below). See BaseGameTilesetProfiles.CityInterior/CastleInterior/CastleInterior2/
+    /// IllithidInterior/CityInterior2/FortInterior for the SetPiece(...) wiring that surfaces this.
     /// </summary>
     private static readonly HashSet<(string Tileset, string Label)> PilotExpectedExemptions = new()
     {
-        ("tin01", "GROUP:Livingroom01_1x2"),
-        ("tin01", "GROUP:Livingroom02_1x2"),
-        ("tin01", "GROUP:KitchenRoom01_1x2"),
-        ("tin01", "GROUP:KitchenRoom02_1x2"),
-        ("tin01", "GROUP:InnRoom01_1x2"),
-        ("tin01", "GROUP:InnRoom02_1x2"),
-        ("tin01", "GROUP:ShopRoom01_1x2"),
-        ("tin01", "GROUP:ShopRoom02_1x2"),
-        ("tin01", "GROUP:Bordello"),
-
         // Barrows (tbw01): CorridorDown_1x2/Corridor_Up_1x2/Corridor_Up_1x2_02 are 1x2 multi-tile
-        // groups whose shared edge carries the canonical "corridor" (Corridor) crosser rather than
-        // Doorway -- ClassifyMultiTileSetPiece only tolerates Doorway edges on multi-tile members, so
-        // these don't classify despite using in-vocabulary crossers. TILE13/TILE51 are ungrouped tiles
-        // pairing a door slot with, respectively, a bare "corridor" crosser edge (not Doorway/Bridge,
-        // so IsCornerEdgeResolverReachable's crosser+door branch excludes it) and no crosser at all
-        // with partially-open corners (excluded by the "door implies TileDoorPlanner's inventory"
-        // rule, which requires a Doorway edge TileDoorPlanner never finds here) -- genuine authoring
-        // gaps, not currently reachable by any mechanism.
+        // groups whose shared edge carries the plain "corridor" body crosser rather than a Doorway/
+        // door-implying port crosser -- ClassifyMultiTileSetPiece only tolerates Doorway edges on
+        // multi-tile members, so these don't classify despite using in-vocabulary crossers. TILE13/
+        // TILE51 are ungrouped tiles pairing a door slot with, respectively, a bare "corridor" crosser
+        // edge (not Doorway/Bridge/an extra declared door-slot crosser, so
+        // IsCornerEdgeResolverReachable's crosser+door branch excludes it) and no crosser at all with
+        // partially-open corners (excluded by the "door implies TileDoorPlanner's inventory" rule,
+        // which requires a Doorway edge TileDoorPlanner never finds here) -- genuine authoring gaps,
+        // not currently reachable by any mechanism. See BaseGameTilesetProfiles.Barrows' own doc
+        // comment for the door_barrow/door_corridor family this list used to also cover (now split
+        // between the auto-tagged alternate-vocabulary bucket for door_barrow and real classification
+        // for door_corridor).
         ("tbw01", "GROUP:CorridorDown_1x2"),
         ("tbw01", "GROUP:Corridor_Up_1x2"),
         ("tbw01", "GROUP:Corridor_Up_1x2_02"),
@@ -797,70 +869,36 @@ public class TileCoverageCensusTests
         ("tdm01", "GROUP:[Cave] Door - Bridge, Lava"),
 
         // Castle Interior (tic01): every "Room - <Type> 1/2 (1x2)" door-entrance pair, the "Room -
-        // Storage, Empty (2x1)" pair, the Turret Interior Lit/Dark pair, and the Room - Bath 1/2 pair
-        // all pair a blank Wall tile with a tile carrying BOTH a Doorway edge crosser AND a door slot
-        // on the same tile -- the identical authoring gap as City Interior's own *Room01_1x2/
-        // *Room02_1x2 pilot exemptions (WallRoom classification excludes any door slot, and these
-        // aren't trivial 1x1 groups either).
-        ("tic01", "GROUP:[Castle] Room - Storage 1 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Storage 2 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Bedroom 1 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Bedroom 2 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Library 1 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Library 2 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Jail 1 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Jail 2 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Stone 1 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Stone 2 (1x2)"),
-        ("tic01", "GROUP:[Castle] Room - Storage, Empty (2x1)"),
+        // Storage, Empty (2x1)" pair, and the Room - Bath 1/2 pair now classify as SetPieceWallRoom
+        // (see this class's own doc comment on the door-slot relaxation). The Turret Interior Lit/Dark
+        // pair is genuinely different and stays exempt: TILE667's only Doorway edge faces its OWN
+        // group-mate TILE668 (the shared 2x1 boundary), and TILE677 (Dark's own unique member, sharing
+        // TILE668 with Lit) is the same shape -- an interior-only opening with zero real perimeter
+        // Doorway edge, which LayoutGroupStamper.IsWallRoomSiteValid's perimeterDoorways check requires
+        // at least one of (verified via direct probe: this group's own doc-comment claim that both
+        // shapes are identical "half turn / half stack" rooms with no outward-facing entrance at all).
         ("tic01", "GROUP:[Castle] Turret Interior - Lit (2x1)"),
         ("tic01", "GROUP:[Castle] Turret Interior - Dark (2x1)"),
-        ("tic01", "GROUP:[Castle] Room - Bath 1 (2x1)"),
-        ("tic01", "GROUP:[Castle] Room - Bath 2 (2x1)"),
 
-        // Castle Interior 2 (tni02): the same door-entrance-pair gap as Castle Interior, plus
-        // CollapsedRoom2x2 (doorway-shape-mismatch) and Mythallar_3x3 (a multi-tile group whose shared
-        // edges carry the canonical "corridor" crosser, same structural exclusion as Barrows' Corridor
-        // Down/Up 1x2 pairs).
-        ("tni02", "GROUP:StorageRoom01_1x2"),
-        ("tni02", "GROUP:StorageRoom02_1x2"),
-        ("tni02", "GROUP:Bedroom01_1x2"),
-        ("tni02", "GROUP:Bedroom02_1x2"),
-        ("tni02", "GROUP:LibraryRoom01_1x2"),
-        ("tni02", "GROUP:LibraryRoom02_1x2"),
-        ("tni02", "GROUP:JailRoom01_1x2"),
-        ("tni02", "GROUP:JailRoom02_1x2"),
-        ("tni02", "GROUP:StoneRoom01_1x2"),
-        ("tni02", "GROUP:StoneRoom02_1x2"),
-        ("tni02", "GROUP:CollapsedRoom2x2"),
+        // Castle Interior 2 (tni02): the door-entrance-pair family and CollapsedRoom2x2 now classify
+        // (same relaxation as Castle Interior). Mythallar_3x3 remains exempt: its shared member edges
+        // carry the plain "corridor" crosser, not Doorway, the same structural exclusion as Barrows'
+        // own Corridor Down/Up 1x2 pairs above.
         ("tni02", "GROUP:Mythallar_3x3"),
 
-        // Illithid Interior (tii01): "Great Brain" (this tileset's signature centerpiece) and
-        // "Resting Pods" each carry a Doorway edge together with a door slot on the same member tile
-        // (doorway-shape-mismatch) -- the same authoring gap as Castle Interior's Room-* families.
-        ("tii01", "GROUP:Great Brain"),
-        ("tii01", "GROUP:Resting Pods"),
-
-        // City Interior 2 (tni01): the same *Room01_1x2/*Room02_1x2 door-entrance-pair gap as City
-        // Interior's own pilot exemptions (this hak copy carries its own separate but structurally
-        // identical Livingroom/Kitchen/Inn/Shop room-entrance tiles), plus Bordello for the same reason.
-        ("tni01", "GROUP:Livingroom01_1x2"),
-        ("tni01", "GROUP:Livingroom02_1x2"),
-        ("tni01", "GROUP:KitchenRoom01_1x2"),
-        ("tni01", "GROUP:KitchenRoom02_1x2"),
-        ("tni01", "GROUP:InnRoom01_1x2"),
-        ("tni01", "GROUP:InnRoom02_1x2"),
-        ("tni01", "GROUP:ShopRoom01_1x2"),
-        ("tni01", "GROUP:ShopRoom02_1x2"),
-        ("tni01", "GROUP:Bordello"),
-
-        // Fort Interior (twc03): a long tail of legacy "OLD_"/superseded furnished-room groups (2x1/
-        // 2x2/2x3/3x3) that carry a Doorway edge together with a door slot on the same member tile, or
-        // (Large_Door/Mythallar_3x3) a shared edge using the canonical "corridor" crosser on a multi-
-        // tile group -- the same two structural gaps seen throughout this wave's authoring. TILE23/29/
-        // 95/105/106/125/127/128 are ungrouped tiles pairing a door slot with either a non-Doorway
-        // crosser ("corridor"/"wall", not in TileDoorPlanner's Doorway-only inventory) or no crosser at
-        // all on partially-open corners -- genuinely unreachable by any current mechanism.
+        // Fort Interior (twc03): the CURRENT (non-"OLD_") furnished-room groups (StoreRoom_2x2L,
+        // Cells_2x2, Kitchen_1x2, Generic_Room_2x1/2x2, Barracks_2x2, Bedroom_02_2x2/03_2x1, Smithy_1x2,
+        // Portal_Hall_2x3) all use the canonical "doorway" (case-insensitive) crosser on their entrance
+        // tile and now classify as SetPieceWallRoom. The legacy "OLD_"-prefixed superseded groups
+        // (OLD_Smithy_1x2, OLD_Kitchen_1x2, OLD_Bedroom_02_2x1/03_2x1, OLD_Barracks_2x2,
+        // OLD_Portal_Hall_2x3, OLD_StoreRoom_2x2L_old, OLD_Cells_2x2_old, OLD_Generic_Room_2x1/2x2) and
+        // Large_Door/Mythallar_3x3 remain exempt: they use the plain "corridor" (or "wall") body
+        // crosser directly on their entrance/wall tile instead of a Doorway-family port -- the same
+        // structural exclusion as Barrows' own Corridor Down/Up 1x2 pairs (Large_Door's TILE36 also
+        // has mixed floor/black corners, so it fails the all-solid CorridorInsert/CorridorStub checks
+        // too). TILE23/29/95/96/105/106/125/127/128 are ungrouped tiles pairing a door slot with either
+        // a non-Doorway crosser ("corridor"/"wall", not in TileDoorPlanner's Doorway-only inventory) or
+        // no crosser at all on partially-open corners -- genuinely unreachable by any current mechanism.
         ("twc03", "GROUP:Large_Door"),
         ("twc03", "GROUP:OLD_Smithy_1x2"),
         ("twc03", "GROUP:OLD_Kitchen_1x2"),
@@ -873,16 +911,6 @@ public class TileCoverageCensusTests
         ("twc03", "GROUP:OLD_Cells_2x2_old"),
         ("twc03", "GROUP:OLD_Generic_Room_2x1"),
         ("twc03", "GROUP:OLD_Generic_Room_2x2"),
-        ("twc03", "GROUP:StoreRoom_2x2L"),
-        ("twc03", "GROUP:Cells_2x2"),
-        ("twc03", "GROUP:Kitchen_1x2"),
-        ("twc03", "GROUP:Generic_Room_2x2"),
-        ("twc03", "GROUP:Barracks_2x2"),
-        ("twc03", "GROUP:Generic_Room_2x1"),
-        ("twc03", "GROUP:Bedroom_02_2x2"),
-        ("twc03", "GROUP:Bedroom_03_2x1"),
-        ("twc03", "GROUP:Smithy_1x2"),
-        ("twc03", "GROUP:Portal_Hall_2x3"),
         ("twc03", "TILE23"),
         ("twc03", "TILE29"),
         ("twc03", "TILE95"),
@@ -1012,7 +1040,8 @@ public class TileCoverageCensusTests
 
             var tile = model.Tiles[tileId];
 
-            if (IsCornerEdgeResolverReachable(model, tile)) { Cover(tileId, "CornerEdgeResolver"); continue; }
+            if (allVocabs.Any(candidateVocab => IsCornerEdgeResolverReachable(model, tile, candidateVocab)))
+            { Cover(tileId, "CornerEdgeResolver"); continue; }
             if (IsDoorTransitionReachable(model, tile)) { Cover(tileId, "DoorTransition"); continue; }
 
             var vocabMechanism = string.Empty;

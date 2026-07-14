@@ -67,13 +67,21 @@ public class OnboardedTilesetPipelineTests
     // Complex (Tunnel mode), Halls (OpenLane), and Organic are the combos both onboarding waves target
     // as "where coverage allows".
     //
-    // Barrows (tbw01) / Complex used to be excluded here (tbw01 has NO "Doorway" crosser in its own
-    // declared vocabulary at all -- only "corridor"/"door_barrow"/"door_corridor" -- see the base-game
-    // tileset census -- and Tunnel mode's room-wall carving always needs a real Doorway-crosser tile at
-    // some room/corridor junction). MacroLayoutGenerator now downgrades CorridorMode from Tunnel to
-    // OpenLane before dispatch whenever the tileset lacks a Doorway or Corridor crosser (mirroring the
-    // existing Alley -> Corridor downgrade for Streets), so Barrows/Complex now reads as a
-    // rooms-with-open-lanes layout instead of failing outright -- included below like any other pairing.
+    // Barrows (tbw01) / Complex used to downgrade to OpenLane here: tbw01 has NO canonical "Doorway"
+    // crosser at all, only "corridor"/"door_barrow"/"door_corridor", and every tile carrying any of
+    // those three also carries a door slot -- TileResolver's crosser+door admission gate used to
+    // hardcode literal "Doorway"/"Bridge" and silently excluded all of them from candidate lookup, so
+    // TunnelVocabularyCheck.SupportsTunnels always read false for this tileset no matter what body/port
+    // pair was probed. BaseGameTilesetProfiles.Barrows now declares TunnelCrossers("corridor",
+    // "door_corridor") + DoorSlotCrossers("door_corridor"), which closes that gate -- Barrows/Complex
+    // now genuinely carves wall-embedded Tunnel-mode corridors under its own renamed vocabulary instead
+    // of downgrading; see CustomCrosserProfile_ComplexActuallyCarvesTheDeclaredBodyCrosser below (which
+    // now covers Barrows alongside the Grey/Desert/Organic families) rather than a dedicated downgrade
+    // test. "door_barrow" (SideChamber1's 1x1 group and its ungrouped boundary partner) stays
+    // unreachable: MacroLayoutParameters only carries one Tunnel port crosser slot per composition
+    // (already claimed by "door_corridor"), and no carver ever writes a "door_barrow" edge for
+    // LayoutGroupStamper's CorridorStub site search to attach to -- see
+    // BaseGameTilesetProfiles.Barrows' own doc comment and TileCoverageCensusTests.PilotExpectedExemptions.
     //
     // Ruins (tdr01) / Organic used to be excluded here too: Organic's OrganicCave style carves its
     // single accent channel crossing (AccentChannels = 1, see StandardLayoutProfiles.Organic) directly
@@ -105,8 +113,8 @@ public class OnboardedTilesetPipelineTests
     // inventory the tunnel carver can emit, not just crosser names) before dispatch and downgrades
     // CorridorMode from Tunnel to OpenLane whenever a tileset can't resolve every shape -- Illithid fails
     // that check purely because of the missing T-with-port junction shape, so Complex now downgrades to
-    // OpenLane for this tileset (mirroring Barrows' own Doorway-vocabulary-absence downgrade) instead of
-    // being excluded outright. See IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers below, which
+    // OpenLane for this tileset instead of being excluded outright. See
+    // IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers below, which
     // locks in that the downgrade actually took effect.
     public static IEnumerable<object[]> OnboardedLayoutCases()
     {
@@ -169,15 +177,20 @@ public class OnboardedTilesetPipelineTests
     }
 
     /// <summary>
-    /// Barrows (tbw01) has no "Doorway" crosser in its own declared vocabulary at all, so Complex's
-    /// Tunnel-mode room-wall carving can never place a real port there. MacroLayoutGenerator downgrades
-    /// CorridorMode to OpenLane for this pairing before dispatch (see the Alley -> Corridor precedent
-    /// it mirrors) -- this locks in that the downgrade actually took effect: no Tunnel-only crosser
-    /// (Corridor/Doorway) ever appears in a resolved Barrows/Complex layout, only plain open-terrain
-    /// lanes, across the same seed range the pipeline gate uses.
+    /// Barrows (tbw01) used to have no "Doorway" crosser in its own declared vocabulary at all, only
+    /// "corridor"/"door_barrow"/"door_corridor", every one of which carries a door slot on every real
+    /// tile -- Complex/Tunnel used to downgrade to OpenLane here (TileResolver's crosser+door admission
+    /// gate hardcoded literal "Doorway"/"Bridge" and excluded all of them). BaseGameTilesetProfiles.
+    /// Barrows now declares TunnelCrossers("corridor", "door_corridor") + DoorSlotCrossers
+    /// ("door_corridor"), and CustomCrosserProfile_ComplexActuallyCarvesTheDeclaredBodyCrosser below
+    /// (which now covers Barrows) proves the downgrade no longer triggers and the "corridor" body
+    /// crosser is actually carved. This test additionally locks in the door-slot half specifically:
+    /// a resolved Barrows/Complex layout actually places at least one "door_corridor" port-crosser edge
+    /// (not merely the body), confirming the door-slot gate generalization is what unlocked this family
+    /// rather than some other path.
     /// </summary>
     [Test]
-    public void BarrowsComplexDowngradesToOpenLaneWithNoTunnelCrossers()
+    public void BarrowsComplexCarvesDoorCorridorPortCrosser()
     {
         var tilesetProfile = TilesetProfiles[BaseGameTilesetProfiles.Barrows];
         var layoutProfile = LayoutProfiles[StandardLayoutProfiles.Complex];
@@ -186,6 +199,7 @@ public class OnboardedTilesetPipelineTests
 
         const int size = 20;
         var seedCount = 0;
+        var sawPortCrosser = false;
 
         for (var seed = 6000; seed < 6015; seed++)
         {
@@ -196,26 +210,20 @@ public class OnboardedTilesetPipelineTests
             parameters.DoorTransitions = true;
 
             var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
-            solved.Success.Should().BeTrue($"seed {seed}: Barrows/Complex must succeed via the OpenLane downgrade -- {solved.FailureReason}");
+            solved.Success.Should().BeTrue($"seed {seed}: Barrows/Complex must succeed with its own renamed Tunnel vocabulary -- {solved.FailureReason}");
 
-            for (var y = 0; y < solved.Layout.Corners.Height; y++)
-            for (var x = 0; x < solved.Layout.Corners.Width; x++)
+            for (var y = 0; y < solved.Layout.Corners.Height && !sawPortCrosser; y++)
+            for (var x = 0; x < solved.Layout.Corners.Width && !sawPortCrosser; x++)
             for (var slot = 0; slot < 4; slot++)
             {
-                var edge = solved.Layout.Crossers.GetEdge(x, y, slot);
-                edge.Should().NotBe("Corridor", $"seed {seed}: downgraded Barrows/Complex must never carve a Tunnel-mode Corridor edge");
-                edge.Should().NotBe("Doorway", $"seed {seed}: downgraded Barrows/Complex must never carve a Tunnel-mode Doorway edge");
+                if (string.Equals(solved.Layout.Crossers.GetEdge(x, y, slot), "door_corridor", StringComparison.OrdinalIgnoreCase))
+                    sawPortCrosser = true;
             }
-
-            // OpenLane carving never records a TunnelLink (only the Tunnel branch and
-            // LayoutAccentChannelCarver do, and Barrows has no channel-capable terrain at all) -- an
-            // empty list is the strongest available proxy that the plain-open-lane path actually ran
-            // rather than Tunnel mode happening to place zero Corridor/Doorway edges by chance.
-            solved.Layout.TunnelLinks.Should().BeEmpty(
-                $"seed {seed}: downgraded Barrows/Complex must carve plain open lanes (no TunnelLinks), not wall-embedded tunnels");
         }
 
         seedCount.Should().Be(15, "the seed loop must actually have run");
+        sawPortCrosser.Should().BeTrue(
+            "Barrows/Complex must actually carve a 'door_corridor' port edge somewhere across the seed range -- the door-slot gate generalization is what makes this family resolvable at all");
     }
 
     /// <summary>
@@ -325,6 +333,7 @@ public class OnboardedTilesetPipelineTests
     [TestCase(BaseGameTilesetProfiles.CryptGrey, "GreyCorridor")]
     [TestCase(BaseGameTilesetProfiles.MinesAndCavernsDesert, "DesertCorridor")]
     [TestCase(BaseGameTilesetProfiles.MinesAndCavernsOrganic, "OrganicCorridor")]
+    [TestCase(BaseGameTilesetProfiles.Barrows, "corridor")]
     public void CustomCrosserProfile_ComplexActuallyCarvesTheDeclaredBodyCrosser(string tilesetKey, string expectedBodyCrosser)
     {
         var tilesetProfile = TilesetProfiles[tilesetKey];
@@ -362,6 +371,58 @@ public class OnboardedTilesetPipelineTests
         seedCount.Should().Be(15, "the seed loop must actually have run");
         sawBodyCrosser.Should().BeTrue(
             $"{tilesetKey}/Complex must actually carve '{expectedBodyCrosser}' edges somewhere across the seed range -- the downgrade-to-OpenLane path must never trigger for this verified-good family");
+    }
+
+    /// <summary>
+    /// Locks in that LayoutGroupStamper.TryClassify's WallRoom door-slot relaxation (a door-entrance
+    /// group -- blank wall tile paired with a tile carrying BOTH a perimeter Doorway edge AND a door
+    /// slot -- now classifies as SetPieceWallRoom instead of failing outright) actually places real
+    /// tiles in a generated layout, not merely that TileCoverageCensusTests' structural probe agrees.
+    /// Checks a representative member tile id from EVERY newly-wired family per tileset (any one
+    /// placing proves that whole group stamped, since LayoutGroupStamper.StampWallRoom writes every
+    /// member together or none at all) rather than a single id -- Fort Interior alone wired ten
+    /// competing families, so any individual one's per-seed placement odds are low (confirmed via
+    /// direct 200-seed isolated probe: ~10% for StoreRoom_2x2L alone, lower still with nine siblings
+    /// competing for the same limited room-perimeter sites in a real composition) even though the
+    /// mechanism itself is unconditionally correct. Illithid Interior is deliberately NOT covered here:
+    /// see BaseGameTilesetProfiles.IllithidInterior's own doc comment for why its five newly-wired
+    /// WallRoom groups can never actually place under Complex today (a separate, pre-existing Tunnel-
+    /// vocabulary gap, not anything the door-slot relaxation itself could fix).
+    /// </summary>
+    [TestCase(BaseGameTilesetProfiles.CityInterior, new[] { 24, 26, 268 })]
+    [TestCase(BaseGameTilesetProfiles.CastleInterior, new[] { 24, 42, 60, 78, 80, 96, 98, 521, 676 })]
+    [TestCase(BaseGameTilesetProfiles.CastleInterior2, new[] { 24, 42, 60, 78, 96, 200 })]
+    [TestCase(BaseGameTilesetProfiles.CityInterior2, new[] { 24, 26, 268 })]
+    [TestCase(BaseGameTilesetProfiles.FortInterior, new[] { 195, 199, 202, 205, 207, 211, 213, 215, 217, 219, 222, 224 })]
+    public void DoorSlotWallRoomFamily_ComplexActuallyPlacesTheGroup(string tilesetKey, int[] candidateTileIds)
+    {
+        var tilesetProfile = TilesetProfiles[tilesetKey];
+        var layoutProfile = LayoutProfiles[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        const int size = 20;
+        var seedCount = 0;
+        var sawAnyCandidateTile = false;
+
+        for (var seed = 6000; seed < 6030; seed++)
+        {
+            seedCount++;
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            solved.Success.Should().BeTrue($"seed {seed}: {tilesetKey}/Complex must succeed -- {solved.FailureReason}");
+
+            if (solved.Resolved.Tiles.Any(t => candidateTileIds.Contains(t.TileId)))
+                sawAnyCandidateTile = true;
+        }
+
+        seedCount.Should().Be(30, "the seed loop must actually have run");
+        sawAnyCandidateTile.Should().BeTrue(
+            $"{tilesetKey}/Complex must actually place at least one of [{string.Join(",", candidateTileIds)}] (members of the newly-wired door-slot WallRoom families) somewhere across the seed range");
     }
 
     /// <summary>

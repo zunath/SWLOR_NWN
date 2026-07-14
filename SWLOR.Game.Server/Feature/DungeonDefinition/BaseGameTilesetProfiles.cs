@@ -297,16 +297,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // City Interior (tin01). Multi-room-type interior (Livingroom/Kitchen/Inn/Shop), each with
             // its own single-tile WallAlcove door group plus a themed furnished-room set piece.
             // PrimaryOpenTerrain left empty (defaults to the declared Floor terrain, "Inn" -- tied for
-            // best coverage with the other three room terrains per the base-game tileset census). The "*Room01_1x2"/
-            // "*Room02_1x2" two-tile door-entrance pairs (Livingroom/Kitchen/Inn/Shop, and Bordello)
-            // are NOT wired -- each pairs a blank wall tile with a tile carrying BOTH a Doorway edge
-            // crosser AND a door slot, which LayoutGroupStamper's WallRoom classification excludes
-            // (WallRoom requires no door slot) and which isn't a trivial 1x1 group either (so the
-            // door-transition tolerance doesn't apply); see TileCoverageCensusTests'
-            // PilotExpectedExemptions for the exact accounting. Bedroom_1/2, Tent, Baracks, the three
-            // Temple variants, Wizards Den, Smithy, Barn, SlumHome01/02, and HomeLower/Upper01-05 are
-            // furnished-room set pieces verified flat/Wall-doorway-consistent with the existing
-            // AncientRuin Room1-5 pattern.
+            // best coverage with the other three room terrains per the base-game tileset census). The
+            // "*Room01_1x2"/"*Room02_1x2" two-tile door-entrance pairs (Livingroom/Kitchen/Inn/Shop, and
+            // Bordello) each pair a blank wall tile with a tile carrying BOTH a Doorway edge crosser AND
+            // a door slot -- LayoutGroupStamper's WallRoom classification now tolerates this shape (see
+            // that method's own doc comment on the door-slot relaxation, closed alongside Castle
+            // Interior/Illithid Interior/City Interior 2/Fort Interior's own equivalent families), so
+            // all nine are wired as SetPieces here; see TileCoverageCensusTests' PilotExpectedExemptions
+            // for the exact accounting. Bedroom_1/2, Tent, Baracks, the three Temple variants, Wizards
+            // Den, Smithy, Barn, SlumHome01/02, and HomeLower/Upper01-05 are furnished-room set pieces
+            // verified flat/Wall-doorway-consistent with the existing AncientRuin Room1-5 pattern.
             _builder.Create(CityInterior, "City Interior")
                 .Tileset("tin01")
                 .Placeholder("gen_placeholder1")
@@ -318,6 +318,15 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("DoorInn01", 1)
                 .SetPiece("DoorShop01", 1)
                 .SetPiece("DoorTrans", 1)
+                .SetPiece("Livingroom01_1x2")
+                .SetPiece("Livingroom02_1x2")
+                .SetPiece("KitchenRoom01_1x2")
+                .SetPiece("KitchenRoom02_1x2")
+                .SetPiece("InnRoom01_1x2")
+                .SetPiece("InnRoom02_1x2")
+                .SetPiece("ShopRoom01_1x2")
+                .SetPiece("ShopRoom02_1x2")
+                .SetPiece("Bordello")
                 .SetPiece("Bedroom_1")
                 .SetPiece("Bedroom_2")
                 .SetPiece("Tent")
@@ -347,17 +356,40 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // "barrow") -- PrimaryOpenTerrain is therefore set explicitly rather than left to the
             // usual empty-means-declared-Floor default, which would otherwise wire solid==open and
             // break every corner/edge classification. No AccentTerrain: the only two terrains are
-            // black/barrow, no third channel-capable terrain exists. CorridorDown_1x2/Corridor_Up_1x2/
-            // Corridor_Up_1x2_02/SideChamber1 all carry a "corridor"/"door_barrow" crosser outside the
-            // canonical Doorway-only multi-tile vocabulary and are excluded (see
-            // TileCoverageCensusTests.PilotExpectedExemptions). FinalArea_7x7 is a large (49-tile),
-            // fully solid-or-barrow decorative set piece (a boss/finale chamber) -- structurally a
-            // valid OpenSetPiece like any smaller one, included at maxPerArea 1.
+            // black/barrow, no third channel-capable terrain exists.
+            //
+            // TunnelCrossers("corridor", "door_corridor") + DoorSlotCrossers("door_corridor"): tbw01's
+            // real "wall-embedded tunnel" vocabulary renames BOTH halves of the canonical Corridor/
+            // Doorway pair (body "corridor", port "door_corridor"), and every single tile that carries
+            // either crosser also carries a door slot -- TileResolver's crosser+door admission gate
+            // used to hardcode literal "Doorway"/"Bridge" and silently exclude every one of these tiles
+            // from candidate lookup regardless of shape, so TunnelVocabularyCheck.SupportsTunnels always
+            // read false for this pair no matter what was declared. Declaring "door_corridor" via
+            // DoorSlotCrossers closes that gate (see TileResolver's class doc comment) and
+            // TunnelVocabularyCheck.SupportsTunnels now verifies the full body/port shape inventory
+            // (straight/turn/T/X body, straight/turn/T/X-with-port, double-port, and the boundary port
+            // shape against "barrow") all resolve -- confirmed directly via ProbeBarrowsTunnelVocabulary
+            // during development. CorridorDown_1x2/Corridor_Up_1x2/Corridor_Up_1x2_02 remain excluded:
+            // they are multi-tile GROUPs whose shared edge carries the plain "corridor" body crosser,
+            // which LayoutGroupStamper's WallRoom/WallAlcove/OpenSetPiece member-edge check only ever
+            // tolerates as "Doorway", not any Tunnel body crosser -- a genuinely different, unwired
+            // authoring gap (see TileCoverageCensusTests.PilotExpectedExemptions). SideChamber1 (a 1x1
+            // group, TILE60) and its ungrouped boundary partner TILE39 both carry a THIRD crosser name,
+            // "door_barrow", used nowhere else in the tileset -- MacroLayoutParameters only carries one
+            // Tunnel port crosser slot per composition (already claimed by "door_corridor" above), and
+            // LayoutGroupStamper.TryPlaceCorridorStub's site search requires an already-carved matching-
+            // crosser neighbor that can never exist for a port name nothing ever carves -- a genuinely
+            // unreachable family, left exempt (see TileCoverageCensusTests.PilotExpectedExemptions).
+            // FinalArea_7x7 is a large (49-tile), fully solid-or-barrow decorative set piece (a boss/
+            // finale chamber) -- structurally a valid OpenSetPiece like any smaller one, included at
+            // maxPerArea 1.
             _builder.Create(Barrows, "Barrows Interior")
                 .Tileset("tbw01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
                 .PrimaryOpenTerrain("barrow")
+                .TunnelCrossers("corridor", "door_corridor")
+                .DoorSlotCrossers("door_corridor")
                 .FeatureTile("Platform01_1x1")
                 .FeatureTile("Depression1x1")
                 .FeatureTile("Platform03_1x1")
@@ -668,17 +700,19 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // [AltTerrain, Wall, Wall, AltTerrain] with only Stone wired as the open terrain, so they
             // match neither OpenSetPiece (wrong open terrain) nor WallAlcove (not all-solid) -- verified
             // via direct corner inspection, not assumed. Only "Door - Stone 1/2" (open=Stone) is wired.
-            // The Room-* / Room1/Room2 groups all carry a Doorway edge together with a door slot on the
-            // same member tile (doorway-shape-mismatch -- WallRoom requires no door), so none of the
-            // four alternate room-type families are reachable here at all (unlike City Interior's
-            // WallAlcove-shaped rooms) -- a genuine gap in this tileset's authoring, not this profile's
-            // curation. "Exit - Corridor"/"Exit - Corridor, Big" are named as exits but structurally
-            // classify as CorridorStub (they carry a Corridor crosser, disqualifying them from
-            // GroupExitPlanner's crosser-free ExitGroup rule) -- wired as SetPieces instead, matching
-            // their real structural shape; no ExitGroup candidate exists in this tileset. Window-*
-            // pieces (Window crosser), Maze-* pieces (MazeMosaic/MazeMarble crossers), and the separate
-            // "[Tower]" brown/grey sub-district (own "Tower" terrain, no coverage) are all alternate
-            // vocabulary and excluded.
+            // The Room-* / Room1/Room2 groups (Storage/Bedroom/Library/Jail/Stone 1/2 (1x2), Storage
+            // Empty (2x1), Bath 1/2 (2x1)) each pair a blank wall tile with a tile carrying BOTH a
+            // Doorway edge crosser AND a door slot -- LayoutGroupStamper's WallRoom classification now
+            // tolerates this shape (see that method's own doc comment), so all thirteen are wired here.
+            // Turret Interior - Lit/Dark (2x1) stays unreachable: each member's own Doorway edge faces
+            // its group-mate (an interior, not perimeter, opening -- verified directly, not assumed) --
+            // see TileCoverageCensusTests.PilotExpectedExemptions. "Exit - Corridor"/"Exit - Corridor,
+            // Big" are named as exits but structurally classify as CorridorStub (they carry a Corridor
+            // crosser, disqualifying them from GroupExitPlanner's crosser-free ExitGroup rule) -- wired
+            // as SetPieces instead, matching their real structural shape; no ExitGroup candidate exists
+            // in this tileset. Window-* pieces (Window crosser), Maze-* pieces (MazeMosaic/MazeMarble
+            // crossers), and the separate "[Tower]" brown/grey sub-district (own "Tower" terrain, no
+            // coverage) are all alternate vocabulary and excluded.
             _builder.Create(CastleInterior, "Castle Interior")
                 .Tileset("tic01")
                 .Placeholder("gen_placeholder1")
@@ -696,7 +730,20 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Castle] Round Corner - Decorated, Stone")
                 .SetPiece("[Castle] Stairs - Up, Stone Corner")
                 .SetPiece("[Castle] Stairs - Down, Stone Corner")
-                .SetPiece("[Castle] Dais");
+                .SetPiece("[Castle] Dais")
+                .SetPiece("[Castle] Room - Storage 1 (1x2)")
+                .SetPiece("[Castle] Room - Storage 2 (1x2)")
+                .SetPiece("[Castle] Room - Bedroom 1 (1x2)")
+                .SetPiece("[Castle] Room - Bedroom 2 (1x2)")
+                .SetPiece("[Castle] Room - Library 1 (1x2)")
+                .SetPiece("[Castle] Room - Library 2 (1x2)")
+                .SetPiece("[Castle] Room - Jail 1 (1x2)")
+                .SetPiece("[Castle] Room - Jail 2 (1x2)")
+                .SetPiece("[Castle] Room - Stone 1 (1x2)")
+                .SetPiece("[Castle] Room - Stone 2 (1x2)")
+                .SetPiece("[Castle] Room - Storage, Empty (2x1)")
+                .SetPiece("[Castle] Room - Bath 1 (2x1)")
+                .SetPiece("[Castle] Room - Bath 2 (2x1)");
 
             // Castle Interior 2 / TNO: Castle Interior (tni02, SWLOR_Haks/sw_t_tnocastle). Same family
             // as Castle Interior (tic01) -- Storage/Rich/Library/Jail/Stone room districts, lowercase
@@ -709,6 +756,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // DoorStone01/02 (open=stone) is wired. CorridorExit/CorridorExitBig are, like tic01's
             // "Exit - Corridor" pair, structurally CorridorStub (carry a Corridor crosser) rather than
             // ExitGroup-eligible -- wired as SetPieces; no ExitGroup candidate exists.
+            // StorageRoom01/02_1x2, Bedroom01/02_1x2, LibraryRoom01/02_1x2, JailRoom01/02_1x2,
+            // StoneRoom01/02_1x2, and CollapsedRoom2x2 are the same door-entrance-pair shape as Castle
+            // Interior's own Room-* families -- LayoutGroupStamper's WallRoom relaxation now covers
+            // them, wired here accordingly. Mythallar_3x3 stays unreachable: its shared member edges
+            // carry the plain "corridor" crosser, not Doorway, the same exclusion as Barrows' Corridor
+            // Down/Up 1x2 pairs (see TileCoverageCensusTests.PilotExpectedExemptions).
             _builder.Create(CastleInterior2, "Castle Interior 2")
                 .Tileset("tni02")
                 .Placeholder("gen_placeholder1")
@@ -722,7 +775,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("StairsDown", 1)
                 .SetPiece("CorridorExit", 1)
                 .SetPiece("CorridorExitBig", 1)
-                .SetPiece("basement_1x2");
+                .SetPiece("basement_1x2")
+                .SetPiece("StorageRoom01_1x2")
+                .SetPiece("StorageRoom02_1x2")
+                .SetPiece("Bedroom01_1x2")
+                .SetPiece("Bedroom02_1x2")
+                .SetPiece("LibraryRoom01_1x2")
+                .SetPiece("LibraryRoom02_1x2")
+                .SetPiece("JailRoom01_1x2")
+                .SetPiece("JailRoom02_1x2")
+                .SetPiece("StoneRoom01_1x2")
+                .SetPiece("StoneRoom02_1x2")
+                .SetPiece("CollapsedRoom2x2");
 
             // Drow Interior (tid01, SWLOR_Haks/sw_t_drowint). PrimaryOpenTerrain left empty (defaults to
             // declared Floor "Floor2"; a separate "floor" terrain and a "2x2"-named terrain also exist
@@ -751,13 +815,28 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
 
             // Illithid Interior (tii01, SWLOR_Haks/sw_t_illithid). PrimaryOpenTerrain left empty
             // (defaults to declared Floor "Floor"). The smallest Wave-2 tileset (79 tiles, 10 groups):
-            // only "Observation pit" and "Fighting Pit" (both 3x3, all-solid-cornered, door-bearing)
-            // structurally clear as WallAlcove -- "Great Brain" (this tileset's signature centerpiece),
-            // "Resting Pods"/"Resting Pod", and "Cell" all carry a Doorway edge together with a door
-            // slot on the same member tile (doorway-shape-mismatch, same authoring gap as Castle
-            // Interior's Room-* families) and are excluded. "Transporter" is the tileset's only
-            // FeatureTile-eligible group (1x1, flat, crosser-free, doorless, pathnode A). No ExitGroup
-            // candidate exists; "Transition Door" is doorway-shape-mismatched.
+            // "Observation pit" and "Fighting Pit" (both 3x3, all-solid-cornered, door-bearing) clear as
+            // WallAlcove. "Great Brain" (this tileset's signature centerpiece, 3x3), "Resting Pods"
+            // (3x3), "Resting Pod" (1x1), "Cell" (1x1), and "Transition Door" (1x1) each carry a Doorway
+            // edge together with a door slot on the same member tile -- LayoutGroupStamper's WallRoom
+            // classification now tolerates this shape (see that method's own doc comment), and all five
+            // structurally verify a real PERIMETER Doorway opening (not merely an interior one shared
+            // between two members of the same group), so all five are wired here too, matching this
+            // codebase's "structurally-valid config counts even if not currently exercised" convention
+            // (see TileCoverageCensusTests' own class doc comment). NOTE: unlike WallAlcove (whose site
+            // check only needs an adjacent OPEN-terrain cell, which OpenLane mode carves fine), WallRoom
+            // strictly requires an adjacent already-carved "Corridor" crosser cell -- and tii01 fails
+            // TunnelVocabularyCheck.SupportsTunnels purely on its missing T-with-port junction shape
+            // (see IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers in OnboardedTilesetPipelineTests),
+            // so Complex -- this tileset's only Tunnel-mode-composed layout -- always downgrades to
+            // OpenLane before dispatch and these five WallRoom groups can never actually place today
+            // (confirmed via direct 200-seed isolated probe: zero placements). They become live the
+            // moment a future task closes that separate, pre-existing T-with-port gap; until then this
+            // is inert-but-correct configuration, deliberately excluded from
+            // OnboardedTilesetPipelineTests.DoorSlotWallRoomFamily_ComplexActuallyPlacesTheGroup's
+            // placement-proof sweep (which only asserts what's provably reachable today). "Transporter"
+            // is the tileset's only FeatureTile-eligible group (1x1, flat, crosser-free, doorless,
+            // pathnode A). No ExitGroup candidate exists in this tileset.
             _builder.Create(IllithidInterior, "Illithid Interior")
                 .Tileset("tii01")
                 .Placeholder("gen_placeholder1")
@@ -766,7 +845,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Stairs up", 1)
                 .SetPiece("Stairs Down", 1)
                 .SetPiece("Observation pit")
-                .SetPiece("Fighting Pit");
+                .SetPiece("Fighting Pit")
+                .SetPiece("Great Brain")
+                .SetPiece("Resting Pods")
+                .SetPiece("Resting Pod")
+                .SetPiece("Cell")
+                .SetPiece("Transition Door");
 
             // City Interior 2 / TNO: City Interior (tni01, SWLOR_Haks/sw_t_cityint2). Same
             // Livingroom/Kitchen/Inn/Shop room-type family as City Interior (tin01, the vanilla pilot),
@@ -784,10 +868,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // this hak copy's real tile data differs) -- wired as SetPieces instead; no ExitGroup
             // candidate exists in this tileset. "Portal" is the only FeatureTile-eligible group
             // ("Chessboard" references the alternate "livingroom" terrain on all 4 corners and doesn't
-            // classify). The *Room01_1x2/*Room02_1x2 door-entrance pairs and "Bordello" are excluded for
-            // the same doorway-shape-mismatch reason as City Interior's pilot exemptions; the
-            // LivingroomCorner*/KitchenCorner* stair/exit pieces reference alternate terrain corners and
-            // don't classify either.
+            // classify). The *Room01_1x2/*Room02_1x2 door-entrance pairs and "Bordello" (this hak copy's
+            // own separate but structurally identical Livingroom/Kitchen/Inn/Shop room-entrance tiles)
+            // now classify via LayoutGroupStamper's WallRoom door-slot relaxation, mirroring City
+            // Interior's own equivalent family -- wired here accordingly. The LivingroomCorner*/
+            // KitchenCorner* stair/exit pieces reference alternate terrain corners and don't classify.
             _builder.Create(CityInterior2, "City Interior 2")
                 .Tileset("tni01")
                 .Placeholder("gen_placeholder1")
@@ -798,6 +883,15 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("StairsDown", 1)
                 .SetPiece("CorridorExit", 1)
                 .SetPiece("CorridorExitBig", 1)
+                .SetPiece("Livingroom01_1x2")
+                .SetPiece("Livingroom02_1x2")
+                .SetPiece("KitchenRoom01_1x2")
+                .SetPiece("KitchenRoom02_1x2")
+                .SetPiece("InnRoom01_1x2")
+                .SetPiece("InnRoom02_1x2")
+                .SetPiece("ShopRoom01_1x2")
+                .SetPiece("ShopRoom02_1x2")
+                .SetPiece("Bordello")
                 .SetPiece("Shop01_1x2")
                 .SetPiece("Shop02_1x2")
                 .SetPiece("HomeLower01_2x2")
@@ -882,15 +976,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // CorridorStub (all-solid-cornered, single Corridor edge, e.g. OLD_Bedroom_01_1x1/
             // OLD_Library_1x1/OLD_Storage_1x1/OLD_Generic_Room_1x1/OLD_Cells_1x1) -- included per this
             // profile's own precedent of registering structurally-valid pieces regardless of a
-            // "legacy"-sounding name; their non-"OLD_" replacements (Storage_1x1/Cells_1x1/Library_1x1/
-            // Generic_Room_1x1/Bedroom_01_1x1/Barracks_2x2/Smithy_1x2/Kitchen_1x2/Portal_Hall_2x3/the
-            // Doorw_SpiralStair_* trio) all carry a Doorway edge together with a door slot on the same
-            // tile (doorway-shape-mismatch) and are excluded, the same authoring gap seen in Castle
-            // Interior/Illithid Interior. No FeatureTile-eligible group exists in this tileset.
-            // "Exit_1x1"/"Exit_Down_1x1"/"Exit_CollapsedWall" are the genuine crosser-free door-bearing
-            // ExitGroup candidates; "Storage_1x1_1"/"Stairway_up"/"Stairway_down" carry the identical
-            // structural shape (floor/floor/black/black corners, a door slot, no crosser) but read as
-            // furnished-room decor by name, so they are wired as SetPieces instead.
+            // "legacy"-sounding name. Their non-"OLD_" *_2x1/*_2x2/*_1x2 replacements (StoreRoom_2x2L,
+            // Cells_2x2, Kitchen_1x2, Generic_Room_2x1/2x2, Barracks_2x2, Bedroom_02_2x2/03_2x1,
+            // Smithy_1x2, Portal_Hall_2x3) each carry a Doorway edge together with a door slot on the
+            // same member tile -- LayoutGroupStamper's WallRoom classification now tolerates this shape
+            // (see that method's own doc comment, the same relaxation that closed Castle Interior/
+            // Illithid Interior/City Interior/City Interior 2's own equivalent families), so all ten are
+            // wired here. The legacy "OLD_"-prefixed superseded groups, Large_Door, and Mythallar_3x3
+            // stay unreachable: they use the plain "corridor" body crosser directly on their entrance/
+            // wall tile instead of a Doorway-family port (Large_Door's TILE36 also has mixed floor/
+            // black corners) -- see TileCoverageCensusTests.PilotExpectedExemptions. No FeatureTile-
+            // eligible group exists in this tileset. "Exit_1x1"/"Exit_Down_1x1"/"Exit_CollapsedWall" are
+            // the genuine crosser-free door-bearing ExitGroup candidates; "Storage_1x1_1"/"Stairway_up"/
+            // "Stairway_down" carry the identical structural shape (floor/floor/black/black corners, a
+            // door slot, no crosser) but read as furnished-room decor by name, so they are wired as
+            // SetPieces instead.
             _builder.Create(FortInterior, "Fort Interior")
                 .Tileset("twc03")
                 .Placeholder("gen_placeholder1")
@@ -916,6 +1016,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("LargeGate_Exit")
                 .SetPiece("Fireplace")
                 .SetPiece("Platform_1x2_01")
+                .SetPiece("StoreRoom_2x2L")
+                .SetPiece("Cells_2x2")
+                .SetPiece("Kitchen_1x2")
+                .SetPiece("Generic_Room_2x1")
+                .SetPiece("Generic_Room_2x2")
+                .SetPiece("Barracks_2x2")
+                .SetPiece("Bedroom_02_2x2")
+                .SetPiece("Bedroom_03_2x1")
+                .SetPiece("Smithy_1x2")
+                .SetPiece("Portal_Hall_2x3")
                 .ExitGroup("Exit_1x1")
                 .ExitGroup("Exit_Down_1x1")
                 .ExitGroup("Exit_CollapsedWall");

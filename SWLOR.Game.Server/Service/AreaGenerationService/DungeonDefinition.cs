@@ -169,6 +169,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string TunnelPortCrosser { get; set; } = string.Empty;
 
         /// <summary>
+        /// Crosser names (beyond the canonical "Doorway"/"Bridge" pair) this tileset's real tile
+        /// inventory uses for a door-implying crosser under a completely different name -- e.g.
+        /// Barrows/tbw01's "door_corridor", paired with its own "corridor" Tunnel body crosser (see
+        /// TunnelBodyCrosser/TunnelPortCrosser above) rather than the canonical Corridor/Doorway pair.
+        /// Declaring a name here is what lets TileResolver register a door-slot tile carrying that
+        /// crosser as an ordinary structural candidate (see TileResolver's class doc comment) --
+        /// without it, every such tile is excluded from candidate lookup entirely regardless of shape.
+        /// Empty = no alternate door-slot vocabulary (every tileset except one that renames its
+        /// door-implying crosser entirely). Distinct from TunnelPortCrosser: a tileset may need this
+        /// declared even when its Tunnel body/port pair stays canonical, and TunnelPortCrosser itself
+        /// is NOT automatically credited here -- declare it explicitly if it also carries door slots.
+        /// </summary>
+        public List<string> DoorSlotCrossers { get; set; } = new();
+
+        /// <summary>
         /// True for a profile that recomposes an ALREADY-onboarded tileset resref against a different
         /// terrain/district palette (e.g. "crypt_grey" recomposing tdc01's Grey palette alongside the
         /// base "crypt" profile's Tan palette) rather than onboarding a new physical tileset. Palette
@@ -294,6 +309,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             parameters.FeatureTiles = Tileset.FeatureTiles;
             parameters.SetPieces = Tileset.SetPieces;
             parameters.ExitGroups = Tileset.ExitGroups;
+            parameters.DoorSlotCrossers = Tileset.DoorSlotCrossers;
             // Layout expresses intent (e.g. StandardLayoutProfiles.Complex's ElevationRegions), the
             // tileset profile caps it to verified support -- 0 on every profile except
             // BaseGameTilesetProfiles.Dungeon means this is a no-op everywhere else today.
@@ -653,6 +669,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             _active.TunnelBodyCrosser = bodyCrosser;
             _active.TunnelPortCrosser = portCrosser;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares one or more crosser names (beyond the canonical "Doorway"/"Bridge" pair) this
+        /// tileset's real tile inventory uses for a door-implying crosser -- see
+        /// DungeonTilesetProfile.DoorSlotCrossers. Only call this after confirming (via a direct
+        /// TileResolver.HasCandidate/TunnelVocabularyCheck.SupportsTunnels probe passing the same names)
+        /// that declaring it actually closes real tile-coverage gaps, not merely that the crosser name
+        /// appears in the tileset's declared vocabulary.
+        /// </summary>
+        public DungeonTilesetProfileBuilder DoorSlotCrossers(params string[] crossers)
+        {
+            _active.DoorSlotCrossers.AddRange(crossers);
             return this;
         }
 

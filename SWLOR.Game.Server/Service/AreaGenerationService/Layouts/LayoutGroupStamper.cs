@@ -198,10 +198,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// perimeter Doorway edge), WallAlcove (all-solid corners, zero crosser edges, at least one
         /// door slot — e.g. vmr01 Room 1-5 2x2), or OpenSetPiece (no crosser edges at all, with every
         /// corner either solid or matching this layout's own open terrain, and at least one corner
-        /// actually open). A door slot is tolerated (never spawns a door object) on a WallAlcove or
-        /// OpenSetPiece candidate — matching the existing CorridorInsert precedent (BigDoor01/02,
-        /// InteriorHallDoor) — but still rejected on a WallRoom candidate, since none of the verified
-        /// WallRoom shapes (Cell/Room/Bedroom/2x1Room/Transiton) carry one.
+        /// actually open). A door slot is tolerated (never spawns a door object — WriteMember only ever
+        /// writes corners/edges, doors are placed solely by TileDoorPlanner/GroupExitPlanner at a real
+        /// TransitionPoint) on any of the three: WallAlcove/OpenSetPiece since their original precedent
+        /// (BigDoor01/02, InteriorHallDoor), and WallRoom too — a whole family of real door-entrance
+        /// room groups (e.g. tin01/tni01's "*Room01_1x2"/"*Room02_1x2" pairs, tic01's "Room - Bath 1/2
+        /// (2x1)", tii01's "Resting Pods") pairs a blank wall tile with an entrance tile carrying BOTH
+        /// a perimeter Doorway edge AND a door slot — the identical unpopulated-door-slot convention
+        /// IsCornerEdgeResolverReachable-equivalent ungrouped tiles already resolve under today (see
+        /// TileResolver's crosser+door admission gate), just inside a multi-tile group instead of a
+        /// single ungrouped tile. A shape whose ONLY Doorway edges face another member of the SAME
+        /// group (an interior, not perimeter, opening — e.g. tic01's "Turret Interior - Lit/Dark (2x1)")
+        /// still correctly fails below via the perimeterDoorways.Count == 0 check, unaffected by this.
         /// </summary>
         private static bool TryClassify(TilesetModel tileset, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
         {
@@ -287,10 +295,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (hasAnyDoorway)
             {
                 // A doorway edge implies a WallRoom; anything that isn't all-solid-cornered with at
-                // least one opening facing outward is an unsupported shape for this pass. None of the
-                // verified WallRoom shapes carry a door slot, so this stays strict (unlike WallAlcove/
-                // OpenSetPiece below).
-                if (!allCornersSolid || perimeterDoorways.Count == 0 || hasAnyDoor) return false;
+                // least one opening facing outward is an unsupported shape for this pass. A door slot
+                // is tolerated here too (see this method's own doc comment) -- WriteMember never writes
+                // door data, so an unpopulated slot on a stamped WallRoom member renders exactly like
+                // any other unpopulated Doorway-keyed door-slot tile already does today.
+                if (!allCornersSolid || perimeterDoorways.Count == 0) return false;
 
                 classified = new ClassifiedGroup
                 {

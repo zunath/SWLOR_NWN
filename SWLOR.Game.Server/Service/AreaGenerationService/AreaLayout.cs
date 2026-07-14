@@ -364,6 +364,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public List<string> ExitGroups { get; set; } = new();
 
+        /// <summary>
+        /// Carried from MacroLayoutParameters.DoorSlotCrossers by MacroLayoutGenerator.Generate —
+        /// crosser names (beyond the canonical Doorway/Bridge pair) TileResolver.TryResolve treats as
+        /// door-implying for its crosser+door-slot admission gate (see TileResolver's class doc
+        /// comment). Empty = no alternate door-slot vocabulary for this tileset (every tileset except
+        /// one that renames its door-implying crosser entirely, e.g. Barrows/tbw01's "door_corridor").
+        /// </summary>
+        public List<string> DoorSlotCrossers { get; set; } = new();
+
         public MacroLayout(CornerTerrainGrid corners)
         {
             Corners = corners;
@@ -558,6 +567,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// this list blindly.
         /// </summary>
         public List<string> ExitGroups { get; set; } = new();
+
+        /// <summary>
+        /// Crosser names (beyond the canonical "Doorway"/"Bridge" pair) TileResolver.TryResolve treats
+        /// as door-implying for its crosser+door-slot admission gate -- usually stamped from
+        /// DungeonTilesetProfile.DoorSlotCrossers by DungeonComposition.BuildLayoutParameters. Empty =
+        /// no alternate door-slot vocabulary (default; fully back-compat -- see TileResolver's class
+        /// doc comment). Some onboarded tilesets rename their door-implying crosser entirely rather
+        /// than merely renaming the Tunnel body half (e.g. Barrows/tbw01's "door_corridor" paired with
+        /// its own "corridor" body crosser, see BaseGameTilesetProfiles.Barrows) -- declaring it here is
+        /// what lets a door-slot tile carrying that crosser resolve as an ordinary structural tile the
+        /// same way a canonical Doorway/Bridge door-slot tile always has.
+        /// </summary>
+        public List<string> DoorSlotCrossers { get; set; } = new();
 
         /// <summary>
         /// Number of raised-corner regions LayoutElevationPainter attempts to paint after fences are

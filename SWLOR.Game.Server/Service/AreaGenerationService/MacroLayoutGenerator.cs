@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 parameters.CorridorCrosserType == CorridorCrosserType.Alley &&
                 !TunnelVocabularyCheck.SupportsTunnels(
                     tileset, parameters.OpenTerrain, parameters.SecondaryOpenTerrain, parameters.SolidTerrain,
-                    CorridorCrosserType.Alley))
+                    CorridorCrosserType.Alley, extraDoorSlotCrossers: parameters.DoorSlotCrossers))
             {
                 parameters = parameters.Clone();
                 parameters.CorridorCrosserType = CorridorCrosserType.Corridor;
@@ -76,7 +76,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                  parameters.CorridorCrosserType == CorridorCrosserType.Custom) &&
                 !TunnelVocabularyCheck.SupportsTunnels(
                     tileset, parameters.OpenTerrain, parameters.SecondaryOpenTerrain, parameters.SolidTerrain,
-                    parameters.CorridorCrosserType, parameters.TunnelBodyCrosser, parameters.TunnelPortCrosser))
+                    parameters.CorridorCrosserType, parameters.TunnelBodyCrosser, parameters.TunnelPortCrosser,
+                    parameters.DoorSlotCrossers))
             {
                 if (!wasCloned)
                 {
@@ -126,6 +127,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             layout.FeatureTiles = parameters.FeatureTiles;
             layout.SetPieces = parameters.SetPieces;
             layout.ExitGroups = parameters.ExitGroups;
+            layout.DoorSlotCrossers = parameters.DoorSlotCrossers;
 
             LayoutRoleAssignment.AssignRoles(layout, parameters, random);
             LayoutAccentPainter.PaintAccents(layout, parameters, random);

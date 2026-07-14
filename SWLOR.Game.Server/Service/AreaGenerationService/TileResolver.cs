@@ -32,9 +32,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     /// Scope otherwise unchanged: within a lookup, a tile is a candidate when it is either (a)
     /// crosser-free and door-free — the full v1 tile set, unchanged — or (b) has at least one edge
     /// crosser. Crosser tiles that ALSO carry door slots are only ever registered under keys whose edge
-    /// part contains a Doorway crosser (a door slot implies a door frame, so such a tile must never leak
-    /// into a blank-edge cell); door-slot tiles with no crosser at all remain excluded — they are
-    /// TileDoorPlanner's post-resolution inventory, not the corner resolver's.
+    /// part contains a Doorway or Bridge crosser (a door slot implies a door frame, so such a tile must
+    /// never leak into a blank-edge cell) OR one of the composition's own declared extra door-slot
+    /// crossers (see <see cref="MacroLayout.DoorSlotCrossers"/>/<see cref="MacroLayoutParameters.DoorSlotCrossers"/>/
+    /// DungeonTilesetProfile.DoorSlotCrossers) -- some onboarded tilesets rename their door-implying
+    /// crosser entirely (e.g. Barrows/tbw01's "door_corridor", paired with its own "corridor" body
+    /// crosser rather than the canonical Corridor/Doorway pair) rather than merely renaming the body
+    /// half the way tdc01's "GreyCorridor" does. Declaring the alternate name here is what lets such a
+    /// tile resolve as an ordinary structural tile the same way a canonical Doorway/Bridge door-slot
+    /// tile always has -- the door slot itself is still never populated by this resolver (doors are only
+    /// ever placed by TileDoorPlanner/GroupExitPlanner at a real TransitionPoint), so an unpopulated
+    /// slot here renders exactly like any other unpopulated Doorway-keyed door-slot tile does today.
+    /// Door-slot tiles with no crosser at all remain excluded regardless — they are TileDoorPlanner's
+    /// post-resolution inventory, not the corner resolver's. Every existing caller passes no extra
+    /// crossers (null/empty), so this is fully back-compat: the gate reduces to the original
+    /// Doorway-or-Bridge-only check byte-for-byte whenever a composition declares nothing.
     /// </summary>
     public static class TileResolver
     {
@@ -57,7 +69,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // below runs unchanged (byte-identical pools/RNG sequence to pre-height behavior).
             var heightAware = layout.Corners.HasAnyHeight();
 
-            var candidateLookup = BuildCandidateLookup(tileset, heightAware);
+            var candidateLookup = BuildCandidateLookup(tileset, heightAware, layout.DoorSlotCrossers);
             // Feature sprinkling stays scoped to flat layouts for now (v1): no layout style paints
             // elevation yet, so this is not a behavior change; a future task can extend feature
             // sprinkling to height-aware cells deliberately.
@@ -292,7 +304,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             public List<(int TileId, int Orientation, int TileMin)> FullyPathable { get; } = new();
         }
 
-        private static Dictionary<string, CandidateSet> BuildCandidateLookup(TilesetModel tileset, bool heightAware)
+        private static Dictionary<string, CandidateSet> BuildCandidateLookup(
+            TilesetModel tileset, bool heightAware, IReadOnlyCollection<string> extraDoorSlotCrossers = null)
         {
             var lookup = new Dictionary<string, CandidateSet>();
 
@@ -335,16 +348,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                     // A crosser tile that also has door slots may only be registered under keys whose
                     // edge part carries a Doorway (or Bridge — a door built directly into a bridge
-                    // bank's wall-facing edge, verified on vmr01 TILE100) crosser somewhere — a door
-                    // slot implies a door frame, so it must never leak into a cell that doesn't expect
-                    // one.
+                    // bank's wall-facing edge, verified on vmr01 TILE100) crosser somewhere, OR one of
+                    // this composition's own declared extra door-slot crossers (see class doc comment;
+                    // extraDoorSlotCrossers is null/empty for every caller that declares nothing, so
+                    // this is a no-op there) — a door slot implies a door frame, so it must never leak
+                    // into a cell that doesn't expect one.
                     if (hasCrosser && hasDoors)
                     {
                         var hasDoorwayEdge =
                             IsDoorway(top) || IsDoorway(right) || IsDoorway(bottom) || IsDoorway(left);
                         var hasBridgeEdge =
                             IsBridge(top) || IsBridge(right) || IsBridge(bottom) || IsBridge(left);
-                        if (!hasDoorwayEdge && !hasBridgeEdge) continue;
+                        var hasExtraEdge = extraDoorSlotCrossers != null && extraDoorSlotCrossers.Count > 0 &&
+                            (IsExtra(top, extraDoorSlotCrossers) || IsExtra(right, extraDoorSlotCrossers) ||
+                             IsExtra(bottom, extraDoorSlotCrossers) || IsExtra(left, extraDoorSlotCrossers));
+                        if (!hasDoorwayEdge && !hasBridgeEdge && !hasExtraEdge) continue;
                     }
 
                     string key;
@@ -482,6 +500,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             return string.Equals(edge, "Bridge", StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>True when <paramref name="edge"/> case-insensitively matches one of a composition's
+        /// declared extra door-slot crossers (see class doc comment). <paramref name="edge"/> may be
+        /// null/blank (an unset edge slot); <paramref name="extraCrossers"/> is assumed non-null/non-empty
+        /// by every call site (checked before calling).</summary>
+        private static bool IsExtra(string edge, IReadOnlyCollection<string> extraCrossers)
+        {
+            if (string.IsNullOrEmpty(edge)) return false;
+            foreach (var candidate in extraCrossers)
+            {
+                if (string.Equals(edge, candidate, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
+        }
+
         private static string Describe(string edge)
         {
             return string.IsNullOrEmpty(edge) ? "-" : edge;
@@ -532,11 +564,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public static bool HasCandidate(
             TilesetModel tileset,
             string tl, string tr, string br, string bl,
-            string top, string right, string bottom, string left)
+            string top, string right, string bottom, string left,
+            IReadOnlyCollection<string> extraDoorSlotCrossers = null)
         {
             if (tileset == null) throw new ArgumentNullException(nameof(tileset));
 
-            var lookup = BuildCandidateLookup(tileset, heightAware: false);
+            var lookup = BuildCandidateLookup(tileset, heightAware: false, extraDoorSlotCrossers);
             var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
             return lookup.TryGetValue(key, out var set) && set.All.Count > 0;
         }

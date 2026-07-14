@@ -702,10 +702,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // profiles per palette -- see TileCoverageCensusTests.PilotAlternateVocabTerrains["tdm01"].
             // AccentTerrain("Water") is the one wired accent channel of [Cave]'s Water/Pit/Lava/Ice
             // quartet (mirrors Dungeon/tde01's single-accent-slot precedent); "[Cave] Door - Bridge,
-            // Pit"/"Lava" are the same shape on the two unwired accents and excluded. "[Cave] Ramp" is
-            // now wired via LayoutGroupStamper's ReliefPiece kind (see the SetPiece below); "Cave
-            // Entrance" stays excluded -- a raised 1x1 group WITH a door slot, which no mechanism
-            // (ReliefPiece is doorless-only, GroupExitPlanner is flat-only) can place. "[Cave] Door -
+            // Pit"/"Lava" are the same shape on the two unwired accents and excluded. "[Cave] Ramp" and
+            // "[Cave] Cave Entrance" are both wired via LayoutGroupStamper's ReliefPiece kind (see the
+            // SetPiece entries below) -- ReliefPiece now tolerates a door slot the same way WallAlcove/
+            // OpenSetPiece/WallRoom already do (never spawns a door object), which closes "Cave
+            // Entrance"'s raised-rim-plus-doorframe shape (round-4 exterior-tail-closure generalization;
+            // see LayoutGroupStamper.TryClassifyReliefPiece's own doc comment). "[Cave] Door -
             // Transition", "[Cave] Ship - Docked", "[Cave] Docks (1x2)" don't structurally classify
             // under any current mechanism and are excluded.
             _builder.Create(MinesAndCaverns, "Mines and Caverns")
@@ -762,6 +764,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // Baked-mesh ramp piece (1x1 GROUP, non-flat [Floor 0,1,1,0]) -- stamped by
                 // LayoutGroupStamper's ReliefPiece kind onto a painted raised rim edge.
                 .SetPiece("[Cave] Ramp", 1)
+                // Baked-mesh cave-mouth piece (1x1 GROUP, non-flat [Floor 1,1,0,0], crosser-free, one
+                // door slot) -- same ReliefPiece kind as "[Cave] Ramp" above, now door-tolerant.
+                .SetPiece("[Cave] Cave Entrance", 1)
                 .ExitGroup("[Cave] Exit 1")
                 .ExitGroup("[Cave] Exit 2")
                 .ExitGroup("[Cave] Exit 3");
@@ -788,9 +793,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // body/port slot, so wiring DesertCorridor here leaves DesertTracks's own four pieces
             // exempt; closing that second family needs a dedicated profile (same "one body crosser per
             // composition" constraint LayoutTunnelCarver enforces), left for a future wave.
-            // "[Desert] Ramp" is non-flat and wired via LayoutGroupStamper's ReliefPiece kind
-            // (matching [Cave]'s own Ramp piece); "[Desert] Cave Entrance" stays excluded -- raised
-            // AND door-bearing, which no mechanism can place (see the base profile's comment). Every other Desert group (Platforms, Pillar, Stairs 2x2, Treasure,
+            // "[Desert] Ramp" and "[Desert] Cave Entrance" are both non-flat and wired via
+            // LayoutGroupStamper's ReliefPiece kind (matching [Cave]'s own Ramp/Cave Entrance pieces
+            // -- ReliefPiece now tolerates Cave Entrance's door slot, see the base profile's own
+            // comment). Every other Desert group (Platforms, Pillar, Stairs 2x2, Treasure,
             // Crystal Casket/Column/Crypt, Chessboard, Portal, Mineshaft, Wall Section, Exit 1/2/3)
             // mirrors [Cave]'s own wired set piece/feature-tile/exit-group shapes tile-for-tile.
             // IsPaletteVariant() excludes this profile from --matrix's full cross-product (see
@@ -845,6 +851,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Desert] Crystal Crypt 1")
                 .SetPiece("[Desert] Crystal Crypt 2")
                 .SetPiece("[Desert] Ramp", 1)
+                .SetPiece("[Desert] Cave Entrance", 1)
                 .ExitGroup("[Desert] Exit 1")
                 .ExitGroup("[Desert] Exit 2")
                 .ExitGroup("[Desert] Exit 3");
@@ -863,9 +870,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // (TILE1123/1204) and "[Organic] Stairs - Down/Up 1" (TILE1127/1128) as
             // SetPieceCorridorInsert/SetPieceCorridorStub; "OrganicTracks" (Door - Big 3/4, Stairs -
             // Down/Up 2) is the same second independent alternate family as Desert's own DesertTracks and
-            // stays unwired for the same one-body-crosser-per-profile reason; "[Organic] Ramp" is wired
-            // via ReliefPiece and "[Organic] Cave Entrance" stays excluded (raised AND door-bearing) --
-            // see the Desert profile's comment for the full reasoning.
+            // stays unwired for the same one-body-crosser-per-profile reason; "[Organic] Ramp" and
+            // "[Organic] Cave Entrance" are both wired via ReliefPiece -- see the Desert profile's
+            // comment for the full reasoning.
             _builder.Create(MinesAndCavernsOrganic, "Mines and Caverns (Organic)")
                 .Tileset("tdm01")
                 // Same raised-terrain trio as [Cave]/[Desert], on the Organic family's own names
@@ -915,6 +922,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Organic] Crystal Crypt 1")
                 .SetPiece("[Organic] Crystal Crypt 2")
                 .SetPiece("[Organic] Ramp", 1)
+                .SetPiece("[Organic] Cave Entrance", 1)
                 .ExitGroup("[Organic] Exit 1")
                 .ExitGroup("[Organic] Exit 2")
                 .ExitGroup("[Organic] Exit 3");
@@ -946,6 +954,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Cave] Door - Big 1", 1)
                 .SetPiece("[Cave] Door - Big 2", 1)
                 .SetPiece("[Cave] Ramp", 1)
+                // "[City] Cave Entrance" (TILE1456) is Floor-cornered like [Cave]'s own family (this
+                // profile has no distinct City-terrain open corner of its own -- see the class doc
+                // comment above), so it's reachable here the same way "[Cave] Ramp"/"Door - Big 1/2"
+                // already are.
+                .SetPiece("[City] Cave Entrance", 1)
                 .ExitGroup("[Cave] Exit 1")
                 .ExitGroup("[Cave] Exit 2")
                 .ExitGroup("[Cave] Exit 3");
@@ -1812,6 +1825,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // Baked-mesh dune ramp (1x1 raised GROUP, all-Desert [0,1,1,0]) -- stamped by
                 // LayoutGroupStamper's ReliefPiece kind onto a painted raised rim edge.
                 .SetPiece("Ramp", 1)
+                // Baked-mesh cave-mouth piece (1x1 GROUP, non-flat [Desert 1,1,0,0], crosser-free, one
+                // door slot) -- same ReliefPiece kind as "Ramp" above, now door-tolerant (round-4
+                // exterior-tail-closure generalization -- shares tdm01 Cave Entrance's exact shape, see
+                // LayoutGroupStamper.TryClassifyReliefPiece's own doc comment). Distinct from the
+                // ExitGroup("CaveEntrance") flat door-tile family below.
+                .SetPiece("SmallCave", 1)
                 .ExitGroup("Exit")
                 .ExitGroup("CliffStairs")
                 .ExitGroup("ChasmStairs")
@@ -1866,10 +1885,20 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // palettes (TILE500-529/541-546/563-573/600-601/623-628/883-887); (b) raised lanes on the
             // unwired Road/RuralStream/RuralWallOne/Two/CityWall/MossWall crosser families
             // (TILE530-532/606-609/719-734/741-779/801-824 -- ramp lanes carry ONE declared crosser
-            // name, "Slope"); (c) raised Bridge/StoneBridge banks (TILE895/896/898); (d) raised
-            // GROUPS: "Cave" (raised AND door-bearing -- the tdm01 Cave Entrance gap), the City
-            // Gate/Wall - Breach/Door/Tower/Ramp - City Wall/Moss Wall families (raised wall-top
-            // content on unwired crosser families).
+            // name, "Slope"); (c) raised Bridge/StoneBridge banks (TILE895/896/898); (d) the 2x2 "City
+            // Gate - Forest/Cobbles" GROUPS: a genuine "2-wide wall mass" shape (both footprint columns
+            // independently touching the CityWall lane network, plus a shared interior seam)
+            // LayoutReliefPainter.TrySpliceReliefLane can never produce -- it only ever carves a lane
+            // exactly ONE cell wide along a single axis (see that method's own doc comment), so no
+            // painted field can ever match a 2-column mass; left exempt, documented rather than
+            // engineered further (round-4 exterior-tail-closure work). "Cave" (raised AND door-bearing,
+            // the tdm01 Cave Entrance shape) and the 1x1 "Wall - Breach/Door/Tower 1/2,
+            // City/Forest,Water,Cobbles"/"Ramp - City Wall"/"Ramp - Moss Wall"/"Wall - Breach/Door,
+            // Moss" family are now CLOSED: LayoutGroupStamper.TryClassifyReliefPiece tolerates a door
+            // slot (never spawns one, matching WallAlcove's own precedent) and an edge matching the
+            // composition's own declared RampCrosser (matching IsTerrainReliefReachable's ungrouped-
+            // tile rule) -- see that method's own doc comment and the SetPiece wiring below and on the
+            // ForestCityWall/ForestMossWall PaletteVariant profiles.
             //
             // Alternate palettes (auto-exempted via PilotAlternateVocabTerrains, each verified
             // directly): GoodCastle/EvilCastle and RuralTrees/RuralWater are full separate district
@@ -1982,6 +2011,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // Baked-mesh slope ramp (1x1 raised GROUP, all-Forest) -- ReliefPiece kind, stamped
                 // onto a painted raised rim edge.
                 .SetPiece("Ramp", 1)
+                // Baked-mesh cave-mouth piece (1x1 GROUP, non-flat [Forest 1,1,0,0], crosser-free, one
+                // door slot) -- same ReliefPiece kind as "Ramp" above, now door-tolerant (round-4
+                // exterior-tail-closure generalization -- shares tdm01 Cave Entrance's exact shape).
+                .SetPiece("Cave", 1)
                 .ExitGroup("Exit")
                 .ExitGroup("Stairs - Cliff")
                 .ExitGroup("Stairs - Pit")
@@ -2149,12 +2182,15 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // this tileset's real data, mirroring the census's own mechanism) before being wired here;
             // numbers below are the probe's actual counts, not estimates. Remaining gaps after each
             // variant are genuinely unmodeled, not missed:
-            //   - raised GROUPS on these families (City Gate (2x2), Wall - Breach/Door/Tower,
-            //     Ramp - City Wall/Moss Wall, City Gate - Cobbles (2x2)) stay height-exempt: an
-            //     unconditional rule in ClassifyMultiTileSetPiece/LayoutGroupStamper.TryClassify
-            //     rejects ANY group with a non-flat member before vocabulary is even consulted, so no
-            //     PaletteVariant can close a raised group regardless of RampCrosser/AccentTerrain --
-            //     see that method's own `if (!IsFlat(tile)) return GroupMechanism.None;` gate.
+            //   - the 1x1 raised GROUPS on these families (Wall - Breach/Door/Tower 1/2,
+            //     City/Forest,Water,Cobbles; Ramp - City Wall/Moss Wall; Wall - Breach/Door, Moss) are
+            //     now CLOSED (round-4 exterior-tail-closure): LayoutGroupStamper.TryClassifyReliefPiece
+            //     tolerates a door slot and an edge matching the composition's own declared RampCrosser
+            //     -- see that method's own doc comment and the SetPiece wiring below. Only the 2x2
+            //     "City Gate - Forest/Cobbles" GROUPS stay height-exempt: a genuine "2-wide wall mass"
+            //     shape LayoutReliefPainter.TrySpliceReliefLane can never paint (it only ever carves a
+            //     lane exactly one cell wide) -- see the Forest base profile's own doc comment for the
+            //     measured 0/450-seed placement-rate evidence.
             //   - dual-crosser cells (TILE606-609, Slope AND Road edges on the SAME tile) stay exempt:
             //     IsTerrainReliefReachable requires every edge to match ONE declared Ramp name, and a
             //     composition can never declare two Ramp crossers at once -- a genuine "crossroads
@@ -2170,7 +2206,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Forest (City Wall) -- closes CityWall's 31 raised ungrouped lanes (TILE741-744/759/763-
             // 765/772-775/801-804, pure-Forest-cornered, 16 tiles; TILE745/746/748-754/766-771,
             // RuralWater-mixed, 15 more via AccentTerrain("RuralWater")) of 49 total CityWall-edged
-            // tiles. Verified directly via probe.
+            // tiles. Verified directly via probe. Also wires the family's 1x1 raised GROUPS (round-4
+            // exterior-tail-closure): "Ramp - City Wall" (doorless), and the door-bearing "Wall -
+            // Breach/Door/Tower 1/2, City/Forest,Water,Cobbles" family -- all now reachable via
+            // LayoutGroupStamper.TryClassifyReliefPiece's door + RampCrosser tolerance (see that
+            // method's own doc comment). "Wall - Tower 1/2, City/Water" mix RuralWater corners, closed
+            // by this profile's own AccentTerrain("RuralWater").
             _builder.Create(ForestCityWall, "Forest (City Wall)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
@@ -2180,13 +2221,25 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PrimaryOpenTerrain("Forest")
                 .AccentTerrain("RuralWater")
                 .MaxReliefRegions(2)
-                .RampCrosser("CityWall");
+                .RampCrosser("CityWall")
+                .SetPiece("Ramp - City Wall", 1)
+                .SetPiece("Wall - Breach, City/Forest", 1)
+                .SetPiece("Wall - Door, City/Forest", 1)
+                .SetPiece("Wall - Tower 1, City/Forest", 1)
+                .SetPiece("Wall - Tower 2, City/Forest", 1)
+                .SetPiece("Wall - Tower 1, City/Water", 1)
+                .SetPiece("Wall - Tower 2, City/Water", 1)
+                .SetPiece("Wall - Breach, City/Cobbles", 1)
+                .SetPiece("Wall - Door, City/Cobbles", 1)
+                .SetPiece("Wall - Tower 1, City/Cobbles", 1)
+                .SetPiece("Wall - Tower 2, City/Cobbles", 1);
 
             // Forest (Moss Wall) -- closes MossWall's 11 raised ungrouped lanes (TILE814-824, all
             // pure-Forest-cornered -- no RuralWater mixing on this family, verified directly) of 14
-            // total MossWall-edged tiles; the remaining 3 (TILE825-827) are the "Ramp - Moss Wall"/
-            // "Wall - Breach, Moss"/"Wall - Door, Moss" raised GROUPS, unreachable per this profile
-            // family's own doc comment above.
+            // total MossWall-edged tiles. Also wires the family's 1x1 raised GROUPS (round-4
+            // exterior-tail-closure): "Ramp - Moss Wall" (doorless) and the door-bearing "Wall -
+            // Breach/Door, Moss" pair -- see the City Wall profile's own comment above for the
+            // mechanism (LayoutGroupStamper.TryClassifyReliefPiece's door + RampCrosser tolerance).
             _builder.Create(ForestMossWall, "Forest (Moss Wall)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
@@ -2195,7 +2248,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SolidTerrainOverride("Cliff")
                 .PrimaryOpenTerrain("Forest")
                 .MaxReliefRegions(2)
-                .RampCrosser("MossWall");
+                .RampCrosser("MossWall")
+                .SetPiece("Ramp - Moss Wall", 1)
+                .SetPiece("Wall - Breach, Moss", 1)
+                .SetPiece("Wall - Door, Moss", 1);
 
             // Forest (Rural Wall One) -- closes all 4 RuralWallOne-edged raised tiles (TILE724-726
             // pure-Forest, TILE727 RuralWater-mixed via AccentTerrain). TILE776-779/812 (RuralWallOne

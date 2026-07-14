@@ -135,6 +135,20 @@ public class TunnelVocabularyCheckTests
         // AccentTerrain/ReliefBlendTerrain differ) -- identical "no crosser family crosses Cliff" gap.
         // See BaseGameTilesetProfiles.ForestRural's own doc comment.
         BaseGameTilesetProfiles.ForestRural,
+        // Round-3 exterior-tail-closure PaletteVariant profiles: each declares the SAME
+        // SolidTerrainOverride("Cliff") + walkable Desert/Forest open terrain as Desert/Forest above,
+        // and only declares a RampCrosser (not a TunnelCrossers pair) -- identical "no crosser family
+        // crosses Cliff" gap. See BaseGameTilesetProfiles.DesertRoad/ForestCityWall/ForestMossWall/
+        // ForestRuralWallOne/ForestRuralWallTwo/ForestRuralStream/ForestRoad/ForestStoneBridge's own
+        // doc comments.
+        BaseGameTilesetProfiles.DesertRoad,
+        BaseGameTilesetProfiles.ForestCityWall,
+        BaseGameTilesetProfiles.ForestMossWall,
+        BaseGameTilesetProfiles.ForestRuralWallOne,
+        BaseGameTilesetProfiles.ForestRuralWallTwo,
+        BaseGameTilesetProfiles.ForestRuralStream,
+        BaseGameTilesetProfiles.ForestRoad,
+        BaseGameTilesetProfiles.ForestStoneBridge,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

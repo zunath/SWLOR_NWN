@@ -94,6 +94,19 @@ public class OnboardedTilesetPipelineTests
         // ttf01's unwired RuralWater/RuralTrees raised-bank district, a PaletteVariant profile -- see
         // BaseGameTilesetProfiles.ForestRural's own doc comment.
         BaseGameTilesetProfiles.ForestRural,
+        // Round-3 exterior-tail-closure PaletteVariant profiles (ttd01/ttf01 per-family raised-lane
+        // RampCrosser variants) -- same full-pipeline gate as any other onboarded profile, registered
+        // here so each gets the standard pipeline sweep. See BaseGameTilesetProfiles.DesertRoad/
+        // ForestCityWall/ForestMossWall/ForestRuralWallOne/ForestRuralWallTwo/ForestRuralStream/
+        // ForestRoad/ForestStoneBridge's own doc comments.
+        BaseGameTilesetProfiles.DesertRoad,
+        BaseGameTilesetProfiles.ForestCityWall,
+        BaseGameTilesetProfiles.ForestMossWall,
+        BaseGameTilesetProfiles.ForestRuralWallOne,
+        BaseGameTilesetProfiles.ForestRuralWallTwo,
+        BaseGameTilesetProfiles.ForestRuralStream,
+        BaseGameTilesetProfiles.ForestRoad,
+        BaseGameTilesetProfiles.ForestStoneBridge,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

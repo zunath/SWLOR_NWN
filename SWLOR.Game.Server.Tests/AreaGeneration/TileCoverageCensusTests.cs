@@ -752,16 +752,24 @@ public class TileCoverageCensusTests
     }
 
     /// <summary>Mirrors LayoutGroupStamper.TryClassifyReliefPiece + TryPlaceReliefPiece's site
-    /// requirement: a RAISED (non-flat, non-uniform-delta), doorless, crosser-free 1x1 group piece
-    /// whose corner (terrain, height) field the relief painter can actually paint (the same
-    /// BFS reachability check IsTerrainReliefReachable uses -- production stamps a piece only onto a
-    /// cell whose PAINTED field exactly matches, so a field the painter can never produce means the
-    /// piece can never place).</summary>
+    /// requirement: a RAISED (non-flat, non-uniform-delta) 1x1 group piece whose corner (terrain,
+    /// height) field the relief painter can actually paint (the same BFS reachability check
+    /// IsTerrainReliefReachable uses -- production stamps a piece only onto a cell whose PAINTED
+    /// field exactly matches, so a field the painter can never produce means the piece can never
+    /// place). Edges may be blank or ALL equal this vocabulary's own Ramp crosser (mirrors
+    /// IsTerrainReliefReachable's identical rule -- e.g. ttf01's "Ramp - City Wall"); a door slot is
+    /// tolerated exactly like WallAlcove/OpenSetPiece/WallRoom (never spawns a door object) -- this
+    /// closes ttf01's raised gate-tower/breach/moss-wall family and the "Cave"/"SmallCave"/"Cave
+    /// Entrance" shape shared by ttf01/ttd01/tdm01. See LayoutGroupStamper.TryClassifyReliefPiece's
+    /// own doc comment for the full reasoning.</summary>
     private static bool IsReliefPieceEligible(TileRecord tile, TilesetVocabulary vocab, TileResolver.HeightAwareProbeCache cache)
     {
         if (IsFlat(tile)) return false;
-        if (tile.HasAnyCrosser) return false;
-        if (tile.Doors.Count != 0) return false;
+        foreach (var edge in tile.Edges)
+        {
+            if (string.IsNullOrEmpty(edge)) continue;
+            if (!Eq(edge, vocab.Ramp)) return false;
+        }
         if (string.IsNullOrEmpty(vocab.Open)) return false;
 
         var min = tile.CornerHeights.Min();

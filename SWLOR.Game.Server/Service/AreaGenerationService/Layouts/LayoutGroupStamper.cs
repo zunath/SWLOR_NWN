@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                         return true;
                     if (TryClassifyCorridorStub(soloTile, group, parameters, out classified))
                         return true;
-                    if (TryClassifyReliefPiece(soloTile, group, out classified))
+                    if (TryClassifyReliefPiece(soloTile, group, parameters, out classified))
                         return true;
                 }
             }
@@ -638,26 +638,49 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         // ---------------- ReliefPiece ----------------
 
         /// <summary>
-        /// A RAISED (non-flat), crosser-free, doorless 1x1 group piece -- a baked-mesh set piece
-        /// authored to straddle a specific corner-height step, e.g. tde01's "Ramp - Straight"
-        /// ([Floor 0,0,1,1], a walkable ramp mesh over a straight rim edge) and "Ramp - Corner, *"
-        /// pieces, or tdm01's "[Cave]/[Desert]/[Organic] Ramp". Every flat group kind above rejects
-        /// non-flat members outright (their sites are flat by construction); a relief piece is the
-        /// opposite -- its site is a cell whose PAINTED corner (terrain, height) field, produced by
-        /// the elevation/pool/relief height passes, exactly matches the piece's own corner profile
-        /// under some rotation (see TryPlaceReliefPiece). Classification is deliberately structural
-        /// only (non-flat, doorless, crosser-free, 1x1); the exact-match site search is what
-        /// guarantees a stamped piece is always consistent with the surrounding grid.
+        /// A RAISED (non-flat) 1x1 group piece -- a baked-mesh set piece authored to straddle a
+        /// specific corner-height step, e.g. tde01's "Ramp - Straight" ([Floor 0,0,1,1], a walkable
+        /// ramp mesh over a straight rim edge) and "Ramp - Corner, *" pieces, tdm01's "[Cave]/
+        /// [Desert]/[Organic] Ramp", or ttf01's raised wall/gate/cave-mouth family ("Wall - Breach/
+        /// Door/Tower 1/2, City/Forest,Water,Cobbles", "Ramp - City Wall"/"Ramp - Moss Wall", "Wall -
+        /// Breach/Door, Moss", "Cave" -- and ttd01's "SmallCave", tdm01's "[City/Cave/Desert/Organic]
+        /// Cave Entrance"). Every flat group kind above rejects non-flat members outright (their sites
+        /// are flat by construction); a relief piece is the opposite -- its site is a cell whose
+        /// PAINTED corner (terrain, height) field, produced by the elevation/pool/relief height
+        /// passes, exactly matches the piece's own corner profile under some rotation (see
+        /// TryPlaceReliefPiece). Classification is deliberately structural only (non-flat, 1x1); the
+        /// exact-match site search is what guarantees a stamped piece is always consistent with the
+        /// surrounding grid.
+        ///
+        /// Edges may be blank, OR ALL equal this composition's own declared ramp-lane crosser
+        /// (LayoutElevationPainter.RampCrosserFor, canonical "Ramp" by default) -- mirrors
+        /// TileCoverageCensusTests.IsTerrainReliefReachable's identical ungrouped-tile rule, since a
+        /// ramp-lane-crossered raised piece (e.g. "Ramp - City Wall") sits on exactly the same 1-wide
+        /// lane LayoutReliefPainter.TrySpliceReliefLane carves; any OTHER crosser name (Doorway,
+        /// Corridor, Fence, Bridge, an unrelated tunnel family) still rejects the whole piece -- a
+        /// relief piece is never a tunnel/room-network member.
+        ///
+        /// A door slot is tolerated exactly like WallAlcove/OpenSetPiece/WallRoom already tolerate one
+        /// (see TryClassify's own doc comment) -- never spawns a door object (WriteMember/
+        /// TryPlaceReliefPiece never write door data), so an unpopulated slot on a stamped ReliefPiece
+        /// renders exactly like any other unpopulated door-slot tile already does today. This is what
+        /// closes ttf01's raised gate-tower/breach/moss-wall family and the "Cave"/"SmallCave"/"Cave
+        /// Entrance" doorframe-on-a-rim-step shape shared by ttf01/ttd01/tdm01.
         /// </summary>
-        private static bool TryClassifyReliefPiece(TileRecord tile, TileGroupRecord group, out ClassifiedGroup classified)
+        private static bool TryClassifyReliefPiece(TileRecord tile, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
         {
             classified = null;
 
             var isFlat = tile.CornerHeights[0] == 0 && tile.CornerHeights[1] == 0 &&
                          tile.CornerHeights[2] == 0 && tile.CornerHeights[3] == 0;
             if (isFlat) return false;
-            if (tile.HasAnyCrosser) return false;
-            if (tile.Doors.Count != 0) return false;
+
+            var rampCrosser = LayoutElevationPainter.RampCrosserFor(parameters);
+            foreach (var edge in tile.Edges)
+            {
+                if (string.IsNullOrEmpty(edge)) continue;
+                if (!Eq(edge, rampCrosser)) return false;
+            }
 
             // A uniform raised profile (all 4 corners at the same nonzero height) normalizes to flat
             // -- such a "plateau top" piece would match ordinary flat interior cells at a raised
@@ -680,10 +703,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// the piece's own rotated profile, then pins the piece there at placementHeight = the cell's
         /// grid height min minus the piece's own corner-height min -- TileResolver's height-aware
         /// placement convention, carried through the pin so the resolved tile sits at the same final
-        /// Tile_Height an ungrouped twin of the same shape would. Cell edges must be blank (relief
-        /// pieces carry no crossers, so a crossered cell can never render one) and the cell must not
-        /// host a transition anchor or an earlier pin. No corner/edge rewrite -- like CorridorInsert,
-        /// the site already matches by construction, so only PinnedTiles is written.
+        /// Tile_Height an ungrouped twin of the same shape would. Cell edges must match the piece's OWN
+        /// rotated edge pattern exactly -- blank for a crosser-free piece (the original precedent,
+        /// e.g. tde01's "Ramp - Straight"), or the composition's ramp-lane crosser for a lane-edged
+        /// piece (e.g. ttf01's "Ramp - City Wall" -- the SAME lane edge LayoutReliefPainter.
+        /// TrySpliceReliefLane already writes into the grid, so an exact per-orientation edge match,
+        /// not a blanket "must be blank" filter, is what correctly admits it) -- see
+        /// TryClassifyReliefPiece's edge-tolerance doc comment. The cell must not host a transition
+        /// anchor or an earlier pin. No corner/edge rewrite -- like CorridorInsert, the site already
+        /// matches by construction, so only PinnedTiles is written.
         /// </summary>
         private static bool TryPlaceReliefPiece(MacroLayout layout, ClassifiedGroup classified, System.Random random)
         {
@@ -707,13 +735,6 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     if (layout.PinnedTiles.ContainsKey(cell)) continue;
                     if (transitionTiles.Contains(cell)) continue;
 
-                    var edgesBlank = true;
-                    for (var slot = 0; slot < 4 && edgesBlank; slot++)
-                    {
-                        if (crossers.GetEdge(x, y, slot).Length != 0) edgesBlank = false;
-                    }
-                    if (!edgesBlank) continue;
-
                     var hTl = corners.Heights[x, y + 1];
                     var hTr = corners.Heights[x + 1, y + 1];
                     var hBr = corners.Heights[x + 1, y];
@@ -725,6 +746,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var placementHeight = cellMin - tileMin;
                     if (placementHeight < 0) continue;
 
+                    var cellTop = crossers.GetEdge(x, y, EdgeSlot.Top);
+                    var cellRight = crossers.GetEdge(x, y, EdgeSlot.Right);
+                    var cellBottom = crossers.GetEdge(x, y, EdgeSlot.Bottom);
+                    var cellLeft = crossers.GetEdge(x, y, EdgeSlot.Left);
+
                     for (var orientation = 0; orientation < 4; orientation++)
                     {
                         var matches =
@@ -735,7 +761,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                             hTl - cellMin == tile.GetCornerHeightAt(orientation, CornerSlot.TopLeft) - tileMin &&
                             hTr - cellMin == tile.GetCornerHeightAt(orientation, CornerSlot.TopRight) - tileMin &&
                             hBr - cellMin == tile.GetCornerHeightAt(orientation, CornerSlot.BottomRight) - tileMin &&
-                            hBl - cellMin == tile.GetCornerHeightAt(orientation, CornerSlot.BottomLeft) - tileMin;
+                            hBl - cellMin == tile.GetCornerHeightAt(orientation, CornerSlot.BottomLeft) - tileMin &&
+                            Eq(cellTop, tile.GetEdgeAt(orientation, EdgeSlot.Top)) &&
+                            Eq(cellRight, tile.GetEdgeAt(orientation, EdgeSlot.Right)) &&
+                            Eq(cellBottom, tile.GetEdgeAt(orientation, EdgeSlot.Bottom)) &&
+                            Eq(cellLeft, tile.GetEdgeAt(orientation, EdgeSlot.Left));
 
                         if (matches)
                         {

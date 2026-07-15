@@ -328,6 +328,7 @@ try
 
     var modelCache = new Dictionary<string, TilesetModel>();
     var areas = new List<(string Resref, float EntryX, float EntryY)>();
+    var decorationAppearances = LoadDecorationAppearances(root, themes.Values);
 
     foreach (var spec in specs)
     {
@@ -419,7 +420,7 @@ try
 
         var layout = solved.Resolved;
         var decorationsPlaced = EmitArea(layout, tileset, spec.Resref, spec.DisplayName, placeholderAre, placeholderGit, stage,
-            spec.Composition.Content, spec.EnableDecorations, spec.DecorationDensityPercent);
+            spec.Composition.Content, spec.EnableDecorations, spec.DecorationDensityPercent, decorationAppearances);
 
         var entrance = layout.Rooms.First(r => r.Role == RoomRole.Entrance);
         areas.Add((spec.Resref, entrance.CenterTile.X * 10f + 5f, entrance.CenterTile.Y * 10f + 5f));
@@ -561,7 +562,8 @@ static string UniqueResref(string baseResref, HashSet<string> used)
 
 static int EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string resref, string display,
     string placeholderArePath, string placeholderGitPath, string stage,
-    DungeonDetail detail, bool enableDecorations, int decorationDensityPercent)
+    DungeonDetail detail, bool enableDecorations, int decorationDensityPercent,
+    Dictionary<string, int> decorationAppearances)
 {
     var lighting = tileset.Lighting;
     var tiles = string.Join(",\n", layout.Tiles.Select(t => TileEntry(t.TileId, t.Orientation, t.Height,
@@ -618,7 +620,7 @@ static int EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string
     if (detail != null && enableDecorations)
     {
         var plan = DungeonDecorationPlanner.Plan(layout, detail, decorationDensityPercent);
-        var placeables = BuildPlaceableEntries(plan);
+        var placeables = BuildPlaceableEntries(plan, decorationAppearances);
         if (!string.IsNullOrEmpty(placeables))
         {
             var placeableStart = git.IndexOf("\"Placeable List\"", StringComparison.Ordinal);
@@ -1013,16 +1015,59 @@ static string DoorEntry(string tag, string locName, float x, float y, float z, d
 }
 
 /// <summary>
+/// Reads the real Appearance row index out of each curated decoration resref's UTP blueprint
+/// (Module/utp/&lt;resref&gt;.utp.json) so emitted .git placeable INSTANCES render the correct model in
+/// the toolset. A .git placeable struct is self-describing — the toolset renders the struct's own
+/// Appearance field, not the blueprint referenced by TemplateResRef — so BuildPlaceableEntries must
+/// copy this value in rather than leave it at a placeholder. A resref with no UTP blueprint, or a
+/// blueprint whose own Appearance is blank/zero, is a palette bug (a theme curated a resref that
+/// isn't a real usable placeable); this is reported to stderr rather than silently rendering wrong.
+/// </summary>
+static Dictionary<string, int> LoadDecorationAppearances(string root, IEnumerable<DungeonDetail> themes)
+{
+    var map = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+    var resrefs = themes
+        .SelectMany(t => t.Decorations)
+        .Select(d => d.Resref)
+        .Distinct(StringComparer.OrdinalIgnoreCase);
+
+    foreach (var resref in resrefs)
+    {
+        var utpPath = Path.Combine(root, "Module", "utp", resref + ".utp.json");
+        if (!File.Exists(utpPath))
+        {
+            Console.Error.WriteLine($"decoration palette bug: '{resref}' has no UTP blueprint under Module/utp — will render as a blank/default placeable");
+            continue;
+        }
+
+        var node = JsonNode.Parse(File.ReadAllText(utpPath));
+        var appearance = node?["Appearance"]?["value"]?.GetValue<int>() ?? 0;
+        if (appearance == 0)
+        {
+            Console.Error.WriteLine($"decoration palette bug: '{resref}' UTP blueprint has a blank/zero Appearance — will render as a blank/default placeable");
+            continue;
+        }
+
+        map[resref] = appearance;
+    }
+
+    return map;
+}
+
+/// <summary>
 /// Builds one Placeable GFF-JSON struct per planned decoration (see DungeonDecorationPlanner.Plan /
 /// PlannedDecoration). Field shape mirrors a hand-built decorative placeable instance (Module/git/
 /// vrotrnsrooftops2.git.json, __struct_id 9): Static=1/Useable=0/Plot=0 and every Trap* field
 /// disabled — pure "set dressing", matching DungeonContentPlacer.PlaceDecorations' own runtime
-/// contract ("no scripts, plot flag, or useable override"). PlannedDecoration.Position is flat
-/// (Z=0) — real ground height needs the live engine's GetGroundHeight, unavailable offline — matching
-/// BuildWaypointEntries' identical convention for this same reason. Facing is degrees; Bearing is
-/// radians (matches BuildDoorEntries' conversion).
+/// contract ("no scripts, plot flag, or useable override"). None of those behavior flags affect
+/// which model the toolset renders — only Appearance does (verified against the same hand-built
+/// exemplar, whose Static/Faction/PortraitId already match these hardcoded defaults) — so Appearance
+/// is the one field sourced per-resref from LoadDecorationAppearances rather than hardcoded.
+/// PlannedDecoration.Position is flat (Z=0) — real ground height needs the live engine's
+/// GetGroundHeight, unavailable offline — matching BuildWaypointEntries' identical convention for
+/// this same reason. Facing is degrees; Bearing is radians (matches BuildDoorEntries' conversion).
 /// </summary>
-static string BuildPlaceableEntries(List<PlannedDecoration> plan)
+static string BuildPlaceableEntries(List<PlannedDecoration> plan, Dictionary<string, int> decorationAppearances)
 {
     var entries = new List<string>();
     var index = 0;
@@ -1032,13 +1077,14 @@ static string BuildPlaceableEntries(List<PlannedDecoration> plan)
         index++;
         var tag = $"PG_DEC_{index}";
         var bearingRadians = planned.Facing * Math.PI / 180.0;
-        entries.Add(PlaceableEntry(tag, planned.Resref, planned.Position.X, planned.Position.Y, planned.Position.Z, bearingRadians));
+        var appearance = decorationAppearances.GetValueOrDefault(planned.Resref, 0);
+        entries.Add(PlaceableEntry(tag, planned.Resref, planned.Position.X, planned.Position.Y, planned.Position.Z, bearingRadians, appearance));
     }
 
     return string.Join(",\n", entries);
 }
 
-static string PlaceableEntry(string tag, string templateResref, float x, float y, float z, double bearingRadians)
+static string PlaceableEntry(string tag, string templateResref, float x, float y, float z, double bearingRadians, int appearance)
 {
     return $$"""
           {
@@ -1049,7 +1095,7 @@ static string PlaceableEntry(string tag, string templateResref, float x, float y
             },
             "Appearance": {
               "type": "dword",
-              "value": 0
+              "value": {{appearance}}
             },
             "AutoRemoveKey": {
               "type": "byte",

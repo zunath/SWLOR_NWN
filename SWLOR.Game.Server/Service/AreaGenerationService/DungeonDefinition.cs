@@ -347,9 +347,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public List<DungeonDecorationEntry> Decorations { get; set; } = new();
 
         /// <summary>
-        /// Fraction of eligible tiles (see DungeonDecorationPlanner) that receive a decoration at
-        /// 100% request density — evidence-derived per theme from the mined decorative-placeable
-        /// density of its hand-built reference areas. Scaled by
+        /// Target decorative placeables PER TOTAL AREA TILE (layout.Width * layout.Height) at 100%
+        /// request density — evidence-derived per theme from the mined decorative-placeable density of
+        /// its hand-built reference areas (decoration_evidence/mine_evidence.py's own "placeables per
+        /// tile (area Width*Height)" convention). DungeonDecorationPlanner.Plan converts this into a
+        /// per-eligible-tile placement probability sized so the EXPECTED realized count converges on
+        /// DecorationBaseDensity * totalTiles, not a literal per-eligible-tile coin-flip chance (the
+        /// eligible pool — room perimeter cells only — is much smaller than the total area). Scaled by
         /// AreaGenerationRequest.DecorationDensityPercent (0-200, default 100).
         /// </summary>
         public double DecorationBaseDensity { get; set; } = 0.2;
@@ -565,7 +569,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
-        /// Sets the theme's base decoration density (fraction of eligible tiles decorated at 100%
+        /// Sets the theme's base decoration density (target placeables per total area tile at 100%
         /// request density). See <see cref="DungeonDetail.DecorationBaseDensity"/>.
         /// </summary>
         public DungeonDefinitionBuilder DecorationDensity(double baseDensity)

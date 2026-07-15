@@ -74,6 +74,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// low (roughly 3-13% across families) — small rooms never got one in the hand-built sample.</summary>
         private const int MinCenterpieceRoomTiles = 6;
 
+        /// <summary>
+        /// Share of the total decoration budget (see <see cref="Plan"/>'s targetCount) reserved for
+        /// RoomCenter centerpieces rather than wall/corridor/doorway "hugging" placements — the
+        /// mid-point of the mined evidence's per-family center_fraction proxy (roughly 3-24% of a
+        /// family's decorative placeables sit away from the perimeter, clustering 3-9% outside one
+        /// single-area outlier family; see decoration_evidence/evidence_by_tileset.json
+        /// context_proxy.center_fraction). Centerpieces are additionally gated per-room by
+        /// MinCenterpieceRoomTiles/isCorridorLike regardless of this share.
+        /// </summary>
+        private const double CenterpieceTargetShare = 0.08;
+
         /// <summary>A room counts as corridor-like when its shorter bounding-box axis is this narrow.</summary>
         private const int CorridorLikeMaxSpan = 2;
 
@@ -91,6 +102,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// (layout.Seed, detail, densityPercent) always produces an identical plan, in the same order.
         /// Returns an empty plan when the theme has no curated palette or densityPercent is 0 (the
         /// toggle-off case).
+        ///
+        /// Calibration: DungeonDetail.DecorationBaseDensity is evidence-derived as placeables PER TOTAL
+        /// AREA TILE (layout.Width * layout.Height) from the hand-built reference areas — see
+        /// decoration_evidence/mine_evidence.py's own "density: decorative placeables per tile (area
+        /// Width*Height)" convention. The eligible tile POOL this planner can actually decorate (room
+        /// perimeter cells with a curated palette bucket) is a much smaller fraction of the total area
+        /// (corridors carved outside LayoutRooms, interior room tiles, and every excluded cell are never
+        /// eligible — see the class doc comment). Applying baseDensity directly as a per-eligible-tile
+        /// coin flip therefore collapses the realized count to a small fraction of the evidence target.
+        /// Plan() instead runs two passes over the layout: PASS 1 (no RNG) counts the real eligible pool
+        /// size for both the wall/corridor/doorway "hugging" placements and the RoomCenter centerpiece
+        /// slots; PASS 2 derives a per-slot probability (targetCount / eligibleCount, capped at 1) that
+        /// makes the EXPECTED realized count converge on baseDensity * totalTiles * (densityPercent/100),
+        /// then rolls the same RNG stream the original single-pass algorithm did to actually place.
         /// </summary>
         public static List<PlannedDecoration> Plan(ResolvedLayout layout, DungeonDetail detail, int densityPercent)
         {
@@ -98,17 +123,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (layout == null || detail == null || detail.Decorations.Count == 0 || densityPercent <= 0)
                 return plan;
 
-            var density = detail.DecorationBaseDensity * (densityPercent / 100.0);
-            if (density <= 0)
+            var densityFraction = densityPercent / 100.0;
+            var targetCount = detail.DecorationBaseDensity * layout.Width * layout.Height * densityFraction;
+            if (targetCount <= 0)
                 return plan;
 
-            var rng = new System.Random(layout.Seed ^ SeedSalt);
             var byContext = detail.Decorations
                 .GroupBy(d => d.Context)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
             var excluded = BuildExclusionSet(layout);
 
+            // Precompute each non-set-piece room's shape classification once — reused by both the
+            // eligibility count (pass 1) and the actual placement rolls (pass 2) so they can never
+            // drift out of sync with each other.
+            var rooms = new List<(LayoutRoom Room, bool IsCorridorLike, HashSet<(int X, int Y)> TileSet)>();
             foreach (var room in layout.Rooms)
             {
                 if (room.IsSetPiece || room.Tiles.Count == 0)
@@ -117,15 +146,51 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var (minX, maxX, minY, maxY) = BoundingBox(room.Tiles);
                 var spanX = maxX - minX + 1;
                 var spanY = maxY - minY + 1;
-                var isCorridorLike = Math.Min(spanX, spanY) <= CorridorLikeMaxSpan;
+                rooms.Add((room, Math.Min(spanX, spanY) <= CorridorLikeMaxSpan, new HashSet<(int X, int Y)>(room.Tiles)));
+            }
 
-                var tileSet = new HashSet<(int X, int Y)>(room.Tiles);
+            // PASS 1: count the eligible pool for each bucket, ignoring RNG entirely — the centerpiece
+            // anchor's one-tile exclusion from the wall pool is intentionally not modeled here (it can
+            // remove at most one tile per qualifying room, negligible against the pool this normalizes).
+            var wallEligibleCount = 0;
+            var centerEligibleRoomCount = 0;
+            foreach (var (room, isCorridorLike, tileSet) in rooms)
+            {
+                if (!isCorridorLike && room.Tiles.Count >= MinCenterpieceRoomTiles &&
+                    byContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntriesProbe) &&
+                    centerEntriesProbe.Count > 0 &&
+                    NearestOtherTile(room.CenterTile, room.Tiles, excluded) != null)
+                    centerEligibleRoomCount++;
+
+                foreach (var tile in room.Tiles)
+                {
+                    if (excluded.Contains(tile) || tile == room.CenterTile)
+                        continue;
+
+                    if (NearestWallDirection(tile, tileSet) == null)
+                        continue;
+
+                    if (TryResolveContext(tile, isCorridorLike, layout, byContext, out _, out _))
+                        wallEligibleCount++;
+                }
+            }
+
+            var centerTarget = targetCount * CenterpieceTargetShare;
+            var wallTarget = targetCount - centerTarget;
+            var wallProbability = wallEligibleCount > 0 ? Math.Min(1.0, wallTarget / wallEligibleCount) : 0.0;
+            var centerProbability = centerEligibleRoomCount > 0 ? Math.Min(0.95, centerTarget / centerEligibleRoomCount) : 0.0;
+
+            var rng = new System.Random(layout.Seed ^ SeedSalt);
+
+            // PASS 2: the actual placement rolls, over the same room/tile order pass 1 used.
+            foreach (var (room, isCorridorLike, tileSet) in rooms)
+            {
                 (int X, int Y)? centerpieceAnchor = null;
 
                 if (!isCorridorLike && room.Tiles.Count >= MinCenterpieceRoomTiles &&
                     byContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntries) &&
                     centerEntries.Count > 0 &&
-                    rng.NextDouble() < Math.Min(0.95, density * 4.0))
+                    rng.NextDouble() < centerProbability)
                 {
                     // Never the CenterTile itself — that cell is reserved for boss/treasure/exit
                     // content placement (see DungeonContentPlacer.PopulateBossRoom/PlaceExit) — so
@@ -162,20 +227,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (wallDir == null)
                         continue; // fully interior tile with no adjacent solid/foreign edge in this room
 
-                    var context = isCorridorLike ? DecorationContext.CorridorSide : DecorationContext.WallAdjacent;
-                    if (IsNearDoorway(tile, layout))
-                        context = DecorationContext.DoorwayFlank;
+                    if (!TryResolveContext(tile, isCorridorLike, layout, byContext, out var context, out var entries))
+                        continue;
 
-                    if (!byContext.TryGetValue(context, out var entries) || entries.Count == 0)
-                    {
-                        // Fall back to the WallAdjacent palette when a theme never curated the more
-                        // specific bucket, so a sparse palette still decorates rather than going silent.
-                        if (context == DecorationContext.WallAdjacent ||
-                            !byContext.TryGetValue(DecorationContext.WallAdjacent, out entries) || entries.Count == 0)
-                            continue;
-                    }
-
-                    if (rng.NextDouble() >= density)
+                    if (rng.NextDouble() >= wallProbability)
                         continue;
 
                     var resrefPick = PickWeighted(entries, rng);
@@ -200,6 +255,38 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             }
 
             return plan;
+        }
+
+        /// <summary>
+        /// Resolves the placement context a wall-eligible tile falls into (CorridorSide for
+        /// corridor-like rooms, else WallAdjacent, upgraded to DoorwayFlank near a transition) and the
+        /// curated palette entries for that bucket, falling back to WallAdjacent when a theme never
+        /// curated the more specific bucket so a sparse palette still decorates rather than going
+        /// silent. Returns false (no eligible entries at all) when even the WallAdjacent fallback is
+        /// empty. Shared by both the pass-1 eligibility count and the pass-2 placement roll so they can
+        /// never resolve a tile's context/entries differently from each other.
+        /// </summary>
+        private static bool TryResolveContext(
+            (int X, int Y) tile, bool isCorridorLike, ResolvedLayout layout,
+            Dictionary<DecorationContext, List<DungeonDecorationEntry>> byContext,
+            out DecorationContext context, out List<DungeonDecorationEntry> entries)
+        {
+            context = isCorridorLike ? DecorationContext.CorridorSide : DecorationContext.WallAdjacent;
+            if (IsNearDoorway(tile, layout))
+                context = DecorationContext.DoorwayFlank;
+
+            if (byContext.TryGetValue(context, out entries) && entries.Count > 0)
+                return true;
+
+            if (context != DecorationContext.WallAdjacent &&
+                byContext.TryGetValue(DecorationContext.WallAdjacent, out entries) && entries.Count > 0)
+            {
+                context = DecorationContext.WallAdjacent;
+                return true;
+            }
+
+            entries = null;
+            return false;
         }
 
         /// <summary>

@@ -291,4 +291,71 @@ public class DungeonDecorationPlannerTests
                 $"{themeKey}: planned {plan.Count} decorations against only {eligibleTileCount} eligible room tiles");
         }
     }
+
+    /// <summary>
+    /// Density-calibration regression: at 16x16 (the SWLOR.ProcgenReview default size) and 100%
+    /// request density, the AVERAGE planned decoration count across several seeds must land within a
+    /// theme-specific band. Guards against the exact defect a live playtest surfaced against
+    /// Mandalorian Garrison — a 16x16 review area carrying only ~6 total decorations, ~10x below the
+    /// hand-built evidence band of roughly 40-90 for a 16x16 area (see
+    /// decoration_evidence/mine_evidence.py's "placeables per tile" mining and DungeonDetail.
+    /// DecorationBaseDensity's doc comment) — which traced back to DungeonDecorationPlanner.Plan
+    /// applying DecorationBaseDensity as a per-ELIGIBLE-tile coin-flip probability instead of
+    /// calibrating against the full area tile count.
+    ///
+    /// Bounds are measured (20 seeds/theme, averaged) against the current two-pass calibration, with
+    /// wide margin below/above so ordinary layout-solver variance or a future palette/exclusion tweak
+    /// doesn't make this flaky, while still catching a collapse back toward the pre-fix single-digit
+    /// counts. Warren/Labyrinth-layout themes (sewer, nightsistercoven, qionhive) structurally can't
+    /// reach the full evidence band at 16x16 — see the DungeonDecorationPlanner class doc comment's own
+    /// "CorridorSide is honestly scoped to long/narrow rooms" architecture-gap note (OpenLane corridors
+    /// carved by these layout styles are never recorded as LayoutRooms, so most of the map is outside
+    /// this planner's eligible-tile pool entirely) — their bands are scaled down accordingly rather than
+    /// held to the same floor as room-dominant layout styles (Packed/Complex/RoomsAndCorridors).
+    /// </summary>
+    [TestCase(MineCaveDungeonDefinition.ThemeKey, 10, 55)]
+    [TestCase(SewerDungeonDefinition.ThemeKey, 3, 30)]
+    [TestCase(SciFiBaseDungeonDefinition.ThemeKey, 8, 55)]
+    [TestCase(AlienRuinDungeonDefinition.ThemeKey, 8, 55)]
+    [TestCase(TatooineWastesDungeonDefinition.ThemeKey, 8, 55)]
+    [TestCase(DathomirWildlandsDungeonDefinition.ThemeKey, 12, 75)]
+    [TestCase(NightsisterCovenDungeonDefinition.ThemeKey, 2, 35)]
+    [TestCase(QionHiveDungeonDefinition.ThemeKey, 8, 50)]
+    [TestCase(DeepMineDungeonDefinition.ThemeKey, 8, 55)]
+    [TestCase(MandalorianGarrisonDungeonDefinition.ThemeKey, 30, 90)]
+    [TestCase(UndercityDenDungeonDefinition.ThemeKey, 8, 55)]
+    [TestCase(DroidFoundryDungeonDefinition.ThemeKey, 8, 55)]
+    [TestCase(LostRuinsDungeonDefinition.ThemeKey, 10, 55)]
+    [TestCase(SithAcademyDungeonDefinition.ThemeKey, 8, 55)]
+    public void Plan_DefaultDensityAt16x16_LandsWithinEvidenceBand(string themeKey, int minAverage, int maxAverage)
+    {
+        var dungeons = BuildAllDungeons();
+        var tilesets = BuildAllTilesetProfiles();
+        var detail = dungeons[themeKey];
+        var tileset = tilesets[detail.TilesetProfileKey];
+
+        var seeds = new[] { 1, 7, 42, 1234, 98765, 555, 2026, 4321, 777, 1337 };
+        var counts = new List<int>();
+
+        foreach (var seed in seeds)
+        {
+            ResolvedLayout layout;
+            try
+            {
+                layout = ResolveLayout(detail, tileset, seed, size: 16);
+            }
+            catch (Exception)
+            {
+                continue; // a handful of (theme, seed) combinations can legitimately fail to resolve
+            }
+
+            counts.Add(DungeonDecorationPlanner.Plan(layout, detail, 100).Count);
+        }
+
+        counts.Should().NotBeEmpty($"{themeKey}: none of the candidate seeds resolved a layout");
+
+        var average = counts.Average();
+        average.Should().BeInRange(minAverage, maxAverage,
+            $"{themeKey}: averaged {average:0.0} decorations across {counts.Count} sixteen-tile-square seeds (counts: [{string.Join(",", counts)}])");
+    }
 }

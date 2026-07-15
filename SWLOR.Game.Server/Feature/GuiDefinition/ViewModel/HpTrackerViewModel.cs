@@ -21,6 +21,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // player (others don't see it), or OBJECT_INVALID. Cleared when it leaves range or the window closes.
         private uint _highlightedCreature = OBJECT_INVALID;
 
+        // The aura color currently applied to _highlightedCreature. Tracked so the glow can be recolored
+        // (green -> yellow -> red) as the creature's HP changes, without re-applying it every refresh.
+        private VisualEffect _highlightAura = VisualEffect.None;
+
         public string AddHpText
         {
             get => Get<string>();
@@ -92,9 +96,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 canManage.Add(HpTrackerWindow.CanManage(Player, creature));
             }
 
-            // Drop the highlight if its creature is no longer tracked in range (avoids a stuck glow).
-            if (_highlightedCreature != OBJECT_INVALID && !_creatures.Contains(_highlightedCreature))
-                ClearHighlight();
+            // Maintain the locate-glow: drop it if its creature left range (avoids a stuck glow); otherwise
+            // recolor it to match the creature's current HP (green -> yellow -> red) when the color changes.
+            if (_highlightedCreature != OBJECT_INVALID)
+            {
+                if (!_creatures.Contains(_highlightedCreature))
+                {
+                    ClearHighlight();
+                }
+                else
+                {
+                    var desired = AuraForCreature(_highlightedCreature);
+                    if (desired != _highlightAura && GetIsObjectValid(_highlightedCreature))
+                    {
+                        PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, _highlightedCreature, VisualEffect.None);
+                        PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, _highlightedCreature, desired);
+                        _highlightAura = desired;
+                    }
+                }
+            }
 
             Names = names;
             HpProgresses = progresses;
@@ -125,6 +145,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
+                if (HPTracker.Has(creature))
+                {
+                    SendMessageToPC(Player, ColorToken.Red($"{GetName(creature)} is already being tracked."));
+                    return;
+                }
+
                 HPTracker.Set(creature, hp, hp);
                 HpTrackerWindow.RefreshOpenWindows();
             });
@@ -148,8 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ClearHighlight();
-            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, creature, VisualEffect.Vfx_Dur_Aura_Green);
-            _highlightedCreature = creature;
+            ApplyHighlight(creature);
         };
 
         public Action OnClickIncrease() => () => AdjustAtRow(1);
@@ -185,6 +210,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return _creatures[index];
         }
 
+        /// <summary>
+        /// Applies this viewer's locate-glow to a creature, colored by its tracked HP (green -> yellow ->
+        /// red), and records it so <see cref="Rebuild"/> can recolor or clear it later.
+        /// </summary>
+        private void ApplyHighlight(uint creature)
+        {
+            var aura = AuraForCreature(creature);
+            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, creature, aura);
+            _highlightedCreature = creature;
+            _highlightAura = aura;
+        }
+
+        /// <summary>The aura matching a tracked creature's current HP: green (high) -> yellow -> red (low, incl. 0).</summary>
+        private static VisualEffect AuraForCreature(uint creature)
+        {
+            if (!HPTracker.Has(creature))
+                return VisualEffect.Vfx_Dur_Aura_Green;
+
+            var (current, max) = HPTracker.Get(creature);
+            var ratio = HPTracker.GetProgress(current, max);
+
+            if (ratio >= 0.66f)
+                return VisualEffect.Vfx_Dur_Aura_Green;
+            if (ratio >= 0.33f)
+                return VisualEffect.Vfx_Dur_Aura_Yellow;
+            return VisualEffect.Vfx_Dur_Aura_Red;
+        }
+
         /// <summary>Removes this viewer's locate-glow, if any. Passing VisualEffect.None clears it per-player.</summary>
         private void ClearHighlight()
         {
@@ -195,6 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, _highlightedCreature, VisualEffect.None);
 
             _highlightedCreature = OBJECT_INVALID;
+            _highlightAura = VisualEffect.None;
         }
 
         /// <summary>Clear the locate-glow so it never outlives the window.</summary>

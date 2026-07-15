@@ -1025,6 +1025,7 @@ public class TileCoverageCensusTests
             "GoodCastle", "EvilCastle", "Marsh", "Platform", "HighForest", "RuralTrees", "RuralWater",
         },
         ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
+        ["fcx01"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     /// <summary>
@@ -1098,6 +1099,11 @@ public class TileCoverageCensusTests
             "RuralWallOne", "RuralWallTwo",
         },
         ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
+        // fcx01: "pont" (Bridge-equivalent, gates the holes chasm) and "Routes" (flat road-marking
+        // lanes) have no wired body/port or DoorSlotCrossers vocabulary -- see
+        // BaseGameTilesetProfiles.FutCity's own doc comment. "murs" is NOT here: it's wired via
+        // DoorSlotCrossers("murs").
+        ["fcx01"] = new(StringComparer.OrdinalIgnoreCase) { "pont", "Routes" },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -1280,6 +1286,18 @@ public class TileCoverageCensusTests
         ("ttf02", "GROUP:StreamBridge02"),
         ("ttf02", "GROUP:Island_Tree"),
         ("ttf02", "GROUP:Island_Connector"),
+
+        // D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc comment for
+        // the full writeup. "platform1" (2x2, uniformly holes-cornered, one door-bearing member) has no
+        // wired path: the doorless pure-Solid shape "b_tower02"/"d_tower02" use classifies fine, but a
+        // door-bearing one does not (verified directly). "b_wall_door"/"d_wall_door" (1x1, pure-Open-
+        // cornered, a "murs" crosser edge on two opposite sides, one door) also fail: DoorSlotCrossers
+        // only ever credits ungrouped tiles (GroupIndex != -1 excludes this GROUP structurally), and no
+        // GROUP-level mechanism recognizes an Open-cornered piece carrying a non-canonical crosser plus
+        // a door.
+        ("fcx01", "GROUP:platform1"),
+        ("fcx01", "GROUP:b_wall_door"),
+        ("fcx01", "GROUP:d_wall_door"),
     };
 
     public static IEnumerable<string> PilotTilesetKeys => new[]
@@ -1287,6 +1305,7 @@ public class TileCoverageCensusTests
         "tdc01", "tde01", "tin01",
         "tbw01", "tdm01", "tdr01", "tic01", "tni02", "tid01", "tii01", "tni01", "tsw01", "twc03",
         "ttd01", "ttf01", "ttf02",
+        "fcx01",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -1311,6 +1330,7 @@ public class TileCoverageCensusTests
             "ttd01" => BaseGameTilesetProfiles.Desert,
             "ttf01" => BaseGameTilesetProfiles.Forest,
             "ttf02" => BaseGameTilesetProfiles.ForestFacelift,
+            "fcx01" => BaseGameTilesetProfiles.FutCity,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

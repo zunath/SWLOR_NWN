@@ -130,6 +130,73 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string ForestRoad = "forest_road";
         public const string ForestStoneBridge = "forest_stonebridge";
 
+        // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
+        // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
+        // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
+        // GENERAL Default=Floor="Cobble" (the same degenerate quirk as ttd01/ttf01/ttf02): only THREE
+        // terrains exist (Cobble, Cobble2, holes) and none is a classic "wall" terrain -- pathnode data
+        // confirms Cobble, Cobble2, AND holes all carry pathnode-A (fully walkable) uniform tiles, so
+        // there is no terrain-level solid/open split at all by pathnode. "holes" is the tileset's
+        // building-footprint FILLER terrain (every Tower/platform GROUP's non-perimeter members are
+        // uniformly "holes"-cornered -- verified directly against every one of the 38 groups), the same
+        // structural role Forest (Platform)'s "Pit" plays for its Platform district: not a literal wall,
+        // but the terrain that pairs with the walkable street to make a mixed-terrain GROUP classify.
+        // SolidTerrainOverride("holes") + PrimaryOpenTerrain("Cobble") is this tileset's build: every
+        // pure-Cobble-cornered GROUP (the eight Towers, b_tower, b_tower02, d_house02, b_rampe,
+        // b_escalier, b_trans, b_arbre/b_arbre2/b_herbe/b_fountain/b_water) becomes a plain OpenSetPiece/
+        // FeatureTile under Open=Cobble regardless of the Solid choice; the mixed Cobble/holes platform
+        // GROUPS (b_platform, d_platform2) depend on Solid=holes for classification, and so do the
+        // doorless pure-holes 1x1 utility GROUPS (b_tower02/d_tower02, verified reachable directly
+        // against the real TileCoverageCensusTests classifier).
+        //
+        // Two genuine, narrow gaps stay exempt (see TileCoverageCensusTests' fcx01 PilotExpectedExemptions):
+        // "platform1" (2x2, uniformly holes-cornered like b_tower02/d_tower02, but ONE member carries a
+        // door slot) does not classify -- verified directly: the doorless pure-Solid shape b_tower02/
+        // d_tower02 use has a wired path, a door-bearing one does not. "b_wall_door"/"d_wall_door" (1x1,
+        // pure-Open(Cobble/Cobble2)-cornered, a "murs" edge crosser on two opposite sides, one door) also
+        // fails: GroupIndex != -1 excludes it from CornerEdgeResolver's DoorSlotCrossers("murs") credit
+        // (that credit only ever reaches ungrouped tiles), and no GROUP-level mechanism recognizes an
+        // Open-cornered piece carrying a non-canonical crosser plus a door. Both were dropped from this
+        // profile's SetPiece(...) calls below (never classify, so wiring them would be dead
+        // configuration) rather than kept as "structurally valid but unexercised" -- unlike, say,
+        // Crypt's Fence doors, these do not structurally qualify for any shipped mechanism at all.
+        // Crossers: three total, all non-canonical -- "pont" (French "bridge"), "Routes" ("roads"), and
+        // "murs" ("walls"). None pairs as a Corridor/Doorway body+port set (verified directly: no crosser
+        // named "Corridor" or "Doorway" exists at all), so Tunnel vocabulary is NONE under this
+        // composition -- Complex's Tunnel mode downgrades to OpenLane, the same verdict as the ttd01/
+        // ttf01/ttf02 wave (locked in by TunnelVocabularyCheckTests.ExpectedUnsupported). "murs" is
+        // declared via DoorSlotCrossers("murs") -- it carries real door slots on the wall/road-gate
+        // GROUPS (b_wall_door/d_wall_door/b_road_door/d_road_door) and on ten flat, ungrouped,
+        // murs-edged ordinary tiles (ry TILE223-232), the same "district's own body-renamed door
+        // crosser" shape as Barrows' "door_corridor" precedent. "pont" (Bridge-equivalent, gates the
+        // holes chasm at TILE5-7/96-98/119-124) and "Routes" (flat road-marking lanes at TILE207-216,
+        // never door-bearing) have no wired body/port or DoorSlotCrossers vocabulary in this wave --
+        // see TileCoverageCensusTests' fcx01 PilotExpectedExemptions entries for the exact accounting.
+        // Two parallel palettes exist, prefixed by GROUP name (not by terrain alone): "b_"-prefixed
+        // GROUPS and the unprefixed Towers are Cobble-cornered (this base profile); "d_"-prefixed GROUPS
+        // are Cobble2-cornered (FutCityPlaza below) -- EXCEPT Tower04/Tower06 (Cobble2, wired on the
+        // Plaza variant despite the unprefixed name) and d_house02 (Cobble, wired here despite the "d_"
+        // name) -- verified directly per-group, name prefix is a loose convention, not a rule.
+        // Hand-built evidence: 9 real fcx01 areas ship in Star Wars LOR v2.mod (Smuggler's Moon/Nar
+        // Shaddaa content -- pw_ar_narpromena/narscorpd/narcatwalk, ns_industrialsec/ns_comrcial_ka,
+        // pw_ar_nsshipyard/velundr, randoncity_01/02), 3468 placed tiles total. TileLighting(0,0,0,0) is
+        // the REAL sampled value -- 2629/3468 (76%) of all placed tiles across all 9 areas use exactly
+        // (MainLight1,MainLight2,SrcLight1,SrcLight2)=(0,0,0,0), including 100% of pw_ar_narpromena's own
+        // 144 tiles (the confirmed-fcx01 reference area named for this onboarding); the two areas with
+        // other combos (pw_ar_velundr, randoncity_02) are hand-lit exceptions, not the tileset default.
+        // Real usage also corroborates 22 of the 38 groups wired below (d_platform2, Tower06, b_platform,
+        // Tower05, Tower02, Tower04, d_trans, b_road_door, Tower00, d_eau, d_road_door, b_fountain,
+        // Tower01, d_tower02, d_monum, d_tower, d_rampe, b_tower, b_arbre/b_arbre2/b_herbe, d_wall_door)
+        // -- the remaining groups are wired as structurally-valid-but-unproven content, matching this
+        // file's own "optional config is exactly as reachable as wired" convention elsewhere.
+        // ExitGroup: exactly four 1x1, flat, crosser-free GROUPS carry a genuine door (verified directly
+        // against the real per-tile [TILEnDOORm] sections, NOT the .set "Doors=" summary field, which is
+        // garbage on several of this tileset's tiles, e.g. b_tower/d_herbe/b_escalier/d_escalier all
+        // declare a nonzero Doors= count but have zero real door subsections) -- "Tower01"/"d_house02"
+        // (Cobble, wired here) and "d_tower"/"d_house01" (Cobble2, wired on FutCityPlaza).
+        public const string FutCity = "futcity";
+        public const string FutCityPlaza = "futcity_plaza";
+
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
         public Dictionary<string, DungeonTilesetProfile> BuildTilesetProfiles()
@@ -2398,6 +2465,72 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("UprightLog2")
                 .ExitGroup("Exit")
                 .ExitGroup("Tower");
+
+            // D20 Futuristic City SW (fcx01) -- Cobble ("b_"/unprefixed) district. See the FutCity/
+            // FutCityPlaza doc comment above for the full probe writeup (solid/open choice, crosser
+            // vocabulary, hand-built evidence, lighting sample).
+            _builder.Create(FutCity, "Futuristic City")
+                .Tileset("fcx01")
+                .SolidTerrainOverride("holes")
+                .PrimaryOpenTerrain("Cobble")
+                // PathNodeOpeningWidthAudit (fresh against fcx01's real pathnode data, Solid=holes/
+                // Open=Cobble) computes 2, not the default 1 -- locked in by OnboardedTilesetPipelineTests.
+                // MinimumOpeningWidth_MatchesFreshPathNodeAudit.
+                .MinimumOpeningWidth(2)
+                .DoorSlotCrossers("murs")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .FeatureTile("b_arbre")
+                .FeatureTile("b_arbre2")
+                .FeatureTile("b_herbe")
+                .FeatureTile("b_fountain")
+                .FeatureTile("b_water")
+                .SetPiece("Tower00")
+                .SetPiece("Tower01")
+                .SetPiece("Tower02")
+                .SetPiece("Tower03")
+                .SetPiece("Tower05")
+                .SetPiece("Tower07")
+                .SetPiece("b_tower", 1)
+                .SetPiece("b_tower02", 1)
+                .SetPiece("d_house02")
+                .SetPiece("b_platform")
+                .SetPiece("b_rampe")
+                .SetPiece("b_escalier", 1)
+                .SetPiece("b_trans", 1)
+                .ExitGroup("Tower01")
+                .ExitGroup("d_house02");
+
+            // D20 Futuristic City SW (fcx01) -- Cobble2 ("d_"-prefixed) district, a PaletteVariant
+            // profile recomposing the SAME fcx01 hak data the base FutCity profile above uses (identical
+            // solid "holes", crosser vocabulary, and hand-built evidence -- see FutCity's own doc
+            // comment). Tower04/Tower06 are wired here (not on the base profile) despite the unprefixed
+            // name -- verified directly, both are uniformly Cobble2-cornered.
+            _builder.Create(FutCityPlaza, "Futuristic City (Plaza)")
+                .Tileset("fcx01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("holes")
+                .PrimaryOpenTerrain("Cobble2")
+                .DoorSlotCrossers("murs")
+                .FeatureTile("d_herbe")
+                .FeatureTile("d_eau")
+                .SetPiece("Tower04")
+                .SetPiece("Tower06")
+                .SetPiece("d_build")
+                .SetPiece("d_tower", 1)
+                .SetPiece("d_tower02", 1)
+                .SetPiece("d_monum")
+                .SetPiece("d_platform2")
+                .SetPiece("d_house01")
+                .SetPiece("d_build02")
+                .SetPiece("d_temple")
+                .SetPiece("d_rampe")
+                .SetPiece("d_escalier", 1)
+                .SetPiece("d_trans", 1)
+                .ExitGroup("d_tower")
+                .ExitGroup("d_house01");
 
             return _builder.Build();
         }

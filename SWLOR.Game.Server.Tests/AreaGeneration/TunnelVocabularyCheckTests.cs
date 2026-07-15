@@ -149,6 +149,10 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.ForestRuralStream,
         BaseGameTilesetProfiles.ForestRoad,
         BaseGameTilesetProfiles.ForestStoneBridge,
+        // D20 Futuristic City SW (fcx01): only "pont"/"Routes"/"murs" crossers exist, none paired as a
+        // Corridor/Doorway body+port set -- see BaseGameTilesetProfiles.FutCity's own doc comment.
+        BaseGameTilesetProfiles.FutCity,
+        BaseGameTilesetProfiles.FutCityPlaza,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

@@ -46,13 +46,22 @@ internal static class ErfPacker
         if (files.Count == 0)
             throw new InvalidOperationException($"no matching staged resources to pack into '{outputPath}'.");
 
-        var entries = string.Join(" ", files.Select(f => $"\"{f}\""));
-        Run(erfTool, $"-e {erfType} -c -f \"{outputPath}\" {entries}");
+        // Pass bare filenames (not the full staged temp-directory paths) and run nwn_erf with its
+        // working directory set to the stage folder. The review module's area count has grown across
+        // every onboarding wave (base-game pilot/Wave-2/Wave-3 exterior/Wave-4 fcx01, plus one showcase
+        // per PaletteVariant profile); by this wave the full-path entry list crossed the ~32K-character
+        // Windows command-line limit and Process.Start began failing with Win32 error 206
+        // ("filename or extension is too long") even though every prior wave packed fine -- the temp
+        // stage directory's own absolute path was repeated once per file, dwarfing the actual filenames.
+        // Relative filenames keep this well under the limit regardless of how many more tilesets/
+        // showcases get added later.
+        var entries = string.Join(" ", files.Select(f => $"\"{Path.GetFileName(f)}\""));
+        Run(erfTool, $"-e {erfType} -c -f \"{outputPath}\" {entries}", workingDirectory: stage);
     }
 
     /// <summary>Shared external-tool runner for both the erf packer above and Program.cs's
     /// JSON-to-GFF conversion step (nwn_gff.exe) -- one process-launch helper for the whole tool.</summary>
-    public static void Run(string exe, string arguments)
+    public static void Run(string exe, string arguments, string workingDirectory = null)
     {
         var psi = new ProcessStartInfo(exe, arguments)
         {
@@ -60,6 +69,8 @@ internal static class ErfPacker
             RedirectStandardOutput = true,
             UseShellExecute = false
         };
+        if (workingDirectory != null)
+            psi.WorkingDirectory = workingDirectory;
         using var proc = Process.Start(psi);
         var stderr = proc.StandardError.ReadToEnd();
         proc.WaitForExit();

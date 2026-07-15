@@ -107,6 +107,11 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.ForestRuralStream,
         BaseGameTilesetProfiles.ForestRoad,
         BaseGameTilesetProfiles.ForestStoneBridge,
+        // Wave-4: D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc
+        // comment. Same "no Tunnel vocabulary through the composed solid" shape as the exterior wave
+        // above, verified via TunnelVocabularyCheckTests' fcx01 entries.
+        BaseGameTilesetProfiles.FutCity,
+        BaseGameTilesetProfiles.FutCityPlaza,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

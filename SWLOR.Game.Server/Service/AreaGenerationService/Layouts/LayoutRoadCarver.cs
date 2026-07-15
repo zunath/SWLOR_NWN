@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 var a = anchors[i];
                 var b = anchors[j];
 
-                if (!TryBuildPath(corners, width, height, open, a, b, out var path)) continue;
+                if (!TryBuildPath(corners, layout, width, height, open, a, b, out var path)) continue;
                 if (!IsPathClear(layout, crossers, road, path)) continue;
 
                 CommitPath(crossers, road, path);
@@ -103,46 +103,71 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         }
 
         /// <summary>
-        /// Builds a right-angle (Manhattan) chain of cells from <paramref name="a"/> to
-        /// <paramref name="b"/>: a horizontal run at a.Y from a.X to b.X, then a vertical run at b.X
-        /// from a.Y to b.Y (degenerates to a single straight run when a.X == b.X or a.Y == b.Y).
-        /// Fails when either anchor sits outside the corner-cell grid.
+        /// Neighbor step order for the BFS below: Right, Left, Top, Bottom -- fixed so the search is
+        /// fully deterministic given the same grid state and anchor pair (the only randomness in this
+        /// pass is CarveRoads' anchor-pair draw).
+        /// </summary>
+        private static readonly (int Dx, int Dy)[] StepOrder = { (1, 0), (-1, 0), (0, 1), (0, -1) };
+
+        /// <summary>
+        /// Builds a shortest connected chain of cells from <paramref name="a"/> to <paramref name="b"/>
+        /// via breadth-first search over cells that are in-bounds, fully open (a road never repaints
+        /// terrain -- see the class doc comment), and unpinned -- so a lane threads BETWEEN stamped
+        /// building footprints the way hand-built fcx01 streets do, instead of demanding one clear
+        /// right-angle Manhattan run. (The original Manhattan-only construction starved once
+        /// SetPieceRoomCornerFloor-sized rooms began hosting stamped towers: measured on fcx01/Complex
+        /// at size 20 with buildings stamping, road-edge share fell to 0.020 against the hand-built
+        /// fcx01 reference's 0.102, because most straight anchor-pair runs crossed a pinned footprint
+        /// and failed validation.) BFS with the fixed <see cref="StepOrder"/> is deterministic for a
+        /// given grid + anchor pair, and a shortest path never revisits a cell, so the committed chain
+        /// is simple -- each cell carries at most 2 of this lane's own edges; junction shapes still
+        /// only arise where two DIFFERENT lanes legitimately meet, exactly as before. Fails when either
+        /// anchor is out of bounds, not fully open/unpinned, or no connected open route exists.
         /// </summary>
         private static bool TryBuildPath(
-            CornerTerrainGrid corners, int width, int height, string open,
+            CornerTerrainGrid corners, MacroLayout layout, int width, int height, string open,
             (int X, int Y) a, (int X, int Y) b, out List<(int X, int Y)> path)
         {
             path = null;
+            if (a == b) return false;
             if (!InBounds(a, width, height) || !InBounds(b, width, height)) return false;
 
-            var cells = new List<(int X, int Y)> { a };
+            bool IsTraversable((int X, int Y) cell) =>
+                InBounds(cell, width, height) &&
+                !layout.PinnedTiles.ContainsKey(cell) &&
+                LayoutCornerUtils.IsTileFullyOpen(corners, cell.X, cell.Y, open);
 
-            var stepX = b.X > a.X ? 1 : -1;
-            for (var x = a.X + stepX; x != b.X + stepX; x += stepX)
-                cells.Add((x, a.Y));
+            if (!IsTraversable(a) || !IsTraversable(b)) return false;
 
-            var stepY = b.Y > a.Y ? 1 : -1;
-            for (var y = a.Y + stepY; y != b.Y + stepY; y += stepY)
-                cells.Add((b.X, y));
+            var cameFrom = new Dictionary<(int X, int Y), (int X, int Y)> { [a] = a };
+            var queue = new Queue<(int X, int Y)>();
+            queue.Enqueue(a);
 
-            // De-duplicate the corner cell shared by both runs when a.X == b.X or a.Y == b.Y (a
-            // straight-line path never enters the second loop / re-adds the first cell).
-            var deduped = new List<(int X, int Y)>();
-            foreach (var cell in cells)
+            while (queue.Count > 0)
             {
-                if (deduped.Count == 0 || deduped[^1] != cell)
-                    deduped.Add(cell);
+                var current = queue.Dequeue();
+                if (current == b) break;
+
+                foreach (var (dx, dy) in StepOrder)
+                {
+                    var next = (X: current.X + dx, Y: current.Y + dy);
+                    if (cameFrom.ContainsKey(next) || !IsTraversable(next)) continue;
+                    cameFrom[next] = current;
+                    queue.Enqueue(next);
+                }
             }
 
-            if (deduped.Count < 2) return false; // a == b, no lane to carve
+            if (!cameFrom.ContainsKey(b)) return false;
 
-            foreach (var cell in deduped)
-            {
-                if (!InBounds(cell, width, height)) return false;
-                if (!LayoutCornerUtils.IsTileFullyOpen(corners, cell.X, cell.Y, open)) return false;
-            }
+            var chain = new List<(int X, int Y)>();
+            for (var cell = b; cell != a; cell = cameFrom[cell])
+                chain.Add(cell);
+            chain.Add(a);
+            chain.Reverse();
 
-            path = deduped;
+            if (chain.Count < 2) return false;
+
+            path = chain;
             return true;
         }
 

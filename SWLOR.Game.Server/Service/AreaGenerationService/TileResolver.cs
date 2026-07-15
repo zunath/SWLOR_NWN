@@ -261,7 +261,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 Rooms = layout.Rooms,
                 Transitions = layout.Transitions,
                 OpenTerrain = layout.OpenTerrain,
-                SecondaryOpenTerrain = layout.SecondaryOpenTerrain
+                SecondaryOpenTerrain = layout.SecondaryOpenTerrain,
+                Crossers = layout.Crossers
             };
             failureReason = null;
             return true;

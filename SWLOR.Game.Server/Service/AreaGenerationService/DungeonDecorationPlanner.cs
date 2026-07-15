@@ -234,6 +234,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 .ToDictionary(g => g.Key, g => g.ToList());
 
             var vignettes = tileset?.Vignettes ?? new List<DungeonVignette>();
+            var roadCrosser = tileset?.RoadCrosser ?? string.Empty;
 
             var excluded = BuildExclusionSet(layout);
 
@@ -281,7 +282,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (NearestWallDirection(tile, tileSet) == null)
                         continue;
 
-                    if (TryResolveContext(tile, isCorridorLike, layout, byContext, out _, out _))
+                    if (TryResolveContext(tile, isCorridorLike, layout, roadCrosser, byContext, out _, out _))
                     {
                         wallEligibleCount++;
                         roomHasWallTile = true;
@@ -385,7 +386,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     }
                 }
 
-                PlaceWallRuns(plan, room, tileSet, isCorridorLike, layout, byContext, excluded,
+                PlaceWallRuns(plan, room, tileSet, isCorridorLike, layout, roadCrosser, byContext, excluded,
                     consumedTiles, centerpieceAnchor, wallProbability, rng, motifCache);
             }
 
@@ -473,7 +474,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         private static void PlaceWallRuns(
             List<PlannedDecoration> plan, LayoutRoom room, HashSet<(int X, int Y)> tileSet, bool isCorridorLike,
-            ResolvedLayout layout, Dictionary<DecorationContext, List<DungeonDecorationEntry>> byContext,
+            ResolvedLayout layout, string roadCrosser, Dictionary<DecorationContext, List<DungeonDecorationEntry>> byContext,
             HashSet<(int X, int Y)> excluded, HashSet<(int X, int Y)> consumedTiles,
             (int X, int Y)? centerpieceAnchor, double wallProbability, System.Random rng,
             Dictionary<(int RoomId, DecorationContext Context), List<string>> motifCache)
@@ -495,7 +496,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (wallDir == null)
                     continue;
 
-                if (!TryResolveContext(tile, isCorridorLike, layout, byContext, out var context, out _))
+                if (!TryResolveContext(tile, isCorridorLike, layout, roadCrosser, byContext, out var context, out _))
                     continue;
 
                 var direction = QuantizeDirection(wallDir.Value.Dx, wallDir.Value.Dy);
@@ -757,19 +758,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
         /// <summary>
         /// Resolves the placement context a wall-eligible tile falls into (CorridorSide for
-        /// corridor-like rooms, else WallAdjacent, upgraded to DoorwayFlank near a transition) and the
-        /// curated palette entries for that bucket, falling back to WallAdjacent when a family never
-        /// curated the more specific bucket so a sparse palette still decorates rather than going
-        /// silent. Returns false (no eligible entries at all) when even the WallAdjacent fallback is
-        /// empty. Shared by both the pass-1 eligibility count and the wall-run assembly so they can
-        /// never resolve a tile's context/entries differently from each other.
+        /// corridor-like rooms OR a tile within one cell of a carved road edge -- see
+        /// <see cref="IsRoadAdjacent"/> -- else WallAdjacent, upgraded to DoorwayFlank near a
+        /// transition) and the curated palette entries for that bucket, falling back to WallAdjacent
+        /// when a family never curated the more specific bucket so a sparse palette still decorates
+        /// rather than going silent. Returns false (no eligible entries at all) when even the
+        /// WallAdjacent fallback is empty. Shared by both the pass-1 eligibility count and the wall-run
+        /// assembly so they can never resolve a tile's context/entries differently from each other.
         /// </summary>
         private static bool TryResolveContext(
-            (int X, int Y) tile, bool isCorridorLike, ResolvedLayout layout,
+            (int X, int Y) tile, bool isCorridorLike, ResolvedLayout layout, string roadCrosser,
             Dictionary<DecorationContext, List<DungeonDecorationEntry>> byContext,
             out DecorationContext context, out List<DungeonDecorationEntry> entries)
         {
-            context = isCorridorLike ? DecorationContext.CorridorSide : DecorationContext.WallAdjacent;
+            context = isCorridorLike || IsRoadAdjacent(tile, layout, roadCrosser)
+                ? DecorationContext.CorridorSide
+                : DecorationContext.WallAdjacent;
             if (IsNearDoorway(tile, layout))
                 context = DecorationContext.DoorwayFlank;
 
@@ -905,6 +909,49 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (Chebyshev(tile, transition.DoorwayCell) <= 1)
                         return true;
                 }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// True when <paramref name="tile"/> itself, or any of its 8 Chebyshev-1 neighbor cells, carries
+        /// <paramref name="roadCrosser"/> on at least one edge (see LayoutRoadCarver, which writes the
+        /// composed tileset's RoadCrosser -- e.g. fcx01's "Routes" -- into the layout's shared
+        /// EdgeCrosserGrid). Matches the hand-built-vs-generated decoration-to-road adjacency
+        /// methodology used by the tile-composition statistics harness (within-1-tile of a road edge),
+        /// so a room tile that reads visually as "along the street" gets routed to the CorridorSide
+        /// decoration bucket (see TryResolveContext) regardless of the owning room's own shape.
+        /// Returns false immediately when the tileset never declared a RoadCrosser (roadCrosser empty)
+        /// or the layout carries no crosser grid (defensive; MacroLayout always allocates one, but a
+        /// hand-crafted ResolvedLayout in a unit test may not).
+        /// </summary>
+        internal static bool IsRoadAdjacent((int X, int Y) tile, ResolvedLayout layout, string roadCrosser)
+        {
+            if (string.IsNullOrEmpty(roadCrosser) || layout?.Crossers == null)
+                return false;
+
+            var crossers = layout.Crossers;
+
+            bool IsRoadTile(int x, int y)
+            {
+                if (x < 0 || y < 0 || x >= crossers.Width || y >= crossers.Height)
+                    return false;
+
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    if (string.Equals(crossers.GetEdge(x, y, slot), roadCrosser, System.StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+
+                return false;
+            }
+
+            for (var dx = -1; dx <= 1; dx++)
+            for (var dy = -1; dy <= 1; dy++)
+            {
+                if (IsRoadTile(tile.X + dx, tile.Y + dy))
+                    return true;
             }
 
             return false;

@@ -138,6 +138,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int MinimumOpeningWidth { get; set; } = 1;
 
         /// <summary>
+        /// Room-size floor (in corners) this tileset's configured multi-tile OpenSetPiece groups need
+        /// to ever stamp: LayoutGroupStamper.IsOpenSetPieceSiteValid requires a group's footprint PLUS
+        /// a 1-cell margin ring PLUS at least one spare center-relocation tile all inside ONE room, so
+        /// an NxM-tile group needs a room strictly larger than (N+2)x(M+2) tiles -- corner size 6+ for
+        /// a 2x2 group, 7+ for a 3x3 (see OpenSetPiecePlacementRateTests' documented Complex room-size
+        /// ceiling, which this knob is the anticipated "room-size-aware layout knob" fix for).
+        /// Compositions raise the layout profile's MaxRoomCornerSize to at least this, mirroring
+        /// CorridorWidth/MinimumOpeningWidth's own "layout expresses intent, tileset declares physical
+        /// need" shape. 0 (default) = no floor; the layout profile's own room sizes stand unchanged.
+        /// Only meaningful alongside configured SetPieces; declare it on tilesets whose visual identity
+        /// depends on stamped structures standing in open districts (e.g. fcx01's city towers --
+        /// hand-built fcx01 areas' group-tile share is ~15% of the area, all of it multi-tile
+        /// building/platform footprints that need plaza-sized rooms to exist at all).
+        /// </summary>
+        public int SetPieceRoomCornerFloor { get; set; }
+
+        /// <summary>
         /// Edge-crosser name this tileset's road/route-marking tile family carves (e.g. fcx01's
         /// "Routes") -- see LayoutRoadCarver/RoadVocabularyCheck. Unlike ChannelTerrain/AccentTerrain,
         /// a road never repaints corner terrain: every road cell stays this composition's own
@@ -466,7 +483,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // tileset caps it to verified support" shape as every other declared capability here.
             parameters.RoadCrosser = Tileset.RoadCrosser ?? string.Empty;
             if (parameters.RoadCrosser.Length == 0)
+            {
                 parameters.RoadLanes = 0;
+            }
+            else
+            {
+                // A road lane can only occupy FULLY-open tiles (LayoutRoadCarver never repaints
+                // corners), and a 1-wide open lane has no fully-open tile at all -- its cells all
+                // straddle the lane's own edges -- so on a road-declaring composition, 1-wide
+                // corridors would confine every street to room interiors (measured on
+                // fcx01/futcity_plaza at size 20: road-edge share 0.016 at width 1 vs ~0.10 at
+                // width 2, against the hand-built fcx01 reference's 0.102). 2-wide lanes are also
+                // what hand-built fcx01 streets are. Independent of MinimumOpeningWidth (a pathnode
+                // WALKABILITY floor -- Cobble2's partially-open tiles genuinely walk fine at width 1,
+                // see PathNodeOpeningWidthAudit); this is road GEOMETRY.
+                parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, 2);
+            }
             parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, Tileset.MinimumOpeningWidth);
             // Tunnel body/port crosser vocabulary: a tileset profile may declare an alternate crosser
             // family (e.g. tdc01's GreyCorridor body paired with the canonical Doorway port) that is
@@ -492,6 +524,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // profile is built, only read by the resolver/stamper.
             parameters.FeatureTiles = Tileset.FeatureTiles;
             parameters.SetPieces = Tileset.SetPieces;
+            // Multi-tile OpenSetPiece stamping needs rooms bigger than the group footprint + margin +
+            // one spare tile (see DungeonTilesetProfile.SetPieceRoomCornerFloor's doc comment) -- floor
+            // the layout's room-size ceiling to the tileset's declared physical need, mirroring the
+            // CorridorWidth/MinimumOpeningWidth floor above and the PoolRegions room-size floor below.
+            // MinRoomCornerSize is floored 2 corners lower (never above the ceiling): if the layout
+            // kept rolling its own small-room minimum, most rooms would still be too small to host any
+            // stamp -- measured on fcx01/Complex at size 20, Min left at 3 placed a 2x2 group on only
+            // 17/30 seeds (mean 2.4 group tiles/area) vs the same composition with Min floored to 5.
+            // LayoutParameterConstraints.ClampToValid still applies its own empirically-measured
+            // per-size ceiling afterward (e.g. corner 6 at size 20), so this floor never pushes a
+            // composition past the measured-safe room size for its area dimensions.
+            // Gated on configured SetPieces so a declared floor with nothing to stamp stays inert.
+            if (Tileset.SetPieceRoomCornerFloor > 0 && Tileset.SetPieces.Count > 0)
+            {
+                parameters.MaxRoomCornerSize = Math.Max(parameters.MaxRoomCornerSize, Tileset.SetPieceRoomCornerFloor);
+                parameters.MinRoomCornerSize = Math.Max(parameters.MinRoomCornerSize, Tileset.SetPieceRoomCornerFloor - 2);
+                parameters.MinRoomCornerSize = Math.Min(parameters.MinRoomCornerSize, parameters.MaxRoomCornerSize);
+            }
             parameters.ExitGroups = Tileset.ExitGroups;
             parameters.DoorSlotCrossers = Tileset.DoorSlotCrossers;
             parameters.ExcludedTiles = Tileset.ExcludedTiles;
@@ -791,6 +841,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder MinimumOpeningWidth(int width)
         {
             _active.MinimumOpeningWidth = width;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the room-size floor (in corners) this tileset's multi-tile OpenSetPiece groups
+        /// need to ever stamp -- see DungeonTilesetProfile.SetPieceRoomCornerFloor. Compositions raise
+        /// the layout profile's MaxRoomCornerSize to at least this whenever the profile also configures
+        /// SetPieces.
+        /// </summary>
+        public DungeonTilesetProfileBuilder SetPieceRoomCornerFloor(int cornerSize)
+        {
+            _active.SetPieceRoomCornerFloor = cornerSize;
             return this;
         }
 

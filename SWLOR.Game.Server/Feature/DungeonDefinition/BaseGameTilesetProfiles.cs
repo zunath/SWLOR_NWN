@@ -2667,6 +2667,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // Open=Cobble) computes 2, not the default 1 -- locked in by OnboardedTilesetPipelineTests.
                 // MinimumOpeningWidth_MatchesFreshPathNodeAudit.
                 .MinimumOpeningWidth(2)
+                // Tower00 (2x2) needs rooms of corner size 6+; Tower02/Tower03 (3x3) and Tower05 (4x3)
+                // need 7+ (footprint + 1-cell margin ring + a spare center-relocation tile all inside
+                // ONE room -- see DungeonTilesetProfile.SetPieceRoomCornerFloor). Without this floor,
+                // Complex-paired city compositions physically cannot stamp ANY multi-tile tower
+                // (measured 0/460 seeds at sizes 16-24: Complex's MaxRoomCornerSize=5 caps rooms at
+                // 4x4 tiles), leaving generated cities at a 0.0 group-tile share against the hand-built
+                // fcx01 reference's 0.152 -- the largest tile-composition divergence measured. 7 is the
+                // machinery's own vanilla default room ceiling (MacroLayoutParameters.MaxRoomCornerSize),
+                // so this is well-exercised territory; Tower07 (6x6) and b_platform (5x6) stay
+                // physically out of reach regardless (8x8 extended footprints exceed any room a
+                // 16-24-tile area realistically carves) -- kept configured for oversized future areas.
+                .SetPieceRoomCornerFloor(7)
                 .DoorSlotCrossers("murs")
                 // RoadVocabularyCheck.SupportsRoads(fcx01, "Cobble", "Routes") verified true: TILE207
                 // (stub), TILE210 (straight), TILE207 (turn; same physical tile, TileResolver's own
@@ -2682,7 +2694,15 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FeatureTile("b_herbe")
                 .FeatureTile("b_fountain")
                 .FeatureTile("b_water")
-                .SetPiece("Tower00")
+                // Tower00 is the only fcx01 Cobble-district group that fits the rooms a size-20-24
+                // city area actually carves (2x2; the 3x3+ towers need corner-size-7 rooms, which
+                // LayoutParameterConstraints.RoomSizeBounds only allows at size 21+ -- see
+                // SetPieceRoomCornerFloor above). Budget 3 raises the realized group-tile share toward
+                // the hand-built 0.152 reference: measured at size 20, budget 1 placed 4 group tiles
+                // on 9/10 seeds (share ~0.01); the whole-area ceiling is site-limited (each stamp
+                // consumes a 4x4-tile rectangle + margin inside one corner-size-6 room), so the budget
+                // is set above the observed per-area site count rather than exactly at it.
+                .SetPiece("Tower00", 3)
                 .SetPiece("Tower01")
                 .SetPiece("Tower02")
                 .SetPiece("Tower03")
@@ -2704,6 +2724,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // the fix for the reported "Alien Ruin content dressed with Alien Ruin's own palette
             // regardless of the Futuristic City tileset it was actually generated on" bug. Strongest
             // structural pairing: a holo kiosk lit by a nearby streetlight -> vignette.
+            //
+            // CorridorSide additionally doubles as this family's "street-side" bucket: LayoutRoadCarver
+            // (post-road-carving pass) makes DungeonDecorationPlanner route any wall-eligible tile
+            // within one cell of a carved Routes lane into CorridorSide regardless of the owning room's
+            // shape (see DungeonDecorationPlanner.IsRoadAdjacent), matching pw_ar_narpromena's own
+            // pattern of streetlights and holo kiosks strung along its streets rather than confined to
+            // corridor-shaped rooms or doorways. _mdrn_pl_lights3/swd_streel01 (streetlight-class) and
+            // swd2_kiosk004 (kiosk-class) are additionally curated here alongside their existing
+            // WallAdjacent/DoorwayFlank entries so road-anchored placements draw real street furniture,
+            // not just the crosswalk decal.
             _builder
                 .Decoration("swd_build007", 3, DecorationContext.WallAdjacent)
                 .Decoration("swd2_fence004", 2, DecorationContext.WallAdjacent)
@@ -2716,6 +2746,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("swd2_kiosk004", 2, DecorationContext.DoorwayFlank)
                 .Decoration("swd_streel01", 2, DecorationContext.DoorwayFlank)
                 .Decoration("_mdrn_pl_crswlk", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_lights3", 3, DecorationContext.CorridorSide)
+                .Decoration("swd_streel01", 2, DecorationContext.CorridorSide)
+                .Decoration("swd2_kiosk004", 2, DecorationContext.CorridorSide)
                 .Vignette("PromenadeKioskLight", 3)
                 .VignetteMember("swd2_kiosk004", 0f, 0f)
                 .VignetteMember("_mdrn_pl_lights3", 0.7f, 0.5f);
@@ -2732,6 +2765,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .SolidTerrainOverride("holes")
                 .PrimaryOpenTerrain("Cobble2")
+                // Same room-size floor as the base FutCity profile: Tower04/d_build02 (2x2) need
+                // corner size 6+, Tower06 (3x4)/d_build (4x3)/d_temple (2x3) need 7 -- see FutCity's
+                // own SetPieceRoomCornerFloor comment above.
+                .SetPieceRoomCornerFloor(7)
                 .DoorSlotCrossers("murs")
                 // Same "Routes" crosser as the base FutCity profile, resolving against the Cobble2-
                 // cornered TILE212-216 physical variants instead -- see FutCity's own RoadCrosser
@@ -2739,7 +2776,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .RoadCrosser("Routes")
                 .FeatureTile("d_herbe")
                 .FeatureTile("d_eau")
-                .SetPiece("Tower04")
+                // Tower04/d_build02 (2x2) are the Cobble2 district's only groups that fit size-20-24
+                // rooms -- same site-limited ceiling reasoning as FutCity's Tower00 budget above.
+                .SetPiece("Tower04", 2)
                 .SetPiece("Tower06")
                 .SetPiece("d_build")
                 .SetPiece("d_tower", 1)
@@ -2747,7 +2786,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("d_monum")
                 .SetPiece("d_platform2")
                 .SetPiece("d_house01")
-                .SetPiece("d_build02")
+                .SetPiece("d_build02", 2)
                 .SetPiece("d_temple")
                 .SetPiece("d_rampe")
                 .SetPiece("d_escalier", 1)

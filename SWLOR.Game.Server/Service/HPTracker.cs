@@ -39,9 +39,11 @@ namespace SWLOR.Game.Server.Service
             if (!_trackers.TryGetValue(creature, out var state))
                 return;
 
-            state.Current += delta;
-            if (state.Current < 0) state.Current = 0;
-            if (state.Current > state.Max) state.Current = state.Max;
+            // Widen to long so a near-int.MaxValue Current + delta can't overflow before the clamp.
+            var next = (long)state.Current + delta;
+            if (next < 0) next = 0;
+            if (next > state.Max) next = state.Max;
+            state.Current = (int)next;
         }
 
         /// <summary>Removes a tracker. Returns true if one was present.</summary>

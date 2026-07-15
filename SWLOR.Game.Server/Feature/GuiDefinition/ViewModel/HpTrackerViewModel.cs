@@ -216,6 +216,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// </summary>
         private void ApplyHighlight(uint creature)
         {
+            // The clicked creature could have been destroyed between the last Rebuild() and this click;
+            // guard the VFX call just as ClearHighlight() does. Leaving _highlightedCreature at
+            // OBJECT_INVALID (set by the preceding ClearHighlight() in OnClickName) keeps the state clean.
+            if (!GetIsObjectValid(creature))
+                return;
+
             var aura = AuraForCreature(creature);
             PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, creature, aura);
             _highlightedCreature = creature;

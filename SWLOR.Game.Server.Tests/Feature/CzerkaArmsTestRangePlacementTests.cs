@@ -41,10 +41,11 @@ public class CzerkaArmsTestRangePlacementTests
         using var arena = LoadModuleJson("git", ArenaArea);
         AssertEncounters(arena, Masters);
 
-        // The wardens (mini-bosses) must NOT be in the arena.
+        // The wardens (mini-bosses) must NOT be in the arena. Identify by Tag: a resref over
+        // NWN's 16-char limit (e.g. rainsteel_ms_call) is truncated on toolset save; the Tag is not.
         var arenaActivators = EnumerateObjects(arena.RootElement)
             .Where(e => GetString(e, "OnUsed") == "quest_enc")
-            .Select(e => GetString(e, "TemplateResRef"))
+            .Select(e => GetString(e, "Tag"))
             .ToArray();
         arenaActivators.Should().BeEquivalentTo(Masters.Select(m => m.Resref));
     }
@@ -63,8 +64,10 @@ public class CzerkaArmsTestRangePlacementTests
 
         foreach (var (resref, quest, enemy, waypoint) in expected)
         {
+            // Match by Tag, not TemplateResRef: resrefs over NWN's 16-char limit are truncated
+            // on toolset save, but the Tag is preserved and is what gameplay uses.
             var activator = EnumerateObjects(area.RootElement)
-                .Single(e => GetString(e, "TemplateResRef") == resref);
+                .Single(e => GetString(e, "Tag") == resref);
 
             GetString(activator, "OnUsed").Should().Be("quest_enc");
             GetLocalString(activator, "QUEST_ID").Should().Be(quest);

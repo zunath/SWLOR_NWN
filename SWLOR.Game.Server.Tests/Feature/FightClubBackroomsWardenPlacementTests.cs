@@ -36,8 +36,11 @@ public class FightClubBackroomsWardenPlacementTests
 
         foreach (var (resref, quest, enemy, waypoint) in Wardens)
         {
+            // Match by Tag, not TemplateResRef: a resref over NWN's 16-char limit
+            // (e.g. tempbloom_wd_call) is truncated when the toolset saves the area, but
+            // the Tag is preserved and is the identifier gameplay actually uses.
             var activator = EnumerateObjects(dungeon.RootElement)
-                .Single(e => GetString(e, "TemplateResRef") == resref);
+                .Single(e => GetString(e, "Tag") == resref);
 
             GetString(activator, "OnUsed").Should().Be("quest_enc");
             GetLocalString(activator, "QUEST_ID").Should().Be(quest);

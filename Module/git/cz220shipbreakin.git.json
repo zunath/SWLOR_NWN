@@ -8874,7 +8874,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Enter_Veles_StarportRoof"
+                "value": "CZ220_MAINT_EXIT_BREAKER"
               }
             },
             {
@@ -8975,15 +8975,15 @@
         },
         "X": {
           "type": "float",
-          "value": 1.225813388824463
+          "value": 2.038729906082153
         },
         "Y": {
           "type": "float",
-          "value": 80.15342712402344
+          "value": 80.19841003417969
         },
         "Z": {
           "type": "float",
-          "value": -0.3832626342773438
+          "value": -0.4964523315429688
         }
       },
       {
@@ -19804,7 +19804,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Shipbreak_Exit"
+          "value": "CZ220_MAINT_ENTRANCE_BREAKER"
         },
         "TemplateResRef": {
           "type": "resref",

@@ -320,13 +320,6 @@
           "type": "cexostring",
           "value": "Splatter Pack v1.0 by Knat\r\n"
         }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
       }
     ]
   },

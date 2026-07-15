@@ -3100,6 +3100,13 @@
           "type": "resref",
           "value": "ka_ar_czweaparen"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_sc_smarena"
+        }
       }
     ]
   },

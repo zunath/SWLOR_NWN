@@ -205,6 +205,13 @@ public class DungeonDefinitionTests
     /// is not blank. Unlike exit/treasure placeables, decorations are NOT required to be
     /// Useable/non-Static (most hand-built decorative placeables are Static — see decoration_evidence
     /// mining notes), so this only checks visibility, not interactivity flags.
+    ///
+    /// Also validates every TILESET PROFILE's own bulk decoration palette and vignette members (see
+    /// DungeonTilesetProfile.Decorations/Vignettes) the same way — the bulk of a generated area's
+    /// dressing lives there now, not on the theme, so this is where most resrefs actually need
+    /// checking. Palette-variant profiles are skipped: they either declare nothing (inheriting a base
+    /// profile's already-validated palette via DungeonTilesetPaletteInheritance) or declare their own
+    /// entries, in which case they get checked directly like any other profile.
     /// </summary>
     [Test]
     public void AllDungeonDefinitions_DecorationsExistAndAreVisible()
@@ -212,6 +219,28 @@ public class DungeonDefinitionTests
         var root = FindRepositoryRoot();
         var modelNamesByRow = ReadPlaceableAppearanceModelNames(root);
         var failures = new List<string>();
+
+        void CheckDecoration(string ownerLabel, DungeonDecorationEntry decoration)
+        {
+            var utpPath = Path.Combine(root.FullName, "Module", "utp", $"{decoration.Resref}.utp.json");
+            if (!File.Exists(utpPath))
+            {
+                failures.Add($"{ownerLabel} {decoration.Context}: '{decoration.Resref}' has no utp blueprint.");
+                return;
+            }
+
+            using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(utpPath));
+            var rootElement = document.RootElement;
+            var appearance = rootElement.TryGetProperty("Appearance", out var f) &&
+                              f.TryGetProperty("value", out var v)
+                ? v.GetInt32()
+                : 0;
+
+            if (!modelNamesByRow.TryGetValue(appearance, out var modelName))
+                failures.Add($"{ownerLabel} {decoration.Context}: '{decoration.Resref}' appearance row {appearance} does not exist in placeables.2da.");
+            else if (string.IsNullOrEmpty(modelName) || modelName == "****")
+                failures.Add($"{ownerLabel} {decoration.Context}: '{decoration.Resref}' appearance row {appearance} has a blank ModelName — it renders invisible.");
+        }
 
         foreach (var (themeKey, detail) in BuildAllDungeons())
         {
@@ -222,26 +251,18 @@ public class DungeonDefinitionTests
                 $"{themeKey} declares decorations but has a zero/negative DecorationBaseDensity");
 
             foreach (var decoration in detail.Decorations)
-            {
-                var utpPath = Path.Combine(root.FullName, "Module", "utp", $"{decoration.Resref}.utp.json");
-                if (!File.Exists(utpPath))
-                {
-                    failures.Add($"{themeKey} {decoration.Context}: '{decoration.Resref}' has no utp blueprint.");
-                    continue;
-                }
+                CheckDecoration(themeKey, decoration);
+        }
 
-                using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(utpPath));
-                var rootElement = document.RootElement;
-                var appearance = rootElement.TryGetProperty("Appearance", out var f) &&
-                                  f.TryGetProperty("value", out var v)
-                    ? v.GetInt32()
-                    : 0;
+        foreach (var (profileKey, profile) in BuildAllTilesetProfiles())
+        {
+            foreach (var decoration in profile.Decorations)
+                CheckDecoration($"tileset '{profileKey}'", decoration);
 
-                if (!modelNamesByRow.TryGetValue(appearance, out var modelName))
-                    failures.Add($"{themeKey} {decoration.Context}: '{decoration.Resref}' appearance row {appearance} does not exist in placeables.2da.");
-                else if (string.IsNullOrEmpty(modelName) || modelName == "****")
-                    failures.Add($"{themeKey} {decoration.Context}: '{decoration.Resref}' appearance row {appearance} has a blank ModelName — it renders invisible.");
-            }
+            foreach (var vignette in profile.Vignettes)
+            foreach (var member in vignette.Members)
+                CheckDecoration($"tileset '{profileKey}' vignette '{vignette.Key}'",
+                    new DungeonDecorationEntry { Resref = member.Resref, Context = DecorationContext.WallAdjacent });
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));

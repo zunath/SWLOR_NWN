@@ -152,6 +152,7 @@ namespace SWLOR.Game.Server.Feature
             var result = AreaGeneration.Generate(new AreaGenerationRequest
             {
                 TilesetResref = composition.Tileset.TilesetResref,
+                TilesetProfileKey = composition.Tileset.Key,
                 PlaceholderResref = composition.Tileset.PlaceholderResref,
                 OpenTerrainOverride = composition.Tileset.PrimaryOpenTerrain,
                 Lighting = composition.Tileset.Lighting,
@@ -239,8 +240,10 @@ namespace SWLOR.Game.Server.Feature
             // same resolved layout/request must match DungeonContentPlacer's own spawn count 1:1;
             // any mismatch means CreateObject/spawn tracking broke, not that RNG rolled unluckily.
             var detail = DungeonContentPlacer.GetDungeonDetail(themeKey);
+            var tilesetKey = string.IsNullOrEmpty(instance.Request?.TilesetProfileKey) ? detail.TilesetProfileKey : instance.Request.TilesetProfileKey;
+            DungeonContentPlacer.GetAllTilesetProfiles().TryGetValue(tilesetKey, out var tileset);
             var decorationDensityPercent = instance.Request?.DecorationDensityPercent ?? 100;
-            var expectedDecorations = DungeonDecorationPlanner.Plan(instance.Layout, detail, decorationDensityPercent);
+            var expectedDecorations = DungeonDecorationPlanner.Plan(instance.Layout, tileset, detail, decorationDensityPercent);
             if (population.DecorationsPlaced != expectedDecorations.Count)
                 throw new InvalidOperationException(
                     $"{themeKey}: decoration spawn count {population.DecorationsPlaced} does not match the " +

@@ -115,8 +115,8 @@ public class DungeonDecorationPlannerTests
         var tileset = tilesets[detail.TilesetProfileKey];
         var layout = ResolveLayout(detail, tileset, seed: 4242);
 
-        var first = DungeonDecorationPlanner.Plan(layout, detail, 100);
-        var second = DungeonDecorationPlanner.Plan(layout, detail, 100);
+        var first = DungeonDecorationPlanner.Plan(layout, tileset, detail, 100);
+        var second = DungeonDecorationPlanner.Plan(layout, tileset, detail, 100);
 
         first.Should().HaveCountGreaterThan(0, "a 20x20 mine-cave layout at 100% density should place at least one decoration");
         first.Should().HaveCount(second.Count);
@@ -139,7 +139,7 @@ public class DungeonDecorationPlannerTests
         var tileset = tilesets[detail.TilesetProfileKey];
         var layout = ResolveLayout(detail, tileset, seed: 99);
 
-        DungeonDecorationPlanner.Plan(layout, detail, 0).Should().BeEmpty();
+        DungeonDecorationPlanner.Plan(layout, tileset, detail, 0).Should().BeEmpty();
     }
 
     [Test]
@@ -155,10 +155,18 @@ public class DungeonDecorationPlannerTests
         {
             ThemeKey = detail.ThemeKey,
             DecorationBaseDensity = detail.DecorationBaseDensity
-            // Decorations left empty — no palette curated.
+            // Decorations left empty — no theme accents curated.
+        };
+        var emptyTileset = new DungeonTilesetProfile
+        {
+            Key = tileset.Key,
+            TilesetResref = tileset.TilesetResref
+            // Decorations/Vignettes left empty — no tileset-family palette curated either, so the
+            // merged palette really is empty (a theme's own small accent list alone should never be
+            // enough to decorate — see the class doc comment's "bulk lives on the tileset" design).
         };
 
-        DungeonDecorationPlanner.Plan(layout, emptyDetail, 100).Should().BeEmpty();
+        DungeonDecorationPlanner.Plan(layout, emptyTileset, emptyDetail, 100).Should().BeEmpty();
     }
 
     [TestCase(50)]
@@ -171,8 +179,8 @@ public class DungeonDecorationPlannerTests
         var tileset = tilesets[detail.TilesetProfileKey];
         var layout = ResolveLayout(detail, tileset, seed: 555, size: 24);
 
-        var baseline = DungeonDecorationPlanner.Plan(layout, detail, 100).Count;
-        var scaled = DungeonDecorationPlanner.Plan(layout, detail, densityPercent).Count;
+        var baseline = DungeonDecorationPlanner.Plan(layout, tileset, detail, 100).Count;
+        var scaled = DungeonDecorationPlanner.Plan(layout, tileset, detail, densityPercent).Count;
 
         if (densityPercent < 100)
             scaled.Should().BeLessThanOrEqualTo(baseline);
@@ -227,7 +235,7 @@ public class DungeonDecorationPlannerTests
                 var centerTiles = layout.Rooms.Where(r => !r.IsSetPiece).Select(r => r.CenterTile).ToHashSet();
                 var setPieceTiles = layout.Rooms.Where(r => r.IsSetPiece).SelectMany(r => r.Tiles).ToHashSet();
 
-                var plan = DungeonDecorationPlanner.Plan(layout, detail, 100);
+                var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, 100);
                 foreach (var planned in plan)
                 {
                     var tile = (X: (int)Math.Floor(planned.Position.X / 10.0), Y: (int)Math.Floor(planned.Position.Y / 10.0));
@@ -285,7 +293,7 @@ public class DungeonDecorationPlannerTests
             var eligibleTileCount = layout!.Rooms.Where(r => !r.IsSetPiece).Sum(r => r.Tiles.Count);
             // Centerpieces add at most one extra placement per eligible room beyond the per-tile roll,
             // so allow a modest headroom rather than an exact tile-for-tile cap.
-            var plan = DungeonDecorationPlanner.Plan(layout, detail, 100);
+            var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, 100);
 
             plan.Count.Should().BeLessThanOrEqualTo(eligibleTileCount + layout.Rooms.Count,
                 $"{themeKey}: planned {plan.Count} decorations against only {eligibleTileCount} eligible room tiles");
@@ -349,7 +357,7 @@ public class DungeonDecorationPlannerTests
                 continue; // a handful of (theme, seed) combinations can legitimately fail to resolve
             }
 
-            counts.Add(DungeonDecorationPlanner.Plan(layout, detail, 100).Count);
+            counts.Add(DungeonDecorationPlanner.Plan(layout, tileset, detail, 100).Count);
         }
 
         counts.Should().NotBeEmpty($"{themeKey}: none of the candidate seeds resolved a layout");

@@ -34,19 +34,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_slid001")
                 .TreasurePlaceable("cz220_cache", "Parts Cache")
 
-                // Decoration palette curated from hand-built tsw01/foundry evidence (Tatooine
-                // Anchorhead Droid Shop) — panels, rust, salvaged droid parts, ship fragments.
+                // Decoration: the bulk of the visual dressing now lives on the Steamworks tileset
+                // profile (its own tsw01 evidence — see BaseGameTilesetProfiles.Steamworks); only a
+                // couple of theme accents (a scrapped droid chassis, a foundry lamp) are curated here.
                 .DecorationDensity(0.2)
-                .Decoration("_mdrn_pl_panel01", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_rustdcr", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_shel001", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_debri01", 1, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_brlrad", 2, DecorationContext.CorridorSide)
-                .Decoration("zep_splat005", 1, DecorationContext.CorridorSide)
-                .Decoration("_mdrn_pl_droidd2", 2, DecorationContext.RoomCenter)
-                .Decoration("_mdrn_pl_shipp03", 1, DecorationContext.RoomCenter)
-                .Decoration("_mdrn_pl_lampd04", 2, DecorationContext.DoorwayFlank)
-                .Decoration("_mdrn_pl_maletts", 1, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_droidd2", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_lampd04", 1, DecorationContext.DoorwayFlank)
 
                 // Tier 1 — malfunctioning assembly-line units (CR ~1-4 ambient). Boss: Rogue Droid
                 // (CR 7), a supervisor unit gone rogue.

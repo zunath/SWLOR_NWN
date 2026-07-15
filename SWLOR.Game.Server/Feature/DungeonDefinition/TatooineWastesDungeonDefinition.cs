@@ -30,15 +30,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_rough")
                 .TreasurePlaceable("structure_rubble", "Sand-Buried Cache")
 
-                // Decoration palette curated from hand-built ttd01 desert evidence (Tatooine
-                // Anchorhead/Mos Eisley/Mos Esper roads and canyons, Korriban Dunes).
+                // Decoration: the bulk of the visual dressing now lives on the Desert tileset profile
+                // (its own ttd01 evidence — see BaseGameTilesetProfiles.Desert); only a couple of
+                // theme accents (a rough-hewn stool, a canyon archway) are curated here.
                 .DecorationDensity(0.15)
-                .Decoration("_mdrn_pl_bldstn", 3, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_hwall26", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_chimny1", 2, DecorationContext.WallAdjacent)
-                .Decoration("zep_fissure_017", 3, DecorationContext.CorridorSide)
-                .Decoration("swd_stool01", 2, DecorationContext.RoomCenter)
-                .Decoration("zep_arch003", 2, DecorationContext.DoorwayFlank)
+                .Decoration("swd_stool01", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_arch003", 1, DecorationContext.DoorwayFlank)
 
                 // Tier 1 — Jawa scavenger bands raiding a fresh wreck (CR ~2-5 ambient).
                 // Boss: Tusken Raider scout (CR 17).

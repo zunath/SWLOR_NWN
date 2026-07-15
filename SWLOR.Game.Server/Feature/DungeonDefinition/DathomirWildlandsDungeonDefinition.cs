@@ -33,19 +33,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_stneint")
                 .TreasurePlaceable("corpse", "Fallen Traveler's Pack")
 
-                // Decoration palette curated from hand-built ttf01/Dathomir jungle evidence (Dathomir
-                // Grottos/Mountains/Tarnished Jungles, Cave Ruins).
+                // Decoration: the bulk of the visual dressing now lives on the Forest tileset profile
+                // (its own ttf01 evidence — see BaseGameTilesetProfiles.Forest); only a couple of
+                // theme accents (a giant Dathomir fern, an overgrown archway) are curated here.
                 .DecorationDensity(0.25)
-                .Decoration("_mdrn_pl_hwall28", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_pillr05", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.WallAdjacent)
-                .Decoration("zep_grasstuft001", 3, DecorationContext.CorridorSide)
-                .Decoration("zep_shrub036", 3, DecorationContext.CorridorSide)
-                .Decoration("zep_shrub038", 2, DecorationContext.CorridorSide)
-                .Decoration("zep_giantfern", 3, DecorationContext.RoomCenter)
-                .Decoration("zep_tno_cliff_2", 1, DecorationContext.RoomCenter)
-                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
-                .Decoration("zep_tno_rockldg2", 1, DecorationContext.DoorwayFlank)
+                .Decoration("zep_giantfern", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_arch002", 1, DecorationContext.DoorwayFlank)
 
                 // Tier 1 — lesser jungle predators (CR ~42-58 ambient). Boss: Squellbug (CR 62).
                 .Tier(1)

@@ -32,16 +32,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_stneint")
                 .TreasurePlaceable("korrduntemple", "Buried Reliquary")
 
-                // Decoration palette curated from hand-built tdr01 ruin evidence (Korriban Academy
-                // Archives/Rooftop/Sith Academy prefabs, Dathomir Cave/Waterfall Ruins).
+                // Decoration: the bulk of the visual dressing now lives on the Ruins tileset profile
+                // (its own tdr01 evidence — see BaseGameTilesetProfiles.Ruins); only a couple of theme
+                // accents (a distinctive crystal spire centerpiece, a weathered archway) are curated
+                // here.
                 .DecorationDensity(0.25)
-                .Decoration("zep_tno_cliff_1", 3, DecorationContext.WallAdjacent)
-                .Decoration("zep_tno_cliff_2", 2, DecorationContext.WallAdjacent)
-                .Decoration("zep_tno_rockldg2", 2, DecorationContext.WallAdjacent)
-                .Decoration("zep_shrub036", 2, DecorationContext.CorridorSide)
-                .Decoration("zep_giantfern", 2, DecorationContext.CorridorSide)
-                .Decoration("crystalspire", 2, DecorationContext.RoomCenter)
-                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+                .Decoration("crystalspire", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_arch002", 1, DecorationContext.DoorwayFlank)
 
                 // Tier 1 — grassland vermin nesting in the rubble (CR ~39-43 ambient). Boss: Iriaz
                 // (CR 55).

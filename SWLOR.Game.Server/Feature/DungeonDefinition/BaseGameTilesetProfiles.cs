@@ -685,6 +685,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("CorridorExit")
                 .ExitGroup("CorridorExitBig");
 
+            // City Interior's own bulk palette — mined from tin01 hand-built reference areas
+            // (decoration_evidence/evidence_by_theme_keyword.json/evidence_named_exemplars.json,
+            // undercity keyword match — small sample, e.g. pw_ar_velundr). Strongest co-occurrence
+            // pair: plc_sacks + x0_ruglarge (5) -> vignette.
+            _builder
+                .Decoration("zep_bedrolls002", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_clothh1", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_carpet02", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_cushion001", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_cageirn", 1, DecorationContext.DoorwayFlank)
+                .Decoration("zep_bedrolls001", 1, DecorationContext.CorridorSide)
+                .Vignette("SlumSackPile", 2)
+                .VignetteMember("zep_bedrolls002", 0f, 0f)
+                .VignetteMember("zep_carpet02", 0.8f, 0.5f);
+
             // Barrows Interior (tbw01, SWLOR_Haks/sw_t_barrow). 135-tile single-district tileset whose
             // GENERAL block declares BOTH Default and Floor as "black" (an authoring quirk -- the
             // tileset has no real "black is walkable floor" district; its actual open terrain is
@@ -837,6 +852,25 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("[Cave] Exit 1")
                 .ExitGroup("[Cave] Exit 2")
                 .ExitGroup("[Cave] Exit 3");
+
+            // Mines and Caverns' own bulk palette — mined from tdm01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['tdm01'], 13 areas). Strongest
+            // co-occurrence pair: zep_grasstuft001 + zep_shrub036 (40) -> vignette.
+            _builder
+                .Decoration("zep_shrub036", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_plant07", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_qwall10", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_bushfern001", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_grasstuft001", 3, DecorationContext.CorridorSide)
+                .Decoration("zep_shrub035", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_vinesh", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_fissure_017", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_lightshft008", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_conta54", 1, DecorationContext.DoorwayFlank)
+                .Decoration("zep_flowers004", 1, DecorationContext.DoorwayFlank)
+                .Vignette("MineGrassThicket", 3)
+                .VignetteMember("zep_grasstuft001", 0f, 0f)
+                .VignetteMember("zep_shrub036", 0.9f, 0.6f);
 
             // Mines and Caverns (Desert) -- tdm01's "[Desert]" district, a PaletteVariant profile
             // recomposing the SAME tdm01 hak data the base MinesAndCaverns profile above uses. Verified
@@ -1247,6 +1281,24 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("ExteriorExit01")
                 .ExitGroup("ExteriorExit02");
 
+            // Ruins' own bulk palette — mined from tdr01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['tdr01'], 5 areas). Strongest
+            // co-occurrence pair: zep_book001 + zep_notes001 (9) -> vignette.
+            _builder
+                .Decoration("zep_bbook003", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_bbook004", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_book001", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_book002", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_bflame003", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_animalcag002", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_bflame002", 2, DecorationContext.DoorwayFlank)
+                .Decoration("structure_rubble", 1, DecorationContext.DoorwayFlank)
+                .Decoration("zep_fog001", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_fog001", 1, DecorationContext.CorridorSide)
+                .Vignette("RuinsReadingNook", 2)
+                .VignetteMember("zep_book001", 0f, 0f)
+                .VignetteMember("zep_notes001", 0.7f, 0.3f);
+
             // Ruins (Plaza) -- tdr01's "Plaza" exterior-district palette, a PaletteVariant profile
             // recomposing the SAME tdr01 hak data the base Ruins profile above uses. Verified by direct
             // probe: solid "Wall" (shared) vs PrimaryOpenTerrain("Plaza") has full 16/16 simple-tile
@@ -1342,6 +1394,25 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Castle] Room - Storage, Empty (2x1)")
                 .SetPiece("[Castle] Room - Bath 1 (2x1)")
                 .SetPiece("[Castle] Room - Bath 2 (2x1)");
+
+            // Castle Interior's own bulk palette — mined from tic01 hand-built reference areas
+            // (decoration_evidence/evidence_by_theme_keyword.json, sithacademy keyword match, 37
+            // areas). Strongest thematic pairing: zep_arch002 + swp_banner0001 (both spike in the
+            // ar_scor_kacademy exemplar) -> vignette.
+            _builder
+                .Decoration("swd3_wall001", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall25", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall28", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_wall002", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_fountain002", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_bflame002", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+                .Decoration("swp_banner0001", 2, DecorationContext.DoorwayFlank)
+                .Decoration("zep_fog002", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_grasstuft001", 1, DecorationContext.CorridorSide)
+                .Vignette("AcademyBannerGate", 3)
+                .VignetteMember("zep_arch002", 0f, 0f)
+                .VignetteMember("swp_banner0001", 0.6f, 0.4f);
 
             // Castle Interior (Storage/Rich/Library/Jail) -- tic01's four alternate room-type district
             // palettes, PaletteVariant profiles recomposing the SAME tic01 hak data the base
@@ -1485,6 +1556,26 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Room")
                 .SetPiece("Under Well (4x3)");
 
+            // Drow Interior's own bulk palette — mined via nightsistercoven keyword match
+            // (decoration_evidence/evidence_by_theme_keyword.json — dath_grottos/dathgrottocavern/
+            // pw_sc_dath_apexd, 3 areas). Strongest structural pairing: the two grotto cliff-face
+            // variants -> vignette.
+            _builder
+                .Decoration("zep_tno_cliff_1", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_tno_cliff_2", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_boulder003", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_shrub036", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_grasstuft001", 3, DecorationContext.CorridorSide)
+                .Decoration("zep_shrub041", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_redfern", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_pillrmrbl002", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_geiser002", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+                .Decoration("zep_gardenstn003", 1, DecorationContext.DoorwayFlank)
+                .Vignette("GrottoCliffGrowth", 2)
+                .VignetteMember("zep_tno_cliff_1", 0f, 0f)
+                .VignetteMember("zep_tno_cliff_2", 1.0f, 0.3f);
+
             // Illithid Interior (tii01, SWLOR_Haks/sw_t_illithid). PrimaryOpenTerrain left empty
             // (defaults to declared Floor "Floor"). The smallest Wave-2 tileset (79 tiles, 10 groups):
             // "Observation pit" and "Fighting Pit" (both 3x3, all-solid-cornered, door-bearing) clear as
@@ -1527,6 +1618,29 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Resting Pod")
                 .SetPiece("Cell")
                 .SetPiece("Transition Door");
+
+            // Illithid Interior's own bulk palette — mined from tii01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['tii01'], 3 areas). Strongest
+            // co-occurrence pairs: plc_altrevil + plc_fountain (67) and x3_plc_mist + x3_plc_slightr
+            // (47) -> vignettes.
+            _builder
+                .Decoration("_mdrn_pl_wwall4t", 3, DecorationContext.WallAdjacent)
+                .Decoration("swd3_wall001", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall28", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_fence003", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_altarevil3", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_fountain002", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_altarevil2", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_lights2", 2, DecorationContext.DoorwayFlank)
+                .Decoration("zep_statues004", 2, DecorationContext.DoorwayFlank)
+                .Decoration("zep_fog002", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_waterfall001", 1, DecorationContext.CorridorSide)
+                .Vignette("HiveThroneAltar", 3)
+                .VignetteMember("zep_altarevil2", 0f, 0f)
+                .VignetteMember("zep_fountain002", 1.2f, 0.6f)
+                .Vignette("HiveMistLight", 2)
+                .VignetteMember("zep_fog002", 0f, 0f)
+                .VignetteMember("_mdrn_pl_lights2", 0.6f, 0.4f);
 
             // City Interior 2 / TNO: City Interior (tni01, SWLOR_Haks/sw_t_cityint2). Same
             // Livingroom/Kitchen/Inn/Shop room-type family as City Interior (tin01, the vanilla pilot),
@@ -1642,6 +1756,24 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit01")
                 .ExitGroup("Exit02");
 
+            // Steamworks' own bulk palette — mined from tsw01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['tsw01'], 1 area). Strongest
+            // co-occurrence pair: _mdrn_pl_brlrad + zep_splat005 (32, a leaking radioactive-barrel
+            // spill) -> vignette.
+            _builder
+                .Decoration("_mdrn_pl_brlrad", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_splat005", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_water001", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_debri20", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_debri01", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_shipp03", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_droidd2", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_cagebst", 1, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_cageirn", 1, DecorationContext.DoorwayFlank)
+                .Vignette("FoundryRadBarrelSpill", 3)
+                .VignetteMember("_mdrn_pl_brlrad", 0f, 0f)
+                .VignetteMember("zep_splat005", 0.5f, 0.3f);
+
             // Fort Interior / TNO: Fort Interior (twc03, SWLOR_Haks/sw_t_fortint). GENERAL declares
             // BOTH Default and Floor as "black" (the same authoring quirk as Barrows) -- PrimaryOpen
             // Terrain is set explicitly to "floor" rather than left empty. AccentTerrain("water")
@@ -1732,6 +1864,25 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit_1x1")
                 .ExitGroup("Exit_Down_1x1")
                 .ExitGroup("Exit_CollapsedWall");
+
+            // Fort Interior's own bulk palette — mined via mandogarrison keyword match
+            // (decoration_evidence/evidence_by_theme_keyword.json — dan_repgarrison/manda_facility/
+            // sol_mandaloriani, 3 areas). Strongest structural pairing: bunk beds anchored by a nearby
+            // locker -> vignette.
+            _builder
+                .Decoration("_mdrn_pl_bunkbd5", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_lockerm", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_weaprck", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_wall009", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_deskgry", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_couch08", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_conta49", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_ovenold", 1, DecorationContext.DoorwayFlank)
+                .Decoration("zep_grasstuft001", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_dirt02", 1, DecorationContext.CorridorSide)
+                .Vignette("GarrisonBunkLocker", 3)
+                .VignetteMember("_mdrn_pl_bunkbd5", 0f, 0f)
+                .VignetteMember("_mdrn_pl_lockerm", 0.9f, 0.4f);
 
             // Fort Interior (Legacy) -- twc03's "OLD_"-prefixed superseded furnished-room family, a
             // PaletteVariant profile recomposing the SAME twc03 hak data the base FortInterior profile
@@ -1913,6 +2064,26 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("CliffStairs")
                 .ExitGroup("ChasmStairs")
                 .ExitGroup("CaveEntrance");
+
+            // Desert's own bulk palette — mined from ttd01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['ttd01'], 49 areas — the richest sample of
+            // any onboarded family). Strongest co-occurrence pairs among the desert-scrub family
+            // (nw_plc_kelp*, a desert scrub/weed reskin) -> vignette.
+            _builder
+                .Decoration("_mdrn_pl_bldstn", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_boulder003", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_df_wseb", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_bldstn", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_shrub036", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_bushfern001", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_boulder003", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_tree070", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_boulder003", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_arch003", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_lights2", 2, DecorationContext.DoorwayFlank)
+                .Vignette("DesertScrubCluster", 3)
+                .VignetteMember("zep_boulder003", 0f, 0f)
+                .VignetteMember("zep_boulder003", 0.6f, 0.4f);
 
             // Desert (Road) -- ttd01's second raised-lane crosser family (round 3 of exterior tail
             // closure; see the ttf01 wave-level comment below for the shared "one RampCrosser slot
@@ -2102,6 +2273,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("House - Turf")
                 .ExitGroup("House - Ruined")
                 .ExitGroup("Tower - Stone");
+
+            // Forest's own bulk palette — mined from ttf01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['ttf01'], 1 area — sparse dathomirwild
+            // sample). Strongest co-occurrence pair: _mdrn_pl_campfre + plc_flamemedium (2) ->
+            // vignette.
+            _builder
+                .Decoration("_mdrn_pl_mtlhut4", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_debri03", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_pinetr6", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_campfre", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_bflame002", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_skinpole001", 2, DecorationContext.DoorwayFlank)
+                .Vignette("CampFirePit", 2)
+                .VignetteMember("_mdrn_pl_campfre", 0f, 0f)
+                .VignetteMember("zep_bflame002", 0.5f, 0f);
 
             // Forest (Platform) -- ttf01's "Platform" chasm-bridge district, a PaletteVariant profile
             // recomposing the SAME ttf01 hak data the base Forest profile above uses, closing part of
@@ -2500,6 +2686,28 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("b_trans", 1)
                 .ExitGroup("Tower01")
                 .ExitGroup("d_house02");
+
+            // Futuristic City's own bulk palette — mined from the fcx01 user-named exemplar
+            // (decoration_evidence/evidence_named_exemplars.json['pw_ar_narpromena'], "Smuggler's Moon
+            // Promenade"): streetlights, holo-sign kiosks, planters/fences, parked speeders — this is
+            // the fix for the reported "Alien Ruin content dressed with Alien Ruin's own palette
+            // regardless of the Futuristic City tileset it was actually generated on" bug. Strongest
+            // structural pairing: a holo kiosk lit by a nearby streetlight -> vignette.
+            _builder
+                .Decoration("swd_build007", 3, DecorationContext.WallAdjacent)
+                .Decoration("swd2_fence004", 2, DecorationContext.WallAdjacent)
+                .Decoration("swd2_fence010", 2, DecorationContext.WallAdjacent)
+                .Decoration("swd_trash01", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_lights3", 3, DecorationContext.WallAdjacent)
+                .Decoration("swd2_vehi006", 1, DecorationContext.RoomCenter)
+                .Decoration("swd2_vehi003", 1, DecorationContext.RoomCenter)
+                .Decoration("swd2_vehi007", 1, DecorationContext.RoomCenter)
+                .Decoration("swd2_kiosk004", 2, DecorationContext.DoorwayFlank)
+                .Decoration("swd_streel01", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_crswlk", 1, DecorationContext.CorridorSide)
+                .Vignette("PromenadeKioskLight", 3)
+                .VignetteMember("swd2_kiosk004", 0f, 0f)
+                .VignetteMember("_mdrn_pl_lights3", 0.7f, 0.5f);
 
             // D20 Futuristic City SW (fcx01) -- Cobble2 ("d_"-prefixed) district, a PaletteVariant
             // profile recomposing the SAME fcx01 hak data the base FutCity profile above uses (identical

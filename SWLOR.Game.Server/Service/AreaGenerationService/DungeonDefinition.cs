@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
 {
@@ -33,13 +34,41 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
     /// <summary>
     /// A single weighted decorative placeable choice for one <see cref="DecorationContext"/> bucket
-    /// within a theme's curated palette. See <see cref="DungeonDetail.Decorations"/>.
+    /// within a curated palette. See <see cref="DungeonDetail.Decorations"/> (theme accents) and
+    /// <see cref="DungeonTilesetProfile.Decorations"/> (the tileset family's own bulk palette).
     /// </summary>
     public class DungeonDecorationEntry
     {
         public string Resref { get; set; } = string.Empty;
         public int Weight { get; set; } = 1;
         public DecorationContext Context { get; set; } = DecorationContext.WallAdjacent;
+    }
+
+    /// <summary>
+    /// One placeable within a <see cref="DungeonVignette"/>: a resref plus its offset (in world units,
+    /// pre-rotation) from the vignette's anchor tile and an additional facing offset (degrees) applied
+    /// on top of the anchor's own "face into the room" facing. Mined from hand-built co-occurrence
+    /// evidence (nearest-neighbor placeable pairs/triples within ~3-5m — see decoration_evidence/
+    /// mine_evidence.py's pairwise clustering pass) — e.g. a bench+lamp or table+chairs grouping.
+    /// </summary>
+    public class DungeonVignetteMember
+    {
+        public string Resref { get; set; } = string.Empty;
+        public float OffsetX { get; set; }
+        public float OffsetY { get; set; }
+        public float FacingOffset { get; set; }
+    }
+
+    /// <summary>
+    /// A small, evidence-backed multi-placeable grouping (e.g. crate stack, bench+lamp) placed as a
+    /// single unit by <see cref="DungeonDecorationPlanner"/> rather than each member rolling
+    /// independently — see <see cref="DungeonTilesetProfile.Vignettes"/>.
+    /// </summary>
+    public class DungeonVignette
+    {
+        public string Key { get; set; } = string.Empty;
+        public int Weight { get; set; } = 1;
+        public List<DungeonVignetteMember> Members { get; set; } = new();
     }
 
     /// <summary>
@@ -287,6 +316,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// TilesetResref (variant or not) so a tile counts as reachable if ANY of them composes it.
         /// </summary>
         public bool IsPaletteVariant { get; set; } = false;
+
+        /// <summary>
+        /// This tileset FAMILY's own bulk "set dressing" palette, mined from its own hand-built
+        /// reference areas (decoration_evidence/evidence_by_tileset.json,
+        /// decoration_evidence/evidence_by_theme_keyword.json, decoration_evidence/
+        /// evidence_named_exemplars.json) rather than from the theme composed onto it — decoration is a
+        /// function of the VISUAL family (what the tileset's own art depicts), not the content theme.
+        /// A palette-variant profile (<see cref="IsPaletteVariant"/>) with no entries of its own
+        /// automatically inherits the palette of the first non-variant profile sharing its
+        /// <see cref="TilesetResref"/> (see DungeonContentPlacer.GetEffectiveTilesetDecorations) — only
+        /// declare entries here directly when that district's own evidence genuinely differs. Empty on
+        /// a base (non-variant) profile = no mined evidence exists for this family yet; documented
+        /// per-profile rather than silently guessing another family's dressing.
+        /// </summary>
+        public List<DungeonDecorationEntry> Decorations { get; set; } = new();
+
+        /// <summary>
+        /// Evidence-backed multi-placeable groupings (see <see cref="DungeonVignette"/>) this tileset
+        /// family offers as a unit placement — vignette members are never sampled independently.
+        /// Inherited the same way as <see cref="Decorations"/> for palette variants.
+        /// </summary>
+        public List<DungeonVignette> Vignettes { get; set; } = new();
     }
 
     /// <summary>
@@ -908,9 +959,91 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             return this;
         }
 
+        /// <summary>
+        /// Adds a weighted decorative placeable to this tileset FAMILY's own bulk palette for one
+        /// placement context — see <see cref="DungeonTilesetProfile.Decorations"/>. This is where the
+        /// bulk of a generated area's visual dressing should live; theme definitions should only add a
+        /// small handful of their own genuinely theme-flavored accents.
+        /// </summary>
+        public DungeonTilesetProfileBuilder Decoration(string resref, int weight, DecorationContext context)
+        {
+            _active.Decorations.Add(new DungeonDecorationEntry
+            {
+                Resref = resref,
+                Weight = weight,
+                Context = context
+            });
+
+            return this;
+        }
+
+        private DungeonVignette _activeVignette;
+
+        /// <summary>
+        /// Starts a new evidence-backed vignette grouping (see <see cref="DungeonVignette"/>) on this
+        /// tileset profile. Follow with one or more <see cref="VignetteMember"/> calls.
+        /// </summary>
+        public DungeonTilesetProfileBuilder Vignette(string key, int weight = 1)
+        {
+            _activeVignette = new DungeonVignette { Key = key, Weight = weight };
+            _active.Vignettes.Add(_activeVignette);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds one placeable to the active vignette. Offsets are world units relative to the
+        /// vignette's anchor tile, BEFORE the anchor's own wall-facing rotation is applied (see
+        /// DungeonDecorationPlanner.PlaceVignette) — author offsets as if the anchor faces "north"
+        /// (+Y) into the room.
+        /// </summary>
+        public DungeonTilesetProfileBuilder VignetteMember(string resref, float offsetX, float offsetY, float facingOffset = 0f)
+        {
+            _activeVignette.Members.Add(new DungeonVignetteMember
+            {
+                Resref = resref,
+                OffsetX = offsetX,
+                OffsetY = offsetY,
+                FacingOffset = facingOffset
+            });
+            return this;
+        }
+
         public Dictionary<string, DungeonTilesetProfile> Build()
         {
             return _profiles;
+        }
+    }
+
+    /// <summary>
+    /// One-time post-processing step for a fully-discovered tileset-profile dictionary: a palette
+    /// variant (<see cref="DungeonTilesetProfile.IsPaletteVariant"/>) that declared no
+    /// Decorations/Vignettes of its own inherits them in place from the first non-variant profile
+    /// registered under the same <see cref="DungeonTilesetProfile.TilesetResref"/> — see the
+    /// Decorations doc comment. Every consumer that discovers tileset profiles (runtime
+    /// DungeonContentPlacer.Bootstrap, SWLOR.ProcgenReview, SWLOR.ContentBuilder's DefinitionCatalog)
+    /// calls this exactly once right after discovery, so an ordinary `tileset.Decorations`/
+    /// `tileset.Vignettes` read anywhere else in the codebase already reflects the effective palette —
+    /// no call site needs its own inheritance-lookup logic.
+    /// </summary>
+    public static class DungeonTilesetPaletteInheritance
+    {
+        public static void Apply(Dictionary<string, DungeonTilesetProfile> profiles)
+        {
+            foreach (var profile in profiles.Values)
+            {
+                if (!profile.IsPaletteVariant || profile.Decorations.Count > 0 || profile.Vignettes.Count > 0)
+                    continue;
+
+                var basis = profiles.Values.FirstOrDefault(p =>
+                    !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                    (p.Decorations.Count > 0 || p.Vignettes.Count > 0));
+
+                if (basis == null)
+                    continue;
+
+                profile.Decorations = basis.Decorations;
+                profile.Vignettes = basis.Vignettes;
+            }
         }
     }
 

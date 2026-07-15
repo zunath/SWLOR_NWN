@@ -27,18 +27,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_bars")
                 .TreasurePlaceable("corpse", "Stashed Loot")
 
-                // Decoration palette curated from hand-built tds01 sewer evidence (Veles Sewers,
-                // Veles Sewers - The Cistern Ring, Sewers Depths, Smuggler's Moon Sewers).
+                // Decoration: the bulk of the visual dressing now lives on the Sewers tileset profile
+                // (its own tds01 evidence — see StandardTilesetProfiles.Sewers); only a couple of
+                // theme accents (a glowing crystal, a stray force field) are curated here.
                 .DecorationDensity(0.3)
-                .Decoration("_mdrn_pl_ration", 2, DecorationContext.WallAdjacent)
-                .Decoration("swd_conta003", 2, DecorationContext.WallAdjacent)
-                .Decoration("swd_conta004", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_conta52", 2, DecorationContext.WallAdjacent)
-                .Decoration("swd_cup01", 2, DecorationContext.CorridorSide)
-                .Decoration("_mdrn_pl_frcfw2", 2, DecorationContext.CorridorSide)
-                .Decoration("swd_cryst02", 2, DecorationContext.RoomCenter)
-                .Decoration("_mdrn_pl_conta52", 1, DecorationContext.DoorwayFlank)
-                .Decoration("swd_conta003", 1, DecorationContext.DoorwayFlank)
+                .Decoration("swd_cryst02", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_frcfw2", 1, DecorationContext.CorridorSide)
 
                 // Tier 1 — scavenger droids and outlaw looters (CR ~1-5 ambient).
                 // Boss: Serpent Leader (CR 11), a Black Serpent enforcer holed up in the tunnels.

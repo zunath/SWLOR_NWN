@@ -82,6 +82,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 }
             }
 
+            DungeonTilesetPaletteInheritance.Apply(_tilesetProfiles);
+
             foreach (var type in allTypes.Where(t => typeof(IDungeonLayoutProfileListDefinition).IsAssignableFrom(t)))
             {
                 var instance = (IDungeonLayoutProfileListDefinition)Activator.CreateInstance(type);
@@ -266,6 +268,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// on, 100%). Decorations are plain CreateObject spawns of curated blueprints — no scripts,
         /// plot flag, or useable override — tracked in instance.SpawnedObjects for teardown exactly
         /// like every other content-population spawn.
+        ///
+        /// Resolves the ACTUAL tileset profile this instance was composed with (instance.Request.
+        /// TilesetProfileKey, falling back to the theme's own default when the request never recorded
+        /// one — e.g. callers built before this field existed) rather than blindly assuming the
+        /// theme's default tileset profile, so a theme composed onto a non-default tileset (e.g. Alien
+        /// Ruin content generated on the Futuristic City tileset) still dresses with THAT tileset's own
+        /// bulk palette instead of a mismatched one.
         /// </summary>
         private static void PlaceDecorations(
             uint area,
@@ -277,8 +286,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (!enabled)
                 return;
 
+            var tilesetKey = string.IsNullOrEmpty(instance.Request?.TilesetProfileKey)
+                ? detail.TilesetProfileKey
+                : instance.Request.TilesetProfileKey;
+            if (!_tilesetProfiles.TryGetValue(tilesetKey, out var tileset))
+                tileset = null;
+
             var densityPercent = instance.Request?.DecorationDensityPercent ?? 100;
-            var plan = DungeonDecorationPlanner.Plan(instance.Layout, detail, densityPercent);
+            var plan = DungeonDecorationPlanner.Plan(instance.Layout, tileset, detail, densityPercent);
 
             foreach (var planned in plan)
             {

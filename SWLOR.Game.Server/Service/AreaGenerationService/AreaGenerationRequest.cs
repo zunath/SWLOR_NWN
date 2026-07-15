@@ -20,6 +20,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     public class AreaGenerationRequest
     {
         public string TilesetResref { get; set; } = "tdt01";
+        /// <summary>
+        /// Key of the DungeonTilesetProfile actually composed for this request, when the caller
+        /// resolved one via DungeonContentPlacer.GetComposition (see AreaGenerationChatCommand,
+        /// SWLOR.ContentBuilder). Populate/PlaceDecorations reads this — falling back to the theme's
+        /// own default TilesetProfileKey when empty — so a theme composed onto a NON-default tileset
+        /// profile still dresses with THAT tileset's own palette instead of silently assuming the
+        /// theme's default family (the root cause of a theme's decorations looking wrong when composed
+        /// onto an unrelated tileset, e.g. Alien Ruin content on the Futuristic City tileset).
+        /// </summary>
+        public string TilesetProfileKey { get; set; } = string.Empty;
         /// <summary>Module area cloned as the shell for the generated grid. Must be registered in the module.</summary>
         public string PlaceholderResref { get; set; } = "gen_placeholder1";
         /// <summary>

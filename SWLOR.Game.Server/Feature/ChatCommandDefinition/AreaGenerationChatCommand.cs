@@ -93,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     AreaGeneration.QueueGeneration(new AreaGenerationRequest
                     {
                         TilesetResref = composition.Tileset.TilesetResref,
+                        TilesetProfileKey = composition.Tileset.Key,
                         PlaceholderResref = composition.Tileset.PlaceholderResref,
                         OpenTerrainOverride = composition.Tileset.PrimaryOpenTerrain,
                         Lighting = composition.Tileset.Lighting,

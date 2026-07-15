@@ -33,19 +33,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_bars")
                 .TreasurePlaceable("corpse", "Stashed Contraband")
 
-                // Decoration palette curated from hand-built tin01/undercity-family evidence: Veles
-                // exterior and Smuggler's Moon Promenade (user-named exemplars), plus Undercity/Slums
-                // prefabs — dense street clutter: pillars, containers, streetlights, trash, kiosks.
+                // Decoration: the bulk of the visual dressing now lives on the CityInterior tileset
+                // profile (its own tin01 evidence — see BaseGameTilesetProfiles.CityInterior); only a
+                // couple of theme accents (a market kiosk, a scavenged fence panel) are curated here.
                 .DecorationDensity(0.35)
-                .Decoration("_mdrn_pl_pillr04", 3, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_conta36", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_barrim2", 2, DecorationContext.WallAdjacent)
-                .Decoration("swd_trash01", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.CorridorSide)
-                .Decoration("_mdrn_pl_lights3", 2, DecorationContext.CorridorSide)
-                .Decoration("swd_streel01", 2, DecorationContext.CorridorSide)
-                .Decoration("swd2_kiosk004", 2, DecorationContext.RoomCenter)
-                .Decoration("swd_holot03", 1, DecorationContext.RoomCenter)
+                .Decoration("swd2_kiosk004", 1, DecorationContext.RoomCenter)
                 .Decoration("swd2_fence004", 1, DecorationContext.DoorwayFlank)
                 .Decoration("_mdrn_pl_rubb031", 1, DecorationContext.DoorwayFlank)
 

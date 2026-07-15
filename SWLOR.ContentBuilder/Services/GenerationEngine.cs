@@ -131,7 +131,7 @@ namespace SWLOR.ContentBuilder.Services
             if (solved.Success && composition.Content != null && (overrides?.EnableDecorations ?? true))
             {
                 var densityPercent = overrides?.DecorationDensityPercent ?? 100;
-                plannedDecorationCount = DungeonDecorationPlanner.Plan(solved.Resolved, composition.Content, densityPercent).Count;
+                plannedDecorationCount = DungeonDecorationPlanner.Plan(solved.Resolved, composition.Tileset, composition.Content, densityPercent).Count;
             }
 
             return new GenerationResult

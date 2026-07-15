@@ -33,20 +33,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitDoor("_mdrn_dt_slid001")
                 .TreasurePlaceable("cz220_cache", "Armory Cache")
 
-                // Decoration palette curated by name-matched proxy: no hand-built area exists yet on
-                // twc03 (Fort Interior), so this draws from the hand-built "Viscara - Mandalorian
-                // Facility" and "Fort Ka'ra" garrison interiors — bunks, lockers, weapon racks,
-                // mess-hall furniture.
+                // Decoration: the bulk of the visual dressing now lives on the FortInterior tileset
+                // profile (mined via the mandogarrison keyword match — see BaseGameTilesetProfiles.
+                // FortInterior); only a couple of theme accents (a pazaak table, a mess-hall desk) are
+                // curated here.
                 .DecorationDensity(0.25)
-                .Decoration("_mdrn_pl_lockerm", 3, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_weaprck", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_wall009", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_conta49", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_chimny1", 2, DecorationContext.CorridorSide)
-                .Decoration("_mdrn_pl_project", 1, DecorationContext.CorridorSide)
-                .Decoration("_mdrn_pl_bunkbd5", 2, DecorationContext.RoomCenter)
-                .Decoration("_mdrn_pl_deskgry", 1, DecorationContext.RoomCenter)
                 .Decoration("_mdrn_pl_pazaaks", 1, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_deskgry", 1, DecorationContext.RoomCenter)
                 .Decoration("_mdrn_pl_couch08", 1, DecorationContext.DoorwayFlank)
 
                 // Tier 1 — garrison rank and file (CR ~7-8 ambient). Boss: Mandalorian Scout

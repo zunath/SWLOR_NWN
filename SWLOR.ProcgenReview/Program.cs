@@ -127,6 +127,7 @@ try
 {
     var themes = Discover<IDungeonListDefinition, DungeonDetail>(d => d.BuildDungeons());
     var tilesetProfiles = Discover<IDungeonTilesetProfileListDefinition, DungeonTilesetProfile>(d => d.BuildTilesetProfiles());
+    DungeonTilesetPaletteInheritance.Apply(tilesetProfiles);
     var layoutProfiles = Discover<IDungeonLayoutProfileListDefinition, DungeonLayoutProfile>(d => d.BuildLayoutProfiles());
 
     if (themes.Count == 0)
@@ -328,7 +329,7 @@ try
 
     var modelCache = new Dictionary<string, TilesetModel>();
     var areas = new List<(string Resref, float EntryX, float EntryY)>();
-    var decorationAppearances = LoadDecorationAppearances(root, themes.Values);
+    var decorationAppearances = LoadDecorationAppearances(root, themes.Values, tilesetProfiles.Values);
 
     foreach (var spec in specs)
     {
@@ -612,14 +613,15 @@ static int EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string
     }
 
     // Content is null for --matrix entries (no theme composed — see the main generation loop's
-    // "Content is irrelevant offline" note); those never get a decoration pass. Uses the SAME
-    // pure/engine-free DungeonDecorationPlanner.Plan the runtime facade and SWLOR.ContentBuilder's
-    // preview call, so a reviewed area's furniture matches exactly what a live server would place for
-    // this theme/layout/seed/density.
+    // "Content is irrelevant offline" note); those never get a decoration pass — DecorationBaseDensity
+    // (the overall count target) is still theme-owned, so there is nothing to calibrate against
+    // without a theme. Uses the SAME pure/engine-free DungeonDecorationPlanner.Plan the runtime facade
+    // and SWLOR.ContentBuilder's preview call, now also fed this composition's own tileset profile so
+    // the bulk of the dressing comes from the TILESET family rather than the theme.
     var decorationsPlaced = 0;
     if (detail != null && enableDecorations)
     {
-        var plan = DungeonDecorationPlanner.Plan(layout, detail, decorationDensityPercent);
+        var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, decorationDensityPercent);
         var placeables = BuildPlaceableEntries(plan, decorationAppearances);
         if (!string.IsNullOrEmpty(placeables))
         {
@@ -1023,12 +1025,18 @@ static string DoorEntry(string tag, string locName, float x, float y, float z, d
 /// blueprint whose own Appearance is blank/zero, is a palette bug (a theme curated a resref that
 /// isn't a real usable placeable); this is reported to stderr rather than silently rendering wrong.
 /// </summary>
-static Dictionary<string, int> LoadDecorationAppearances(string root, IEnumerable<DungeonDetail> themes)
+static Dictionary<string, int> LoadDecorationAppearances(
+    string root, IEnumerable<DungeonDetail> themes, IEnumerable<DungeonTilesetProfile> tilesetProfiles)
 {
     var map = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+    // Bulk dressing now lives on the tileset profile (DungeonTilesetProfile.Decorations/Vignettes);
+    // themes only curate a small accent list (DungeonDetail.Decorations) — both sources feed the
+    // planner's merged palette, so both need their resrefs' real Appearance rows loaded here.
     var resrefs = themes
         .SelectMany(t => t.Decorations)
         .Select(d => d.Resref)
+        .Concat(tilesetProfiles.SelectMany(t => t.Decorations).Select(d => d.Resref))
+        .Concat(tilesetProfiles.SelectMany(t => t.Vignettes).SelectMany(v => v.Members).Select(m => m.Resref))
         .Distinct(StringComparer.OrdinalIgnoreCase);
 
     foreach (var resref in resrefs)

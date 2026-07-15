@@ -65,6 +65,29 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit02")
                 .ExitGroup("Exit03");
 
+            // Cavern's own bulk "set dressing" palette — mined from tdt01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['tdt01'], 4 areas: barrows_door_corridor,
+            // proof_barrows, etc). Strongest co-occurrence pair: plc_waterdrip + zep_fireflies001 (13
+            // occurrences) -> CaveDripGlow vignette.
+            _builder
+                .Decoration("zep_water001", 4, DecorationContext.WallAdjacent)
+                .Decoration("zep_fireflies001", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_tno_rockldg2", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_bushfern001", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_debri20", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_tno_cliff_1", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_debri19", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_bushfern001", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_fireflies001", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_water001", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_boulder003", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_altar002", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_colony9", 1, DecorationContext.DoorwayFlank)
+                .Vignette("CaveDripGlow", 3)
+                .VignetteMember("zep_water001", 0f, 0f)
+                .VignetteMember("zep_fireflies001", 1.5f, 0.8f);
+
             // Sewers (reference: veles_sewers). Pit channel accents fully covered.
             // Feature tiles: tds01 open ('Floor') 1x1 groups (Portal/Chessboard deliberately excluded).
             _builder.Create(Sewers, "Sewers")
@@ -108,6 +131,29 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit01")
                 .ExitGroup("Exit02");
 
+            // Sewers' own bulk palette — mined from tds01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['tds01'], 4 areas). Strongest
+            // co-occurrence pairs: plc_dustplume + x0_tomb (63) and _mdrn_pl_pall009 + _mdrn_pl_ration
+            // (38) -> vignettes.
+            _builder
+                .Decoration("_mdrn_pl_crate08", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_conta52", 3, DecorationContext.WallAdjacent)
+                .Decoration("swd_build007", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_generas", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_machin1", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_chrmtgr", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_fog001", 3, DecorationContext.CorridorSide)
+                .Decoration("zep_fog002", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_water001", 2, DecorationContext.CorridorSide)
+                .Decoration("structure_rubble", 2, DecorationContext.CorridorSide)
+                .Decoration("structure_rubble", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_frcfw2", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_carpt04", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_ration", 1, DecorationContext.DoorwayFlank)
+                .Vignette("SewerRationStash", 2)
+                .VignetteMember("_mdrn_pl_ration", 0f, 0f)
+                .VignetteMember("_mdrn_pl_pall009", 1.2f, 0.4f);
+
             // Sci-Fi Base (reference: czs220_maintlvl). No accent coverage. Every partially-open
             // corner combo on zsf01 carries a movement-restricted pathnode (H/I) — only fully-open
             // tiles are pathnode A — so 1-wide door gaps and corridors fail the engine path check.
@@ -135,6 +181,25 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // exercisable in Facility's own default Complex (Tunnel mode) pairing.
                 .SetPiece("StairsUP", 1)
                 .SetPiece("StairsDOWN", 1);
+
+            // Facility's own bulk palette — mined from zsf01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['zsf01'], 8 areas). Strongest
+            // co-occurrence pair: _mdrn_pl_hwall33 + _mdrn_pl_lghtpl3 (8) -> vignette.
+            _builder
+                .Decoration("_mdrn_pl_contpan", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall33", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_divider", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_conso23", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_contr01", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_cabi002", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_clntnke", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_cryotk2", 2, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_engctr1", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_fac13xe", 1, DecorationContext.DoorwayFlank)
+                .Vignette("FacilityLightPanel", 3)
+                .VignetteMember("_mdrn_pl_hwall33", 0f, 0f)
+                .VignetteMember("_mdrn_pl_lghtpl3", 0.8f, 1.2f);
 
             // Alien Ruin (reference: korr_crypt_zil). Chasm lacks coverage — no accents.
             // 'Plaza' carries 11 fully-open tile variants vs 4 on the declared 'Floor'.
@@ -216,6 +281,27 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Room 5 2x2")
                 .ExitGroup("ExteriorExit01")
                 .ExitGroup("ExteriorExit02");
+
+            // Ancient Ruin's own bulk palette — mined from vmr01 hand-built reference areas
+            // (decoration_evidence/evidence_by_tileset.json['vmr01'], 5 areas). Strongest
+            // co-occurrence pair: _mdrn_pl_frcf002 + _mdrn_pl_frcfw (36, a force-field gate pairing)
+            // -> vignette.
+            _builder
+                .Decoration("_mdrn_pl_hwall34", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_walls06", 3, DecorationContext.WallAdjacent)
+                .Decoration("swd3_wall001", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall11", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_hwall06", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_walls09", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_carpt04", 2, DecorationContext.CorridorSide)
+                .Decoration("swd_flormh01", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_pillr18", 2, DecorationContext.RoomCenter)
+                .Decoration("swd_conta002", 1, DecorationContext.RoomCenter)
+                .Decoration("swp_banner0001", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_frcfw", 1, DecorationContext.DoorwayFlank)
+                .Vignette("RuinForcefieldGate", 2)
+                .VignetteMember("_mdrn_pl_frcfw", 0f, 0f)
+                .VignetteMember("_mdrn_pl_frcf001", 0f, 1.0f);
 
             return _builder.Build();
         }

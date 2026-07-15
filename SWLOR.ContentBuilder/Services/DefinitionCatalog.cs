@@ -21,7 +21,9 @@ namespace SWLOR.ContentBuilder.Services
         {
             var themes = Discover<IDungeonListDefinition, DungeonDetail>(d => d.BuildDungeons());
             Themes = themes.Values.OrderBy(t => t.DisplayName).ToList();
-            TilesetProfiles = Discover<IDungeonTilesetProfileListDefinition, DungeonTilesetProfile>(d => d.BuildTilesetProfiles());
+            var tilesetProfiles = Discover<IDungeonTilesetProfileListDefinition, DungeonTilesetProfile>(d => d.BuildTilesetProfiles());
+            DungeonTilesetPaletteInheritance.Apply(tilesetProfiles);
+            TilesetProfiles = tilesetProfiles;
             LayoutProfiles = Discover<IDungeonLayoutProfileListDefinition, DungeonLayoutProfile>(d => d.BuildLayoutProfiles());
         }
 

@@ -169,9 +169,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // GROUPS (b_wall_door/d_wall_door/b_road_door/d_road_door) and on ten flat, ungrouped,
         // murs-edged ordinary tiles (ry TILE223-232), the same "district's own body-renamed door
         // crosser" shape as Barrows' "door_corridor" precedent. "pont" (Bridge-equivalent, gates the
-        // holes chasm at TILE5-7/96-98/119-124) and "Routes" (flat road-marking lanes at TILE207-216,
-        // never door-bearing) have no wired body/port or DoorSlotCrossers vocabulary in this wave --
-        // see TileCoverageCensusTests' fcx01 PilotExpectedExemptions entries for the exact accounting.
+        // holes chasm at TILE5-7/96-98/119-124) has no wired body/port or DoorSlotCrossers vocabulary in
+        // this wave -- see TileCoverageCensusTests' fcx01 PilotExpectedExemptions entries for the exact
+        // accounting. "Routes" (flat road-marking lanes at TILE207-216, never door-bearing) is now wired
+        // as a RoadCrosser (see LayoutRoadCarver/RoadVocabularyCheck): street lanes carved between
+        // transition anchors and room centers, routed around LayoutGroupStamper's already-stamped
+        // building footprints, closing the "disconnected road decals crossing empty plazas" tile-
+        // composition gap real hand-built fcx01 areas (pw_ar_narpromena etc.) don't have.
         // Two parallel palettes exist, prefixed by GROUP name (not by terrain alone): "b_"-prefixed
         // GROUPS and the unprefixed Towers are Cobble-cornered (this base profile); "d_"-prefixed GROUPS
         // are Cobble2-cornered (FutCityPlaza below) -- EXCEPT Tower04/Tower06 (Cobble2, wired on the
@@ -2664,6 +2668,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // MinimumOpeningWidth_MatchesFreshPathNodeAudit.
                 .MinimumOpeningWidth(2)
                 .DoorSlotCrossers("murs")
+                // RoadVocabularyCheck.SupportsRoads(fcx01, "Cobble", "Routes") verified true: TILE207
+                // (stub), TILE210 (straight), TILE207 (turn; same physical tile, TileResolver's own
+                // rotation search covers both), TILE208 (T), TILE209 (X) are all uniformly Cobble-
+                // cornered, PathNode=A, doorless -- see LayoutRoadCarver/RoadVocabularyCheck's own doc
+                // comments. Was PilotAlternateVocabCrossers-exempt ("Routes ... have no wired body/port
+                // ... vocabulary in this wave", see this profile's own header comment) before this pass.
+                .RoadCrosser("Routes")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)
                 .FeatureTile("b_arbre")
@@ -2722,6 +2733,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SolidTerrainOverride("holes")
                 .PrimaryOpenTerrain("Cobble2")
                 .DoorSlotCrossers("murs")
+                // Same "Routes" crosser as the base FutCity profile, resolving against the Cobble2-
+                // cornered TILE212-216 physical variants instead -- see FutCity's own RoadCrosser
+                // comment above.
+                .RoadCrosser("Routes")
                 .FeatureTile("d_herbe")
                 .FeatureTile("d_eau")
                 .SetPiece("Tower04")

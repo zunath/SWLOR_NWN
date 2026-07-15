@@ -1099,11 +1099,14 @@ public class TileCoverageCensusTests
             "RuralWallOne", "RuralWallTwo",
         },
         ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
-        // fcx01: "pont" (Bridge-equivalent, gates the holes chasm) and "Routes" (flat road-marking
-        // lanes) have no wired body/port or DoorSlotCrossers vocabulary -- see
-        // BaseGameTilesetProfiles.FutCity's own doc comment. "murs" is NOT here: it's wired via
-        // DoorSlotCrossers("murs").
-        ["fcx01"] = new(StringComparer.OrdinalIgnoreCase) { "pont", "Routes" },
+        // fcx01: "pont" (Bridge-equivalent, gates the holes chasm) has no wired body/port or
+        // DoorSlotCrossers vocabulary -- see BaseGameTilesetProfiles.FutCity's own doc comment. "murs"
+        // is NOT here: it's wired via DoorSlotCrossers("murs"). "Routes" is no longer here either:
+        // BaseGameTilesetProfiles.FutCity/FutCityPlaza now declare it as RoadCrosser (see
+        // LayoutRoadCarver/RoadVocabularyCheck) -- the census now credits TILE207-216 via
+        // IsCornerEdgeResolverReachable the same way every other declared-and-verified crosser family
+        // in this file already is, rather than auto-exempting them as unwired.
+        ["fcx01"] = new(StringComparer.OrdinalIgnoreCase) { "pont" },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -1294,10 +1297,18 @@ public class TileCoverageCensusTests
         // cornered, a "murs" crosser edge on two opposite sides, one door) also fail: DoorSlotCrossers
         // only ever credits ungrouped tiles (GroupIndex != -1 excludes this GROUP structurally), and no
         // GROUP-level mechanism recognizes an Open-cornered piece carrying a non-canonical crosser plus
-        // a door.
+        // a door. "b_road_door"/"d_road_door" (TILE235/236, verified directly via ZZ-style probe) are
+        // the identical shape one crosser richer -- "murs" on the Top/Bottom edges (a wall gate) PLUS
+        // "Routes" on Right/Left (the road passing through the gate) -- and fail for the same reason:
+        // no GROUP-level mechanism recognizes a door-bearing 1x1 carrying this non-canonical crosser
+        // pair, regardless of "Routes" now being wired as RoadCrosser for LayoutRoadCarver's own
+        // open-terrain (crosser-free-of-doors) lane cells. Wiring a wall-gate-with-road-door mechanism
+        // is out of this pass's scope (LayoutRoadCarver never carves through "murs" walls at all).
         ("fcx01", "GROUP:platform1"),
         ("fcx01", "GROUP:b_wall_door"),
         ("fcx01", "GROUP:d_wall_door"),
+        ("fcx01", "GROUP:b_road_door"),
+        ("fcx01", "GROUP:d_road_door"),
     };
 
     public static IEnumerable<string> PilotTilesetKeys => new[]

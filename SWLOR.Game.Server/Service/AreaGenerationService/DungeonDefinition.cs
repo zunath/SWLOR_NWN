@@ -138,6 +138,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int MinimumOpeningWidth { get; set; } = 1;
 
         /// <summary>
+        /// Edge-crosser name this tileset's road/route-marking tile family carves (e.g. fcx01's
+        /// "Routes") -- see LayoutRoadCarver/RoadVocabularyCheck. Unlike ChannelTerrain/AccentTerrain,
+        /// a road never repaints corner terrain: every road cell stays this composition's own
+        /// PrimaryOpenTerrain, so no separate terrain slot is needed. Empty = the tileset has no
+        /// verified road-lane vocabulary; compositions skip road carving entirely (fully back-compat).
+        /// Only set after verifying RoadVocabularyCheck.SupportsRoads returns true, mirroring every
+        /// other tileset-declared capability in this file.
+        /// </summary>
+        public string RoadCrosser { get; set; } = string.Empty;
+
+        /// <summary>
         /// Terrain used for the SOLID (wall/impassable) mass. Empty = the tileset's declared Default
         /// terrain, which is correct for every interior tileset (their GENERAL Default IS the wall).
         /// EXTERIOR tilesets invert this: ttd01/ttf01/ttf02 declare Default==Floor=="Desert"/"Forest"
@@ -450,6 +461,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     : string.Empty;
             if (parameters.ChannelTerrain.Length == 0)
                 parameters.AccentChannels = 0;
+            // Roads have no terrain slot of their own (see DungeonTilesetProfile.RoadCrosser's doc
+            // comment) -- just the crosser name, gated the same "layout expresses intent via RoadLanes,
+            // tileset caps it to verified support" shape as every other declared capability here.
+            parameters.RoadCrosser = Tileset.RoadCrosser ?? string.Empty;
+            if (parameters.RoadCrosser.Length == 0)
+                parameters.RoadLanes = 0;
             parameters.CorridorWidth = Math.Max(parameters.CorridorWidth, Tileset.MinimumOpeningWidth);
             // Tunnel body/port crosser vocabulary: a tileset profile may declare an alternate crosser
             // family (e.g. tdc01's GreyCorridor body paired with the canonical Doorway port) that is
@@ -901,6 +918,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder RampCrosser(string crosserName)
         {
             _active.RampCrosser = crosserName;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the edge-crosser name this tileset's road/route-marking tile family carves (e.g.
+        /// fcx01's "Routes") -- see DungeonTilesetProfile.RoadCrosser. Only call this after verifying
+        /// RoadVocabularyCheck.SupportsRoads(tileset, openTerrain, crosserName) returns true against
+        /// the real tileset data, not merely that the crosser name appears in the .set CROSSER TYPES
+        /// list.
+        /// </summary>
+        public DungeonTilesetProfileBuilder RoadCrosser(string crosserName)
+        {
+            _active.RoadCrosser = crosserName;
             return this;
         }
 

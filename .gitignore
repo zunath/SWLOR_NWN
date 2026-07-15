@@ -281,3 +281,5 @@ Module/SWLOR Procgen Review.mod
 /tools/SWLOR.CLI/InputFiles/
 /tools/SWLOR.CLI/Templates/
 /tools/SWLOR.CLI/*.pdb
+
+_scratch_decor/

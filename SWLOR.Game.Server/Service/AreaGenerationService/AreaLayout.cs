@@ -537,6 +537,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public int FenceLines { get; set; } = 0;
 
+        /// <summary>
+        /// Number of street-style Road edge-crosser lanes LayoutRoadCarver connects between transition
+        /// anchors and room centers, through open space, AFTER LayoutGroupStamper has already stamped
+        /// set pieces -- so a lane naturally routes between/around stamped buildings rather than
+        /// through them (see LayoutRoadCarver's own doc comment for why it runs last). Unlike
+        /// AccentChannels/FenceLines, a nonzero default is set directly here rather than opted into per
+        /// layout profile: a road lane is a general composition improvement (real hand-built city
+        /// tilesets carve streets through every open plaza), not a narrative per-profile choice, and it
+        /// is fully inert on every tileset that never declares DungeonTilesetProfile.RoadCrosser (see
+        /// DungeonComposition.BuildLayoutParameters, which zeroes this out whenever the composed
+        /// tileset has no verified road vocabulary) -- so this default only ever takes effect on a
+        /// composition that opts in via the tileset side of the pairing. 0 disables road carving.
+        /// </summary>
+        public int RoadLanes { get; set; } = 6;
+
+        /// <summary>
+        /// Effective Road edge-crosser name LayoutRoadCarver carves. Stamped from
+        /// DungeonTilesetProfile.RoadCrosser by DungeonComposition.BuildLayoutParameters; empty when
+        /// the composed tileset never declared one (RoadLanes is zeroed alongside it in that case).
+        /// </summary>
+        public string RoadCrosser { get; set; } = string.Empty;
+
         /// <summary>Arrival points assigned to rooms (1..3). The first is the primary anchor.</summary>
         public int EntranceCount { get; set; } = 1;
         /// <summary>Outbound exit points assigned to rooms (1..3). Exit placeables spawn at each.</summary>

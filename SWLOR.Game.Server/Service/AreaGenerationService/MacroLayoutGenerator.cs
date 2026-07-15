@@ -165,6 +165,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (tileset != null)
                 LayoutGroupStamper.Stamp(layout, parameters, tileset, random);
 
+            // Runs LAST, after set pieces are stamped: LayoutRoadCarver deliberately consults
+            // LayoutGroupStamper's own PinnedTiles as its "occupied by a building" signal so a carved
+            // lane routes between/around stamped groups instead of through them -- see that class's own
+            // doc comment for why this differs from AccentChannelCarver/FenceCarver's earlier slot.
+            LayoutRoadCarver.CarveRoads(layout, parameters, tileset, random);
+
             ValidateInvariants(layout, parameters);
 
             return layout;

@@ -24,6 +24,7 @@
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\MacroLayoutGenerator.cs" Link="Generation\MacroLayoutGenerator.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileResolver.cs" Link="Generation\TileResolver.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TunnelVocabularyCheck.cs" Link="Generation\TunnelVocabularyCheck.cs" />
+    <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\RoadVocabularyCheck.cs" Link="Generation\RoadVocabularyCheck.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileDoorPlanner.cs" Link="Generation\TileDoorPlanner.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\TileDoorGeometry.cs" Link="Generation\TileDoorGeometry.cs" />
     <Compile Include="..\SWLOR.Game.Server\Service\AreaGenerationService\GroupExitPlanner.cs" Link="Generation\GroupExitPlanner.cs" />

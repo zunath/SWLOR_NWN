@@ -219,10 +219,14 @@ public class PlayerFacingNameBroadcastTests
             .Where(path =>
             {
                 var areaResref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(path));
-                return areaResref.StartsWith("vrotr") ||
+                var hasEventResref = areaResref.StartsWith("vrotr") ||
                        areaResref.StartsWith("ka_") ||
                        areaResref.StartsWith("na_ka_") ||
                        areaResref == "republicshipevnt";
+                // The DM Comms event areas are all "[Prefab] ..." prefab areas. Require the prefab
+                // name too, so non-prefab areas that merely share a resref prefix (e.g. the capstone
+                // boss arena ka_ar_czweaparen) are not held to the COMMS_EVENT_AREA invariant.
+                return hasEventResref && GetAreaDisplayName(path).StartsWith("[Prefab]", StringComparison.Ordinal);
             })
             .ToList();
 

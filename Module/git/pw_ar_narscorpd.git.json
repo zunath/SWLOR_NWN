@@ -434687,7 +434687,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "SMUG_CZERKA_WEAPONS_TEST_EXIT"
+                "value": "SMUG_CZERKA_WEAPONS_TEST_ENT"
               }
             },
             {
@@ -434717,7 +434717,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": ""
+                "value": "The testing facility's blast doors are sealed. A Czerka Arms Test Range access key is required."
               }
             },
             {
@@ -434732,7 +434732,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 113
               }
             },
             {
@@ -434777,7 +434777,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 1
               }
             }
           ]

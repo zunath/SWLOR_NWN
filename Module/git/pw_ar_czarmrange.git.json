@@ -40,26 +40,6 @@
       "MusicNight": {
         "type": "int",
         "value": 435
-      },
-      "VarTable": {
-        "type": "list",
-        "value": [
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "PLANET_TYPE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 1
-            },
-            "Value": {
-              "type": "int",
-              "value": 256
-            }
-          }
-        ]
       }
     }
   },
@@ -347524,6 +347504,345 @@
           "type": "float",
           "value": -5.7220458984375e-006
         }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 479
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -3.141591787338257
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "id": 14533,
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "id": 5670,
+          "type": "cexolocstring",
+          "value": {
+            "0": "[Exit]"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "teleport"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "tele_obj"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "tele_obj"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "SMUG_CZERKA_WEAPONS_TEST_EXIT"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "MISSING_KEY_ITEM_MESSAGE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "KEY_ITEM_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_OBJECT_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_HIDDEN_DEFAULT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 112.5336380004883
+        },
+        "Y": {
+          "type": "float",
+          "value": 6.665340423583984
+        },
+        "Z": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
       }
     ]
   },
@@ -347659,10 +347978,332 @@
   },
   "TriggerList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cursor": {
+          "type": "byte",
+          "value": 1
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Geometry": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02499999850988388
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.07375335693359375
+              },
+              "PointY": {
+                "type": "float",
+                "value": -1.912643432617188
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02500000037252903
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 5.163063049316406
+              },
+              "PointY": {
+                "type": "float",
+                "value": -1.78271484375
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02500000037252903
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 5.174560546875
+              },
+              "PointY": {
+                "type": "float",
+                "value": -0.023529052734375
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02500000037252903
+              }
+            }
+          ]
+        },
+        "HighlightHeight": {
+          "type": "float",
+          "value": 0.0
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": "WP_SMUG_CZERKA_ARENA_TO_WEAPONS"
+        },
+        "LinkedToFlags": {
+          "type": "byte",
+          "value": 2
+        },
+        "LoadScreenID": {
+          "type": "word",
+          "value": 0
+        },
+        "LocalizedName": {
+          "id": 14760,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnEnter": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnExit": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SMUG_CZERKA_WEAPONS_TO_ARENA"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "newtransition"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "int",
+          "value": 1
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 102.6052474975586
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 152.5541229248047
+        },
+        "ZOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      }
+    ]
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SMUG_CZERKA_WEAPONS_TEST_ENT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 112.3962020874023
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 7.105330467224121
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "WP_SMUG_CZERKA_WEAPONS_TO_ARENA"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.02454144880175591
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 105.06005859375
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.99969881772995
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 150.4289093017578
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      }
+    ]
   }
 }

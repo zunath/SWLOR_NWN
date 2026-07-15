@@ -3093,6 +3093,13 @@
           "type": "resref",
           "value": "pw_sc_emfbackr"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "ka_ar_czweaparen"
+        }
       }
     ]
   },

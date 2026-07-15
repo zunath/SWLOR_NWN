@@ -134,6 +134,41 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         private const int CorridorLikeMaxSpan = 2;
 
         /// <summary>
+        /// Largest number of consecutive placements PlaceWallRuns emits along one (context, wall
+        /// direction) bucket before forcing a real gap and starting a fresh segment — round-3
+        /// decoration-quality fix for the reported "ring" artifact: an open room's perimeter used to
+        /// be dressed as ONE continuous run per wall-facing direction with no cap, so a room whose
+        /// entire perimeter was wall-eligible (the common case on tilesets like fcx01 where "solid
+        /// terrain" is platform gaps, not real walls) got the SAME motif wrapped evenly around all
+        /// four sides — a closed ring no hand-built reference area produces at this fixture density
+        /// (see decoration_evidence/ round-3 statistics harness: hand-built same-resref closed-loop
+        /// rate is near-zero for wall-hugging set dressing, and what little occurs is a different
+        /// kind of thing — floor-decal motifs, not repeated vertical fixtures). 6 matches the
+        /// hand-built per-family longest-run p90 for the typical (non-warehouse-density) families.
+        /// </summary>
+        internal const int MaxRunSegmentLength = 6;
+
+        /// <summary>
+        /// Extra whole-spacing steps skipped (on top of the run's own jittered spacing) when a segment
+        /// hits <see cref="MaxRunSegmentLength"/>, so the next segment reads as a visually separate
+        /// wall cluster rather than a continuation of the same run.
+        /// </summary>
+        private const int RunSegmentGapExtraSteps = 1;
+
+        /// <summary>
+        /// Largest number of times a single resref may appear as wall/corridor/doorway-hugging
+        /// dressing in one room, across every run/side in that room — independent of and in addition
+        /// to <see cref="MaxRunSegmentLength"/> (that caps one straight segment; this caps the whole
+        /// room, so four capped sides can't still add up to one uniform ring of the same fixture).
+        /// Derived from the hand-built grid-bucket same-resref-repeat p90 across the typical
+        /// (non-warehouse-density) mined families — see decoration_evidence/handbuilt_summary.json.
+        /// Once every motif/palette entry for a room+context hits this cap, PlaceWallRuns stops
+        /// dressing that bucket rather than overflowing it (a real hand-built room does not have
+        /// unlimited copies of one fixture either).
+        /// </summary>
+        internal const int MaxSameResrefPerRoomContext = 5;
+
+        /// <summary>
         /// Largest number of DISTINCT resrefs a single room draws into its own wall/corridor motif
         /// (see PickMotif) — "choose 1-3 decoration types per room and repeat them" per the brief;
         /// keeps a room internally consistent instead of sampling the full palette per placement.
@@ -426,9 +461,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>
         /// Groups a room's eligible tiles for one DecorationContext into straight wall/corridor "runs"
         /// (one group per quantized wall-facing direction, ordered along the run) and dresses each run
-        /// at an even spacing derived from wallProbability — "evenly-spaced repetition of one fixture
-        /// type along a wall" instead of an independent per-tile coin flip. Each run draws only from
-        /// that room's own small motif set (see PickMotif) for internal consistency.
+        /// at a JITTERED spacing derived from wallProbability, split into segments of at most
+        /// <see cref="MaxRunSegmentLength"/> separated by a real gap — "an irregular cluster of a few
+        /// fixtures along part of a wall" instead of either an independent per-tile coin flip OR one
+        /// perfectly even run wrapping the room's entire perimeter (the reported "ring" artifact).
+        /// Each run draws only from that room's own small motif set (see PickMotif) for internal
+        /// consistency, additionally capped per-resref by <see cref="MaxSameResrefPerRoomContext"/>
+        /// across the WHOLE room (not just one run/side) via a usage-count table scoped to this one
+        /// call (PlaceWallRuns runs once per room), so multiple wall-direction buckets in the same
+        /// room/context share one budget instead of each independently maxing out the same fixture.
         /// </summary>
         private static void PlaceWallRuns(
             List<PlannedDecoration> plan, LayoutRoom room, HashSet<(int X, int Y)> tileSet, bool isCorridorLike,
@@ -469,6 +510,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             var spacing = Math.Max(1, (int)Math.Round(1.0 / wallProbability));
 
+            // Shared across every (context, direction) bucket in THIS room, so e.g. all four walls of
+            // one open room draw down the SAME per-resref budget instead of each independently maxing
+            // out — see MaxSameResrefPerRoomContext's doc comment.
+            var resrefUsageCounts = new Dictionary<(DecorationContext Context, string Resref), int>();
+
+            // A SECOND small motif per (room, context), drawn lazily only once the primary motif's
+            // per-resref budget (MaxSameResrefPerRoomContext) runs out — "second motif ... filling
+            // beyond the cap" per the round-3 decoration-quality brief, rather than falling back to
+            // the room's entire palette bucket (which would blow past the hand-built-evidence-backed
+            // "a room repeats a small handful of fixture types" pattern PickMotif exists to encode).
+            var secondaryMotifCache = new Dictionary<DecorationContext, List<string>>();
+
             foreach (var ((context, direction), tiles) in runs.OrderBy(kv => kv.Key.Direction).ThenBy(kv => kv.Key.Context))
             {
                 // Sort along the run's own axis: a wall facing +/-X runs along Y, a wall facing +/-Y
@@ -494,18 +547,82 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (motifEntries.Count == 0)
                     motifEntries = entries;
 
-                var start = rng.Next(spacing);
-                for (var i = start; i < ordered.Count; i += spacing)
+                if (!secondaryMotifCache.TryGetValue(context, out var secondaryMotif))
+                {
+                    var remaining = entries.Where(e => !motif.Contains(e.Resref)).ToList();
+                    secondaryMotif = remaining.Count > 0 ? PickMotif(remaining, rng) : new List<string>();
+                    secondaryMotifCache[context] = secondaryMotif;
+                }
+                var secondaryMotifEntries = entries.Where(e => secondaryMotif.Contains(e.Resref)).ToList();
+
+                // Jittered, segmented walk along the run instead of a perfectly even `i += spacing`
+                // stride: hand-built reference wall/corridor spacing has a real coefficient of
+                // variation (~0.5-1.4 across mined families, see decoration_evidence/ round-3
+                // statistics harness) — machine-even spacing is itself part of what reads as
+                // artificial. jitterRange = spacing gives a uniform-distributed step with CV ~0.58, a
+                // conservative move toward that measured irregularity without risking a degenerate
+                // (near-zero or negative) step.
+                var jitterRange = Math.Max(1, spacing);
+                var i = rng.Next(spacing);
+                var segmentLength = 0;
+
+                while (i < ordered.Count)
                 {
                     var tile = ordered[i];
                     var wallDir = NearestWallDirection(tile, tileSet);
-                    if (wallDir == null)
-                        continue;
+                    if (wallDir != null)
+                    {
+                        var resref = PickResrefUnderRoomCap(motifEntries, secondaryMotifEntries, entries, resrefUsageCounts, context, rng);
+                        if (resref != null)
+                        {
+                            plan.Add(BuildWallHuggingPlacement(tile, wallDir.Value, resref, context));
+                            segmentLength++;
+                        }
+                    }
 
-                    var resref = PickWeighted(motifEntries, rng);
-                    plan.Add(BuildWallHuggingPlacement(tile, wallDir.Value, resref, context));
+                    var step = Math.Max(1, spacing + rng.Next(-jitterRange, jitterRange + 1));
+                    if (segmentLength >= MaxRunSegmentLength)
+                    {
+                        // Force a real gap before starting the next segment — this is what makes a
+                        // long wall read as a few distinct dressed clusters instead of one continuous
+                        // run (or, worst case, a run that wraps the room's entire perimeter).
+                        step += spacing * (RunSegmentGapExtraSteps + 1);
+                        segmentLength = 0;
+                    }
+
+                    i += step;
                 }
             }
+        }
+
+        /// <summary>
+        /// Weighted-picks a resref for one wall/corridor/doorway placement, excluding any resref that
+        /// has already reached <see cref="MaxSameResrefPerRoomContext"/> for this room+context — tried
+        /// in tiers: the room's own primary small motif first, then its secondary motif (drawn lazily
+        /// once the primary is exhausted — see PlaceWallRuns), then the full palette bucket as a last
+        /// resort so a heavily-capped room still keeps dressing rather than stopping early. Returns
+        /// null (place nothing at this tile) only once every candidate for this room+context is at cap.
+        /// </summary>
+        private static string PickResrefUnderRoomCap(
+            List<DungeonDecorationEntry> motifEntries, List<DungeonDecorationEntry> secondaryMotifEntries,
+            List<DungeonDecorationEntry> fallbackEntries,
+            Dictionary<(DecorationContext Context, string Resref), int> resrefUsageCounts,
+            DecorationContext context, System.Random rng)
+        {
+            bool UnderCap(DungeonDecorationEntry e) =>
+                resrefUsageCounts.GetValueOrDefault((context, e.Resref)) < MaxSameResrefPerRoomContext;
+
+            var available = motifEntries.Where(UnderCap).ToList();
+            if (available.Count == 0)
+                available = secondaryMotifEntries.Where(UnderCap).ToList();
+            if (available.Count == 0)
+                available = fallbackEntries.Where(UnderCap).ToList();
+            if (available.Count == 0)
+                return null;
+
+            var resref = PickWeighted(available, rng);
+            resrefUsageCounts[(context, resref)] = resrefUsageCounts.GetValueOrDefault((context, resref)) + 1;
+            return resref;
         }
 
         /// <summary>

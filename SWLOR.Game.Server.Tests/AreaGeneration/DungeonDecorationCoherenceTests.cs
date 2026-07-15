@@ -420,4 +420,342 @@ public class DungeonDecorationCoherenceTests
             $"the composed TILESET's own palette should dominate the plan (got {placedFromFutCity}/{totalPlaced} from Futuristic City, " +
             $"{placedFromAlienRuinAccents}/{totalPlaced} from Alien Ruin's own accents)");
     }
+
+    // -------------------------------------------------------------------------------------------
+    // Round-3 distribution-matching regressions (see decoration_evidence/ round-3 statistics
+    // harness: a Python harness applied the SAME metrics below to hand-built reference areas and to
+    // the generated planner's own output and reported a before/after divergence table). These four
+    // tests encode the metrics that harness measured directly as data-derived C# regressions, so the
+    // reported "ring" artifact (an open room's entire perimeter dressed as one evenly-spaced run of
+    // an identical fixture) can never silently regress.
+    // -------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Round-3 metric (1): per-room same-resref repeat count for wall/corridor/doorway-hugging
+    /// dressing must never exceed DungeonDecorationPlanner.MaxSameResrefPerRoomContext (5) —
+    /// derived from the hand-built grid-bucket same-resref-repeat p90 across the typical
+    /// (non-warehouse-density) mined tileset families (see decoration_evidence/
+    /// handbuilt_summary.json: tdt01/zsf01/ttf01/tin01/tsw01/ttd01 sit at p90 3-5; families like
+    /// tds01/vmr01/tii01/tdm01/tdr01/fcx01 run much higher, but that is warehouse/floor-motif set
+    /// dressing — a different arrangement kind than the vertical wall-hugging fixtures this cap
+    /// governs).
+    /// </summary>
+    [Test]
+    public void Plan_SameResrefPerRoom_NeverExceedsCap()
+    {
+        var dungeons = BuildAllDungeons();
+        var tilesets = BuildAllTilesetProfiles();
+        var violations = new List<string>();
+        var groupsChecked = 0;
+
+        foreach (var (themeKey, tilesetKey) in SampleCompositions)
+        {
+            var detail = dungeons[themeKey];
+            var tileset = tilesets[tilesetKey];
+            var vignetteMemberResrefs = tileset.Vignettes.SelectMany(v => v.Members).Select(m => m.Resref)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var seed in Seeds)
+            {
+                ResolvedLayout layout;
+                try { layout = ResolveLayout(detail, tileset, seed, size: 24); }
+                catch (Exception) { continue; }
+
+                var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, 150);
+
+                var groups = plan
+                    .Where(p => p.Context is DecorationContext.WallAdjacent or DecorationContext.CorridorSide or DecorationContext.DoorwayFlank)
+                    .Where(p => !vignetteMemberResrefs.Contains(p.Resref))
+                    .GroupBy(p => (RoomId: RoomIdForTile(layout, RecoverTile(p.Position)), p.Context, p.Resref));
+
+                foreach (var group in groups)
+                {
+                    if (group.Key.RoomId < 0)
+                        continue;
+
+                    groupsChecked++;
+                    var count = group.Count();
+                    if (count > DungeonDecorationPlanner.MaxSameResrefPerRoomContext)
+                        violations.Add($"{themeKey}/{tilesetKey} seed {seed} room {group.Key.RoomId} {group.Key.Context} {group.Key.Resref}: " +
+                                       $"{count} (cap {DungeonDecorationPlanner.MaxSameResrefPerRoomContext})");
+                }
+            }
+        }
+
+        groupsChecked.Should().BeGreaterThan(20, "the sample compositions/seeds should produce plenty of room/resref groups to check");
+        violations.Should().BeEmpty(string.Join(Environment.NewLine, violations));
+    }
+
+    /// <summary>
+    /// Round-3 metric (2): the longest colinear, regularly-spaced same-resref chain among a room's
+    /// wall/corridor/doorway-hugging dressing must never exceed
+    /// DungeonDecorationPlanner.MaxRunSegmentLength (6) — mirrors the statistics harness's own
+    /// run-detection method exactly (colinear grouping by shared axis within a 2-unit tolerance,
+    /// chained while consecutive gaps stay under a 15-unit run-continuity tolerance — see
+    /// LongestColinearChain) so this test measures precisely what the harness measured against
+    /// hand-built reference areas.
+    /// </summary>
+    [Test]
+    public void Plan_LongestColinearSameResrefChain_StaysWithinCap()
+    {
+        var dungeons = BuildAllDungeons();
+        var tilesets = BuildAllTilesetProfiles();
+        var violations = new List<string>();
+        var chainsChecked = 0;
+
+        foreach (var (themeKey, tilesetKey) in SampleCompositions)
+        {
+            var detail = dungeons[themeKey];
+            var tileset = tilesets[tilesetKey];
+            var vignetteMemberResrefs = tileset.Vignettes.SelectMany(v => v.Members).Select(m => m.Resref)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var seed in Seeds)
+            {
+                ResolvedLayout layout;
+                try { layout = ResolveLayout(detail, tileset, seed, size: 24); }
+                catch (Exception) { continue; }
+
+                var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, 150);
+
+                var groups = plan
+                    .Where(p => p.Context is DecorationContext.WallAdjacent or DecorationContext.CorridorSide or DecorationContext.DoorwayFlank)
+                    .Where(p => !vignetteMemberResrefs.Contains(p.Resref))
+                    .GroupBy(p => (RoomId: RoomIdForTile(layout, RecoverTile(p.Position)), p.Context, p.Resref));
+
+                foreach (var group in groups)
+                {
+                    if (group.Key.RoomId < 0 || group.Count() < 2)
+                        continue;
+
+                    chainsChecked++;
+                    var chain = LongestColinearChain(group.Select(p => p.Position).ToList());
+                    if (chain > DungeonDecorationPlanner.MaxRunSegmentLength)
+                        violations.Add($"{themeKey}/{tilesetKey} seed {seed} room {group.Key.RoomId} {group.Key.Context} {group.Key.Resref}: " +
+                                       $"chain {chain} (cap {DungeonDecorationPlanner.MaxRunSegmentLength})");
+                }
+            }
+        }
+
+        chainsChecked.Should().BeGreaterThan(10, "the sample compositions/seeds should produce plenty of 2+-member same-resref groups to check");
+        violations.Should().BeEmpty(string.Join(Environment.NewLine, violations));
+    }
+
+    /// <summary>
+    /// Round-3 metric (3) — THE regression for the reported bug: no room's wall/corridor/doorway
+    /// same-resref group may form a closed perimeter ring (see IsClosedRing). Checked across every
+    /// sample composition/seed at three sizes (20/24/28) specifically to stress the large-open-room
+    /// case the report's screenshot showed (a Futuristic City plaza where nearly the whole perimeter
+    /// was wall-eligible). The statistics harness measured this exact metric against hand-built
+    /// reference areas and found it near-zero (0-4 out of 32-519 same-resref groups per family,
+    /// depending on family, versus up to 10/300 in this planner's PRE-FIX output) — this test holds
+    /// the fixed planner to zero, matching what the harness measured post-fix across 12 families x
+    /// 30-40 seeds each.
+    /// </summary>
+    [Test]
+    public void Plan_NoRoomHasClosedRingOfWallHuggingDecorations()
+    {
+        var dungeons = BuildAllDungeons();
+        var tilesets = BuildAllTilesetProfiles();
+        var violations = new List<string>();
+        var candidateGroupsChecked = 0;
+        var sizes = new[] { 20, 24, 28 };
+
+        foreach (var (themeKey, tilesetKey) in SampleCompositions)
+        {
+            var detail = dungeons[themeKey];
+            var tileset = tilesets[tilesetKey];
+            var vignetteMemberResrefs = tileset.Vignettes.SelectMany(v => v.Members).Select(m => m.Resref)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var seed in Seeds)
+            foreach (var size in sizes)
+            {
+                ResolvedLayout layout;
+                try { layout = ResolveLayout(detail, tileset, seed, size: size); }
+                catch (Exception) { continue; }
+
+                var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, 150);
+
+                var groups = plan
+                    .Where(p => p.Context is DecorationContext.WallAdjacent or DecorationContext.CorridorSide or DecorationContext.DoorwayFlank)
+                    .Where(p => !vignetteMemberResrefs.Contains(p.Resref))
+                    .GroupBy(p => (RoomId: RoomIdForTile(layout, RecoverTile(p.Position)), p.Context, p.Resref));
+
+                foreach (var group in groups)
+                {
+                    if (group.Key.RoomId < 0 || group.Count() < 4)
+                        continue;
+
+                    candidateGroupsChecked++;
+                    if (IsClosedRing(group.Select(p => p.Position).ToList(), out var metrics))
+                        violations.Add($"{themeKey}/{tilesetKey} seed {seed} size {size} room {group.Key.RoomId} {group.Key.Context} {group.Key.Resref}: " +
+                                       $"span={metrics.Span:0.0} radiusCv={metrics.RadiusCv:0.00} gapCv={metrics.GapCv:0.00}");
+                }
+            }
+        }
+
+        candidateGroupsChecked.Should().BeGreaterThan(5, "the sample compositions/seeds/sizes should produce at least a few 4+-member same-resref groups to check");
+        violations.Should().BeEmpty(string.Join(Environment.NewLine, violations));
+    }
+
+    /// <summary>
+    /// Round-3 metric (4): nearest-neighbor same-resref distance (whole-area, not room-scoped) should
+    /// land within the broad range the statistics harness measured across every mined hand-built
+    /// family — p50 ranged 1.39-17.83 world units and p90 ranged 4.55-50.16 across the 12 mined
+    /// families (see decoration_evidence/handbuilt_summary.json nn_same_type_distance) — a coarse
+    /// regression guard against a future change collapsing same-resref placements into
+    /// near-duplicates or scattering them far outside anything a hand-built family shows.
+    /// </summary>
+    [Test]
+    public void Plan_NearestSameResrefDistance_StaysWithinHandBuiltRange()
+    {
+        var dungeons = BuildAllDungeons();
+        var tilesets = BuildAllTilesetProfiles();
+        var distances = new List<double>();
+
+        foreach (var (themeKey, tilesetKey) in SampleCompositions)
+        {
+            var detail = dungeons[themeKey];
+            var tileset = tilesets[tilesetKey];
+
+            foreach (var seed in Seeds)
+            {
+                ResolvedLayout layout;
+                try { layout = ResolveLayout(detail, tileset, seed, size: 24); }
+                catch (Exception) { continue; }
+
+                var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, 150);
+
+                foreach (var group in plan.GroupBy(p => p.Resref))
+                {
+                    var points = group.Select(p => p.Position).ToList();
+                    if (points.Count < 2)
+                        continue;
+
+                    for (var i = 0; i < points.Count; i++)
+                    {
+                        var best = double.MaxValue;
+                        for (var j = 0; j < points.Count; j++)
+                        {
+                            if (i == j)
+                                continue;
+                            var d = Vector2.Distance(new Vector2(points[i].X, points[i].Y), new Vector2(points[j].X, points[j].Y));
+                            if (d < best)
+                                best = d;
+                        }
+                        distances.Add(best);
+                    }
+                }
+            }
+        }
+
+        distances.Should().NotBeEmpty("the sample compositions/seeds should produce plenty of repeated resrefs to measure");
+        var sorted = distances.OrderBy(d => d).ToList();
+        var median = sorted[sorted.Count / 2];
+
+        median.Should().BeInRange(0.5, 45.0,
+            "median nearest-neighbor same-resref distance should stay within the range every mined hand-built family showed (p50 1.39-17.83)");
+    }
+
+    /// <summary>
+    /// Colinear same-resref chain detector mirroring the round-3 statistics harness's own
+    /// _find_runs_for_resref exactly: groups points by their "other" axis coordinate (rounded to a
+    /// 2-unit tolerance — same row/column), sorts along the run axis, and chains consecutive points
+    /// while the gap between them stays within a 15-unit run-continuity tolerance. Checks both axis
+    /// orientations (a run along a +/-X-facing wall runs along Y and vice versa) since a black-box
+    /// test cannot know which wall direction produced a given placement.
+    /// </summary>
+    private static int LongestColinearChain(List<Vector3> positions)
+    {
+        if (positions.Count < 2)
+            return positions.Count;
+
+        const float axisTolerance = 2f;
+        const float gapTolerance = 15f;
+        var longest = 1;
+
+        foreach (var primaryIsX in new[] { true, false })
+        {
+            var buckets = new Dictionary<int, List<float>>();
+            foreach (var p in positions)
+            {
+                var primaryVal = primaryIsX ? p.X : p.Y;
+                var secondaryVal = primaryIsX ? p.Y : p.X;
+                var key = (int)MathF.Round(secondaryVal / axisTolerance);
+                if (!buckets.TryGetValue(key, out var list))
+                {
+                    list = new List<float>();
+                    buckets[key] = list;
+                }
+                list.Add(primaryVal);
+            }
+
+            foreach (var list in buckets.Values)
+            {
+                list.Sort();
+                var chain = 1;
+                for (var i = 1; i < list.Count; i++)
+                {
+                    chain = list[i] - list[i - 1] <= gapTolerance ? chain + 1 : 1;
+                    longest = Math.Max(longest, chain);
+                }
+            }
+        }
+
+        return longest;
+    }
+
+    /// <summary>
+    /// Ring-shape detector mirroring the round-3 statistics harness's own ring_metrics/is_closed_loop
+    /// exactly: a same-resref group is a closed ring when its members sweep at least 300 degrees of
+    /// angle around their own centroid (angular_span), sit at a roughly CONSTANT radius from that
+    /// centroid (radius coefficient-of-variation &lt;= 0.4 — this is what tells a deliberate ring apart
+    /// from a same-resref group merely scattered across a filled room, which also sweeps a wide angle
+    /// but at wildly varying radii), AND are roughly EVENLY spaced in angle (the largest gap excluded,
+    /// remaining-gap coefficient-of-variation &lt;= 0.6).
+    /// </summary>
+    private static bool IsClosedRing(List<Vector3> positions, out (double Span, double RadiusCv, double GapCv) metrics)
+    {
+        metrics = default;
+        if (positions.Count < 4)
+            return false;
+
+        var cx = positions.Average(p => p.X);
+        var cy = positions.Average(p => p.Y);
+
+        var radii = positions.Select(p => Math.Sqrt(Math.Pow(p.X - cx, 2) + Math.Pow(p.Y - cy, 2))).ToList();
+        var meanR = radii.Average();
+        if (meanR < 1e-6)
+            return false;
+        var radiusStdev = Math.Sqrt(radii.Select(r => (r - meanR) * (r - meanR)).Average());
+        var radiusCv = radiusStdev / meanR;
+
+        var angles = positions
+            .Select(p => (Math.Atan2(p.Y - cy, p.X - cx) * (180.0 / Math.PI) + 360.0) % 360.0)
+            .OrderBy(a => a).ToList();
+        var gaps = new List<double>();
+        for (var i = 0; i < angles.Count; i++)
+        {
+            var next = i == angles.Count - 1 ? angles[0] + 360.0 : angles[i + 1];
+            gaps.Add(next - angles[i]);
+        }
+        var span = 360.0 - gaps.Max();
+
+        var remaining = gaps.OrderBy(g => g).Take(gaps.Count - 1).ToList();
+        if (remaining.Count == 0)
+            remaining = gaps;
+        var meanGap = remaining.Average();
+        var gapCv = meanGap > 1e-6
+            ? Math.Sqrt(remaining.Select(g => (g - meanGap) * (g - meanGap)).Average()) / meanGap
+            : double.PositiveInfinity;
+
+        metrics = (span, radiusCv, gapCv);
+
+        const double angleThreshold = 300.0;
+        const double radiusCvMax = 0.4;
+        const double gapCvMax = 0.6;
+
+        return span >= angleThreshold && radiusCv <= radiusCvMax && gapCv <= gapCvMax;
+    }
 }

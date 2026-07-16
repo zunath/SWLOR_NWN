@@ -375,4 +375,82 @@ public class OpenSetPiecePlacementRateTests
                 $"'{groupName}' on '{profileKey}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
         }
     }
+
+    // ---------------- ttf01 Good/Evil Castle ExitGroup placement proofs ----------------
+
+    /// <summary>
+    /// Isolates one named 1x1 ExitGroup group as the composition's ONLY configured exit-group
+    /// candidate (mirroring <see cref="MeasureIsolatedGroupHits"/>'s in-place-mutation isolation
+    /// technique, but for <see cref="DungeonTilesetProfile.ExitGroups"/> rather than SetPieces) and
+    /// returns how many of <paramref name="seedCount"/> single-attempt seeds pin it via
+    /// GroupExitPlanner (the same PinnedTiles signal MeasureIsolatedGroupHits reads -- GroupExitPlanner
+    /// writes its placement into MacroLayout.PinnedTiles exactly like LayoutGroupStamper does, see
+    /// GroupExitPlanner.ApplyGroupExits).
+    /// </summary>
+    private static (int Successes, int Hits) MeasureIsolatedExitGroupHits(
+        DungeonTilesetProfile tilesetProfile, DungeonLayoutProfile layoutProfile, TilesetModel model,
+        string groupName, int seedBase, int seedCount, int seedStride = 13)
+    {
+        tilesetProfile.SetPieces = new Dictionary<string, int>();
+        tilesetProfile.ExitGroups = new List<string> { groupName };
+
+        var group = model.Groups.First(g => string.Equals(g.Name, groupName, StringComparison.OrdinalIgnoreCase));
+        var anchorTileId = group.TileIds[0];
+
+        var successes = 0;
+        var hits = 0;
+        for (var i = 0; i < seedCount; i++)
+        {
+            var seed = seedBase + i * seedStride;
+            var composition = new DungeonComposition { Tileset = tilesetProfile, Layout = layoutProfile };
+            var result = LayoutSolver.Solve(composition.BuildLayoutParameters(), model, Size, Size, seed, tilesetProfile.PrimaryOpenTerrain, retryCount: 1);
+            if (!result.Success) continue;
+            successes++;
+
+            if (result.Layout.PinnedTiles.Values.Any(p => p.TileId == anchorTileId))
+                hits++;
+        }
+
+        return (successes, hits);
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.ForestGoodCastle/ForestEvilCastle (see those
+    /// profiles' own doc comments): under the base Forest profile's Solid=Cliff/Open=Forest pair,
+    /// GoodCastle/EvilCastle corners never appear in a real corner grid, so GroupExitPlanner's exact
+    /// corner-match requirement could never place these groups even though the census's
+    /// vocab-independent IsExitGroupEligible structural check already counted them as reachable. Each
+    /// variant's own SolidTerrainOverride(&lt;faction&gt;Castle) makes the castle terrain a real wall
+    /// material, so it genuinely appears in the grid and these groups can actually place. Measured
+    /// (seedBase 95000, 150 seeds each, all successes=150): every one of the six groups places
+    /// 150/150 (100%) -- a single 1x1 footprint on the composed castle-terrain wall is trivial for
+    /// GroupExitPlanner's ring search once the wall's own corner terrain actually matches (unlike the
+    /// base Forest profile, where it structurally never can). Threshold set well under the measured
+    /// floor for safety margin.
+    /// </summary>
+    [Test]
+    public void GoodEvilCastleDoorGroups_PlaceAsGroupExits()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var profiles = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+
+        foreach (var (profileKey, groupName) in new[]
+                 {
+                     (BaseGameTilesetProfiles.ForestGoodCastle, "Castle - Main Door, Good"),
+                     (BaseGameTilesetProfiles.ForestGoodCastle, "Castle - Small Door, Good"),
+                     (BaseGameTilesetProfiles.ForestGoodCastle, "Castle - Breach, Good"),
+                     (BaseGameTilesetProfiles.ForestEvilCastle, "Castle - Main Door, Evil"),
+                     (BaseGameTilesetProfiles.ForestEvilCastle, "Castle - Small Door, Evil"),
+                     (BaseGameTilesetProfiles.ForestEvilCastle, "Castle - Breach, Evil"),
+                 })
+        {
+            var tilesetProfile = profiles[profileKey];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(130);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.1),
+                $"'{groupName}' on '{profileKey}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
 }

@@ -149,6 +149,17 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.ForestRuralStream,
         BaseGameTilesetProfiles.ForestRoad,
         BaseGameTilesetProfiles.ForestStoneBridge,
+        // Forest (Good Castle) / Forest (Evil Castle): the same "no crosser family crosses the
+        // composed solid" gap, this time against SolidTerrainOverride("GoodCastle")/("EvilCastle") --
+        // none of Wall/Road/Stream/etc. cross either castle terrain (verified directly: each blends
+        // only with Forest, 2/16 against every other terrain). See
+        // BaseGameTilesetProfiles.ForestGoodCastle/ForestEvilCastle's own doc comment.
+        BaseGameTilesetProfiles.ForestGoodCastle,
+        BaseGameTilesetProfiles.ForestEvilCastle,
+        // Forest (Marsh): same SolidTerrainOverride("Cliff") as the base Forest profile above (only
+        // AccentTerrain differs) -- identical "no crosser family crosses Cliff" gap. See
+        // BaseGameTilesetProfiles.ForestMarsh's own doc comment.
+        BaseGameTilesetProfiles.ForestMarsh,
         // D20 Futuristic City SW (fcx01): only "pont"/"Routes"/"murs" crossers exist, none paired as a
         // Corridor/Doorway body+port set -- see BaseGameTilesetProfiles.FutCity's own doc comment.
         BaseGameTilesetProfiles.FutCity,

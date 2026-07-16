@@ -551,4 +551,63 @@ public class LayoutReliefPainterTests
         ruralTreesSeeds.Should().BeGreaterThan(0,
             $"across 60 seeds the relief-blend pass must paint at least one RuralTrees corner in a real {tilesetProfile.TilesetResref}/ForestRural layout (got 0/{resolvedCount})");
     }
+
+    /// <summary>
+    /// Positive placement proof for BaseGameTilesetProfiles.ForestMarsh (ttf01's PaletteVariant wiring
+    /// Marsh as a plain flat AccentTerrain -- see that profile's own doc comment): a real Halls
+    /// composition must actually paint Marsh corners via LayoutAccentPainter.PaintAccents' blob-patch
+    /// pass. Halls (like every RoomsAndCorridors-style StandardLayoutProfiles entry) does not itself
+    /// declare AccentDensity &gt; 0 (only Organic/Warren do, neither a Forest-exterior pairing), so this
+    /// test forces the same knob value Organic uses directly on the built parameters -- the identical
+    /// technique RealForestRuralComplexComposition_PaintsRuralWaterAndRuralTreesBanks above uses to
+    /// force EntranceCount/ExitCount/DoorTransitions -- to exercise the SAME production
+    /// LayoutAccentPainter pass a future Organic/Warren-paired ttf01 composition would also drive.
+    /// </summary>
+    [Test]
+    public void RealForestMarshComposition_PaintsMarshAccentPatches()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.ForestMarsh];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = TilesetTestSource.LoadTileset(tilesetProfile.TilesetResref);
+        var composition = new DungeonComposition { Content = null, Tileset = tilesetProfile, Layout = layoutProfile };
+
+        var resolvedCount = 0;
+        var marshSeeds = 0;
+        const int size = 24;
+
+        for (var seed = 9500; seed < 9560; seed++)
+        {
+            var parameters = composition.BuildLayoutParameters();
+            parameters.EntranceCount = 1;
+            parameters.ExitCount = 1;
+            parameters.DoorTransitions = true;
+            // DungeonComposition.BuildLayoutParameters computes MacroLayoutParameters.AccentTerrain
+            // from the LAYOUT profile's own AccentDensity at build time (zeroing it out when
+            // AccentDensity is 0, see that method's own doc comment) -- Halls doesn't declare
+            // AccentDensity, so both must be forced here, not just AccentDensity, to actually exercise
+            // LayoutAccentPainter.PaintAccents' gate.
+            parameters.AccentDensity = 0.06;
+            parameters.AccentTerrain = tilesetProfile.AccentTerrain;
+
+            var solved = LayoutSolver.Solve(parameters, model, size, size, seed, tilesetProfile.PrimaryOpenTerrain);
+            if (!solved.Success) continue;
+            resolvedCount++;
+
+            var corners = solved.Layout.Corners;
+            var sawMarsh = false;
+            for (var x = 0; x <= corners.Width && !sawMarsh; x++)
+            for (var y = 0; y <= corners.Height && !sawMarsh; y++)
+            {
+                if (string.Equals(corners.Labels[x, y], "Marsh", StringComparison.Ordinal)) sawMarsh = true;
+            }
+            if (sawMarsh) marshSeeds++;
+        }
+
+        // Measured: 60/60 seeds resolve, and every single one paints at least one Marsh corner (a
+        // forced AccentDensity=0.06 on a 24x24 grid gives the blob-patch pass ample open Forest space
+        // to seed from).
+        resolvedCount.Should().BeGreaterThan(0, "at least some seeds must generate successfully");
+        marshSeeds.Should().BeGreaterThan(0,
+            $"across 60 seeds the blob-patch pass must paint at least one Marsh corner in a real {tilesetProfile.TilesetResref}/ForestMarsh layout (got 0/{resolvedCount})");
+    }
 }

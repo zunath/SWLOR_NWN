@@ -122,6 +122,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string ForestFacelift = "forest_facelift";
         public const string ForestPlatform = "forest_platform";
         public const string ForestRural = "forest_rural";
+        public const string ForestGoodCastle = "forest_goodcastle";
+        public const string ForestEvilCastle = "forest_evilcastle";
+        public const string ForestMarsh = "forest_marsh";
         public const string ForestCityWall = "forest_citywall";
         public const string ForestMossWall = "forest_mosswall";
         public const string ForestRuralWallOne = "forest_ruralwallone";
@@ -2828,27 +2831,66 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // tile rule) -- see that method's own doc comment and the SetPiece wiring below and on the
             // ForestCityWall/ForestMossWall PaletteVariant profiles.
             //
-            // Alternate palettes (auto-exempted via PilotAlternateVocabTerrains, each verified
-            // directly): GoodCastle/EvilCastle and RuralTrees/RuralWater are full separate district
-            // palettes (out of this wave's scope -- the tni01 room-palette precedent); Marsh reaches
-            // only 14/16 against Forest. Platform and HighForest blend only 2/16 against Forest, and
-            // HighForest only 2/16 against Cliff too -- but Platform reaches 16/16 against Cliff AND
-            // 16/16 against Pit, and HighForest also reaches 16/16 against Pit (verified directly by
-            // 16-combo probe): see the "Forest (Platform)" PaletteVariant below, which declares
-            // SolidTerrainOverride("Pit") + PrimaryOpenTerrain("Platform") to close the Platform
-            // GROUPS that need a Solid+Open pair covering Pit and Platform simultaneously (every
-            // ungrouped Platform/HighForest-cornered simple tile was ALREADY CornerEdgeResolver-
-            // reachable regardless of vocab, so only the groups needed a dedicated variant; a
-            // dedicated HighForest variant would add no additional coverage since no group uses
-            // HighForest corners). Still exempt after that variant, still terrain-listed here:
-            // "Platform - Cliff Door" and "Platform - Cliff Section" mix Platform+Cliff+Pit (three
-            // terrains on one group -- no two-terrain classifier reaches it), and the four remaining
-            // GoodCastle/EvilCastle/RuralTrees/RuralWater tiles. Unwired crosser families
-            // (PilotAlternateVocabCrossers):
-            // DlaEdgeFix, StoneBridge, RuralStream, MossWall, CityWall, RuinWall, RuralWallOne/Two --
-            // their flat door-free tiles all resolve via CornerEdgeResolver regardless; the entries
-            // exempt the few flat door/group tiles (e.g. "Bridge - Footbridge, Rural Stream",
-            // "Wall - Gate, Ruin").
+            // Alternate palettes (formerly auto-exempted via PilotAlternateVocabTerrains -- see that
+            // dictionary's own doc comment for the census-vs-practice writeup for each):
+            // RuralTrees/RuralWater are MOSTLY closed by BaseGameTilesetProfiles.ForestRural's
+            // AccentTerrain/ReliefBlendTerrain variant (PoolBank/TerrainRelief, verified directly and
+            // via a real-generation placement proof). Platform and HighForest blend only 2/16 against
+            // Forest, and HighForest only 2/16 against Cliff too -- but Platform reaches 16/16 against
+            // Cliff AND 16/16 against Pit, and HighForest also reaches 16/16 against Pit (verified
+            // directly by 16-combo probe): see the "Forest (Platform)" PaletteVariant below, which
+            // declares SolidTerrainOverride("Pit") + PrimaryOpenTerrain("Platform") to close the
+            // Platform GROUPS that need a Solid+Open pair covering Pit and Platform simultaneously
+            // (every ungrouped Platform/HighForest-cornered simple tile was ALREADY
+            // CornerEdgeResolver-reachable regardless of vocab, so only the groups needed a dedicated
+            // variant; a dedicated HighForest variant would add no additional coverage since no group
+            // uses HighForest corners). Still exempt after that variant, still terrain-listed in
+            // PilotAlternateVocabTerrains: "Platform - Cliff Section" (genuinely three terrains,
+            // Platform+Cliff+Pit, on one group -- no two-terrain classifier reaches it, and its 3x2
+            // footprint disqualifies it from IsExitGroupEligible too). "Platform - Cliff Door" is NOT
+            // also exempt (a prior pass's comment here was WRONG, re-verified directly and fixed on
+            // ForestPlatform's own doc comment): despite mixing Platform+Cliff, it already satisfies
+            // IsExitGroupEligible's vocab-independent structural rule (any flat, crosser-free,
+            // door-bearing 1x1 group), the same shape as the GoodCastle/EvilCastle door groups below.
+            //
+            // GoodCastle/EvilCastle/Marsh are CONFIRMED DEAD entries, not real gaps: re-probing found
+            // GoodCastle and EvilCastle each reach full 16/16 flat corner coverage against
+            // Solid=<faction>Castle/Open=Forest (a genuine alternate wall-material palette, same shape
+            // as the base Cliff/Forest pair), and every touching tile was ALREADY counted as reachable
+            // regardless -- the ~10 ungrouped simple tiles per faction via CornerEdgeResolver
+            // (vocab-independent), and the three 1x1 door/breach GROUPS per faction
+            // ("Castle - Main Door/Small Door/Breach, Good/Evil") via IsExitGroupEligible (also
+            // vocab-independent: any flat, crosser-free, door-bearing 1x1 group qualifies as exit-group
+            // candidate content regardless of its corners' terrain). Verified directly: removing
+            // GoodCastle/EvilCastle from PilotAlternateVocabTerrains changes ttf01's census numbers not
+            // at all. Marsh reaches 14/16 against Forest (missing both blank-edge DIAGONAL two-terrain
+            // splits, the same shape ForestRural's own doc comment documents for RuralWater/RuralTrees)
+            // but was likewise never a real gap: its entire real .set inventory is 11 flat, ungrouped,
+            // crosser-free simple tiles (TILE838-848), none of which use the missing diagonal shape,
+            // all already CornerEdgeResolver-reachable regardless of vocab -- verified directly,
+            // removing "Marsh" from the dictionary changes nothing either.
+            //
+            // The structural "reachable regardless" finding above only means the CENSUS was never
+            // blocked by these three terrains -- under the BASE profile's Solid=Cliff/Open=Forest
+            // composition, none of GoodCastle/EvilCastle/Marsh is ever actually painted into a real
+            // corner grid, so none of this content ever actually APPEARED in generated areas. Three
+            // dedicated PaletteVariant profiles below (Forest (Good Castle)/(Evil Castle)/(Marsh))
+            // recompose the same base pair with each district terrain playing a real structural role
+            // (SolidTerrainOverride for the two castle palettes, AccentTerrain for Marsh) so this
+            // content is genuinely reachable in real generation, not just census-credited -- see each
+            // profile's own doc comment for its placement-proof evidence. Marsh's own diagonal-split
+            // gap is a real, accepted residual under this variant too (LayoutAccentPainter.GrowBlob
+            // only ever grows one 4-connected region per blob-painting pass, but PaintAccents calls it
+            // repeatedly per composition with a fresh random seed each time, and CanAccept's solid-only
+            // adjacency guard does not prevent two INDEPENDENT blob passes from landing on
+            // diagonally-adjacent corners -- so the shape CAN be produced by the painter, it just has
+            // no matching real tile, exactly ForestRural's own already-accepted RuralWater/RuralTrees
+            // diagonal residual, tolerated the same way by the existing seed-retry pipeline).
+            //
+            // Unwired crosser families (PilotAlternateVocabCrossers): DlaEdgeFix, StoneBridge,
+            // RuralStream, MossWall, CityWall, RuinWall, RuralWallOne/Two -- their flat door-free tiles
+            // all resolve via CornerEdgeResolver regardless; the entries exempt the few flat door/group
+            // tiles (e.g. "Bridge - Footbridge, Rural Stream", "Wall - Gate, Ruin").
             //
             // FeatureTile curation: semantic/functional tiles are deliberately NOT sprinkled --
             // "Portal - Forest"/"Portal - Platform" (teleporters), "Entrance - Dungeon" (a transition
@@ -2988,14 +3030,18 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // "Platform - House 1/2", "Platform - Pillar 1/2", "Platform - Plaza"/"Plaza (1x2)"
             // (Pit/Platform mixes), "Tower - Guard, Pit (1x2)" (one Platform-cornered member, one
             // all-Pit member -- the group-wide "at least one Open corner somewhere in the group"
-            // rule). Stay exempt (genuinely unmodeled, verified directly): "Platform - Cliff Door"
-            // (TILE966, [Platform,Cliff,Cliff,Platform] -- Cliff isn't in this variant's vocab, and
-            // making Cliff the solid instead reopens the base profile's own Platform-vs-Cliff 16/16
-            // pairing but abandons Pit, which "Platform - Cliff Section" below still needs); "Platform
-            // - Cliff Section (2x3)" (TILE949-954, genuinely THREE terrains -- Platform, Cliff, AND
-            // Pit -- on one group's members; ClassifySetPiece's matchesPrimary/matchesSecondary each
-            // only ever admit a Solid+ONE-other-terrain pair, never three simultaneously, so no single
-            // profile composition can close a true three-terrain group). "Portal - Platform"/"Platform
+            // rule). STALE-COMMENT FIX (re-verified directly, same class of bug as the GoodCastle/
+            // EvilCastle/Marsh dead-entry finding above): "Platform - Cliff Door" (TILE966,
+            // [Platform,Cliff,Cliff,Platform], ONE door slot, crosser-free, 1x1) was NEVER actually
+            // exempt -- it already satisfies IsExitGroupEligible's vocab-independent structural rule
+            // (any flat, crosser-free, door-bearing 1x1 group) the same way the Castle door groups do,
+            // so it was already classified as an ExitGroup candidate under the census's own permissive
+            // definition even before this variant existed. Only "Platform - Cliff Section (2x3)"
+            // (TILE949-954, genuinely THREE terrains -- Platform, Cliff, AND Pit -- on one group's
+            // members; ClassifySetPiece's matchesPrimary/matchesSecondary each only ever admit a
+            // Solid+ONE-other-terrain pair, never three simultaneously, so no single profile
+            // composition can close a true three-terrain group, and its own 3x2 footprint disqualifies
+            // it from IsExitGroupEligible's 1x1-only rule too) stays genuinely exempt. "Portal - Platform"/"Platform
             // - Elevator, Lower"/"Crystal - Platform"/"Tower - Archer Platform" are misleadingly named
             // but physically all-Forest -- already reachable under the base profile, untouched by this
             // variant. "Tower - Guard, Pit" (solo, TILE963, all-Pit) is a separate, pre-existing
@@ -3105,6 +3151,100 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .MaxPoolRegions(2)
                 .MaxReliefRegions(2)
                 .RampCrosser("Slope");
+
+            // Forest (Good Castle) / Forest (Evil Castle) -- ttf01's two "district" wall-material
+            // palettes (see BaseGameTilesetProfiles.Forest's own doc comment, "GoodCastle/EvilCastle"
+            // note). Direct 16-combo probe (TileResolver.HasCandidate over all 16 flat corner masks,
+            // both orientations) confirms GoodCastle and EvilCastle EACH reach full 16/16 flat corner
+            // coverage against Solid=<faction>Castle/Open=Forest (equivalently Solid=Forest/
+            // Open=<faction>Castle -- the pairing is symmetric): each is a genuine alternate WALL
+            // material, structurally identical in shape to the base profile's own Solid=Cliff/
+            // Open=Forest pair, just recomposed with the castle terrain playing Cliff's role. Neither
+            // blends with Cliff or Pit at all (2/16 each, only the two uniform-corner masks survive).
+            //
+            // The tileset's own castle inventory is exactly three 1x1 GROUPS per faction (no bulk wall-
+            // lane family exists, unlike CityWall/MossWall): "Castle - Main Door", "Castle - Small
+            // Door", "Castle - Breach" (TILE671/673/674 Good, TILE662/667/670 Evil), each a single tile
+            // with mixed Forest/<faction>Castle corners (a vertical two-open/two-solid split) plus a
+            // door slot and NO crosser edge. This shape already satisfies IsExitGroupEligible's
+            // structural rule (any flat, crosser-free, door-bearing 1x1 group -- vocab-independent), so
+            // the census NEVER actually exempted these six tiles even before this profile existed (see
+            // BaseGameTilesetProfiles.Forest's own doc comment). But GroupExitPlanner's REAL placement
+            // pass requires an exact corner-terrain match against the composition's own painted grid,
+            // and the base profile's Solid=Cliff/Open=Forest pair never paints <faction>Castle
+            // anywhere -- so under the base profile alone this content is census-credited but never
+            // actually generated. This variant's SolidTerrainOverride makes the castle terrain a real
+            // wall material, so its corners genuinely appear in the grid and GroupExitPlanner can place
+            // them. Wired as ExitGroups (matching "Castle - Main/Small Door"/"Breach"'s own gate-in-a-
+            // wall semantics, the same family as the base profile's "Exit"/"House - Small 1-3"/
+            // "Tower - Stone"), not SetPieces -- IsExitGroupEligible/ExitGroup classification already
+            // wins priority over SetPiece classification for this exact shape (see
+            // TileCoverageCensusTests' own mechanism-priority ordering), so a SetPiece registration
+            // would be dead code. Real-generation placement proof: OpenSetPiecePlacementRateTests'
+            // GoodEvilCastleDoorGroups_PlaceAsGroupExits (Halls composition, both factions, isolated
+            // ExitGroup measured across 150 seeds each -- 150/150 for all six groups).
+            // PaletteVariant() excludes each from --matrix's full cross-product -- one showcase area
+            // apiece.
+            _builder.Create(ForestGoodCastle, "Forest* (Good Castle)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("GoodCastle")
+                .PrimaryOpenTerrain("Forest")
+                .ExitGroup("Castle - Main Door, Good")
+                .ExitGroup("Castle - Small Door, Good")
+                .ExitGroup("Castle - Breach, Good");
+
+            _builder.Create(ForestEvilCastle, "Forest* (Evil Castle)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("EvilCastle")
+                .PrimaryOpenTerrain("Forest")
+                .ExitGroup("Castle - Main Door, Evil")
+                .ExitGroup("Castle - Small Door, Evil")
+                .ExitGroup("Castle - Breach, Evil");
+
+            // Forest (Marsh) -- ttf01's unwired Marsh ground-cover district (see
+            // BaseGameTilesetProfiles.Forest's own doc comment, "GoodCastle/EvilCastle/Marsh" note), a
+            // PaletteVariant profile recomposing the SAME ttf01 hak data the base Forest profile uses.
+            // Direct probe (TileResolver.HasCandidate over all 16 flat corner masks) confirms Marsh
+            // reaches 14/16 against Solid=Forest -- i.e. it is a walkable "ground cover" terrain layered
+            // onto Forest, the SAME role RuralWater/RuralTrees play for ForestRural -- missing only the
+            // two blank-edge DIAGONAL two-terrain splits (Forest/Marsh/Forest/Marsh and its rotation),
+            // which no real ttf01 tile uses anyway (Marsh's entire real inventory is 11 flat, ungrouped,
+            // crosser-free simple tiles, TILE838-848, all single-corner or uniform-corner shapes). Marsh
+            // never blends with Cliff or Pit at all (2/16 each).
+            //
+            // Wired as a plain flat AccentTerrain (LayoutAccentPainter's blob-patch pass) rather than a
+            // ReliefBlendTerrain/ChannelTerrain like RuralWater/RuralTrees -- Marsh's own tile family
+            // carries no raised bank/relief shapes, so no MaxPoolRegions/MaxReliefRegions declaration is
+            // needed (matching the class doc comment's "e.g. Water pools, Pit channels" flat-patch
+            // description). Real-generation placement proof: LayoutReliefPainterTests'
+            // RealForestMarshComposition_PaintsMarshAccentPatches (Halls composition, many seeds, at
+            // least one Marsh corner actually painted by the production painter).
+            //
+            // The missing diagonal-split combo is a real, accepted residual, not a provably-excluded
+            // one: LayoutAccentPainter.PaintAccents calls GrowBlob repeatedly per composition (a fresh
+            // random seed each pass), and GrowBlob's 4-connected growth only guarantees connectivity
+            // WITHIN one blob -- CanAccept's adjacency guard only excludes touching the SOLID terrain,
+            // never an existing accent corner from an earlier pass, so two independent blob passes CAN
+            // legally land on diagonally-adjacent corners. This is the exact same shape ForestRural's
+            // own doc comment already documents and accepts for RuralWater/RuralTrees (verified there
+            // directly against real tile data, e.g. TILE512/528/543/896) -- tolerated by the existing
+            // seed-retry pipeline (an occasional unresolvable cell fails that seed's attempt, not the
+            // whole composition) rather than requiring a structural guard.
+            // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
+            _builder.Create(ForestMarsh, "Forest* (Marsh)")
+                .Tileset("ttf01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 8, 8)
+                .PaletteVariant()
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .AccentTerrain("Marsh");
 
             // Forest raised-lane crosser families (round 3 of exterior tail closure) -- ttf01's base
             // Forest profile above and ForestRural both declare RampCrosser("Slope"), but a

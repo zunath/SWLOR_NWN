@@ -1068,26 +1068,38 @@ public class TileCoverageCensusTests
         // bare door slots with no crosser -- TileDoorPlanner's single-Doorway-edge rule can never
         // place them regardless).
         ["ttd01"] = new(StringComparer.OrdinalIgnoreCase) { "Svirfneblin", "Poor" },
-        // ttf01's hak copy (sw_t_forest) carries two full unwired district palettes (GoodCastle/
-        // EvilCastle, each blending only with the walkable Forest terrain -- out of this wave's scope,
-        // the tni01 livingroom/kitchen/shop precedent), one under-covered palette (Marsh, 14/16
-        // against Forest). Platform/HighForest are MOSTLY closed by BaseGameTilesetProfiles.
-        // ForestPlatform's SolidTerrainOverride("Pit") + PrimaryOpenTerrain("Platform") variant
-        // (16/16 against Pit, verified directly), leaving only the genuinely three-terrain "Platform -
-        // Cliff Door"/"Platform - Cliff Section" groups (Platform+Cliff+Pit on one group, outside any
-        // two-terrain classifier) still tagged via this dictionary. RuralTrees/RuralWater are now
-        // MOSTLY closed too by BaseGameTilesetProfiles.ForestRural's AccentTerrain/ReliefBlendTerrain
-        // variant (PoolBank/TerrainRelief, verified directly and via a real-generation placement
-        // proof) -- but TILE849 (uniform RuralWater, door-bearing, Road-crossered) and TILE1114
-        // (Forest/RuralTrees mixed, door-bearing, Road-crossered) still need the TERRAIN entries here:
-        // "Road" is deliberately NOT in PilotAlternateVocabCrossers["ttf01"] below (it's the base
-        // wired crossroads-gate family, not an alternate one), and a door-bearing tile fails
+        // ttf01's hak copy (sw_t_forest): "GoodCastle"/"EvilCastle"/"Marsh" are NO LONGER here --
+        // confirmed DEAD entries, not real gaps (re-probed directly): every GoodCastle/EvilCastle/
+        // Marsh-touching tile was ALREADY reachable regardless of vocab (the ~10 ungrouped simple
+        // tiles per castle faction and Marsh's 11 ungrouped tiles via CornerEdgeResolver, the six
+        // 1x1 castle door/breach GROUPS via IsExitGroupEligible, both vocab-independent structural
+        // rules) -- removing all three terrain names from this set changes ttf01's census numbers not
+        // at all, verified directly. BaseGameTilesetProfiles.ForestGoodCastle/ForestEvilCastle/
+        // ForestMarsh now additionally wire this content for REAL generation-time placement (not just
+        // census credit) -- see BaseGameTilesetProfiles.Forest's own doc comment for the full
+        // census-vs-practice writeup and each variant's own doc comment for its placement-proof
+        // evidence.
+        //
+        // Platform/HighForest are MOSTLY closed by BaseGameTilesetProfiles.ForestPlatform's
+        // SolidTerrainOverride("Pit") + PrimaryOpenTerrain("Platform") variant (16/16 against Pit,
+        // verified directly), leaving only the genuinely three-terrain "Platform - Cliff Section"
+        // group (Platform+Cliff+Pit on one group, outside any two-terrain classifier) still tagged via
+        // this dictionary -- "Platform - Cliff Door" is NOT also tagged despite mixing Platform+Cliff
+        // (a prior pass's comment here was WRONG, re-verified directly and fixed on
+        // BaseGameTilesetProfiles.ForestPlatform's own doc comment): it already satisfies
+        // IsExitGroupEligible's vocab-independent structural rule. RuralTrees/RuralWater are now MOSTLY closed
+        // too by BaseGameTilesetProfiles.ForestRural's AccentTerrain/ReliefBlendTerrain variant
+        // (PoolBank/TerrainRelief, verified directly and via a real-generation placement proof) -- but
+        // TILE849 (uniform RuralWater, door-bearing, Road-crossered) and TILE1114 (Forest/RuralTrees
+        // mixed, door-bearing, Road-crossered) still need the TERRAIN entries here: "Road" is
+        // deliberately NOT in PilotAlternateVocabCrossers["ttf01"] below (it's the base wired
+        // crossroads-gate family, not an alternate one), and a door-bearing tile fails
         // CornerEdgeResolver's Doorway/Bridge/extra-only admission gate regardless of vocab -- verified
         // directly that removing RuralTrees/RuralWater from this set turns exactly these two tiles
         // UNCLASSIFIED. See BaseGameTilesetProfiles.Forest's own doc comment.
         ["ttf01"] = new(StringComparer.OrdinalIgnoreCase)
         {
-            "GoodCastle", "EvilCastle", "Marsh", "Platform", "HighForest", "RuralTrees", "RuralWater",
+            "Platform", "HighForest", "RuralTrees", "RuralWater",
         },
         ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
         // jac01 (Jacoby's Jungle): Platform/HighForest registered as a PaletteVariant (JunglePlatform)
@@ -1448,9 +1460,13 @@ public class TileCoverageCensusTests
         // with no Solid or Open corner anywhere in the group -- the same channel-only-group gap as
         // ttf01's "Island"/"Island_Tree" family. "CarrackD_4x1" and "CaravelFloating_3x1" (both
         // all-Water) are the same accent-terrain-only-group gap (AccentTerrain is a painted overlay,
-        // not a Solid/Open composition member). "Platform Cliff Dwellings 2x3" and "Platform Cliff
-        // Door" mix Cliff+Pit+Platform (three terrains -- no two-terrain classifier reaches either),
-        // the same residual as ttf01's own "Platform - Cliff Door"/"Platform - Cliff Section".
+        // not a Solid/Open composition member). "Platform Cliff Dwellings 2x3" mixes Cliff+Pit+Platform
+        // (three terrains -- no two-terrain classifier reaches it), the same residual as ttf01's own
+        // "Platform - Cliff Section". "Platform Cliff Door" is NOT also exempt despite the same
+        // Platform+Cliff mixed-corner shape ttf01's own "Platform - Cliff Door" has (STALE-COMMENT FIX,
+        // re-verified directly, the identical bug class -- see BaseGameTilesetProfiles.Forest's own
+        // doc comment): both are a flat, crosser-free, door-bearing 1x1 group, so both already satisfy
+        // IsExitGroupEligible's vocab-independent structural rule regardless of their mixed corners.
         ("jac01", "GROUP:WallGate01"),
         ("jac01", "GROUP:WallGate02"),
         ("jac01", "GROUP:StreamBridge01"),

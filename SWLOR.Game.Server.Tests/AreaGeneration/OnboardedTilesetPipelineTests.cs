@@ -107,6 +107,12 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.ForestRuralStream,
         BaseGameTilesetProfiles.ForestRoad,
         BaseGameTilesetProfiles.ForestStoneBridge,
+        // ttf01's GoodCastle/EvilCastle district wall-material palettes and Marsh ground-cover
+        // district, three PaletteVariant profiles -- see BaseGameTilesetProfiles.ForestGoodCastle/
+        // ForestEvilCastle/ForestMarsh's own doc comments.
+        BaseGameTilesetProfiles.ForestGoodCastle,
+        BaseGameTilesetProfiles.ForestEvilCastle,
+        BaseGameTilesetProfiles.ForestMarsh,
         // Wave-4: D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc
         // comment. Same "no Tunnel vocabulary through the composed solid" shape as the exterior wave
         // above, verified via TunnelVocabularyCheckTests' fcx01 entries.

@@ -219,6 +219,19 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.CastleExteriorRuralKeep,
         BaseGameTilesetProfiles.CastleExteriorRuralWater,
         BaseGameTilesetProfiles.CastleExteriorRuralHarbor,
+        // City Exterior* (tcn01): declares NO canonical "Corridor"/"Doorway" crosser at all (its ten
+        // crossers are Wall/Stream/Dock/Bridge/Alley/SigilRoad/FieldDock/FieldBridge/GothicDock/
+        // GothicBridge) -- the same shape as the tno01/ttd01/ttf01/jac01/ttr01/tts01/fcx01 exterior
+        // wave. Complex downgrades to OpenLane under the canonical probe this test runs regardless of
+        // which terrain each district composes as Solid; each profile's own TunnelCrossers("Dock"/
+        // "FieldDock"/"GothicDock", ...) declaration is what gives it REAL Custom-mode Tunnel support
+        // instead (verified via ProbeTool's direct TunnelVocabularyCheck.SupportsTunnels(Custom, ...)
+        // call -- see BaseGameTilesetProfiles.CityExterior's own doc comment), which this canonical-only
+        // check doesn't exercise.
+        BaseGameTilesetProfiles.CityExterior,
+        BaseGameTilesetProfiles.CityExteriorFieldstone,
+        BaseGameTilesetProfiles.CityExteriorGothic,
+        BaseGameTilesetProfiles.CityExteriorSigil,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

@@ -1164,6 +1164,28 @@ public class TileCoverageCensusTests
         // BaseGameTilesetProfiles.CepCityInterior's own doc comment. Workshop is wired directly on the
         // base profile (no PrimaryOpenTerrain override needed).
         ["zin01"] = new(StringComparer.OrdinalIgnoreCase),
+        // tcn01 (City Exterior*): Building/EvilCastle/GoodCastle (and each district's own
+        // Field*/Gothic*/Sigil* equivalents) are composed only as ordinary SetPiece OBSTACLE terrain
+        // (buildings/castle walls stamped as rooms/set pieces within the open Cobble-family street
+        // space), never as this profile's Open/Secondary/Accent terrain -- so any tile/group touching
+        // ONLY these plus the district's own Cobble is legitimately outside the wired vocabulary. This
+        // closes 42 ungrouped door-bearing Cobble/Building (and FieldCobble/FieldBuilding,
+        // GothicCobble/GothicBuilding, SigilCobble/SigilBuilding) boundary tiles -- a plain building
+        // entrance door with no crosser at all, structurally the same "door-bearing mixed-terrain tile,
+        // no CornerEdgeResolver/TileDoorPlanner mechanism applies" shape ttf01/ttr01's own RuralTrees/
+        // RuralWater entries document -- plus "[City] Ship - Air, Above Buildings (3x1)" (all-Building
+        // corners, the "Above Water"/"Docked" siblings' unwired cousin). SigilHill is Sigil's own
+        // starved minor terrain (no GROUP touches it beyond the wired SigilCastle/SigilCobble/
+        // SigilChasm trio). PADDING is the universal area-border fill terrain every onboarded tileset's
+        // own entry already carries.
+        ["tcn01"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Building", "EvilCastle", "GoodCastle",
+            "FieldBuilding", "FieldEvilCastle", "FieldGoodCastle",
+            "GothicBuilding", "GothicEvilCastle", "GothicGoodCastle",
+            "SigilHill", "SigilBuilding",
+            "PADDING",
+        },
     };
 
     /// <summary>
@@ -1318,6 +1340,12 @@ public class TileCoverageCensusTests
         // (Window is resolver-covered on flat door-free tiles, ElvenHallway/SigilHallway via
         // DoorSlotCrossers on the Elven/Sigil variants) -- no alternates expected, pending the census run.
         ["zin01"] = new(StringComparer.OrdinalIgnoreCase),
+        // tcn01 (City Exterior*): Wall/Stream/Alley have no wired body/port/road vocabulary this pass
+        // -- see BaseGameTilesetProfiles.CityExterior's own doc comment for the full evidence writeup
+        // (Alley is a Building-embedded back-alley crosser, Wall/Stream are property-line/canal
+        // dividers through open Cobble, none of which any current mechanism recognizes for this
+        // composition).
+        ["tcn01"] = new(StringComparer.OrdinalIgnoreCase) { "Wall", "Stream", "Alley" },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -1909,6 +1937,67 @@ public class TileCoverageCensusTests
         ("zin01", "TILE551"),
         ("zin01", "TILE846"),
         ("zin01", "TILE879"),
+        //
+        // tcn01 (City Exterior*): see BaseGameTilesetProfiles.CityExterior's own doc comment for the
+        // full composition writeup. Four genuinely-unreachable shapes, none closed by any current
+        // mechanism or by the alternate-vocabulary auto-tagging above:
+        //
+        // (1) "[Sigil] Final Area (7x7)" -- a 49-tile finale/boss-chamber set piece mixing THREE
+        // terrains (SigilCobble open floor, SigilChasm accent pit, SigilCastle solid border).
+        // ClassifyMultiTileSetPiece's OpenSetPiece rule is a strict two-terrain (Solid+Open or
+        // Solid+Secondary) corner match with no Accent-terrain allowance -- the identical
+        // three-terrain-group ceiling BaseGameTilesetProfiles.CastleExteriorRuralCastleWall's own
+        // "CastleWall4/CastleGate2/Drawbridge" doc comment documents. Structurally excluded from every
+        // composition; kept wired (SetPiece call safe regardless, per this codebase's "TryClassify
+        // re-verifies independently" convention).
+        ("tcn01", "GROUP:[Sigil] Final Area (7x7)"),
+        //
+        // (2) Docked-ship hull groups (City/Fieldstone/Gothic's own Dock-family crosser) mark a
+        // continuous "keel line" of Dock/FieldDock/GothicDock crosser running the length of the hull --
+        // BOTH an interior edge (shared between two real hull members) AND a perimeter edge (facing the
+        // group's own boundary) carry the SAME crosser. ClassifyMultiTileSetPiece's CorridorStubChain
+        // branch requires hasAnyPerimeterBodyCrosser with NO hasInteriorBodyCrosser at all (mirrors
+        // LayoutGroupStamper.TryClassify's own rejection) -- verified directly against each group's real
+        // tile-by-tile edge layout (ProbeTool) that every one of these hulls carries at least one
+        // interior Dock-family edge, disqualifying the whole group regardless of TunnelCrossers choice.
+        ("tcn01", "GROUP:[City] Ship - Small, Docked (2x2)"),
+        ("tcn01", "GROUP:[City] Ship - Merchant, Docked (3x2)"),
+        ("tcn01", "GROUP:[City] Ship - Weathered, Docked (3x2)"),
+        // Also carries a "Road" edge on one member (TILE653, a genuine tileset-authoring quirk -- "Road"
+        // is not a declared CROSSER TYPES entry at all) which independently fails
+        // ClassifyMultiTileSetPiece's IsAllowedMemberEdge gate regardless of the keel-line issue above.
+        ("tcn01", "GROUP:[City] Ship - Carrack, Docked (4x2)"),
+        ("tcn01", "GROUP:[Fieldstone] Ship - Small, Docked (2x2)"),
+        ("tcn01", "GROUP:[Gothic] Ship - Small, Docked (2x2)"),
+        //
+        // (3) All-Water-cornered, doorless, crosser-free hull/boat groups -- the identical shape
+        // BaseGameTilesetProfiles.CastleExteriorRuralWater's own "Boat_water" doc comment documents: no
+        // door means WallAlcove never triggers, no crosser means CorridorStubChain never triggers, and
+        // no Open corner (every corner is Water==Solid under this composition) means OpenSetPiece never
+        // triggers either -- genuinely no classification branch applies.
+        ("tcn01", "GROUP:[City] Boat"),
+        ("tcn01", "GROUP:[City] Ship - Small, Floating (1x2)"),
+        ("tcn01", "GROUP:[City] Ship - Galleon 1 (5x1)"),
+        ("tcn01", "GROUP:[City] Ship - Galleon 2 (5x1)"),
+        ("tcn01", "GROUP:[City] Ship - Longship, Floating (3x2)"),
+        ("tcn01", "GROUP:[City] Ship - Weathered, Undockable (3x1)"),
+        ("tcn01", "GROUP:[Fieldstone] Boat"),
+        ("tcn01", "GROUP:[Fieldstone] Ship - Small, Floating (1x2)"),
+        ("tcn01", "GROUP:[Gothic] Boat"),
+        ("tcn01", "GROUP:[Gothic] Ship - Small, Floating (1x2)"),
+        //
+        // (4) "Door - Bridge" (all three districts): Bridge/FieldBridge/GothicBridge are each an
+        // independently-verified second real Tunnel body/port pair (TunnelVocabularyCheck confirmed
+        // TRUE for all three, exactly like Dock/FieldDock/GothicDock -- see the base profile's own doc
+        // comment), but a DungeonTilesetProfile carries only one Tunnel body/port slot, and Dock is
+        // wired here (richer real content: it touches far more of the fleet than Bridge, which only
+        // ever appears on this one boundary-port group per district). Bridge-crossered content is a
+        // real, structurally-valid alternate vocabulary this pass doesn't also wire.
+        ("tcn01", "GROUP:[City] Door - Bridge"),
+        ("tcn01", "GROUP:[Fieldstone] Door - Bridge"),
+        ("tcn01", "GROUP:[Gothic] Door - Bridge"),
+        // City's OWN "Ship - Air, Above Buildings" alternate-vocab entry above already closes the
+        // Building-cornered airship (auto-tagged); no manual entry needed for it here.
     };
 
     public static IEnumerable<string> PilotTilesetKeys => new[]
@@ -1924,6 +2013,7 @@ public class TileCoverageCensusTests
         "tjsb0", "tbx78", "tqq01", "udp2",
         "zde01",
         "zin01",
+        "tcn01",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -1959,6 +2049,7 @@ public class TileCoverageCensusTests
             "udp2" => BaseGameTilesetProfiles.OfficeInteriors,
             "zde01" => BaseGameTilesetProfiles.CepDungeon,
             "zin01" => BaseGameTilesetProfiles.CepCityInterior,
+            "tcn01" => BaseGameTilesetProfiles.CityExterior,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

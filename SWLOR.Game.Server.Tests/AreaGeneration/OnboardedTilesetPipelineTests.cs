@@ -186,6 +186,14 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.CepCityInterior,
         BaseGameTilesetProfiles.CepCityInteriorElven,
         BaseGameTilesetProfiles.CepCityInteriorSigil,
+        // Wave-10: City Exterior* (tcn01) -- base City district plus the Fieldstone/Gothic/Sigil
+        // PaletteVariant districts. See BaseGameTilesetProfiles.CityExterior's own doc comment for the
+        // full composition writeup (Dock as the real TunnelCrossers pair; Sigil needs
+        // SolidTerrainOverride("SigilCastle") for full 16/16 coverage, unlike the other three districts).
+        BaseGameTilesetProfiles.CityExterior,
+        BaseGameTilesetProfiles.CityExteriorFieldstone,
+        BaseGameTilesetProfiles.CityExteriorGothic,
+        BaseGameTilesetProfiles.CityExteriorSigil,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

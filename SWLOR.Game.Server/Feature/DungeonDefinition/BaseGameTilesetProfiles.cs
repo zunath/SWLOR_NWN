@@ -195,6 +195,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string CastleExteriorRuralWater = "castleexteriorrural_water";
         public const string CastleExteriorRuralHarbor = "castleexteriorrural_harbor";
 
+        // Wave-10: City Exterior* (tcn01, SWLOR_Haks/sw_t_cityext -- hak wins over the basegame_sets
+        // fallback, 1460 tiles / 295 groups, the largest onboarded set yet). See CityExterior's own doc
+        // comment for the full composition writeup.
+        public const string CityExterior = "cityexterior";
+        public const string CityExteriorFieldstone = "cityexterior_fieldstone";
+        public const string CityExteriorGothic = "cityexterior_gothic";
+        public const string CityExteriorSigil = "cityexterior_sigil";
+
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
@@ -5240,6 +5248,458 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("DockedShip_City", 1)
                 .SetPiece("Docks_City", 1)
                 .SetPiece("Ship_3x1_Docked", 1);
+
+            // City Exterior* (tcn01, SWLOR_Haks/sw_t_cityext -- UnlocalizedName "City Exterior*";
+            // hak wins over basegame_sets, 1460 tiles / 295 groups, the largest onboarded set yet).
+            // GENERAL: Border=Water, Default=Water, Floor=Cobble -- Default != Floor already (a
+            // conventional composition, unlike the degenerate ttr01/tts01 Rural pair where Default ==
+            // Floor forced an explicit PrimaryOpenTerrain override). No SolidTerrainOverride/
+            // PrimaryOpenTerrain declared here: BuildVocabulary's own empty-means-Default/Floor
+            // defaults already give Solid="Water"/Open="Cobble", and a direct 16-combo corner probe
+            // (ProbeTool, all four corners drawn from {Water, Cobble}, crosser-free) resolved 16/16 --
+            // full coverage with zero override needed.
+            //
+            // FOUR PARALLEL DISTRICTS share this one physical tileset under prefixed group/terrain/
+            // crosser names: City (unprefixed, this profile), Sigil, Fieldstone, Gothic -- each
+            // ~90-105 groups, verified by a direct group-name diff (Fieldstone/Gothic mirror City's
+            // building family tile-for-tile minus City's own large naval fleet, plus 3-4 district-only
+            // extras; Sigil is a much smaller, structurally distinct hive/chasm district). Three
+            // PaletteVariant profiles below (CityExteriorFieldstone/Gothic/Sigil) recompose the SAME
+            // tcn01 hak data, matching the zin01/tno01 multi-district precedent.
+            //
+            // TUNNEL VOCABULARY (the tileset's real "wall-embedded corridor" mechanism, verified via
+            // TunnelVocabularyCheck.SupportsTunnels): Wall and Stream both FAIL every custom body/port
+            // shape (never occur on 4x-uniform-Solid corners in a straight/turn/T/X/port pattern -- see
+            // their own doc comments below for what they actually are). Dock and Bridge BOTH
+            // independently verify TRUE as a Custom body==port pair against Solid=Water/Open=Cobble --
+            // a coherent, evidence-backed reading: tcn01's City district is a canal/harbor city whose
+            // districts sit on Cobble "islands" separated by a Water solid mass, connected by literal
+            // docks and bridges. "[City] Door - Bridge"/"[City] Door - Dock" (both 1x1 GROUPs, all-Water
+            // corners, one door, the crosser mirrored on two opposite edges) are exactly
+            // TunnelVocabularyCheck's "boundary port cell" shape -- confirmed live, these are the tiles
+            // LayoutTunnelCarver's own TryAddPort stamps a port onto, so they are NOT separately wired
+            // via SetPiece/ExitGroup (the tunnel carver consumes them directly, the same way Barrows'
+            // "door_corridor" port tiles are consumed by DoorSlotCrossers rather than hand-listed).
+            // Dock is wired as the primary TunnelCrossers pair here (richer real content: the docked-
+            // ship fleet -- Small/Merchant/Weathered/Caravel/Longship, some now genuinely placeable via
+            // SetPieceCorridorStubChain -- carries a real Dock crosser on its hull, whereas Bridge only
+            // ever appears on the single "Door - Bridge" boundary-port group). Bridge is an equally-
+            // valid second real vocabulary (structurally reachable via the same mechanism a future
+            // variant could switch to; not both at once since DungeonTilesetProfile only carries one
+            // Tunnel body/port slot per profile) -- "Door - Bridge" and its Bridge-crossered siblings are
+            // census-exempt as this pass's unwired alternate (see TileCoverageCensusTests.
+            // PilotExpectedExemptions["tcn01"]). Several docked-ship hull groups (Merchant/Weathered/
+            // Carrack, plus each district's own "Small, Docked") still don't classify even with Dock
+            // wired: they mark a continuous Dock-crosser "keel line" down the hull spanning BOTH an
+            // interior seam (between two real hull members) and a perimeter edge, which
+            // ClassifyMultiTileSetPiece's CorridorStubChain rule rejects outright (no interior body
+            // crosser tolerated) -- also census-exempt, see the same PilotExpectedExemptions entry.
+            //
+            // "Alley" (10-crosser CROSSER TYPES list, "[All] Alley") is NOT a street/lane crosser
+            // despite the name: a direct census of all 138 Alley-edged tiles shows EVERY one sits on
+            // uniform Building/FieldBuilding/GothicBuilding corners (or a Building/Cobble mixed corner),
+            // almost always carrying a door -- i.e. Alley is a back-alley passage carved THROUGH the
+            // Building solid mass (a WallRoom/tunnel-in-masonry shape), not a lane through open Cobble
+            // street space. RoadVocabularyCheck.SupportsRoads(Cobble, Alley) verified FALSE on all five
+            // required shapes (stub/straight/turn/T/X all fail) for exactly this reason: Alley never
+            // occurs on all-Cobble corners at all. TunnelVocabularyCheck.SupportsTunnels(..., Alley)
+            // also verified FALSE (the canonical-Alley overload, which checks Alley as BOTH body and
+            // port against the composed Solid=Water). Since this profile composes Building as an
+            // ordinary SetPiece obstacle (not the corner-match Solid terrain), Alley's real vocabulary
+            // is structurally out of reach here -- left as a documented alternate-vocabulary gap for a
+            // possible future "Building-embedded back-alley" sub-mode rather than forced into this
+            // composition.
+            //
+            // STREETS (LayoutRoadCarver): Alley also fails as a RoadCrosser for the reason above. The
+            // Sigil district's OWN "SigilRoad" crosser (declared only for Sigil, not City/Fieldstone/
+            // Gothic) DOES verify true (SupportsRoads(SigilCobble, SigilRoad) = TRUE, all five shapes
+            // resolve) -- making tcn01 the SECOND Streets-capable tileset in this codebase after vmr01,
+            // wired on the Sigil PaletteVariant below via RoadCrosser("SigilRoad"). The base City
+            // district itself has NO Streets vocabulary.
+            //
+            // "Wall" ("[All] Wall") is mostly a flat, doorless, all-Cobble opposite-edge-pair crosser
+            // (PathNode=D) with a minority Cobble/Water and Cobble/Building-boundary shape (PathNode=S)
+            // -- structurally a property-line/parapet divider through open street space, not a tunnel or
+            // road crosser (confirmed FALSE under every TunnelVocabularyCheck combination tried). No
+            // production mechanism in this codebase recognizes an arbitrarily-named "Fence"-style
+            // crosser (LayoutFenceCarver/IsCorridorInsertEligible's FenceCrosser slot is the fixed
+            // literal name "Fence", which tcn01 does not declare) -- left as a documented
+            // alternate-vocabulary gap. "Stream" is the same shape one register over (mostly flat,
+            // doorless, all-Cobble single-edge crosser, PathNode=C, minority Cobble/Water boundary,
+            // PathNode=I) paired with "[City] Footbridge" (flat, all-Cobble, Stream-crossed, doorless) as
+            // its crossing piece -- a decorative canal-through-downtown pair, same "no wired vocabulary
+            // this wave" verdict as Wall/Alley. Both stay unwired; their tiles fall through to the
+            // automatic alternate-vocabulary/height exemption buckets.
+            //
+            // Lighting sampled directly from the one hand-built module area on this tileset
+            // (Module/are/dan_repgarrison.are.json, a Republic garrison outpost, 100 tiles): uniform
+            // MainLight1=0/MainLight2=0/SrcLight1=0/SrcLight2=0 across all 100 tiles -- matches every
+            // other exterior profile's daylight convention. This area is comparatively thin evidence for
+            // a 1460-tile set and its placeable inventory (133 items) skews military-garrison (troops,
+            // turrets, cargo containers, chain-link fencing) rather than general downtown dressing; the
+            // small directly-evidenced subset below is supplemented by the SAME city-family fallback
+            // fcx01/tin01 decoration work already established for other thin-evidence exterior/city
+            // profiles, not invented wholesale.
+            //
+            // THEME PAIRING: like every profile in this file, no theme/content registration happens
+            // here -- reachable via explicit tileset override only. Natural future pairing: coastal/
+            // harbor settlement worlds (matching the Bridge/Dock canal-city reading above) and walled
+            // free-city or garrison-outpost worlds (matching dan_repgarrison's own military use).
+            _builder.Create(CityExterior, "City Exterior*")
+                .Tileset("tcn01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .TunnelCrossers("Dock", "Dock")
+                .FeatureTile("[City] Chessboard")
+                .FeatureTile("[City] Construction")
+                .FeatureTile("[City] Fountain")
+                .FeatureTile("[City] Garden - Vegetable")
+                .FeatureTile("[City] Garden - Flower")
+                .FeatureTile("[City] Gazebo")
+                .FeatureTile("[City] Market 1")
+                .FeatureTile("[City] Market 2")
+                .FeatureTile("[City] Market - Slum 1")
+                .FeatureTile("[City] Market - Slum 2")
+                .FeatureTile("[City] Plaza 1")
+                .FeatureTile("[City] Plaza 2")
+                .FeatureTile("[City] Streetlight")
+                .FeatureTile("[City] Tree")
+                .FeatureTile("[City] Wagon")
+                .FeatureTile("[City] Well")
+                .FeatureTile("[City] Wall - Chunk")
+                .FeatureTile("[City] Building - Destroyed 1")
+                .FeatureTile("[City] Building - Destroyed 2")
+                .FeatureTile("[City] Building - Destroyed 3")
+                .FeatureTile("[City] Building - Burned")
+                // Semantic teleporter tile -- excluded from random FeatureTile sprinkling and wired as
+                // a rare set piece instead, mirroring ttd01/fcx01's own "Portal" precedent.
+                .SetPiece("[City] Portal", 1)
+                .ExitGroup("[City] House - Slum 1")
+                .ExitGroup("[City] House - Slum 2")
+                .ExitGroup("[City] House")
+                .ExitGroup("[City] Sewer Entrance 1")
+                .ExitGroup("[City] Wall - Breach")
+                .ExitGroup("[City] Wall - Door 1")
+                .ExitGroup("[City] Building - Wall Breach")
+                .ExitGroup("[City] Building - Wall Temple")
+                .ExitGroup("[City] Castle - Breach, Evil")
+                .ExitGroup("[City] Castle - Breach, Good")
+                .ExitGroup("[City] Castle - Main Door, Evil")
+                .ExitGroup("[City] Castle - Main Door, Good")
+                .ExitGroup("[City] Castle - Small Door, Evil")
+                .ExitGroup("[City] Castle - Small Door, Good")
+                // Non-flat (a raised rampart-tower segment); kept wired per the project's "wire it,
+                // let TryClassify/height-exemption sort it out" convention -- no relief vocabulary is
+                // declared for this profile, so these fall through to the automatic height exemption if
+                // they don't independently classify.
+                .ExitGroup("[City] Wall - Tower 1")
+                .ExitGroup("[City] Wall - Tower 2")
+                .SetPiece("[City] House 01 (2x3)")
+                .SetPiece("[City] House 02 (2x2)")
+                .SetPiece("[City] House 03 (2x2)")
+                .SetPiece("[City] House 04 (2x2)")
+                .SetPiece("[City] House 05 (2x2)")
+                .SetPiece("[City] House 06 (2x2)")
+                .SetPiece("[City] House 07 (1x2)")
+                .SetPiece("[City] House 08 (1x2)")
+                .SetPiece("[City] House 09 (1x2)")
+                .SetPiece("[City] House 10 (1x2)")
+                .SetPiece("[City] House - Slum (1x2)")
+                .SetPiece("[City] Inn - Slum 1 (1x2)")
+                .SetPiece("[City] Inn - Slum 2 (1x2)")
+                .SetPiece("[City] Barracks (2x2)")
+                .SetPiece("[City] Temple - Evil (2x3)")
+                .SetPiece("[City] Temple - Good (3x3)")
+                .SetPiece("[City] Temple - Neutral (2x2)")
+                .SetPiece("[City] Tower - Cloak (2x2)")
+                .SetPiece("[City] Tower - Guard (1x2)")
+                .SetPiece("[City] Tower - Ruined (2x2)")
+                .SetPiece("[City] Tower - Wizard (1x2)")
+                // Non-flat (a raised gate arch); same "wire it, height-exemption is the safety net"
+                // reasoning as the wall-tower ExitGroups above.
+                .SetPiece("[City] Gate - City (2x2)")
+                .SetPiece("[City] Building - State 1 (2x3)")
+                .SetPiece("[City] Building - State 2 (2x3)")
+                .SetPiece("[City] Arena (3x3)")
+                .SetPiece("[City] Fountain (1x2)")
+                .SetPiece("[City] Garden - Flower (1x2)")
+                .SetPiece("[City] Market (2x1)")
+                .SetPiece("[City] Plaza (2x2)")
+                .SetPiece("[City] Pool - Holy (2x2)")
+                .SetPiece("[City] Ruined Park (1x2)")
+                .SetPiece("[City] Tree - Giant (2x2)")
+                .SetPiece("[City] Building - Burned (2x1)")
+                .SetPiece("[City] Building - Destroyed (1x2)")
+                // 72-tile (9x8) finale/showcase piece -- the same oversized-set-piece shape as
+                // Barrows' FinalArea_7x7/fcx01's Tower07, kept wired for future larger-area generation
+                // even though a 20x20 area's room supply cannot realistically fit it today.
+                .SetPiece("[City] Amphitheater (9x8)", 1)
+                // The Cobble-cornered "Docked" airship variant only -- the "Above Buildings"/"Above
+                // Water" siblings need Building/Water composed as OPEN terrain, which this profile
+                // does not do, and are left as alternate-vocabulary exemptions.
+                .SetPiece("[City] Ship - Air, Docked (3x1)", 1)
+                // All-Water-cornered ship hulls (some Dock-crossered) -- wired per the same "TryClassify
+                // re-verifies independently" convention as every other tileset-declared-but-unverified
+                // group in this codebase; safe even if these turn out to need a mechanism this pass
+                // doesn't wire, since an unreachable SetPiece call is simply never stamped.
+                .SetPiece("[City] Boat", 1)
+                .SetPiece("[City] Boathouse", 1)
+                .SetPiece("[City] Ship - Caravel, Docked (3x2)", 1)
+                .SetPiece("[City] Ship - Caravel, Floating (3x1)", 1)
+                .SetPiece("[City] Ship - Carrack, Docked (4x2)", 1)
+                .SetPiece("[City] Ship - Carrack, Floating (4x1)", 1)
+                .SetPiece("[City] Ship - Galleon 1 (5x1)", 1)
+                .SetPiece("[City] Ship - Galleon 2 (5x1)", 1)
+                .SetPiece("[City] Ship - Longship, Docked (3x2)", 1)
+                .SetPiece("[City] Ship - Longship, Floating (3x2)", 1)
+                .SetPiece("[City] Ship - Merchant, Docked (3x2)", 1)
+                .SetPiece("[City] Ship - Merchant, Undockable (3x1)", 1)
+                .SetPiece("[City] Ship - Weathered, Docked (3x2)", 1)
+                .SetPiece("[City] Ship - Weathered, Undockable (3x1)", 1);
+
+            // City Exterior*'s own bulk palette -- directly evidenced items from the one hand-built
+            // tcn01 area (Module/git/dan_repgarrison.git.json, a Republic garrison outpost, 133
+            // placeables) plus the established city-family fallback (fcx01/tin01's own palettes) for
+            // what that thin, garrison-skewed sample cannot support. See the base profile's own doc
+            // comment above for the full evidence-thinness writeup.
+            _builder
+                .Decoration("zep_grasstuft001", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_dirt02", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_wall009", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_shrub036", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_conta32", 1, DecorationContext.StructureAdjacent)
+                .Decoration("_mdrn_pl_floor23", 2, DecorationContext.CourtyardCenter)
+                .Decoration("_mdrn_pl_strtlm4", 2, DecorationContext.DoorwayFlank);
+
+            // City Exterior* (Fieldstone) -- FieldCobble/FieldBuilding/FieldEvilCastle/FieldGoodCastle
+            // district PaletteVariant, recomposing the SAME tcn01 hak data with no override needed
+            // (16-combo probe against Solid=Water/Open=FieldCobble verified 16/16, mirroring the base
+            // City profile exactly). Mirrors the base profile's own group family tile-for-tile (verified
+            // by a direct group-name diff): every City building/gate/wall/tower/dock group has a
+            // same-shaped Fieldstone counterpart, MINUS City's own large naval fleet (Fieldstone keeps
+            // only the small-boat/dock/footbridge family) PLUS "Gate - City (2x3)"/"Garden -
+            // Flower_1x2"/"Building - Burned (1x2)" as its own small naming-convention deltas.
+            // TunnelCrossers("FieldBridge","FieldBridge") independently verified TRUE via
+            // TunnelVocabularyCheck, the same Bridge-spans-Water mechanism as the base profile.
+            _builder.Create(CityExteriorFieldstone, "City Exterior* (Fieldstone)")
+                .Tileset("tcn01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("FieldCobble")
+                .TunnelCrossers("FieldDock", "FieldDock")
+                .FeatureTile("[Fieldstone] Chessboard")
+                .FeatureTile("[Fieldstone] Construction")
+                .FeatureTile("[Fieldstone] Fountain")
+                .FeatureTile("[Fieldstone] Garden - Vegetable")
+                .FeatureTile("[Fieldstone] Garden - Flower")
+                .FeatureTile("[Fieldstone] Gazebo")
+                .FeatureTile("[Fieldstone] Market 1")
+                .FeatureTile("[Fieldstone] Market 2")
+                .FeatureTile("[Fieldstone] Market - Slum 1")
+                .FeatureTile("[Fieldstone] Market - Slum 2")
+                .FeatureTile("[Fieldstone] Plaza 1")
+                .FeatureTile("[Fieldstone] Plaza 2")
+                .FeatureTile("[Fieldstone] Streetlight")
+                .FeatureTile("[Fieldstone] Tree")
+                .FeatureTile("[Fieldstone] Wagon")
+                .FeatureTile("[Fieldstone] Well")
+                .FeatureTile("[Fieldstone] Wall - Chunk")
+                .FeatureTile("[Fieldstone] Building - Destroyed 1")
+                .FeatureTile("[Fieldstone] Building - Destroyed 2")
+                .FeatureTile("[Fieldstone] Building - Destroyed 3")
+                .FeatureTile("[Fieldstone] Building - Burned")
+                .SetPiece("[Fieldstone] Portal", 1)
+                .ExitGroup("[Fieldstone] House - Slum 1")
+                .ExitGroup("[Fieldstone] House - Slum 2")
+                .ExitGroup("[Fieldstone] House")
+                .ExitGroup("[Fieldstone] Sewer Entrance 1")
+                .ExitGroup("[Fieldstone] Wall - Breach")
+                .ExitGroup("[Fieldstone] Wall - Door 1")
+                .ExitGroup("[Fieldstone] Building - Wall Breach")
+                .ExitGroup("[Fieldstone] Building - Wall Temple")
+                .ExitGroup("[Fieldstone] Castle - Breach, Evil")
+                .ExitGroup("[Fieldstone] Castle - Breach, Good")
+                .ExitGroup("[Fieldstone] Castle - Main Door, Evil")
+                .ExitGroup("[Fieldstone] Castle - Main Door, Good")
+                .ExitGroup("[Fieldstone] Castle - Small Door, Evil")
+                .ExitGroup("[Fieldstone] Castle - Small Door, Good")
+                .ExitGroup("[Fieldstone] Wall - Tower 1")
+                .ExitGroup("[Fieldstone] Wall - Tower 2")
+                .SetPiece("[Fieldstone] House 01 (2x3)")
+                .SetPiece("[Fieldstone] House 02 (2x2)")
+                .SetPiece("[Fieldstone] House 03 (2x2)")
+                .SetPiece("[Fieldstone] House 04 (2x2)")
+                .SetPiece("[Fieldstone] House 05 (2x2)")
+                .SetPiece("[Fieldstone] House 06 (2x2)")
+                .SetPiece("[Fieldstone] House 07 (1x2)")
+                .SetPiece("[Fieldstone] House 08 (1x2)")
+                .SetPiece("[Fieldstone] House 09 (1x2)")
+                .SetPiece("[Fieldstone] House 10 (1x2)")
+                .SetPiece("[Fieldstone] House - Slum (1x2)")
+                .SetPiece("[Fieldstone] Inn - Slum 1 (1x2)")
+                .SetPiece("[Fieldstone] Inn - Slum 2 (1x2)")
+                .SetPiece("[Fieldstone] Barracks (2x2)")
+                .SetPiece("[Fieldstone] Temple - Evil (2x3)")
+                .SetPiece("[Fieldstone] Temple - Good (3x3)")
+                .SetPiece("[Fieldstone] Temple - Neutral (2x2)")
+                .SetPiece("[Fieldstone] Tower - Cloak (2x2)")
+                .SetPiece("[Fieldstone] Tower - Guard (1x2)")
+                .SetPiece("[Fieldstone] Tower - Ruined (2x2)")
+                .SetPiece("[Fieldstone] Tower - Wizard (1x2)")
+                .SetPiece("[Fieldstone] Gate - City (2x2)")
+                .SetPiece("[Fieldstone] Gate - City (2x3)")
+                .SetPiece("[Fieldstone] Building - State 1 (2x3)")
+                .SetPiece("[Fieldstone] Building - State 2 (2x3)")
+                .SetPiece("[Fieldstone] Arena (3x3)")
+                .SetPiece("[Fieldstone] Fountain (1x2)")
+                .SetPiece("[Fieldstone] Garden - Flower_1x2")
+                .SetPiece("[Fieldstone] Market (1x2)")
+                .SetPiece("[Fieldstone] Plaza (2x2)")
+                .SetPiece("[Fieldstone] Pool - Holy (2x2)")
+                .SetPiece("[Fieldstone] Ruined Park (1x2)")
+                .SetPiece("[Fieldstone] Tree - Giant (2x2)")
+                .SetPiece("[Fieldstone] Building - Burned (1x2)")
+                .SetPiece("[Fieldstone] Building - Destroyed (1x2)")
+                .SetPiece("[Fieldstone] Boat", 1)
+                .SetPiece("[Fieldstone] Boathouse", 1)
+                .SetPiece("[Fieldstone] Ship - Small, Docked (2x2)", 1)
+                .SetPiece("[Fieldstone] Ship - Small, Floating (1x2)", 1);
+
+            // City Exterior* (Gothic) -- GothicCobble/GothicBuilding/GothicEvilCastle/GothicGoodCastle
+            // district PaletteVariant, same shape as Fieldstone above (16-combo probe against
+            // Solid=Water/Open=GothicCobble verified 16/16; TunnelCrossers("GothicBridge","GothicBridge")
+            // independently verified TRUE). Mirrors City's group family tile-for-tile minus the naval
+            // fleet, plus its own "Chessboard 1"/"Chessboard 2"/"Market (1x2)"/"Building - Burned (1x2)"
+            // naming deltas.
+            _builder.Create(CityExteriorGothic, "City Exterior* (Gothic)")
+                .Tileset("tcn01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("GothicCobble")
+                .TunnelCrossers("GothicDock", "GothicDock")
+                .FeatureTile("[Gothic] Chessboard 1")
+                .FeatureTile("[Gothic] Chessboard 2")
+                .FeatureTile("[Gothic] Construction")
+                .FeatureTile("[Gothic] Fountain")
+                .FeatureTile("[Gothic] Garden - Vegetable")
+                .FeatureTile("[Gothic] Garden - Flower")
+                .FeatureTile("[Gothic] Gazebo")
+                .FeatureTile("[Gothic] Market 1")
+                .FeatureTile("[Gothic] Market 2")
+                .FeatureTile("[Gothic] Market - Slum 1")
+                .FeatureTile("[Gothic] Market - Slum 2")
+                .FeatureTile("[Gothic] Plaza 1")
+                .FeatureTile("[Gothic] Plaza 2")
+                .FeatureTile("[Gothic] Streetlight")
+                .FeatureTile("[Gothic] Tree")
+                .FeatureTile("[Gothic] Wagon")
+                .FeatureTile("[Gothic] Well")
+                .FeatureTile("[Gothic] Wall - Chunk")
+                .FeatureTile("[Gothic] Building - Destroyed 1")
+                .FeatureTile("[Gothic] Building - Destroyed 2")
+                .FeatureTile("[Gothic] Building - Destroyed 3")
+                .FeatureTile("[Gothic] Building - Burned")
+                .SetPiece("[Gothic] Portal", 1)
+                .ExitGroup("[Gothic] House - Slum 1")
+                .ExitGroup("[Gothic] House - Slum 2")
+                .ExitGroup("[Gothic] House")
+                .ExitGroup("[Gothic] Sewer Entrance 1")
+                .ExitGroup("[Gothic] Wall - Breach")
+                .ExitGroup("[Gothic] Wall - Door 1")
+                .ExitGroup("[Gothic] Building - Wall Breach")
+                .ExitGroup("[Gothic] Building - Wall Temple")
+                .ExitGroup("[Gothic] Castle - Breach, Evil")
+                .ExitGroup("[Gothic] Castle - Breach, Good")
+                .ExitGroup("[Gothic] Castle - Main Door, Evil")
+                .ExitGroup("[Gothic] Castle - Main Door, Good")
+                .ExitGroup("[Gothic] Castle - Small Door, Evil")
+                .ExitGroup("[Gothic] Castle - Small Door, Good")
+                .ExitGroup("[Gothic] Wall - Tower 1")
+                .ExitGroup("[Gothic] Wall - Tower 2")
+                .SetPiece("[Gothic] House 01 (2x3)")
+                .SetPiece("[Gothic] House 02 (2x2)")
+                .SetPiece("[Gothic] House 03 (2x2)")
+                .SetPiece("[Gothic] House 04 (2x2)")
+                .SetPiece("[Gothic] House 05 (2x2)")
+                .SetPiece("[Gothic] House 06 (2x2)")
+                .SetPiece("[Gothic] House 07 (1x2)")
+                .SetPiece("[Gothic] House 08 (1x2)")
+                .SetPiece("[Gothic] House 09 (1x2)")
+                .SetPiece("[Gothic] House 10 (1x2)")
+                .SetPiece("[Gothic] House - Slum (1x2)")
+                .SetPiece("[Gothic] Inn - Slum 1 (1x2)")
+                .SetPiece("[Gothic] Inn - Slum 2 (1x2)")
+                .SetPiece("[Gothic] Barracks (2x2)")
+                .SetPiece("[Gothic] Temple - Evil (2x3)")
+                .SetPiece("[Gothic] Temple - Good (3x3)")
+                .SetPiece("[Gothic] Temple - Neutral (2x2)")
+                .SetPiece("[Gothic] Tower - Cloak (2x2)")
+                .SetPiece("[Gothic] Tower - Guard (1x2)")
+                .SetPiece("[Gothic] Tower - Ruined (2x2)")
+                .SetPiece("[Gothic] Tower - Wizard (1x2)")
+                .SetPiece("[Gothic] Gate - City (2x2)")
+                .SetPiece("[Gothic] Building - State 1 (2x3)")
+                .SetPiece("[Gothic] Building - State 2 (2x3)")
+                .SetPiece("[Gothic] Arena (3x3)")
+                .SetPiece("[Gothic] Fountain (1x2)")
+                .SetPiece("[Gothic] Garden - Flower (1x2)")
+                .SetPiece("[Gothic] Market (1x2)")
+                .SetPiece("[Gothic] Plaza (2x2)")
+                .SetPiece("[Gothic] Pool - Holy (2x2)")
+                .SetPiece("[Gothic] Ruined Park (1x2)")
+                .SetPiece("[Gothic] Tree - Giant (2x2)")
+                .SetPiece("[Gothic] Building - Burned (1x2)")
+                .SetPiece("[Gothic] Building - Destroyed (1x2)")
+                .SetPiece("[Gothic] Boat", 1)
+                .SetPiece("[Gothic] Boathouse", 1)
+                .SetPiece("[Gothic] Ship - Small, Docked (2x2)", 1)
+                .SetPiece("[Gothic] Ship - Small, Floating (1x2)", 1);
+
+            // City Exterior* (Sigil) -- the tileset's smallest, structurally distinct district (13
+            // groups / 61 tiles): a hive/chasm quarter on its own SigilCobble/SigilHill/SigilChasm/
+            // SigilBuilding/SigilCastle terrain family. UNLIKE City/Fieldstone/Gothic, a direct 16-combo
+            // probe against the default Solid=Water/Open=SigilCobble pairing measured only 14/16 (the
+            // two diagonal-split-corner combos [Water,SigilCobble,Water,SigilCobble] and its rotation
+            // never resolve) -- SolidTerrainOverride("SigilCastle") is required here, verified 16/16
+            // against Open=SigilCobble. RoadCrosser("SigilRoad") verified TRUE via RoadVocabularyCheck
+            // (all five shapes resolve) -- see the base CityExterior profile's own doc comment on this
+            // making tcn01 the second Streets-capable tileset after vmr01. SigilRoad independently
+            // verified FALSE as a Tunnel body/port (it is a street-lane crosser, not a wall-embedded
+            // one) -- no TunnelCrossers declared; Sigil has no district-specific Dock/Bridge crosser
+            // pair at all (only City/Fieldstone/Gothic do), consistent with Sigil being a landlocked
+            // hive quarter rather than a harbor district.
+            //
+            // "[Sigil] Final Area (7x7)" is a 49-tile finale/boss-chamber set piece, heavily SigilChasm-
+            // cornered (144/196 corners) -- the same oversized showcase-piece shape as Barrows'
+            // FinalArea_7x7/City's own Amphitheater above, kept wired for future larger-area generation.
+            // The five WallAlcove-shaped 1x1 door groups (Door - Castle, House - Low, House - Tall,
+            // Shop - Green, Shop - Harys) mirror every other district's own single-door-building shape.
+            _builder.Create(CityExteriorSigil, "City Exterior* (Sigil)")
+                .Tileset("tcn01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("SigilCastle")
+                .PrimaryOpenTerrain("SigilCobble")
+                .AccentTerrain("SigilChasm")
+                .RoadCrosser("SigilRoad")
+                .FeatureTile("[Sigil] Fountain")
+                .FeatureTile("[Sigil] Midden 1")
+                .FeatureTile("[Sigil] Pipes")
+                .FeatureTile("[Sigil] Puddle 1")
+                .FeatureTile("[Sigil] Puddle 2")
+                .FeatureTile("[Sigil] Puddle 3")
+                .SetPiece("[Sigil] Door - Castle", 1)
+                .SetPiece("[Sigil] House - Low")
+                .SetPiece("[Sigil] House - Tall")
+                .SetPiece("[Sigil] Shop - Green")
+                .SetPiece("[Sigil] Shop - Harys")
+                // Non-flat (a raised minaret spire, two door slots); kept wired per the same
+                // height-exemption safety-net convention as City's Wall - Tower/Gate - City above.
+                .SetPiece("[Sigil] Minaret", 1)
+                .SetPiece("[Sigil] Final Area (7x7)", 1);
 
             return _builder.Build();
         }

@@ -204,6 +204,28 @@ Each content package below requires one dungeon area and one attached boss arena
 
 (2026-07-11: the Lightsaber Ward/Severance perk trees were redesigned. The Dantooine Jedi Enclave Trial Halls "Saber Storm" and "Guardian Master" mastery quests listed above are unchanged/reused — their quest IDs and definitions did not change — but they now gate the new capstones Epicenter (Severance tree) and Aegis Eternal (Ward tree) respectively, instead of the old Lightsaber Defense/Offense capstones.)
 
+### Suggested Tilesets
+
+Tileset per area: the resref goes in the area's `Tileset` field, and the toolset display name (`UnlocalizedName` in the `.set`) is what you pick in the New Area dropdown. The four shipped packages list their actual tilesets; the rest are recommendations chosen to fit the fiction and reuse tilesets already proven in existing SWLOR areas.
+
+| Content Package | Dungeon Tileset | Attached Boss Arena Tileset |
+| --- | --- | --- |
+| Veles Militia Annex | `tjsb0` — D20 Secret Base | `tbx78` — D20 Modern Facility |
+| Dantooine Jedi Enclave Trial Halls | `udp2` — D20 Office Interiors UDP | `zin01` — [CEP] City Interior 1 |
+| Korriban Forge Caverns | `zde01` — [CEP] Dungeon | `ztu01` — [CEP] Underdark |
+| Smuggler's Moon Fight Club Backrooms | `udp2` — D20 Office Interiors UDP (built) | `udp2` — D20 Office Interiors UDP (built) |
+| CZ-220 Breaker Yard | `zsf01` — D20 SciFi Base CQ (built) | `zsf01` — D20 SciFi Base CQ (built) |
+| Anchorhead Canyon Range | `ttd01` — [SW] Tatooine | `tdm01` — Mines and Caverns |
+| Czerka Arms Test Range | `flow_pa` — D20 Parking Garage (built) | `dgt04` — D20 Modern Exterior (built) |
+| Hutlar Qion Test Site | `zti01` — [CEP] Frozen Wastes | `tbx78` — D20 Modern Facility |
+| Korriban Sith Crypt Depths | `vmr01` — D20 Alien Ruins | `zid01` — [CEP] Drow Interior |
+| Viscara Republic Engineering Bunker | `tbx78` — D20 Modern Facility | `tjsb0` — D20 Secret Base |
+| Dantooine Medical Sublevel | `tqq01` — Complex Labs Storage | `tmi` — ModernInterior |
+| Dathomir Tarn Jungle Preserve | `jac01` — Jacoby's Jungle | `ttu01` — Underdark |
+| Dathomir Grotto Apex Den | `ttu01` — Underdark (built) | `ttu01` — Underdark (built) |
+
+Naming caveats: `udp2` ("D20 Office Interiors") and `zin01` ("[CEP] City Interior 1") read as urban but render as the stone enclave/temple interiors used by the game's Dantooine Jedi Enclave Library and Viscara Jedi Temple Interior. `tqq01` is stored in the hak with a typo as "Complex laps storage"; it is the Dantooine Medical/Lab interior tileset.
+
 ### Generated Dungeon Spawn Tables
 
 These spawn tables are for the dungeon/lesson areas only. Do not place these waypoint blueprints in the attached boss arena.

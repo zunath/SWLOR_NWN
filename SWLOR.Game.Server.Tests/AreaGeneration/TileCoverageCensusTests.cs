@@ -1026,6 +1026,24 @@ public class TileCoverageCensusTests
         },
         ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
         ["fcx01"] = new(StringComparer.OrdinalIgnoreCase),
+        // tjsb0 (D20 Secret Base): a single Wall/Floor/lava split, no alternate district palette.
+        ["tjsb0"] = new(StringComparer.OrdinalIgnoreCase),
+        // tbx78 (D20 Modern Facility): a single Wall/facility split, no alternate district palette.
+        ["tbx78"] = new(StringComparer.OrdinalIgnoreCase),
+        // tqq01 (Complex laps storage): BaseGameTilesetProfiles.LabStorage only wires the "Inn" district
+        // (the .set's own declared Floor terrain) plus generic groups -- the other three parallel
+        // room-type districts (Livingroom/Kitchen/Shop) are out of this onboarding pass's scope (no
+        // PaletteVariant profile registered for them), the identical descope BaseGameTilesetProfiles.
+        // CityInterior2 (tni01) already applies to its own "livingroom"/"kitchen"/"shop" terrains.
+        ["tqq01"] = new(StringComparer.OrdinalIgnoreCase) { "Livingroom", "Kitchen", "Shop" },
+        // udp2 (D20 Office Interiors UDP): BaseGameTilesetProfiles.OfficeInteriors only wires the
+        // "Office_Vinyl" district (the .set's own declared Floor terrain) plus tileset-generic groups --
+        // the other six parallel room-type districts are out of this onboarding pass's scope, same
+        // descope reasoning as tqq01 above.
+        ["udp2"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Service", "Tiled", "Office_Wood", "Office_Alum", "Foyer_L", "Foyer_U",
+        },
     };
 
     /// <summary>
@@ -1107,6 +1125,28 @@ public class TileCoverageCensusTests
         // IsCornerEdgeResolverReachable the same way every other declared-and-verified crosser family
         // in this file already is, rather than auto-exempting them as unwired.
         ["fcx01"] = new(StringComparer.OrdinalIgnoreCase) { "pont" },
+        // tjsb0: "bridge"/"fence" are both wired vocabulary (Bridge is canonical; fence-crossered doors
+        // are all GROUPed, see BaseGameTilesetProfiles.SecretBase's own doc comment) -- no alternates.
+        ["tjsb0"] = new(StringComparer.OrdinalIgnoreCase),
+        // tbx78: doorway1/doorway2/doorway3/cell/raised are all declared via DoorSlotCrossers (see
+        // BaseGameTilesetProfiles.ModernFacility) -- no unwired alternates remain.
+        ["tbx78"] = new(StringComparer.OrdinalIgnoreCase),
+        // tqq01: Corridor/Doorway are both canonical -- no alternates.
+        ["tqq01"] = new(StringComparer.OrdinalIgnoreCase),
+        // udp2: "Door"/"Door_Garage_Sm"/"Door_Garage_Lg" are declared via DoorSlotCrossers for
+        // CornerEdgeResolver's ungrouped-tile path (see BaseGameTilesetProfiles.OfficeInteriors), but
+        // DoorSlotCrossers has NO effect on GROUP classification (LayoutGroupStamper.TryClassifyGroup's
+        // IsAllowedMemberEdge only ever allows the literal canonical "Doorway" string or a Tunnel-mode
+        // stub crosser) -- verified directly. Every GROUP whose door-bearing member carries "Door" (every
+        // district's Entry/SmRm1/SmRm2/MidRm1/MidRm2 pair, plus Elevator1/2/Stairwell_U/UD/D/Restrooms/
+        // Break_Room) is therefore auto-exempted here rather than hand-listed one-by-one, the same
+        // "unwired crosser family" treatment fcx01's "pont" and ttf01's eight crosser families already
+        // get. Hallway1/Hallway2 (district-junction wall crossers, no verified Tunnel vocabulary either)
+        // stay here too.
+        ["udp2"] = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Door", "Door_Garage_Sm", "Door_Garage_Lg", "Hallway1", "Hallway2",
+        },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -1309,6 +1349,39 @@ public class TileCoverageCensusTests
         ("fcx01", "GROUP:d_wall_door"),
         ("fcx01", "GROUP:b_road_door"),
         ("fcx01", "GROUP:d_road_door"),
+
+        // D20 Secret Base (tjsb0): Caveentrance (2x1, TILE172/173) mixes THREE terrains on its two
+        // members (lava/floor/wall diagonal splits), crosser-free, one door -- outside every
+        // two-terrain classifier (WallAlcove/OpenSetPiece need a uniform Solid or Open corner set; this
+        // group has neither), the same "Cave - Cliff (2x3)" gap ttf01 already documents. See
+        // BaseGameTilesetProfiles.SecretBase's own doc comment.
+        ("tjsb0", "GROUP:Caveentrance"),
+
+        // D20 Modern Facility (tbx78): every group below carries a "doorway1"/"doorway2" perimeter edge
+        // on its door-bearing member -- LayoutGroupStamper.TryClassifyGroup's IsAllowedMemberEdge only
+        // ever allows the literal canonical "Doorway" string or a Tunnel-mode stub crosser, never a
+        // DoorSlotCrossers-declared alias (that only credits CornerEdgeResolver's ungrouped-tile path).
+        // See BaseGameTilesetProfiles.ModernFacility's own doc comment for the full writeup -- this closes
+        // essentially this tileset's ENTIRE room/utility group vocabulary except removed_panel/
+        // giant_cage/pillar, a genuine, verified solver-incompatibility for group content (ordinary flat
+        // tile coverage is unaffected -- CornerEdgeResolver still resolves 64/84 plain tiles fine).
+        ("tbx78", "GROUP:ladder_up"),
+        ("tbx78", "GROUP:ladder_dwn"),
+        ("tbx78", "GROUP:room2x1"),
+        ("tbx78", "GROUP:stairs_up"),
+        ("tbx78", "GROUP:room"),
+        ("tbx78", "GROUP:stairs_dwn"),
+        ("tbx78", "GROUP:elevator"),
+        ("tbx78", "GROUP:room3x1"),
+        ("tbx78", "GROUP:door_transition"),
+
+        // D20 Office Interiors UDP (udp2): the identical IsAllowedMemberEdge gap as tbx78 above, against
+        // the "Door" crosser name -- auto-exempted via PilotAlternateVocabCrossers["udp2"] (see that
+        // dictionary's own doc comment) rather than hand-listed here, since it closes every district's
+        // Entry/SmRm1/SmRm2/MidRm1/MidRm2 pair uniformly. Only the Office_Vinyl district's own
+        // Win/WinCrnr/Firepl/Stair_UD/U/D/Stair2_UD/U/D (crosser-free) and the tileset-generic
+        // Hallway1_Entry/Hallway2_Entry stay reachable. See BaseGameTilesetProfiles.OfficeInteriors' own
+        // doc comment.
     };
 
     public static IEnumerable<string> PilotTilesetKeys => new[]
@@ -1317,6 +1390,7 @@ public class TileCoverageCensusTests
         "tbw01", "tdm01", "tdr01", "tic01", "tni02", "tid01", "tii01", "tni01", "tsw01", "twc03",
         "ttd01", "ttf01", "ttf02",
         "fcx01",
+        "tjsb0", "tbx78", "tqq01", "udp2",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -1342,6 +1416,10 @@ public class TileCoverageCensusTests
             "ttf01" => BaseGameTilesetProfiles.Forest,
             "ttf02" => BaseGameTilesetProfiles.ForestFacelift,
             "fcx01" => BaseGameTilesetProfiles.FutCity,
+            "tjsb0" => BaseGameTilesetProfiles.SecretBase,
+            "tbx78" => BaseGameTilesetProfiles.ModernFacility,
+            "tqq01" => BaseGameTilesetProfiles.LabStorage,
+            "udp2" => BaseGameTilesetProfiles.OfficeInteriors,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

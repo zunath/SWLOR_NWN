@@ -153,6 +153,15 @@ public class TunnelVocabularyCheckTests
         // Corridor/Doorway body+port set -- see BaseGameTilesetProfiles.FutCity's own doc comment.
         BaseGameTilesetProfiles.FutCity,
         BaseGameTilesetProfiles.FutCityPlaza,
+        // Wave-5: D20 Modern Facility (tbx78) declares "doorway1/2/3", none literally "Doorway", and
+        // D20 Office Interiors UDP (udp2) declares "Door" -- neither pairs as a canonical Corridor/
+        // Doorway body+port set. See BaseGameTilesetProfiles.ModernFacility/OfficeInteriors' own doc comments.
+        // D20 Secret Base (tjsb0) and Complex laps storage (tqq01) are DELIBERATELY NOT here: both
+        // declare case-insensitive-canonical "corridor"/"Corridor" + "doorway"/"Doorway" and pass this
+        // verdict check as TRUE (verified directly) -- the first onboarded profiles since fcx01's wave
+        // to keep real Tunnel-mode support rather than downgrading.
+        BaseGameTilesetProfiles.ModernFacility,
+        BaseGameTilesetProfiles.OfficeInteriors,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

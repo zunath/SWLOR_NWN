@@ -201,6 +201,131 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string FutCity = "futcity";
         public const string FutCityPlaza = "futcity_plaza";
 
+        // Wave-5 (onboarding wave 1 of 2): four hak tilesets probed via a throwaway NUnit harness
+        // (ZZOnboardingProbe/ZZOnboardingProbe2, deleted after this pass -- their output is reproduced
+        // in each profile's own doc comment below) rather than the interactive toolset. All four are
+        // Interior=true, share the ordinary Default=Wall/Floor=<primary> GENERAL split (no
+        // SolidTerrainOverride inversion needed, unlike the ttd01/ttf01/fcx01 exterior wave), and all
+        // four's PathNodeOpeningWidthAudit (run fresh against Solid=Wall/Open=<primary>) returns 1, so
+        // MinimumOpeningWidth stays the machinery default.
+        //
+        // D20 Secret Base (tjsb0, SWLOR_Haks/sw_t_secretbs, 174 tiles): Wall/Floor/lava, three terrains,
+        // crossers bridge/corridor/fence/doorway -- ALL FOUR canonical or near-canonical (case-
+        // insensitive "corridor"/"doorway" match the shared Tunnel body/port names exactly). Verified
+        // directly: TunnelVocabularyCheck.SupportsTunnels(tjsb0, "Floor", "Wall", CorridorCrosserType.
+        // Corridor) returns TRUE -- full body/port shape inventory (straight/turn/T/X, with-port
+        // variants, double-port variants) resolves with no Custom renaming needed, so this profile keeps
+        // real wall-embedded Tunnel-mode corridors rather than downgrading to OpenLane, unlike every
+        // profile in the prior wave. "bridge" (gates the lava chasm, e.g. TILE112/TILE15) and "fence"
+        // (TILE60/154 gate props) both stay undeclared: every door-bearing tile using them is already
+        // GROUPed (BridgeDoor01/FenceDoor01/FenceDoor02) except TILE15, which pairs "doorway" (canonical,
+        // already recognized) with "bridge" on separate edges -- Bridge is a first-class canonical
+        // crosser in its own right (see BridgeChannelTests), so no DoorSlotCrossers declaration is
+        // needed for it. SetPieceRoomCornerFloor(6): every multi-tile group here tops out at 2x2
+        // (StairsDown_2x2/StairsUp_2x2/Platform01-03_2x2), the same footprint as FutCity's Tower00,
+        // which needed corner size 6 to ever stamp (see FutCity's own doc comment for the margin-ring +
+        // spare-relocation-tile derivation -- a geometric rule, not fcx01-specific). ExitGroup: exactly
+        // two 1x1, crosser-free, single-door groups exist -- Exit01 (TILE69) and Exit02 (TILE70), both
+        // wall/wall/floor/floor diagonal-split corners with zero crosser edges, the same shape FutCity's
+        // own ExitGroup candidates used. BigDoor01/02 (corridor-crossered, doored) and BridgeDoor01/
+        // FenceDoor01/02 (bridge/fence-crossered, doored) are wired as ordinary SetPieces (gate props),
+        // not ExitGroups, since they carry real crosser edges. Hand-built evidence: 8 real tjsb0 areas
+        // ship in the module (Module/are/{v_repubbase_hang,v_repubbase_cd,v_repubbase_2,v_repubbase_1,
+        // sol_mandaloriani,r_prax_centralsp,manda_facility,city_hall}.are.json -- the Mandalorian/
+        // Republic base content), 992 placed tiles total. TileLighting(0,0,0,0) is the measured plurality
+        // (350/992 tiles, 34.2%, including 100% of city_hall's 36 tiles and 119/121 of v_repubbase_hang's)
+        // -- several areas (v_repubbase_1/2, sol_mandaloriani, manda_facility) are hand-lit with varied
+        // SrcLight(3,3)-family accents, not the tileset default. Decoration palette: NOT mined this pass
+        // (time-boxed out of onboarding wave 1) -- generated tjsb0 content stays on accent-only/no
+        // tileset-keyed palette until a follow-up pass mines the 8 real areas' placeable inventories.
+        public const string SecretBase = "secretbase";
+
+        // D20 Modern Facility (tbx78, SWLOR_Haks/sw_t_facility, 84 tiles -- the smallest of the four):
+        // Wall/facility, two terrains only. Crossers: corridor, doorway1/2/3, cell, raised -- NONE of
+        // the three doorway variants is the literal canonical string "Doorway", so every door-bearing
+        // tile (52 of 84) needs DoorSlotCrossers to be recognized at all, unlike tjsb0's case-insensitive
+        // match. Verified directly: TunnelVocabularyCheck.SupportsTunnels tried against every
+        // body=corridor/port={doorway1,doorway2,doorway3} Custom pairing returns FALSE for all three (the
+        // T-with-port/X-with-port shapes never resolve) -- Tunnel mode downgrades to OpenLane, the same
+        // verdict as the ttd01/ttf01/fcx01 wave. DoorSlotCrossers("doorway1","doorway2","doorway3",
+        // "cell","raised") is declared so CornerEdgeResolver/LayoutGroupStamper recognize all five
+        // non-canonical door-implying crossers (cell gates the facility's holding-cell tiles TILE36/38/
+        // 40; raised gates TILE48/50's ramp doors). SetPieceRoomCornerFloor(7): the largest group is
+        // room3x1 (3x1, max dimension 3), matching FutCity's 3x3+/4x3 rule (corner size 7, the
+        // machinery's own vanilla ceiling). Group-name quirk: three separate GROUP entries are all
+        // literally named "room2x1" (footprints 1x2, 2x1, 2x1) -- wired once via SetPiece("room2x1"),
+        // matched by name against all three real .set entries. ExitGroup("door_transition"): a 1x1
+        // group, the same "*_transition"/"*Trans"/"Door_Trans" naming convention this entire onboarding
+        // wave's tilesets share for their literal area-boundary marker group. Hand-built evidence: 8 real
+        // tbx78 areas ship in the module (space_derelict_k, pw_ar_undrnasha, pw_ar_nscrafting,
+        // pref_facility, pref_facilidark, nashadaa_czlabin, nanostation015, dan_crafterbase), 2475 placed
+        // tiles. TileLighting(0,0,0,0) is the measured plurality (899/2475, 36.3%). Decoration palette:
+        // NOT mined this pass, same as SecretBase above.
+        public const string ModernFacility = "modernfacility";
+
+        // Complex laps storage (tqq01, SWLOR_Haks/sw_t_labstore, 305 tiles -- display name kept VERBATIM
+        // per the toolset's own UnlocalizedName typo). Wall + four parallel room-type districts
+        // (Livingroom/Kitchen/Inn/Shop, ~65-70 corner uses each), crossers Corridor/Doorway -- BOTH
+        // exactly canonical (case differs only in capitalization). Verified directly:
+        // TunnelVocabularyCheck.SupportsTunnels(tqq01, open, "Wall", CorridorCrosserType.Corridor)
+        // returns TRUE against EVERY district's own open terrain (Livingroom/Kitchen/Inn/Shop all pass
+        // independently, not just the declared Floor="Inn") -- real wall-embedded Tunnel-mode corridors,
+        // like SecretBase. This profile wires the base "Inn" district (the .set's own declared Floor
+        // terrain) plus its generic (non-district) groups: StairsUp/StairsDown, CorridorExitBig/
+        // CorridorExit, DoorTrans, Portal, Chessboard, and the freestanding building/decor set-pieces
+        // that aren't corner-locked to one district's terrain (Tent, Baracks, the three Temple variants,
+        // Wizards Den, Smithy, Barn, Bordello, SlumHome01/02, HomeLower/Upper 2x2 family). The
+        // Livingroom/Kitchen/Shop districts and their own Room/Room01_1x2/Room02_1x2/DoorX01/
+        // CornerStairs/CornerExit families are NOT registered as separate PaletteVariant profiles this
+        // pass (time-boxed) -- PilotAlternateVocabTerrains auto-exempts them the same way BaseGame
+        // TilesetProfiles.CityInterior2 (tni01) already exempts its own "livingroom"/"kitchen"/"shop"
+        // terrains, a direct, already-shipped precedent for exactly this multi-district shape.
+        // SetPieceRoomCornerFloor(7): the largest groups are Temple Good (4x4) and Temple Evil (4x3),
+        // matching FutCity's corner-size-7 rule. ExitGroup("DoorTrans"): the 1x1, crosser-free,
+        // door-transition-named group, same convention as SecretBase/Facility above. Hand-built
+        // evidence: 9 real tqq01 areas ship in the module (veles_cantina, tochee_cantina,
+        // tosche_cantina_s, tat_anc_gocorpst, player_rnd, dan_warehouse, dan_medinterior, cantina), 182
+        // placed tiles total (a much smaller sample than the other three). TileLighting(0,0,3,3) is the
+        // measured plurality (34/182, 18.7%, narrowly ahead of (0,0,2,2) at 15.4%) -- unlike the other
+        // three tilesets, tqq01's real usage favors a lit SrcLight(3,3) ambient over the bare (0,0,0,0)
+        // default (only 9.3% of sampled tiles), consistent with its Inn/Livingroom/Kitchen/Shop
+        // furnished-interior content. Decoration palette: NOT mined this pass, same as above.
+        public const string LabStorage = "labstorage";
+
+        // D20 Office Interiors UDP (udp2, SWLOR_Haks/sw_t_office, 229 tiles, 93 groups -- the largest and
+        // most heavily districted of the four). KNOWN QUIRK (per this onboarding wave's brief): the raw
+        // .set Doors= summary field is corrupt on several tiles (garbage counts up to ~1.8 billion);
+        // TilesetSetParser.MaxDoorsPerTile already clamps this, and every door decision below is read
+        // from real [TILEnDOORm] subsections, never the summary field. Wall + SEVEN parallel room-type
+        // districts (Service/Tiled/Office_Vinyl/Office_Wood/Office_Alum/Foyer_L/Foyer_U). Crossers: Door,
+        // Hallway1, Hallway2, Door_Garage_Sm, Door_Garage_Lg -- NONE is the literal canonical "Doorway"
+        // string, so DoorSlotCrossers("Door","Door_Garage_Sm","Door_Garage_Lg") is REQUIRED for any
+        // door-bearing content (all 134 door-bearing tiles/groups use "Door", not "Doorway") to be
+        // recognized at all -- without it every one of udp2's real room-entry groups would be
+        // structurally invisible to CornerEdgeResolver/LayoutGroupStamper. Verified directly:
+        // TunnelVocabularyCheck.SupportsTunnels tried against every body={Hallway1,Hallway2}/
+        // port={Door,Door_Garage_Sm,Door_Garage_Lg} Custom pairing returns FALSE for all six -- Hallway1/
+        // Hallway2 are district-junction wall crossers, not a carveable corridor body vocabulary; Tunnel
+        // mode downgrades to OpenLane, the same verdict as Facility above. This profile wires only the
+        // primary Office_Vinyl district (the .set's own declared Floor terrain) -- Entry/Win/WinCrnr/
+        // Firepl/SmRm1/SmRm2/MidRm1/MidRm2/Stair_UD/U/D/Stair2_UD/U/D (14 groups) -- plus the
+        // tileset-generic, non-district-locked groups (Hallway1_Entry, Hallway2_Entry, Elevator1/2,
+        // Stairwell_U/UD/D, Restrooms, Break_Room). The other six districts (Service/Tiled/Office_Wood/
+        // Office_Alum/Foyer_L/Foyer_U) are NOT registered as separate PaletteVariant profiles this pass
+        // (time-boxed, the same descope as LabStorage's Livingroom/Kitchen/Shop) -- PilotAlternateVocab
+        // Terrains auto-exempts them. No group here is literally named as a transition/exit marker (no
+        // "*Trans"/"*Exit" group exists in this .set, unlike the other three tilesets in this wave), so
+        // ExitGroup is left unwired pending a follow-up probe of udp2's un-dumped door tiles (only the
+        // first 30 of 134 were inspected this pass). SetPieceRoomCornerFloor(6): every wired group here
+        // tops out at 2x1 (max dimension 2), matching FutCity's Tower00 2x2 rule. Hand-built evidence: 17
+        // real udp2 areas ship in the module (velesinterior, veles_sheriff, veles_genstore,
+        // veles_holonews, v_repubbase_off, v_repubbase_jnrm, roch_govbuild, pw_ar_nsczgnstr,
+        // pw_ar_nsficlub, pw_ar_ns_doffice, pw_ar_ns_medical, pw_ar_nscasino, pw_ar_nars_canhd,
+        // pw_ar_gentemp, foszestate, dan_repinside, dan_jedienlibry), 1460 placed tiles. TileLighting
+        // (0,0,0,0) is the measured plurality (323/1460, 22.1%). Decoration palette: NOT mined this pass,
+        // same as above.
+        public const string OfficeInteriors = "officeinteriors";
+
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
         public Dictionary<string, DungeonTilesetProfile> BuildTilesetProfiles()
@@ -2793,6 +2918,144 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("d_trans", 1)
                 .ExitGroup("d_tower")
                 .ExitGroup("d_house01");
+
+            // D20 Secret Base (tjsb0) -- see this file's own Wave-5 doc comment (SecretBase) for the full
+            // probe writeup (tunnel vocabulary, room-size floor, ExitGroup evidence, hand-built lighting).
+            _builder.Create(SecretBase, "D20 Secret Base")
+                .Tileset("tjsb0")
+                .SetPieceRoomCornerFloor(6)
+                // AccentTerrain("lava"): required for BridgeDoor01 (TILE112, uniformly lava-cornered,
+                // "bridge" crosser on its Top/Bottom edge pair) to classify at all --
+                // LayoutGroupStamper.TryClassifyCorridorInsert's Bridge branch only matches when the
+                // tile's corners are uniformly AccentTerrain (verified directly: PilotEveryTileIs
+                // ReachableOrExplicitlyExempted flagged TILE112 UNCLASSIFIED before this was declared,
+                // and passed once it was). Costs nothing else this pass -- no ElevationBlob/PoolBank/
+                // TerrainRelief/AccentChannel vocabulary is separately wired or verified.
+                .AccentTerrain("lava")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .SetPiece("StairsDown_2x2")
+                .SetPiece("StairsUp_2x2")
+                .SetPiece("Platform01_2x2")
+                .SetPiece("Platform02_2x2")
+                .SetPiece("Platform03_2x2")
+                .SetPiece("Platform04_1x2")
+                .SetPiece("Platform05_1x2")
+                .SetPiece("Pillar_1x2")
+                .SetPiece("WallSection01_1x2")
+                .SetPiece("WallSection02_1x2")
+                .SetPiece("EnergySource")
+                .SetPiece("Caveentrance")
+                .SetPiece("Treasure01", 2)
+                .SetPiece("Treasure02", 2)
+                .SetPiece("Pillar01", 3)
+                .SetPiece("Pillar02", 3)
+                .SetPiece("Pillar03", 3)
+                .SetPiece("Portal")
+                .SetPiece("Chessboard")
+                .SetPiece("Door_Trans")
+                .SetPiece("BigDoor01")
+                .SetPiece("BigDoor02")
+                .SetPiece("BridgeDoor01")
+                .SetPiece("FenceDoor01")
+                .SetPiece("FenceDoor02")
+                .ExitGroup("Exit01")
+                .ExitGroup("Exit02");
+
+            // D20 Modern Facility (tbx78) -- see this file's own Wave-5 doc comment (Facility) for the
+            // full probe writeup (DoorSlotCrossers rationale, OpenLane-only Tunnel verdict, room-size
+            // floor, ExitGroup evidence, hand-built lighting).
+            _builder.Create(ModernFacility, "D20 Modern Facility")
+                .Tileset("tbx78")
+                .SetPieceRoomCornerFloor(7)
+                .DoorSlotCrossers("doorway1", "doorway2", "doorway3", "cell", "raised")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                // Only removed_panel/giant_cage/pillar are wired: every OTHER group in this .set
+                // (ladder_up/ladder_dwn/room2x1 x3/stairs_up/room/stairs_dwn/elevator/room3x1/
+                // door_transition) carries a "doorway2" (or "doorway1") perimeter edge on its
+                // door-bearing member -- verified directly (PilotEveryTileIsReachableOrExplicitlyExempted
+                // flagged all of them UNCLASSIFIED) that LayoutGroupStamper.TryClassifyGroup's
+                // IsAllowedMemberEdge only ever allows the LITERAL canonical "Doorway" string or a
+                // Tunnel-mode stub crosser on a group member edge -- DoorSlotCrossers (declared above)
+                // only credits CornerEdgeResolver's ungrouped-tile path, never group classification, the
+                // same documented gap as FutCity's "b_wall_door"/"d_wall_door". No ExitGroup is wired for
+                // this reason: door_transition (the only "*_transition"-named group) is one of the
+                // casualties. See TileCoverageCensusTests' tbx78 PilotExpectedExemptions entries.
+                .SetPiece("removed_panel")
+                .SetPiece("giant_cage")
+                .SetPiece("pillar", 3);
+
+            // Complex laps storage (tqq01) -- display name kept VERBATIM per the toolset's own
+            // UnlocalizedName typo. See this file's own Wave-5 doc comment (LabStorage) for the full
+            // probe writeup (real Tunnel-mode support, multi-district descope rationale, room-size floor,
+            // ExitGroup evidence, hand-built lighting).
+            _builder.Create(LabStorage, "Complex laps storage")
+                .Tileset("tqq01")
+                .SetPieceRoomCornerFloor(7)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 3, 3)
+                .SetPiece("InnRoom")
+                .SetPiece("InnRoom01_1x2")
+                .SetPiece("InnRoom02_1x2")
+                .SetPiece("DoorInn01")
+                .SetPiece("StairsUp")
+                .SetPiece("StairsDown")
+                .SetPiece("CorridorExitBig")
+                .SetPiece("CorridorExit")
+                .SetPiece("Portal")
+                .SetPiece("Chessboard")
+                .SetPiece("Tent")
+                .SetPiece("Baracks")
+                .SetPiece("Temple Evil")
+                .SetPiece("Temple Good")
+                .SetPiece("Temple Neutral")
+                .SetPiece("Wizards Den")
+                .SetPiece("Smithy")
+                .SetPiece("Barn")
+                .SetPiece("Bordello")
+                .SetPiece("Bordello Blank")
+                .SetPiece("SlumHome01")
+                .SetPiece("SlumHome02")
+                .SetPiece("HomeLower01_2x2")
+                .SetPiece("HomeLower02_2x2")
+                .SetPiece("HomeLower03_2x2")
+                .SetPiece("HomeLower04_2x2")
+                .SetPiece("HomeLower05_2x2")
+                .SetPiece("HomeUpper01_2x2")
+                .SetPiece("HomeUpper02_2x2")
+                .SetPiece("HomeUpper03_2x2")
+                .SetPiece("HomeUpper04_2x2")
+                .SetPiece("HomeUpper05_2x2")
+                .ExitGroup("DoorTrans");
+
+            // D20 Office Interiors UDP (udp2) -- see this file's own Wave-5 doc comment
+            // (OfficeInteriors) for the full probe writeup (DoorSlotCrossers requirement, OpenLane-only
+            // Tunnel verdict, multi-district descope rationale, room-size floor, hand-built lighting).
+            _builder.Create(OfficeInteriors, "D20 Office Interiors UDP")
+                .Tileset("udp2")
+                .SetPieceRoomCornerFloor(6)
+                .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                // Only the crosser-free groups below are wired. Every group whose door-bearing member
+                // carries a "Door" perimeter edge (Office_Vinyl_Entry/SmRm1/SmRm2/MidRm1/MidRm2,
+                // Elevator1/2, Stairwell_U/UD/D, Restrooms, Break_Room) fails the identical
+                // IsAllowedMemberEdge gap Facility's doc comment above describes -- "Door" is no more
+                // the literal canonical "Doorway" string than tbx78's "doorway1/2/3" are. Verified
+                // directly via PilotEveryTileIsReachableOrExplicitlyExempted. See TileCoverageCensusTests'
+                // udp2 PilotExpectedExemptions entries.
+                .SetPiece("Office_Vinyl_Win")
+                .SetPiece("Office_Vinyl_WinCrnr")
+                .SetPiece("Office_Vinyl_Firepl")
+                .SetPiece("Office_Vinyl_Stair_UD")
+                .SetPiece("Office_Vinyl_Stair_U")
+                .SetPiece("Office_Vinyl_Stair_D")
+                .SetPiece("Office_Vinyl_Stair2_UD")
+                .SetPiece("Office_Vinyl_Stair2_U")
+                .SetPiece("Office_Vinyl_Stair2_D")
+                .SetPiece("Hallway1_Entry 2x1")
+                .SetPiece("Hallway2_Entry 2x1");
 
             return _builder.Build();
         }

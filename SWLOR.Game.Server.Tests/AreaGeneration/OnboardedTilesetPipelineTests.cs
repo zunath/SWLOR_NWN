@@ -112,6 +112,18 @@ public class OnboardedTilesetPipelineTests
         // above, verified via TunnelVocabularyCheckTests' fcx01 entries.
         BaseGameTilesetProfiles.FutCity,
         BaseGameTilesetProfiles.FutCityPlaza,
+        // Wave-5 (onboarding wave 1 of 2): D20 Secret Base (tjsb0) and Complex laps storage (tqq01) both
+        // declare real canonical Corridor/Doorway Tunnel vocabulary (verified via TunnelVocabularyCheck,
+        // see their own doc comments in BaseGameTilesetProfiles) -- Complex stays real Tunnel mode for
+        // both, unlike every profile in the prior two waves. D20 Modern Facility (tbx78) and D20 Office
+        // Interiors UDP (udp2) both declare no Tunnel vocabulary (their door crosser is renamed to
+        // doorway1/2/3 and Door respectively, neither literally "Doorway") -- Complex downgrades to
+        // OpenLane for both, the same verdict as the ttd01/ttf01/fcx01 wave, verified via
+        // TunnelVocabularyCheckTests' own tbx78/udp2 entries.
+        BaseGameTilesetProfiles.SecretBase,
+        BaseGameTilesetProfiles.ModernFacility,
+        BaseGameTilesetProfiles.LabStorage,
+        BaseGameTilesetProfiles.OfficeInteriors,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

@@ -75493,6 +75493,105 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Reactor-Forged Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "reactor_plate"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Piston-Driven Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "piston_gaunt"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Siege Optics Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "siege_optics"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Salvaged Reactor Core"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "reactor_core"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Salvaged Crusher Piston"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "crusher_piston"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Salvaged Targeting Lens"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "targeting_lens"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Reactor-Forged Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_reactorpl"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Piston-Driven Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_pistongaunt"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Siege Optics Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_siegeoptic"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Ablative Yard Plating"
                           },
                           "RESREF": {

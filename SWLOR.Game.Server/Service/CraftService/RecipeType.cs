@@ -3102,6 +3102,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         SaberstaffUpgradeKit4 = 5007,
         SaberstaffUpgradeKit5 = 5008,
         ChiroSaberstaffUpgradeKit = 5009,
+        SalvagedReactorPlate = 5010,
+        SalvagedPistonGauntlet = 5011,
+        SalvagedSiegeOptics = 5012,
 
         #endregion
 

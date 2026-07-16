@@ -1,15 +1,67 @@
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
+using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
+using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class CZ220SpawnDefinitionTests
 {
+    // Blueprint drop -> recipe -> crafted output -> encounter salvage component.
+    private static readonly (string Blueprint, RecipeType Recipe, string CraftedResref, string Component)[] RareRecipes =
+    {
+        ("bp_reactorpl", RecipeType.SalvagedReactorPlate, "reactor_plate", "reactor_core"),
+        ("bp_pistongaunt", RecipeType.SalvagedPistonGauntlet, "piston_gaunt", "crusher_piston"),
+        ("bp_siegeoptic", RecipeType.SalvagedSiegeOptics, "siege_optics", "targeting_lens"),
+    };
+
+    [Test]
+    public void CZ220RareRecipes_AreRegisteredWithSalvageComponents()
+    {
+        var recipes = new SalvagedFieldGearRecipes().BuildRecipes();
+        foreach (var (_, recipe, crafted, component) in RareRecipes)
+        {
+            recipes.Should().ContainKey(recipe);
+            var detail = recipes[recipe];
+            detail.Skill.Should().Be(SkillType.Smithery);
+            detail.Resref.Should().Be(crafted);
+            detail.Level.Should().Be(50);
+            detail.Quantity.Should().Be(1);
+            detail.Components.Should().ContainKey(component);
+        }
+    }
+
+    [Test]
+    public void CZ220RareRecipeBlueprints_LearnRegisteredRecipes()
+    {
+        var root = FindRepositoryRoot();
+        foreach (var (blueprint, recipe, _, _) in RareRecipes)
+        {
+            using var uti = JsonDocument.Parse(File.ReadAllText(
+                Path.Combine(root.FullName, "Module", "uti", $"{blueprint}.uti.json")));
+            var json = uti.RootElement;
+            json.GetProperty("Tag").GetProperty("value").GetString().Should().Be("RECIPE");
+            GetLocalString(json, "RECIPES").Should().Be(((int)recipe).ToString());
+            json.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString()
+                .Should().StartWith("Blueprint: ");
+        }
+    }
+
+    private static string GetLocalString(JsonElement json, string name)
+    {
+        foreach (var v in json.GetProperty("VarTable").GetProperty("value").EnumerateArray())
+            if (v.GetProperty("Name").GetProperty("value").GetString() == name)
+                return v.GetProperty("Value").GetProperty("value").GetString() ?? string.Empty;
+        return string.Empty;
+    }
+
     private static readonly (string Resref, string RareLootTable)[] RareElites =
     {
         ("bulwark", "CZ220_BULWARK_RARES"),

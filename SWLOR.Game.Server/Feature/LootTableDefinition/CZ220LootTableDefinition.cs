@@ -27,18 +27,30 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         // Each drops a small pool of reusable industrial-salvage gear.
         private void CapstoneCZ220RareElites()
         {
+            // Rare pool: unique gear plus a blueprint that unlocks a salvage crafting recipe.
             _builder.Create("CZ220_BULWARK_RARES")
                 .IsRare()
                 .AddItem("yard_plate", 1, 1, true)
-                .AddItem("servo_frame", 1, 1, true);
+                .AddItem("servo_frame", 1, 1, true)
+                .AddItem("bp_reactorpl", 1, 1, true);
             _builder.Create("CZ220_SLAGBORN_RARES")
                 .IsRare()
                 .AddItem("slag_crusher", 1, 1, true)
-                .AddItem("reclaim_gaunt", 1, 1, true);
+                .AddItem("reclaim_gaunt", 1, 1, true)
+                .AddItem("bp_pistongaunt", 1, 1, true);
             _builder.Create("CZ220_DEMOLISHER_RARES")
                 .IsRare()
                 .AddItem("ord_rig", 1, 1, true)
-                .AddItem("blast_harness", 1, 1, true);
+                .AddItem("blast_harness", 1, 1, true)
+                .AddItem("bp_siegeoptic", 1, 1, true);
+
+            // Guaranteed encounter-specific salvage component that the recipes require.
+            _builder.Create("CZ220_BULWARK_COMPONENT")
+                .AddItem("reactor_core", 1, 1);
+            _builder.Create("CZ220_SLAGBORN_COMPONENT")
+                .AddItem("crusher_piston", 1, 1);
+            _builder.Create("CZ220_DEMOLISHER_COMPONENT")
+                .AddItem("targeting_lens", 1, 1);
         }
 
         private void CapstoneCZ220DungeonRares()

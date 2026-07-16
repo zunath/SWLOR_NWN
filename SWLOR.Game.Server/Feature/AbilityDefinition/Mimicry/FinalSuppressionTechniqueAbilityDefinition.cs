@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Final Suppression",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.FinalSuppression,
                 1.4f,
                 30f,
                 10,

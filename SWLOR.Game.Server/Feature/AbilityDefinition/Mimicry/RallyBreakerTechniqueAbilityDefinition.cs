@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Rally Breaker",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.RallyBreaker,
                 0.8f,
                 18f,
                 7,

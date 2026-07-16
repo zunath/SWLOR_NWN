@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Inner Circle Surge",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.InnerCircleSurge,
                 1.3f,
                 24f,
                 9,

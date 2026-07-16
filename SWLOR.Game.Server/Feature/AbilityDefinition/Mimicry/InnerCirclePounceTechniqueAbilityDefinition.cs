@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Inner Circle Pounce",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.InnerCirclePounce,
                 1.3f,
                 24f,
                 9,

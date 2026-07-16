@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Lockstep Crush",
                 Animation.ShieldWall,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.LockstepCrush,
                 1.0f,
                 30f,
                 10,
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 5f,
                 CombatDamageType.Physical,
                 ResistanceType.Mobility,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
+                VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Shake,
                 maxRange: 5f,
                 additionalStatusEffects: new[] { typeof(SunderStatusEffect) })

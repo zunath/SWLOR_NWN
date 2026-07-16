@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
-                .HasRecastDelay(RecastGroup.Capstone, 30f)
+                .HasRecastDelay(RecastGroup.ApexCollapse, 30f)
                 .MimicryStance(FeatType.ApexCollapse, 4, 3);
 
             ConfigureToggle(ability, typeof(ApexCollapseStatusEffect));

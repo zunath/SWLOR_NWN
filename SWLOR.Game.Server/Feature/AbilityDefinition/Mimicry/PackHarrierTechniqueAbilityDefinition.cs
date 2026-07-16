@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Pack Harrier",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.PackHarrier,
                 0.8f,
                 18f,
                 7,

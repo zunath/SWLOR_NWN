@@ -5259,6 +5259,14 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DamageDealtPoisonChance = 917,
+
+        /// <summary>
+        /// Percent of incoming physical damage reflected back to the attacker after mitigation.
+        /// The physical counterpart to <see cref="ForceDamageReflectionPercentAdjustment"/> and
+        /// <see cref="ElementalDamageReflectionPercentAdjustment"/>.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PhysicalDamageReflectionPercentAdjustment = 918,
     }
 
     public class StatTypeAttribute : Attribute

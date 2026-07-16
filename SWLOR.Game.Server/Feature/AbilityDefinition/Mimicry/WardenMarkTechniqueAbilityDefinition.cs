@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Warden Mark",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.WardenMark,
                 1.1f,
                 30f,
                 10,

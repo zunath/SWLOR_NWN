@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.Capstone, 30f)
+                .HasRecastDelay(RecastGroup.WardenOrder, 30f)
                 .RequirementStamina(10)
                 .IsCastedAbility()
                 .MimicryTechnique(FeatType.WardenOrder, 4, 3)

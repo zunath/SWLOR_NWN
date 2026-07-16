@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 typeof(KnockdownStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Mobility,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
+                VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 maxRange: 6f)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

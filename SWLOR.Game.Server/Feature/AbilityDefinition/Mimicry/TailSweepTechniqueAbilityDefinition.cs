@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 0f,
                 CombatDamageType.Physical,
                 ResistanceType.Mind,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
+                VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)

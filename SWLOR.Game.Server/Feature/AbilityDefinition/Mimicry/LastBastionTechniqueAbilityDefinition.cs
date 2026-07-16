@@ -22,16 +22,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.Capstone, 30f)
+                .HasRecastDelay(RecastGroup.LastBastion, 30f)
                 .RequirementStamina(10)
                 .IsCastedAbility()
                 .MimicryTechnique(FeatType.LastBastion, 4, 3)
                 .MimicryUtility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
+                    // Allies get a shield that absorbs 30 damage (temporary HP) for 30 seconds.
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
                     {
-                        StatusEffect.ApplyStatusEffect(activator, ally, new Shielding1StatusEffect(), 30f);
+                        ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(30), ally, 30f);
+                    }
+
+                    // Nearby enemies generate +25% enmity toward the caster for the duration.
+                    foreach (var enemy in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(activator), 8.0f, 10))
+                    {
+                        StatusEffect.ApplyStatusEffect(activator, enemy, new LastBastionStatusEffect(), 30f);
                     }
                 });
 

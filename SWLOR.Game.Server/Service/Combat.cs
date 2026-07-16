@@ -695,6 +695,9 @@ namespace SWLOR.Game.Server.Service
                 adjustment += Stat.GetStatAdjustment(defender, StatType.ForceDamageReflectionPercentAdjustment);
             }
 
+            if (damageType == CombatDamageType.Physical)
+                adjustment += Stat.GetStatAdjustment(defender, StatType.PhysicalDamageReflectionPercentAdjustment);
+
             if (damageType.IsElementalDamageType())
                 adjustment += Stat.GetStatAdjustment(defender, StatType.ElementalDamageReflectionPercentAdjustment);
 

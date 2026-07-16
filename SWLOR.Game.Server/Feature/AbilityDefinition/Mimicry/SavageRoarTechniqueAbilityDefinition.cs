@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 0f,
                 CombatDamageType.Sonic,
                 ResistanceType.Mind,
-                VisualEffect.Vfx_Fnf_Howl_War_Cry,
+                VisualEffect.Vfx_Imp_Sonic,
                 VisualEffect.Vfx_Fnf_Howl_War_Cry,
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)

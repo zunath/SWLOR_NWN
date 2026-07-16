@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Inner Ring Flurry",
                 Animation.CrossCut,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.InnerRingFlurry,
                 1.3f,
                 24f,
                 9,

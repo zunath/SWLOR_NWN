@@ -1106,6 +1106,17 @@ public class TileCoverageCensusTests
         // + the base Jungle profile's own "always CornerEdgeResolver-reachable ungrouped tile" note
         // above, not this alternate-vocab bucket -- no terrain needs auto-tagging here.
         ["jac01"] = new(StringComparer.OrdinalIgnoreCase),
+        // ttr01 (Rural Grass): GoodCastle/EvilCastle/Water are all registered as real PaletteVariant
+        // profiles (RuralGrassGoodCastle/RuralGrassEvilCastle/RuralGrassWater), and Forest/GentleHill
+        // never appear on any GROUP (verified directly), so every ungrouped tile carrying them was
+        // already CornerEdgeResolver-reachable regardless of declared vocabulary. "Trees" IS needed
+        // here: TILE60/TILE74 (Grass/Trees mixed, door-bearing, Stream/Road crosser respectively) fail
+        // CornerEdgeResolver's admission gate regardless of vocab (a door-bearing mixed-terrain tile,
+        // the same shape ttf01's own TILE849/1114 RuralTrees/RuralWater note documents) -- no
+        // Trees-based composition is warranted (Trees carries no GROUP content beyond the
+        // accent-terrain-only "Ship - Air, Above Trees" boat group, already separately exempt). See
+        // BaseGameTilesetProfiles.RuralGrass's own doc comment.
+        ["ttr01"] = new(StringComparer.OrdinalIgnoreCase) { "Trees" },
         ["fcx01"] = new(StringComparer.OrdinalIgnoreCase),
         // tjsb0 (D20 Secret Base): a single Wall/Floor/lava split, no alternate district palette.
         ["tjsb0"] = new(StringComparer.OrdinalIgnoreCase),
@@ -1213,6 +1224,12 @@ public class TileCoverageCensusTests
         // base Jungle profile (Hills as RampCrosser, Bridge via ChannelTerrain, the rest resolver-
         // covered) -- no unwired crosser family exists, so no entries are needed.
         ["jac01"] = new(StringComparer.OrdinalIgnoreCase),
+        // ttr01: Road/Slope/HighBridge are wired directly on the RuralGrass/RuralGrassWater profiles
+        // (RoadCrosser/RampCrosser). Stream/Wall1/Wall2 have no dedicated wiring -- their doorless,
+        // ungrouped tiles resolve via CornerEdgeResolver directly regardless, and the two door-bearing
+        // "Wall - Road Gate, Rural 1/2" dual-crosser cells are handled via PilotExpectedExemptions, not
+        // this bucket -- see BaseGameTilesetProfiles.RuralGrass's own doc comment.
+        ["ttr01"] = new(StringComparer.OrdinalIgnoreCase),
         // fcx01: "pont" (Bridge-equivalent, gates the holes chasm) has no wired body/port or
         // DoorSlotCrossers vocabulary -- see BaseGameTilesetProfiles.FutCity's own doc comment. "murs"
         // is NOT here: it's wired via DoorSlotCrossers("murs"). "Routes" is no longer here either:
@@ -1487,6 +1504,59 @@ public class TileCoverageCensusTests
         ("jac01", "GROUP:Suspension Bridge_1x3"),
         ("jac01", "GROUP:Walkthrough Tree"),
 
+        // Rural Grass (ttr01) -- see BaseGameTilesetProfiles.RuralGrass's own doc comment for the full
+        // placement-honesty writeup. This tileset declares no canonical "Doorway"/"Corridor" crosser,
+        // so Complex/Halls/Organic all downgrade Tunnel corridors to OpenLane -- and every group below
+        // is WallRoom-classify-eligible ONLY (a kind that hangs off a Tunnel corridor's wall face,
+        // which never carves here), verified via a direct isolated-placement probe at 0/100 across all
+        // three layouts for every one of them. Registering them as SetPieces would be dead weight, so
+        // none are wired -- they stay census-exempt here instead (structural classification is real;
+        // real placement is not, and the project's placement-honesty convention treats that as an
+        // exemption, not a closure). "Footbridge"/Stream and "Ruined Cart"/Road: solo, all-Grass, one
+        // door-implying crosser edge. "Tower - Archer, Rural Wall 1/2" and their "... Corner" siblings
+        // (four groups): solo, all-Grass, one Wall1/Wall2 edge. "Wall - Gate, Rural 1/2": solo,
+        // all-Grass, one Wall1/Wall2 edge plus a real door. "Wall - Road Gate, Rural 1/2": the same
+        // shape, PLUS a second independent Road edge -- the identical dual-crosser-crossroads gap as
+        // jac01's WallGate01/02 and ttd01/ttf01's own WallGate/TrenchBridge families (doubly exempt:
+        // WallRoom-eligible in principle but unplaceable regardless, same as its single-crosser
+        // siblings). On the RuralGrassWater PaletteVariant: "Door - Bridge"/Road and "Door - Bridge,
+        // High"/HighBridge (solo, all-Water, one door-implying crosser edge) and "Ship - Docked 2
+        // (2x2)" (Water, one Road edge, one real member + three holes) are the identical WallRoom
+        // ceiling over a Water solid instead of Grass. "Ship - Air, Above Trees (3x1)" stays exempt for
+        // a DIFFERENT reason: a uniform all-Trees door-bearing group sitting purely on an AccentTerrain
+        // no profile composes as Solid or Open (Trees carries no other GROUP content to justify a
+        // dedicated composition) -- the accent-terrain-only-group gap jac01's CarrackD_4x1/
+        // CaravelFloating_3x1 document (its all-Water sibling "Ship - Air, Above Water (3x1)" DOES
+        // classify AND place for real: RuralGrassWater composes Water as a real Solid terrain, and
+        // allCornersSolid + a real door on TILE573 satisfies WallAlcove -- a different, Tunnel-
+        // independent mechanism -- regardless of any crosser; verified 100% isolated placement).
+        ("ttr01", "GROUP:Footbridge"),
+        ("ttr01", "GROUP:Ruined Cart"),
+        ("ttr01", "GROUP:Tower - Archer, Rural Wall 1"),
+        ("ttr01", "GROUP:Tower - Archer, Rural Wall 1 Corner"),
+        ("ttr01", "GROUP:Tower - Archer, Rural Wall 2"),
+        ("ttr01", "GROUP:Tower - Archer, Rural Wall 2 Corner"),
+        ("ttr01", "GROUP:Wall - Gate, Rural 1"),
+        ("ttr01", "GROUP:Wall - Gate, Rural 2"),
+        ("ttr01", "GROUP:Wall - Road Gate, Rural 1"),
+        ("ttr01", "GROUP:Wall - Road Gate, Rural 2"),
+        ("ttr01", "GROUP:Door - Bridge"),
+        ("ttr01", "GROUP:Door - Bridge, High"),
+        ("ttr01", "GROUP:Ship - Air, Above Trees (3x1)"),
+        // "Ship - Floating (2x1)"'s TileIds are [229, 179], and "Ship - Docked 2 (2x2)"'s are
+        // [230, 180, -1, 179] -- TILE179/TILE180 are SHARED physical tiles whose OWN GroupIndex
+        // resolves to "Ship - Docked 1 (2x2)" (claimed first, per TilesetSetParser's "whichever group
+        // claims it FIRST" rule -- the same tdm01-precedent sharing shape this file's own
+        // exemptedTileIds dedup comment documents) and are already Cover()'ed there (a genuine
+        // OpenSetPiece, Grass+Water mixed corners). Registering the bare TILE229/TILE230 (not the whole
+        // GROUP) avoids re-pulling in the already-covered TILE179/TILE180 under their own group names.
+        // TILE229/TILE230 themselves (all-Water, no door on 229, one Road edge with no door on 230)
+        // have no path: OpenSetPiece needs an Open corner, WallAlcove needs a door, WallRoom needs a
+        // Doorway-equivalent edge (and even granting one, the same Tunnel-corridor-dependent WallRoom
+        // ceiling this profile's own doc comment documents applies) -- none apply.
+        ("ttr01", "TILE229"),
+        ("ttr01", "TILE230"),
+
         // D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc comment for
         // the full writeup. "platform1" (2x2, uniformly holes-cornered, one door-bearing member) has no
         // wired path: the doorless pure-Solid shape "b_tower02"/"d_tower02" use classifies fine, but a
@@ -1661,6 +1731,7 @@ public class TileCoverageCensusTests
         "tbw01", "tdm01", "tdr01", "tic01", "tni02", "tid01", "tii01", "tni01", "tsw01", "twc03",
         "ttd01", "ttf01", "ttf02",
         "jac01",
+        "ttr01",
         "fcx01",
         "tjsb0", "tbx78", "tqq01", "udp2",
         "zde01",
@@ -1690,6 +1761,7 @@ public class TileCoverageCensusTests
             "ttf01" => BaseGameTilesetProfiles.Forest,
             "ttf02" => BaseGameTilesetProfiles.ForestFacelift,
             "jac01" => BaseGameTilesetProfiles.Jungle,
+            "ttr01" => BaseGameTilesetProfiles.RuralGrass,
             "fcx01" => BaseGameTilesetProfiles.FutCity,
             "tjsb0" => BaseGameTilesetProfiles.SecretBase,
             "tbx78" => BaseGameTilesetProfiles.ModernFacility,

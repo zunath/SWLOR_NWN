@@ -113,6 +113,13 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.ForestGoodCastle,
         BaseGameTilesetProfiles.ForestEvilCastle,
         BaseGameTilesetProfiles.ForestMarsh,
+        // Wave-7: Rural Grass (ttr01) -- no Cliff-equivalent wall mass, SolidTerrainOverride left
+        // UNSET (open field) -- see BaseGameTilesetProfiles.RuralGrass's own doc comment. Good/Evil
+        // Castle and Water are PaletteVariant districts, same shape as ttf01's own castle pair.
+        BaseGameTilesetProfiles.RuralGrass,
+        BaseGameTilesetProfiles.RuralGrassGoodCastle,
+        BaseGameTilesetProfiles.RuralGrassEvilCastle,
+        BaseGameTilesetProfiles.RuralGrassWater,
         // Wave-4: D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc
         // comment. Same "no Tunnel vocabulary through the composed solid" shape as the exterior wave
         // above, verified via TunnelVocabularyCheckTests' fcx01 entries.

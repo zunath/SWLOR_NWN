@@ -453,4 +453,100 @@ public class OpenSetPiecePlacementRateTests
                 $"'{groupName}' on '{profileKey}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
         }
     }
+
+    // ---------------- ttr01 Rural Grass placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.RuralGrassGoodCastle/RuralGrassEvilCastle, the same
+    /// shape as GoodEvilCastleDoorGroups_PlaceAsGroupExits above (ttr01's own Castle - Main/Small
+    /// Door/Breach groups only ever appear in a real corner grid once each variant's own
+    /// SolidTerrainOverride(&lt;faction&gt;Castle) composes the castle terrain as a genuine wall
+    /// material). Measured (seedBase 95000, 150 seeds each, all successes=150): every one of the six
+    /// groups places 150/150 (100%). Threshold set well under the measured floor for safety margin.
+    /// </summary>
+    [Test]
+    public void RuralGrassCastleDoorGroups_PlaceAsGroupExits()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var profiles = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+
+        foreach (var (profileKey, groupName) in new[]
+                 {
+                     (BaseGameTilesetProfiles.RuralGrassGoodCastle, "Castle - Main Door, Good"),
+                     (BaseGameTilesetProfiles.RuralGrassGoodCastle, "Castle - Small Door, Good"),
+                     (BaseGameTilesetProfiles.RuralGrassGoodCastle, "Castle - Breach, Good"),
+                     (BaseGameTilesetProfiles.RuralGrassEvilCastle, "Castle - Main Door, Evil"),
+                     (BaseGameTilesetProfiles.RuralGrassEvilCastle, "Castle - Small Door, Evil"),
+                     (BaseGameTilesetProfiles.RuralGrassEvilCastle, "Castle - Breach, Evil"),
+                 })
+        {
+            var tilesetProfile = profiles[profileKey];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(130);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' on '{profileKey}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.RuralGrass's own all-Grass OpenSetPiece family (see
+    /// that profile's own doc comment): three representative multi-tile groups spanning the 2x2/3x3
+    /// footprint range. Measured (seedBase 95000, 150 seeds each, all successes=150): all three place
+    /// 150/150 (100%) -- an ordinary flat all-open-terrain footprint is trivial for
+    /// TryPlaceOpenSetPiece's site search on an open field with no wall competition at all. Threshold
+    /// set well under the measured floor for safety margin.
+    /// </summary>
+    [Test]
+    public void RuralGrassOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.RuralGrass];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var name in new[] { "Barn 1 (2x2)", "Temple - Good (3x3)", "Windmill (2x2)" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, name, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{name}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.RuralGrassWater's Grass+Water mixed OpenSetPiece
+    /// family (see that profile's own doc comment): "Ship - Docked 1 (2x2)" (flat) places at a healthy
+    /// rate, but "Cave - Sea" and "Pier" (both NONFLAT -- a baked height-1 bank edge) measure 0/150 in
+    /// isolation -- TryPlaceOpenSetPiece's site search only ever finds FLAT open-room interiors under
+    /// the currently-supported layouts, and neither group's exact raised-bank corner/height pattern
+    /// ever spontaneously occurs in a generated room. This is a genuine, separate geometric ceiling
+    /// (the same "documented, not silently regressed" shape as
+    /// CavePlatform1OnMinesAndCavernsComplex_StillDoesNotPlace_DocumentedRoomSizeCeiling above), locked
+    /// in here so a future change to relief/room generation that starts placing them is a deliberate,
+    /// visible decision rather than a silent behavior drift.
+    /// </summary>
+    [Test]
+    public void RuralGrassWaterOpenSetPieces_ShipDockedPlacesButNonflatBankPiecesDoNot()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.RuralGrassWater];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (dockedSuccesses, dockedHits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "Ship - Docked 1 (2x2)", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+        dockedSuccesses.Should().BeGreaterThan(140);
+        // Measured 40.7% (61/150). Safety margin under the measured rate.
+        dockedHits.Should().BeGreaterOrEqualTo((int)(dockedSuccesses * 0.2),
+            $"'Ship - Docked 1 (2x2)' must place on a meaningful share of the {dockedSuccesses} successful seeds (got {dockedHits})");
+
+        foreach (var name in new[] { "Cave - Sea", "Pier" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, name, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{name}' is a nonflat bank footprint with no flat open-room site TryPlaceOpenSetPiece can ever match -- " +
+                "if this ever starts placing, room/relief generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
 }

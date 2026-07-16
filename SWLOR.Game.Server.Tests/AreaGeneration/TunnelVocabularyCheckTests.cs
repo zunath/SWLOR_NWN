@@ -191,6 +191,14 @@ public class TunnelVocabularyCheckTests
         // "Corridor"/"Doorway" pair (Stairs - Up/Down, Exit - Corridor) and passes this verdict as TRUE.
         BaseGameTilesetProfiles.CepCityInteriorElven,
         BaseGameTilesetProfiles.CepCityInteriorSigil,
+        // Rural Grass (ttr01): declares NO canonical "Corridor"/"Doorway" crosser at all (verified
+        // directly), the same shape as ttd01/ttf01/jac01's own exterior wave -- Complex downgrades to
+        // OpenLane for all four profiles (base + the three PaletteVariants) regardless of which
+        // terrain each composes as Solid. See BaseGameTilesetProfiles.RuralGrass's own doc comment.
+        BaseGameTilesetProfiles.RuralGrass,
+        BaseGameTilesetProfiles.RuralGrassGoodCastle,
+        BaseGameTilesetProfiles.RuralGrassEvilCastle,
+        BaseGameTilesetProfiles.RuralGrassWater,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

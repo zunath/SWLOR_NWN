@@ -143,6 +143,30 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string Jungle = "jungle";
         public const string JunglePlatform = "jungle_platform";
 
+        // Wave-7: Rural Grass (ttr01, SWLOR_Haks/sw_t_rural -- a 653-tile HasHeightTransition=1
+        // hak-shipped exterior tileset, UnlocalizedName "Rural Grass*"). Same degenerate GENERAL quirk
+        // as ttd01/ttf01/jac01 (Default=Floor=Border="Grass", the walkable ground), but UNLIKE every
+        // prior exterior wave, ttr01 has no Cliff-equivalent wall mass at all: Grass reaches full
+        // 16-combo coverage against EVERY other terrain (Water/Trees/Forest/GentleHill/EvilCastle/
+        // GoodCastle), and every one of those six is a minor accent/district family (1-8 uniform flat
+        // tiles), not a genuine rock/wall inventory -- confirmed via a real LayoutSolver pipeline sweep
+        // (15 seeds x Complex/Halls/Organic, ProbeTool), not merely the 16/16 table: Forest-as-solid
+        // and Trees-as-solid both "succeed" on paper but neither carries a single GROUP (no
+        // forest-specific building/wall family exists to unlock), so composing either as
+        // SolidTerrainOverride would only manufacture a fake, repetitive 4-8-tile wall ring around an
+        // otherwise open-field tile vocabulary. The base Rural profile therefore leaves
+        // SolidTerrainOverride UNSET (LayoutSolver.Solve then stamps Solid=tileset.DefaultTerrain=
+        // "Grass", identical to PrimaryOpenTerrain("Grass")) -- a genuinely open field with no wall
+        // concept, matching the tile inventory's own identity: all 91 GROUPS are pastoral structures
+        // (Barn/Farm/Temple/Tower/Windmill/Well/Graves/Shrine/Garden/Orchard/Anthill/Wagon/Warzone/
+        // Dragon Skeleton) dropped onto open Grass, never a wall/rock mass. See RuralGrass's own doc
+        // comment for the ChannelTerrain/ReliefBlendTerrain/RampCrosser vocabulary and RuralGrass
+        // GoodCastle/EvilCastle/Water's own doc comments for the three PaletteVariant districts.
+        public const string RuralGrass = "ruralgrass";
+        public const string RuralGrassGoodCastle = "ruralgrass_goodcastle";
+        public const string RuralGrassEvilCastle = "ruralgrass_evilcastle";
+        public const string RuralGrassWater = "ruralgrass_water";
+
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
@@ -4286,6 +4310,260 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Platform Portal", 1)
                 .SetPiece("Meeting Place", 1)
                 .SetPiece("Platform Cliff Door", 1);
+
+            // Rural Grass (ttr01, SWLOR_Haks/sw_t_rural, 653 tiles/91 groups, HasHeightTransition=1,
+            // UnlocalizedName "Rural Grass*"). See this file's Jungle-adjacent constants comment above
+            // for the full composition writeup (no Cliff-equivalent wall mass -- Grass reaches full
+            // 16/16 against every other terrain, and none of the six minor terrains carries a
+            // wall/rock-scale GROUP inventory). SolidTerrainOverride left UNSET: LayoutSolver.Solve
+            // stamps Solid=tileset.DefaultTerrain="Grass" == PrimaryOpenTerrain("Grass"), a genuinely
+            // open field. Verified via a real pipeline sweep (ProbeTool, 15 seeds x Complex/Halls/
+            // Organic, 45/45 succeeded) rather than trusting the 16/16 table alone.
+            //
+            // AccentTerrain("Water") gives LayoutAccentPainter blob ponds/lakes: Water's own bank
+            // tiles blend freely with Grass (and a 3-way Grass/Water/Trees shoreline blend exists too,
+            // all ungrouped and crosser-free -- verified directly). ReliefBlendTerrain("GentleHill")
+            // matches GentleHill's own real usage exactly: 32 tiles (TILE500-532), every one an
+            // ungrouped, crosser-free, ordinary-pathnode Grass/GentleHill corner blend with height 0/1
+            // variance -- the per-corner "slope blend" shape LayoutReliefPainter targets, not a
+            // Cliff-style solid mass (GentleHill is never used on any GROUP). RampCrosser("Slope")
+            // matches the OTHER raised-tile family: TILE554-568, all-Grass-cornered with height
+            // variance and a "Slope" edge crosser -- the ramp-lane analog of ttd01's "Dunes"/ttf01's
+            // "Slope"/jac01's "Hills". MaxReliefRegions(2) mirrors jac01/Dungeon's own cap.
+            // RoadCrosser("Road") -- RoadVocabularyCheck.SupportsRoads(Grass, "Road") verified true
+            // directly (stub/straight/turn/T/X all resolve). No canonical "Doorway"/"Corridor" crosser
+            // exists anywhere in this tileset (verified directly), so Complex downgrades to OpenLane,
+            // the same verdict as every prior exterior wave (ttd01/ttf01/jac01).
+            //
+            // FeatureTiles are the ~24 solo, flat, crosser-free, pathnode-'A', all-Grass 1x1 groups
+            // (ambient dressing: Anthill/Chessboard/Cobbles/Crystal-Platform/Crystal-Sunken/Field/
+            // Fountain/Garden 1-2/Granary/Graves 1-5/Menhir/Orchard/Portal/Shrine 1-2/Tower-Archer/
+            // Tower-Rural/Tree/Tree-Hollow/Turf House/Wagon-Caravan 1/Warzone 1-2/Well).
+            // ExitGroups are the solo, flat, crosser-free, door-bearing 1x1 groups (House 1-2/
+            // Mausoleum 1-2/Wagon-Caravan 2). SetPieces are every multi-tile all-Grass building/decor
+            // group (Barn/Barracks/Dragon Skeleton/Farm/Field/Inn/Ship-Air Docked/Temple/Tower-Cloak/
+            // Guard/Large/Rural/Wizard/Warzone/Windmill) plus the baked-mesh raised "Ramp"/"Cave"
+            // pieces (same ReliefPiece kind as ttd01/ttf01/jac01's own "Ramp"/"Cave"/"SmallCave"
+            // precedent -- stamped onto a painted raised rim edge, not auto-classified).
+            //
+            // Footbridge/Stream, Ruined Cart/Road, the four Tower - Archer, Rural Wall 1/2 (Corner)
+            // pieces, Wall - Gate, Rural 1/2, and Wall - Road Gate, Rural 1/2 are DELIBERATELY NOT
+            // wired as SetPieces, despite all being structurally WallRoom-classify-eligible once
+            // Wall1/Wall2/Stream/Road are recognized as door-implying crossers (verified directly).
+            // This tileset declares no canonical "Doorway"/"Corridor" crosser at all, so Complex/Halls/
+            // Organic all downgrade Tunnel corridors to OpenLane -- and LayoutGroupStamper's WallRoom
+            // kind exists to hang a group off a Tunnel corridor's wall face, which never carves here.
+            // A direct isolated-placement probe (ProbeTool, 100 seeds x Complex/Halls/Organic, all six
+            // groups) measured 0/100 on every single pairing: with no Tunnel-mode wall mass anywhere in
+            // the generated grid, WallRoom's site search has nowhere to attach regardless of
+            // classification eligibility. Registering these as SetPieces would be dead weight per the
+            // project's placement-honesty convention (0/N placements is an exemption with the proof,
+            // not a closure) -- they stay census-exempt via PilotExpectedExemptions instead. See
+            // TileCoverageCensusTests.PilotExpectedExemptions' own ttr01 doc comment for the full
+            // writeup (including "Ship - Air, Above Trees/Water" and "Ship - Floating", RuralGrassWater's
+            // own analogous WallRoom-shaped residuals, and the TILE229/TILE179 shared-tile-id
+            // accounting).
+            //
+            // Lighting sampled directly from all 8 hand-built module areas stamping ttr01
+            // (dan_jungle1, dmfi_custom_enc, prefabgridgrass, prefabgridwater, vrotrdantcourt,
+            // vrotrdantfarms, vrotrdantkhoonda, vrotrdantplains -- 840 tiles total): every single tile
+            // carries MainLight1=0, MainLight2=0, SourceLight1=0, SourceLight2=0, uniformly (an
+            // outdoor daylight field needs no baked light sourcing, unlike Forest/Jungle's "1,2,1,2").
+            //
+            // Decoration palette mined from the same 8 areas' placeable inventories (functional/loot/
+            // spawn-marker resrefs -- lockedcrate001, box027, terminal, swlor_0103/0175 -- excluded):
+            // dominated by the same zep_*/_mdrn_pl_* families ttd01/jac01's own bulk palettes already
+            // use. The areas' own "x3_plc_tree003"/"x0_stonecircle" have no utp blueprint in this
+            // module (verified via AllDungeonDefinitions_DecorationsExistAndAreVisible, the same jac01
+            // "x0_ivy"/"nw_plc_palm02" gap its own doc comment describes) -- substituted with the
+            // nearest blueprint-backed equivalents already in the module (zep_tree003, zep_stones018).
+            _builder.Create(RuralGrass, "Rural Grass*")
+                .Tileset("ttr01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PrimaryOpenTerrain("Grass")
+                .AccentTerrain("Water")
+                .ReliefBlendTerrain("GentleHill")
+                .RampCrosser("Slope")
+                .MaxReliefRegions(2)
+                .RoadCrosser("Road")
+                .FeatureTile("Anthill")
+                .FeatureTile("Chessboard")
+                .FeatureTile("Cobbles")
+                .FeatureTile("Crystal - Platform")
+                .FeatureTile("Crystal - Sunken")
+                .FeatureTile("Field")
+                .FeatureTile("Fountain")
+                .FeatureTile("Garden 1")
+                .FeatureTile("Garden 2")
+                .FeatureTile("Granary")
+                .FeatureTile("Graves 1")
+                .FeatureTile("Graves 2")
+                .FeatureTile("Graves 3")
+                .FeatureTile("Graves 4")
+                .FeatureTile("Graves 5")
+                .FeatureTile("Menhir")
+                .FeatureTile("Orchard")
+                .FeatureTile("Portal")
+                .FeatureTile("Shrine 1")
+                .FeatureTile("Shrine 2")
+                .FeatureTile("Tower - Archer")
+                .FeatureTile("Tower - Rural")
+                .FeatureTile("Tree")
+                .FeatureTile("Tree - Hollow")
+                .FeatureTile("Turf House")
+                .FeatureTile("Wagon - Caravan 1")
+                .FeatureTile("Warzone 1")
+                .FeatureTile("Warzone 2")
+                .FeatureTile("Well")
+                .ExitGroup("House 1")
+                .ExitGroup("House 2")
+                .ExitGroup("Mausoleum 1")
+                .ExitGroup("Mausoleum 2")
+                .ExitGroup("Wagon - Caravan 2")
+                .SetPiece("Barn 1 (2x2)", 1)
+                .SetPiece("Barn 2 (1x2)", 1)
+                .SetPiece("Barn 3 (1x2)", 1)
+                .SetPiece("Barracks 1 (1x2)", 1)
+                .SetPiece("Barracks 2 (2x2)", 1)
+                .SetPiece("Dragon Skeleton (1x2)", 1)
+                .SetPiece("Farm 1 (2x2)", 1)
+                .SetPiece("Farm 2 (1x2)", 1)
+                .SetPiece("Farm 3 (1x2)", 1)
+                .SetPiece("Field 1 (2x2)", 1)
+                .SetPiece("Field 2 (2x2)", 1)
+                .SetPiece("Field 3 (2x1)", 1)
+                .SetPiece("Inn (1x2)", 1)
+                .SetPiece("Ship - Air, Docked (3x1)", 1)
+                .SetPiece("Temple - Evil (2x3)", 1)
+                .SetPiece("Temple - Good (3x3)", 1)
+                .SetPiece("Temple - Neutral (2x2)", 1)
+                .SetPiece("Temple - Rural 1 (3x2)", 1)
+                .SetPiece("Temple - Rural 2 (2x2)", 1)
+                .SetPiece("Temple - Rural 3 (3x2)", 1)
+                .SetPiece("Tower - Cloak (2x2)", 1)
+                .SetPiece("Tower - Guard (1x2)", 1)
+                .SetPiece("Tower - Large 1, Evil (2x2)", 1)
+                .SetPiece("Tower - Large 1, Wizard (2x2)", 1)
+                .SetPiece("Tower - Large 2, Evil (2x2)", 1)
+                .SetPiece("Tower - Large 2, Wizard (2x2)", 1)
+                .SetPiece("Tower - Rural (1x2)", 1)
+                .SetPiece("Tower - Wizard (1x2)", 1)
+                .SetPiece("Warzone (1x2)", 1)
+                .SetPiece("Windmill (2x2)", 1)
+                .SetPiece("Ramp", 1)
+                .SetPiece("Cave", 1);
+
+            // Rural Grass's own bulk palette -- mined from ttr01's 8 hand-built reference areas
+            // (dan_jungle1/dmfi_custom_enc/prefabgridgrass/prefabgridwater/vrotrdantcourt/
+            // vrotrdantfarms/vrotrdantkhoonda/vrotrdantplains). Shares ttd01/jac01's own zep_*/
+            // _mdrn_pl_* decoration families (see this profile's own doc comment above for the two
+            // blueprint substitutions).
+            _builder
+                .Decoration("zep_shrub036", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_wdfence", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_bpillar007", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_giantfern", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_bushfern001", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_tree003", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_tree060", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_treebig", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_stones018", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_plant07", 2, DecorationContext.DoorwayFlank)
+                .Decoration("zep_column004", 1, DecorationContext.DoorwayFlank)
+                .Vignette("RuralFarmCluster", 2)
+                .VignetteMember("_mdrn_pl_wdfence", 0f, 0f)
+                .VignetteMember("zep_shrub036", 0.5f, 0.2f);
+
+            // Rural Grass (Good Castle) / Rural Grass (Evil Castle) -- ttr01's two "district" wall-
+            // material palettes, mirroring BaseGameTilesetProfiles.ForestGoodCastle/ForestEvilCastle's
+            // shape exactly (see that pair's own doc comment for the full mechanism writeup). Direct
+            // 16-combo probe confirms GoodCastle and EvilCastle EACH reach full 16/16 flat corner
+            // coverage against Solid=<faction>Castle/Open=Grass. The tileset's own castle inventory is
+            // exactly three 1x1 GROUPS per faction (Castle - Main Door/Small Door/Breach, <faction>),
+            // each a single tile with mixed Grass/<faction>Castle corners plus a door slot and NO
+            // crosser edge -- already IsExitGroupEligible-eligible (vocab-independent), so the base
+            // profile's census was never actually exempting these six tiles even before this variant
+            // existed. But GroupExitPlanner's REAL placement pass needs the castle terrain to actually
+            // appear in the composed grid, which the base Grass-only composition never paints -- this
+            // variant's SolidTerrainOverride makes it a real wall material so GroupExitPlanner can
+            // place these door groups for real, and additionally paints the raised all-<faction>Castle
+            // uniform tile (TILE644 Evil/TILE645 Good, pathnode-restricted) and the plain ungrouped
+            // Grass/<faction>Castle blend tiles as real wall fill via CornerEdgeResolver.
+            // PaletteVariant() excludes each from --matrix's full cross-product -- one showcase area
+            // apiece.
+            _builder.Create(RuralGrassGoodCastle, "Rural Grass* (Good Castle)")
+                .Tileset("ttr01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("GoodCastle")
+                .PrimaryOpenTerrain("Grass")
+                .ExitGroup("Castle - Main Door, Good")
+                .ExitGroup("Castle - Small Door, Good")
+                .ExitGroup("Castle - Breach, Good");
+
+            _builder.Create(RuralGrassEvilCastle, "Rural Grass* (Evil Castle)")
+                .Tileset("ttr01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("EvilCastle")
+                .PrimaryOpenTerrain("Grass")
+                .ExitGroup("Castle - Main Door, Evil")
+                .ExitGroup("Castle - Small Door, Evil")
+                .ExitGroup("Castle - Breach, Evil");
+
+            // Rural Grass (Water) -- ttr01's harbor/waterfront district, recomposing the SAME ttr01
+            // hak data the base profile above uses with SolidTerrainOverride("Water") +
+            // PrimaryOpenTerrain("Grass") (verified full 16/16, the pairing is symmetric with the base
+            // profile's own Water-as-accent role). Closes the three groups that genuinely mix
+            // Grass+Water corners -- Cave - Sea, Pier (both raised Grass/Water bank pieces), and
+            // Ship - Docked 1 (a Grass+Water hull footprint) -- as real OpenSetPieces (structurally
+            // classify-eligible AND actually registered), but real isolated-placement rates differ by
+            // shape (ProbeTool, 150 seeds, Halls): Ship - Docked 1 places at 40.7% (61/150), while
+            // Cave - Sea and Pier both measure 0/150. The latter two are NONFLAT (a height-1 bank edge
+            // baked into the footprint itself), and TryPlaceOpenSetPiece's site search only ever finds
+            // FLAT open-room interiors to stamp into under the currently-supported layouts/relief
+            // budgets -- a real, separate geometric ceiling (the exact height-corner pattern these two
+            // groups need never spontaneously occurs in a generated room), not a registration bug.
+            // Registered anyway (harmless, matches the project's "keep it wired, document the ceiling"
+            // convention for CavePlatform1OnMinesAndCavernsComplex_StillDoesNotPlace_DocumentedRoomSizeCeiling)
+            // rather than pulled, since census credit and real placement are tracked/reported
+            // separately per this pass's own placement-honesty accounting. "Ship - Air, Above Water
+            // (3x1)" closes for real at 100% (150/150): all-Water-cornered with a real door on one
+            // member (TILE573), allCornersSolid + hasAnyDoor satisfies WallAlcove regardless of any
+            // crosser now that Water composes as a genuine Solid terrain here (its base-profile
+            // AccentTerrain role never lets this trigger). RampCrosser("HighBridge") (instead of the
+            // base profile's Slope) closes TILE603, the Road-to-HighBridge ramp tile (Water/Grass mixed
+            // corners, nonflat) -- the same baked-raised-rim shape RampCrosser targets elsewhere, just
+            // over a Water solid instead of a Grass/GentleHill blend, mirroring ttd01/ttf01's own
+            // per-family RampCrosser variant precedent (DesertRoad/ForestStoneBridge etc.).
+            //
+            // "Door - Bridge" (Road crosser), "Door - Bridge, High" (HighBridge crosser), and
+            // "Ship - Docked 2 (2x2)" (Road crosser, one real member + three holes) are DELIBERATELY
+            // NOT wired: all three are solo, all-Water-cornered, WallRoom-classify-eligible once Road/
+            // HighBridge are recognized as door-implying crossers, but the same Tunnel-corridor-
+            // dependent WallRoom ceiling the base profile's own doc comment documents applies here too
+            // (this tileset has no canonical Doorway/Corridor crosser at all, so Complex/Halls/Organic
+            // all downgrade to OpenLane) -- verified directly (0/100 isolated across all three layouts
+            // for all three groups). Census-exempt via PilotExpectedExemptions instead. "Ship -
+            // Floating (2x1)" (all-Water, no door, no crosser) stays exempt too: none of OpenSetPiece/
+            // WallAlcove/WallRoom's triggers apply. See TileCoverageCensusTests.PilotExpectedExemptions'
+            // own ttr01 doc comment for the full writeup, including the TILE229/TILE179 shared-tile-id
+            // accounting.
+            _builder.Create(RuralGrassWater, "Rural Grass* (Water)")
+                .Tileset("ttr01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("Water")
+                .PrimaryOpenTerrain("Grass")
+                .RampCrosser("HighBridge")
+                .SetPiece("Cave - Sea", 1)
+                .SetPiece("Pier", 1)
+                .SetPiece("Ship - Docked 1 (2x2)", 1)
+                .SetPiece("Ship - Air, Above Water (3x1)", 1);
 
             return _builder.Build();
         }

@@ -170,6 +170,19 @@ namespace SWLOR.Game.Server.Service
             if (!witnessedTechniques.Add(techniqueFeat))
                 return;
 
+            // Witnessing an above-tier technique is still recorded (the learn roll re-checks the
+            // gate at the creature's death, in case the player's rank crosses the floor first),
+            // but the feedback makes clear it cannot be learned yet and what rank it needs.
+            var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
+            var tierMinRank = GetTierMinRank(techniqueDetail.MimicryTier);
+
+            if (skillRank < tierMinRank)
+            {
+                SendMessageToPC(player, ColorToken.Gray(
+                    $"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {tierMinRank})"));
+                return;
+            }
+
             SendMessageToPC(player, ColorToken.Cyan($"Your combat analyzer records {techniqueDetail.Name}..."));
         }
 

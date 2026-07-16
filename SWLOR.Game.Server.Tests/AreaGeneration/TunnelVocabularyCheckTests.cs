@@ -162,6 +162,15 @@ public class TunnelVocabularyCheckTests
         // to keep real Tunnel-mode support rather than downgrading.
         BaseGameTilesetProfiles.ModernFacility,
         BaseGameTilesetProfiles.OfficeInteriors,
+        // [CEP] City Interior 1 (Elven/Sigil): each district's own hallway crosser (ElvenHallway/
+        // SigilHallway) is a renamed BOTH-halves family with no resolvable boundary shape against the
+        // canonical Corridor/Doorway probe this test runs (verified directly) -- neither profile
+        // declares TunnelCrossers (only DoorSlotCrossers, which this check doesn't consult), so Complex
+        // downgrades to OpenLane for both, the same Crypt-Dwarven/Barrows-style fallback. The base
+        // [CEP] City Interior 1 profile is DELIBERATELY NOT here: it keeps the tileset's own canonical
+        // "Corridor"/"Doorway" pair (Stairs - Up/Down, Exit - Corridor) and passes this verdict as TRUE.
+        BaseGameTilesetProfiles.CepCityInteriorElven,
+        BaseGameTilesetProfiles.CepCityInteriorSigil,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

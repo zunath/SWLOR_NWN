@@ -124,6 +124,20 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.ModernFacility,
         BaseGameTilesetProfiles.LabStorage,
         BaseGameTilesetProfiles.OfficeInteriors,
+        // Wave-6 (final CEP superset wave, 1 of 2): [CEP] Dungeon (zde01) -- byte-identical tile data
+        // to tde01/Dungeon (see BaseGameTilesetProfiles.CepDungeon's own doc comment), so the same
+        // Complex/Halls/Organic pairing gate applies unchanged.
+        BaseGameTilesetProfiles.CepDungeon,
+        BaseGameTilesetProfiles.CepDungeonWater,
+        BaseGameTilesetProfiles.CepDungeonSewer,
+        BaseGameTilesetProfiles.CepDungeonIce,
+        BaseGameTilesetProfiles.CepDungeonPit,
+        // Wave-6 (final CEP superset wave, 2 of 2): [CEP] City Interior 1 (zin01) -- base City/Home/
+        // Workshop-exit family plus the Elven/Sigil district PaletteVariants. See
+        // BaseGameTilesetProfiles.CepCityInterior's own doc comment.
+        BaseGameTilesetProfiles.CepCityInterior,
+        BaseGameTilesetProfiles.CepCityInteriorElven,
+        BaseGameTilesetProfiles.CepCityInteriorSigil,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

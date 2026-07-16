@@ -1048,6 +1048,16 @@ public class TileCoverageCensusTests
         {
             "Service", "Tiled", "Office_Wood", "Office_Alum", "Foyer_L", "Foyer_U",
         },
+        // [CEP] Dungeon (zde01): byte-identical tile data to tde01 (see BaseGameTilesetProfiles.
+        // CepDungeon's own doc comment) -- Water/Sewer/Ice/Pit are covered the same way tde01's own
+        // entry above is, by the CepDungeonWater/Sewer/Ice/Pit PaletteVariant profiles each declaring
+        // AccentTerrain(<accent>).
+        ["zde01"] = new(StringComparer.OrdinalIgnoreCase),
+        // [CEP] City Interior 1 (zin01): Elven/Sigil are covered by their own PaletteVariant profiles
+        // (CepCityInteriorElven/Sigil) declaring PrimaryOpenTerrain(<district>) -- see
+        // BaseGameTilesetProfiles.CepCityInterior's own doc comment. Workshop is wired directly on the
+        // base profile (no PrimaryOpenTerrain override needed).
+        ["zin01"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     /// <summary>
@@ -1155,6 +1165,13 @@ public class TileCoverageCensusTests
         {
             "Door", "Door_Garage_Sm", "Door_Garage_Lg", "Hallway1", "Hallway2",
         },
+        // zde01: byte-identical crosser vocabulary to tde01 (Bridge/Corridor/Fence/Doorway/Ramp/
+        // MazeMosaic) -- MazeMosaic is the same out-of-scope alternate family tde01 already carries.
+        ["zde01"] = new(StringComparer.OrdinalIgnoreCase) { "MazeMosaic" },
+        // zin01: Corridor/Doorway are canonical; Window/ElvenHallway/SigilHallway are all declared
+        // (Window is resolver-covered on flat door-free tiles, ElvenHallway/SigilHallway via
+        // DoorSlotCrossers on the Elven/Sigil variants) -- no alternates expected, pending the census run.
+        ["zin01"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -1422,6 +1439,77 @@ public class TileCoverageCensusTests
         // Win/WinCrnr/Firepl/Stair_UD/U/D/Stair2_UD/U/D (crosser-free) and the tileset-generic
         // Hallway1_Entry/Hallway2_Entry stay reachable. See BaseGameTilesetProfiles.OfficeInteriors' own
         // doc comment.
+
+        // [CEP] City Interior 1 (zin01) -- see BaseGameTilesetProfiles.CepCityInterior's own doc
+        // comment. 930/961 tiles (96.8%) reach a mechanism directly; the residual 31 fall into four
+        // genuine, verified gap classes:
+        //
+        // (1) "Window"-crossered City room families: the five "Room - <Type> <N>, Window (1x2)" pairs
+        // (Living Room/Kitchen/Inn) and the three standalone "Window - Home"/"Window - Porthole 1/2/3"
+        // single-tile groups all carry a Window edge (alongside Doorway on some, alone on others) --
+        // verified directly that neither the group-level WallRoom/WallAlcove classifiers nor the
+        // per-member CornerEdgeResolver fallback recognize Window as an admitted crosser, so every
+        // member of these nine groups stays unclassified even though their plain (non-Window)
+        // Doorway-only siblings (Room - Living Room 1 (1x2) etc., wired directly above) classify fine.
+        ("zin01", "GROUP:[City] Room - Living Room 1, Window (1x2)"),
+        ("zin01", "GROUP:[City] Room - Living Room 2, Window (1x2)"),
+        ("zin01", "GROUP:[City] Room - Kitchen 1, Window (1x2)"),
+        ("zin01", "GROUP:[City] Room - Kitchen 2, Window (1x2)"),
+        ("zin01", "GROUP:[City] Room - Inn 2, Window (1x2)"),
+        ("zin01", "GROUP:[City] Window - Home"),
+        ("zin01", "GROUP:[City] Window - Porthole 1"),
+        ("zin01", "GROUP:[City] Window - Porthole 2"),
+        ("zin01", "GROUP:[City] Window - Porthole 3"),
+        // TILE790/TILE881 are the two interior members of "[Elven] Tree House - Grass, Window (3x3)"
+        // whose own corners/edges touch the group's Window-crossered face -- the group as a whole fails
+        // classification (same Window-crosser gap as above), but the other 7 members independently
+        // resolve via CornerEdgeResolver against their own plain corners once the group-level check
+        // falls through (see this file's own per-tile fallback loop) -- only these two stay genuinely
+        // unclassified.
+        ("zin01", "TILE790"),
+        ("zin01", "TILE881"),
+        //
+        // (2) District-renamed hallway crossers (ElvenHallway/SigilHallway) on GROUPed tiles: declared
+        // via DoorSlotCrossers on the Elven/Sigil variant profiles, but DoorSlotCrossers only ever
+        // credits CornerEdgeResolver's UNGROUPED-tile path (verified directly, the same documented gap
+        // as fcx01's "murs"-crossered b_wall_door/d_wall_door and tbx78's whole doorway1/2/3 group
+        // family) -- no GROUP-level mechanism recognizes a non-canonical hallway crosser. Elven's own
+        // "Room - Round"/"Stairs" family and Sigil's own "Corridor - Stairs/Entry" family are the ONLY
+        // hallway-adjacent groups either district has, and all of them use the renamed crosser.
+        ("zin01", "GROUP:[Elven] Room - Round"),
+        ("zin01", "GROUP:[Elven] Room - Round, Light"),
+        ("zin01", "GROUP:[Elven] Room - Round, Couch"),
+        ("zin01", "GROUP:[Elven] Room - Round, Couch/Light"),
+        ("zin01", "GROUP:[Elven] Stairs - Down, Short"),
+        ("zin01", "GROUP:[Elven] Stairs - Up, Short"),
+        ("zin01", "GROUP:[Elven] Stairs - Down, Long"),
+        ("zin01", "GROUP:[Sigil] Corridor - Stairs Down"),
+        ("zin01", "GROUP:[Sigil] Corridor - Stairs Up"),
+        // "[Sigil] Corridor - Entry" (TILE929) is the one tile where "SigilFloor" is ALSO used as a
+        // crosser name (alongside SigilHallway) -- doorless, and neither declared name reaches any
+        // GROUP-level mechanism either, the same DoorSlotCrossers-doesn't-credit-GROUPs gap.
+        ("zin01", "GROUP:[Sigil] Corridor - Entry"),
+        //
+        // (3) Workshop district has no PrimaryOpenTerrain declaration anywhere (its groups classify via
+        // WallAlcove door-corner shapes that don't require an open-terrain match -- see
+        // BaseGameTilesetProfiles.CepCityInterior's own doc comment -- but that path needs a door).
+        // "[Workshop] Smithy" (TILE876) is the one Workshop-cornered group with NEITHER a door NOR a
+        // crosser -- WallAlcove's doorless admission path requires the alcove's own open corner to
+        // match a profile's declared PrimaryOpenTerrain, and no profile here declares "Workshop" (only
+        // Inn/ElvenFloor/SigilFloor) -- a genuine, narrow gap out of this pass's scope (adding a fourth
+        // PaletteVariant for a single doorless decorative alcove is not worth the extra profile).
+        ("zin01", "GROUP:[Workshop] Smithy"),
+        //
+        // (4) Four raw ungrouped tiles carrying a door slot but NO crosser at all, on a diagonal or
+        // checkerboard-split corner pattern -- the same genuinely-unreachable shape as Barrows' TILE51
+        // and Fort Interior's TILE125/127/128 (TileDoorPlanner's single-Doorway-edge rule requires a
+        // real Doorway edge, which none of these four have). Verified directly: TILE541
+        // (Wall|Wall|Wall|Kitchen, one door), TILE551/846/879 (checkerboard-alternating Kitchen/Wall or
+        // Workshop/Wall corners, two doors each).
+        ("zin01", "TILE541"),
+        ("zin01", "TILE551"),
+        ("zin01", "TILE846"),
+        ("zin01", "TILE879"),
     };
 
     public static IEnumerable<string> PilotTilesetKeys => new[]
@@ -1432,6 +1520,8 @@ public class TileCoverageCensusTests
         "jac01",
         "fcx01",
         "tjsb0", "tbx78", "tqq01", "udp2",
+        "zde01",
+        "zin01",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -1462,6 +1552,8 @@ public class TileCoverageCensusTests
             "tbx78" => BaseGameTilesetProfiles.ModernFacility,
             "tqq01" => BaseGameTilesetProfiles.LabStorage,
             "udp2" => BaseGameTilesetProfiles.OfficeInteriors,
+            "zde01" => BaseGameTilesetProfiles.CepDungeon,
+            "zin01" => BaseGameTilesetProfiles.CepCityInterior,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --
@@ -1627,13 +1719,19 @@ public class TileCoverageCensusTests
             .Select(t => $"TILE{t.TileId} (group '{model.Groups[t.GroupIndex].Name}')")
             .ToHashSet();
 
-        // Ungrouped-tile manual exemptions (e.g. Barrows' TILE13/TILE51, Fort Interior's plain door+
-        // crosser tiles): a bare "TILE{n}" PilotExpectedExemptions key, honored only for a genuinely
-        // ungrouped (GroupIndex == -1), flat, non-alternate-vocab tile -- mirrors the group-keyed
-        // reconstruction above so ungrouped gaps get the same EXACT, no-silent-drift guarantee.
+        // Bare "TILE{n}" manual exemptions (e.g. Barrows' TILE13/TILE51, Fort Interior's plain door+
+        // crosser tiles): honored for a flat, non-alternate-vocab tile -- mirrors the group-keyed
+        // reconstruction above so these gaps get the same EXACT, no-silent-drift guarantee. Usually an
+        // ungrouped (GroupIndex == -1) tile, but a GROUPed tile can also carry a bare "TILE{n}" entry
+        // (e.g. zin01's TILE790/TILE881, two members of a 9-tile GROUP whose group-level classification
+        // fails and falls through to independent per-tile probing -- see this file's own per-tile
+        // fallback loop) as long as its own GROUP isn't ALSO separately exempted (which would already
+        // reconstruct it above with the "(group '...')" suffix, and the runtime Exempt() call would
+        // never reach the bare-tile path for it).
         foreach (var tile in model.Tiles)
         {
-            if (tile.GroupIndex != -1) continue;
+            if (tile.GroupIndex != -1 && PilotExpectedExemptions.Contains((tilesetResref, "GROUP:" + model.Groups[tile.GroupIndex].Name)))
+                continue;
             if (!IsFlat(tile)) continue;
             if (UsesOnlyAlternateVocab(model, new[] { tile }, tilesetResref)) continue;
             if (PilotExpectedExemptions.Contains((tilesetResref, "TILE" + tile.TileId)))

@@ -336,6 +336,76 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // same as above.
         public const string OfficeInteriors = "officeinteriors";
 
+        // Wave-6 (final CEP superset wave, 1 of 2): [CEP] Dungeon (zde01, SWLOR_Haks/sw_t_cepdungeon).
+        // zde01.set is BYTE-IDENTICAL to the already-onboarded SWLOR hak copy of tde01 (SWLOR_Haks/
+        // sw_t_dungeon/tde01.set) except for the [GENERAL] Name/UnlocalizedName header fields (verified
+        // directly: `diff` between the two .set files returns only those two lines) -- 1092 tiles, 60
+        // groups, identical Wall/Floor/Lava/Water/Sewer/Ice/Pit terrain family, identical Bridge/
+        // Corridor/Fence/Doorway/Ramp/MazeMosaic crossers, identical group names (Treasure 1/2, Door -
+        // Big 1/2, Exit 1/2-<Accent>, Stairs - Up/Down, Platform 1-5, Pillar family, Wall Section 1/2,
+        // Energy Source, Door - Fence 1/2, Door - Transition, Ramp - Straight/Corner, Door - Bridge 1
+        // <Accent>, Door - Maze <End 1/End 2/Side> Mosaic), identical HasHeightTransition=1 raised-tile
+        // system (323/1092 non-flat). So this profile family is a straight re-composition of the SAME
+        // proven Dungeon/DungeonWater/DungeonSewer/DungeonIce/DungeonPit wiring against Tileset("zde01")
+        // instead of "tde01" -- same SolidTerrainOverride-free plain Wall/Floor split (Wall is
+        // GENERAL Default/Border, so no override needed), same MaxElevationRegions/MaxPoolRegions/
+        // MaxReliefRegions(2) trio (the height-relief probes are per-tile-shape, and every shape here is
+        // identical to tde01's), same single AccentTerrain slot per profile (Lava on the base profile,
+        // Water/Sewer/Ice/Pit on the four PaletteVariants), same MazeMosaic-crosser alternate-vocabulary
+        // gap (see TileCoverageCensusTests.PilotAlternateVocabCrossers["zde01"]).
+        // TileLighting: UNLIKE tde01 (zero hand-built areas exist, so tde01's own (0,0,8,8) is an
+        // uncalibrated placeholder per this file's own pilot-wave doc comment above), zde01 ships with
+        // real hand-built content: Module/are/dath_mountcaves.are.json (126 tiles) and
+        // Module/are/valkorrdung1c.are.json (256 tiles), 382 placed tiles total. The measured plurality
+        // across both is (MainLight1,MainLight2,SrcLight1,SrcLight2)=(0,0,0,0) at 31.2% (119/382) --
+        // ahead of (0,0,2,2)/(0,11,0,0) at 10.7% each -- so this wave uses that real sampled default
+        // instead of copying tde01's placeholder value.
+        // Display names: UnlocalizedName verbatim ("[CEP] Dungeon"), variants cascade
+        // "[CEP] Dungeon (<Qualifier>)" -- see this wave's own naming instruction, distinct from the
+        // pilot wave's "Dungeon*" asterisk convention above.
+        public const string CepDungeon = "cep_dungeon";
+        public const string CepDungeonWater = "cep_dungeon_water";
+        public const string CepDungeonSewer = "cep_dungeon_sewer";
+        public const string CepDungeonIce = "cep_dungeon_ice";
+        public const string CepDungeonPit = "cep_dungeon_pit";
+
+        // Wave-6 (final CEP superset wave, 2 of 2): [CEP] City Interior 1 (zin01, SWLOR_Haks/
+        // sw_t_cepcityin). NOT byte-identical to tin01 (428KB vs 139KB) -- a genuinely larger,
+        // independently-authored 961-tile/148-group superset that follows the SAME design convention
+        // as tin01 (Livingroom/Kitchen/Inn/Shop/Home furnished-room families, WallAlcove door-corner
+        // groups, WallRoom Doorway-port pairs, all-Wall multi-door crosser-free furnished rooms) under
+        // a "[City] "-prefixed namespace, PLUS three whole new districts tin01 never had: [Elven]
+        // (ElvenFloor/ElvenPlatform/ElvenGrass, 25/9/3 groups, its own ElvenHallway crosser),
+        // [Sigil] (SigilFloor, 14 groups, its own SigilHallway crosser + one quirk tile where
+        // "SigilFloor" is ALSO used as a crosser name), and [Workshop] (Workshop, 9 groups, exit/
+        // stairs-corner pieces only, no furnished room family or its own crosser).
+        // GENERAL Default/Border=Wall, Floor=Inn (the .set's own declared default) -- Inn itself is a
+        // minimal district (only 3 real-Inn-cornered groups: Portal/Chessboard/Door), so this profile
+        // leaves PrimaryOpenTerrain at its Inn default (matching tin01's own "leave it at the declared
+        // Floor" convention) and wires the full City+Home+Workshop-exit door/furnished-room family --
+        // the same mechanisms (WallAlcove door-corner groups, WallRoom Doorway-port pairs, all-Wall
+        // multi-door furnished rooms) already proven by tin01/tic01/tni01/tni02/twc03 against these
+        // exact group shapes, just under zin01's own confirmed group-name spellings (verified directly
+        // against the real .set data, not assumed from tin01's naming). Elven/Sigil are wired as their
+        // own PaletteVariant profiles (CepCityInteriorElven/CepCityInteriorSigil) declaring
+        // PrimaryOpenTerrain(<district>) the same way CastleInteriorStorage/Rich/Library/Jail
+        // recompose tic01 -- ElvenFloor is the tileset's single richest secondary district (25 groups,
+        // ahead of SigilFloor's 14), so it gets the primary variant slot; Sigil gets a second variant.
+        // Workshop (9 groups, no furnished-room family at all, only WallAlcove exit/stairs-corner
+        // pieces) is wired directly on the base profile instead of its own variant -- its groups need
+        // no PrimaryOpenTerrain override to classify (WallAlcove door-corner groups don't require the
+        // group's own open corner to equal the profile's declared primary terrain, mirroring tin01's
+        // own Livingroom/Kitchen/Shop door groups composing fine under a Inn-primary profile).
+        // TileLighting: real sampled evidence from 3 hand-built zin01 areas already in the module
+        // (Module/are/jeditemp_int.are.json 252 tiles, spending_area.are.json 9 tiles,
+        // tat_anc_junix.are.json 64 tiles -- 325 placed tiles total). Measured plurality
+        // (MainLight1,MainLight2,SrcLight1,SrcLight2)=(0,0,0,0) at 20.9% (68/325).
+        // Display name: UnlocalizedName verbatim ("[CEP] City Interior 1"), variants cascade
+        // "[CEP] City Interior 1 (<Qualifier>)".
+        public const string CepCityInterior = "cep_cityinterior";
+        public const string CepCityInteriorElven = "cep_cityinterior_elven";
+        public const string CepCityInteriorSigil = "cep_cityinterior_sigil";
+
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
         public Dictionary<string, DungeonTilesetProfile> BuildTilesetProfiles()
@@ -767,6 +837,384 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Ramp - Corner, Floor", 1)
                 .SetPiece("Ramp - Corner, Pit", 1)
                 .ExitGroup("Exit 1");
+
+            // [CEP] Dungeon (zde01) -- byte-identical tile data to tde01 (see the CepDungeon const's
+            // own doc comment above for the full writeup), so this is the SAME wiring as the base
+            // Dungeon profile above, just against Tileset("zde01") with the real sampled TileLighting
+            // and this wave's verbatim display-name convention.
+            _builder.Create(CepDungeon, "[CEP] Dungeon")
+                .Tileset("zde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .AccentTerrain("Lava")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .FeatureTile("Pillar 1 - Lava")
+                .FeatureTile("Pillar 2 - Lava")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 4 - Lava (1x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Lava", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Down, Lava (2x2)")
+                .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Lava", 1)
+                .ExitGroup("Exit 1")
+                .ExitGroup("Exit 2 - Lava");
+
+            _builder.Create(CepDungeonWater, "[CEP] Dungeon (Water)")
+                .Tileset("zde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .AccentTerrain("Water")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .FeatureTile("Pillar 1 - Water")
+                .FeatureTile("Pillar 2 - Water")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 4 - Water (1x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Water", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Water", 1)
+                .ExitGroup("Exit 1")
+                .ExitGroup("Exit 2 - Water");
+
+            _builder.Create(CepDungeonSewer, "[CEP] Dungeon (Sewer)")
+                .Tileset("zde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .AccentTerrain("Sewer")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .FeatureTile("Pillar 1 - Sewer")
+                .FeatureTile("Pillar 2 - Sewer")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 4 - Sewer (1x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Sewer", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Sewer", 1)
+                .ExitGroup("Exit 1")
+                .ExitGroup("Exit 2 - Sewer");
+
+            _builder.Create(CepDungeonIce, "[CEP] Dungeon (Ice)")
+                .Tileset("zde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .AccentTerrain("Ice")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .FeatureTile("Pillar 1 - Ice")
+                .FeatureTile("Pillar 2 - Ice")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 4 - Ice (1x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Ice", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Ice", 1)
+                .ExitGroup("Exit 1")
+                .ExitGroup("Exit 2 - Ice");
+
+            _builder.Create(CepDungeonPit, "[CEP] Dungeon (Pit)")
+                .Tileset("zde01")
+                .MaxElevationRegions(2)
+                .MaxPoolRegions(2)
+                .MaxReliefRegions(2)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .AccentTerrain("Pit")
+                .FeatureTile("Treasure 1", 2)
+                .FeatureTile("Treasure 2", 2)
+                .FeatureTile("Pillar 3")
+                .FeatureTile("Pillar 4")
+                .SetPiece("Platform 1 (2x2)")
+                .SetPiece("Platform 2 (2x2)")
+                .SetPiece("Platform 3 (2x2)")
+                .SetPiece("Platform 5 (1x2)")
+                .SetPiece("Pillar (1x2)", 2)
+                .SetPiece("Energy Source (1x2)")
+                .SetPiece("Wall Section 1 (1x2)")
+                .SetPiece("Wall Section 2 (1x2)")
+                .SetPiece("Door - Big 1", 1)
+                .SetPiece("Door - Big 2", 1)
+                .SetPiece("Door - Bridge 1, Pit", 1)
+                .SetPiece("Door - Fence 1", 1)
+                .SetPiece("Door - Fence 2", 1)
+                .SetPiece("Door - Transition", 1)
+                .SetPiece("Stairs - Down", 1)
+                .SetPiece("Stairs - Up", 1)
+                .SetPiece("Stairs - Up (2x2)")
+                .SetPiece("Ramp - Straight", 1)
+                .SetPiece("Ramp - Corner, Floor", 1)
+                .SetPiece("Ramp - Corner, Pit", 1)
+                .ExitGroup("Exit 1");
+
+            // [CEP] City Interior 1 (zin01) -- base profile: City+Home+Workshop-exit family. See the
+            // CepCityInterior const's own doc comment above for the full writeup.
+            _builder.Create(CepCityInterior, "[CEP] City Interior 1")
+                .Tileset("zin01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .FeatureTile("[City] Chessboard - Home")
+                .FeatureTile("[City] Chessboard - Inn")
+                .FeatureTile("[City] Chessboard - Kitchen")
+                .FeatureTile("[City] Chessboard - Living Room")
+                .FeatureTile("[City] Chessboard - Shop")
+                .FeatureTile("[City] Portal - Home")
+                .FeatureTile("[City] Portal - Inn")
+                .FeatureTile("[City] Portal - Kitchen")
+                .FeatureTile("[City] Portal - Living Room")
+                .FeatureTile("[City] Portal - Shop")
+                .FeatureTile("[Workshop] Chessboard")
+                .FeatureTile("[Workshop] Portal")
+                .FeatureTile("[Workshop] Smelter")
+                .SetPiece("[City] Door - Living Room 1", 1)
+                .SetPiece("[City] Door - Kitchen 1", 1)
+                .SetPiece("[City] Door - Inn 1", 1)
+                .SetPiece("[City] Door - Shop 1", 1)
+                .SetPiece("[City] Exit - Home Corner 1", 1)
+                .SetPiece("[City] Exit - Home Corner 2", 1)
+                .SetPiece("[City] Exit - Kitchen Corner 1", 1)
+                .SetPiece("[City] Exit - Kitchen Corner 2", 1)
+                .SetPiece("[City] Exit - Living Room Corner 1", 1)
+                .SetPiece("[City] Exit - Living Room Corner 2", 1)
+                .SetPiece("[City] Stairs - Both, Kitchen Corner", 1)
+                .SetPiece("[City] Stairs - Both, Living Room Corner", 1)
+                .SetPiece("[City] Stairs - Down, Home Corner", 1)
+                .SetPiece("[City] Stairs - Down, Kitchen Corner", 1)
+                .SetPiece("[City] Stairs - Down, Living Room Corner", 1)
+                .SetPiece("[City] Stairs - Up, Home Corner 1", 1)
+                .SetPiece("[City] Stairs - Up, Home Corner 2", 1)
+                .SetPiece("[City] Stairs - Up, Kitchen Corner", 1)
+                .SetPiece("[City] Stairs - Up, Living Room Corner", 1)
+                .SetPiece("[City] Window - Home", 1)
+                .SetPiece("[City] Window - Porthole 1")
+                .SetPiece("[City] Window - Porthole 2", 1)
+                .SetPiece("[City] Window - Porthole 3", 1)
+                .SetPiece("[Workshop] Exit - Corner 1", 1)
+                .SetPiece("[Workshop] Exit - Corner 2", 1)
+                .SetPiece("[Workshop] Stairs - Both, Corner", 1)
+                .SetPiece("[Workshop] Stairs - Down, Corner", 1)
+                .SetPiece("[Workshop] Stairs - Up, Corner", 1)
+                .SetPiece("[Workshop] Smithy")
+                .SetPiece("[City] Room - Inn", 1)
+                .SetPiece("[City] Room - Inn 1 (1x2)", 1)
+                .SetPiece("[City] Room - Inn 2 (1x2)", 1)
+                .SetPiece("[City] Room - Inn 2, Window (1x2)", 1)
+                .SetPiece("[City] Room - Kitchen", 1)
+                .SetPiece("[City] Room - Kitchen 1 (1x2)", 1)
+                .SetPiece("[City] Room - Kitchen 1, Window (1x2)", 1)
+                .SetPiece("[City] Room - Kitchen 2 (1x2)", 1)
+                .SetPiece("[City] Room - Kitchen 2, Window (1x2)", 1)
+                .SetPiece("[City] Room - Living Room", 1)
+                .SetPiece("[City] Room - Living Room 1 (1x2)", 1)
+                .SetPiece("[City] Room - Living Room 1, Window (1x2)", 1)
+                .SetPiece("[City] Room - Living Room 2 (1x2)", 1)
+                .SetPiece("[City] Room - Living Room 2, Window (1x2)", 1)
+                .SetPiece("[City] Room - Shop", 1)
+                .SetPiece("[City] Room - Shop 1 (1x2)", 1)
+                .SetPiece("[City] Room - Shop 2 (1x2)", 1)
+                .SetPiece("[City] Room - Bordello (2x2)", 1)
+                .SetPiece("[City] Home - Lower 1 (2x2)")
+                .SetPiece("[City] Home - Lower 2 (2x2)")
+                .SetPiece("[City] Home - Lower 3 (2x2)")
+                .SetPiece("[City] Home - Lower 4 (2x2)")
+                .SetPiece("[City] Home - Lower 5 (2x2)")
+                .SetPiece("[City] Home - Upper 1 (2x2)")
+                .SetPiece("[City] Home - Upper 2 (2x2)")
+                .SetPiece("[City] Home - Upper 3 (2x2)")
+                .SetPiece("[City] Interior - Barn (3x2)")
+                .SetPiece("[City] Interior - Barracks (2x3)")
+                .SetPiece("[City] Interior - Shop 1 (1x2)")
+                .SetPiece("[City] Interior - Shop 2 (1x2)")
+                .SetPiece("[City] Interior - Slum House 1")
+                .SetPiece("[City] Interior - Slum House 2")
+                .SetPiece("[City] Interior - Smithy (2x1)")
+                .SetPiece("[City] Interior - Temple Evil (4x3)")
+                .SetPiece("[City] Interior - Temple Good (4x4)")
+                .SetPiece("[City] Interior - Temple Neutral (3x3)")
+                .SetPiece("[City] Interior - Tent (2x2)")
+                .SetPiece("[City] Interior - Wizards Den (2x2)")
+                .ExitGroup("[City] Door - Transition")
+                .ExitGroup("[City] Exit - Corridor")
+                .ExitGroup("[City] Exit - Corridor, Big")
+                .ExitGroup("[City] Stairs - Down")
+                .ExitGroup("[City] Stairs - Up");
+
+            // [CEP] City Interior 1 (Elven) -- ElvenFloor/ElvenPlatform/ElvenGrass district
+            // PaletteVariant, the tileset's single richest secondary district (25 ElvenFloor groups).
+            // ElvenHallway (the district's own renamed door/hallway crosser, paralleling Barrows'
+            // "corridor"/"door_corridor" and Modern Facility's "doorway1/2/3") is declared via
+            // DoorSlotCrossers so CornerEdgeResolver/WallAlcove-style mechanisms recognize it on the
+            // Room - Round/Stairs - Down/Up family.
+            _builder.Create(CepCityInteriorElven, "[CEP] City Interior 1 (Elven)")
+                .Tileset("zin01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("ElvenFloor")
+                .DoorSlotCrossers("ElvenHallway")
+                .FeatureTile("[Elven] Pool - Platform, Lights")
+                .FeatureTile("[Elven] Pool - Platform, Tree")
+                .FeatureTile("[Elven] Portal - Floor")
+                .FeatureTile("[Elven] Portal - Grass")
+                .FeatureTile("[Elven] Stairs - Both, Spiral")
+                .FeatureTile("[Elven] Stairs - Down, Spiral")
+                .FeatureTile("[Elven] Stairs - Down, Spiral/Light")
+                .FeatureTile("[Elven] Stairs - Up, Spiral")
+                .FeatureTile("[Elven] Stairs - Up, Spiral/Light")
+                .FeatureTile("[Elven] Table - Tree")
+                .FeatureTile("[Elven] Table - Tree, Lights")
+                .FeatureTile("[Elven] Tree - Giant")
+                .FeatureTile("[Elven] Tree - Medium")
+                .FeatureTile("[Elven] Tree - Medium, Walkable")
+                .FeatureTile("[Elven] Chessboard - Floor")
+                .FeatureTile("[Elven] Chessboard - Grass")
+                .SetPiece("[Elven] Alcove - Couch")
+                .SetPiece("[Elven] Alcove - Couch/Light")
+                .SetPiece("[Elven] Alcove - Grass")
+                .SetPiece("[Elven] Alcove - Light")
+                .SetPiece("[Elven] Alcove - Platform, Couch")
+                .SetPiece("[Elven] Alcove - Platform, Couch/Light")
+                .SetPiece("[Elven] Alcove - Simple")
+                .SetPiece("[Elven] Corner - Curtain")
+                .SetPiece("[Elven] Corner - Curtain, Couch")
+                .SetPiece("[Elven] Corner - Curtain, Table")
+                .SetPiece("[Elven] Exit - Grass")
+                .SetPiece("[Elven] Exit - Platform", 1)
+                .SetPiece("[Elven] Stub/Candle - Platform")
+                .SetPiece("[Elven] Wall Pool - Platform, Lights")
+                .SetPiece("[Elven] Wall Tree - Platform")
+                .SetPiece("[Elven] Wall Tree - Platform, Lights")
+                .SetPiece("[Elven] Room - Round", 1)
+                .SetPiece("[Elven] Room - Round, Couch")
+                .SetPiece("[Elven] Room - Round, Couch/Light")
+                .SetPiece("[Elven] Room - Round, Light", 1)
+                .SetPiece("[Elven] Stairs - Down, Long", 1)
+                .SetPiece("[Elven] Stairs - Down, Short", 1)
+                .SetPiece("[Elven] Stairs - Up, Short", 1)
+                .SetPiece("[Elven] Room - Oval, Grass (2x3)")
+                .SetPiece("[Elven] Tree House - Grass (3x3)")
+                .SetPiece("[Elven] Tree House - Grass, Window (3x3)")
+                .SetPiece("[Elven] Room - Tree (2x2)")
+                .SetPiece("[Elven] Room - Tree, Table (2x2)")
+                .SetPiece("[Elven] Room - Tree, Table/Lights (2x2)")
+                .SetPiece("[Elven] Pool (1x2)")
+                .SetPiece("[Elven] Pool - Trees (1x2)");
+
+            // [CEP] City Interior 1 (Sigil) -- SigilFloor district PaletteVariant, 14 groups.
+            // SigilHallway is the district's own renamed door/hallway crosser (same DoorSlotCrossers
+            // pattern as Elven above); "SigilFloor" is ALSO used once as a crosser name on the
+            // "Corridor - Entry" group's edges, a genuine tileset-authoring quirk -- declared alongside
+            // SigilHallway so the mechanism gets a fair chance at it, but this is unverified pending
+            // the census run (see the wave's own follow-up note if it stays exempt).
+            _builder.Create(CepCityInteriorSigil, "[CEP] City Interior 1 (Sigil)")
+                .Tileset("zin01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("SigilFloor")
+                .DoorSlotCrossers("SigilHallway", "SigilFloor")
+                .FeatureTile("[Sigil] Counter - Magic")
+                .FeatureTile("[Sigil] Counter - Normal")
+                .FeatureTile("[Sigil] Portal")
+                .SetPiece("[Sigil] Corner - Snug 1 (1x2)")
+                .SetPiece("[Sigil] Corner - Snug 2 (2x1)")
+                .SetPiece("[Sigil] Corner - Spiral", 1)
+                .SetPiece("[Sigil] Window 1")
+                .SetPiece("[Sigil] Window 2")
+                .SetPiece("[Sigil] Arena (3x3)", 1)
+                .SetPiece("[Sigil] Bar (2x2)", 1)
+                .SetPiece("[Sigil] Door - Main (2x2)", 1)
+                .SetPiece("[Sigil] Doorway 1 (1x2)", 1)
+                .SetPiece("[Sigil] Doorway 2 (1x2)", 1)
+                .SetPiece("[Sigil] Corridor - Stairs Down", 1)
+                .SetPiece("[Sigil] Corridor - Stairs Up", 1)
+                .SetPiece("[Sigil] Corridor - Entry");
 
             // City Interior (tin01). Multi-room-type interior (Livingroom/Kitchen/Inn/Shop), each with
             // its own single-tile WallAlcove door group plus a themed furnished-room set piece.

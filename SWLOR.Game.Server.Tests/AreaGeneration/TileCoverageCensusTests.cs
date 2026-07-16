@@ -1099,12 +1099,14 @@ public class TileCoverageCensusTests
         ["tjsb0"] = new(StringComparer.OrdinalIgnoreCase),
         // tbx78 (D20 Modern Facility): a single Wall/facility split, no alternate district palette.
         ["tbx78"] = new(StringComparer.OrdinalIgnoreCase),
-        // tqq01 (Complex laps storage): BaseGameTilesetProfiles.LabStorage only wires the "Inn" district
-        // (the .set's own declared Floor terrain) plus generic groups -- the other three parallel
-        // room-type districts (Livingroom/Kitchen/Shop) are out of this onboarding pass's scope (no
-        // PaletteVariant profile registered for them), the identical descope BaseGameTilesetProfiles.
-        // CityInterior2 (tni01) already applies to its own "livingroom"/"kitchen"/"shop" terrains.
-        ["tqq01"] = new(StringComparer.OrdinalIgnoreCase) { "Livingroom", "Kitchen", "Shop" },
+        // tqq01 (Complex laps storage): "Livingroom"/"Kitchen"/"Shop" are no longer here --
+        // BaseGameTilesetProfiles.LabStorageLivingroom/LabStorageKitchen/LabStorageShop now register
+        // each district's own group family as SetPieces (see BaseGameTilesetProfiles.LabStorage's own
+        // doc comment for the census-vs-practice writeup: this bucket had ALREADY read 100% via
+        // terrain-independent mechanisms even before this registration, so removing these entries
+        // changes no coverage number -- it only stops the exemption dictionary from documenting a "gap"
+        // that was never real).
+        ["tqq01"] = new(StringComparer.OrdinalIgnoreCase),
         // udp2 (D20 Office Interiors UDP): "Service"/"Tiled"/"Office_Wood"/"Office_Alum"/"Foyer_L"/
         // "Foyer_U" are no longer here: BaseGameTilesetProfiles.OfficeInteriorsService/Tiled/OfficeWood/
         // OfficeAlum/FoyerL/FoyerU each declare PrimaryOpenTerrain(<district>), closing their full
@@ -1216,31 +1218,36 @@ public class TileCoverageCensusTests
         // tqq01: Corridor/Doorway are both canonical -- no alternates.
         ["tqq01"] = new(StringComparer.OrdinalIgnoreCase),
         // udp2: "Door"/"Door_Garage_Sm"/"Door_Garage_Lg" are declared via DoorSlotCrossers, which (post
-        // the "accept profile-declared door crossers in group classification" fix) DOES now generalize
-        // GROUP classification's IsDoorwayEdge the same way it always has for CornerEdgeResolver's
-        // ungrouped-tile path -- every district's single-tile, all-solid-cornered door family (SmRm1/
-        // SmRm2/MidRm1 2x1/MidRm2 2x1, plus the tileset-generic Elevator1/2/Stairwell_U/UD/D/Restrooms/
-        // Break_Room) now genuinely classifies as SetPieceWallRoom via ClassifySetPiece and is no longer
-        // reached by this bucket. Only each district's own "Entry 2x1" pair (Service/Tiled/Office_Vinyl/
-        // Office_Wood/Office_Alum/Foyer_L/Foyer_U, plus the tileset-generic Hallway1_Entry/Hallway2_Entry)
-        // still lands here: its OPEN member (district-terrain corners, a "Door" port edge) mixes an Open
-        // corner with a door on the SAME group as an all-Wall interior member, so allCornersSolid is
-        // false -- ClassifyMultiTileSetPiece's hasAnyDoorway branch requires allCornersSolid and returns
-        // None before ever trying the OpenSetPiece corner-match branch below it (verified directly against
-        // ClassifyMultiTileSetPiece's own priority order), a genuine shared-classifier gap distinct from
-        // the WallRoom-placement (SupportsWallRoomOpenLaneBoundary) gap documented on
-        // BaseGameTilesetProfiles.OfficeInteriors/OfficeInteriorsService -- out of scope for a
-        // single-tileset pass since ClassifyMultiTileSetPiece/LayoutGroupStamper are shared infrastructure.
-        // Hallway1/Hallway2 stay here too, for a DIFFERENT reason than the district Entry gap above:
-        // Hallway1_Entry/Hallway2_Entry are all-Wall-cornered on both members (allCornersSolid would be
-        // true), but ClassifyMultiTileSetPiece's very first per-member-edge gate (IsAllowedMemberEdge)
-        // rejects any edge that isn't blank, a recognized doorway, the Tunnel body crosser, or Alley --
-        // "Hallway1"/"Hallway2" (district-junction wall crossers, no verified Tunnel vocabulary, and not
-        // declared as a DoorSlotCrosser) fail that gate outright, so the whole group returns None before
-        // allCornersSolid/hasAnyDoor are ever consulted.
+        // the "accept profile-declared door crossers in group classification" fix) generalizes GROUP
+        // classification's IsDoorwayEdge the same way it always has for CornerEdgeResolver's ungrouped-
+        // tile path. STALE-COMMENT UPDATE (re-probed 2026-07-16, dc9663ff6 entry-pair pass): the seven
+        // district "*_Entry 2x1" pairs (Service/Tiled/Office_Vinyl/Office_Wood/Office_Alum/Foyer_L/
+        // Foyer_U) described below as still landing here are WRONG -- they were closed by the mixed/
+        // open-member interior-doorway tolerance (see LayoutGroupStamper.TryClassify's own doc comment)
+        // in the same pass that produced this file's PilotExpectedExemptions entries for them; they are
+        // wired as SetPieces (BaseGameTilesetProfiles.OfficeInteriors/OfficeInteriorsService etc.) and no
+        // longer reach this fallback bucket at all. Only "Hallway1"/"Hallway2" remain here, for a THIRD,
+        // freshly re-verified reason (probed directly, not merely inferred from IsAllowedMemberEdge):
+        // declaring them as DoorSlotCrossers DOES make "Hallway1_Entry 2x1"/"Hallway2_Entry 2x1"
+        // structurally classify as WallRoom (verified: census rises to 229/229 with the declaration
+        // added) -- both are genuine all-Wall-cornered WallRoom shapes whose sole crosser edge (Doors=1
+        // on the Wall-cornered member, a real door slot) faces the group's own perimeter, identical in
+        // shape to tbx78's already-closed doorway1/2/3 family. But a real MeasureIsolatedGroupHits
+        // placement probe (OpenSetPiecePlacementRateTests' own isolation technique, Halls layout, 150
+        // seeds each) measured 0/150 for BOTH groups even once classifiable: this tileset has no
+        // OpenLane boundary tile shape (SupportsWallRoomOpenLaneBoundary) supporting ANY WallRoom
+        // perimeter attachment at all -- the SAME tileset-wide structural fact already documented on
+        // BaseGameTilesetProfiles.OfficeInteriors for its other declared door crossers (SmRm1/SmRm2/
+        // Elevator1/2/Stairwell_U/UD/D/Restrooms/Break_Room, also classify-but-never-place). Declaring
+        // Hallway1/Hallway2 would only inject dead RNG draws (Stamp shuffles candidate anchors for every
+        // classified group each seed, even ones that can never find a site) into every udp2 composition
+        // for zero placed content -- per this project's established convention, NOT wired; the
+        // exemption stays, now with a placement-rate proof instead of a stale classification-gap guess.
+        // Coverage stays 225/229 (98.3%) -- genuinely, verifiably as good as this tileset gets short of
+        // a room-size/boundary-shape engine change out of scope for a single-tileset pass.
         ["udp2"] = new(StringComparer.OrdinalIgnoreCase)
         {
-            "Door", "Door_Garage_Sm", "Door_Garage_Lg", "Hallway1", "Hallway2",
+            "Hallway1", "Hallway2",
         },
         // zde01: byte-identical crosser vocabulary to tde01 (Bridge/Corridor/Fence/Doorway/Ramp/
         // MazeMosaic) -- MazeMosaic is the same out-of-scope alternate family tde01 already carries.
@@ -1524,40 +1531,56 @@ public class TileCoverageCensusTests
         // they now classify as SetPieceOpenSetPiece via the same mixed/open-member tolerance. See
         // BaseGameTilesetProfiles.OfficeInteriors/OfficeInteriorsService's own doc comments for the
         // SetPiece(...) wiring. Hallway1_Entry/Hallway2_Entry stay exempt (still in
-        // PilotAlternateVocabCrossers["udp2"]'s "Hallway1"/"Hallway2" bucket) for a genuinely DIFFERENT,
-        // still-open reason: their door-family edge is the literal crosser name "Hallway1"/"Hallway2",
-        // which IsAllowedMemberEdge rejects outright (not declared as a DoorSlotCrosser) before
-        // allCornersSolid/hasAnyDoorway are ever consulted -- see PilotAlternateVocabCrossers["udp2"]'s
-        // own doc comment. Coverage: 211/229 (92.1%) -> 225/229 (98.3%).
+        // PilotAlternateVocabCrossers["udp2"]'s "Hallway1"/"Hallway2" bucket), RE-PROBED 2026-07-16: this
+        // was originally recorded as an IsAllowedMemberEdge declaration gap, but declaring Hallway1/
+        // Hallway2 as DoorSlotCrossers DOES make both groups classify as WallRoom (verified: census rises
+        // to 229/229) -- the real, empirically-measured reason they stay exempt is a placement-rate
+        // impossibility instead: 0/150 seeds each in isolation (MeasureIsolatedGroupHits probe), because
+        // this tileset has no OpenLane boundary shape supporting ANY WallRoom perimeter attachment (the
+        // same tileset-wide fact already covering SmRm1/SmRm2/Elevator1/2/etc. above) -- see
+        // PilotAlternateVocabCrossers["udp2"]'s own doc comment for the full writeup. Coverage: 211/229
+        // (92.1%) -> 225/229 (98.3%), genuinely final for this tileset.
 
         // [CEP] City Interior 1 (zin01) -- see BaseGameTilesetProfiles.CepCityInterior's own doc
-        // comment. 930/961 tiles (96.8%) reach a mechanism directly; the residual 31 fall into four
-        // genuine, verified gap classes:
+        // comment. RE-PROBED 2026-07-16 (100% closure campaign): "Window" is a genuine .set CROSSER
+        // TYPE (CROSSER1, same section as Corridor/Doorway/ElvenHallway/SigilHallway) but was never
+        // declared as a DoorSlotCrosser anywhere -- IsAllowedMemberEdge rejected any group carrying a
+        // Window edge outright regardless of shape. Declaring it on the base profile
+        // (BaseGameTilesetProfiles.CepCityInterior) closed the five "Room - <Type> <N>, Window (1x2)"
+        // pairs (Living Room/Kitchen/Inn) and "[City] Window - Porthole 3" -- all six are all-Wall-
+        // cornered WallRoom shapes whose Window edge sits on the group's true perimeter (a "window on
+        // the far wall" pattern), the same allCornersSolid+hasAnyDoorway path any ordinary Doorway-
+        // ported WallRoom already used. Placement proof:
+        // OpenSetPiecePlacementRateTests.WindowCrosseredGroupsOnCepCityInterior_NowPlaceInIsolation (all
+        // six clear 28-49% isolated, 150/150 successes). It ALSO closed TILE790/TILE881 for free: they
+        // are the two members of "[Elven] Tree House - Grass, Window (3x3)" (Elven-variant-only, all
+        // nine members all-Wall-cornered) that this census's cross-profile union check now classifies as
+        // WallRoom via the BASE profile's vocabulary alone (WallRoom classification only needs
+        // SolidTerrain corners + a recognized doorway-family edge -- it never checks PrimaryOpenTerrain,
+        // so the base profile's Window declaration is sufficient even though this group is registered as
+        // a SetPiece ONLY on the Elven variant). Verified this has ZERO runtime/RNG effect on the Elven
+        // composition: LayoutGroupStamper.Stamp only ever iterates parameters.SetPieces.Keys for the
+        // SPECIFIC profile in use, and the base profile never registers this Elven-only group name, so
+        // it is never added to the base composition's stamp candidate list. A real isolated placement
+        // probe against the ELVEN profile (with "Window" temporarily added to ITS OWN DoorSlotCrossers,
+        // to check whether the group could ever place under its own composition) measured 0/150 -- a 3x3
+        // footprint finds no legal WallRoom site in zin01's room-size envelope -- so "Window" is
+        // deliberately NOT added to CepCityInteriorElven's own DoorSlotCrossers (that would only inject
+        // dead RNG draws into every Elven-variant seed for zero placed content, per this project's
+        // established convention); TILE790/881 get their census credit for free from the base profile's
+        // declaration without paying that cost. Two Window-crossered groups still correctly stay exempt
+        // ("[City] Window - Porthole 1/2" below) because they mix Window with the Corridor body crosser
+        // on the same tile -- the identical hasAnyBodyCrosser-vs-hasAnyDoorway rejection
+        // LayoutGroupStamper.TryClassify already applies everywhere else. "[City] Window - Home" also
+        // stays exempt: mixed Wall/Home corners (not all-solid) with its sole Window edge on the
+        // group's true 1x1 perimeter -- the same single-tile "no interior seam available" ceiling as
+        // "[Sigil] Corridor - Entry" below. Coverage: 939/961 (97.7%) -> 952/961 (99.1%). The residual 9
+        // fall into three genuine, verified gap classes:
         //
-        // (1) "Window"-crossered City room families: the five "Room - <Type> <N>, Window (1x2)" pairs
-        // (Living Room/Kitchen/Inn) and the three standalone "Window - Home"/"Window - Porthole 1/2/3"
-        // single-tile groups all carry a Window edge (alongside Doorway on some, alone on others) --
-        // verified directly that neither the group-level WallRoom/WallAlcove classifiers nor the
-        // per-member CornerEdgeResolver fallback recognize Window as an admitted crosser, so every
-        // member of these nine groups stays unclassified even though their plain (non-Window)
-        // Doorway-only siblings (Room - Living Room 1 (1x2) etc., wired directly above) classify fine.
-        ("zin01", "GROUP:[City] Room - Living Room 1, Window (1x2)"),
-        ("zin01", "GROUP:[City] Room - Living Room 2, Window (1x2)"),
-        ("zin01", "GROUP:[City] Room - Kitchen 1, Window (1x2)"),
-        ("zin01", "GROUP:[City] Room - Kitchen 2, Window (1x2)"),
-        ("zin01", "GROUP:[City] Room - Inn 2, Window (1x2)"),
+        // (1) The three remaining Window-crossered groups above (Home/Porthole 1/Porthole 2).
         ("zin01", "GROUP:[City] Window - Home"),
         ("zin01", "GROUP:[City] Window - Porthole 1"),
         ("zin01", "GROUP:[City] Window - Porthole 2"),
-        ("zin01", "GROUP:[City] Window - Porthole 3"),
-        // TILE790/TILE881 are the two interior members of "[Elven] Tree House - Grass, Window (3x3)"
-        // whose own corners/edges touch the group's Window-crossered face -- the group as a whole fails
-        // classification (same Window-crosser gap as above), but the other 7 members independently
-        // resolve via CornerEdgeResolver against their own plain corners once the group-level check
-        // falls through (see this file's own per-tile fallback loop) -- only these two stay genuinely
-        // unclassified.
-        ("zin01", "TILE790"),
-        ("zin01", "TILE881"),
         //
         // (2) District-renamed hallway crossers (ElvenHallway/SigilHallway) on GROUPed tiles: declared
         // via DoorSlotCrossers on the Elven/Sigil variant profiles. LayoutGroupStamper's group
@@ -1567,18 +1590,41 @@ public class TileCoverageCensusTests
         // ElvenHallway/SigilHallway-crossered GROUP either district has) now classify as WallRoom -- this
         // closes the whole category except the one below.
         // "[Sigil] Corridor - Entry" (TILE929) is the one tile where "SigilFloor" is ALSO used as a
-        // crosser name (alongside SigilHallway) -- doorless, and neither declared name reaches any
-        // GROUP-level mechanism either, the same DoorSlotCrossers-doesn't-credit-GROUPs gap.
+        // crosser name (alongside SigilHallway) -- both ARE declared (CepCityInteriorSigil's
+        // DoorSlotCrossers("SigilHallway", "SigilFloor")) and DO now reach the GROUP mechanism (a prior
+        // pass's comment describing a "DoorSlotCrossers-doesn't-credit-GROUPs gap" here was stale --
+        // that gap was closed tileset-wide by the "accept profile-declared door crossers in group
+        // classification" fix). RE-PROBED 2026-07-16: the real, current reason is shape, not
+        // declaration. TILE929's corners are Wall|SigilFloor|Wall|SigilFloor (mixed, not all-solid) with
+        // BOTH edges (Right=SigilFloor, Left=SigilHallway) landing on its own 1x1 footprint's perimeter
+        // -- there is no second group member for either edge to face instead, so neither can ever be the
+        // INTERIOR-only shape the mixed/open-member tolerance requires (see
+        // LayoutGroupStamper.TryClassify's own doc comment); a group with any doorway-family edge on the
+        // true perimeter of a non-all-solid footprint is rejected outright before OpenSetPiece's corner-
+        // match rule is ever tried. A single-tile group can structurally never supply the "interior seam"
+        // this tolerance needs -- a genuine geometric ceiling, not a missing declaration. Kept exempt.
         ("zin01", "GROUP:[Sigil] Corridor - Entry"),
         //
-        // (3) Workshop district has no PrimaryOpenTerrain declaration anywhere (its groups classify via
-        // WallAlcove door-corner shapes that don't require an open-terrain match -- see
-        // BaseGameTilesetProfiles.CepCityInterior's own doc comment -- but that path needs a door).
-        // "[Workshop] Smithy" (TILE876) is the one Workshop-cornered group with NEITHER a door NOR a
-        // crosser -- WallAlcove's doorless admission path requires the alcove's own open corner to
-        // match a profile's declared PrimaryOpenTerrain, and no profile here declares "Workshop" (only
-        // Inn/ElvenFloor/SigilFloor) -- a genuine, narrow gap out of this pass's scope (adding a fourth
-        // PaletteVariant for a single doorless decorative alcove is not worth the extra profile).
+        // (3) Workshop district has no PrimaryOpenTerrain declaration anywhere. RE-PROBED 2026-07-16
+        // (direct .set audit of every Workshop-cornered tile, 37 rows): the OTHER Workshop-district
+        // groups (Exit-Corner 1/2, Stairs Both/Down/Up) all carry a real door slot on an all-solid
+        // footprint, so they classify as WallAlcove without ever needing an open-terrain match. "[Workshop]
+        // Smithy" (TILE876: Wall|Wall|Workshop|Wall corners, no crosser, Doors=0) is the one Workshop
+        // group with NEITHER a door NOR a crosser -- it falls to the OpenSetPiece corner-match rule
+        // (not WallAlcove, which requires allCornersSolid; a prior pass's comment mislabeled this),
+        // which needs its lone open corner to equal a declared PrimaryOpenTerrain, and none here
+        // declares "Workshop" (only Inn/ElvenFloor/SigilFloor). A Workshop PaletteVariant IS
+        // structurally viable -- the audit found 5 fully-open all-Workshop simple tiles (TILE850/868/
+        // 877/890/897, all PathNode=A, no pathnode restriction) plus a real Doorway-crossered boundary
+        // family (TILE851-863 etc., Workshop corners paired with a literal Doorway edge, canonical
+        // vocabulary, no DoorSlotCrossers declaration needed) -- so a room built from this terrain could
+        // both open fully and connect via ordinary doors. But the entire remaining Workshop-district
+        // group inventory (Exit-Corner/Stairs) already classifies today without this variant, so the
+        // ONLY thing a new PaletteVariant would buy is this one doorless decorative alcove -- not worth
+        // the added profile (its own OnboardedTilesetPipelineTests/TunnelVocabularyCheckTests
+        // registration, placement-rate proof, and layout-hash-pin exposure) for a single census tile,
+        // per this project's established cost/benefit convention (mirrors the original judgment call,
+        // now backed by the actual corner/pathnode inventory instead of an assumption). Kept exempt.
         ("zin01", "GROUP:[Workshop] Smithy"),
         //
         // (4) Four raw ungrouped tiles carrying a door slot but NO crosser at all, on a diagonal or

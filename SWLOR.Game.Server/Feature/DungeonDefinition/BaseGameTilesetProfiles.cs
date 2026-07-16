@@ -300,7 +300,25 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // three tilesets, tqq01's real usage favors a lit SrcLight(3,3) ambient over the bare (0,0,0,0)
         // default (only 9.3% of sampled tiles), consistent with its Inn/Livingroom/Kitchen/Shop
         // furnished-interior content. Decoration palette: NOT mined this pass, same as above.
+        // District registration (2026-07-16, census-vs-practice reconciliation): the "descope" above was
+        // a STRUCTURAL non-issue, not a real gap -- TileCoverageCensusTests already read 305/305 (100%)
+        // for tqq01 with ZERO alternate-vocab exemptions actually triggered, because every Livingroom/
+        // Kitchen/Shop-cornered group already classifies via a terrain-independent mechanism (WallAlcove
+        // door-corner shapes, or CornerEdgeResolver's static "does a matching candidate exist in the raw
+        // .set inventory" check) that never needed PrimaryOpenTerrain in the first place. But that
+        // static reachability is NOT the same as LIVE placement: LayoutGroupStamper.Stamp only iterates
+        // parameters.SetPieces.Keys for the profile actually in use, and no profile here ever registered
+        // ANY Livingroom/Kitchen/Shop group as a SetPiece -- so real generation never placed a single one
+        // of these 27 groups, regardless of the census's 100% structural reading. Three PaletteVariant
+        // profiles (LabStorageLivingroom/LabStorageKitchen/LabStorageShop) now register each district's
+        // own-named groups the same way OfficeInteriorsService/Tiled/etc. do for udp2's districts --
+        // PilotAlternateVocabTerrains["tqq01"] is now empty (no terrain needs auto-tagging once every
+        // district composes somewhere). See each variant's own doc comment for its group inventory and
+        // placement-rate proof (OpenSetPiecePlacementRateTests).
         public const string LabStorage = "labstorage";
+        public const string LabStorageLivingroom = "labstorage_livingroom";
+        public const string LabStorageKitchen = "labstorage_kitchen";
+        public const string LabStorageShop = "labstorage_shop";
 
         // D20 Office Interiors UDP (udp2, SWLOR_Haks/sw_t_office, 229 tiles, 93 groups -- the largest and
         // most heavily districted of the four). KNOWN QUIRK (per this onboarding wave's brief): the raw
@@ -456,6 +474,24 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // (MainLight1,MainLight2,SrcLight1,SrcLight2)=(0,0,0,0) at 20.9% (68/325).
         // Display name: UnlocalizedName verbatim ("[CEP] City Interior 1"), variants cascade
         // "[CEP] City Interior 1 (<Qualifier>)".
+        // Tail closure (2026-07-16): "Window" is declared as a DoorSlotCrosser on the base profile --
+        // probed directly against the raw .set data, it is a genuine CROSSER TYPE (CROSSER1, same
+        // section as Corridor/Doorway), not a terrain name, used prolifically (150+ ordinary tiles,
+        // already CornerEdgeResolver-reachable) plus on six all-Wall WallRoom-shaped GROUPs whose Window
+        // edge sits on the group's own perimeter (a "window on the far wall" pattern, several paired with
+        // a real Doorway-ported entrance on the SAME group) -- see
+        // OpenSetPiecePlacementRateTests.WindowCrosseredGroupsOnCepCityInterior_NowPlaceInIsolation for
+        // the placement proof (all six clear 28-49% isolated). Two Window-crossered groups ("Window -
+        // Porthole 1/2") still correctly stay exempt: they mix Window with the Corridor body crosser on
+        // the SAME tile, the identical hasAnyBodyCrosser-vs-hasAnyDoorway shape LayoutGroupStamper.
+        // TryClassify already rejects everywhere else (no verified data mixes a body crosser with a
+        // doorway-family edge). "Window - Home" also stays exempt (mixed Wall/Home corners, not
+        // all-solid, with its sole Window edge on the group's true 1x1 perimeter -- the same geometric
+        // ceiling as "[Sigil] Corridor - Entry" below: a single-tile group can never supply the interior
+        // seam the mixed/open-member tolerance requires). Verified no ordinary (non-grouped) zin01 tile
+        // relies on Window being EXCLUDED from the door-slot gate: every ordinary tile pairing a Window
+        // edge with a real door slot also carries a literal Doorway edge on the same tile (already
+        // admitted before this declaration). Census: 939/961 (97.7%) -> 952/961 (99.1%).
         public const string CepCityInterior = "cep_cityinterior";
         public const string CepCityInteriorElven = "cep_cityinterior_elven";
         public const string CepCityInteriorSigil = "cep_cityinterior_sigil";
@@ -1093,6 +1129,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Tileset("zin01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)
+                // "Window" tail closure -- see the CepCityInterior const's own doc comment above.
+                .DoorSlotCrossers("Window")
                 .FeatureTile("[City] Chessboard - Home")
                 .FeatureTile("[City] Chessboard - Inn")
                 .FeatureTile("[City] Chessboard - Kitchen")
@@ -3659,6 +3697,96 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("HomeUpper03_2x2")
                 .SetPiece("HomeUpper04_2x2")
                 .SetPiece("HomeUpper05_2x2")
+                .ExitGroup("DoorTrans");
+
+            // Complex laps storage (Livingroom) -- tqq01's Livingroom district PaletteVariant, mirroring
+            // udp2's OfficeInteriorsService/Tiled/etc. pattern: recomposes the SAME tqq01 hak data the
+            // base LabStorage profile above uses, with PrimaryOpenTerrain("Livingroom") so the district's
+            // own Room/Door/CornerStairs/CornerExit family (12 groups) actually places instead of
+            // sitting structurally-classifiable-but-never-wired (see BaseGameTilesetProfiles.LabStorage's
+            // own doc comment for the census-vs-practice writeup). Group inventory verified directly
+            // against the raw .set data: "Livingroom" (1x1, open Doorway-ported room), "Livingroom01_1x2"/
+            // "02_1x2"/"03_1x2"/"04_1x2" (2-tile room pairs, blank+Doorway members, same shape as zin01's
+            // Room-<Type> family), "DoorLivingroom01" (1x1, mixed Wall/Livingroom corners with a door
+            // slot, no crosser -- an OpenSetPiece corner-match shape needing this variant's
+            // PrimaryOpenTerrain to resolve), "LivingroomCornerStairsU/D/B" and "LivingroomCornerExit1/2"
+            // (the SAME mixed-corner door-slot shape, this district's own stairs/exit family paralleling
+            // the base profile's generic StairsUp/StairsDown/CorridorExit/CorridorExitBig), and
+            // "Livingroom Blank" (1x1, all-Wall, doorless -- a WallAlcove-adjacent decorative filler
+            // already classify-eligible via CornerEdgeResolver regardless of this variant, wired here for
+            // completeness since it shares the district's own art). PaletteVariant() excludes this from
+            // --matrix's full cross-product (one showcase area instead, matching every other district
+            // variant in this file). Placement proof: OpenSetPiecePlacementRateTests.
+            // LabStorageDistrictGroups_PlaceInIsolation.
+            _builder.Create(LabStorageLivingroom, "Complex laps storage (Livingroom)")
+                .Tileset("tqq01")
+                .SetPieceRoomCornerFloor(7)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 3, 3)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Livingroom")
+                .SetPiece("Livingroom")
+                .SetPiece("Livingroom01_1x2")
+                .SetPiece("Livingroom02_1x2")
+                .SetPiece("Livingroom03_1x2")
+                .SetPiece("Livingroom04_1x2")
+                .SetPiece("DoorLivingroom01")
+                .SetPiece("LivingroomCornerStairsU")
+                .SetPiece("LivingroomCornerStairsD")
+                .SetPiece("LivingroomCornerStairsB")
+                .SetPiece("LivingroomCornerExit1")
+                .SetPiece("LivingroomCornerExit2")
+                .SetPiece("Livingroom Blank")
+                .ExitGroup("DoorTrans");
+
+            // Complex laps storage (Kitchen) -- tqq01's Kitchen district PaletteVariant, same pattern as
+            // Livingroom above. Group inventory (9 groups, verified against the raw .set data):
+            // "KitchenRoom"/"KitchenRoom01_1x2"/"KitchenRoom02_1x2" (open Doorway-ported room family),
+            // "DoorKitchen01" (mixed Wall/Kitchen corners, door slot, no crosser -- OpenSetPiece
+            // corner-match shape), "KitchenCornerStairsB/U/D" and "KitchenCornerExit1/2" (this district's
+            // own stairs/exit family, identical mixed-corner door-slot shape). Placement proof:
+            // OpenSetPiecePlacementRateTests.LabStorageDistrictGroups_PlaceInIsolation.
+            _builder.Create(LabStorageKitchen, "Complex laps storage (Kitchen)")
+                .Tileset("tqq01")
+                .SetPieceRoomCornerFloor(7)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 3, 3)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Kitchen")
+                .SetPiece("KitchenRoom")
+                .SetPiece("KitchenRoom01_1x2")
+                .SetPiece("KitchenRoom02_1x2")
+                .SetPiece("DoorKitchen01")
+                .SetPiece("KitchenCornerStairsB")
+                .SetPiece("KitchenCornerStairsU")
+                .SetPiece("KitchenCornerStairsD")
+                .SetPiece("KitchenCornerExit1")
+                .SetPiece("KitchenCornerExit2")
+                .ExitGroup("DoorTrans");
+
+            // Complex laps storage (Shop) -- tqq01's Shop district PaletteVariant, same pattern as
+            // Livingroom/Kitchen above. Group inventory (6 groups, verified against the raw .set data):
+            // "ShopRoom"/"ShopRoom01_1x2"/"ShopRoom02_1x2"/"Shop01_1x2"/"Shop02_1x2" (open Doorway-ported
+            // room family -- Shop's naming is less regular than Livingroom/Kitchen's, both "Shop*_1x2"
+            // and "ShopRoom*_1x2" spellings are real, distinct groups, verified directly), "DoorShop01"
+            // (mixed Wall/Shop corners, door slot, no crosser -- OpenSetPiece corner-match shape). Unlike
+            // Livingroom/Kitchen, Shop has NO district-specific CornerStairs/CornerExit family (verified:
+            // no "Shop*Corner*" group exists anywhere in the .set) -- it relies on the base profile's
+            // generic StairsUp/StairsDown/CorridorExit/CorridorExitBig the same way Inn does. Placement
+            // proof: OpenSetPiecePlacementRateTests.LabStorageDistrictGroups_PlaceInIsolation.
+            _builder.Create(LabStorageShop, "Complex laps storage (Shop)")
+                .Tileset("tqq01")
+                .SetPieceRoomCornerFloor(7)
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 3, 3)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Shop")
+                .SetPiece("ShopRoom")
+                .SetPiece("ShopRoom01_1x2")
+                .SetPiece("ShopRoom02_1x2")
+                .SetPiece("Shop01_1x2")
+                .SetPiece("Shop02_1x2")
+                .SetPiece("DoorShop01")
                 .ExitGroup("DoorTrans");
 
             // D20 Office Interiors UDP (udp2) -- see this file's own Wave-5 doc comment

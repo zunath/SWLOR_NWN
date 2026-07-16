@@ -276,4 +276,103 @@ public class OpenSetPiecePlacementRateTests
         hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
             $"'elevator' must place on a meaningful share of the {successes} successful seeds now that the mixed/open-member tolerance classifies it as OpenSetPiece (got {hits})");
     }
+
+    // ---------------- zin01 Window-crossered WallRoom proofs ----------------
+
+    /// <summary>
+    /// Placement proof for declaring "Window" as a DoorSlotCrosser on CepCityInterior (see that
+    /// profile's own doc comment): "Window" is a genuine .set CROSSER TYPE (not a terrain name), but
+    /// unlike Doorway/ElvenHallway/SigilHallway it was never declared anywhere, so IsAllowedMemberEdge
+    /// rejected every group carrying a Window edge outright regardless of shape. Six previously-exempt
+    /// groups are all-Wall-cornered WallRoom shapes whose Window edge sits on a genuine perimeter face
+    /// (a "this room has a window on its far wall" pattern, opposite a real Doorway-ported entrance on
+    /// the SAME group for the five room pairs) -- once Window is recognized, they classify exactly like
+    /// any ordinary WallRoom with a real Doorway port, and TryPlaceWallRoom's OpenLane-boundary site
+    /// search (zin01 already supports it -- Elven/Sigil's own door-ported rooms prove that) treats the
+    /// Window edge identically to a Doorway edge for site validity. Verified directly against every
+    /// tile's raw .set data that none of these six groups mixes Window with a body crosser (Corridor) on
+    /// the same member -- "[City] Window - Porthole 1/2" DO mix Window with Corridor edges and stay
+    /// correctly rejected (see BaseGameTilesetProfiles.CepCityInterior's own doc comment).
+    /// All six are ALREADY registered as SetPieces on the base profile (BaseGameTilesetProfiles.
+    /// CepCityInterior) from before this closure -- they were silently dead weight (classify-reject, so
+    /// Stamp never even tried them) until this declaration made them reachable.
+    /// </summary>
+    [Test]
+    public void WindowCrosseredGroupsOnCepCityInterior_NowPlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.CepCityInterior];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        // Measured (seedBase 95000, 150 seeds each, all successes=150): Porthole 3 73 (48.7%), Living
+        // Room 1 65 (43.3%), Living Room 2 48 (32.0%), Kitchen 1 65 (43.3%), Kitchen 2 53 (35.3%),
+        // Inn 2 42 (28.0%) -- every group clears a healthy, well-above-noise floor. Threshold set well
+        // under the lowest measured rate (Inn 2's 28.0%) for safety margin.
+        foreach (var name in new[]
+                 {
+                     "[City] Window - Porthole 3",
+                     "[City] Room - Living Room 1, Window (1x2)",
+                     "[City] Room - Living Room 2, Window (1x2)",
+                     "[City] Room - Kitchen 1, Window (1x2)",
+                     "[City] Room - Kitchen 2, Window (1x2)",
+                     "[City] Room - Inn 2, Window (1x2)",
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, name, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.15),
+                $"'{name}' must place on a meaningful share of the {successes} successful seeds now that Window is a declared DoorSlotCrosser (got {hits})");
+        }
+    }
+
+    // ---------------- tqq01 Livingroom/Kitchen/Shop district registration proofs ----------------
+
+    /// <summary>
+    /// Placement proof for the tqq01 district registration (see BaseGameTilesetProfiles.LabStorage's
+    /// own doc comment): TileCoverageCensusTests already read 305/305 (100%) for tqq01 purely
+    /// structurally, but no profile registered a single Livingroom/Kitchen/Shop group as a SetPiece, so
+    /// LayoutGroupStamper.Stamp (which only iterates parameters.SetPieces.Keys) never actually placed
+    /// any of them. One WallRoom-shape group (the district's own "Room"-family 1x1, all-Wall corners
+    /// with an ordinary Doorway port -- classify-eligible even without PrimaryOpenTerrain, since WallRoom
+    /// never checks terrain) and one OpenSetPiece-shape group (the district's own "Door*01" 1x1, mixed
+    /// Wall/<District> corners with a door slot and no crosser -- genuinely NEEDS this variant's
+    /// PrimaryOpenTerrain declaration to resolve) are measured per district; Livingroom/Kitchen also get
+    /// their own "CornerExit1" (same OpenSetPiece shape as Door*01, this district's own stairs/exit
+    /// family) since Shop has no equivalent group to compare against.
+    /// </summary>
+    [Test]
+    public void LabStorageDistrictGroups_PlaceInIsolation()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var profiles = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+
+        // Measured (seedBase 95000, 150 seeds each): every group below placed on 100% of its successful
+        // seeds (Livingroom/DoorLivingroom01/KitchenRoom/DoorKitchen01/ShopRoom/DoorShop01 all 150/150;
+        // LivingroomCornerExit1/KitchenCornerExit1 both 142/142, successes=142 -- these two draw one
+        // extra RNG shuffle before the flagship groups in the same isolated SetPieces dictionary probe,
+        // shifting which seeds reach a successful LayoutSolver attempt, not a placement failure). All
+        // single-tile footprints, trivial for TryPlaceWallRoom/TryPlaceOpenSetPiece's site search.
+        // Threshold set well under the measured 94.7%+ floor for safety margin.
+        foreach (var (profileKey, groupName) in new[]
+                 {
+                     (BaseGameTilesetProfiles.LabStorageLivingroom, "Livingroom"),
+                     (BaseGameTilesetProfiles.LabStorageLivingroom, "DoorLivingroom01"),
+                     (BaseGameTilesetProfiles.LabStorageLivingroom, "LivingroomCornerExit1"),
+                     (BaseGameTilesetProfiles.LabStorageKitchen, "KitchenRoom"),
+                     (BaseGameTilesetProfiles.LabStorageKitchen, "DoorKitchen01"),
+                     (BaseGameTilesetProfiles.LabStorageKitchen, "KitchenCornerExit1"),
+                     (BaseGameTilesetProfiles.LabStorageShop, "ShopRoom"),
+                     (BaseGameTilesetProfiles.LabStorageShop, "DoorShop01"),
+                 })
+        {
+            var tilesetProfile = profiles[profileKey];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(130);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' on '{profileKey}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
 }

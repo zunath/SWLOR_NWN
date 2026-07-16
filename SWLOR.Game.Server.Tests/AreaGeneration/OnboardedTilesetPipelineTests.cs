@@ -123,6 +123,12 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.SecretBase,
         BaseGameTilesetProfiles.ModernFacility,
         BaseGameTilesetProfiles.LabStorage,
+        // tqq01's three remaining district palettes -- PaletteVariant profiles registering the
+        // Livingroom/Kitchen/Shop group families as real SetPieces (census-vs-practice reconciliation,
+        // see BaseGameTilesetProfiles.LabStorage's own doc comment).
+        BaseGameTilesetProfiles.LabStorageLivingroom,
+        BaseGameTilesetProfiles.LabStorageKitchen,
+        BaseGameTilesetProfiles.LabStorageShop,
         BaseGameTilesetProfiles.OfficeInteriors,
         // udp2's six remaining district palettes -- PaletteVariant profiles closing the tile-coverage
         // census gap OfficeInteriors' own doc comment above descoped. See

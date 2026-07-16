@@ -1117,6 +1117,15 @@ public class TileCoverageCensusTests
         // accent-terrain-only "Ship - Air, Above Trees" boat group, already separately exempt). See
         // BaseGameTilesetProfiles.RuralGrass's own doc comment.
         ["ttr01"] = new(StringComparer.OrdinalIgnoreCase) { "Trees" },
+        // tts01 (Rural Winter*): the identical shape as ttr01 (verified directly against tts01's own
+        // .set data, not assumed) -- GoodCastle/EvilCastle/Water are registered PaletteVariant profiles
+        // (RuralWinterGoodCastle/RuralWinterEvilCastle/RuralWinterWater), and GentleHill never appears
+        // on any GROUP, so those are already CornerEdgeResolver-reachable regardless of vocabulary.
+        // "Trees" IS needed here for the same reason as ttr01: TILE60/TILE74 (Snow/Trees mixed,
+        // door-bearing, Stream/Road crosser respectively -- the same TileIds as ttr01's own copy) fail
+        // CornerEdgeResolver's admission gate regardless of vocab. See
+        // BaseGameTilesetProfiles.RuralWinter's own doc comment.
+        ["tts01"] = new(StringComparer.OrdinalIgnoreCase) { "Trees" },
         ["fcx01"] = new(StringComparer.OrdinalIgnoreCase),
         // tjsb0 (D20 Secret Base): a single Wall/Floor/lava split, no alternate district palette.
         ["tjsb0"] = new(StringComparer.OrdinalIgnoreCase),
@@ -1230,6 +1239,14 @@ public class TileCoverageCensusTests
         // "Wall - Road Gate, Rural 1/2" dual-crosser cells are handled via PilotExpectedExemptions, not
         // this bucket -- see BaseGameTilesetProfiles.RuralGrass's own doc comment.
         ["ttr01"] = new(StringComparer.OrdinalIgnoreCase),
+        // tts01: Road/Slope are wired directly on the RuralWinter/RuralWinterWater profiles
+        // (RoadCrosser/RampCrosser) -- no HighBridge crosser exists in this tileset at all. Stream/
+        // Wall1/Wall2 have no dedicated wiring -- their doorless, ungrouped tiles resolve via
+        // CornerEdgeResolver directly regardless, and the door-bearing "Wall - Road Gate, Winter 1/2"
+        // dual-crosser cells (plus the new doorless "Wall - Over Stream, Winter 1/2" dual-crosser
+        // cells) are handled via PilotExpectedExemptions, not this bucket -- see
+        // BaseGameTilesetProfiles.RuralWinter's own doc comment.
+        ["tts01"] = new(StringComparer.OrdinalIgnoreCase),
         // fcx01: "pont" (Bridge-equivalent, gates the holes chasm) has no wired body/port or
         // DoorSlotCrossers vocabulary -- see BaseGameTilesetProfiles.FutCity's own doc comment. "murs"
         // is NOT here: it's wired via DoorSlotCrossers("murs"). "Routes" is no longer here either:
@@ -1557,6 +1574,55 @@ public class TileCoverageCensusTests
         ("ttr01", "TILE229"),
         ("ttr01", "TILE230"),
 
+        // Rural Winter* (tts01) -- the winter reskin sibling of ttr01, verified directly against
+        // tts01's own .set data (same TileIds for every shared shape). See
+        // BaseGameTilesetProfiles.RuralWinter's own doc comment for the full group-inventory-delta
+        // writeup. This tileset ALSO declares no canonical "Doorway"/"Corridor" crosser, so the
+        // identical WallRoom-classify-eligible-but-Tunnel-vocab-starved shape applies: a direct
+        // isolated-placement probe (ProbeTool, 100 seeds x Complex/Halls/Organic) measured 0/100 on
+        // every one of the groups below. "Footbridge"/Stream and "Ruined Cart"/Road: solo, all-Snow,
+        // one door-implying crosser edge. "Tower - Archer, Winter Wall 1/2" and their "... Corner"
+        // siblings (four groups): solo, all-Snow, one Wall1/Wall2 edge. "Wall - Gate, Winter 1/2": solo,
+        // all-Snow, one Wall1/Wall2 edge plus a real door. "Wall - Road Gate, Winter 1/2": the same
+        // shape, PLUS a second independent Road edge -- the identical dual-crosser-crossroads gap
+        // ttr01's own "Wall - Road Gate, Rural 1/2" documents. "Wall - Over Stream, Winter 1/2" is a
+        // tts01-only addition with no ttr01 counterpart: the same dual-crosser shape again (Stream +
+        // Wall1/Wall2 instead of Road + Wall1/Wall2), doorless this time -- doorless doesn't matter
+        // (the Wall1/Wall2 crosser edge alone is what makes "Tower - Archer, Winter Wall 1/2" above
+        // WallRoom-eligible too), so it is doubly exempt for the identical reason. On the
+        // RuralWinterWater PaletteVariant: "Door - Bridge"/Road (solo, all-Water, one door-implying
+        // crosser edge) is the identical WallRoom ceiling over a Water solid instead of Snow -- ttr01's
+        // own "Door - Bridge, High"/HighBridge sibling has no tts01 counterpart at all (tts01 has no
+        // HighBridge crosser), so there is no matching entry to carry over. "Ship - Air, Above Trees
+        // (3x1)" stays exempt for the identical accent-terrain-only-group reason ttr01's own doc comment
+        // gives (Trees carries no other GROUP content to justify a dedicated composition; the all-Water
+        // sibling "Ship - Air, Above Water (3x1)" DOES classify AND place for real via WallAlcove, same
+        // mechanism, verified 100% isolated placement). "Ship - Docked 2 (2x2)"'s own doc comment lives
+        // with the TILE230 entry below, the same shape ttr01's own doc comment uses (no GROUP-level
+        // entry needed -- see there).
+        ("tts01", "GROUP:Footbridge"),
+        ("tts01", "GROUP:Ruined Cart"),
+        ("tts01", "GROUP:Tower - Archer, Winter Wall 1"),
+        ("tts01", "GROUP:Tower - Archer, Winter Wall 1 Corner"),
+        ("tts01", "GROUP:Tower - Archer, Winter Wall 2"),
+        ("tts01", "GROUP:Tower - Archer, Winter Wall 2 Corner"),
+        ("tts01", "GROUP:Wall - Gate, Winter 1"),
+        ("tts01", "GROUP:Wall - Gate, Winter 2"),
+        ("tts01", "GROUP:Wall - Road Gate, Winter 1"),
+        ("tts01", "GROUP:Wall - Road Gate, Winter 2"),
+        ("tts01", "GROUP:Wall - Over Stream, Winter 1"),
+        ("tts01", "GROUP:Wall - Over Stream, Winter 2"),
+        ("tts01", "GROUP:Door - Bridge"),
+        ("tts01", "GROUP:Ship - Air, Above Trees (3x1)"),
+        // "Ship - Floating (2x1)"'s TileIds are [229, 179], and "Ship - Docked 2 (2x2)"'s are
+        // [230, 180, -1, 179] -- the identical shared-tile-id shape ttr01's own doc comment documents,
+        // same TileIds, verified directly. TILE179/TILE180 are SHARED physical tiles already Cover()'ed
+        // under "Ship - Docked 1 (2x2)" (claimed first). Registering the bare TILE229/TILE230 avoids
+        // re-pulling the already-covered TILE179/TILE180 under their own group names; neither has a
+        // path of its own (same reasoning as ttr01's own writeup).
+        ("tts01", "TILE229"),
+        ("tts01", "TILE230"),
+
         // D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc comment for
         // the full writeup. "platform1" (2x2, uniformly holes-cornered, one door-bearing member) has no
         // wired path: the doorless pure-Solid shape "b_tower02"/"d_tower02" use classifies fine, but a
@@ -1732,6 +1798,7 @@ public class TileCoverageCensusTests
         "ttd01", "ttf01", "ttf02",
         "jac01",
         "ttr01",
+        "tts01",
         "fcx01",
         "tjsb0", "tbx78", "tqq01", "udp2",
         "zde01",
@@ -1762,6 +1829,7 @@ public class TileCoverageCensusTests
             "ttf02" => BaseGameTilesetProfiles.ForestFacelift,
             "jac01" => BaseGameTilesetProfiles.Jungle,
             "ttr01" => BaseGameTilesetProfiles.RuralGrass,
+            "tts01" => BaseGameTilesetProfiles.RuralWinter,
             "fcx01" => BaseGameTilesetProfiles.FutCity,
             "tjsb0" => BaseGameTilesetProfiles.SecretBase,
             "tbx78" => BaseGameTilesetProfiles.ModernFacility,

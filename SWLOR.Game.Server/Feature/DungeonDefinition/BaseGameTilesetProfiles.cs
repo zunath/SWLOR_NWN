@@ -167,6 +167,24 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string RuralGrassEvilCastle = "ruralgrass_evilcastle";
         public const string RuralGrassWater = "ruralgrass_water";
 
+        // Rural Winter* (tts01) -- the winter reskin sibling of ttr01 Rural Grass (hak wins over the
+        // basegame_sets fallback; RESREF TRAP: tts01 is "Rural Winter*", NOT ttr01). Same 91-group,
+        // 6-terrain (Snow/Water/Trees/GentleHill/EvilCastle/GoodCastle -- no Forest terrain at all
+        // here) shape as ttr01, and the same pipeline-sweep conclusion applies: Snow pairs 16/16 with
+        // every other terrain (verified directly, mirroring RuralGrass's own matrix), and both
+        // candidate solids (Trees: 4 uniform tiles, GentleHill: 3 uniform tiles, neither carrying a
+        // GROUP -- verified directly) are the identical starved-minor-family shape RuralGrass's own doc
+        // comment documents for ttr01's Forest/Trees/GentleHill. No SolidTerrainOverride here either --
+        // solid==open==Snow, a genuinely open field. See RuralWinter's own doc comment below for the
+        // real group-inventory deltas against ttr01 (Snowdrift/Snowy Pines/Turf House (2x2)/Wall - Over
+        // Stream additions; Cave - Sea/Pier/Door - Bridge, High/the four Tower - Large pieces removed;
+        // Turf House itself flips from FeatureTile to ExitGroup because tts01's copy carries a real
+        // door where ttr01's does not).
+        public const string RuralWinter = "ruralwinter";
+        public const string RuralWinterGoodCastle = "ruralwinter_goodcastle";
+        public const string RuralWinterEvilCastle = "ruralwinter_evilcastle";
+        public const string RuralWinterWater = "ruralwinter_water";
+
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
@@ -4562,6 +4580,211 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .RampCrosser("HighBridge")
                 .SetPiece("Cave - Sea", 1)
                 .SetPiece("Pier", 1)
+                .SetPiece("Ship - Docked 1 (2x2)", 1)
+                .SetPiece("Ship - Air, Above Water (3x1)", 1);
+
+            // Rural Winter* (tts01) -- the winter reskin sibling of ttr01 Rural Grass. No hand-built
+            // module areas exist for this tileset (zero lighting/decoration evidence of its own), so
+            // TileLighting and the bulk Decoration palette below are the RuralGrass fallback: the same
+            // uniform (0,0,0,0) daylight-field lighting RuralGrass's own 8-area sample measured, and
+            // RuralGrass's own mined palette with the visually grass/forest-specific entries swapped
+            // for verified-visible winter equivalents (see the doc comment on the palette below).
+            //
+            // GROUP inventory is a near-exact re-skin of ttr01 (91 groups both sides, same TileIds for
+            // every shared shape -- confirmed directly via ProbeTool, e.g. TILE229/TILE230 land on the
+            // identical Ship - Floating/Ship - Docked 2 residue ttr01's own doc comment documents), with
+            // five real deltas (all verified directly against tts01's own .set data, not assumed from
+            // ttr01):
+            //   1. "Turf House" (1x1) carries a real door here (doors=1) where ttr01's copy is doorless
+            //      -- it moves from FeatureTile to ExitGroup, the same door-bearing-vs-doorless split
+            //      RuralGrass's own doc comment draws between its ExitGroup and FeatureTile buckets.
+            //   2. "Turf House (2x2)" is a new 4-member SetPiece with no ttr01 counterpart.
+            //   3. "Snowdrift - Pure", "Snowdrift - Rock", "Snowy Dip", "Snowy Pines" are four new
+            //      solo, flat, crosser-free, doorless, pathNode-A 1x1 groups -- the same shape as
+            //      Anthill/Chessboard/Cobbles, so they join FeatureTile.
+            //   4. "Wall - Over Stream, Winter 1"/"2" are two new solo, all-Snow, dual-crosser
+            //      (Stream+Wall1 / Stream+Wall2) groups with no door -- the identical WallRoom-eligible-
+            //      but-Tunnel-vocab-starved shape as "Wall - Road Gate" below (see that entry's own
+            //      note); census-exempt via PilotExpectedExemptions, not wired.
+            //   5. "Cave - Sea", "Pier", "Door - Bridge, High", and all four "Tower - Large 1/2,
+            //      Evil/Wizard (2x2)" pieces simply DO NOT EXIST in tts01 (no matching group at all,
+            //      verified directly) -- not a census gap (there is no tile content to account for),
+            //      just a smaller building/water-bank roster than ttr01's. tts01 also has no HighBridge
+            //      crosser at all (5 crossers total: Stream/Wall1/Wall2/Road/Slope), so RuralWinterWater
+            //      needs no RampCrosser override -- no Water-bank ramp tile family exists to close.
+            //
+            // Pipeline sweep confirms the same open-field conclusion as RuralGrass: Snow pairs 16/16
+            // with every other terrain (Water/Trees/GentleHill/EvilCastle/GoodCastle), and both
+            // candidate solids are the identical starved-minor-family shape (Trees: 4 uniform tiles,
+            // carrying only the accent-only "Ship - Air, Above Trees" boat group; GentleHill: 3 uniform
+            // tiles, carrying no group at all -- verified directly). No SolidTerrainOverride here
+            // either -- solid==open==Snow.
+            _builder.Create(RuralWinter, "Rural Winter*")
+                .Tileset("tts01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PrimaryOpenTerrain("Snow")
+                .AccentTerrain("Water")
+                .ReliefBlendTerrain("GentleHill")
+                .RampCrosser("Slope")
+                .MaxReliefRegions(2)
+                .RoadCrosser("Road")
+                .FeatureTile("Anthill")
+                .FeatureTile("Chessboard")
+                .FeatureTile("Cobbles")
+                .FeatureTile("Crystal - Platform")
+                .FeatureTile("Crystal - Sunken")
+                .FeatureTile("Field")
+                .FeatureTile("Fountain")
+                .FeatureTile("Garden 1")
+                .FeatureTile("Garden 2")
+                .FeatureTile("Granary")
+                .FeatureTile("Graves 1")
+                .FeatureTile("Graves 2")
+                .FeatureTile("Graves 3")
+                .FeatureTile("Graves 4")
+                .FeatureTile("Graves 5")
+                .FeatureTile("Menhir")
+                .FeatureTile("Orchard")
+                .FeatureTile("Portal")
+                .FeatureTile("Shrine 1")
+                .FeatureTile("Shrine 2")
+                .FeatureTile("Snowdrift - Pure")
+                .FeatureTile("Snowdrift - Rock")
+                .FeatureTile("Snowy Dip")
+                .FeatureTile("Snowy Pines")
+                .FeatureTile("Tower - Archer")
+                .FeatureTile("Tower - Winter")
+                .FeatureTile("Tree")
+                .FeatureTile("Tree - Hollow")
+                .FeatureTile("Wagon - Caravan 1")
+                .FeatureTile("Warzone 1")
+                .FeatureTile("Warzone 2")
+                .FeatureTile("Well")
+                .ExitGroup("House 1")
+                .ExitGroup("House 2")
+                .ExitGroup("Mausoleum 1")
+                .ExitGroup("Mausoleum 2")
+                .ExitGroup("Turf House")
+                .ExitGroup("Wagon - Caravan 2")
+                .SetPiece("Barn 1 (2x2)", 1)
+                .SetPiece("Barn 2 (1x2)", 1)
+                .SetPiece("Barn 3 (1x2)", 1)
+                .SetPiece("Barracks (1x2)", 1)
+                .SetPiece("Barracks (2x2)", 1)
+                .SetPiece("Dragon Skeleton (1x2)", 1)
+                .SetPiece("Farm 1 (2x2)", 1)
+                .SetPiece("Farm 2 (1x2)", 1)
+                .SetPiece("Farm 3 (1x2)", 1)
+                .SetPiece("Field 1 (2x2)", 1)
+                .SetPiece("Field 2 (2x2)", 1)
+                .SetPiece("Field 3 (2x1)", 1)
+                .SetPiece("Inn (1x2)", 1)
+                .SetPiece("Ship - Air, Docked (3x1)", 1)
+                .SetPiece("Temple - Evil (2x3)", 1)
+                .SetPiece("Temple - Good (3x3)", 1)
+                .SetPiece("Temple - Neutral (2x2)", 1)
+                .SetPiece("Temple - Winter 1 (3x2)", 1)
+                .SetPiece("Temple - Winter 2 (2x2)", 1)
+                .SetPiece("Temple - Winter 3 (3x2)", 1)
+                .SetPiece("Tower - Cloak (2x2)", 1)
+                .SetPiece("Tower - Guard (1x2)", 1)
+                .SetPiece("Tower - Winter (1x2)", 1)
+                .SetPiece("Tower - Wizard (1x2)", 1)
+                .SetPiece("Turf House (2x2)", 1)
+                .SetPiece("Warzone (1x2)", 1)
+                .SetPiece("Windmill (2x2)", 1)
+                .SetPiece("Ramp", 1)
+                .SetPiece("Cave", 1);
+
+            // Rural Winter's own bulk palette -- RuralGrass's own mined palette (see that profile's own
+            // doc comment for the 8-area provenance), with every visually grass/forest-specific entry
+            // swapped for a verified-visible winter equivalent already in the module (per this pass's
+            // own evidence-fallback convention: no hand-built tts01 area exists to mine directly).
+            // Terrain-neutral entries (wood fence, broken pillar, stone formation, column) carry over
+            // unchanged. Substitutions, each confirmed against placeables.2da (real ModelName, not a
+            // blank "****" row -- zep_iceblder001-003 and the _mdrn_pl_snowsh*/snowsp* rows were
+            // checked and rejected for exactly this reason):
+            //   zep_shrub036 (WallAdjacent, green shrub) -> daf_sw322 ("[SWTOR] Snow Pile 01", appearance
+            //     31865, a genuine snow-pile ground prop).
+            //   zep_giantfern / zep_bushfern001 (CorridorSide, forest-floor ferns) -> zep_pinetr7 /
+            //     zep_pinetr10 (placeables.2da rows 3050/3051, "Tree: Pine 8, Snowy, Large/Medium* --
+            //     explicitly snow-textured base-game pine models).
+            //   zep_tree003 / zep_tree060 / zep_treebig (RoomCenter, bare deciduous trees) ->
+            //     zep_pinetr12 / zep_pinetr20 / zep_pinecanopy (rows 3059/3053/3069, all "Snowy"/"Snow
+            //     Canopy" labeled).
+            //   _mdrn_pl_plant07 (DoorwayFlank, potted leafy plant) -> zep_pinetr5 (row 3046, "Snowy,
+            //     Roots, Small*" -- a small flanking sapling in the same size role).
+            _builder
+                .Decoration("daf_sw322", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_wdfence", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_bpillar007", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_pinetr7", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_pinetr10", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_pinetr12", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_pinetr20", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_pinecanopy", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_stones018", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_pinetr5", 2, DecorationContext.DoorwayFlank)
+                .Decoration("zep_column004", 1, DecorationContext.DoorwayFlank)
+                .Vignette("WinterFarmCluster", 2)
+                .VignetteMember("_mdrn_pl_wdfence", 0f, 0f)
+                .VignetteMember("daf_sw322", 0.5f, 0.2f);
+
+            // Rural Winter (Good Castle) / (Evil Castle) -- mirrors RuralGrassGoodCastle/
+            // RuralGrassEvilCastle's shape exactly (see that pair's own doc comment for the full
+            // mechanism writeup). tts01's own castle inventory is the identical three 1x1 GROUPS per
+            // faction (Castle - Main Door/Small Door/Breach, <faction>), each a single Snow/<faction>
+            // mixed-corner door tile with no crosser edge, verified directly.
+            _builder.Create(RuralWinterGoodCastle, "Rural Winter* (Good Castle)")
+                .Tileset("tts01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("GoodCastle")
+                .PrimaryOpenTerrain("Snow")
+                .ExitGroup("Castle - Main Door, Good")
+                .ExitGroup("Castle - Small Door, Good")
+                .ExitGroup("Castle - Breach, Good");
+
+            _builder.Create(RuralWinterEvilCastle, "Rural Winter* (Evil Castle)")
+                .Tileset("tts01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("EvilCastle")
+                .PrimaryOpenTerrain("Snow")
+                .ExitGroup("Castle - Main Door, Evil")
+                .ExitGroup("Castle - Small Door, Evil")
+                .ExitGroup("Castle - Breach, Evil");
+
+            // Rural Winter (Water) -- tts01's waterfront district, recomposing the same tts01 hak data
+            // with SolidTerrainOverride("Water") + PrimaryOpenTerrain("Snow"). No RampCrosser override
+            // (see this pass's own doc comment above -- tts01 has no HighBridge crosser and no
+            // Water-bank ramp tile family to close). Closes "Ship - Docked 1 (2x2)" (flat, Snow+Water
+            // mixed corners) and "Ship - Air, Above Water (3x1)" (all-Water, real door on TILE557,
+            // WallAlcove via allCornersSolid+door once Water composes as a genuine Solid) as real
+            // OpenSetPieces -- the identical mechanism RuralGrassWater's own doc comment documents.
+            // ttr01's "Cave - Sea"/"Pier" have no tts01 counterpart at all (see this pass's own doc
+            // comment above), so there is no nonflat-bank-piece residual to register here.
+            //
+            // "Door - Bridge" (Road crosser, all-Water, door=1) and "Ship - Docked 2 (2x2)" (Water, one
+            // Road edge, one real member + three holes) are the identical WallRoom-eligible-but-Tunnel-
+            // vocab-starved shape RuralGrassWater's own doc comment documents for its own analogous
+            // residuals (verified directly, 0/100 isolated across all three layouts) -- census-exempt
+            // via PilotExpectedExemptions, not wired. "Ship - Air, Above Trees (3x1)" stays exempt for
+            // the same accent-terrain-only-group reason RuralGrassWater's own doc comment gives (Trees
+            // carries no other GROUP content to justify a dedicated composition). TILE229/TILE230 (the
+            // bare "Ship - Floating"/"Ship - Docked 2" anchor tiles) are the identical shared-tile-id
+            // residue RuralGrassWater's own doc comment documents -- same TileIds, same mechanism,
+            // verified directly against tts01's own .set data.
+            _builder.Create(RuralWinterWater, "Rural Winter* (Water)")
+                .Tileset("tts01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("Water")
+                .PrimaryOpenTerrain("Snow")
                 .SetPiece("Ship - Docked 1 (2x2)", 1)
                 .SetPiece("Ship - Air, Above Water (3x1)", 1);
 

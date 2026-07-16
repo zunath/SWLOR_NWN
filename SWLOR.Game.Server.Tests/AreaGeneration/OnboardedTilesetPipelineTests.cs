@@ -120,6 +120,14 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.RuralGrassGoodCastle,
         BaseGameTilesetProfiles.RuralGrassEvilCastle,
         BaseGameTilesetProfiles.RuralGrassWater,
+        // Wave-8: Rural Winter* (tts01) -- the winter reskin sibling of ttr01, same open-field shape
+        // (no SolidTerrainOverride on the base profile) -- see BaseGameTilesetProfiles.RuralWinter's
+        // own doc comment for the real group-inventory deltas against ttr01. Good/Evil Castle and Water
+        // are PaletteVariant districts, same shape as RuralGrass's own castle/water trio.
+        BaseGameTilesetProfiles.RuralWinter,
+        BaseGameTilesetProfiles.RuralWinterGoodCastle,
+        BaseGameTilesetProfiles.RuralWinterEvilCastle,
+        BaseGameTilesetProfiles.RuralWinterWater,
         // Wave-4: D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc
         // comment. Same "no Tunnel vocabulary through the composed solid" shape as the exterior wave
         // above, verified via TunnelVocabularyCheckTests' fcx01 entries.

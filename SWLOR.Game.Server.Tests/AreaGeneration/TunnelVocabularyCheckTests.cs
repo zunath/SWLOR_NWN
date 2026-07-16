@@ -199,6 +199,14 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.RuralGrassGoodCastle,
         BaseGameTilesetProfiles.RuralGrassEvilCastle,
         BaseGameTilesetProfiles.RuralGrassWater,
+        // Rural Winter* (tts01): declares NO canonical "Corridor"/"Doorway" crosser at all (verified
+        // directly), the same shape as RuralGrass's own exterior wave -- Complex downgrades to OpenLane
+        // for all four profiles (base + the three PaletteVariants) regardless of which terrain each
+        // composes as Solid. See BaseGameTilesetProfiles.RuralWinter's own doc comment.
+        BaseGameTilesetProfiles.RuralWinter,
+        BaseGameTilesetProfiles.RuralWinterGoodCastle,
+        BaseGameTilesetProfiles.RuralWinterEvilCastle,
+        BaseGameTilesetProfiles.RuralWinterWater,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

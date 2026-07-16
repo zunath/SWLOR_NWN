@@ -185,6 +185,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string RuralWinterEvilCastle = "ruralwinter_evilcastle";
         public const string RuralWinterWater = "ruralwinter_water";
 
+        // Castle Exterior, Rural* (tno01, SWLOR_Haks/sw_t_castleex). See BaseGameTilesetProfiles.
+        // CastleExteriorRural's own doc comment below for the full hak-vs-vanilla delta, placeholder-art
+        // audit, and composition writeup.
+        public const string CastleExteriorRural = "castleexteriorrural";
+        public const string CastleExteriorRuralVillage = "castleexteriorrural_village";
+        public const string CastleExteriorRuralCastleWall = "castleexteriorrural_castlewall";
+        public const string CastleExteriorRuralKeep = "castleexteriorrural_keep";
+        public const string CastleExteriorRuralWater = "castleexteriorrural_water";
+        public const string CastleExteriorRuralHarbor = "castleexteriorrural_harbor";
+
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
@@ -4787,6 +4797,449 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PrimaryOpenTerrain("Snow")
                 .SetPiece("Ship - Docked 1 (2x2)", 1)
                 .SetPiece("Ship - Air, Above Water (3x1)", 1);
+
+            // Castle Exterior, Rural* (tno01, SWLOR_Haks/sw_t_castleex/tno01.set; UnlocalizedName
+            // "Castle Exterior, Rural*"). GENERAL Default=Floor=Border="grass" (the degenerate
+            // walkable-ground quirk shared with ttd01/ttf01/ttf02/tno01's own basegame_sets sibling).
+            //
+            // HAK-VS-VANILLA DELTA (the first confirmed hak-SHRINKS case -- every prior hak copy in this
+            // file is a superset of its basegame_sets sibling, e.g. ttr01 653 vs an unshipped vanilla,
+            // ttd01 388 vs 212). Verified directly via TilesetSetParser against both files' own
+            // [TILES]/[GROUPS] Count= fields (NOT a naive "[TILE" line-count grep, which double-counts
+            // each tile's own "[TILEnnnDOORn]" door sub-sections and wildly overstates both sides --
+            // caught and corrected during this pass's own recon):
+            //   hak (SWLOR_Haks/sw_t_castleex/tno01.set):  1254 tiles / 193 groups.
+            //   vanilla (basegame_sets/tno01.set):         1287 tiles / 198 groups.
+            // Group-name-set delta (both files carry duplicate group names -- e.g. "cliff_path1" and
+            // every "City_House..."/"House..." family name appears TWICE, once on a Dirt-grounded copy
+            // and once on a Grass-grounded copy -- so this is a distinct-NAME existence delta, not a
+            // raw 1:1 structural diff): vanilla carries 7 group names absent from the hak -- "Docked Ship
+            // (4x2)", "Lodge (3x2)", "MidwallDoorway", and "Ship 1/2/3/4 (3x2) - Docked" (a second,
+            // larger docked-ship family, distinct from the smaller "DockedShip_City"/"Ship_3x1_Docked"
+            // pieces both files still share) -- while the hak adds 7 different group names vanilla never
+            // had: "Floating Island", "Halfling Burrow", "Halfling Home 1/2 1x2", "Halfling Home 3",
+            // "Halfling Inn 2x3", "Oriental Teahouse". Net effect: the hak swapped one large-ship/lodge
+            // family for a smaller halfling-hamlet family, not a simple truncation -- readers should not
+            // assume the hak is a strict subset of the vanilla inventory the way every earlier
+            // hak-superset entry in this file is a strict superset.
+            //
+            // PLACEHOLDER-ART AUDIT (Tyrants of the Moonsea premium family -- the same family twc03 Fort
+            // Interior belongs to, whose 15 "xyz"-family tiles are confirmed hand-written ASCII
+            // placeholder stubs, see FortInteriorLegacy's own ExcludedTiles(...) above). Only 14 of
+            // tno01's own physical .mdl files are hak-shipped (the t01-t06/v05_61 castle-tower set); the
+            // other 1230 unique Model= resrefs the .set references all resolve through the base game's
+            // own KEY/BIF (verified directly: a purpose-built reader reusing SWLOR.ContentBuilder's own
+            // KeyBifReader parsed data/nwn_base.key and pulled MDL (restype 2002) bytes for every one of
+            // those 1230 resrefs). Every single one resolved (found=1230, missing=0) -- unlike twc03,
+            // there is no missing-resource gap here. None carry the twc03 "newmodel "-prefixed
+            // hand-written ASCII header (asciiStub=0). Exactly one, "tno01_b20_04" (TILE990, ungrouped),
+            // is a small (4.7KB) compiled BINARY model that flagged on a size-only heuristic; a follow-up
+            // ASCII-string scan of its own bytes shows it carries TWO real, correctly-mapped textures
+            // ("tno01_wtcliff02", "tno01_water01") alongside "NULL"-textured sub-meshes -- the ordinary
+            // invisible-collision/aabb-helper-node pattern every compiled tile model uses, not a broken
+            // primary surface. CONCLUSION: no confirmed placeholder/stub art in tno01's currently-used
+            // model set -- no ExcludedTiles(...) call on any profile below.
+            //
+            // COMPOSITION (matrix + pipeline-sweep decided, mirroring ttd01/jac01's own inverted
+            // Cliff-solid precedent -- see this file's own ttd01 doc comment). Full 16-combo probe
+            // (TileResolver.HasCandidate, both orientations, all C(7,2)*2=42 ordered pairs of the seven
+            // terrains) found a MULTI-DISTRICT shape unlike any prior exterior wave: THREE separate
+            // terrains each reach full 16/16 flat-corner coverage against "grass" open in BOTH
+            // directions -- "cliff" (the tileset's genuine rock-wall family, 30 uniform-flat tiles plus a
+            // large mixed-corner cliff/grass "sandbank"-edged shoreline-blend residue), "castlewall" (the
+            // tileset's actual castle-wall material, a much denser mixed-corner inventory carrying every
+            // gate/drawbridge/stables group), and "keep" (a starved 8-uniform-tile inner-keep material
+            // carrying only 3 door groups). "castlewall" and "keep" ALSO reach 16/16 against "dirt" open
+            // in both directions (not just grass); "cliff" vs "dirt" is the one combination that FAILS
+            // (matrix "--", confirmed by a live pipeline sweep: Complex/Halls/Organic all measured 0/15,
+            // every failure citing the identical missing corner combo "TL=cliff, TR=dirt, BR=cliff,
+            // BL=cliff" -- no candidate tile mixes cliff and dirt on the same cell at all). "dirt" itself
+            // reaches 16/16 against "grass" in both directions too (96 uniform-flat tiles, and the
+            // overwhelming majority of the tileset's building GROUPs are literally duplicated once per
+            // ground -- e.g. "City_House_1x1_Tower_2" and dozens of others carry both a Dirt-grounded and
+            // a Grass-grounded copy of the identical building), the same shoreline-blend shape
+            // ttr01/tts01's own Water-as-AccentTerrain plays, not a wall material.
+            //
+            // BASE profile: SolidTerrainOverride("cliff") + PrimaryOpenTerrain("grass") -- the tileset's
+            // name ("Castle Exterior, Rural") and its own tile inventory both read as "a castle on a
+            // cliff above open rural grassland", the identical narrative role ttd01's Cliff/Desert pairing
+            // plays for Tatooine. AccentTerrain("dirt") paints the village/courtyard/road-verge ground
+            // patches the duplicated building families sit on. RampCrosser("ridge") -- TILE78-116's own
+            // raised, all-grass-cornered, height-varying "ridge"-edged family is the tileset's ramp-lane
+            // vocabulary (RoadVocabularyCheck.SupportsRoads(grass, ridge) = FALSE, confirming it is a
+            // rim/ramp crosser and not a road network, the same distinction ttr01's "Slope" draws).
+            // RoadCrosser("road") -- SupportsRoads(grass, road) AND SupportsRoads(dirt, road) both
+            // verified TRUE directly (stub/straight/turn/T/X all resolve on both open terrains).
+            // MaxReliefRegions(2) mirrors every other exterior wave's own cap. No canonical
+            // "Doorway"/"Corridor" crosser exists anywhere in the inventory (verified directly), so
+            // Complex's Tunnel mode downgrades to OpenLane, the same verdict as every prior exterior wave.
+            // A live pipeline sweep (15 seeds x Complex/Halls/Organic) confirms this composition: 45/45
+            // succeeded.
+            //
+            // "stonewall" (172 tile refs) and "smallwall" (44 tile refs) are BOTH real low-wall/fence
+            // crosser families (SupportsRoads TRUE for both on grass/dirt too -- rural garden-wall lanes,
+            // not the RampCrosser) -- their doorless, ungrouped tiles resolve via CornerEdgeResolver
+            // directly, and their solo door-bearing GROUPS (GrassLowWall_gate1/2, DirtLowWall_gate1/2,
+            // CastleCrosser_Grass_Breach, Smallwall Break, Smallwall Stairs_Dirt/Grass) are DELIBERATELY
+            // NOT wired: an open-cornered solo group carrying a non-tunnel crosser edge fails every
+            // LayoutGroupStamper classification branch (CorridorInsert only splices Corridor/Alley/Fence/
+            // Bridge; the WallRoom/OpenSetPiece path rejects any member edge outside the doorway/body
+            // vocabulary -- see TryClassify), the identical shape ttr01's own "Wall - Gate, Rural 1/2"
+            // exemption documents. Census-exempt via PilotExpectedExemptions with the classifier-rule
+            // proof. "sandbank" (50 tile refs) is the flat cliff/grass shoreline-blend edge tag
+            // (Boat_cliff_Landed, cliff_caveentry_1x2, cliff_path1, CliffPath_3x3, Cave Sandbank Entry
+            // 1x1, Shipwreck_clifs) -- the same member-edge rejection applies to every group carrying it,
+            // so the whole sandbank family is census-exempt rather than wired. "bridge" (21) and "river"
+            // (43) are genuine water-crossing crossers: their ungrouped lanes resolve via ordinary
+            // corner/edge matching, while Footbridge_Dirt/Footbridge_Grass (solo river-crosser gates)
+            // fail classification for the same member-edge reason -- exempt, mirroring ttr01's own
+            // "Footbridge" exemption verbatim. "lists"/"listssmall" (2 tile refs each) carry no GROUP at
+            // all and are not wired.
+            //
+            // "Mill 2x2" is the one dual-crosser multi-tile building: its raised member tile carries
+            // BOTH "river" and "road" edges on the SAME cell (nonflat, heights [0,1]) -- the identical
+            // dual-crosser-on-one-cell conflict ttf01's own TILE606-609 doc comment documents. Left
+            // unregistered; its nonflat members land in the automatic height-exemption bucket.
+            //
+            // Measured isolated placement rates (Halls, 150 seeds, 20x20): Cog_3x1/Ship_4x1_cliffs
+            // 150/150 (WallAlcove), CliffStairs 150/150, Portal 86.0%, Range 56.0%, the grass house/
+            // tent exits 40.7%, Tent 1 29.3%, Halfling Inn 2x3 8.0%, Hay_barn 7.3%. Three wired pieces
+            // measured 0/150 at this size and are kept wired with a documented ceiling (the ttd01
+            // palais_jabba/Astroport large-footprint precedent): "FantasyTower 4x4" and "Tower3 m69
+            // 3x3" need a room with a larger contiguous open interior than a 20x20 area produces, and
+            // "Cave" (ReliefPiece) needs a painted raised rim edge whose exact corner field Halls'
+            // relief budget rarely produces at this size.
+            //
+            // VILLAGE, CASTLEWALL, KEEP, WATER, and HARBOR districts (see each variant's own doc comment
+            // below) recompose this SAME tno01 hak data with a different SolidTerrainOverride/
+            // PrimaryOpenTerrain pairing, mirroring RuralGrassGoodCastle/EvilCastle/Water's own
+            // PaletteVariant shape -- each needed for real (not just census-eligible) placement of its
+            // own building/door-group family, the same GroupExitPlanner/LayoutGroupStamper real-terrain
+            // requirement that pattern documents.
+            //
+            // Lighting sampled directly from all 3 hand-built module areas stamping tno01
+            // (vrotrviscvokouts 512 tiles, vrotrnabmission 496 tiles, ka_drps_crsh_vis 144 tiles -- 1152
+            // tiles total): the dominant combination is MainLight1=0/MainLight2=0/SrcLight1=0/
+            // SrcLight2=0 (998/1152, 86.6%), with a real minority MainLight2=2 variant (154/1152, 13.4%,
+            // present only in the latter two areas) -- reported honestly rather than rounded to a false
+            // "uniform" claim; TileLighting(0,0,0,0) is wired as the dominant value, matching every other
+            // exterior profile's own daylight-field convention.
+            //
+            // THEME PAIRING: like every profile in this file, no theme/content registration happens
+            // here -- these six profiles are reachable via explicit tileset override only. The
+            // module's own hand-built tno01 usage is temperate-settlement worlds (vrotrnabmission is
+            // a Naboo mission area; vrotrviscvokouts/ka_drps_crsh_vis are Vis outpost/crash sites), so
+            // the natural future pairings are pastoral mid-rim settlement themes: the base profile for
+            // fortified farmland, Village for walled towns, CastleWall/Keep for fortress assaults,
+            // Water/Harbor for coastal settlements.
+            //
+            // Decoration palette mined from the same 3 areas' own placeable inventories (Module/git/
+            // vrotrviscvokouts.git.json, vrotrnabmission.git.json, ka_drps_crsh_vis.git.json -- 118
+            // placeables total; functional/scene-effect resrefs excluded: zep_smokeb/zep_smokea/
+            // zep_smokesm are chimney/fire VFX props, not ambient dressing, and dem_color_text is a
+            // scripted signage marker). Dominated by zep_dirt01 (22, a ground-clutter dirt-patch decal)
+            // and _mdrn_pl_crgo001/zep_shack001/zep_shelter/zep_leanto001 (crate/shack/lean-to hamlet
+            // clutter, consistent with the rural-village identity) plus x3_plc_tree003 (5, a generic
+            // tree already used by ttr01/ttd01/jac01's own bulk palettes).
+            _builder.Create(CastleExteriorRural, "Castle Exterior, Rural*")
+                .Tileset("tno01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .SolidTerrainOverride("cliff")
+                .PrimaryOpenTerrain("grass")
+                .AccentTerrain("dirt")
+                .RampCrosser("ridge")
+                .MaxReliefRegions(2)
+                .RoadCrosser("road")
+                // GRASS-family content only here. tno01 duplicates most building GROUP names -- a
+                // Dirt-grounded copy and a Grass-grounded copy per name, DIRT copy FIRST in .set group
+                // order -- and every runtime name resolver (LayoutGroupStamper.FindGroup,
+                // GroupExitPlanner.BuildCandidateGroups, TileResolver.BuildFeatureLookup) is
+                // first-match-by-name: a duplicated name wired ANYWHERE always resolves to the DIRT
+                // copy. Wiring those names here would be dead weight (the dirt copy never classifies/
+                // corner-matches against this profile's cliff/grass composition) -- they are wired on
+                // the Village district variant below instead, whose dirt-open composition is the one
+                // the dirt copies actually place in. The grass copies remain structurally
+                // classify-eligible (the census credits them) but are unreachable by name through
+                // FindGroup's first-match rule -- a real, documented engine ceiling, not a wiring gap.
+                .FeatureTile("Arena")
+                .FeatureTile("Burned_house1")
+                .FeatureTile("Burned_house2")
+                .FeatureTile("Chessboard")
+                .FeatureTile("Field_01_1x1")
+                .FeatureTile("Fisherman_1")
+                .FeatureTile("Fisherman_2")
+                .FeatureTile("graves_grass_01")
+                .FeatureTile("graves_grass_02")
+                .FeatureTile("graves_grass_03")
+                .FeatureTile("graves_grass_04")
+                .FeatureTile("graves_grass_05")
+                .FeatureTile("graves_grass_06")
+                .FeatureTile("Oriental Teahouse")
+                .FeatureTile("StoneCircle_1x1")
+                .FeatureTile("StoneDolman")
+                .FeatureTile("Thatch_House_3")
+                .FeatureTile("well_grass")
+                .ExitGroup("CliffStairs")
+                .ExitGroup("Halfling Burrow")
+                .ExitGroup("Halfling Home 3")
+                .ExitGroup("Ice_Cellar")
+                .ExitGroup("Small Tent 1")
+                .ExitGroup("Small Tent 2")
+                .ExitGroup("Small Tent 4")
+                .ExitGroup("Thatch_House_1")
+                .ExitGroup("Thatch_House_2")
+                // "Portal" mirrors ttd01's own precedent: a semantic teleporter tile, excluded from
+                // random FeatureTile sprinkling and wired as a rare set piece instead.
+                .SetPiece("Portal", 1)
+                .SetPiece("BarrowEntry_2x2", 1)
+                .SetPiece("Burned_house2x1", 1)
+                .SetPiece("Burned_L_2x2", 1)
+                .SetPiece("Cog_3x1", 1)
+                .SetPiece("Cog_Anchored_3x1", 1)
+                .SetPiece("FantasyTower 4x4", 1)
+                .SetPiece("Field_02_1x2")
+                .SetPiece("Field_03_1x2")
+                .SetPiece("Halfling Home 1 1x2", 1)
+                .SetPiece("Halfling Home 2 1x2", 1)
+                .SetPiece("Halfling Inn 2x3", 1)
+                .SetPiece("Hay_barn", 1)
+                .SetPiece("House_2x2_Lshape03", 1)
+                .SetPiece("JoustingList", 1)
+                .SetPiece("JoustStands_1x2", 1)
+                .SetPiece("JoustStands_1x3", 1)
+                .SetPiece("JoustStands_1x3_2", 1)
+                .SetPiece("Large Tent 1", 1)
+                .SetPiece("Large Tent 2", 1)
+                .SetPiece("Large Tent 4", 1)
+                .SetPiece("Range", 1)
+                .SetPiece("ruin_2x2_Lshape_02", 1)
+                .SetPiece("Ship_4x1_cliffs", 1)
+                .SetPiece("StoneCircle", 1)
+                .SetPiece("Tent 1", 1)
+                .SetPiece("Tent 2", 1)
+                .SetPiece("Tent 4", 1)
+                .SetPiece("Tower Hill", 1)
+                .SetPiece("tower_2x2_m70", 1)
+                .SetPiece("Tower3 m69 3x3", 1)
+                // Baked-mesh raised cave-mouth piece (1x1 GROUP, nonflat, all-Grass, "ridge" crosser,
+                // one door slot) -- the same ReliefPiece kind ttd01/ttf01/ttr01/tts01's own "Ramp"/
+                // "Cave"/"SmallCave" pieces use, stamped onto a painted raised rim edge.
+                .SetPiece("Cave", 1);
+
+            // Castle Exterior, Rural's own bulk palette -- mined from tno01's 3 hand-built reference
+            // areas (see the base profile's own doc comment above for the full provenance and the
+            // functional/VFX exclusions). Two evidence resrefs have no utp blueprint in this module
+            // (verified via AllDungeonDefinitions_DecorationsExistAndAreVisible, the same jac01/ttr01
+            // gap those palettes' own doc comments describe) and are substituted with the nearest
+            // blueprint-backed equivalents: _mdrn_pl_crgo001 -> _mdrn_pl_crate01 ("[mdrn]Box 1",
+            // appearance 20225, real ModelName pkt_tlcrate1 -- the _mdrn_pl_cargo1 candidate was
+            // checked and REJECTED for a blank-ModelName appearance row, the same visibility-guard
+            // rejection RuralWinter's own palette doc comment describes), and x3_plc_tree003 ->
+            // zep_tree003 (ttr01's own identical substitution).
+            _builder
+                .Decoration("zep_dirt01", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_crate01", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_shack001", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_shelter", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_df_hvbk", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_tree003", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_shack002", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_leanto001", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_shed001", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_parts10", 1, DecorationContext.DoorwayFlank)
+                .Vignette("RuralHamletCluster", 2)
+                .VignetteMember("zep_shack001", 0f, 0f)
+                .VignetteMember("zep_dirt01", 0.5f, 0.2f);
+
+            // Castle Exterior, Rural (Village) -- tno01's walled-town district, recomposing the SAME
+            // tno01 hak data with SolidTerrainOverride("castlewall") + PrimaryOpenTerrain("dirt")
+            // (verified full 16/16 both directions; live pipeline sweep 15 seeds x Complex/Halls/
+            // Organic all succeeded). This is the composition the tileset's dirt-grounded building
+            // copies actually place in: every duplicated building name resolves to its DIRT copy
+            // through the first-match-by-name rule (see the base profile's own doc comment), and an
+            // all-dirt building only classifies as an OpenSetPiece when dirt composes as a real OPEN
+            // terrain (LayoutGroupStamper.TryClassify's corner-match reads the composed
+            // SolidTerrain/OpenTerrain pair -- dirt-as-Accent on the base profile never qualifies).
+            // "Castle-Stairs" and "Stables On Wall" (castlewall+dirt mixed groups) classify here for
+            // the same reason. RoadCrosser("road") -- SupportsRoads(dirt, road) verified TRUE directly.
+            // PaletteVariant() excludes this from --matrix's full cross-product.
+            _builder.Create(CastleExteriorRuralVillage, "Castle Exterior, Rural* (Village)")
+                .Tileset("tno01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("castlewall")
+                .PrimaryOpenTerrain("dirt")
+                // PathNodeOpeningWidthAudit measures 2 for the castlewall-solid pairing (the
+                // castlewall/dirt blend tiles' pathnodes never leave a 1-cell-wide walkable lane) --
+                // verified by MinimumOpeningWidth_MatchesFreshPathNodeAudit.
+                .MinimumOpeningWidth(2)
+                .RoadCrosser("road")
+                .FeatureTile("City_Granary_m42")
+                .FeatureTile("Fountain_Dirt")
+                .FeatureTile("graves_dirt_01")
+                .FeatureTile("graves_dirt_02")
+                .FeatureTile("graves_dirt_03")
+                .FeatureTile("graves_dirt_04")
+                .FeatureTile("graves_dirt_05")
+                .FeatureTile("graves_dirt_06")
+                .FeatureTile("graves_dirt_07")
+                .FeatureTile("Market Stall 1x1 m55_01")
+                .FeatureTile("MarketStall02")
+                .FeatureTile("MarketStall03")
+                .FeatureTile("SimpleStage")
+                .ExitGroup("City_House_1x1_Tower_1")
+                .ExitGroup("City_House_1x1_Tower_2")
+                .ExitGroup("City_House_1x1_Tower_3")
+                .ExitGroup("City_House_1x1_Tower_4")
+                .ExitGroup("Crypt_Dirt")
+                .ExitGroup("FineHouse m50")
+                .ExitGroup("GuildHouse m39")
+                .ExitGroup("house 1x1 m61")
+                .ExitGroup("house 1x1 m64")
+                .ExitGroup("House 3 m32")
+                .ExitGroup("House 3 m32_02")
+                .ExitGroup("House m60")
+                .ExitGroup("House_Tower_m57")
+                .ExitGroup("Med Tower m58")
+                .ExitGroup("Roundhouse 1x1 m21")
+                .ExitGroup("Small Roundhouse m25")
+                .ExitGroup("Watchtower m72")
+                .SetPiece("Castle-Stairs", 1)
+                .SetPiece("Chapel_3x2", 1)
+                .SetPiece("City_House_1x2_m41", 1)
+                .SetPiece("City_House_1x3", 1)
+                .SetPiece("city_house_2x2", 1)
+                .SetPiece("City_House_2x2_m26", 1)
+                .SetPiece("City_Inn_1x2_m37", 1)
+                .SetPiece("city_SewerEntrance", 1)
+                .SetPiece("CoachInn", 1)
+                .SetPiece("Forge_L_shape_2x2", 1)
+                .SetPiece("House_1x2_m59", 1)
+                .SetPiece("House_2x2_Arcaded", 1)
+                .SetPiece("house_2x2_m40", 1)
+                .SetPiece("House_Inn_2x2", 1)
+                .SetPiece("Inn 2x2", 1)
+                .SetPiece("MarketStall_2x2 m54", 1)
+                .SetPiece("Mausoleum_dirt_2x2", 1)
+                .SetPiece("RichMarket_2x2", 1)
+                .SetPiece("Stables On Wall", 1)
+                .SetPiece("Tower 2x2 m71", 1);
+
+            // Castle Exterior, Rural (Castle Wall) -- tno01's outer-wall district, recomposing the SAME
+            // tno01 hak data with SolidTerrainOverride("castlewall") + PrimaryOpenTerrain("grass")
+            // (verified full 16/16 both directions). Wires the castlewall/grass mixed-corner door
+            // groups GroupExitPlanner can actually corner-match at composed wall cells (OuterWallDoor2/
+            // OuterWallDoor3/WallRaiseGate, each a solo grass+castlewall door tile -- the same
+            // mixed-corner shape ttr01's own Castle - Main Door/Small Door/Breach trio places at
+            // 150/150). The multi-terrain gate groups (CastleWall4/CastleGate2 2x1/CastleWall
+            // Entrance (+Walkable)/Castle Gate Walkable 2x1: castlewall+dirt+grass on THREE terrains;
+            // the four Drawbridge/drawbridge_passage pieces: three terrains PLUS road member edges;
+            // CaveWall2x1: castlewall+cliff, cliff being neither open nor secondary in any composition)
+            // are NOT wired: LayoutGroupStamper's OpenSetPiece corner rule is a strict two-terrain
+            // (solid+open, or solid+secondary) match, so a three-terrain group fails classification
+            // under EVERY tno01 composition -- census-exempt via PilotExpectedExemptions with that
+            // proof. PaletteVariant() excludes this from --matrix's full cross-product.
+            _builder.Create(CastleExteriorRuralCastleWall, "Castle Exterior, Rural* (Castle Wall)")
+                .Tileset("tno01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("castlewall")
+                .PrimaryOpenTerrain("grass")
+                // PathNodeOpeningWidthAudit measures 2 for the castlewall-solid pairing -- see the
+                // Village variant's own note above.
+                .MinimumOpeningWidth(2)
+                .RoadCrosser("road")
+                .ExitGroup("OuterWallDoor2")
+                .ExitGroup("OuterWallDoor3")
+                .ExitGroup("WallRaiseGate");
+
+            // Castle Exterior, Rural (Keep) -- tno01's inner-keep district, recomposing the SAME tno01
+            // hak data with SolidTerrainOverride("keep") + PrimaryOpenTerrain("grass") (verified full
+            // 16/16 both directions, and full 16/16 against "dirt" too). "keep" is a starved terrain (8
+            // uniform-flat tiles, only 1 grouped) exactly like RuralGrassGoodCastle/EvilCastle's own
+            // three-tile-per-faction shape -- its entire real GROUP inventory is three 1x1 door tiles.
+            // Only "KeepDoor_Grass" (keep+grass mixed corners) is wired: it corner-matches this
+            // composition's own wall cells for real (measured 150/150 isolated, Halls). "KeepDoor_Dirt"
+            // (keep+dirt corners -- dirt never composes here) and "KeepTop_Stairs" (ALL-keep corners --
+            // GroupExitPlanner's wall-ring candidates always carry at least two open-facing corners, so
+            // an all-solid door tile never corner-matches any ring cell) both measured 0/150 isolated
+            // and are NOT wired; both remain census-covered as structural ExitGroups (eligibility is
+            // vocabulary-independent). PaletteVariant() excludes this from --matrix's full
+            // cross-product.
+            _builder.Create(CastleExteriorRuralKeep, "Castle Exterior, Rural* (Keep)")
+                .Tileset("tno01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("keep")
+                .PrimaryOpenTerrain("grass")
+                // PathNodeOpeningWidthAudit measures 2 for the keep-solid pairing (same
+                // wall-blend-pathnode shape as the castlewall variants) -- verified by
+                // MinimumOpeningWidth_MatchesFreshPathNodeAudit.
+                .MinimumOpeningWidth(2)
+                .ExitGroup("KeepDoor_Grass");
+
+            // Castle Exterior, Rural (Water) -- tno01's rural-shoreline district, recomposing the SAME
+            // tno01 hak data with SolidTerrainOverride("water") + PrimaryOpenTerrain("grass") (verified
+            // full 16/16 both directions, mirroring RuralGrassWater's own Water-as-real-solid
+            // mechanism). Closes the grass-side water content: "Grass_docks" (a solo grass+water
+            // mixed-corner dock, OpenSetPiece) and the all-water ship hulls Ship_3x1_water/
+            // Ship_4x1_water (allCornersSolid + a real door -> WallAlcove, the identical mechanism
+            // RuralGrassWater's own "Ship - Air, Above Water" doc comment documents). "Boat_water"
+            // (all-water, DOORLESS, pathnode T) is NOT wired: with neither a door (WallAlcove's
+            // trigger) nor a doorway/body crosser (WallRoom/CorridorStub's) nor an open corner
+            // (OpenSetPiece's), no classification branch applies -- the identical shape ttr01's own
+            // "Ship - Floating" exemption documents. "WaterRoad_gate" (all-water + road crosser +
+            // door) is NOT wired either: a road-family gate's member edge fails every classification
+            // branch, and even under a DoorSlotCrossers("road") declaration it would classify WallRoom
+            // only to never place (this tileset has no Tunnel vocabulary, and the direct
+            // isolated-placement probe below measured 0 across all three layouts) -- the identical
+            // verdict ttr01's own "Wall - Road Gate" exemption documents. Census-exempt via
+            // PilotExpectedExemptions. PaletteVariant() excludes this from --matrix's full
+            // cross-product.
+            _builder.Create(CastleExteriorRuralWater, "Castle Exterior, Rural* (Water)")
+                .Tileset("tno01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("water")
+                .PrimaryOpenTerrain("grass")
+                .SetPiece("Grass_docks", 1)
+                .SetPiece("Ship_3x1_water", 1)
+                .SetPiece("Ship_4x1_water", 1);
+
+            // Castle Exterior, Rural (Harbor) -- tno01's city-waterfront district, recomposing the
+            // SAME tno01 hak data with SolidTerrainOverride("water") + PrimaryOpenTerrain("dirt")
+            // (verified full 16/16 both directions; live pipeline sweep 15 seeds x Complex/Halls/
+            // Organic all succeeded). This is the composition the DIRT-side dock family actually
+            // classifies in: City_boat_docked, DockedShip_City, Docks_City, and Ship_3x1_Docked all
+            // mix water+dirt corners, which the strict two-terrain OpenSetPiece rule only admits when
+            // water composes as Solid and dirt as Open. Isolated rates (Halls, 150 seeds):
+            // Docks_City 45.0%, City_boat_docked 22.6%, Ship_3x1_Docked 6.1%, DockedShip_City 0/150 --
+            // the last is a 4x2/6-member footprint whose water+dirt shoreline pattern never
+            // spontaneously occurs in a 20x20 generated room; kept wired anyway per the project's
+            // "keep it wired, document the ceiling" convention (the same
+            // CavePlatform1OnMinesAndCavernsComplex/RuralGrassWater Cave-Sea/Pier precedent).
+            // PaletteVariant() excludes this from --matrix's full cross-product.
+            // No RoadCrosser here: a carved road lane that reaches the water shoreline needs a
+            // road-edged water/dirt blend for EVERY corner arrangement, and the inventory only covers
+            // a few (TILE394/403-405) -- a direct pipeline run with RoadCrosser("road") failed on
+            // "TL=water, TR/BR/BL=dirt + road edges" (no such tile exists). Roads stay a base/Village
+            // district feature.
+            _builder.Create(CastleExteriorRuralHarbor, "Castle Exterior, Rural* (Harbor)")
+                .Tileset("tno01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("water")
+                .PrimaryOpenTerrain("dirt")
+                .SetPiece("City_boat_docked", 1)
+                .SetPiece("DockedShip_City", 1)
+                .SetPiece("Docks_City", 1)
+                .SetPiece("Ship_3x1_Docked", 1);
 
             return _builder.Build();
         }

@@ -1126,6 +1126,14 @@ public class TileCoverageCensusTests
         // CornerEdgeResolver's admission gate regardless of vocab. See
         // BaseGameTilesetProfiles.RuralWinter's own doc comment.
         ["tts01"] = new(StringComparer.OrdinalIgnoreCase) { "Trees" },
+        // tno01 (Castle Exterior, Rural*): "cliff"/"castlewall"/"keep"/"water" are all registered as
+        // real profiles (base CastleExteriorRural + the CastleWall/Keep/Water PaletteVariants), so
+        // ungrouped tiles carrying them were already CornerEdgeResolver-reachable regardless of this
+        // bucket. "trees" IS needed: it carries no GROUP content at all (1 uniform tile, 0 grouped --
+        // verified directly) and every ungrouped grass/trees/water blend tile (e.g. TILE14-19/25-47) is
+        // doorless, so no district composition is warranted for it -- the same starved-minor-terrain
+        // shape ttr01/tts01's own "Trees" entries document.
+        ["tno01"] = new(StringComparer.OrdinalIgnoreCase) { "trees" },
         ["fcx01"] = new(StringComparer.OrdinalIgnoreCase),
         // tjsb0 (D20 Secret Base): a single Wall/Floor/lava split, no alternate district palette.
         ["tjsb0"] = new(StringComparer.OrdinalIgnoreCase),
@@ -1247,6 +1255,14 @@ public class TileCoverageCensusTests
         // cells) are handled via PilotExpectedExemptions, not this bucket -- see
         // BaseGameTilesetProfiles.RuralWinter's own doc comment.
         ["tts01"] = new(StringComparer.OrdinalIgnoreCase),
+        // tno01: ridge/road are wired directly on the base CastleExteriorRural profile (RampCrosser/
+        // RoadCrosser). stonewall/smallwall/sandbank/river/bridge have no dedicated crosser-slot wiring
+        // -- their doorless, ungrouped tiles resolve via CornerEdgeResolver directly regardless, and the
+        // door-bearing solo groups that use them (GrassLowWall_gate1/2, DirtLowWall_gate1/2,
+        // CastleCrosser_Grass_Breach, Smallwall Break, Smallwall Stairs_Dirt/Grass) are wired as
+        // SetPieces directly on the base profile. "lists"/"listssmall" carry no GROUP and no door-
+        // bearing tile at all -- see BaseGameTilesetProfiles.CastleExteriorRural's own doc comment.
+        ["tno01"] = new(StringComparer.OrdinalIgnoreCase),
         // fcx01: "pont" (Bridge-equivalent, gates the holes chasm) has no wired body/port or
         // DoorSlotCrossers vocabulary -- see BaseGameTilesetProfiles.FutCity's own doc comment. "murs"
         // is NOT here: it's wired via DoorSlotCrossers("murs"). "Routes" is no longer here either:
@@ -1623,6 +1639,110 @@ public class TileCoverageCensusTests
         ("tts01", "TILE229"),
         ("tts01", "TILE230"),
 
+        // Castle Exterior, Rural* (tno01) -- see BaseGameTilesetProfiles.CastleExteriorRural's own doc
+        // comment for the composition/variant writeup. Six proof-backed exemption families:
+        //
+        // (1) The sandbank family: every group carrying a "sandbank" member edge
+        // (Boat_cliff_Landed, Cave Sandbank Entry 1x1, cliff_caveentry_1x2, cliff_path1 -- BOTH
+        // same-named copies share the same failing shape -- CliffPath_3x3, Shipwreck_clifs).
+        // ClassifyMultiTileSetPiece rejects any member edge outside the doorway/body vocabulary
+        // (IsAllowedMemberEdge), and "sandbank" is neither canonical nor declared: these are
+        // cliff+grass shoreline paths, not placeable set pieces under any tno01 composition.
+        ("tno01", "GROUP:Boat_cliff_Landed"),
+        ("tno01", "GROUP:Cave Sandbank Entry 1x1"),
+        ("tno01", "GROUP:cliff_caveentry_1x2"),
+        ("tno01", "GROUP:cliff_path1"),
+        ("tno01", "GROUP:CliffPath_3x3"),
+        ("tno01", "GROUP:Shipwreck_clifs"),
+        //
+        // (2) Solo gates on non-tunnel crosser families (stonewall/smallwall/river/road) -- the
+        // identical shape ttr01's own "Wall - Gate"/"Footbridge" exemptions document. An open-cornered
+        // solo group carrying a non-tunnel crosser edge fails every classification branch
+        // (CorridorInsert only splices Corridor/Alley/Fence/Bridge; the WallRoom/OpenSetPiece path
+        // rejects the member edge). The two all-SOLID-cornered road gates (CliffRoad_gate all-cliff,
+        // WaterRoad_gate all-water) WOULD classify WallRoom under a DoorSlotCrossers("road")
+        // declaration -- measured directly under exactly that probe profile: 0/100 isolated on every
+        // one of Complex/Halls/Organic for both (this tileset has no Tunnel vocabulary, so the wall
+        // faces WallRoom needs never carve, and the OpenLane boundary fallback never corner-matches
+        // them either) -- declared here with the rate proof instead of wired as dead RNG weight.
+        ("tno01", "GROUP:CastleCrosser_Grass_Breach"),
+        ("tno01", "GROUP:Smallwall Break"),
+        ("tno01", "GROUP:Smallwall Stairs_Dirt"),
+        ("tno01", "GROUP:Smallwall Stairs_Grass"),
+        ("tno01", "GROUP:GrassLowWall_gate1"),
+        ("tno01", "GROUP:GrassLowWall_gate2"),
+        ("tno01", "GROUP:DirtLowWall_gate1"),
+        ("tno01", "GROUP:DirtLowWall_gate2"),
+        ("tno01", "GROUP:Footbridge_Dirt"),
+        ("tno01", "GROUP:Footbridge_Grass"),
+        ("tno01", "GROUP:CliffRoad_gate"),
+        ("tno01", "GROUP:WaterRoad_gate"),
+        //
+        // (3) All-solid-cornered DOORLESS solo boats (Boat_cliff/Floating Island all-cliff pathnode
+        // P, Boat_water all-water pathnode T): with neither a door (WallAlcove's trigger) nor a
+        // doorway/body crosser (WallRoom/CorridorStub's) nor an open corner (OpenSetPiece's), no
+        // classification branch applies -- the identical shape ttr01's own "Ship - Floating"
+        // exemption documents.
+        ("tno01", "GROUP:Boat_cliff"),
+        ("tno01", "GROUP:Floating Island"),
+        ("tno01", "GROUP:Boat_water"),
+        //
+        // (4) THREE-terrain castle gate groups (castlewall+dirt+grass on the same group):
+        // LayoutGroupStamper's OpenSetPiece corner rule is a strict TWO-terrain match (solid+open, or
+        // solid+secondary), so a three-terrain group fails classification under every tno01
+        // composition -- the same "no mechanism models this" class as ttd01's own crossroads-gate
+        // exemption. The four drawbridge pieces stack a fourth terrain (water or cliff) AND "road"
+        // member edges on top of the same conflict.
+        ("tno01", "GROUP:Castle Gate Walkable 2x1"),
+        ("tno01", "GROUP:CastleGate2 2x1"),
+        ("tno01", "GROUP:CastleWall Entrance"),
+        ("tno01", "GROUP:CastleWall Entrance Walkable"),
+        ("tno01", "GROUP:CastleWall4"),
+        ("tno01", "GROUP:CastleWall4 Walkable"),
+        ("tno01", "GROUP:Drawbridge 1x2"),
+        ("tno01", "GROUP:Drawbridge_cliff_1x2"),
+        ("tno01", "GROUP:drawbridge_passage"),
+        ("tno01", "GROUP:drawbridge_passage_cliff"),
+        //
+        // (5) CaveWall2x1 (castlewall+cliff, doorless, crosser-free): cliff is a SOLID material in
+        // this tileset's own base composition and is never walkable (pathnodes P/H/W/I) -- no
+        // composition can cast it as the Open (or Secondary) side of the two-terrain OpenSetPiece
+        // rule, and with both terrains being wall materials neither WallAlcove (no door) nor WallRoom
+        // (no doorway edge) applies. A castle-wall-meets-rock adapter, not a placeable piece.
+        ("tno01", "GROUP:CaveWall2x1"),
+        //
+        // (6) Ungrouped door-bearing tiles, two shapes -- the same genuinely-unreachable classes
+        // ttd01's Svirfneblin/Poor door tiles and zin01's TILE541/551/846/879 document:
+        //   (6a) 45 crosser-FREE door tiles on mixed corners (the keep-wall door family: keep+grass,
+        //        keep+dirt, keep+castlewall, keep+cliff, keep+water blends, plus TILE625 dirt+water):
+        //        TileResolver's admission gate excludes door-bearing crosser-free tiles (TileDoorPlanner's
+        //        inventory instead), and TileDoorPlanner's single-Doorway-edge rule can never fire --
+        //        tno01 declares no "Doorway" crosser anywhere.
+        //   (6b) 31 door tiles carrying a non-door-implying crosser (smallwall/stonewall/river/road
+        //        gate cells, incl. the road+stonewall crossroads TILE869/872/899): the crosser+door
+        //        admission gate requires a Doorway/Bridge/declared-extra edge, and no DoorSlotCrossers
+        //        vocabulary is declared (nor warranted -- the wall families never carve; see the
+        //        GROUP-level road-gate 0/100 probe above).
+        ("tno01", "TILE218"), ("tno01", "TILE228"), ("tno01", "TILE235"), ("tno01", "TILE241"),
+        ("tno01", "TILE625"), ("tno01", "TILE675"), ("tno01", "TILE755"), ("tno01", "TILE785"),
+        ("tno01", "TILE789"), ("tno01", "TILE791"), ("tno01", "TILE794"), ("tno01", "TILE799"),
+        ("tno01", "TILE801"), ("tno01", "TILE803"), ("tno01", "TILE805"), ("tno01", "TILE810"),
+        ("tno01", "TILE812"), ("tno01", "TILE818"), ("tno01", "TILE819"), ("tno01", "TILE820"),
+        ("tno01", "TILE821"), ("tno01", "TILE822"), ("tno01", "TILE828"), ("tno01", "TILE829"),
+        ("tno01", "TILE830"), ("tno01", "TILE832"), ("tno01", "TILE867"), ("tno01", "TILE868"),
+        ("tno01", "TILE869"), ("tno01", "TILE872"), ("tno01", "TILE878"), ("tno01", "TILE899"),
+        ("tno01", "TILE900"), ("tno01", "TILE901"), ("tno01", "TILE913"), ("tno01", "TILE915"),
+        ("tno01", "TILE919"), ("tno01", "TILE920"), ("tno01", "TILE989"), ("tno01", "TILE1025"),
+        ("tno01", "TILE1026"), ("tno01", "TILE1027"), ("tno01", "TILE1028"), ("tno01", "TILE1030"),
+        ("tno01", "TILE1031"), ("tno01", "TILE1032"), ("tno01", "TILE1034"), ("tno01", "TILE1035"),
+        ("tno01", "TILE1037"), ("tno01", "TILE1038"), ("tno01", "TILE1039"), ("tno01", "TILE1040"),
+        ("tno01", "TILE1042"), ("tno01", "TILE1043"), ("tno01", "TILE1044"), ("tno01", "TILE1045"),
+        ("tno01", "TILE1046"), ("tno01", "TILE1080"), ("tno01", "TILE1083"), ("tno01", "TILE1085"),
+        ("tno01", "TILE1087"), ("tno01", "TILE1088"), ("tno01", "TILE1089"), ("tno01", "TILE1095"),
+        ("tno01", "TILE1113"), ("tno01", "TILE1114"), ("tno01", "TILE1116"), ("tno01", "TILE1117"),
+        ("tno01", "TILE1120"), ("tno01", "TILE1122"), ("tno01", "TILE1123"), ("tno01", "TILE1202"),
+        ("tno01", "TILE1206"), ("tno01", "TILE1207"), ("tno01", "TILE1209"), ("tno01", "TILE1215"),
+
         // D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc comment for
         // the full writeup. "platform1" (2x2, uniformly holes-cornered, one door-bearing member) has no
         // wired path: the doorless pure-Solid shape "b_tower02"/"d_tower02" use classifies fine, but a
@@ -1799,6 +1919,7 @@ public class TileCoverageCensusTests
         "jac01",
         "ttr01",
         "tts01",
+        "tno01",
         "fcx01",
         "tjsb0", "tbx78", "tqq01", "udp2",
         "zde01",
@@ -1830,6 +1951,7 @@ public class TileCoverageCensusTests
             "jac01" => BaseGameTilesetProfiles.Jungle,
             "ttr01" => BaseGameTilesetProfiles.RuralGrass,
             "tts01" => BaseGameTilesetProfiles.RuralWinter,
+            "tno01" => BaseGameTilesetProfiles.CastleExteriorRural,
             "fcx01" => BaseGameTilesetProfiles.FutCity,
             "tjsb0" => BaseGameTilesetProfiles.SecretBase,
             "tbx78" => BaseGameTilesetProfiles.ModernFacility,
@@ -1979,6 +2101,20 @@ public class TileCoverageCensusTests
             TestContext.WriteLine($"  {kv.Key,-24} {kv.Value,4} tiles");
         foreach (var kv in exemptions.GroupBy(e => e.Reason).OrderByDescending(g => g.Count()))
             TestContext.WriteLine($"  EXEMPT: {kv.Key,-90} {kv.Count(),4} tiles");
+
+        // Diagnostic detail for genuinely-unaccounted tiles: prints one shape line per UNCLASSIFIED
+        // entry (corners/edges/heights/doors/owning group) so a failing onboarding pass can read the
+        // gap list straight out of the test output instead of re-deriving it with an offline probe.
+        foreach (var e in exemptions.Where(e => e.Reason == "UNCLASSIFIED"))
+        {
+            var idText = e.TileOrGroup.Substring(4);
+            var spaceIdx = idText.IndexOf(' ');
+            var unclassifiedId = int.Parse(spaceIdx < 0 ? idText : idText.Substring(0, spaceIdx));
+            var t = model.Tiles[unclassifiedId];
+            var grpName = t.GroupIndex >= 0 ? model.Groups[t.GroupIndex].Name : "(ungrouped)";
+            TestContext.WriteLine(
+                $"  UNCLASSIFIED TILE{unclassifiedId}: corners=[{string.Join(",", t.Corners)}] edges=[{string.Join(",", t.Edges)}] heights=[{string.Join(",", t.CornerHeights)}] doors={t.Doors.Count} pathNode={t.PathNode} group='{grpName}'");
+        }
 
         // ---- assertions ----
         // Every tile must be either reachable, or carry an honest, reasoned exemption (automatic

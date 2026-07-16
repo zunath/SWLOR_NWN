@@ -128,6 +128,18 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.RuralWinterGoodCastle,
         BaseGameTilesetProfiles.RuralWinterEvilCastle,
         BaseGameTilesetProfiles.RuralWinterWater,
+        // Wave-9: Castle Exterior, Rural* (tno01, hak wins over the basegame_sets fallback -- the
+        // first confirmed hak-SHRINKS case, see BaseGameTilesetProfiles.CastleExteriorRural's own
+        // hak-vs-vanilla doc comment). Multi-district exterior: cliff-solid base plus five
+        // PaletteVariant districts (Village castlewall/dirt, Castle Wall castlewall/grass, Keep
+        // keep/grass, Water water/grass, Harbor water/dirt), every pairing 16/16-verified and
+        // pipeline-swept.
+        BaseGameTilesetProfiles.CastleExteriorRural,
+        BaseGameTilesetProfiles.CastleExteriorRuralVillage,
+        BaseGameTilesetProfiles.CastleExteriorRuralCastleWall,
+        BaseGameTilesetProfiles.CastleExteriorRuralKeep,
+        BaseGameTilesetProfiles.CastleExteriorRuralWater,
+        BaseGameTilesetProfiles.CastleExteriorRuralHarbor,
         // Wave-4: D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc
         // comment. Same "no Tunnel vocabulary through the composed solid" shape as the exterior wave
         // above, verified via TunnelVocabularyCheckTests' fcx01 entries.

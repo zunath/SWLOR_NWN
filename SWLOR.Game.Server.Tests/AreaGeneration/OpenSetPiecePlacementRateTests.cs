@@ -664,4 +664,159 @@ public class OpenSetPiecePlacementRateTests
         airHits.Should().BeGreaterOrEqualTo((int)(airSuccesses * 0.5),
             $"'Ship - Air, Above Water (3x1)' must place on a meaningful share of the {airSuccesses} successful seeds (got {airHits})");
     }
+
+    // ---------------- tno01 Castle Exterior, Rural* placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for tno01's wall-material door groups, the same shape as
+    /// RuralGrassCastleDoorGroups_PlaceAsGroupExits above: each group's mixed solid/open corner tile
+    /// only ever appears in a real corner grid once its own variant composes the wall material
+    /// (castlewall or keep) as a genuine Solid terrain, and "CliffStairs" (cliff+grass) matches the
+    /// base profile's own cliff walls directly. Measured (ProbeTool, seedBase 95000, 150 seeds each,
+    /// successes=150): all five place 150/150 (100%). KeepDoor_Dirt and KeepTop_Stairs are
+    /// DELIBERATELY NOT wired or measured here -- 0/150 each (dirt never composes in the Keep
+    /// variant; an ALL-keep door tile can never corner-match GroupExitPlanner's wall-ring candidates,
+    /// which always carry open-facing corners) -- see BaseGameTilesetProfiles.CastleExteriorRuralKeep's
+    /// own doc comment.
+    /// </summary>
+    [Test]
+    public void CastleExteriorRuralWallDoorGroups_PlaceAsGroupExits()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var profiles = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+
+        foreach (var (profileKey, groupName) in new[]
+                 {
+                     (BaseGameTilesetProfiles.CastleExteriorRuralCastleWall, "OuterWallDoor2"),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralCastleWall, "OuterWallDoor3"),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralCastleWall, "WallRaiseGate"),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralKeep, "KeepDoor_Grass"),
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "CliffStairs"),
+                 })
+        {
+            var tilesetProfile = profiles[profileKey];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(130);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' on '{profileKey}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for tno01's ALL-open-cornered house/tent door groups: on the base profile
+    /// (grass copies of the halfling/tent family) and the Village variant (dirt copies of the
+    /// duplicated house family -- FindGroup's first-match-by-name rule always resolves a duplicated
+    /// name to its dirt copy, see BaseGameTilesetProfiles.CastleExteriorRural's own doc comment).
+    /// Unlike the mixed-corner wall doors above, an all-open door tile only corner-matches an
+    /// interstitial ring cell whose every corner happens to be open (a cell BETWEEN two open rooms),
+    /// so the rate sits near 40%, not 100%. Measured (ProbeTool, seedBase 95000, 150 seeds each,
+    /// successes=150): base grass exits 61/150 (40.7%), Village dirt exits 59/150 (39.3%). Threshold
+    /// set well under the measured floor for safety margin.
+    /// </summary>
+    [Test]
+    public void CastleExteriorRuralOpenCorneredExitGroups_PlaceAsGroupExits()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var profiles = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+
+        foreach (var (profileKey, groupName) in new[]
+                 {
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Halfling Burrow"),
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Thatch_House_1"),
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Ice_Cellar"),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralVillage, "house 1x1 m61"),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralVillage, "City_House_1x1_Tower_1"),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralVillage, "Crypt_Dirt"),
+                 })
+        {
+            var tilesetProfile = profiles[profileKey];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(130);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.2),
+                $"'{groupName}' on '{profileKey}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for tno01's building set pieces across the base (grass), Village (dirt), Water
+    /// (grass-shoreline), and Harbor (dirt-waterfront) compositions. Measured rates (ProbeTool,
+    /// seedBase 95000, 150 seeds each, successes=150): Cog_3x1 and Ship_4x1_cliffs 150/150 (WallAlcove
+    /// hulls embedded in the cliff mass); Range 56.0%; Tent 1 29.3%; Village CoachInn/Inn 2x2/
+    /// house_2x2_m40 all 29.3%; Water Grass_docks 89.3%, Ship_3x1_water and Ship_4x1_water 150/150
+    /// (WallAlcove in the water mass); Harbor Docks_City 67.3%, City_boat_docked 40.7%,
+    /// Ship_3x1_Docked 11.3%. Thresholds set well under each measured rate for safety margin.
+    /// </summary>
+    [Test]
+    public void CastleExteriorRuralSetPieces_PlaceInIsolation()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var profiles = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+
+        foreach (var (profileKey, groupName, minShare) in new[]
+                 {
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Cog_3x1", 0.5),
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Ship_4x1_cliffs", 0.5),
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Range", 0.25),
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Tent 1", 0.1),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralVillage, "CoachInn", 0.1),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralVillage, "Inn 2x2", 0.1),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralVillage, "house_2x2_m40", 0.1),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralWater, "Grass_docks", 0.5),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralWater, "Ship_3x1_water", 0.5),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralWater, "Ship_4x1_water", 0.5),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralHarbor, "Docks_City", 0.3),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralHarbor, "City_boat_docked", 0.2),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralHarbor, "Ship_3x1_Docked", 0.04),
+                 })
+        {
+            var tilesetProfile = profiles[profileKey];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(130);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' on '{profileKey}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceilings for tno01's four wired-but-currently-unplaceable pieces (the
+    /// same "documented, not silently regressed" shape as
+    /// RuralGrassWaterOpenSetPieces_ShipDockedPlacesButNonflatBankPiecesDoNot above): "FantasyTower
+    /// 4x4" and "Tower3 m69 3x3" need a room with a larger contiguous open interior than a 20x20
+    /// area's Halls rooms ever produce (the ttd01 palais_jabba/Astroport footprint precedent); "Cave"
+    /// (ReliefPiece) needs a painted raised rim edge whose exact corner field Halls' relief budget
+    /// rarely produces at this size; "DockedShip_City" (4x2, 6 members) needs a water/dirt shoreline
+    /// pattern that never spontaneously occurs inside a generated room. All measured 0/150 in
+    /// isolation. If any starts placing, room/relief generation changed and the affected test (and
+    /// its doc comment) should be revisited deliberately, not silently deleted.
+    /// </summary>
+    [Test]
+    public void CastleExteriorRuralLargeFootprintPieces_StillDoNotPlace_DocumentedCeilings()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var profiles = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+
+        foreach (var (profileKey, groupName) in new[]
+                 {
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "FantasyTower 4x4"),
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Tower3 m69 3x3"),
+                     (BaseGameTilesetProfiles.CastleExteriorRural, "Cave"),
+                     (BaseGameTilesetProfiles.CastleExteriorRuralHarbor, "DockedShip_City"),
+                 })
+        {
+            var tilesetProfile = profiles[profileKey];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(130);
+            hits.Should().Be(0,
+                $"'{groupName}' on '{profileKey}' has a documented placement ceiling at this size -- " +
+                "if it ever starts placing, generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
 }

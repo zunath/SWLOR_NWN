@@ -207,6 +207,18 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.RuralWinterGoodCastle,
         BaseGameTilesetProfiles.RuralWinterEvilCastle,
         BaseGameTilesetProfiles.RuralWinterWater,
+        // Castle Exterior, Rural* (tno01): declares NO canonical "Corridor"/"Doorway" crosser at all
+        // (verified directly -- its nine crossers are road/ridge/bridge/smallwall/sandbank/stonewall/
+        // river/lists/listssmall), the same shape as the ttd01/ttf01/jac01/ttr01/tts01 exterior wave --
+        // Complex downgrades to OpenLane for all six profiles (base + the five PaletteVariant
+        // districts) regardless of which terrain each composes as Solid. See
+        // BaseGameTilesetProfiles.CastleExteriorRural's own doc comment.
+        BaseGameTilesetProfiles.CastleExteriorRural,
+        BaseGameTilesetProfiles.CastleExteriorRuralVillage,
+        BaseGameTilesetProfiles.CastleExteriorRuralCastleWall,
+        BaseGameTilesetProfiles.CastleExteriorRuralKeep,
+        BaseGameTilesetProfiles.CastleExteriorRuralWater,
+        BaseGameTilesetProfiles.CastleExteriorRuralHarbor,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

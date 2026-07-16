@@ -1347,6 +1347,7 @@
 "StatusEffect","TwinGuardStanceStatusEffect","Twin Guard Stance","Beneficial",,"ief_twingrdstnc","SWLOR.Game.Server\Feature\StatusEffectDefinition\TwinGuardStanceStatusEffect.cs"
 "StatusEffect","TwinInterceptStatusEffect","Twin Intercept","Beneficial",,"ief_twinintc","SWLOR.Game.Server\Feature\StatusEffectDefinition\TwinInterceptStatusEffect.cs"
 "StatusEffect","UnbreakableBeast1StatusEffect","Unbreakable Beast","Beneficial","1","ief_unbrkbst1","SWLOR.Game.Server\Feature\StatusEffectDefinition\UnbreakableBeast1StatusEffect.cs"
+"StatusEffect","UnbreakableStatusEffect","Unbreakable","Beneficial",,"ief_unbrk","SWLOR.Game.Server\Feature\StatusEffectDefinition\UnbreakableStatusEffect.cs"
 "StatusEffect","UnmovingCenterStatusEffect","Unmoving Center","Beneficial",,"ief_unmovecntr","SWLOR.Game.Server\Feature\StatusEffectDefinition\UnmovingCenterStatusEffect.cs"
 "StatusEffect","UnstablePressureStatusEffect","Unstable Pressure","Harmful",,"ief_nstblprssr","SWLOR.Game.Server\Feature\StatusEffectDefinition\UnstablePressureStatusEffect.cs"
 "StatusEffect","UntouchableInstinct1StatusEffect","Untouchable Instinct","Beneficial","1","ief_untchinst1","SWLOR.Game.Server\Feature\StatusEffectDefinition\UntouchableInstinct1StatusEffect.cs"

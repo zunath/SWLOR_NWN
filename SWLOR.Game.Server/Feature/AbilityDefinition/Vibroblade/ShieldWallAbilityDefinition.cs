@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -10,7 +11,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
     {
         private const string ReplacementAnimationName = "Shield_Wall";
         private const float ChannelSeconds = 30f;
-        private const float DurationSeconds = 30f;
+
+        // The damage reduction only lasts while channeling, so the status runs for the channel itself
+        // and is removed early if the channel is interrupted.
+        private const float DurationSeconds = ChannelSeconds;
         private const int StaminaCost = 10;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -36,7 +40,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Name(name)
                     .Level(level)
                     .HasRecastDelay(RecastGroup.ShieldWall, 45f)
-                    .UsesAnimationOverwrite(ReplacementAnimationName),
+                    .UsesAnimationOverwrite(ReplacementAnimationName)
+                    .IsChanneledAbility(activator => StatusEffect.RemoveStatusEffectFromAllTargetsBySource(
+                        typeof(ShieldWallStatusEffect),
+                        activator,
+                        false)),
                 () => new ShieldWallStatusEffect(damageReductionPercent),
                 DurationSeconds,
                 StaminaCost,

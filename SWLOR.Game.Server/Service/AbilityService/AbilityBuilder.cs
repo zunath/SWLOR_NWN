@@ -67,6 +67,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Marks the activation delay as a channel: the ability's impact, costs, and recast delay all
+        /// apply when the channel starts and the granted effects run for the channel itself.
+        /// Interrupting the channel runs the interrupt action so the granted effects end early;
+        /// the recast delay is not refunded.
+        /// </summary>
+        /// <param name="channelInterruptAction">Action run against the activator when the channel is interrupted.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder IsChanneledAbility(Action<uint> channelInterruptAction)
+        {
+            _activeAbility.IsChanneled = true;
+            _activeAbility.ChannelInterruptAction = channelInterruptAction;
+
+            return this;
+        }
+
+        /// <summary>
         /// Indicates this ability can be used while in space.
         /// </summary>
         /// <returns>An ability builder with the configured options.</returns>

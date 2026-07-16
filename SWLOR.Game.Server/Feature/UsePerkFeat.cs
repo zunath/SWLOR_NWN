@@ -378,7 +378,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Recursive function which checks if player has moved since starting the casting.
-            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, List<string> activationTelegraphIds)
+            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, List<string> activationTelegraphIds, uint resumeAttackTarget)
             {
                 if (!GetIsPC(activator)) return;
 
@@ -399,10 +399,20 @@ namespace SWLOR.Game.Server.Feature
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.");
                     SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
+
+                    // Release the activator immediately - the busy state must not linger for the
+                    // remainder of the activation delay.
+                    Activity.ClearBusy(activator);
+
+                    // Channeled abilities granted their effects at channel start; end them early.
+                    if (ability.IsChanneled)
+                        ability.ChannelInterruptAction?.Invoke(activator);
+
+                    ResumeAttack(activator, resumeAttackTarget);
                     return;
                 }
 
-                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphIds));
+                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphIds, resumeAttackTarget));
             }
 
             // This method is called after the delay of the ability has finished.
@@ -417,13 +427,30 @@ namespace SWLOR.Game.Server.Feature
                         ResumeAttack(activator, resumeAttackTarget);
                 }
 
+                // Interrupted activations were already fully released (busy cleared, channel effects
+                // ended, attack resumed) the moment the interruption was detected, and the activator
+                // may have started a new activation since - don't clear that one's busy state.
+                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted)
+                {
+                    DeleteLocalInt(activator, activationId);
+                    return;
+                }
+
                 Activity.ClearBusy(activator);
 
-                // Moved during casting or activator died. Cancel the activation.
+                // Activator died during casting. Cancel the activation.
                 var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
-                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || !activatorIsAlive)
+                if (!activatorIsAlive)
                 {
-                    CancelActivation(activatorIsAlive);
+                    CancelActivation(false);
+                    return;
+                }
+
+                // Channeled abilities applied their impact, costs, and recast when the channel
+                // started; completing the channel only releases the activator.
+                if (ability.IsChanneled)
+                {
+                    CancelActivation(true);
                     return;
                 }
 
@@ -465,7 +492,7 @@ namespace SWLOR.Game.Server.Feature
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
             var activationTelegraphIds = ProcessAnimationAndVisualEffects(activationDelay);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
-            CheckForActivationInterruption(activationId, position, activationTelegraphIds);
+            CheckForActivationInterruption(activationId, position, activationTelegraphIds, resumeAttackTarget);
 
             var executeImpact = ability.ActivationAction == null
                 ? true
@@ -485,6 +512,17 @@ namespace SWLOR.Game.Server.Feature
                 {
                     PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
                 }
+            }
+
+            // Channeled abilities grant their effects for the length of the channel, so the impact,
+            // costs, and recast delay apply up front. Interruption ends the effects early via the
+            // channel interrupt action but does not refund the recast delay.
+            if (ability.IsChanneled)
+            {
+                ApplyRequirementEffects(activator, ability);
+                HandleStealthBreaking(activator, ability);
+                ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
+                Recast.ApplyRecastDelay(activator, ability.RecastGroup, recastDelay);
             }
 
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);

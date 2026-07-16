@@ -616,6 +616,12 @@ function Get-StatusEffectClasses([string]$path) {
         if ($content -match 'public\s+override\s+string\s+Name\s*=>\s*"([^"]+)"') {
             $name = $Matches[1]
         }
+        elseif ($content -match 'public\s+override\s+string\s+Name\s*=>\s*\$"([^"{]+)') {
+            # Interpolated names (e.g. stack counters such as "Cruel Momentum ({Stacks})") use their
+            # literal prefix as the static display name; the dynamic suffix is combat-log-only and the
+            # TLK/effecticons.2da row carries the base name.
+            $name = ($Matches[1] -replace '[\s(+\-]+$', '').Trim()
+        }
 
         $rank = Get-RankFromText ($className -replace "StatusEffect$", "")
         if ($null -eq $rank) {

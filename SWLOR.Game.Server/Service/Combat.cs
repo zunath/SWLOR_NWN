@@ -1047,6 +1047,40 @@ namespace SWLOR.Game.Server.Service
             return bonus;
         }
 
+        /// <summary>
+        /// Advances the auto-attack cycle counter for cycle perks with no radius (Follow-Through) and,
+        /// on the attack that completes the cycle, returns the cycle bonus as DMG so it feeds the
+        /// standard attack damage formula and scales with the attacker's stats. Radius-based cycle
+        /// perks (Edge Rhythm) hit a nearby enemy instead and are handled after the damage roll by
+        /// ApplyAutoAttackCycleDamage.
+        /// </summary>
+        public static int ConsumeAutoAttackCycleDamageBonus(uint attacker, SkillType skillType)
+        {
+            if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
+                return 0;
+
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleDamageSkillType));
+            var requiredCount = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleRequiredCount);
+            var cycleDamage = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleDamage);
+            var radius = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleRadiusMeters);
+            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+                requiredCount <= 0 ||
+                cycleDamage <= 0 ||
+                radius > 0)
+                return 0;
+
+            _autoAttackCycleCounts.TryGetValue(attacker, out var count);
+            count++;
+            if (count < requiredCount)
+            {
+                _autoAttackCycleCounts[attacker] = count;
+                return 0;
+            }
+
+            _autoAttackCycleCounts[attacker] = 0;
+            return cycleDamage;
+        }
+
         private static void ApplyAutoAttackCycleDamage(uint attacker, uint defender, SkillType skillType)
         {
             if (!GetIsObjectValid(attacker) ||
@@ -1060,7 +1094,8 @@ namespace SWLOR.Game.Server.Service
             var radius = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleRadiusMeters);
             if (!SkillTypeMatches(skillType, requiredSkillType) ||
                 requiredCount <= 0 ||
-                cycleDamage <= 0)
+                cycleDamage <= 0 ||
+                radius <= 0)
                 return;
 
             _autoAttackCycleCounts.TryGetValue(attacker, out var count);
@@ -2267,12 +2302,12 @@ namespace SWLOR.Game.Server.Service
                 !TryUseStatTrigger(defender, StatType.LowHPPhysicalDefensePercentAdjustment, cooldown))
                 return;
 
-            TemporaryStatModifier.Replace(
+            // A visible status effect carries the defense bonus so the player can track the trigger.
+            StatusEffect.ApplyStatusEffect(
                 defender,
-                StatType.PhysicalDefensePercentAdjustment,
-                defensePercent,
-                duration,
-                StatType.LowHPPhysicalDefensePercentAdjustment);
+                defender,
+                new UnbreakableStatusEffect(defensePercent),
+                duration);
         }
 
         private static void ApplyLowHPEvasionEffect(uint defender, int damage)

@@ -62,6 +62,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public int MimicrySlotCost { get; set; }
 
         /// <summary>
+        /// When true the activation delay is a channel: the ability's impact, costs, and recast delay
+        /// all apply when the channel starts and the granted effects run for the channel itself.
+        /// Interrupting the channel ends it early via <see cref="ChannelInterruptAction"/> without
+        /// refunding the recast delay.
+        /// </summary>
+        public bool IsChanneled { get; set; }
+
+        /// <summary>
+        /// Invoked against the activator when a channeled ability is interrupted so the effects granted
+        /// at channel start can be ended early.
+        /// </summary>
+        public Action<uint> ChannelInterruptAction { get; set; }
+
+        /// <summary>
         /// When true this mimicked technique is a passive trait rather than an activated ability:
         /// equipping it applies <see cref="MimicryTraitStatusEffect"/> for as long as it is slotted
         /// (granting flat stats, a self-buff, or an on-hit proc chance) and it has no hotbar action.

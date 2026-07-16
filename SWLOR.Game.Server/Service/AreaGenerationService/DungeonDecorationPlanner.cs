@@ -130,6 +130,49 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         private const double VignetteTargetShare = 0.06;
 
+        /// <summary>
+        /// Share of the total decoration budget reserved for composed courtyard arrangements (see
+        /// PlanCourtyard) -- ONLY carved out of the wall-run budget when the composed palette actually
+        /// curates CourtyardCenter/Courtyard buckets AND at least one room has an interior anchor
+        /// (courtyardTarget stays 0 otherwise, so every tileset without curated courtyards keeps its
+        /// exact pre-courtyard budget split and RNG sequence). Evidence: hand-built fcx01 interior
+        /// items (&gt;2 tiles from walls/roads) are a major share of plaza dressing (13/19 decorated
+        /// areas carry them), arranged as centerpiece+ring clusters rather than scatter -- see the
+        /// July 2026 city-density pass courtyard measurement (ring clusters of 4-13 items at radius
+        /// ~4-9m around a floor decal/light/structure centerpiece).
+        /// </summary>
+        private const double CourtyardTargetShare = 0.12;
+
+        /// <summary>Ring member count bounds for one courtyard. Hand-built ring clusters measured
+        /// 4-13 members; 8 caps the generated ring so one courtyard can't eat a whole room's budget
+        /// (larger plazas instead qualify for a bigger ring via the room-area scaling below).</summary>
+        internal const int CourtyardMinRingItems = 4;
+        internal const int CourtyardMaxRingItems = 8;
+
+        /// <summary>Ring radius band (world units): base + up to jitter. Hand-built rings measured
+        /// mean radius 4.3-9.2; generated rooms are smaller than hand-built open districts (roads and
+        /// stamped buildings consume the rest of the plaza), so this sits at the band's lower half --
+        /// a 5.0-6.5 ring plus member jitter stays within the anchor's verified 2-tile interior
+        /// clearance.</summary>
+        internal const float CourtyardBaseRadius = 5.0f;
+        private const float CourtyardRadiusJitter = 1.5f;
+
+        /// <summary>
+        /// Interior clearance (Chebyshev, tiles) a courtyard anchor tile needs: every tile within
+        /// this range must belong to the same room (no walls, no stamped building footprints -- those
+        /// are removed from room.Tiles by the stamper -- no foreign rooms) and neither the anchor nor
+        /// any ring member may stand ON a road-carrying tile. Hand-built interior items sit &gt;2
+        /// tiles from walls/roads, but that distance is a property of hand-built areas' LARGE open
+        /// districts: measured against generated 32x32 fcx01 layouts (July 2026 city-density pass),
+        /// clearance 2 leaves literally ZERO qualifying rooms (0/206 packed, 0/157 complex -- roads
+        /// thread every generated plaza and stamped buildings consume the rest), while clearance 1
+        /// (a full 3x3 in-room block, anchor off the road surface) qualifies 50/206 and 13/157. The
+        /// ring's own radius band (5.0-6.5 + member jitter, under 7.5 world units) stays inside the
+        /// verified 3x3 block, so clearance 1 is sufficient for every position the arrangement can
+        /// emit.
+        /// </summary>
+        private const int CourtyardInteriorClearance = 1;
+
         /// <summary>A room counts as corridor-like when its shorter bounding-box axis is this narrow.</summary>
         private const int CorridorLikeMaxSpan = 2;
 
@@ -238,9 +281,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             var excluded = BuildExclusionSet(layout);
 
+            // Courtyards only exist for palettes that curate BOTH courtyard buckets -- everything
+            // below (anchor search, budget share, per-room roll) is skipped entirely otherwise, so a
+            // palette without courtyards keeps its exact pre-courtyard budget split and RNG sequence.
+            byContext.TryGetValue(DecorationContext.CourtyardCenter, out var courtyardCenterEntries);
+            byContext.TryGetValue(DecorationContext.Courtyard, out var courtyardRingEntries);
+            var courtyardsCurated = courtyardCenterEntries is { Count: > 0 } && courtyardRingEntries is { Count: > 0 };
+
             // Precompute each non-set-piece room's shape classification once — reused across every
             // pass so they can never drift out of sync with each other.
-            var rooms = new List<(LayoutRoom Room, bool IsCorridorLike, HashSet<(int X, int Y)> TileSet)>();
+            var rooms = new List<(LayoutRoom Room, bool IsCorridorLike, HashSet<(int X, int Y)> TileSet, (int X, int Y)? CourtyardAnchor)>();
             foreach (var room in layout.Rooms)
             {
                 if (room.IsSetPiece || room.Tiles.Count == 0)
@@ -249,7 +299,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var (minX, maxX, minY, maxY) = BoundingBox(room.Tiles);
                 var spanX = maxX - minX + 1;
                 var spanY = maxY - minY + 1;
-                rooms.Add((room, Math.Min(spanX, spanY) <= CorridorLikeMaxSpan, new HashSet<(int X, int Y)>(room.Tiles)));
+                var isCorridorLike = Math.Min(spanX, spanY) <= CorridorLikeMaxSpan;
+                var roomTileSet = new HashSet<(int X, int Y)>(room.Tiles);
+                var courtyardAnchor = courtyardsCurated && !isCorridorLike
+                    ? FindCourtyardAnchor(room, roomTileSet, excluded, layout, roadCrosser)
+                    : null;
+                rooms.Add((room, isCorridorLike, roomTileSet, courtyardAnchor));
             }
 
             var tileToRoom = new Dictionary<(int X, int Y), int>();
@@ -265,7 +320,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var wallEligibleCount = 0;
             var centerEligibleRoomCount = 0;
             var vignetteEligibleRoomCount = 0;
-            foreach (var (room, isCorridorLike, tileSet) in rooms)
+            var courtyardEligibleRoomCount = rooms.Count(r => r.CourtyardAnchor != null);
+            foreach (var (room, isCorridorLike, tileSet, _) in rooms)
             {
                 if (!isCorridorLike && room.Tiles.Count >= MinCenterpieceRoomTiles &&
                     byContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntriesProbe) &&
@@ -298,7 +354,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var centerTarget = targetCount * CenterpieceTargetShare;
             var doorwayFlankTarget = targetCount * DoorwayFlankTargetShare;
             var vignetteTarget = targetCount * VignetteTargetShare;
-            var wallTarget = Math.Max(0.0, targetCount - centerTarget - doorwayFlankTarget - vignetteTarget);
+            // Strictly zero unless the palette curates courtyards AND a room can host one -- see
+            // CourtyardTargetShare's doc comment (palettes without courtyards keep the exact
+            // pre-courtyard budget split).
+            var courtyardTarget = courtyardsCurated && courtyardEligibleRoomCount > 0
+                ? targetCount * CourtyardTargetShare
+                : 0.0;
+            var wallTarget = Math.Max(0.0, targetCount - centerTarget - doorwayFlankTarget - vignetteTarget - courtyardTarget);
 
             var wallProbability = wallEligibleCount > 0 ? Math.Min(1.0, wallTarget / wallEligibleCount) : 0.0;
             var centerProbability = centerEligibleRoomCount > 0 ? Math.Min(0.95, centerTarget / centerEligibleRoomCount) : 0.0;
@@ -309,6 +371,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 : 0.0;
             var vignetteProbability = vignetteEligibleRoomCount > 0 && vignettes.Count > 0
                 ? Math.Min(0.9, vignetteTarget / vignetteEligibleRoomCount)
+                : 0.0;
+            // One courtyard EVENT places 1 centerpiece + a ring (mid-band ring size), so the per-room
+            // roll targets the event count, mirroring the doorway-flank pair convention above.
+            var courtyardExpectedItems = 1.0 + (CourtyardMinRingItems + CourtyardMaxRingItems) / 2.0;
+            var courtyardProbability = courtyardTarget > 0
+                ? Math.Min(0.9, (courtyardTarget / courtyardExpectedItems) / courtyardEligibleRoomCount)
                 : 0.0;
 
             var rng = new System.Random(layout.Seed ^ SeedSalt);
@@ -339,11 +407,25 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // PASS 2b: per-room centerpiece, vignette, then rhythmic wall/corridor runs.
             var motifCache = new Dictionary<(int RoomId, DecorationContext Context), List<string>>();
 
-            foreach (var (room, isCorridorLike, tileSet) in rooms)
+            foreach (var (room, isCorridorLike, tileSet, courtyardAnchor) in rooms)
             {
                 (int X, int Y)? centerpieceAnchor = null;
 
-                if (!isCorridorLike && room.Tiles.Count >= MinCenterpieceRoomTiles &&
+                // Courtyard first: when one lands, it IS this room's interior arrangement -- the
+                // plain single-item centerpiece roll is skipped for the room (its centerpiece slot is
+                // the courtyard's own center) so the two interior mechanisms never double-dress the
+                // same plaza.
+                var courtyardPlaced = false;
+                if (courtyardAnchor != null && courtyardProbability > 0 && rng.NextDouble() < courtyardProbability)
+                {
+                    courtyardPlaced = PlanCourtyard(
+                        plan, room, tileSet, courtyardAnchor.Value, courtyardCenterEntries, courtyardRingEntries,
+                        excluded, consumedTiles, layout, roadCrosser, rng);
+                    if (courtyardPlaced)
+                        centerpieceAnchor = courtyardAnchor;
+                }
+
+                if (!courtyardPlaced && !isCorridorLike && room.Tiles.Count >= MinCenterpieceRoomTiles &&
                     byContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntries) &&
                     centerEntries.Count > 0 &&
                     rng.NextDouble() < centerProbability)
@@ -418,7 +500,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         private static List<(int TransitionIndex, (int X, int Y) A, (int X, int Y) B)> FindDoorwayFlankPairs(
             ResolvedLayout layout, HashSet<(int X, int Y)> excluded, Dictionary<(int X, int Y), int> tileToRoom,
-            List<(LayoutRoom Room, bool IsCorridorLike, HashSet<(int X, int Y)> TileSet)> rooms)
+            List<(LayoutRoom Room, bool IsCorridorLike, HashSet<(int X, int Y)> TileSet, (int X, int Y)? CourtyardAnchor)> rooms)
         {
             var results = new List<(int, (int X, int Y), (int X, int Y))>();
 
@@ -650,6 +732,152 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
+        /// Finds a room's courtyard anchor: the room tile with the deepest verified interior
+        /// clearance (every tile within <see cref="CourtyardInteriorClearance"/> Chebyshev range
+        /// belongs to this same room -- walls, stamped building footprints, and foreign rooms all
+        /// fail the tile-set test), that is not the reserved CenterTile, not excluded, and does not
+        /// itself carry a road edge (the arrangement never stands ON the street; mere road
+        /// ADJACENCY is allowed -- see CourtyardInteriorClearance's doc comment for the measured
+        /// generated-scale justification). Ties break on the room's stored tile order, so the anchor
+        /// is deterministic per layout with zero RNG. Returns null when the room has no interior at
+        /// all (small rooms, ring-shaped rooms, rooms fully consumed by roads/buildings).
+        /// </summary>
+        private static (int X, int Y)? FindCourtyardAnchor(
+            LayoutRoom room, HashSet<(int X, int Y)> tileSet, HashSet<(int X, int Y)> excluded,
+            ResolvedLayout layout, string roadCrosser)
+        {
+            (int X, int Y)? best = null;
+            var bestClearance = CourtyardInteriorClearance - 1;
+
+            foreach (var tile in room.Tiles)
+            {
+                if (excluded.Contains(tile) || tile == room.CenterTile)
+                    continue;
+                if (TileCarriesRoadEdge(tile, layout, roadCrosser))
+                    continue;
+
+                // Largest Chebyshev radius (up to clearance+1, no need to scan further) whose whole
+                // square block stays inside this room's own tiles.
+                var clearance = 0;
+                for (var radius = 1; radius <= CourtyardInteriorClearance + 1; radius++)
+                {
+                    var intact = true;
+                    for (var dx = -radius; dx <= radius && intact; dx++)
+                    for (var dy = -radius; dy <= radius && intact; dy++)
+                    {
+                        if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != radius)
+                            continue;
+                        if (!tileSet.Contains((tile.X + dx, tile.Y + dy)))
+                            intact = false;
+                    }
+
+                    if (!intact)
+                        break;
+                    clearance = radius;
+                }
+
+                if (clearance > bestClearance)
+                {
+                    bestClearance = clearance;
+                    best = tile;
+                }
+            }
+
+            return best;
+        }
+
+        /// <summary>
+        /// Composes one courtyard: a CourtyardCenter item standing at the anchor tile's center, ringed
+        /// by Courtyard-bucket items at a roughly constant radius and roughly even angles (small
+        /// deterministic jitter on both), each facing back at the centerpiece -- the arrangement mined
+        /// from hand-built fcx01 interior clusters (centerpiece + 4-13-member ring at radius ~4-9m;
+        /// see CourtyardTargetShare's doc comment). Ring size scales with room area. Ring members draw
+        /// from a small motif (2-3 distinct resrefs, cycled) so the ring reads as a composed mixed
+        /// arrangement, matching the hand-built clusters' 2-10 distinct-resref compositions. A ring
+        /// position whose tile falls outside the room (or on an excluded/consumed tile) is skipped;
+        /// the courtyard commits only when the centerpiece plus at least 3 ring members landed,
+        /// otherwise nothing is planned and the room falls back to the ordinary centerpiece roll.
+        /// </summary>
+        private static bool PlanCourtyard(
+            List<PlannedDecoration> plan, LayoutRoom room, HashSet<(int X, int Y)> tileSet, (int X, int Y) anchor,
+            List<DungeonDecorationEntry> centerEntries, List<DungeonDecorationEntry> ringEntries,
+            HashSet<(int X, int Y)> excluded, HashSet<(int X, int Y)> consumedTiles,
+            ResolvedLayout layout, string roadCrosser, System.Random rng)
+        {
+            var centerResref = PickWeighted(centerEntries, rng);
+            var center = TileCenter(anchor.X, anchor.Y);
+
+            // Room-area scaling: a 5x5-tile room rings 4-5 items, a 9x9 plaza rings the full 8.
+            var ringCount = Math.Clamp(3 + room.Tiles.Count / 16, CourtyardMinRingItems, CourtyardMaxRingItems);
+            var radius = CourtyardBaseRadius + (float)(rng.NextDouble() * CourtyardRadiusJitter);
+
+            // Mixed-resref ring motif: 2-3 distinct resrefs cycled around the ring (weighted sample
+            // without replacement), matching the hand-built mixed-composition evidence. A palette
+            // with a single curated ring resref still works (the hand-built sample includes one
+            // all-light-pole ring too).
+            var motifSize = Math.Min(3, ringEntries.Select(e => e.Resref).Distinct().Count());
+            var pool = new List<DungeonDecorationEntry>(ringEntries);
+            var motif = new List<string>();
+            for (var i = 0; i < motifSize && pool.Count > 0; i++)
+            {
+                var pick = PickWeighted(pool, rng);
+                motif.Add(pick);
+                pool.RemoveAll(e => e.Resref == pick);
+            }
+
+            if (motif.Count == 0)
+                return false;
+
+            var startAngle = rng.NextDouble() * Math.PI * 2.0;
+            var members = new List<PlannedDecoration>();
+            var memberTiles = new List<(int X, int Y)>();
+
+            for (var i = 0; i < ringCount; i++)
+            {
+                var angle = startAngle + i * (Math.PI * 2.0 / ringCount) + (rng.NextDouble() - 0.5) * 0.24;
+                var r = radius + (float)((rng.NextDouble() - 0.5) * 1.0);
+                var x = center.X + (float)Math.Cos(angle) * r;
+                var y = center.Y + (float)Math.Sin(angle) * r;
+
+                var tile = ((int)MathF.Floor(x / TileSize), (int)MathF.Floor(y / TileSize));
+                if (!tileSet.Contains(tile) || excluded.Contains(tile) || tile == room.CenterTile || consumedTiles.Contains(tile))
+                    continue;
+                if (TileCarriesRoadEdge(tile, layout, roadCrosser))
+                    continue;
+
+                // Face back at the centerpiece -- hand-built ring members (benches, light poles,
+                // kiosks) consistently orient into the arrangement they surround.
+                var facing = (float)(Math.Atan2(center.Y - y, center.X - x) * (180.0 / Math.PI));
+                members.Add(new PlannedDecoration
+                {
+                    Resref = motif[i % motif.Count],
+                    Position = new Vector3(x, y, 0f),
+                    Facing = facing,
+                    Context = DecorationContext.Courtyard
+                });
+                memberTiles.Add(tile);
+            }
+
+            if (members.Count < 3)
+                return false;
+
+            plan.Add(new PlannedDecoration
+            {
+                Resref = centerResref,
+                Position = center,
+                Facing = (float)(rng.NextDouble() * 360.0),
+                Context = DecorationContext.CourtyardCenter
+            });
+            plan.AddRange(members);
+
+            consumedTiles.Add(anchor);
+            foreach (var tile in memberTiles)
+                consumedTiles.Add(tile);
+
+            return true;
+        }
+
+        /// <summary>
         /// Finds the first tile in a room (in stored, deterministic order) eligible to anchor a
         /// vignette: not excluded/CenterTile/centerpiece/already consumed, with a real wall direction.
         /// </summary>
@@ -757,23 +985,40 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
-        /// Resolves the placement context a wall-eligible tile falls into (CorridorSide for
-        /// corridor-like rooms OR a tile within one cell of a carved road edge -- see
-        /// <see cref="IsRoadAdjacent"/> -- else WallAdjacent, upgraded to DoorwayFlank near a
-        /// transition) and the curated palette entries for that bucket, falling back to WallAdjacent
-        /// when a family never curated the more specific bucket so a sparse palette still decorates
-        /// rather than going silent. Returns false (no eligible entries at all) when even the
-        /// WallAdjacent fallback is empty. Shared by both the pass-1 eligibility count and the wall-run
-        /// assembly so they can never resolve a tile's context/entries differently from each other.
+        /// Resolves the placement context a wall-eligible tile falls into (StructureAdjacent within
+        /// one cell of a stamped OpenSetPiece building footprint when the palette curates that bucket
+        /// -- see <see cref="IsStructureAdjacent"/>; else CorridorSide for corridor-like rooms OR a
+        /// tile within one cell of a carved road edge -- see <see cref="IsRoadAdjacent"/>; else
+        /// WallAdjacent; upgraded to DoorwayFlank near a transition) and the curated palette entries
+        /// for that bucket, falling back to WallAdjacent when a family never curated the more
+        /// specific bucket so a sparse palette still decorates rather than going silent. The
+        /// StructureAdjacent branch is additionally gated on the palette actually curating that
+        /// bucket: many non-city tilesets stamp OpenSetPieces too, and without the gate their
+        /// structure-adjacent tiles would silently reroute out of their curated CorridorSide/
+        /// WallAdjacent buckets the moment the enum value existed. Returns false (no eligible entries
+        /// at all) when even the WallAdjacent fallback is empty. Shared by both the pass-1
+        /// eligibility count and the wall-run assembly so they can never resolve a tile's
+        /// context/entries differently from each other.
         /// </summary>
         private static bool TryResolveContext(
             (int X, int Y) tile, bool isCorridorLike, ResolvedLayout layout, string roadCrosser,
             Dictionary<DecorationContext, List<DungeonDecorationEntry>> byContext,
             out DecorationContext context, out List<DungeonDecorationEntry> entries)
         {
+            var structureCurated = byContext.TryGetValue(DecorationContext.StructureAdjacent, out var structureEntries) &&
+                                   structureEntries.Count > 0;
+
+            // Priority: road-side beats structure-side -- a city building's street frontage tile is
+            // usually BOTH road- and structure-adjacent, and giving StructureAdjacent precedence
+            // measured it absorbing over half of ALL placements on fcx01 at 32x32 (1573/2853,
+            // collapsing the street-furniture CorridorSide bucket 1163 -> 244); with road first, the
+            // street keeps its streetlight/kiosk dressing and StructureAdjacent dresses the
+            // off-street building flanks.
             context = isCorridorLike || IsRoadAdjacent(tile, layout, roadCrosser)
                 ? DecorationContext.CorridorSide
-                : DecorationContext.WallAdjacent;
+                : structureCurated && IsStructureAdjacent(tile, layout)
+                    ? DecorationContext.StructureAdjacent
+                    : DecorationContext.WallAdjacent;
             if (IsNearDoorway(tile, layout))
                 context = DecorationContext.DoorwayFlank;
 
@@ -951,6 +1196,52 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             for (var dy = -1; dy <= 1; dy++)
             {
                 if (IsRoadTile(tile.X + dx, tile.Y + dy))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// True when <paramref name="tile"/> sits within Chebyshev distance 1 of a stamped
+        /// OpenSetPiece structure footprint cell (see ResolvedLayout.StampedStructureTiles) -- the
+        /// tile reads visually as a building's frontage/flank, so decoration curated as
+        /// StructureAdjacent (building lamps, frontage container stacks) anchors against the
+        /// structure rather than free-standing along an unrelated room divider. Mirrors
+        /// <see cref="IsRoadAdjacent"/>'s within-1-tile convention.
+        /// </summary>
+        internal static bool IsStructureAdjacent((int X, int Y) tile, ResolvedLayout layout)
+        {
+            var stamped = layout?.StampedStructureTiles;
+            if (stamped == null || stamped.Count == 0)
+                return false;
+
+            for (var dx = -1; dx <= 1; dx++)
+            for (var dy = -1; dy <= 1; dy++)
+            {
+                if (stamped.Contains((tile.X + dx, tile.Y + dy)))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// True when this one tile itself carries <paramref name="roadCrosser"/> on any edge -- the
+        /// radius-0 companion to <see cref="IsRoadAdjacent"/>, used by courtyard placement so an
+        /// arrangement never stands ON the street surface while road-ADJACENT interior space (the
+        /// only interior generated city plazas have -- see CourtyardInteriorClearance) stays usable.
+        /// </summary>
+        internal static bool TileCarriesRoadEdge((int X, int Y) tile, ResolvedLayout layout, string roadCrosser)
+        {
+            if (string.IsNullOrEmpty(roadCrosser) || layout?.Crossers == null)
+                return false;
+            if (tile.X < 0 || tile.Y < 0 || tile.X >= layout.Crossers.Width || tile.Y >= layout.Crossers.Height)
+                return false;
+
+            for (var slot = 0; slot < 4; slot++)
+            {
+                if (string.Equals(layout.Crossers.GetEdge(tile.X, tile.Y, slot), roadCrosser, System.StringComparison.OrdinalIgnoreCase))
                     return true;
             }
 

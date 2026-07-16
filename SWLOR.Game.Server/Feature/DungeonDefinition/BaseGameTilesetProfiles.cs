@@ -2827,6 +2827,35 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // on 9/10 seeds (share ~0.01); the whole-area ceiling is site-limited (each stamp
                 // consumes a 4x4-tile rectangle + margin inside one corner-size-6 room), so the budget
                 // is set above the observed per-area site count rather than exactly at it.
+                //
+                // Re-measured at size 32 (_scratch_decor/DecorGen, 20 seeds, before/after budget-only
+                // sweep): raising every group's budget substantially (Tower00 3->6, Tower02/03 1->5,
+                // etc.) moved group_share from 0.0398 to 0.0393 -- statistically flat, and per-seed
+                // counts show REDISTRIBUTION (some seeds up, some down) rather than growth, because
+                // Stamp's own loop (see its doc comment above) breaks a group's attempts on the FIRST
+                // failed site search -- budget past the real site ceiling is pure waste, and pulling an
+                // early-alphabetized group's (Tower* sorts before b_*/d_* under StringComparer.Ordinal)
+                // extra successful attempts consumes room supply a later group would otherwise have
+                // used. The real size-32 ceiling is ROOM COUNT, not budget: DECORGEN_DEBUG showed a
+                // flat 8 rooms/area regardless of seed, because StandardLayoutProfiles.Packed's own
+                // MinRoomCornerSize/MaxRoomCornerSize (3/6) is overridden by SetPieceRoomCornerFloor(7)
+                // to 5/7 -- the SAME floor that lets a tower fit AT ALL also shrinks how many rooms a
+                // 32x32 area's BSP split produces, since a bigger room-size floor means fewer splits.
+                // Budgets are left at their original size-20-tuned values (no measured benefit to
+                // raising them); the room-supply ceiling is instead lifted by the
+                // SetPieceRoomSupplyScaling declaration below, which scales the room COUNT and SIZE
+                // envelope with area above the 20x20 tuning baseline (Complex/Halls hardcode
+                // MinRooms=6/MaxRooms=9 regardless of area size; PackedRooms reports at most MaxRooms
+                // of its BSP leaves to the stamper) and switches stamping to largest-footprint-first
+                // (see LayoutGroupStamper.Stamp) so the big-room supply the envelope creates is
+                // claimed by the big tower groups before 2x2 infill fragments it. Measured at 32x32
+                // (32 seeds, 0 solve failures, July 2026 city-density pass): group share 0.061 (room
+                // supply flat, budgets already scaled) -> 0.150 vs the hand-built 0.152 reference --
+                // Tower07 (6x6) and Tower05 (4x3) only become placeable at all once corner-size-9/10
+                // rooms exist. See LayoutParameterConstraints.ApplySetPieceRoomSupplyScaling for the
+                // derivation and _scratch_decor/tilecomp_m1_before32.json /
+                // tilecomp_m1_after32_final.json for the raw measurements this comment summarizes.
+                .SetPieceRoomSupplyScaling()
                 .SetPiece("Tower00", 3)
                 .SetPiece("Tower01")
                 .SetPiece("Tower02")
@@ -2837,6 +2866,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("b_tower02", 1)
                 .SetPiece("d_house02")
                 .SetPiece("b_platform")
+                // platform1 (2x2, TILE111-114) was a genuinely unwired fcx01 Cobble-district group --
+                // structurally identical footprint requirement to Tower00 (see SetPieceRoomCornerFloor
+                // comment above). TryClassify re-verifies its corner terrain independently, so wiring it
+                // here is safe even if it turns out to be Cobble2-cornered (it would simply never
+                // classify/place on this profile, matching every other tileset-declared-but-unverified
+                // group in this codebase's established pattern).
+                .SetPiece("platform1", 3)
                 .SetPiece("b_rampe")
                 .SetPiece("b_escalier", 1)
                 .SetPiece("b_trans", 1)
@@ -2860,11 +2896,32 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // WallAdjacent/DoorwayFlank entries so road-anchored placements draw real street furniture,
             // not just the crosswalk decal.
             _builder
-                .Decoration("swd_build007", 3, DecorationContext.WallAdjacent)
-                .Decoration("swd2_fence004", 2, DecorationContext.WallAdjacent)
-                .Decoration("swd2_fence010", 2, DecorationContext.WallAdjacent)
+                // Sign panels / barrier fences relocated out of WallAdjacent (July 2026 city-density
+                // pass): generated WallAdjacent anchors against ANY room boundary -- usually a
+                // knee-high divider on fcx01 -- where a free-standing holo sign board reads as junk.
+                // Hand-built fcx01 measurement says these are street furniture, not divider dressing:
+                // swd_build007 31% road-adjacent / 2% building-adjacent, swd2_fence004 46% / 22%,
+                // swd2_fence010 46% / 0% (n=103/126/24), so all three now live in CorridorSide (the
+                // road-lining bucket -- see DungeonDecorationPlanner.IsRoadAdjacent). They were NOT
+                // moved to StructureAdjacent: the measured building adjacency above shows hand-built
+                // builders do not hang these on tower frontages either.
+                .Decoration("swd_build007", 3, DecorationContext.CorridorSide)
+                .Decoration("swd2_fence004", 2, DecorationContext.CorridorSide)
+                .Decoration("swd2_fence010", 2, DecorationContext.CorridorSide)
                 .Decoration("swd_trash01", 2, DecorationContext.WallAdjacent)
                 .Decoration("_mdrn_pl_lights3", 3, DecorationContext.WallAdjacent)
+                // StructureAdjacent (building-frontage) bucket -- the items hand-built fcx01 actually
+                // anchors against stamped tower/building footprints (Chebyshev<=1 building adjacency,
+                // n>=51 each): _mdrn_pl_lamp4 52% building-adjacent AND 100% road-adjacent (a
+                // street-facing building lamp), _mdrn_pl_bldlit 41%/95% (building-mounted light),
+                // swd_conta003 51% (container stacks against frontage walls), _mdrn_pl_df_chb 100%
+                // (debris chunks at building bases). Weights follow those measured adjacency rates.
+                // Entries here place ONLY within 1 tile of a stamped OpenSetPiece footprint (see
+                // DungeonDecorationPlanner.IsStructureAdjacent) -- never free-standing.
+                .Decoration("_mdrn_pl_lamp4", 3, DecorationContext.StructureAdjacent)
+                .Decoration("_mdrn_pl_bldlit", 3, DecorationContext.StructureAdjacent)
+                .Decoration("swd_conta003", 2, DecorationContext.StructureAdjacent)
+                .Decoration("_mdrn_pl_df_chb", 2, DecorationContext.StructureAdjacent)
                 .Decoration("swd2_vehi006", 1, DecorationContext.RoomCenter)
                 .Decoration("swd2_vehi003", 1, DecorationContext.RoomCenter)
                 .Decoration("swd2_vehi007", 1, DecorationContext.RoomCenter)
@@ -2874,6 +2931,30 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("_mdrn_pl_lights3", 3, DecorationContext.CorridorSide)
                 .Decoration("swd_streel01", 2, DecorationContext.CorridorSide)
                 .Decoration("swd2_kiosk004", 2, DecorationContext.CorridorSide)
+                // Courtyard arrangement buckets (see DungeonDecorationPlanner.PlanCourtyard), mined
+                // from hand-built fcx01 INTERIOR items (>2 tiles from walls/roads across the 19
+                // decorated fcx01 areas, July 2026 city-density pass): interior arrangements cluster
+                // as a centerpiece + 4-13-member ring at radius ~4-9m. Measured centerpieces are
+                // floor decals/lights (_mdrn_pl_lghtflr anchored the narshadaar_promi light-pole
+                // ring, _mdrn_pl_floor27 the ns_industrialsec container ring; swd_floorm01 is the
+                // most common structured interior floor piece at 107 interior occurrences); measured
+                // ring members are light poles (_mdrn_pl_lghtpl3, 4 ring hits), containers
+                // (_mdrn_pl_conta36, 4), barrels/crates (_mdrn_pl_barr001/_mdrn_pl_crate08, 2 each),
+                // pillars (_mdrn_pl_pillr04, 241 interior occurrences), bus shelters
+                // (_mdrn_pl_busshel), and kiosks (swd2_kiosk004 -- also the mission-reported "kiosk
+                // cluster" pattern). Weights follow those measured frequencies.
+                .Decoration("swd_floorm01", 3, DecorationContext.CourtyardCenter)
+                .Decoration("_mdrn_pl_lghtflr", 2, DecorationContext.CourtyardCenter)
+                .Decoration("_mdrn_pl_floor27", 2, DecorationContext.CourtyardCenter)
+                .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.Courtyard)
+                .Decoration("_mdrn_pl_conta36", 3, DecorationContext.Courtyard)
+                .Decoration("_mdrn_pl_pillr04", 2, DecorationContext.Courtyard)
+                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.Courtyard)
+                .Decoration("_mdrn_pl_crate08", 2, DecorationContext.Courtyard)
+                // _mdrn_pl_busshel (bus shelter, 19 interior occurrences) was measured into this
+                // bucket too but is EXCLUDED: its appearance row (7038) has a blank ModelName and
+                // renders invisible (caught by AllDungeonDefinitions_DecorationsExistAndAreVisible).
+                .Decoration("swd2_kiosk004", 1, DecorationContext.Courtyard)
                 .Vignette("PromenadeKioskLight", 3)
                 .VignetteMember("swd2_kiosk004", 0f, 0f)
                 .VignetteMember("_mdrn_pl_lights3", 0.7f, 0.5f);
@@ -2903,15 +2984,36 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FeatureTile("d_eau")
                 // Tower04/d_build02 (2x2) are the Cobble2 district's only groups that fit size-20-24
                 // rooms -- same site-limited ceiling reasoning as FutCity's Tower00 budget above.
-                .SetPiece("Tower04", 2)
-                .SetPiece("Tower06")
-                .SetPiece("d_build")
+                //
+                // Re-measured at size 32 (_scratch_decor/DecorGen, 20 seeds against the Complex layout
+                // pairing): a budget-only sweep was tried here too and reverted for the identical reason
+                // documented on FutCity's Tower00 SetPiece above (no measured group_share benefit --
+                // Complex's own MinRooms=6/MaxRooms=9 caps room supply at size 32 regardless of budget).
+                // platform1 wired here too (2x2, same TryClassify self-verification safety as FutCity).
+                // Room supply scaled with area exactly like the base FutCity profile -- see its own
+                // SetPieceRoomSupplyScaling comment above. With room supply unblocked, the 2x2
+                // workhorse Tower04 measured EXACTLY at its scaled budget ceiling at 32x32 (6.0
+                // placements/area == ceil(2 x 2.56)), so the well-fitting groups' budgets are raised
+                // toward the hand-built 0.15 group-share reference. Measured at 32x32 (32 seeds, 0
+                // solve failures, July 2026 city-density pass, with the largest-footprint-first stamp
+                // order this district's Tunnel-mode rooms rely on -- see LayoutGroupStamper.Stamp):
+                // group share 0.017 (room supply flat) -> 0.070; d_temple/d_platform2/Tower06 only
+                // place at all under largest-first + budget >= 2 (name order let Tower04 fragment
+                // every big room first: raising Tower04's budget alone measured group share DOWN,
+                // 0.050 -> 0.046). ~0.07 is this district's honest Complex-pairing ceiling -- Tunnel
+                // mode keeps most of the grid as solid mass between rooms, so its stampable interior
+                // is structurally smaller than the Packed pairing's (0.15 on the base profile).
+                .SetPieceRoomSupplyScaling()
+                .SetPiece("Tower04", 4)
+                .SetPiece("Tower06", 2)
+                .SetPiece("d_build", 2)
                 .SetPiece("d_tower", 1)
                 .SetPiece("d_tower02", 1)
-                .SetPiece("d_monum")
+                .SetPiece("d_monum", 2)
                 .SetPiece("d_platform2")
+                .SetPiece("platform1", 3)
                 .SetPiece("d_house01")
-                .SetPiece("d_build02", 2)
+                .SetPiece("d_build02", 4)
                 .SetPiece("d_temple")
                 .SetPiece("d_rampe")
                 .SetPiece("d_escalier", 1)

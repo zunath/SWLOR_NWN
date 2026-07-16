@@ -88,6 +88,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 parameters.CorridorMode = CorridorMode.OpenLane;
             }
 
+            // Set-piece-heavy room-supply scaling (see MacroLayoutParameters.SetPieceRoomSupplyScaling):
+            // runs BEFORE ClampToValid so the derived counts still pass through the same normalization
+            // every caller-supplied count does. Gated on the declared flag, so every composition that
+            // never declares it takes zero new branches, zero clones, and zero RNG difference here
+            // (RoomSupplyScalingIsolationTests pins that byte-identity across the onboarded tilesets).
+            if (LayoutParameterConstraints.NeedsSetPieceRoomSupplyScaling(parameters))
+            {
+                if (!wasCloned)
+                {
+                    parameters = parameters.Clone();
+                    wasCloned = true;
+                }
+
+                LayoutParameterConstraints.ApplySetPieceRoomSupplyScaling(parameters);
+            }
+
             // Normalize every Advanced Settings knob (room counts/sizes, organic fill, corridor width,
             // entrance/exit counts, size floor) to a combination LayoutParameterConstraints has
             // verified is generation-safe. Content Builder's sliders can otherwise reach combinations

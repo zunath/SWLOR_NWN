@@ -154,6 +154,130 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 CommitPath(crossers, road, path);
                 placed++;
             }
+
+            CarvePlazaRingStreets(layout, parameters, road, open);
+        }
+
+        /// <summary>
+        /// Smallest room tile count that qualifies for a Tunnel-mode plaza perimeter ring street, and
+        /// the per-area ring cap. See <see cref="CarvePlazaRingStreets"/>.
+        /// </summary>
+        private const int PlazaRingMinRoomTiles = 49;
+        private const int PlazaRingMaxPerArea = 1;
+
+        /// <summary>
+        /// Discrete-room (Halls/Complex-family) road-density gap closer. On a RoomsAndCorridors-style
+        /// city composition, nearly every room center is excluded from the anchor pool as a building
+        /// candidate (correctly -- see CarveRoads' own anchor note), so the anchor pool degenerates to
+        /// the transition tiles and the street network is almost entirely CarveSpurs-grown -- measured
+        /// on fcx01 at 32x32 (20 seeds/district, July 2026 city-density pass): futcity_plaza/Complex
+        /// road share 0.0855 vs futcity/Packed 0.157 vs hand-built 0.102. (PackedRooms compositions
+        /// spur-grow a dense network anyway because their whole grid is one connected open surface;
+        /// RoomsAndCorridors' rooms connect only through narrow lanes, so spur growth stays sparse.)
+        /// Re-anchoring big-room centers was tried first and reverted: it closed only a third of the
+        /// gap (0.0855 -> 0.0918) while the through-plaza lanes consumed stamp sites (futcity group
+        /// share fell 0.150 -> 0.124 -- the priority-1 metric).
+        ///
+        /// Instead, the LARGEST plaza room (per <see cref="PlazaRingMaxPerArea"/>) gets a street ring
+        /// around its perimeter tile loop: the outermost room tiles a stamped footprint's own
+        /// extended-rectangle requirement could never use as footprint cells anyway (they are the
+        /// margin), so a ring adds street density AND road-adjacent stamp-site preference without
+        /// consuming a single interior site -- measured: futcity_plaza/Complex road share 0.0855 ->
+        /// 0.1016 (hand-built 0.102) with group share within seed noise (0.0704 -> 0.0675), and the
+        /// packed pairing byte-identical (non-RoomsAndCorridors styles skip this entirely). Gated on
+        /// STYLE, not CorridorMode: fcx01's Complex pairing is tunnel-vocabulary-downgraded to
+        /// OpenLane by MacroLayoutGenerator before this pass ever runs, so a CorridorMode gate would
+        /// never fire for the exact composition this exists for. Rectangular-loop rooms only
+        /// (RoomsAndCorridors rooms are carved as rectangles); a room whose ring fails any cell/edge
+        /// validation is skipped whole, never partially carved, matching this class's
+        /// pre-validate-then-commit convention.
+        /// </summary>
+        private static void CarvePlazaRingStreets(
+            MacroLayout layout, MacroLayoutParameters parameters, string road, string open)
+        {
+            if (parameters.Style != DungeonLayoutStyle.RoomsAndCorridors) return;
+
+            var corners = layout.Corners;
+            var crossers = layout.Crossers;
+            var width = corners.Width;
+            var height = corners.Height;
+            var placedRings = 0;
+
+            foreach (var room in layout.Rooms
+                         .Where(r => !r.IsSetPiece && r.Tiles.Count >= PlazaRingMinRoomTiles)
+                         .OrderByDescending(r => r.Tiles.Count)
+                         .ThenBy(r => r.Id))
+            {
+                if (placedRings >= PlazaRingMaxPerArea) break;
+                if (!TryBuildRectangularRing(room, layout, corners, width, height, open, out var ring)) continue;
+
+                // Ring edges: consecutive loop cells plus the closing edge. All-or-nothing validation.
+                var clear = true;
+                for (var i = 0; i < ring.Count && clear; i++)
+                {
+                    var slot = SlotTowards(ring[i], ring[(i + 1) % ring.Count]);
+                    var existing = crossers.GetEdge(ring[i].X, ring[i].Y, slot);
+                    if (existing.Length != 0 && !string.Equals(existing, road, System.StringComparison.OrdinalIgnoreCase))
+                        clear = false;
+                }
+
+                if (!clear) continue;
+
+                for (var i = 0; i < ring.Count; i++)
+                {
+                    var slot = SlotTowards(ring[i], ring[(i + 1) % ring.Count]);
+                    crossers.SetEdge(ring[i].X, ring[i].Y, slot, road);
+                }
+
+                placedRings++;
+            }
+        }
+
+        /// <summary>
+        /// Builds a room's perimeter tile loop in walk order (south edge west-to-east, east edge
+        /// south-to-north, north edge east-to-west, west edge north-to-south). Fails unless the room
+        /// is a full unclipped rectangle of fully-open, unpinned tiles at least 3x3 (so the loop is a
+        /// real cycle with an interior) -- Tunnel-mode rooms are carved as rectangles, and anything
+        /// already clipped (an earlier pass painted/pinned into it) is skipped rather than half-rung.
+        /// </summary>
+        private static bool TryBuildRectangularRing(
+            LayoutRoom room, MacroLayout layout, CornerTerrainGrid corners, int width, int height, string open,
+            out List<(int X, int Y)> ring)
+        {
+            ring = null;
+
+            var minX = int.MaxValue; var maxX = int.MinValue;
+            var minY = int.MaxValue; var maxY = int.MinValue;
+            foreach (var (x, y) in room.Tiles)
+            {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+
+            var spanX = maxX - minX + 1;
+            var spanY = maxY - minY + 1;
+            if (spanX < 3 || spanY < 3) return false;
+            if (spanX * spanY != room.Tiles.Count) return false; // clipped/non-rectangular
+
+            var tileSet = new HashSet<(int X, int Y)>(room.Tiles);
+            var loop = new List<(int X, int Y)>();
+            for (var x = minX; x <= maxX; x++) loop.Add((x, minY));
+            for (var y = minY + 1; y <= maxY; y++) loop.Add((maxX, y));
+            for (var x = maxX - 1; x >= minX; x--) loop.Add((x, maxY));
+            for (var y = maxY - 1; y >= minY + 1; y--) loop.Add((minX, y));
+
+            foreach (var cell in loop)
+            {
+                if (!tileSet.Contains(cell)) return false;
+                if (!InBounds(cell, width, height)) return false;
+                if (layout.PinnedTiles.ContainsKey(cell)) return false;
+                if (!LayoutCornerUtils.IsTileFullyOpen(corners, cell.X, cell.Y, open)) return false;
+            }
+
+            ring = loop;
+            return true;
         }
 
         /// <summary>

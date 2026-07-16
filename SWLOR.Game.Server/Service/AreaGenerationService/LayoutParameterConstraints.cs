@@ -134,6 +134,107 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
+        /// The area (in tiles) every layout profile's hardcoded room counts and every tileset
+        /// profile's SetPiece budgets were tuned against (see LayoutGroupStamper.EffectiveMaxCount,
+        /// which shares this baseline). Room-supply scaling only activates ABOVE it, so tuned
+        /// behavior at the machinery's usual 16-24 test sizes is untouched even for a profile that
+        /// declares scaling.
+        /// </summary>
+        public const int RoomSupplyBaselineTiles = 20 * 20;
+
+        /// <summary>
+        /// True if <see cref="ApplySetPieceRoomSupplyScaling"/> would change any field on
+        /// <paramref name="parameters"/>. Mirrors that method's conditions exactly (the same
+        /// check-before-clone contract as <see cref="NeedsClamping"/>/<see cref="ClampToValid"/>)
+        /// so MacroLayoutGenerator.Generate never allocates a clone just to find out.
+        /// </summary>
+        public static bool NeedsSetPieceRoomSupplyScaling(MacroLayoutParameters parameters)
+        {
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            if (!parameters.SetPieceRoomSupplyScaling) return false;
+            if (parameters.Width * parameters.Height <= RoomSupplyBaselineTiles) return false;
+
+            var derived = ScaledRoomEnvelope(parameters);
+            return derived.MaxRooms > parameters.MaxRooms || derived.MinRooms > parameters.MinRooms ||
+                   derived.MaxSize > parameters.MaxRoomCornerSize || derived.MinSize > parameters.MinRoomCornerSize;
+        }
+
+        /// <summary>
+        /// Scales the room envelope (MinRooms/MaxRooms and MinRoomCornerSize/MaxRoomCornerSize) up
+        /// with area for a set-piece-heavy composition (see
+        /// MacroLayoutParameters.SetPieceRoomSupplyScaling) IN PLACE -- callers pass a clone, exactly
+        /// like <see cref="ClampToValid"/>. Never lowers any field, stays inside
+        /// <see cref="RoomSizeBounds"/>' measured-safe size cap, and consumes no RNG. No-op at or
+        /// below the 20x20 tuning baseline.
+        ///
+        /// Why the envelope and not budgets: measured on fcx01 at 32x32 (20 seeds/district, July 2026
+        /// city-density pass), raising every SetPiece budget substantially moved group-tile share
+        /// 0.0398 -> 0.0393 (flat) because every layout style's room supply is constant in area --
+        /// Halls/Complex hardcode MinRooms=6/MaxRooms=9 and PackedRooms reports at most MaxRooms
+        /// (default 8) leaves to the stamper -- while LayoutGroupStamper needs one
+        /// SetPieceRoomCornerFloor-sized room per stamped building (footprint + margin + spare
+        /// center tile all inside ONE room). Scaling COUNTS alone measured 0.052 group share (still
+        /// site-starved: a corner-size-7 room hosts exactly one 2x2 stamp, and 3x3+ towers need more);
+        /// scaling counts AND sizes together measured the 0.10+ shares CityBlockDensityTests pins,
+        /// because plaza-sized rooms host several buildings apiece -- the hand-built fcx01 pattern.
+        /// </summary>
+        public static void ApplySetPieceRoomSupplyScaling(MacroLayoutParameters parameters)
+        {
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            if (!parameters.SetPieceRoomSupplyScaling) return;
+            if (parameters.Width * parameters.Height <= RoomSupplyBaselineTiles) return;
+
+            var derived = ScaledRoomEnvelope(parameters);
+            parameters.MaxRoomCornerSize = Math.Max(parameters.MaxRoomCornerSize, derived.MaxSize);
+            parameters.MinRoomCornerSize = Math.Max(parameters.MinRoomCornerSize, derived.MinSize);
+            parameters.MinRoomCornerSize = Math.Min(parameters.MinRoomCornerSize, parameters.MaxRoomCornerSize);
+            parameters.MaxRooms = Math.Max(parameters.MaxRooms, derived.MaxRooms);
+            parameters.MinRooms = Math.Max(parameters.MinRooms, derived.MinRooms);
+            parameters.MinRooms = Math.Min(parameters.MinRooms, parameters.MaxRooms);
+        }
+
+        /// <summary>
+        /// Area-derived room envelope for a set-piece-heavy composition.
+        ///
+        /// Sizes: the ceiling grows by one corner per 4 corners of area min-dimension past the 20x20
+        /// baseline (32x32 -> +3), capped by <see cref="RoomSizeBounds"/>' measured-safe per-size
+        /// ceiling, so plaza rooms get big enough to host several stamped buildings (an 8x8-tile room
+        /// hosts four 2x2-footprint stamps; a corner-size-7 room hosts exactly one) and the 3x3/4x3
+        /// tower groups become placeable at all. The floor rides 4 corners under the ceiling -- deep
+        /// enough to keep a small/large room mix, high enough that most rooms stay stampable.
+        ///
+        /// Counts: how many rooms of the MIDPOINT derived size, each with its 1-corner solid gap, the
+        /// interior corner grid can theoretically host. RoomsAndCorridors' random rectangle packing
+        /// realizes roughly 70-90% of this in practice (measured at 32x32), which lands generated
+        /// group-tile density at hand-built fcx01's own building spacing rather than wall-to-wall
+        /// towers, so the theoretical count is used directly as MaxRooms rather than being
+        /// discounted. MinRooms rides at 2/3 of MaxRooms so small targets stay possible (the styles
+        /// roll targetCount from the range; placing fewer than target is graceful, never a failure).
+        /// </summary>
+        private static (int MinSize, int MaxSize, int MinRooms, int MaxRooms) ScaledRoomEnvelope(
+            MacroLayoutParameters parameters)
+        {
+            var minDim = Math.Min(parameters.Width, parameters.Height);
+            var (_, sizeCap) = RoomSizeBounds(parameters.Style, parameters.Width, parameters.Height);
+
+            var maxSize = Math.Min(sizeCap, parameters.MaxRoomCornerSize + Math.Max(0, (minDim - 20) / 4));
+            maxSize = Math.Max(maxSize, parameters.MaxRoomCornerSize);
+            var minSize = Math.Max(parameters.MinRoomCornerSize, maxSize - 4);
+
+            var midpointSize = (minSize + maxSize) / 2;
+            var perRoom = (midpointSize + 1) * (midpointSize + 1);
+            var usable = (parameters.Width - 1) * (parameters.Height - 1);
+            var theoretical = Math.Max(2, usable / perRoom);
+
+            // MinRooms rides one under MaxRooms rather than the 2/3 first tried: RoomsAndCorridors
+            // stops PLACING at the rolled targetCount, so a wide Min..Max roll range directly costs
+            // realized rooms (measured at 32x32 futcity_plaza/Complex: Min 7/Max 11 realized 7.7
+            // rooms/area; Min 10/Max 11 realized 9.9). Placing fewer than target is graceful, so a
+            // tight-high roll never risks generation failure -- only unrealized intent.
+            return (minSize, maxSize, Math.Max(2, theoretical - 1), theoretical);
+        }
+
+        /// <summary>
         /// Largest room/chamber corner size (see <see cref="MacroLayoutParameters.MaxRoomCornerSize"/>)
         /// that reliably (>=95% single-attempt, verified by probe) generates for <paramref name="style"/>
         /// at the given area dimensions. The returned Min is always 2 (every style's own generator

@@ -262,7 +262,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 Transitions = layout.Transitions,
                 OpenTerrain = layout.OpenTerrain,
                 SecondaryOpenTerrain = layout.SecondaryOpenTerrain,
-                Crossers = layout.Crossers
+                Crossers = layout.Crossers,
+                StampedStructureTiles = layout.StampedOpenSetPieceFootprints
+                    .SelectMany(f => f)
+                    .ToHashSet()
             };
             failureReason = null;
             return true;

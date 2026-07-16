@@ -459,6 +459,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
         public int MinRooms { get; set; } = 4;
         public int MaxRooms { get; set; } = 8;
+
+        /// <summary>
+        /// When true, MacroLayoutGenerator.Generate scales MinRooms/MaxRooms up with area (above the
+        /// 20x20 room-count tuning baseline) via
+        /// LayoutParameterConstraints.ApplySetPieceRoomSupplyScaling, so set-piece-heavy tilesets
+        /// (fcx01 city districts) keep a proportional supply of stampable rooms at larger sizes
+        /// instead of the styles' flat hardcoded counts. Default false (fully back-compat: no clone,
+        /// no RNG change, no derivation for any composition that never declares it) -- stamped from
+        /// DungeonTilesetProfile.SetPieceRoomSupplyScaling by DungeonComposition.BuildLayoutParameters,
+        /// the same "tileset declares physical need, generator applies it" shape as
+        /// SetPieceRoomCornerFloor.
+        /// </summary>
+        public bool SetPieceRoomSupplyScaling { get; set; }
         /// <summary>Room rectangle bounds in corners (RoomsAndCorridors/Warren chambers/PackedRooms leaves).</summary>
         public int MinRoomCornerSize { get; set; } = 3;
         public int MaxRoomCornerSize { get; set; } = 7;
@@ -770,6 +783,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// DungeonDecorationPlanner.IsRoadAdjacent. Never null (MacroLayout always allocates one).
         /// </summary>
         public EdgeCrosserGrid Crossers { get; set; }
+
+        /// <summary>
+        /// Every tile cell stamped as part of an OpenSetPiece structure footprint, carried through
+        /// from MacroLayout.StampedOpenSetPieceFootprints by TileResolver.TryResolve (the same
+        /// carry-through convention as <see cref="Crossers"/>) so downstream consumers that only see
+        /// the resolved layout can reason about stamped buildings. DungeonDecorationPlanner reads
+        /// this to route building-frontage decoration into the StructureAdjacent bucket -- see
+        /// DungeonDecorationPlanner.IsStructureAdjacent. Empty for every composition that never
+        /// stamps an OpenSetPiece.
+        /// </summary>
+        public HashSet<(int X, int Y)> StampedStructureTiles { get; set; } = new();
 
         public ResolvedTile GetTile(int x, int y)
         {

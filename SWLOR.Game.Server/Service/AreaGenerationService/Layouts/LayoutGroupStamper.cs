@@ -172,6 +172,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // SupportsWallRoomOpenLaneBoundary's own doc comment.
             var openLaneWallRoomSupported = SupportsWallRoomOpenLaneBoundary(tileset, parameters);
 
+            // Classification (FindGroup/TryClassify) consumes no RNG, so splitting it out of the
+            // placement loop below is behavior-identical for the default name-ordered path.
+            var stampOrder = new List<(string Name, int MaxCount, ClassifiedGroup Classified)>();
             foreach (var groupName in parameters.SetPieces.Keys.OrderBy(k => k, StringComparer.Ordinal))
             {
                 var maxCount = EffectiveMaxCount(parameters, parameters.SetPieces[groupName]);
@@ -183,6 +186,30 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 if (!TryClassify(tileset, group, parameters, out var classified))
                     continue;
 
+                stampOrder.Add((groupName, maxCount, classified));
+            }
+
+            // Set-piece-heavy compositions (see MacroLayoutParameters.SetPieceRoomSupplyScaling)
+            // stamp LARGEST footprint first instead of the default group-name order: large groups
+            // need the area's scarcest resource (big rooms with big contiguous open interiors), and
+            // name order let an early-alphabetized 2x2 workhorse fragment every such interior before
+            // a 3x3+ tower ever searched for a site (measured on fcx01/futcity_plaza at 32x32:
+            // raising the 2x2 Tower04's budget under name order moved group share DOWN, 0.050 ->
+            // 0.046, because Tower06/d_build placements collapsed 13.8 -> 1.8 tiles/area). Largest-
+            // first matches the hand-built city pattern -- big towers anchor a block, small
+            // structures infill -- and 2x2/1x1 groups still place freely in the fragments afterward.
+            // Ties break on the same ordinal name order, and non-declaring compositions keep the
+            // original name order verbatim (RoomSupplyScalingIsolationTests pins that byte-identity).
+            if (parameters.SetPieceRoomSupplyScaling)
+            {
+                stampOrder = stampOrder
+                    .OrderByDescending(e => e.Classified.Group.Rows * e.Classified.Group.Columns)
+                    .ThenBy(e => e.Name, StringComparer.Ordinal)
+                    .ToList();
+            }
+
+            foreach (var (_, maxCount, classified) in stampOrder)
+            {
                 for (var i = 0; i < maxCount; i++)
                 {
                     var placed = classified.Kind switch

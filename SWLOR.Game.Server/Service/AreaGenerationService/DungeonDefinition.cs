@@ -29,7 +29,31 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>Lines the perimeter of a long/narrow "corridor-like" room.</summary>
         CorridorSide = 2,
         /// <summary>Small clutter near a transition's doorway.</summary>
-        DoorwayFlank = 3
+        DoorwayFlank = 3,
+        /// <summary>
+        /// The central anchor of a composed courtyard arrangement (see
+        /// DungeonDecorationPlanner.PlanCourtyard): one item standing at the interior anchor tile of a
+        /// large plaza-like room, ringed by <see cref="Courtyard"/> items. Mined from hand-built fcx01
+        /// interior arrangements (items &gt;2 tiles from walls/roads cluster as a centerpiece -- floor
+        /// decal, floor light, small structure -- with a 4-13-item ring at radius ~4-9m around it).
+        /// Only placed as part of a courtyard; never used as generic scatter.
+        /// </summary>
+        CourtyardCenter = 4,
+        /// <summary>
+        /// A ring/surround member of a composed courtyard arrangement (light poles, containers,
+        /// planters, kiosks standing around a <see cref="CourtyardCenter"/> item) -- see
+        /// DungeonDecorationPlanner.PlanCourtyard. Only placed as part of a courtyard.
+        /// </summary>
+        Courtyard = 5,
+        /// <summary>
+        /// Stands within one tile of a stamped multi-tile structure (an OpenSetPiece building
+        /// footprint pinned by LayoutGroupStamper): sign panels, holo billboards, barriers that read
+        /// as attached to a building's frontage rather than free-standing street furniture. Falls
+        /// back to nothing (NOT WallAdjacent) when a layout has no stamped structures, so entries
+        /// curated here never free-stand in the open -- the reported "sign panel next to a knee-high
+        /// divider" artifact.
+        /// </summary>
+        StructureAdjacent = 6
     }
 
     /// <summary>
@@ -153,6 +177,26 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// building/platform footprints that need plaza-sized rooms to exist at all).
         /// </summary>
         public int SetPieceRoomCornerFloor { get; set; }
+
+        /// <summary>
+        /// True for a tileset whose visual identity depends on MANY stamped OpenSetPiece structures
+        /// per area (e.g. fcx01's city districts, where hand-built areas measure ~0.15 group-tile
+        /// share -- dozens of multi-tile buildings each): compositions additionally scale the layout
+        /// profile's ROOM COUNTS with area so larger areas actually carry proportionally more
+        /// stampable rooms (see LayoutParameterConstraints.ApplySetPieceRoomSupplyScaling). Without
+        /// this, room supply is flat in area size -- Halls/Complex hardcode MinRooms/MaxRooms and
+        /// PackedRooms caps its reported room list at MaxRooms, so a 32x32 area hosts the same ~8
+        /// stampable rooms as a 20x20 and group-tile share collapses as areas grow (measured flat
+        /// 0.039-0.040 at 32x32 on fcx01 regardless of SetPiece budgets, vs 0.15 hand-built).
+        ///
+        /// Deliberately a SEPARATE declaration from SetPieceRoomCornerFloor: four interior profiles
+        /// (secretbase/modernfacility/labstorage/officeinteriors) declare the corner floor for their
+        /// occasional 2x2 room-groups but are NOT set-piece-heavy -- their layouts must stay
+        /// byte-identical (see RoomSupplyScalingIsolationTests), so the floor alone must never
+        /// trigger room-count scaling. Only meaningful alongside configured SetPieces and a declared
+        /// SetPieceRoomCornerFloor; inert below the 20x20 tuning baseline either way.
+        /// </summary>
+        public bool SetPieceRoomSupplyScaling { get; set; }
 
         /// <summary>
         /// Edge-crosser name this tileset's road/route-marking tile family carves (e.g. fcx01's
@@ -541,6 +585,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 parameters.MaxRoomCornerSize = Math.Max(parameters.MaxRoomCornerSize, Tileset.SetPieceRoomCornerFloor);
                 parameters.MinRoomCornerSize = Math.Max(parameters.MinRoomCornerSize, Tileset.SetPieceRoomCornerFloor - 2);
                 parameters.MinRoomCornerSize = Math.Min(parameters.MinRoomCornerSize, parameters.MaxRoomCornerSize);
+                // Room-supply scaling is only ever stamped inside the same gate: a set-piece-heavy
+                // declaration without a corner floor or without configured SetPieces has nothing to
+                // scale FOR (the room-count derivation is sized off the floored room envelope above).
+                // Width/Height are not known here (LayoutSolver stamps them per attempt), so this only
+                // records intent; MacroLayoutGenerator.Generate applies the actual derivation via
+                // LayoutParameterConstraints.ApplySetPieceRoomSupplyScaling once dimensions exist.
+                parameters.SetPieceRoomSupplyScaling = Tileset.SetPieceRoomSupplyScaling;
             }
             parameters.ExitGroups = Tileset.ExitGroups;
             parameters.DoorSlotCrossers = Tileset.DoorSlotCrossers;
@@ -853,6 +904,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder SetPieceRoomCornerFloor(int cornerSize)
         {
             _active.SetPieceRoomCornerFloor = cornerSize;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares this tileset as set-piece-heavy: compositions scale the layout profile's room
+        /// counts with area so larger areas carry proportionally more stampable rooms -- see
+        /// DungeonTilesetProfile.SetPieceRoomSupplyScaling for the measured rationale and why this
+        /// is separate from SetPieceRoomCornerFloor. Declare only alongside SetPieceRoomCornerFloor
+        /// and configured SetPieces.
+        /// </summary>
+        public DungeonTilesetProfileBuilder SetPieceRoomSupplyScaling()
+        {
+            _active.SetPieceRoomSupplyScaling = true;
             return this;
         }
 

@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public CripplingInstinctStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtHemorrhageChance] = 12;
+            StatGroup.Stats[StatType.DamageDealtHemorrhageChance] = 6;
         }
     }
 }

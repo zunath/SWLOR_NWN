@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 30f,
                 10,
-                28,
+                40,
                 30,
                 typeof(HemorrhageStatusEffect),
                 CombatImpactAreaShape.Cone,

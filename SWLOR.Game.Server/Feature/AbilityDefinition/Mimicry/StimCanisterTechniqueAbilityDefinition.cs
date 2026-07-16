@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasActivationDelay(1.2f)
-                .HasRecastDelay(RecastGroup.StimCanister, 24f)
+                .HasRecastDelay(RecastGroup.StimCanister, 45f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
                 .MimicryTechnique(FeatType.StimCanister, 3, 3)

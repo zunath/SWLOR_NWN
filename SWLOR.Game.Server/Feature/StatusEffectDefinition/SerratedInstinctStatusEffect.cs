@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public SerratedInstinctStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtBleedChance] = 20;
+            StatGroup.Stats[StatType.DamageDealtBleedChance] = 10;
         }
     }
 }

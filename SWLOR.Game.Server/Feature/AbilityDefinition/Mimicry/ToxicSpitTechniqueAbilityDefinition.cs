@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 12f,
                 3,
-                10,
+                12,
                 30,
                 typeof(PoisonStatusEffect),
                 CombatDamageType.Poison,

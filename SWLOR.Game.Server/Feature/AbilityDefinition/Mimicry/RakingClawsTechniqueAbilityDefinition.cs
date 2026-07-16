@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1f,
                 12f,
                 3,
-                10,
+                12,
                 30,
                 typeof(HamstringStatusEffect),
                 CombatDamageType.Physical,

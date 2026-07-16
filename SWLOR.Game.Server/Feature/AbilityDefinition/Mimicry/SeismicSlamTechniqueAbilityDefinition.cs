@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        20,
+                        28,
                         3,
                         typeof(KnockdownStatusEffect),
                         CombatImpactAreaShape.Sphere,

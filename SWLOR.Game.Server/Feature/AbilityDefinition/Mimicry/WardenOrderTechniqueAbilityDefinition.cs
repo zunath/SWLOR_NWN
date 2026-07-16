@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 {
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5.5f))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(30), ally);
+                        ApplyEffectToObject(DurationType.Instant, EffectHeal(GameMath.PercentOf(GetMaxHitPoints(ally), 15)), ally);
                     }
                 });
 

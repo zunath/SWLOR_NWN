@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ForceRiftStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtSunderChance] = 24;
+            StatGroup.Stats[StatType.DamageDealtSunderChance] = 12;
         }
     }
 }

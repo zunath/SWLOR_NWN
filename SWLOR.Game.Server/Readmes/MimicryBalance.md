@@ -44,10 +44,14 @@ For the **damage-dealing subset**, base damage and Stamina cost are banded by ti
 
 | Tier | Single dmg | Area dmg | STM | Cooldown (single/area) |
 |---|---|---|---|---|
-| T1 | 10 | 8 | 3 | 12s / 15s |
-| T2 | 16 | 13 | 5 | 15s / 18s |
-| T3 | 24 | 20 | 7 (+1 for area, i.e. 8) | 18s / 24s |
-| T4 | 32 | 28 | 9 (+1 for area, i.e. 10) | 24s / 30s |
+| T1 | 12 | 10 | 3 | 12s / 15s |
+| T2 | 22 | 18 | 5 | 15s / 18s |
+| T3 | 34 | 28 | 7 (+1 for area, i.e. 8) | 18s / 24s |
+| T4 | 48 | 40 | 9 (+1 for area, i.e. 10) | 24s / 30s |
+
+Damage bands target roughly **75% of a same-gate weapon active's per-cast damage**: techniques pay
+technique slots and learn RNG, carry no weapon requirement, and do not scale with gear, so they sit
+deliberately below dedicated weapon actives while remaining a meaningful extra button.
 
 Learn gates (Mimicry skill requirement) scale with tier: **T1 = Mimicry 0, T2 = Mimicry 15, T3 = Mimicry 30, T4 = Mimicry 45.**
 
@@ -63,33 +67,33 @@ Twenty-one techniques are **passive traits** rather than activated abilities. Th
 
 Each trait grants a **unique** effect, and effect strength scales with tier so a higher-tier trait is always worth more than a lower-tier one (no two traits are interchangeable). Two flavours exist:
 
-- **On-hit procs** — a percent chance for a landed hit to inflict a status effect, scaling roughly T1 = 12%, T2 = 18%, T3 = 24% (with a couple of intentional off-band values to keep same-tier procs of one element distinct).
+- **On-hit procs** — a percent chance for a landed hit to inflict a status effect. Elemental DoT procs (Poison/Shock/Freezing) scale roughly T1 = 12%, T2 = 15-18%. The debuff families (Bleed, Hemorrhage, Sunder) run at **half those rates** (T1 = 6%, T2 = 9-10%, T3 = 12%): their payloads scale with target max HP or strip defenses, so at equal chances they dwarf every perk-priced passive against elite/boss targets. Halved, their steady-state uptime lands near 25-45% instead of 55-85%.
 - **Flat buffs** — a permanent stat bonus, scaling roughly T1 = +4%, T2 = +6%, T3 = +8%.
 
 Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. The two defensive traits (`Chitin Guard`, `Iron Carapace`) are deliberately given **different** resistance/defense profiles so they are complementary rather than identical.
 
 | Technique | Tier | Slot | Passive trait effect |
 |---|---|---|---|
-| Rending Bite | T1 | 1 | 12% chance to inflict Bleed |
-| Crippling Talons | T1 | 1 | 12% chance to inflict Hemorrhage |
+| Rending Bite | T1 | 1 | 6% chance to inflict Bleed |
+| Crippling Talons | T1 | 1 | 6% chance to inflict Hemorrhage |
 | Target Lock | T1 | 1 | +4% Accuracy |
-| Bonecrusher Bite | T2 | 2 | 18% chance to inflict Sunder |
+| Bonecrusher Bite | T2 | 2 | 9% chance to inflict Sunder |
 | Chitin Guard | T2 | 2 | +10% Physical Def, +15% Force Def, +20 Fire & Poison Resist |
 | Force Rend | T2 | 2 | +6% Force Attack |
 | Glacial Slime | T2 | 2 | 18% chance to inflict Poison |
 | Hoarfrost Glob | T2 | 2 | 18% chance to inflict Freezing |
 | Iron Carapace | T2 | 2 | +15% Physical Def, +10% Force Def, +25 Trauma, +15 Fire & Poison Resist |
-| Mauling Bite | T2 | 2 | 18% chance to inflict Bleed |
+| Mauling Bite | T2 | 2 | 9% chance to inflict Bleed |
 | Mind Spike | T2 | 2 | +6% Accuracy |
 | Overload Shot | T2 | 2 | 18% chance to inflict Shock |
 | Precision Shot | T2 | 2 | +6% Critical Rate |
-| Rending Carve | T2 | 2 | 18% chance to inflict Hemorrhage |
+| Rending Carve | T2 | 2 | 9% chance to inflict Hemorrhage |
 | Rime Pounce | T2 | 2 | 15% chance to inflict Freezing |
-| Serrated Slash | T2 | 2 | 20% chance to inflict Bleed |
+| Serrated Slash | T2 | 2 | 10% chance to inflict Bleed |
 | Tactical Mark | T2 | 2 | +6% Attack |
 | Essence Scar | T3 | 2 | +8% Force Attack |
-| Force Sunder | T3 | 2 | 24% chance to inflict Sunder |
-| Opening Cut | T3 | 2 | 24% chance to inflict Bleed |
+| Force Sunder | T3 | 2 | 12% chance to inflict Sunder |
+| Opening Cut | T3 | 2 | 12% chance to inflict Bleed |
 | Rangefinder Shot | T3 | 2 | +8% Accuracy |
 
 ### Effect durations (match the rest of the Bible)

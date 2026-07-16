@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public CarvingInstinctStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtHemorrhageChance] = 18;
+            StatGroup.Stats[StatType.DamageDealtHemorrhageChance] = 9;
         }
     }
 }

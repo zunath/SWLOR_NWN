@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public MaulingInstinctStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtBleedChance] = 18;
+            StatGroup.Stats[StatType.DamageDealtBleedChance] = 9;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.3f,
                 24f,
                 9,
-                32,
+                48,
                 30,
                 typeof(ExposedStatusEffect),
                 CombatDamageType.Electrical,

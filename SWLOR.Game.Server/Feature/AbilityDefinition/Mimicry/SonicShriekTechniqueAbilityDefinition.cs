@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.3f,
                 18f,
                 5,
-                13,
+                18,
                 30,
                 typeof(DisorientedStatusEffect),
                 CombatImpactAreaShape.Cone,

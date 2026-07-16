@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 15f,
                 5,
-                16,
+                22,
                 6,
                 typeof(KnockdownStatusEffect),
                 CombatDamageType.Physical,

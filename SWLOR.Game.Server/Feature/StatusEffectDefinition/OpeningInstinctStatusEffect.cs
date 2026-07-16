@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public OpeningInstinctStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtBleedChance] = 24;
+            StatGroup.Stats[StatType.DamageDealtBleedChance] = 12;
         }
     }
 }

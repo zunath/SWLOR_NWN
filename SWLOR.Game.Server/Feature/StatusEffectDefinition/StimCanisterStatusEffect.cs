@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public StimCanisterStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 15;
-            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 15;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = 10;
+            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 10;
         }
     }
 }

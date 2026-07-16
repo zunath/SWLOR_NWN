@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public BonebreakerInstinctStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageDealtSunderChance] = 18;
+            StatGroup.Stats[StatType.DamageDealtSunderChance] = 9;
         }
     }
 }

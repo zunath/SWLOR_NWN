@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.5f,
                 24f,
                 8,
-                20,
+                28,
                 30,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,

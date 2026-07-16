@@ -3531,17 +3531,27 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .DoorSlotCrossers("doorway1", "doorway2", "doorway3", "cell", "raised")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)
-                // Only removed_panel/giant_cage/pillar are wired: every OTHER group in this .set
-                // (ladder_up/ladder_dwn/room2x1 x3/stairs_up/room/stairs_dwn/elevator/room3x1/
-                // door_transition) carries a "doorway2" (or "doorway1") perimeter edge on its
-                // door-bearing member -- verified directly (PilotEveryTileIsReachableOrExplicitlyExempted
-                // flagged all of them UNCLASSIFIED) that LayoutGroupStamper.TryClassifyGroup's
-                // IsAllowedMemberEdge only ever allows the LITERAL canonical "Doorway" string or a
-                // Tunnel-mode stub crosser on a group member edge -- DoorSlotCrossers (declared above)
-                // only credits CornerEdgeResolver's ungrouped-tile path, never group classification, the
-                // same documented gap as FutCity's "b_wall_door"/"d_wall_door". No ExitGroup is wired for
-                // this reason: door_transition (the only "*_transition"-named group) is one of the
-                // casualties. See TileCoverageCensusTests' tbx78 PilotExpectedExemptions entries.
+                // ladder_up/ladder_dwn/room2x1/stairs_up/room/stairs_dwn/room3x1/door_transition all now
+                // structurally CLASSIFY as WallRoom (LayoutGroupStamper's group classification reads
+                // MacroLayoutParameters.DoorSlotCrossers the same way CornerEdgeResolver's ungrouped-tile
+                // path always has -- see LayoutGroupStamper.IsDoorwayEdge -- so their "doorway1"/
+                // "doorway2" perimeter edge is recognized instead of rejected). They are deliberately
+                // left UNWIRED here though: this tileset declares no Tunnel-mode corridor family, and
+                // verified directly (TileResolver.HasCandidate against the real tile inventory) that it
+                // ALSO has no ungrouped boundary tile shape pairing solid/open/open/solid corners with a
+                // doorway-family port edge -- SupportsWallRoomOpenLaneBoundary's own probe -- so
+                // IsWallRoomSiteValid can never find a legal site for ANY WallRoom group in this tileset,
+                // by construction, not just empirically (measured 0/30 seeds via a real LayoutSolver run
+                // before reverting the wiring). Wiring these as SetPieces would be dead weight that only
+                // perturbs the RNG stream for OTHER groups (each failed site search still Shuffles every
+                // candidate anchor) with zero placed content. TileCoverageCensusTests still credits them
+                // (structural classification, independent of profile wiring, matching every other
+                // "optional config" mechanism this census already recognizes) -- see this file's own
+                // PilotExpectedExemptions entries. "elevator" (TILE66/67) additionally fails
+                // classification itself: TILE66 mixes Solid ("wall") and Open ("facility") corners on the
+                // SAME tile while also carrying a doorway edge, so TryClassify's hasAnyDoorway gate
+                // commits to the WallRoom branch (which requires allCornersSolid) before OpenSetPiece's
+                // solid-or-open tolerance is ever considered -- a second, narrower structural gap.
                 .SetPiece("removed_panel")
                 .SetPiece("giant_cage")
                 .SetPiece("pillar", 3);
@@ -3598,13 +3608,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)
-                // Only the crosser-free groups below are wired. Every group whose door-bearing member
-                // carries a "Door" perimeter edge (Office_Vinyl_Entry/SmRm1/SmRm2/MidRm1/MidRm2,
-                // Elevator1/2, Stairwell_U/UD/D, Restrooms, Break_Room) fails the identical
-                // IsAllowedMemberEdge gap Facility's doc comment above describes -- "Door" is no more
-                // the literal canonical "Doorway" string than tbx78's "doorway1/2/3" are. Verified
-                // directly via PilotEveryTileIsReachableOrExplicitlyExempted. See TileCoverageCensusTests'
-                // udp2 PilotExpectedExemptions entries.
+                // Door-bearing groups (Office_Vinyl_Entry/SmRm1/SmRm2/MidRm1/MidRm2, Elevator1/2,
+                // Stairwell_U/UD/D, Restrooms, Break_Room) now structurally CLASSIFY as WallRoom the same
+                // way tbx78's do (LayoutGroupStamper.IsDoorwayEdge recognizes "Door" identically to the
+                // literal canonical "Doorway" string). They stay UNWIRED here for the identical reason
+                // documented on BaseGameTilesetProfiles.ModernFacility above: this tileset declares no
+                // Tunnel-mode corridor family and has no ungrouped boundary tile shape supporting an
+                // OpenLane WallRoom site (verified directly via TileResolver.HasCandidate against the
+                // real tile inventory; measured 0/30 seeds via a real LayoutSolver run before reverting
+                // the wiring), so IsWallRoomSiteValid can never find a legal site for any WallRoom group
+                // here either. TileCoverageCensusTests still credits them structurally -- see this file's
+                // own PilotExpectedExemptions/PilotAlternateVocabCrossers entries.
                 .SetPiece("Office_Vinyl_Win")
                 .SetPiece("Office_Vinyl_WinCrnr")
                 .SetPiece("Office_Vinyl_Firepl")

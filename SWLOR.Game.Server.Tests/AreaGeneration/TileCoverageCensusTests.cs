@@ -157,6 +157,51 @@ public class TileCoverageCensusTests
         return false;
     }
 
+    /// <summary>
+    /// Mirrors LayoutGroupStamper.IsBodyCrosserName: true when <paramref name="edge"/> is a name this
+    /// composition's body-crosser vocabulary already claims (canonical "Corridor"/"Alley", or
+    /// vocab.TunnelBody when a Custom-mode alternate is declared) -- a tileset can legitimately declare
+    /// its OWN body-crosser name as a DoorSlotCrosser too (tbw01 declares "corridor" itself, for one
+    /// ungrouped boundary tile that pairs a door slot with a bare body-crosser edge) without that name
+    /// ever meaning "Doorway port" for GROUP classification, where WallRoom (port) and
+    /// CorridorStubChain (body) are mutually-exclusive branches keyed on exactly this distinction.
+    /// Checked first by IsDoorwayEdge/TryMatchDoorwayEdge so body-crosser identity always wins.
+    /// </summary>
+    private static bool IsBodyCrosserName(string edge, TilesetVocabulary vocab) =>
+        Eq(edge, CorridorCrosser) || Eq(edge, AlleyCrosser) || Eq(edge, vocab.TunnelBody);
+
+    /// <summary>
+    /// Mirrors LayoutGroupStamper.IsDoorwayEdge: true for the canonical "Doorway" crosser OR any of
+    /// this profile's own declared alternate door-slot crossers (vocab.ExtraDoorSlotCrossers),
+    /// EXCLUDING any name that already belongs to this composition's body-crosser vocabulary (see
+    /// IsBodyCrosserName) -- generalizes every GROUP-path "is this a door edge" check below the same
+    /// way IsCornerEdgeResolverReachable already treats ExtraDoorSlotCrossers for the ungrouped path
+    /// (see IsExtra above, which deliberately has NO such exclusion -- the ungrouped admission gate
+    /// is a broader OR-relaxation, not a WallRoom-vs-CorridorStubChain distinction), so this census
+    /// actually reflects LayoutGroupStamper's post-generalization behavior instead of the
+    /// pre-generalization literal-only gate.
+    /// </summary>
+    private static bool IsDoorwayEdge(string edge, TilesetVocabulary vocab) =>
+        IsDoorway(edge) || (!IsBodyCrosserName(edge, vocab) && IsExtra(edge, vocab));
+
+    /// <summary>Mirrors LayoutGroupStamper.TryMatchDoorwayEdge: same recognition as
+    /// <see cref="IsDoorwayEdge(string, TilesetVocabulary)"/> but also returns which specific crosser
+    /// name matched (canonical or a declared alternate), needed wherever the matched name itself is
+    /// threaded onward (HasCorridorDoorwayAdapter's re-key search).</summary>
+    private static bool TryMatchDoorwayEdge(string edge, TilesetVocabulary vocab, out string matched)
+    {
+        if (IsDoorway(edge)) { matched = DoorwayCrosser; return true; }
+        if (!IsBodyCrosserName(edge, vocab))
+        {
+            foreach (var candidate in vocab.ExtraDoorSlotCrossers)
+            {
+                if (Eq(edge, candidate)) { matched = candidate; return true; }
+            }
+        }
+        matched = null;
+        return false;
+    }
+
     /// <summary>Mirrors TileDoorPlanner's TryGetSingleDoorwaySlot + door-slot requirement, covering both
     /// its room-edge pool (any corner pattern) and terminator pool (all-solid corners) uniformly: a
     /// flat, door-bearing tile with exactly one rotated Doorway edge (the other three blank) is
@@ -573,11 +618,15 @@ public class TileCoverageCensusTests
     {
         var hasDoorway = new bool[4];
         var doorwayOnly = true;
+        string matchedDoorwayCrosser = null;
         for (var slot = 0; slot < 4; slot++)
         {
             var edge = tile.Edges[slot] ?? string.Empty;
             if (edge.Length == 0) continue;
-            if (!IsDoorway(edge) && !Eq(edge, vocab.TunnelPort)) { doorwayOnly = false; break; }
+            var matched = Eq(edge, vocab.TunnelPort) ? vocab.TunnelPort : null;
+            if (matched == null && !TryMatchDoorwayEdge(edge, vocab, out matched)) { doorwayOnly = false; break; }
+            if (matchedDoorwayCrosser == null) matchedDoorwayCrosser = matched;
+            else if (!Eq(matchedDoorwayCrosser, matched)) { doorwayOnly = false; break; }
             hasDoorway[slot] = true;
         }
         if (!doorwayOnly) return false;
@@ -586,16 +635,22 @@ public class TileCoverageCensusTests
         var isHorizontalPair = hasDoorway[EdgeSlot.Left] && hasDoorway[EdgeSlot.Right] && !hasDoorway[EdgeSlot.Top] && !hasDoorway[EdgeSlot.Bottom];
         if (!isVerticalPair && !isHorizontalPair) return false;
 
-        return HasCorridorDoorwayAdapter(model, vocab);
+        return HasCorridorDoorwayAdapter(model, vocab, matchedDoorwayCrosser);
     }
 
     /// <summary>True when the tileset carries at least one flat, all-solid-corner tile with exactly
-    /// one body-crosser edge and its opposite edge a port-crosser edge (the other two blank) -- mirrors
-    /// LayoutGroupStamper.HasCorridorDoorwayAdapter. vocab.TunnelBody/TunnelPort default to the
-    /// canonical "Corridor"/"Doorway" pair (see BuildVocabulary), so this is unchanged for every
-    /// profile that doesn't declare an alternate Tunnel crosser family.</summary>
-    private static bool HasCorridorDoorwayAdapter(TilesetModel model, TilesetVocabulary vocab)
+    /// one body-crosser edge and its opposite edge carrying <paramref name="doorwayCrosser"/> (the
+    /// other two blank) -- mirrors LayoutGroupStamper.HasCorridorDoorwayAdapter. vocab.TunnelBody
+    /// defaults to the canonical "Corridor" (see BuildVocabulary), so this is unchanged for every
+    /// profile that doesn't declare an alternate Tunnel crosser family. <paramref name="doorwayCrosser"/>
+    /// generalizes the port search to whichever door-slot crosser the candidate group's own tile
+    /// actually carries (canonical "Doorway", the profile's declared TunnelPortCrosser, or one of its
+    /// DoorSlotCrossers alternates -- see TryMatchDoorwayEdge), mirroring LayoutGroupStamper's own
+    /// post-generalization HasCorridorDoorwayAdapter signature.</summary>
+    private static bool HasCorridorDoorwayAdapter(TilesetModel model, TilesetVocabulary vocab, string doorwayCrosser)
     {
+        if (string.IsNullOrEmpty(doorwayCrosser)) return false;
+
         foreach (var candidate in model.Tiles)
         {
             if (!IsFlat(candidate)) continue;
@@ -609,7 +664,7 @@ public class TileCoverageCensusTests
                 var edge = candidate.Edges[slot] ?? string.Empty;
                 if (edge.Length == 0) continue;
                 if (Eq(edge, vocab.TunnelBody)) corridorSlot = slot;
-                else if (Eq(edge, vocab.TunnelPort) || IsDoorway(edge)) doorwaySlot = slot;
+                else if (Eq(edge, doorwayCrosser)) doorwaySlot = slot;
                 else { onlyThoseTwo = false; break; }
             }
 
@@ -662,7 +717,7 @@ public class TileCoverageCensusTests
         // multi-tile CorridorStubChain (e.g. Barrows/tbw01's CorridorDown_1x2) is allowed to carry on a
         // perimeter edge, alongside the canonical Doorway port WallRoom/WallAlcove/OpenSetPiece use.
         bool IsAllowedMemberEdge(string edge) =>
-            string.IsNullOrEmpty(edge) || Eq(edge, DoorwayCrosser) || Eq(edge, vocab.TunnelBody) || Eq(edge, AlleyCrosser);
+            string.IsNullOrEmpty(edge) || IsDoorwayEdge(edge, vocab) || Eq(edge, vocab.TunnelBody) || Eq(edge, AlleyCrosser);
 
         var members = new List<TileRecord>();
         var positioned = new List<(int Row, int Col, TileRecord Tile)>();
@@ -700,7 +755,7 @@ public class TileCoverageCensusTests
             for (var slot = 0; slot < 4; slot++)
             {
                 var edge = tile.GetEdgeAt(0, slot);
-                var isDoorway = Eq(edge, DoorwayCrosser);
+                var isDoorway = IsDoorwayEdge(edge, vocab);
                 var isBodyCrosser = !isDoorway && (Eq(edge, vocab.TunnelBody) || Eq(edge, AlleyCrosser));
                 if (!isDoorway && !isBodyCrosser) continue;
 
@@ -717,8 +772,8 @@ public class TileCoverageCensusTests
             }
         }
 
-        var hasAnyDoorway = members.Any(m => m.Edges.Any(e => Eq(e, DoorwayCrosser)));
-        var hasAnyBodyCrosser = members.Any(m => m.Edges.Any(e => !Eq(e, DoorwayCrosser) && (Eq(e, vocab.TunnelBody) || Eq(e, AlleyCrosser))));
+        var hasAnyDoorway = members.Any(m => m.Edges.Any(e => IsDoorwayEdge(e, vocab)));
+        var hasAnyBodyCrosser = members.Any(m => m.Edges.Any(e => !IsDoorwayEdge(e, vocab) && (Eq(e, vocab.TunnelBody) || Eq(e, AlleyCrosser))));
         var allCornersSolid = members.All(m => m.Corners.All(c => Eq(c, vocab.Solid)));
         var hasAnyDoor = members.Any(m => m.Doors.Count != 0);
 
@@ -1414,31 +1469,27 @@ public class TileCoverageCensusTests
         // BaseGameTilesetProfiles.SecretBase's own doc comment.
         ("tjsb0", "GROUP:Caveentrance"),
 
-        // D20 Modern Facility (tbx78): every group below carries a "doorway1"/"doorway2" perimeter edge
-        // on its door-bearing member -- LayoutGroupStamper.TryClassifyGroup's IsAllowedMemberEdge only
-        // ever allows the literal canonical "Doorway" string or a Tunnel-mode stub crosser, never a
-        // DoorSlotCrossers-declared alias (that only credits CornerEdgeResolver's ungrouped-tile path).
-        // See BaseGameTilesetProfiles.ModernFacility's own doc comment for the full writeup -- this closes
-        // essentially this tileset's ENTIRE room/utility group vocabulary except removed_panel/
-        // giant_cage/pillar, a genuine, verified solver-incompatibility for group content (ordinary flat
-        // tile coverage is unaffected -- CornerEdgeResolver still resolves 64/84 plain tiles fine).
-        ("tbx78", "GROUP:ladder_up"),
-        ("tbx78", "GROUP:ladder_dwn"),
-        ("tbx78", "GROUP:room2x1"),
-        ("tbx78", "GROUP:stairs_up"),
-        ("tbx78", "GROUP:room"),
-        ("tbx78", "GROUP:stairs_dwn"),
+        // D20 Modern Facility (tbx78): LayoutGroupStamper's group classification (IsAllowedMemberEdge/
+        // TryClassify's WallRoom rule) now reads MacroLayoutParameters.DoorSlotCrossers the same way
+        // CornerEdgeResolver's ungrouped-tile path always has (see LayoutGroupStamper.IsDoorwayEdge),
+        // so every "doorway1"/"doorway2"-crossered group here classifies as WallRoom now -- see
+        // BaseGameTilesetProfiles.ModernFacility's own doc comment. Only "elevator" (TILE66/67) remains:
+        // TILE66 mixes Solid ("wall") and Open ("facility") corners on the SAME tile while also carrying
+        // a doorway edge -- verified directly that TryClassify's hasAnyDoorway gate commits to the
+        // WallRoom branch (which requires allCornersSolid) before OpenSetPiece's solid-or-open tolerance
+        // is ever considered, so this door-bearing mixed-corner shape has no supporting GroupKind. A
+        // genuine, narrow structural gap, not a wiring gap.
         ("tbx78", "GROUP:elevator"),
-        ("tbx78", "GROUP:room3x1"),
-        ("tbx78", "GROUP:door_transition"),
 
-        // D20 Office Interiors UDP (udp2): the identical IsAllowedMemberEdge gap as tbx78 above, against
-        // the "Door" crosser name -- auto-exempted via PilotAlternateVocabCrossers["udp2"] (see that
-        // dictionary's own doc comment) rather than hand-listed here, since it closes every district's
-        // Entry/SmRm1/SmRm2/MidRm1/MidRm2 pair uniformly. Only the Office_Vinyl district's own
-        // Win/WinCrnr/Firepl/Stair_UD/U/D/Stair2_UD/U/D (crosser-free) and the tileset-generic
-        // Hallway1_Entry/Hallway2_Entry stay reachable. See BaseGameTilesetProfiles.OfficeInteriors' own
-        // doc comment.
+        // D20 Office Interiors UDP (udp2): the identical IsAllowedMemberEdge/DoorSlotCrossers gap as
+        // tbx78 above, against the "Door" crosser name, is closed the same way -- Office_Vinyl_Entry/
+        // SmRm1/SmRm2/MidRm1/MidRm2, Elevator1/2, Stairwell_U/UD/D, Restrooms, and Break_Room all now
+        // classify as WallRoom (see BaseGameTilesetProfiles.OfficeInteriors' own doc comment) and are
+        // wired: coverage rose from 156/229 to 193/229. The remaining ~36-tile gap (still auto-exempted
+        // via PilotAlternateVocabCrossers["udp2"], test unaffected) is the six other district palettes
+        // (Service/Tiled/Office_Wood/Office_Alum/Foyer_L/Foyer_U) no profile here composes with at all --
+        // each needs its own PaletteVariant (mirroring zin01's Elven/Sigil pattern) before its
+        // district-specific terrain/crosser vocabulary is even attempted, out of this pass's scope.
 
         // [CEP] City Interior 1 (zin01) -- see BaseGameTilesetProfiles.CepCityInterior's own doc
         // comment. 930/961 tiles (96.8%) reach a mechanism directly; the residual 31 fall into four
@@ -1470,21 +1521,12 @@ public class TileCoverageCensusTests
         ("zin01", "TILE881"),
         //
         // (2) District-renamed hallway crossers (ElvenHallway/SigilHallway) on GROUPed tiles: declared
-        // via DoorSlotCrossers on the Elven/Sigil variant profiles, but DoorSlotCrossers only ever
-        // credits CornerEdgeResolver's UNGROUPED-tile path (verified directly, the same documented gap
-        // as fcx01's "murs"-crossered b_wall_door/d_wall_door and tbx78's whole doorway1/2/3 group
-        // family) -- no GROUP-level mechanism recognizes a non-canonical hallway crosser. Elven's own
-        // "Room - Round"/"Stairs" family and Sigil's own "Corridor - Stairs/Entry" family are the ONLY
-        // hallway-adjacent groups either district has, and all of them use the renamed crosser.
-        ("zin01", "GROUP:[Elven] Room - Round"),
-        ("zin01", "GROUP:[Elven] Room - Round, Light"),
-        ("zin01", "GROUP:[Elven] Room - Round, Couch"),
-        ("zin01", "GROUP:[Elven] Room - Round, Couch/Light"),
-        ("zin01", "GROUP:[Elven] Stairs - Down, Short"),
-        ("zin01", "GROUP:[Elven] Stairs - Up, Short"),
-        ("zin01", "GROUP:[Elven] Stairs - Down, Long"),
-        ("zin01", "GROUP:[Sigil] Corridor - Stairs Down"),
-        ("zin01", "GROUP:[Sigil] Corridor - Stairs Up"),
+        // via DoorSlotCrossers on the Elven/Sigil variant profiles. LayoutGroupStamper's group
+        // classification now reads MacroLayoutParameters.DoorSlotCrossers the same way
+        // CornerEdgeResolver's ungrouped-tile path always has (see LayoutGroupStamper.IsDoorwayEdge), so
+        // Elven's "Room - Round"/"Stairs" family and Sigil's "Corridor - Stairs Down/Up" family (every
+        // ElvenHallway/SigilHallway-crossered GROUP either district has) now classify as WallRoom -- this
+        // closes the whole category except the one below.
         // "[Sigil] Corridor - Entry" (TILE929) is the one tile where "SigilFloor" is ALSO used as a
         // crosser name (alongside SigilHallway) -- doorless, and neither declared name reaches any
         // GROUP-level mechanism either, the same DoorSlotCrossers-doesn't-credit-GROUPs gap.

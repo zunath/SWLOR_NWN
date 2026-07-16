@@ -93,6 +93,71 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         // documented on TilesetModel.TileRecord — also the convention pinned above for group rows.
         private static readonly (int Dx, int Dy)[] SlotOffsets = { (0, 1), (1, 0), (0, -1), (-1, 0) };
 
+        /// <summary>
+        /// True when <paramref name="edge"/> is a name a body-crosser vocabulary already claims for
+        /// THIS composition -- canonical "Corridor"/"Alley", or this composition's own Custom-mode
+        /// TunnelBodyCrosser (e.g. Barrows/tbw01's "corridor"). DoorSlotCrossers is declared for
+        /// TileResolver's ungrouped-tile ADMISSION gate (an OR-relaxation: "this edge may carry a
+        /// resolvable door slot"), which is safe to blend broadly; but a tileset can legitimately
+        /// declare its OWN body-crosser name as a DoorSlotCrosser too (tbw01 declares "corridor" itself,
+        /// for one ungrouped boundary tile -- TILE13 -- that pairs a door slot with a bare body-crosser
+        /// edge instead of the port crosser) without that name ever meaning "Doorway port" for GROUP
+        /// classification, where WallRoom (port) and CorridorStubChain (body) are mutually-exclusive
+        /// branches keyed on exactly this distinction (e.g. tbw01's CorridorDown_1x2 family, whose outer
+        /// member's lone "corridor" edge must stay a body crosser, never get reclassified as a doorway
+        /// port). Checked first by IsDoorwayEdge/TryMatchDoorwayEdge so body-crosser identity always
+        /// wins a naming collision.
+        /// </summary>
+        private static bool IsBodyCrosserName(string edge, MacroLayoutParameters parameters) =>
+            Eq(edge, CorridorCrosser) || Eq(edge, AlleyCrosser) ||
+            (!string.IsNullOrEmpty(parameters.TunnelBodyCrosser) && Eq(edge, parameters.TunnelBodyCrosser));
+
+        /// <summary>
+        /// True when <paramref name="edge"/> is either the canonical "Doorway" crosser or one of the
+        /// tileset profile's own declared alternate door-slot crosser names
+        /// (DungeonTilesetProfile.DoorSlotCrossers, threaded through as
+        /// MacroLayoutParameters.DoorSlotCrossers) -- EXCLUDING any name that already belongs to this
+        /// composition's body-crosser vocabulary (see IsBodyCrosserName; body-crosser identity always
+        /// wins). Generalizes every "is this a door edge" check below the same way TileResolver's
+        /// ungrouped-tile path already treats DoorSlotCrossers (see TileResolver's own DoorSlotCrossers
+        /// doc comment) — a tileset that renames its door-slot crosser (e.g. tbx78's "doorway1"/
+        /// "doorway2"/"doorway3", udp2's "Door") is recognized here identically to one using the
+        /// literal string, so a WallRoom/WallAlcove/CorridorInsert group built from such tiles
+        /// classifies instead of being silently rejected by IsAllowedMemberEdge. A profile declaring
+        /// nothing (DoorSlotCrossers empty/null) reduces to exactly Eq(edge, DoorwayCrosser) —
+        /// byte-identical to pre-generalization behavior (pinned by RoomSupplyScalingIsolationTests'
+        /// non-declaring-profile SHA256 checks).
+        /// </summary>
+        private static bool IsDoorwayEdge(string edge, MacroLayoutParameters parameters)
+        {
+            if (Eq(edge, DoorwayCrosser)) return true;
+            if (IsBodyCrosserName(edge, parameters)) return false;
+            return parameters.DoorSlotCrossers != null && parameters.DoorSlotCrossers.Any(c => Eq(edge, c));
+        }
+
+        /// <summary>
+        /// Same recognition as <see cref="IsDoorwayEdge"/>, but also returns the SPECIFIC crosser
+        /// string that matched (canonical "Doorway" or whichever declared alternate) rather than just
+        /// a bool. Needed wherever the matched name itself must be threaded onward instead of assumed
+        /// literal -- e.g. TryClassifyCorridorInsert's Doorway-pair branch, which must re-key its
+        /// flanking cells to the SAME name the group's own tile actually carries (see
+        /// TryPlaceDoorwayCorridorInsert), and HasCorridorDoorwayAdapter, which must search for an
+        /// adapter tile pairing Corridor with that SAME name, not always literal "Doorway".
+        /// </summary>
+        private static bool TryMatchDoorwayEdge(string edge, MacroLayoutParameters parameters, out string matched)
+        {
+            if (Eq(edge, DoorwayCrosser)) { matched = DoorwayCrosser; return true; }
+            if (!IsBodyCrosserName(edge, parameters) && parameters.DoorSlotCrossers != null)
+            {
+                foreach (var c in parameters.DoorSlotCrossers)
+                {
+                    if (Eq(edge, c)) { matched = c; return true; }
+                }
+            }
+            matched = null;
+            return false;
+        }
+
         private sealed class GroupMember
         {
             public int LocalRow;
@@ -337,7 +402,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // below. Anything else (Fence/Bridge/an unrecognized name) still rejects the whole group.
             var stubCrossers = CorridorStubCrossersFor(parameters);
             bool IsAllowedMemberEdge(string edge) =>
-                string.IsNullOrEmpty(edge) || Eq(edge, DoorwayCrosser) || stubCrossers.Any(c => Eq(edge, c));
+                string.IsNullOrEmpty(edge) || IsDoorwayEdge(edge, parameters) || stubCrossers.Any(c => Eq(edge, c));
 
             var members = new List<GroupMember>();
             for (var row = 0; row < group.Rows; row++)
@@ -370,7 +435,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 for (var slot = 0; slot < 4; slot++)
                 {
                     var edge = member.Tile.GetEdgeAt(0, slot);
-                    var isDoorway = Eq(edge, DoorwayCrosser);
+                    var isDoorway = IsDoorwayEdge(edge, parameters);
                     var isBodyCrosser = !isDoorway && stubCrossers.Any(c => Eq(edge, c));
                     if (!isDoorway && !isBodyCrosser) continue;
 
@@ -404,8 +469,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 }
             }
 
-            var hasAnyDoorway = members.Any(m => m.Tile.Edges.Any(e => Eq(e, DoorwayCrosser)));
-            var hasAnyBodyCrosser = members.Any(m => m.Tile.Edges.Any(e => !Eq(e, DoorwayCrosser) && stubCrossers.Any(c => Eq(e, c))));
+            var hasAnyDoorway = members.Any(m => m.Tile.Edges.Any(e => IsDoorwayEdge(e, parameters)));
+            var hasAnyBodyCrosser = members.Any(m => m.Tile.Edges.Any(e => !IsDoorwayEdge(e, parameters) && stubCrossers.Any(c => Eq(e, c))));
             var allCornersSolid = members.All(m => m.Tile.Corners.All(c => Eq(c, parameters.SolidTerrain)));
             var hasAnyDoor = members.Any(m => m.Tile.Doors.Count != 0);
 
@@ -420,7 +485,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 if (hasAnyDoorway || !allCornersSolid || hasInteriorBodyCrosser || perimeterBodyCrossers.Count == 0)
                     return false;
 
-                var bodyCrosserEdge = members.SelectMany(m => m.Tile.Edges).First(e => !string.IsNullOrEmpty(e) && !Eq(e, DoorwayCrosser));
+                var bodyCrosserEdge = members.SelectMany(m => m.Tile.Edges).First(e => !string.IsNullOrEmpty(e) && !IsDoorwayEdge(e, parameters));
 
                 classified = new ClassifiedGroup
                 {
@@ -609,11 +674,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             {
                 var hasDoorwayEdge = new bool[4];
                 var edgesAreDoorwayOnly = true;
+                string matchedDoorwayCrosser = null;
                 for (var slot = 0; slot < 4; slot++)
                 {
                     var edge = tile.Edges[slot] ?? string.Empty;
                     if (edge.Length == 0) continue;
-                    if (!Eq(edge, DoorwayCrosser)) { edgesAreDoorwayOnly = false; break; }
+                    if (!TryMatchDoorwayEdge(edge, parameters, out var matched)) { edgesAreDoorwayOnly = false; break; }
+                    // Both edges of the pair must be the SAME door-slot crosser name -- a tile mixing
+                    // canonical "Doorway" on one edge with a declared alternate on the other is not a
+                    // shape any verified data uses, so treat it like any other unrecognized pattern.
+                    if (matchedDoorwayCrosser == null) matchedDoorwayCrosser = matched;
+                    else if (!Eq(matchedDoorwayCrosser, matched)) { edgesAreDoorwayOnly = false; break; }
                     hasDoorwayEdge[slot] = true;
                 }
 
@@ -623,7 +694,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                                                !hasDoorwayEdge[EdgeSlot.Top] && !hasDoorwayEdge[EdgeSlot.Bottom];
 
                 if (edgesAreDoorwayOnly && (isVerticalDoorwayPair || isHorizontalDoorwayPair) &&
-                    HasCorridorDoorwayAdapter(tileset, parameters))
+                    HasCorridorDoorwayAdapter(tileset, parameters, matchedDoorwayCrosser))
                 {
                     classified = new ClassifiedGroup
                     {
@@ -631,7 +702,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                         Members = new List<GroupMember> { new GroupMember { LocalRow = 0, LocalCol = 0, Tile = tile } },
                         Kind = GroupKind.CorridorInsert,
                         PerimeterDoorways = new List<(int, int, int)>(),
-                        InsertCrosser = DoorwayCrosser
+                        InsertCrosser = matchedDoorwayCrosser
                     };
                     return true;
                 }
@@ -642,14 +713,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
         /// <summary>
         /// True when the tileset carries at least one flat, all-solid-corner tile with exactly one
-        /// Corridor edge and its opposite edge Doorway (the other two blank) -- the corridor-to-doorway
-        /// adapter a Doorway-pair CorridorInsert's flanking cells must re-key to once their shared edge
-        /// is rewritten from Corridor to Doorway (see TryPlaceCorridorInsert's Doorway branch). Verified
-        /// present in tdt01 (TILE46), tds01 (TILE47), zsf01 (TILE20), and vmr01 (TILE45); checked here
-        /// rather than assumed so a future tileset lacking it never enables an unplaceable splice.
+        /// Corridor edge and its opposite edge carrying <paramref name="doorwayCrosser"/> (the other
+        /// two blank) -- the corridor-to-doorway adapter a Doorway-pair CorridorInsert's flanking
+        /// cells must re-key to once their shared edge is rewritten from Corridor to that same door-
+        /// slot crosser name (see TryPlaceDoorwayCorridorInsert). Verified present in tdt01 (TILE46),
+        /// tds01 (TILE47), zsf01 (TILE20), and vmr01 (TILE45) using the canonical "Doorway" name;
+        /// <paramref name="doorwayCrosser"/> generalizes the search to whichever door-slot crosser the
+        /// candidate group's own tile actually carries (canonical or a profile-declared alternate --
+        /// see TryMatchDoorwayEdge), so a tileset that renames it is checked for the SAME adapter shape
+        /// under its own name rather than always literal "Doorway". Checked here rather than assumed so
+        /// a future tileset lacking it never enables an unplaceable splice.
         /// </summary>
-        private static bool HasCorridorDoorwayAdapter(TilesetModel tileset, MacroLayoutParameters parameters)
+        private static bool HasCorridorDoorwayAdapter(TilesetModel tileset, MacroLayoutParameters parameters, string doorwayCrosser)
         {
+            if (string.IsNullOrEmpty(doorwayCrosser)) return false;
+
             foreach (var candidate in tileset.Tiles)
             {
                 if (candidate.CornerHeights[0] != 0 || candidate.CornerHeights[1] != 0 ||
@@ -664,7 +742,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var edge = candidate.Edges[slot] ?? string.Empty;
                     if (edge.Length == 0) continue;
                     if (Eq(edge, CorridorCrosser)) corridorSlot = slot;
-                    else if (Eq(edge, DoorwayCrosser)) doorwaySlot = slot;
+                    else if (Eq(edge, doorwayCrosser)) doorwaySlot = slot;
                     else { onlyThoseTwo = false; break; }
                 }
 
@@ -888,8 +966,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var tile = classified.Members[0].Tile;
             var crosser = classified.InsertCrosser;
 
-            if (Eq(crosser, DoorwayCrosser))
-                return TryPlaceDoorwayCorridorInsert(layout, parameters, tile, random);
+            if (IsDoorwayEdge(crosser, parameters))
+                return TryPlaceDoorwayCorridorInsert(layout, parameters, tile, crosser, random);
 
             var corners = layout.Corners;
             var crossers = layout.Crossers;
@@ -987,7 +1065,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// skips any cell carrying a crosser edge, so it never contests this splice.
         /// </summary>
         private static bool TryPlaceDoorwayCorridorInsert(
-            MacroLayout layout, MacroLayoutParameters parameters, TileRecord tile, System.Random random)
+            MacroLayout layout, MacroLayoutParameters parameters, TileRecord tile, string doorwayCrosser, System.Random random)
         {
             var corners = layout.Corners;
             var crossers = layout.Crossers;
@@ -1032,20 +1110,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     var oLeft = tile.GetEdgeAt(orientation, EdgeSlot.Left);
 
                     var matches = isVertical
-                        ? Eq(oTop, DoorwayCrosser) && Eq(oBottom, DoorwayCrosser) && (oLeft ?? "").Length == 0 && (oRight ?? "").Length == 0
-                        : Eq(oLeft, DoorwayCrosser) && Eq(oRight, DoorwayCrosser) && (oTop ?? "").Length == 0 && (oBottom ?? "").Length == 0;
+                        ? Eq(oTop, doorwayCrosser) && Eq(oBottom, doorwayCrosser) && (oLeft ?? "").Length == 0 && (oRight ?? "").Length == 0
+                        : Eq(oLeft, doorwayCrosser) && Eq(oRight, doorwayCrosser) && (oTop ?? "").Length == 0 && (oBottom ?? "").Length == 0;
 
                     if (!matches) continue;
 
                     if (isVertical)
                     {
-                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Top, DoorwayCrosser);
-                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Bottom, DoorwayCrosser);
+                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Top, doorwayCrosser);
+                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Bottom, doorwayCrosser);
                     }
                     else
                     {
-                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Left, DoorwayCrosser);
-                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Right, DoorwayCrosser);
+                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Left, doorwayCrosser);
+                        crossers.SetEdge(cell.X, cell.Y, EdgeSlot.Right, doorwayCrosser);
                     }
 
                     layout.PinnedTiles[cell] = (tile.TileId, orientation, 0);
@@ -1275,7 +1353,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 {
                     var edge = crossers.GetEdge(neighbor.X, neighbor.Y, slot2);
                     if (Eq(edge, CorridorCrosser)) neighborHasCorridor = true;
-                    if (Eq(edge, DoorwayCrosser)) neighborHasDoorway = true;
+                    if (IsDoorwayEdge(edge, parameters)) neighborHasDoorway = true;
                 }
 
                 if (neighborHasDoorway) return false; // keeps two WallRoom instances from claiming the same adapter cell

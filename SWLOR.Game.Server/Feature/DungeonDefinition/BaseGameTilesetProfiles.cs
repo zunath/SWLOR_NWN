@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // data. Fence doors are included even though no shipped layout profile currently pairs
             // Fence carving with this tileset, matching StandardTilesetProfiles' own convention of
             // registering structurally-valid pieces a future layout pairing can exercise.
-            _builder.Create(Crypt, "Crypt")
+            _builder.Create(Crypt, "Crypts*")
                 .Tileset("tdc01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // shapes tile-for-tile. IsPaletteVariant() excludes this profile from --matrix's full
             // tileset x layout cross-product (see SWLOR.ProcgenReview/Program.cs) -- it gets one
             // showcase area instead.
-            _builder.Create(CryptGrey, "Crypt (Grey)")
+            _builder.Create(CryptGrey, "Crypts* (Grey)")
                 .Tileset("tdc01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Wall) in one group -- outside ClassifyMultiTileSetPiece's two-terrain (Solid/Open or
             // Solid/Secondary) shape -- and stays exempted, a genuine structural gap shared with the
             // base Crypt profile's own scope (multi-terrain sets are never wired anywhere in this file).
-            _builder.Create(CryptDwarven, "Crypt (Dwarven)")
+            _builder.Create(CryptDwarven, "Crypts* (Dwarven)")
                 .Tileset("tdc01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -410,7 +410,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // reusing the identical rectangle/rim machinery) -- live-probed against the Floor/Lava
             // mixed-terrain, mixed-height tile family (e.g. TILE505/506/510/521...) this pilot's earlier
             // census left height-exempted.
-            _builder.Create(Dungeon, "Dungeon")
+            _builder.Create(Dungeon, "Dungeon*")
                 .Tileset("tde01")
                 .MaxElevationRegions(2)
                 .MaxPoolRegions(2)
@@ -481,7 +481,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // symmetric (verified by the same probes: every accent family carries the identical
             // rim/pool-bank/relief shapes, see TileCoverageCensusTests). PaletteVariant() excludes
             // each from --matrix's full cross-product -- one showcase area each instead.
-            _builder.Create(DungeonWater, "Dungeon (Water)")
+            _builder.Create(DungeonWater, "Dungeon* (Water)")
                 .Tileset("tde01")
                 .MaxElevationRegions(2)
                 .MaxPoolRegions(2)
@@ -520,7 +520,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit 1")
                 .ExitGroup("Exit 2 - Water");
 
-            _builder.Create(DungeonSewer, "Dungeon (Sewer)")
+            _builder.Create(DungeonSewer, "Dungeon* (Sewer)")
                 .Tileset("tde01")
                 .MaxElevationRegions(2)
                 .MaxPoolRegions(2)
@@ -559,7 +559,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit 1")
                 .ExitGroup("Exit 2 - Sewer");
 
-            _builder.Create(DungeonIce, "Dungeon (Ice)")
+            _builder.Create(DungeonIce, "Dungeon* (Ice)")
                 .Tileset("tde01")
                 .MaxElevationRegions(2)
                 .MaxPoolRegions(2)
@@ -598,7 +598,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("Exit 1")
                 .ExitGroup("Exit 2 - Ice");
 
-            _builder.Create(DungeonPit, "Dungeon (Pit)")
+            _builder.Create(DungeonPit, "Dungeon* (Pit)")
                 .Tileset("tde01")
                 .MaxElevationRegions(2)
                 .MaxPoolRegions(2)
@@ -751,7 +751,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // FinalArea_7x7 is a large (49-tile), fully solid-or-barrow decorative set piece (a boss/
             // finale chamber) -- structurally a valid OpenSetPiece like any smaller one, included at
             // maxPerArea 1.
-            _builder.Create(Barrows, "Barrows Interior")
+            _builder.Create(Barrows, "TNO: Barrows Interior")
                 .Tileset("tbw01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -796,7 +796,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // see LayoutGroupStamper.TryClassifyReliefPiece's own doc comment). "[Cave] Door -
             // Transition", "[Cave] Ship - Docked", "[Cave] Docks (1x2)" don't structurally classify
             // under any current mechanism and are excluded.
-            _builder.Create(MinesAndCaverns, "Mines and Caverns")
+            _builder.Create(MinesAndCaverns, "Mines and Caverns*")
                 .Tileset("tdm01")
                 // Raised-terrain support (probed directly against the .set data): Floor carries the
                 // one-corner/two-adjacent-raised rim shapes LayoutElevationPainter needs (so
@@ -908,7 +908,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // SWLOR.ProcgenReview/Program.cs) -- it gets one showcase area instead. [Organic] and [City]
             // remain unwired (left for a future wave; [Organic] mirrors [Desert]'s shape closely but
             // [City] has a much smaller, differently-shaped tile family and would need its own probe).
-            _builder.Create(MinesAndCavernsDesert, "Mines and Caverns (Desert)")
+            _builder.Create(MinesAndCavernsDesert, "Mines and Caverns* (Desert)")
                 .Tileset("tdm01")
                 // Same raised-terrain trio as the base [Cave] profile, on the Desert family's own
                 // names (GentleDesert has full 16/16 flat coverage against Desert; the Slope crosser
@@ -978,7 +978,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // stays unwired for the same one-body-crosser-per-profile reason; "[Organic] Ramp" and
             // "[Organic] Cave Entrance" are both wired via ReliefPiece -- see the Desert profile's
             // comment for the full reasoning.
-            _builder.Create(MinesAndCavernsOrganic, "Mines and Caverns (Organic)")
+            _builder.Create(MinesAndCavernsOrganic, "Mines and Caverns* (Organic)")
                 .Tileset("tdm01")
                 // Same raised-terrain trio as [Cave]/[Desert], on the Organic family's own names
                 // (GentleOrganic has full 16/16 flat coverage against Organic). No pools.
@@ -1044,7 +1044,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // grades. No blend terrain ([City] has none), no alternate Tunnel family wired (the
             // canonical Corridor/Doorway family composes normally on the shared solid/Floor terrain).
             // PaletteVariant() -- one showcase area, excluded from --matrix.
-            _builder.Create(MinesAndCavernsCity, "Mines and Caverns (City Water)")
+            _builder.Create(MinesAndCavernsCity, "Mines and Caverns* (City Water)")
                 .Tileset("tdm01")
                 .MaxElevationRegions(2)
                 .MaxPoolRegions(2)
@@ -1085,7 +1085,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // pieces/exit groups); PaletteVariant() excludes this from --matrix's full cross-product, one
             // showcase area instead -- closing TileCoverageCensusTests.PilotAlternateVocabCrossers["tdm01"]'s
             // "Tracks" entry.
-            _builder.Create(MinesAndCavernsTracks, "Mines and Caverns (Tracks)")
+            _builder.Create(MinesAndCavernsTracks, "Mines and Caverns* (Tracks)")
                 .Tileset("tdm01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1138,7 +1138,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Stairs - Down 2" (TILE776)/"Stairs - Up 2" (TILE777) are the CorridorStub single-edge dead
             // end -- verified directly against the .set data, mirroring [Cave] Tracks' own shapes.
             // Everything else mirrors the base MinesAndCavernsDesert profile's own wiring.
-            _builder.Create(MinesAndCavernsDesertTracks, "Mines and Caverns (Desert Tracks)")
+            _builder.Create(MinesAndCavernsDesertTracks, "Mines and Caverns* (Desert Tracks)")
                 .Tileset("tdm01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1190,7 +1190,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // opposite-OrganicTracks-pair-with-door shape; "[Organic] Stairs - Down 2"/"Stairs - Up 2" are
             // the CorridorStub single-edge dead end -- mirroring [Cave] Tracks/Desert Tracks' own shapes.
             // Everything else mirrors the base MinesAndCavernsOrganic profile's own wiring.
-            _builder.Create(MinesAndCavernsOrganicTracks, "Mines and Caverns (Organic Tracks)")
+            _builder.Create(MinesAndCavernsOrganicTracks, "Mines and Caverns* (Organic Tracks)")
                 .Tileset("tdm01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1367,7 +1367,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // in this tileset. Window-* pieces (Window crosser), Maze-* pieces (MazeMosaic/MazeMarble
             // crossers), and the separate "[Tower]" brown/grey sub-district (own "Tower" terrain, no
             // coverage) are all alternate vocabulary and excluded.
-            _builder.Create(CastleInterior, "Castle Interior")
+            _builder.Create(CastleInterior, "Castle Interior 1*")
                 .Tileset("tic01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1443,7 +1443,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // composed, so they are NOT re-wired here -- these variants add ONLY their own
             // district-specific pieces. PaletteVariant() excludes each from --matrix's full
             // cross-product -- one showcase area each instead.
-            _builder.Create(CastleInteriorStorage, "Castle Interior (Storage)")
+            _builder.Create(CastleInteriorStorage, "Castle Interior 1* (Storage)")
                 .Tileset("tic01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1452,7 +1452,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Castle] Door - Storage 1", 1)
                 .SetPiece("[Castle] Door - Storage 2", 1);
 
-            _builder.Create(CastleInteriorRich, "Castle Interior (Rich)")
+            _builder.Create(CastleInteriorRich, "Castle Interior 1* (Rich)")
                 .Tileset("tic01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1466,7 +1466,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Castle] Stairs - Up, Rich Corner")
                 .SetPiece("[Castle] Stairs - Down, Rich Corner");
 
-            _builder.Create(CastleInteriorLibrary, "Castle Interior (Library)")
+            _builder.Create(CastleInteriorLibrary, "Castle Interior 1* (Library)")
                 .Tileset("tic01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1479,7 +1479,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("[Castle] Stairs - Up, Library Corner")
                 .SetPiece("[Castle] Stairs - Down, Library Corner");
 
-            _builder.Create(CastleInteriorJail, "Castle Interior (Jail)")
+            _builder.Create(CastleInteriorJail, "Castle Interior 1* (Jail)")
                 .Tileset("tic01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1508,7 +1508,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // WallRoom port pairing -- see that class's TryPlaceCorridorStubChain and
             // BaseGameTilesetProfiles.FortInterior's own doc comment for the equivalent twc03 family),
             // so it's wired here too.
-            _builder.Create(CastleInterior2, "Castle Interior 2")
+            _builder.Create(CastleInterior2, "TNO: Castle Interior")
                 .Tileset("tni02")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1547,7 +1547,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // crosser-free door-bearing group either). Door - Maze End/Side, Mosaic pieces carry the
             // alternate MazeMosaic crosser and are excluded; Door - Transition is doorway-shape-
             // mismatched and excluded.
-            _builder.Create(DrowInterior, "Drow Interior")
+            _builder.Create(DrowInterior, "Drow Interior*")
                 .Tileset("tid01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1667,7 +1667,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // now classify via LayoutGroupStamper's WallRoom door-slot relaxation, mirroring City
             // Interior's own equivalent family -- wired here accordingly. The LivingroomCorner*/
             // KitchenCorner* stair/exit pieces reference alternate terrain corners and don't classify.
-            _builder.Create(CityInterior2, "City Interior 2")
+            _builder.Create(CityInterior2, "City Interior 2*")
                 .Tileset("tni01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1833,7 +1833,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // reason FortInteriorLegacy dropped its whole "OLD_" family. The other ten "OLD_"-prefixed
             // groups (the ones WITH a non-"OLD_" replacement) were never wired in this base profile to
             // begin with (superseded by the replacements above).
-            _builder.Create(FortInterior, "Fort Interior")
+            _builder.Create(FortInterior, "TNO: Fort Interior")
                 .Tileset("twc03")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -1919,7 +1919,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // classifies under any mechanism (see TileCoverageCensusTests.PilotExpectedExemptions).
             // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area
             // instead.
-            _builder.Create(FortInteriorLegacy, "Fort Interior (Legacy)")
+            _builder.Create(FortInteriorLegacy, "TNO: Fort Interior (Legacy)")
                 .Tileset("twc03")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2000,7 +2000,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Star Wars-specific hak additions (palais_jabba 6x6, Astroport 8x8) are wired at
             // maxPerArea 1, mirroring Barrows' FinalArea_7x7 large-set-piece precedent (placement
             // requires a room large enough for the footprint; smaller rooms simply never site them).
-            _builder.Create(Desert, "Desert")
+            _builder.Create(Desert, "[SW] Tatooine")
                 .Tileset("ttd01")
                 .SolidTerrainOverride("Cliff")
                 .PrimaryOpenTerrain("Desert")
@@ -2100,7 +2100,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // dual-crosser conflict no single composition can express, the same shape as ttf01's
             // TILE606-609 (Slope+Road). PaletteVariant() excludes this from --matrix's full
             // cross-product -- one showcase area.
-            _builder.Create(DesertRoad, "Desert (Road)")
+            _builder.Create(DesertRoad, "[SW] Tatooine (Road)")
                 .Tileset("ttd01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2180,7 +2180,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // mouth), "Platform - Elevator, Upper/Lower" (paired elevators) are wired as maxPerArea-1
             // set pieces instead ("Portal - Platform" and the elevators are additionally
             // Platform-palette content and stay unwired entirely).
-            _builder.Create(Forest, "Forest")
+            _builder.Create(Forest, "Forest*")
                 .Tileset("ttf01")
                 .SolidTerrainOverride("Cliff")
                 .PrimaryOpenTerrain("Forest")
@@ -2351,7 +2351,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // slack) remain a genuine, separate geometric ceiling this fix cannot address -- see
             // OpenSetPiecePlacementRateTests' own doc comment for the full before/after accounting.
             // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
-            _builder.Create(ForestPlatform, "Forest (Platform)")
+            _builder.Create(ForestPlatform, "Forest* (Platform)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2417,7 +2417,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // "Slope" here -- see the closure toolkit's "additional families = additional variants"
             // note).
             // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
-            _builder.Create(ForestRural, "Forest (Rural)")
+            _builder.Create(ForestRural, "Forest* (Rural)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2480,7 +2480,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // LayoutGroupStamper.TryClassifyReliefPiece's door + RampCrosser tolerance (see that
             // method's own doc comment). "Wall - Tower 1/2, City/Water" mix RuralWater corners, closed
             // by this profile's own AccentTerrain("RuralWater").
-            _builder.Create(ForestCityWall, "Forest (City Wall)")
+            _builder.Create(ForestCityWall, "Forest* (City Wall)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2508,7 +2508,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // exterior-tail-closure): "Ramp - Moss Wall" (doorless) and the door-bearing "Wall -
             // Breach/Door, Moss" pair -- see the City Wall profile's own comment above for the
             // mechanism (LayoutGroupStamper.TryClassifyReliefPiece's door + RampCrosser tolerance).
-            _builder.Create(ForestMossWall, "Forest (Moss Wall)")
+            _builder.Create(ForestMossWall, "Forest* (Moss Wall)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2525,7 +2525,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // pure-Forest, TILE727 RuralWater-mixed via AccentTerrain). TILE776-779/812 (RuralWallOne
             // edges paired with a SECOND crosser, CityWall, on the same tile) are a dual-crosser
             // conflict, same shape/gap as TILE606-609's Slope+Road conflict above.
-            _builder.Create(ForestRuralWallOne, "Forest (Rural Wall One)")
+            _builder.Create(ForestRuralWallOne, "Forest* (Rural Wall One)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2538,7 +2538,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
 
             // Forest (Rural Wall Two) -- closes all 4 RuralWallTwo-edged raised tiles (TILE728-730
             // pure-Forest, TILE731 RuralWater-mixed via AccentTerrain). Verified directly.
-            _builder.Create(ForestRuralWallTwo, "Forest (Rural Wall Two)")
+            _builder.Create(ForestRuralWallTwo, "Forest* (Rural Wall Two)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2553,7 +2553,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // pure-Forest, TILE722 RuralWater-mixed via AccentTerrain). The family's remaining
             // RuralStream-edged tiles (TILE850/865-871/881/882) are all flat -- already
             // CornerEdgeResolver-reachable regardless of this variant, unaffected either way.
-            _builder.Create(ForestRuralStream, "Forest (Rural Stream)")
+            _builder.Create(ForestRuralStream, "Forest* (Rural Stream)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2570,7 +2570,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // documented above. Every other Road-edged tile in the family is flat -- already
             // CornerEdgeResolver-reachable regardless of this variant (TILE849/1114's RuralWater/
             // RuralTrees door tiles are additionally closed by ForestRural's own AccentTerrain).
-            _builder.Create(ForestRoad, "Forest (Road)")
+            _builder.Create(ForestRoad, "Forest* (Road)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2585,7 +2585,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // RuralWater-mixed, via AccentTerrain). TILE897 (flat, all-RuralWater-cornered,
             // door-free) is unaffected by this variant either way -- already CornerEdgeResolver-
             // reachable regardless of RampCrosser vocabulary.
-            _builder.Create(ForestStoneBridge, "Forest (Stone Bridge)")
+            _builder.Create(ForestStoneBridge, "Forest* (Stone Bridge)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -2659,7 +2659,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // D20 Futuristic City SW (fcx01) -- Cobble ("b_"/unprefixed) district. See the FutCity/
             // FutCityPlaza doc comment above for the full probe writeup (solid/open choice, crosser
             // vocabulary, hand-built evidence, lighting sample).
-            _builder.Create(FutCity, "Futuristic City")
+            _builder.Create(FutCity, "D20 Futuristic City SW")
                 .Tileset("fcx01")
                 .SolidTerrainOverride("holes")
                 .PrimaryOpenTerrain("Cobble")
@@ -2758,7 +2758,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // solid "holes", crosser vocabulary, and hand-built evidence -- see FutCity's own doc
             // comment). Tower04/Tower06 are wired here (not on the base profile) despite the unprefixed
             // name -- verified directly, both are uniformly Cobble2-cornered.
-            _builder.Create(FutCityPlaza, "Futuristic City (Plaza)")
+            _builder.Create(FutCityPlaza, "D20 Futuristic City SW (Plaza)")
                 .Tileset("fcx01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)

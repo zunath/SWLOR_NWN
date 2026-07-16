@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         {
             // Sea Caves (reference: moncaladungeon1). Water accents fully covered.
             // Feature tiles: tdt01 open ('Floor') 1x1 groups (Portal/Chessboard deliberately excluded).
-            _builder.Create(Cavern, "Cavern")
+            _builder.Create(Cavern, "Sea Caves")
                 .Tileset("tdt01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // Sci-Fi Base (reference: czs220_maintlvl). No accent coverage. Every partially-open
             // corner combo on zsf01 carries a movement-restricted pathnode (H/I) — only fully-open
             // tiles are pathnode A — so 1-wide door gaps and corridors fail the engine path check.
-            _builder.Create(Facility, "Facility")
+            _builder.Create(Facility, "D20 SciFi Base CQ")
                 .Tileset("zsf01")
                 .Placeholder("gen_placeholder2")
                 .TileLighting(4, 0, 2, 2)
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // below, composed with a Tunnel-mode layout) Floor rooms actually exist and these start
             // matching automatically — no resolver change needed, TileResolver's corner-key lookup is
             // already terrain-agnostic.
-            _builder.Create(AncientRuin, "Ancient Ruin")
+            _builder.Create(AncientRuin, "D20 Alien Ruins")
                 .Tileset("vmr01")
                 .Placeholder("gen_placeholder4")
                 .TileLighting(31, 27, 10, 12)

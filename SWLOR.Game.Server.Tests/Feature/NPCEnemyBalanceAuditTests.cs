@@ -154,6 +154,9 @@ public class NPCEnemyBalanceAuditTests
         new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1270, 19, 32, 19, 27, 27, 91, 23, 18, 2, 10, 13, 13, 61, 22),
         new("inkveil", "inkveil_sk", "inkveil_wp2", 31, 1109, 18, 25, 31, 18, 25, 60, 78, 13, 15, 9, 11, 15, 23, 24),
         new("glassjaw", "glassjaw_sk", "glassjaw_wp2", 30, 1128, 18, 31, 18, 25, 25, 84, 21, 17, 2, 10, 12, 12, 28, 24),
+        new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 24, 34, 42, 24, 139, 46, 21, 2, 9, 25, 22, 76, 23),
+        new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
     };
 
     private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
@@ -203,6 +206,9 @@ public class NPCEnemyBalanceAuditTests
             ["kael_drox"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 15, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 15, [ResistanceType.Ice] = 15, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 15, [ResistanceType.Trauma] = 17, [ResistanceType.Disruption] = 15 },
             ["inkveil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 17, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 19, [ResistanceType.Trauma] = 21, [ResistanceType.Disruption] = -10 },
             ["glassjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 16, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 18, [ResistanceType.Trauma] = 20, [ResistanceType.Disruption] = -10 },
+            ["bulwark"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["slagborn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["demolisherzr9"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
         };
 
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
@@ -236,6 +242,9 @@ public class NPCEnemyBalanceAuditTests
         ["kael_drox"] = new[] { FeatType.TacticalMark, FeatType.TargetLock, FeatType.ShrapnelBurst, FeatType.ArcPulse, FeatType.IonBurst },
         ["inkveil"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TailSweep, FeatType.ToxicCloud },
         ["glassjaw"] = new[] { FeatType.PiercingQuills, FeatType.VenomSpray, FeatType.PouncingStrike, FeatType.RakingClaws },
+        ["bulwark"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["slagborn"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["demolisherzr9"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
     };
 
     private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>

@@ -19,7 +19,26 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             ColicoidExperimentRares();
 
             CapstoneCZ220DungeonRares();
+            CapstoneCZ220RareElites();
             return _builder.Build();
+        }
+
+        // Unique loot for the named rare elite droids that spawn in the Breaker Yard.
+        // Each drops a small pool of reusable industrial-salvage gear.
+        private void CapstoneCZ220RareElites()
+        {
+            _builder.Create("CZ220_BULWARK_RARES")
+                .IsRare()
+                .AddItem("yard_plate", 1, 1, true)
+                .AddItem("servo_frame", 1, 1, true);
+            _builder.Create("CZ220_SLAGBORN_RARES")
+                .IsRare()
+                .AddItem("slag_crusher", 1, 1, true)
+                .AddItem("reclaim_gaunt", 1, 1, true);
+            _builder.Create("CZ220_DEMOLISHER_RARES")
+                .IsRare()
+                .AddItem("ord_rig", 1, 1, true)
+                .AddItem("blast_harness", 1, 1, true);
         }
 
         private void CapstoneCZ220DungeonRares()

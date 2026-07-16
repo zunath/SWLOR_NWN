@@ -75489,6 +75489,72 @@
                             "value": "adamguard_w1"
                           }
                         },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ablative Yard Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "yard_plate"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Load-Bearing Servo Frame"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "servo_frame"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Slag-Forged Crusher"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "slag_crusher"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reclamation Gauntlet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "reclaim_gaunt"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ordnance Targeting Rig"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ord_rig"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blast-Shunt Harness"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blast_harness"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "NAME": {

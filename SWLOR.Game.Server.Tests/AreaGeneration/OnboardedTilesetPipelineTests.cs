@@ -124,6 +124,15 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.ModernFacility,
         BaseGameTilesetProfiles.LabStorage,
         BaseGameTilesetProfiles.OfficeInteriors,
+        // udp2's six remaining district palettes -- PaletteVariant profiles closing the tile-coverage
+        // census gap OfficeInteriors' own doc comment above descoped. See
+        // BaseGameTilesetProfiles.OfficeInteriorsService's own doc comment.
+        BaseGameTilesetProfiles.OfficeInteriorsService,
+        BaseGameTilesetProfiles.OfficeInteriorsTiled,
+        BaseGameTilesetProfiles.OfficeInteriorsOfficeWood,
+        BaseGameTilesetProfiles.OfficeInteriorsOfficeAlum,
+        BaseGameTilesetProfiles.OfficeInteriorsFoyerL,
+        BaseGameTilesetProfiles.OfficeInteriorsFoyerU,
         // Wave-6 (final CEP superset wave, 1 of 2): [CEP] Dungeon (zde01) -- byte-identical tile data
         // to tde01/Dungeon (see BaseGameTilesetProfiles.CepDungeon's own doc comment), so the same
         // Complex/Halls/Organic pairing gate applies unchanged.

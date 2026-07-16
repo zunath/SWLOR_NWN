@@ -1095,14 +1095,13 @@ public class TileCoverageCensusTests
         // PaletteVariant profile registered for them), the identical descope BaseGameTilesetProfiles.
         // CityInterior2 (tni01) already applies to its own "livingroom"/"kitchen"/"shop" terrains.
         ["tqq01"] = new(StringComparer.OrdinalIgnoreCase) { "Livingroom", "Kitchen", "Shop" },
-        // udp2 (D20 Office Interiors UDP): BaseGameTilesetProfiles.OfficeInteriors only wires the
-        // "Office_Vinyl" district (the .set's own declared Floor terrain) plus tileset-generic groups --
-        // the other six parallel room-type districts are out of this onboarding pass's scope, same
-        // descope reasoning as tqq01 above.
-        ["udp2"] = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "Service", "Tiled", "Office_Wood", "Office_Alum", "Foyer_L", "Foyer_U",
-        },
+        // udp2 (D20 Office Interiors UDP): "Service"/"Tiled"/"Office_Wood"/"Office_Alum"/"Foyer_L"/
+        // "Foyer_U" are no longer here: BaseGameTilesetProfiles.OfficeInteriorsService/Tiled/OfficeWood/
+        // OfficeAlum/FoyerL/FoyerU each declare PrimaryOpenTerrain(<district>), closing their full
+        // simple-tile coverage via CornerEdgeResolver the same way every other PaletteVariant's own
+        // open-terrain declaration does -- see BaseGameTilesetProfiles.OfficeInteriorsService's own doc
+        // comment.
+        ["udp2"] = new(StringComparer.OrdinalIgnoreCase),
         // [CEP] Dungeon (zde01): byte-identical tile data to tde01 (see BaseGameTilesetProfiles.
         // CepDungeon's own doc comment) -- Water/Sewer/Ice/Pit are covered the same way tde01's own
         // entry above is, by the CepDungeonWater/Sewer/Ice/Pit PaletteVariant profiles each declaring
@@ -1206,16 +1205,29 @@ public class TileCoverageCensusTests
         ["tbx78"] = new(StringComparer.OrdinalIgnoreCase),
         // tqq01: Corridor/Doorway are both canonical -- no alternates.
         ["tqq01"] = new(StringComparer.OrdinalIgnoreCase),
-        // udp2: "Door"/"Door_Garage_Sm"/"Door_Garage_Lg" are declared via DoorSlotCrossers for
-        // CornerEdgeResolver's ungrouped-tile path (see BaseGameTilesetProfiles.OfficeInteriors), but
-        // DoorSlotCrossers has NO effect on GROUP classification (LayoutGroupStamper.TryClassifyGroup's
-        // IsAllowedMemberEdge only ever allows the literal canonical "Doorway" string or a Tunnel-mode
-        // stub crosser) -- verified directly. Every GROUP whose door-bearing member carries "Door" (every
-        // district's Entry/SmRm1/SmRm2/MidRm1/MidRm2 pair, plus Elevator1/2/Stairwell_U/UD/D/Restrooms/
-        // Break_Room) is therefore auto-exempted here rather than hand-listed one-by-one, the same
-        // "unwired crosser family" treatment fcx01's "pont" and ttf01's eight crosser families already
-        // get. Hallway1/Hallway2 (district-junction wall crossers, no verified Tunnel vocabulary either)
-        // stay here too.
+        // udp2: "Door"/"Door_Garage_Sm"/"Door_Garage_Lg" are declared via DoorSlotCrossers, which (post
+        // the "accept profile-declared door crossers in group classification" fix) DOES now generalize
+        // GROUP classification's IsDoorwayEdge the same way it always has for CornerEdgeResolver's
+        // ungrouped-tile path -- every district's single-tile, all-solid-cornered door family (SmRm1/
+        // SmRm2/MidRm1 2x1/MidRm2 2x1, plus the tileset-generic Elevator1/2/Stairwell_U/UD/D/Restrooms/
+        // Break_Room) now genuinely classifies as SetPieceWallRoom via ClassifySetPiece and is no longer
+        // reached by this bucket. Only each district's own "Entry 2x1" pair (Service/Tiled/Office_Vinyl/
+        // Office_Wood/Office_Alum/Foyer_L/Foyer_U, plus the tileset-generic Hallway1_Entry/Hallway2_Entry)
+        // still lands here: its OPEN member (district-terrain corners, a "Door" port edge) mixes an Open
+        // corner with a door on the SAME group as an all-Wall interior member, so allCornersSolid is
+        // false -- ClassifyMultiTileSetPiece's hasAnyDoorway branch requires allCornersSolid and returns
+        // None before ever trying the OpenSetPiece corner-match branch below it (verified directly against
+        // ClassifyMultiTileSetPiece's own priority order), a genuine shared-classifier gap distinct from
+        // the WallRoom-placement (SupportsWallRoomOpenLaneBoundary) gap documented on
+        // BaseGameTilesetProfiles.OfficeInteriors/OfficeInteriorsService -- out of scope for a
+        // single-tileset pass since ClassifyMultiTileSetPiece/LayoutGroupStamper are shared infrastructure.
+        // Hallway1/Hallway2 stay here too, for a DIFFERENT reason than the district Entry gap above:
+        // Hallway1_Entry/Hallway2_Entry are all-Wall-cornered on both members (allCornersSolid would be
+        // true), but ClassifyMultiTileSetPiece's very first per-member-edge gate (IsAllowedMemberEdge)
+        // rejects any edge that isn't blank, a recognized doorway, the Tunnel body crosser, or Alley --
+        // "Hallway1"/"Hallway2" (district-junction wall crossers, no verified Tunnel vocabulary, and not
+        // declared as a DoorSlotCrosser) fail that gate outright, so the whole group returns None before
+        // allCornersSolid/hasAnyDoor are ever consulted.
         ["udp2"] = new(StringComparer.OrdinalIgnoreCase)
         {
             "Door", "Door_Garage_Sm", "Door_Garage_Lg", "Hallway1", "Hallway2",

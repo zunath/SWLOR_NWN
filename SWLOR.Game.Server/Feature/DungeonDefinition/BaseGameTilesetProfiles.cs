@@ -336,6 +336,57 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // same as above.
         public const string OfficeInteriors = "officeinteriors";
 
+        // D20 Office Interiors UDP (udp2) district-closure pass: the six parallel room-type districts
+        // the Wave-5 doc comment above descoped (Service/Tiled/Office_Wood/Office_Alum/Foyer_L/Foyer_U)
+        // are PaletteVariant profiles recomposing the SAME udp2 hak data the base OfficeInteriors
+        // profile above uses -- the identical CastleInteriorStorage/Rich/Library/Jail and
+        // CepCityInteriorElven/Sigil "declare PrimaryOpenTerrain(<district>), the ordinary resolver does
+        // the rest" pattern. Verified directly against the raw .set data: Service/Tiled/Office_Wood/
+        // Office_Alum each mirror Office_Vinyl's own 14-group family tile-for-tile (same corner/edge
+        // shapes, same tile count, only the district terrain name and model resrefs differ) -- Win/
+        // WinCrnr/Firepl/Stair_UD/U/D/Stair2_UD/U/D (9 groups, all-solid-or-open corners, several with a
+        // Doors=1 slot but NO crosser edge, the identical shape as the already-wired Office_Vinyl_Stair_U
+        // etc.) classify and place exactly like their Office_Vinyl counterparts. SmRm1/SmRm2/MidRm1 2x1/
+        // MidRm2 2x1 (4 groups, single-tile-per-member, all-Wall-cornered with a "Door" crosser edge) now
+        // structurally CLASSIFY as WallRoom the same way Office_Vinyl's own door-bearing groups do (see
+        // this file's Office_Vinyl doc comment above), but stay UNWIRED here for the identical reason:
+        // udp2 has no ungrouped boundary tile shape pairing solid/open/open/solid corners with a literal
+        // "Doorway" port edge (SupportsWallRoomOpenLaneBoundary always probes the canonical "Doorway"
+        // string, never a DoorSlotCrossers alternate -- verified directly reading LayoutGroupStamper --
+        // so this is a deterministic, tileset-wide structural fact, not a per-district empirical
+        // measurement; udp2's own "Door" crosser can never satisfy it regardless of which district
+        // supplies the open terrain). Each district's own "Entry 2x1" pair does NOT classify at all (a
+        // DIFFERENT, genuine shared-classifier gap, not a placement gap): its open member mixes the
+        // district's open terrain corners with a "Door" port edge, so allCornersSolid is false and
+        // ClassifyMultiTileSetPiece's hasAnyDoorway branch returns None before ever trying the
+        // OpenSetPiece corner-match branch below it -- verified directly against
+        // ClassifyMultiTileSetPiece's own priority order. This pre-existed for Office_Vinyl_Entry/
+        // Hallway1_Entry/Hallway2_Entry before this pass (auto-exempted via the "Door"/"Hallway1"/
+        // "Hallway2" alternate-vocab crosser bucket) and is now shared by every district's own Entry
+        // pair the same way -- see TileCoverageCensusTests' udp2 PilotAlternateVocabCrossers entry.
+        // Fixing the shared classifier is out of scope for a single-tileset pass. Foyer_L/Foyer_U are
+        // smaller districts (7 groups each: Entry 2x1/Win/WinCrnr/Firepl/Stair_U or Stair_D/Stair2_U or
+        // Stair2_D/Grandstair_U or Grandstair_D) -- same shape family, same Entry-pair gap.
+        //
+        // Each variant redeclares SetPieceRoomCornerFloor(6) and DoorSlotCrossers("Door",
+        // "Door_Garage_Sm", "Door_Garage_Lg") identically to the base profile: a variant may be selected
+        // as a composition's own Tileset profile directly (not merely unioned in for the census), so it
+        // needs the same room-size floor and door-slot vocabulary the base profile relies on for correct
+        // real generation, not just census credit.
+        //
+        // Census: 193/229 (84.3%) -> 211/229 (92.1%) -- the residual 18 tiles (9 Entry-shaped groups x 2
+        // members) are the shared-classifier gap above, not a per-district gap. See
+        // TileCoverageCensusTests' udp2 PilotAlternateVocabTerrains entry (now empty, the six district
+        // names removed the same way CastleInteriorStorage/Rich/Library/Jail emptied tic01's own entry)
+        // and PilotAlternateVocabCrossers entry (unchanged Door/Hallway1/Hallway2 bucket, now also
+        // covering every district's own Entry pair).
+        public const string OfficeInteriorsService = "officeinteriors_service";
+        public const string OfficeInteriorsTiled = "officeinteriors_tiled";
+        public const string OfficeInteriorsOfficeWood = "officeinteriors_office_wood";
+        public const string OfficeInteriorsOfficeAlum = "officeinteriors_office_alum";
+        public const string OfficeInteriorsFoyerL = "officeinteriors_foyer_l";
+        public const string OfficeInteriorsFoyerU = "officeinteriors_foyer_u";
+
         // Wave-6 (final CEP superset wave, 1 of 2): [CEP] Dungeon (zde01, SWLOR_Haks/sw_t_cepdungeon).
         // zde01.set is BYTE-IDENTICAL to the already-onboarded SWLOR hak copy of tde01 (SWLOR_Haks/
         // sw_t_dungeon/tde01.set) except for the [GENERAL] Name/UnlocalizedName header fields (verified
@@ -3630,6 +3681,125 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Office_Vinyl_Stair2_D")
                 .SetPiece("Hallway1_Entry 2x1")
                 .SetPiece("Hallway2_Entry 2x1");
+
+            // D20 Office Interiors UDP (Service/Tiled/Office_Wood/Office_Alum) -- udp2's four remaining
+            // full-size district palettes, PaletteVariant profiles recomposing the SAME udp2 hak data the
+            // base OfficeInteriors profile above uses. See OfficeInteriorsService's own doc comment
+            // above for the full probe writeup (tile-for-tile parity with Office_Vinyl's own group
+            // family, the WallRoom door-group classify-but-never-place verdict). PaletteVariant()
+            // excludes each from --matrix's full cross-product -- one showcase area each instead.
+            _builder.Create(OfficeInteriorsService, "D20 Office Interiors UDP (Service)")
+                .Tileset("udp2")
+                .SetPieceRoomCornerFloor(6)
+                .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Service")
+                .SetPiece("Service_Win")
+                .SetPiece("Service_WinCrnr")
+                .SetPiece("Service_Firepl")
+                .SetPiece("Service_Stair_UD")
+                .SetPiece("Service_Stair_U")
+                .SetPiece("Service_Stair_D")
+                .SetPiece("Service_Stair2_UD")
+                .SetPiece("Service_Stair2_U")
+                .SetPiece("Service_Stair2_D");
+
+            _builder.Create(OfficeInteriorsTiled, "D20 Office Interiors UDP (Tiled)")
+                .Tileset("udp2")
+                .SetPieceRoomCornerFloor(6)
+                .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Tiled")
+                .SetPiece("Tiled_Win")
+                .SetPiece("Tiled_WinCrnr")
+                .SetPiece("Tiled_Firepl")
+                .SetPiece("Tiled_Stair_UD")
+                .SetPiece("Tiled_Stair_U")
+                .SetPiece("Tiled_Stair_D")
+                .SetPiece("Tiled_Stair2_UD")
+                .SetPiece("Tiled_Stair2_U")
+                .SetPiece("Tiled_Stair2_D");
+
+            _builder.Create(OfficeInteriorsOfficeWood, "D20 Office Interiors UDP (Office Wood)")
+                .Tileset("udp2")
+                .SetPieceRoomCornerFloor(6)
+                .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Office_Wood")
+                .SetPiece("Office_Wood_Win")
+                .SetPiece("Office_Wood_WinCrnr")
+                .SetPiece("Office_Wood_Firepl")
+                .SetPiece("Office_Wood_Stair_UD")
+                .SetPiece("Office_Wood_Stair_U")
+                .SetPiece("Office_Wood_Stair_D")
+                .SetPiece("Office_Wood_Stair2_UD")
+                .SetPiece("Office_Wood_Stair2_U")
+                .SetPiece("Office_Wood_Stair2_D");
+
+            _builder.Create(OfficeInteriorsOfficeAlum, "D20 Office Interiors UDP (Office Alum)")
+                .Tileset("udp2")
+                .SetPieceRoomCornerFloor(6)
+                .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Office_Alum")
+                .SetPiece("Office_Alum_Win")
+                .SetPiece("Office_Alum_WinCrnr")
+                .SetPiece("Office_Alum_Firepl")
+                .SetPiece("Office_Alum_Stair_UD")
+                .SetPiece("Office_Alum_Stair_U")
+                .SetPiece("Office_Alum_Stair_D")
+                .SetPiece("Office_Alum_Stair2_UD")
+                .SetPiece("Office_Alum_Stair2_U")
+                .SetPiece("Office_Alum_Stair2_D");
+
+            // D20 Office Interiors UDP (Foyer L/Foyer U) -- udp2's two smaller foyer districts (7 groups
+            // each instead of the 14-group full-size family above): Entry 2x1/Win/WinCrnr/Firepl plus a
+            // ONE-DIRECTION stair trio (Foyer_L only ever carries the "_U" (up) member of Stair/Stair2/
+            // Grandstair, Foyer_U only the "_D" (down) member -- verified directly, neither district has
+            // the other's UD/opposite-direction piece). Same door-group classify-but-never-place descope
+            // as the four full-size districts above.
+            _builder.Create(OfficeInteriorsFoyerL, "D20 Office Interiors UDP (Foyer L)")
+                .Tileset("udp2")
+                .SetPieceRoomCornerFloor(6)
+                .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Foyer_L")
+                .SetPiece("Foyer_L_Win")
+                .SetPiece("Foyer_L_WinCrnr")
+                .SetPiece("Foyer_L_Firepl")
+                .SetPiece("Foyer_L_Stair_U")
+                .SetPiece("Foyer_L_Stair2_U")
+                .SetPiece("Foyer_L_Grandstair_U");
+
+            _builder.Create(OfficeInteriorsFoyerU, "D20 Office Interiors UDP (Foyer U)")
+                .Tileset("udp2")
+                .SetPieceRoomCornerFloor(6)
+                .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                // PathNodeOpeningWidthAudit (fresh against udp2's real pathnode data, Solid=Wall/
+                // Open=Foyer_U) computes 2, not the default 1: unlike the other five districts, none of
+                // Foyer_U's crosser-free ungrouped partial-open Wall/Foyer_U tiles carry a pathnode-'A'
+                // node -- locked in by OnboardedTilesetPipelineTests.MinimumOpeningWidth_MatchesFreshPathNodeAudit.
+                .MinimumOpeningWidth(2)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("Foyer_U")
+                .SetPiece("Foyer_U_Win")
+                .SetPiece("Foyer_U_WinCrnr")
+                .SetPiece("Foyer_U_Firepl")
+                .SetPiece("Foyer_U_Stair_D")
+                .SetPiece("Foyer_U_Stair2_D")
+                .SetPiece("Foyer_U_Grandstair_D");
 
             // Jacoby's Jungle (jac01, SWLOR_Haks/sw_t_jungle, 380 tiles, HasHeightTransition=1). A lean
             // sibling of Forest/ttf01: same degenerate GENERAL quirk (Border=Default=Floor="Forest",

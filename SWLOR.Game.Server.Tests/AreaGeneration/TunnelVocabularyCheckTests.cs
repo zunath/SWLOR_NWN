@@ -162,6 +162,15 @@ public class TunnelVocabularyCheckTests
         // to keep real Tunnel-mode support rather than downgrading.
         BaseGameTilesetProfiles.ModernFacility,
         BaseGameTilesetProfiles.OfficeInteriors,
+        // udp2's six remaining district palettes: same "Door" crosser, no TunnelCrossers declared --
+        // identical OpenLane downgrade as the base OfficeInteriors profile above. See
+        // BaseGameTilesetProfiles.OfficeInteriorsService's own doc comment.
+        BaseGameTilesetProfiles.OfficeInteriorsService,
+        BaseGameTilesetProfiles.OfficeInteriorsTiled,
+        BaseGameTilesetProfiles.OfficeInteriorsOfficeWood,
+        BaseGameTilesetProfiles.OfficeInteriorsOfficeAlum,
+        BaseGameTilesetProfiles.OfficeInteriorsFoyerL,
+        BaseGameTilesetProfiles.OfficeInteriorsFoyerU,
         // [CEP] City Interior 1 (Elven/Sigil): each district's own hallway crosser (ElvenHallway/
         // SigilHallway) is a renamed BOTH-halves family with no resolvable boundary shape against the
         // canonical Corridor/Doorway probe this test runs (verified directly) -- neither profile

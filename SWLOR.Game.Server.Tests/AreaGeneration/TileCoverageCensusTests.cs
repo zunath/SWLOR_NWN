@@ -1025,6 +1025,10 @@ public class TileCoverageCensusTests
             "GoodCastle", "EvilCastle", "Marsh", "Platform", "HighForest", "RuralTrees", "RuralWater",
         },
         ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
+        // jac01 (Jacoby's Jungle): Platform/HighForest registered as a PaletteVariant (JunglePlatform)
+        // + the base Jungle profile's own "always CornerEdgeResolver-reachable ungrouped tile" note
+        // above, not this alternate-vocab bucket -- no terrain needs auto-tagging here.
+        ["jac01"] = new(StringComparer.OrdinalIgnoreCase),
         ["fcx01"] = new(StringComparer.OrdinalIgnoreCase),
         // tjsb0 (D20 Secret Base): a single Wall/Floor/lava split, no alternate district palette.
         ["tjsb0"] = new(StringComparer.OrdinalIgnoreCase),
@@ -1117,6 +1121,10 @@ public class TileCoverageCensusTests
             "RuralWallOne", "RuralWallTwo",
         },
         ["ttf02"] = new(StringComparer.OrdinalIgnoreCase),
+        // jac01: all five crosser families (Wall/Road/Stream/Bridge/Hills) are wired directly on the
+        // base Jungle profile (Hills as RampCrosser, Bridge via ChannelTerrain, the rest resolver-
+        // covered) -- no unwired crosser family exists, so no entries are needed.
+        ["jac01"] = new(StringComparer.OrdinalIgnoreCase),
         // fcx01: "pont" (Bridge-equivalent, gates the holes chasm) has no wired body/port or
         // DoorSlotCrossers vocabulary -- see BaseGameTilesetProfiles.FutCity's own doc comment. "murs"
         // is NOT here: it's wired via DoorSlotCrossers("murs"). "Routes" is no longer here either:
@@ -1330,6 +1338,38 @@ public class TileCoverageCensusTests
         ("ttf02", "GROUP:Island_Tree"),
         ("ttf02", "GROUP:Island_Connector"),
 
+        // Jacoby's Jungle (jac01) -- see BaseGameTilesetProfiles.Jungle's own doc comment for the full
+        // writeup. WallGate01/02 (Wall+Road) and StreamBridge01/02 (Stream+Bridge) are the same two-
+        // independent-crosser-family crossroads shape as Desert/Forest/Forest-Facelift's own gate
+        // groups. "Hills w/Road" (TILE184) carries BOTH Hills AND Road edges on one raised cell -- the
+        // same dual-crosser conflict as ttd01's TILE255 (Dunes+Road). "Pit Tower" (all-Pit, no door)
+        // and "AirshipAbovePit_3x1" (all-Pit, one door) sit purely on the Bridge-gated channel terrain
+        // with no Solid or Open corner anywhere in the group -- the same channel-only-group gap as
+        // ttf01's "Island"/"Island_Tree" family. "CarrackD_4x1" and "CaravelFloating_3x1" (both
+        // all-Water) are the same accent-terrain-only-group gap (AccentTerrain is a painted overlay,
+        // not a Solid/Open composition member). "Platform Cliff Dwellings 2x3" and "Platform Cliff
+        // Door" mix Cliff+Pit+Platform (three terrains -- no two-terrain classifier reaches either),
+        // the same residual as ttf01's own "Platform - Cliff Door"/"Platform - Cliff Section".
+        ("jac01", "GROUP:WallGate01"),
+        ("jac01", "GROUP:WallGate02"),
+        ("jac01", "GROUP:StreamBridge01"),
+        ("jac01", "GROUP:StreamBridge02"),
+        ("jac01", "GROUP:Hills w/Road"),
+        ("jac01", "GROUP:Pit Tower"),
+        ("jac01", "GROUP:CarrackD_4x1"),
+        ("jac01", "GROUP:CaravelFloating_3x1"),
+        ("jac01", "GROUP:Platform Cliff Dwellings 2x3"),
+        // "Log Bridge_1x3"/"Suspension Bridge_1x3": a uniformly-Pit-cornered middle tile (no Solid or
+        // Open corner) flanked by two half-Forest/half-Pit bank tiles -- ClassifyMultiTileSetPiece's
+        // Solid/Open binary never triggers once any one member is pure-channel, unlike PitStair's
+        // single-tile half-and-half shape. "Walkthrough Tree" (TILE292) is a single-tile GROUP with
+        // all-OPEN (Forest) corners and an opposite-edge Road pair: CorridorInsert requires all-SOLID
+        // corners, and being GROUP-wrapped excludes it from CornerEdgeResolver -- the same shape as
+        // ttf01's "Tower - Archer, Forest Wall/Corner" residual.
+        ("jac01", "GROUP:Log Bridge_1x3"),
+        ("jac01", "GROUP:Suspension Bridge_1x3"),
+        ("jac01", "GROUP:Walkthrough Tree"),
+
         // D20 Futuristic City SW (fcx01) -- see BaseGameTilesetProfiles.FutCity's own doc comment for
         // the full writeup. "platform1" (2x2, uniformly holes-cornered, one door-bearing member) has no
         // wired path: the doorless pure-Solid shape "b_tower02"/"d_tower02" use classifies fine, but a
@@ -1389,6 +1429,7 @@ public class TileCoverageCensusTests
         "tdc01", "tde01", "tin01",
         "tbw01", "tdm01", "tdr01", "tic01", "tni02", "tid01", "tii01", "tni01", "tsw01", "twc03",
         "ttd01", "ttf01", "ttf02",
+        "jac01",
         "fcx01",
         "tjsb0", "tbx78", "tqq01", "udp2",
     };
@@ -1415,6 +1456,7 @@ public class TileCoverageCensusTests
             "ttd01" => BaseGameTilesetProfiles.Desert,
             "ttf01" => BaseGameTilesetProfiles.Forest,
             "ttf02" => BaseGameTilesetProfiles.ForestFacelift,
+            "jac01" => BaseGameTilesetProfiles.Jungle,
             "fcx01" => BaseGameTilesetProfiles.FutCity,
             "tjsb0" => BaseGameTilesetProfiles.SecretBase,
             "tbx78" => BaseGameTilesetProfiles.ModernFacility,

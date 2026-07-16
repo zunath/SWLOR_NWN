@@ -130,6 +130,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string ForestRoad = "forest_road";
         public const string ForestStoneBridge = "forest_stonebridge";
 
+        // Wave-5: Jacoby's Jungle (jac01, SWLOR_Haks/sw_t_jungle -- a 380-tile HasHeightTransition=1
+        // hak-shipped exterior tileset). See the Jungle profile's own doc comment below for the full
+        // probe writeup (a lean sibling of Forest/ttf01: same degenerate Default==Floor=="Forest"
+        // GENERAL quirk, same inverted SolidTerrainOverride("Cliff")/PrimaryOpenTerrain("Forest")
+        // composition, and a near-identical group-naming vocabulary, but only 7 terrains/5 crossers
+        // against ttf01's 11/13 -- no RuralTrees/RuralWater/GoodCastle/EvilCastle/Marsh/CityWall/
+        // MossWall/RuinWall/RuralWallOne/Two/StoneBridge/DlaEdgeFix districts at all).
+        public const string Jungle = "jungle";
+        public const string JunglePlatform = "jungle_platform";
+
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
@@ -3158,6 +3168,192 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Office_Vinyl_Stair2_D")
                 .SetPiece("Hallway1_Entry 2x1")
                 .SetPiece("Hallway2_Entry 2x1");
+
+            // Jacoby's Jungle (jac01, SWLOR_Haks/sw_t_jungle, 380 tiles, HasHeightTransition=1). A lean
+            // sibling of Forest/ttf01: same degenerate GENERAL quirk (Border=Default=Floor="Forest",
+            // the walkable ground, not a wall; the fully-Cliff tile is pathnode-restricted, verified
+            // directly against the raw .set pathnode data), so the same INVERTED composition applies:
+            // SolidTerrainOverride("Cliff") + PrimaryOpenTerrain("Forest").
+            //
+            // Terrains(7)=Cliff,Forest,Pit,Water,Trees,Platform,HighForest; Crossers(5)=Wall,Road,
+            // Stream,Bridge,Hills -- roughly a third of ttf01's 11-terrain/13-crosser superset, and the
+            // group vocabulary echoes ttf01/ttf02 tile-for-tile in most families (Ruin01_2x2/Ruin02_1x2/
+            // Ruin, Temple_3x2, Shack01_2x2/Shack02_1x2, Lodge_2x2, Camp01_2x2/Camp02_1x2/Camp,
+            // Graveyard_1x2/Graveyard, Meeting_Area, Grove01_3x3, Exit01_2x3/Exit02_2x2/Exit,
+            // WebbedForest/WebbedCorner, BigTree, Chessboard, Portal, BridgeDoor01, WallGate01/02,
+            // StreamBridge01/02, Ramp, Cave -- same names ttf02's own profile above wires). No Tunnel
+            // vocabulary under the Cliff solid: every crosser family (Wall/Road/Stream/Bridge/Hills,
+            // same-name body/port pairs) resolves only against Solid=Forest compositions (verified
+            // directly, mirroring ttd01/ttf01/ttf02's own TunnelVocabularyCheck result) -- Complex's
+            // Tunnel mode downgrades to OpenLane.
+            //
+            // AccentTerrain("Water") gives LayoutAccentPainter blob lakes (114 corner instances,
+            // mirroring ttf01's Water accent role). ChannelTerrain("Pit") is the Bridge-gated channel
+            // (207 corner instances) -- "BridgeDoor01" (1x1, all-Pit, one door) is the channel door,
+            // the same shape as ttf01's "Door - Bridge, Pit".
+            //
+            // Heights (56 non-flat tiles of 380, all on Forest open terrain -- Cliff never carries a
+            // nonzero corner height, verified directly): MaxElevationRegions(2) (crosser-free raised-
+            // Forest rim tiles), RampCrosser("Hills") -- jac01's own ramp-lane crosser name (its analog
+            // of ttd01's "Dunes"/ttf01's "Slope"), MaxReliefRegions(2). The raised 1x1 "Ramp"/"Cave"
+            // groups and the raised Halfling Window Sidehill/Halfling Door Sidehill/Halfling Door
+            // Corner/Halfling Window Corner/Hill Corner Door groups (all all-Forest-cornered, each
+            // exactly one non-flat member, door-tolerant per LayoutGroupStamper.TryClassifyReliefPiece's
+            // now-generalized rule) classify as ReliefPieces stamped onto painted raised rim edges, the
+            // same mechanism ttd01's "Ramp"/"SmallCave" and ttf01's "Ramp"/"Cave" use. "Hills w/Road"
+            // (TILE184, raised, carrying BOTH Hills AND Road edges on the same cell) stays exempt: a
+            // dual-crosser conflict no single composition can express -- the identical shape as ttd01's
+            // TILE255 (Dunes+Road) and ttf01's TILE606-609 (Slope+Road).
+            //
+            // Groups: WallGate01/02 (Wall+Road) and StreamBridge01/02 (Stream+Bridge) are two-
+            // independent-crosser-family crossroads cells -- the same shape as Desert's WallGate01/02/
+            // TrenchBridge01/02 and Forest-Facelift's WallGate01/02/StreamBridge01/02, stays exempt (no
+            // mechanism models a two-family intersection cell). "Pit Tower" (all-Pit, no door) sits
+            // purely on the Bridge-gated channel terrain with no Solid or Open corner anywhere in the
+            // group -- ClassifySetPiece's Solid/Open binary never triggers (the channel-only-group gap
+            // ttf01's own "Island"/"Island_Tree" family already documents) -- stays exempt. Its door-
+            // bearing sibling "AirshipAbovePit_3x1" (also all-Pit, 3 tiles) DOES classify (verified
+            // directly), so the gap is specific to doorless all-channel groups. "CarrackD_4x1" and
+            // "CaravelFloating_3x1" (both all-Water, boats/wrecks) are the same accent-terrain-only-
+            // group gap -- AccentTerrain is a painted overlay, not a Solid/Open composition member --
+            // both stay exempt. Everything else classifies: the all-Forest building/decor families as
+            // OpenSetPieces, the Cliff+Forest mixed groups (Exit01_2x3/Exit02_2x2/Exit/WebbedCorner/
+            // CliffStair) as OpenSetPieces/ExitGroups too (the same Desert+Cliff mixed-group precedent
+            // Desert's own doc comment describes), and single-tile Forest+Pit mixed groups (PitStair,
+            // half-Forest/half-Pit corners) as OpenSetPieces.
+            //
+            // Two further residuals, verified directly against the raw .set data (PilotEveryTileIsReach
+            // ableOrExplicitlyExempted's own UNCLASSIFIED report): "Log Bridge_1x3" and "Suspension
+            // Bridge_1x3" each have a uniformly-Pit-cornered MIDDLE tile (TILE280/378 -- no Solid or
+            // Open corner at all) flanked by two half-Forest/half-Pit bank tiles; unlike PitStair's
+            // single-tile half-and-half shape, ClassifyMultiTileSetPiece's Solid/Open binary never
+            // triggers once any one member is a pure-channel tile, so both 3-tile groups stay exempt
+            // (the same channel-only-member gap "Pit Tower" hits above, just on a mixed-member group
+            // this time). "Walkthrough Tree" (TILE292, a single-tile GROUP) is an
+            // all-Forest-cornered tile carrying an opposite-edge Road pair -- CorridorInsert's body-
+            // crosser shapes require all-SOLID corners (this tile is all-OPEN), and being GROUP-wrapped
+            // (GroupIndex != -1) excludes it from CornerEdgeResolver, which only registers ungrouped
+            // tiles -- the same "single-tile boxed-into-a-GROUP resolver-eligible shape" gap ttf01's
+            // own "Tower - Archer, Forest Wall/Corner" family already documents.
+            //
+            // "Trees" (42 corner instances) and "HighForest" (45 corner instances) never appear on any
+            // GROUP (verified directly) -- every ungrouped tile carrying them was already
+            // CornerEdgeResolver-reachable regardless of declared vocabulary (the same "Marsh"/
+            // "HighForest" simple-tile gap ttf01's own doc comment describes), so neither needs a
+            // dedicated PilotAlternateVocabTerrains entry or a PaletteVariant on its own.
+            //
+            // Lighting sampled directly from all 5 hand-built module areas stamping jac01
+            // (dath_cz_baseok, dath_landingpad, moncalajungelsu, moncalawildjungl, yavin -- 921 tiles
+            // total): every single tile carries MainLight1=1, MainLight2=2, SourceLight1=1,
+            // SourceLight2=2, uniformly.
+            //
+            // Decoration palette mined from the same 5 areas' placeable inventories (functional/
+            // spawn-marker resrefs like plc_arrowcorpse/creature_spaw001 excluded): the zep_*/
+            // _mdrn_pl_* families ttd01's own bulk palette already uses recur here too (zep_shrub036,
+            // zep_giantfern, _mdrn_pl_pillr05/_mdrn_pl_lamp5). The areas' own "x0_ivy"/"nw_plc_palm02"
+            // placeables have no utp blueprint in this module (verified via
+            // AllDungeonDefinitions_DecorationsExistAndAreVisible) -- substituted with the nearest
+            // blueprint-backed equivalents already in the module (zep_vinesh, zep_tree070).
+            _builder.Create(Jungle, "Jacoby's Jungle")
+                .Tileset("jac01")
+                .SolidTerrainOverride("Cliff")
+                .PrimaryOpenTerrain("Forest")
+                .MaxElevationRegions(2)
+                .MaxReliefRegions(2)
+                .RampCrosser("Hills")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(1, 2, 1, 2)
+                .AccentTerrain("Water")
+                .ChannelTerrain("Pit")
+                .FeatureTile("Ruin")
+                .FeatureTile("Camp")
+                .FeatureTile("Graveyard")
+                .FeatureTile("WebbedForest")
+                .FeatureTile("BigTree")
+                .FeatureTile("Chessboard")
+                .SetPiece("Portal", 1)
+                .SetPiece("BridgeDoor01", 1)
+                .SetPiece("Ruin01_2x2")
+                .SetPiece("Ruin02_1x2")
+                .SetPiece("Temple_3x2")
+                .SetPiece("Shack01_2x2")
+                .SetPiece("Shack02_1x2")
+                .SetPiece("Lodge_2x2")
+                .SetPiece("Camp01_2x2")
+                .SetPiece("Camp02_1x2")
+                .SetPiece("Graveyard_1x2")
+                .SetPiece("Meeting_Area")
+                .SetPiece("Grove01_3x3")
+                .SetPiece("Exit01_2x3")
+                .SetPiece("Exit02_2x2")
+                .SetPiece("WebbedCorner", 1)
+                .SetPiece("Mayan Tomb")
+                .SetPiece("Jungle Elevator", 1)
+                .SetPiece("AirshipAbovePit_3x1", 1)
+                .SetPiece("AirshipDocked1_3x1", 1)
+                .SetPiece("Halfling Window Sidehill", 1)
+                .SetPiece("Halfling Door Sidehill", 1)
+                .SetPiece("Halfling Door Corner", 1)
+                .SetPiece("Halfling Window Corner", 1)
+                .SetPiece("Hill Corner Door", 1)
+                // Baked-mesh raised ramp/cave-mouth pieces -- same ReliefPiece kind as ttd01's "Ramp"/
+                // "SmallCave" and ttf01's "Ramp"/"Cave", stamped onto a painted raised rim edge.
+                .SetPiece("Ramp", 1)
+                .SetPiece("Cave", 1)
+                .SetPiece("RuinedRamp", 1)
+                .ExitGroup("Exit")
+                .ExitGroup("CliffStair")
+                .ExitGroup("PitStair")
+                .ExitGroup("Tower");
+
+            // Jungle's own bulk palette -- mined from jac01's 5 hand-built reference areas
+            // (dath_cz_baseok/dath_landingpad/moncalajungelsu/moncalawildjungl/yavin), functional/
+            // spawn-marker resrefs (plc_arrowcorpse, creature_spaw001) excluded. Shares ttd01's own
+            // zep_*/_mdrn_pl_* decoration families.
+            _builder
+                .Decoration("zep_shrub036", 3, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_pillr05", 2, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_barr001", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_giantfern", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_vinesh", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_tno_rockldg2", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_tree070", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_log001", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_lamp5", 2, DecorationContext.DoorwayFlank)
+                .Decoration("zep_arch002", 2, DecorationContext.DoorwayFlank)
+                .Vignette("JungleRuinCluster", 2)
+                .VignetteMember("_mdrn_pl_pillr05", 0f, 0f)
+                .VignetteMember("zep_vinesh", 0.5f, 0.2f);
+
+            // Jungle (Platform) -- jac01's "Platform" chasm-bridge district, a PaletteVariant profile
+            // recomposing the SAME jac01 hak data the base Jungle profile above uses. Mirrors ttf01's
+            // own "Forest (Platform)" variant exactly: SolidTerrainOverride("Pit") +
+            // PrimaryOpenTerrain("Platform") closes the GROUPS that fail the base profile's Cliff/
+            // Forest Solid/Open binary because they use Platform+Pit corners instead (Platform House2,
+            // Platform Boss House 2x3, Guard Tower 1x2, Platform Pillar, Platform Elevator, Platform
+            // Column, Platform House, Platform Portal, Meeting Place -- all all-{Pit,Platform}-cornered,
+            // verified directly). "Platform Cliff Dwellings 2x3" mixes Cliff+Pit+Platform (three
+            // terrains on one group -- no two-terrain classifier reaches it) and stays exempt, the same
+            // shape as ttf01's own "Platform - Cliff Section" residual. Its similarly Cliff-mixed
+            // sibling "Platform Cliff Door" (Cliff+Platform, no Pit corner, one door) DOES classify
+            // (verified directly), wired below as an ordinary SetPiece.
+            _builder.Create(JunglePlatform, "Jacoby's Jungle (Platform)")
+                .Tileset("jac01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(1, 2, 1, 2)
+                .PaletteVariant()
+                .SolidTerrainOverride("Pit")
+                .PrimaryOpenTerrain("Platform")
+                .SetPiece("Platform House2", 1)
+                .SetPiece("Platform Boss House 2x3", 1)
+                .SetPiece("Guard Tower 1x2", 1)
+                .SetPiece("Platform Pillar", 1)
+                .SetPiece("Platform Elevator", 1)
+                .SetPiece("Platform Column", 1)
+                .SetPiece("Platform House", 1)
+                .SetPiece("Platform Portal", 1)
+                .SetPiece("Meeting Place", 1)
+                .SetPiece("Platform Cliff Door", 1);
 
             return _builder.Build();
         }

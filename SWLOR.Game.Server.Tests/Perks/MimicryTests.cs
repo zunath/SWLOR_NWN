@@ -393,6 +393,58 @@ public class MimicryTests
         }
     }
 
+    // feat.2da targeting metadata must match each technique's shape so the client presents the
+    // correct activation UX. Mirrors the weapon-archetype generator convention:
+    //   - single-target hostile cast  -> HostileFeat=1, TARGETSELF blank (shows a hostile cursor)
+    //   - self-origin area / stance / self-or-ally utility -> TARGETSELF=1, HostileFeat blank
+    //     (originates on the caster; SWLOR activation targeting drives any area placement)
+    //   - passive trait -> both blank (never cast)
+    // Guards against techniques shipping with unset targeting columns (the client would then prompt
+    // the wrong cursor, e.g. a self-centered area asking for a manual target).
+    [Test]
+    public void MimicryTechniques_Feat2daTargetingMatchesAbilityShape()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
+
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
+        techniques.Should().NotBeEmpty();
+
+        foreach (var technique in techniques)
+        {
+            var feat = technique.Feat;
+            var detail = technique.Detail;
+
+            featRows.Should().ContainKey((int)feat, $"feat.2da should have a row for {feat}");
+            var row = featRows[(int)feat];
+            var targetSelf = row.GetValueOrDefault("TARGETSELF", "****");
+            var hostile = row.GetValueOrDefault("HostileFeat", "****");
+
+            if (detail.IsMimicryTrait)
+            {
+                targetSelf.Should().Be("****", $"{feat} is a passive trait and is never cast");
+                hostile.Should().Be("****", $"{feat} is a passive trait and is not a hostile cast");
+                continue;
+            }
+
+            // Only a single-target hostile cast presents a manual target cursor; everything that
+            // originates on the caster (areas, stances, self/ally utility) must self-cast instead.
+            var originatesOnCaster = detail.IsAreaAbility || detail.IsMimicryStance || detail.IsMimicryUtility;
+
+            if (originatesOnCaster)
+            {
+                targetSelf.Should().Be("1", $"{feat} originates on the caster and must not present a target cursor (TARGETSELF=1)");
+                hostile.Should().Be("****", $"{feat} originates on the caster and must not be a hostile-cursor cast");
+            }
+            else
+            {
+                hostile.Should().Be("1", $"{feat} is a single-target hostile cast and must present a hostile target cursor (HostileFeat=1)");
+                targetSelf.Should().Be("****", $"{feat} is a single-target cast and must not self-target");
+            }
+        }
+    }
+
     // Registry-driven TLK check covering every technique in the pool. Replaces the old fixed
     // strref-id range assertion (192553-192573), which only fit the original 10-row pool, with a
     // check that every technique's FEAT/DESCRIPTION strrefs are custom TLK references that

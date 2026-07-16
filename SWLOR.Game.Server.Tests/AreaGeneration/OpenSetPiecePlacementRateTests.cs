@@ -227,4 +227,53 @@ public class OpenSetPiecePlacementRateTests
             "Complex's MaxRoomCornerSize=5 leaves zero spare tiles for a 2x2 footprint+margin to relocate CenterTile onto -- " +
             "if this ever starts placing, Complex's room-size policy changed and this test (and its doc comment) should be revisited, not silently deleted");
     }
+
+    // ---------------- Mixed/open-member-with-interior-doorway-edge OpenSetPiece proofs ----------------
+
+    /// <summary>
+    /// Placement proof for LayoutGroupStamper.TryClassify's mixed/open-member tolerance (see that
+    /// method's own doc comment): a group pairing an all-solid member with an open-cornered member
+    /// whose sole door-family edge faces its own group-mate (interior, never the group's own perimeter)
+    /// now classifies as OpenSetPiece instead of being rejected outright. udp2's "Office_Vinyl_Entry
+    /// 2x1" is the flagship case -- verified directly against the raw .set data that its "Door" edge is
+    /// interior-only.
+    /// </summary>
+    [Test]
+    public void OfficeVinylEntryOnOfficeInteriors_NowPlacesInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.OfficeInteriors];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "Office_Vinyl_Entry 2x1", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+        successes.Should().BeGreaterThan(140);
+        // Measured 96.7% (145/150) isolated -- a 1x2 footprint (no CenterTile-relocation dependency at
+        // all, unlike the 2x2+ groups above) is trivial for TryPlaceOpenSetPiece's site search to place
+        // in almost any open-terrain room. Safety margin well under the measured rate.
+        hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+            $"'Office_Vinyl_Entry 2x1' must place on a meaningful share of the {successes} successful seeds now that the mixed/open-member tolerance classifies it as OpenSetPiece (got {hits})");
+    }
+
+    /// <summary>
+    /// Same mechanism as OfficeVinylEntryOnOfficeInteriors_NowPlacesInIsolation above, on tbx78's
+    /// "elevator" group (Rows=1/Columns=2 -- a "wall"/"facility" split tile whose "doorway2" edge faces
+    /// its own group-mate, interior-only, verified directly against the raw .set data).
+    /// </summary>
+    [Test]
+    public void ElevatorOnModernFacility_NowPlacesInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.ModernFacility];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "elevator", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+        successes.Should().BeGreaterThan(140);
+        // Measured 100% (150/150) isolated -- same trivial 1x2-footprint reasoning as
+        // OfficeVinylEntryOnOfficeInteriors_NowPlacesInIsolation above. Safety margin well under the
+        // measured rate.
+        hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+            $"'elevator' must place on a meaningful share of the {successes} successful seeds now that the mixed/open-member tolerance classifies it as OpenSetPiece (got {hits})");
+    }
 }

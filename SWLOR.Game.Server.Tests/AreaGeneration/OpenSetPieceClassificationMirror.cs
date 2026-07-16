@@ -10,8 +10,12 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 /// Used ONLY to filter which configured 2x2+ groups are genuine OpenSetPiece candidates for the
 /// placement-rate measurement/regression tests -- not a replacement for the production classifier,
 /// and deliberately narrower (ignores 1x1 CorridorInsert/CorridorStub/ReliefPiece paths, which never
-/// apply to a Rows&gt;=2/Columns&gt;=2 group). Keep in sync with LayoutGroupStamper.TryClassify if that
-/// method's multi-tile rules ever change.
+/// apply to a Rows&gt;=2/Columns&gt;=2 group, and never generalizes DoorwayCrosser via
+/// MacroLayoutParameters.DoorSlotCrossers -- callers on a DoorSlotCrossers-declaring profile, e.g.
+/// udp2/tbx78, must not rely on this mirror to recognize their renamed door-family edge as
+/// "Doorway"). Keep in sync with LayoutGroupStamper.TryClassify if that method's multi-tile rules
+/// ever change -- see this class's own mixed/open-member fallthrough below (added alongside
+/// production's identical fallthrough) for the current shape of that sync.
 /// </summary>
 internal enum MirroredGroupKind { Invalid, WallRoom, WallAlcove, OpenSetPiece, CorridorStubChain }
 
@@ -20,6 +24,10 @@ internal static class OpenSetPieceClassificationMirror
     private const string DoorwayCrosser = "Doorway";
     private const string CorridorCrosser = "Corridor";
     private const string AlleyCrosser = "Alley";
+
+    // Slot -> (Dx, Dy) step to the neighboring cell across that edge -- mirrors
+    // LayoutGroupStamper.SlotOffsets (Top=0/Right=1/Bottom=2/Left=3, Top is +Y/north).
+    private static readonly (int Dx, int Dy)[] SlotOffsets = { (0, 1), (1, 0), (0, -1), (-1, 0) };
 
     private static bool Eq(string a, string b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.OrdinalIgnoreCase);
 
@@ -38,6 +46,7 @@ internal static class OpenSetPieceClassificationMirror
             string.IsNullOrEmpty(edge) || Eq(edge, DoorwayCrosser) || stubCrossers.Any(c => Eq(edge, c));
 
         var members = new System.Collections.Generic.List<TileRecord>();
+        var positioned = new System.Collections.Generic.List<(int Row, int Col, TileRecord Tile)>();
         for (var row = 0; row < group.Rows; row++)
         {
             for (var col = 0; col < group.Columns; col++)
@@ -56,6 +65,7 @@ internal static class OpenSetPieceClassificationMirror
                 }
 
                 members.Add(tile);
+                positioned.Add((row, col, tile));
             }
         }
         if (members.Count == 0) return MirroredGroupKind.Invalid;
@@ -72,7 +82,32 @@ internal static class OpenSetPieceClassificationMirror
 
         if (hasAnyDoorway)
         {
-            return !allCornersSolid ? MirroredGroupKind.Invalid : MirroredGroupKind.WallRoom;
+            // Mirrors LayoutGroupStamper.TryClassify's own mixed/open-member fallthrough: a doorway
+            // edge implies WallRoom only when every corner is solid; a mixed shape is tolerated ONLY
+            // when every doorway edge is interior to the group's own footprint (faces another member of
+            // the SAME group, never the group's own perimeter) -- see production's own doc comment on
+            // this exact branch. Falls through to the OpenSetPiece corner-match check below when that
+            // holds (e.g. udp2's "*_Entry 2x1" family, tbx78's "elevator").
+            if (allCornersSolid) return MirroredGroupKind.WallRoom;
+
+            var hasAnyPerimeterDoorway = false;
+            foreach (var (row, col, tile) in positioned)
+            {
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    if (!Eq(tile.GetEdgeAt(0, slot), DoorwayCrosser)) continue;
+
+                    var (dx, dy) = SlotOffsets[slot];
+                    var neighborRow = row + dy;
+                    var neighborCol = col + dx;
+                    var outOfBounds = neighborRow < 0 || neighborRow >= group.Rows ||
+                                       neighborCol < 0 || neighborCol >= group.Columns;
+                    if (outOfBounds || group.TileIds[neighborRow * group.Columns + neighborCol] < 0)
+                        hasAnyPerimeterDoorway = true;
+                }
+            }
+            if (hasAnyPerimeterDoorway) return MirroredGroupKind.Invalid;
+            // else: fall through to the OpenSetPiece corner-match check below.
         }
 
         if (allCornersSolid && hasAnyDoor)

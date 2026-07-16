@@ -788,8 +788,18 @@ public class TileCoverageCensusTests
 
         if (hasAnyDoorway)
         {
-            if (!allCornersSolid || !hasAnyPerimeterDoorway) return GroupMechanism.None;
-            return GroupMechanism.SetPieceWallRoom;
+            // Mirrors LayoutGroupStamper.TryClassify's own mixed/open-member fallthrough: a doorway
+            // edge implies SetPieceWallRoom only when every corner is solid; a mixed shape is tolerated
+            // ONLY when every doorway edge is interior (never perimeter) -- see production's own doc
+            // comment on this exact branch for the WriteMember/EdgeCrosserGrid reasoning. Falls through
+            // to the OpenSetPiece corner-match check below when that holds (e.g. udp2's "*_Entry 2x1"
+            // family, tbx78's "elevator").
+            if (allCornersSolid)
+            {
+                if (!hasAnyPerimeterDoorway) return GroupMechanism.None;
+                return GroupMechanism.SetPieceWallRoom;
+            }
+            if (hasAnyPerimeterDoorway) return GroupMechanism.None;
         }
 
         if (allCornersSolid && hasAnyDoor)
@@ -1485,13 +1495,13 @@ public class TileCoverageCensusTests
         // TryClassify's WallRoom rule) now reads MacroLayoutParameters.DoorSlotCrossers the same way
         // CornerEdgeResolver's ungrouped-tile path always has (see LayoutGroupStamper.IsDoorwayEdge),
         // so every "doorway1"/"doorway2"-crossered group here classifies as WallRoom now -- see
-        // BaseGameTilesetProfiles.ModernFacility's own doc comment. Only "elevator" (TILE66/67) remains:
-        // TILE66 mixes Solid ("wall") and Open ("facility") corners on the SAME tile while also carrying
-        // a doorway edge -- verified directly that TryClassify's hasAnyDoorway gate commits to the
-        // WallRoom branch (which requires allCornersSolid) before OpenSetPiece's solid-or-open tolerance
-        // is ever considered, so this door-bearing mixed-corner shape has no supporting GroupKind. A
-        // genuine, narrow structural gap, not a wiring gap.
-        ("tbx78", "GROUP:elevator"),
+        // BaseGameTilesetProfiles.ModernFacility's own doc comment. "elevator" (TILE66/67) is CLOSED too
+        // (no longer exempt here): TILE66 mixes Solid ("wall") and Open ("facility") corners on the SAME
+        // tile while also carrying a "doorway2" edge, but that edge faces TILE67 -- its own group-mate,
+        // an interior seam, never the group's own perimeter (verified directly against the raw .set
+        // data) -- so it now falls through TryClassify's mixed/open-member tolerance and classifies as
+        // SetPieceOpenSetPiece (see LayoutGroupStamper.TryClassify's own doc comment on that branch).
+        // Coverage: 82/84 -> 84/84 (100%).
 
         // D20 Office Interiors UDP (udp2): the identical IsAllowedMemberEdge/DoorSlotCrossers gap as
         // tbx78 above, against the "Door" crosser name, is closed the same way -- Office_Vinyl_Entry/
@@ -1502,6 +1512,23 @@ public class TileCoverageCensusTests
         // (Service/Tiled/Office_Wood/Office_Alum/Foyer_L/Foyer_U) no profile here composes with at all --
         // each needs its own PaletteVariant (mirroring zin01's Elven/Sigil pattern) before its
         // district-specific terrain/crosser vocabulary is even attempted, out of this pass's scope.
+        //
+        // District-closure follow-up: the six variant PaletteVariant profiles above close that ~36-tile
+        // gap (see BaseGameTilesetProfiles.OfficeInteriorsService's own doc comment), leaving only each
+        // district's own "*_Entry 2x1" pair (Service/Tiled/Office_Vinyl/Office_Wood/Office_Alum/Foyer_L/
+        // Foyer_U, 14 tiles) plus the tileset-generic Hallway1_Entry/Hallway2_Entry (4 tiles) exempted --
+        // the SAME mixed/open-member-with-interior-doorway-edge shape as tbx78's "elevator" above. The
+        // seven district Entry pairs are now CLOSED (no longer exempt anywhere): each pairs an all-Wall
+        // member with an open (district-terrain) member whose sole "Door" edge faces its own group-mate
+        // -- interior, never perimeter (verified directly against every district's raw .set data) -- so
+        // they now classify as SetPieceOpenSetPiece via the same mixed/open-member tolerance. See
+        // BaseGameTilesetProfiles.OfficeInteriors/OfficeInteriorsService's own doc comments for the
+        // SetPiece(...) wiring. Hallway1_Entry/Hallway2_Entry stay exempt (still in
+        // PilotAlternateVocabCrossers["udp2"]'s "Hallway1"/"Hallway2" bucket) for a genuinely DIFFERENT,
+        // still-open reason: their door-family edge is the literal crosser name "Hallway1"/"Hallway2",
+        // which IsAllowedMemberEdge rejects outright (not declared as a DoorSlotCrosser) before
+        // allCornersSolid/hasAnyDoorway are ever consulted -- see PilotAlternateVocabCrossers["udp2"]'s
+        // own doc comment. Coverage: 211/229 (92.1%) -> 225/229 (98.3%).
 
         // [CEP] City Interior 1 (zin01) -- see BaseGameTilesetProfiles.CepCityInterior's own doc
         // comment. 930/961 tiles (96.8%) reach a mechanism directly; the residual 31 fall into four

@@ -359,6 +359,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// single ungrouped tile. A shape whose ONLY Doorway edges face another member of the SAME
         /// group (an interior, not perimeter, opening — e.g. tic01's "Turret Interior - Lit/Dark (2x1)")
         /// still correctly fails below via the perimeterDoorways.Count == 0 check, unaffected by this.
+        ///
+        /// A mixed/open-member group (NOT all-solid-cornered) that also carries a door-family edge is
+        /// no longer rejected outright either, as long as every one of its doorway edges is INTERIOR
+        /// (faces another member of the SAME group, never the group's own perimeter) — it falls through
+        /// to the OpenSetPiece corner-match rule below instead, tolerating the door-family edge as a
+        /// never-written-for-resolution seam exactly like WriteMember's own doc comment already
+        /// documents for a mismatched interior boundary (both flanking cells are pinned, so neither is
+        /// ever read back via corner/edge key lookup — see WriteMember). This closes udp2's seven
+        /// district "*_Entry 2x1" pairs (e.g. Office_Vinyl_Entry: an all-Wall member paired with an
+        /// Office_Vinyl-open member whose sole "Door" edge faces its own group-mate) and tbx78's
+        /// "elevator" group (a "wall"/"facility" split tile whose "doorway2" edge faces its own
+        /// group-mate) — verified directly against both tilesets' raw .set data that the doorway edge in
+        /// every case is interior-only, never perimeter. A mixed-member group whose doorway edge DOES
+        /// face the group's own perimeter is deliberately still rejected (return false below) rather
+        /// than tolerated: WriteMember writes every member edge verbatim into the shared per-cell grid,
+        /// so a perimeter door-family edge on an open-cornered footprint cell would rewrite its
+        /// unpinned neighbor's facing edge too (EdgeCrosserGrid stores one value per SHARED edge — see
+        /// TryPlaceDoorwayCorridorInsert's own doc comment), and TryPlaceOpenSetPiece's site search
+        /// (unlike TryPlaceWallRoom's IsWallRoomSiteValid) never verifies that neighbor can actually
+        /// resolve a matching tile afterward. No verified tileset data needs that broader case this
+        /// pass, so it stays out of scope rather than guessed at.
         /// </summary>
         private static bool TryClassify(TilesetModel tileset, TileGroupRecord group, MacroLayoutParameters parameters, out ClassifiedGroup classified)
         {
@@ -500,21 +521,32 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             if (hasAnyDoorway)
             {
-                // A doorway edge implies a WallRoom; anything that isn't all-solid-cornered with at
-                // least one opening facing outward is an unsupported shape for this pass. A door slot
-                // is tolerated here too (see this method's own doc comment) -- WriteMember never writes
-                // door data, so an unpopulated slot on a stamped WallRoom member renders exactly like
-                // any other unpopulated Doorway-keyed door-slot tile already does today.
-                if (!allCornersSolid || perimeterDoorways.Count == 0) return false;
-
-                classified = new ClassifiedGroup
+                // A doorway edge implies a WallRoom when every corner is solid; anything with at least
+                // one opening facing outward classifies, anything without one is an unsupported shape
+                // for this pass. A door slot is tolerated here too (see this method's own doc comment)
+                // -- WriteMember never writes door data, so an unpopulated slot on a stamped WallRoom
+                // member renders exactly like any other unpopulated Doorway-keyed door-slot tile
+                // already does today.
+                if (allCornersSolid)
                 {
-                    Group = group,
-                    Members = members,
-                    Kind = GroupKind.WallRoom,
-                    PerimeterDoorways = perimeterDoorways
-                };
-                return true;
+                    if (perimeterDoorways.Count == 0) return false;
+
+                    classified = new ClassifiedGroup
+                    {
+                        Group = group,
+                        Members = members,
+                        Kind = GroupKind.WallRoom,
+                        PerimeterDoorways = perimeterDoorways
+                    };
+                    return true;
+                }
+
+                // Mixed/open-member shape: only tolerated when every doorway edge is interior (see this
+                // method's own doc comment) -- a genuine perimeter doorway edge on an open-cornered
+                // footprint is still an unsupported shape, rejected here rather than risking an
+                // unresolvable neighbor cell. Falls through to the OpenSetPiece corner-match rule below
+                // when this holds.
+                if (perimeterDoorways.Count != 0) return false;
             }
 
             // WallAlcove: all-solid corners, zero crosser edges anywhere, at least one door slot (e.g.

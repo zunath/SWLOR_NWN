@@ -355,18 +355,22 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // string, never a DoorSlotCrossers alternate -- verified directly reading LayoutGroupStamper --
         // so this is a deterministic, tileset-wide structural fact, not a per-district empirical
         // measurement; udp2's own "Door" crosser can never satisfy it regardless of which district
-        // supplies the open terrain). Each district's own "Entry 2x1" pair does NOT classify at all (a
-        // DIFFERENT, genuine shared-classifier gap, not a placement gap): its open member mixes the
-        // district's open terrain corners with a "Door" port edge, so allCornersSolid is false and
-        // ClassifyMultiTileSetPiece's hasAnyDoorway branch returns None before ever trying the
-        // OpenSetPiece corner-match branch below it -- verified directly against
-        // ClassifyMultiTileSetPiece's own priority order. This pre-existed for Office_Vinyl_Entry/
-        // Hallway1_Entry/Hallway2_Entry before this pass (auto-exempted via the "Door"/"Hallway1"/
-        // "Hallway2" alternate-vocab crosser bucket) and is now shared by every district's own Entry
-        // pair the same way -- see TileCoverageCensusTests' udp2 PilotAlternateVocabCrossers entry.
-        // Fixing the shared classifier is out of scope for a single-tileset pass. Foyer_L/Foyer_U are
-        // smaller districts (7 groups each: Entry 2x1/Win/WinCrnr/Firepl/Stair_U or Stair_D/Stair2_U or
-        // Stair2_D/Grandstair_U or Grandstair_D) -- same shape family, same Entry-pair gap.
+        // supplies the open terrain). Each district's own "Entry 2x1" pair is now CLOSED and wired: it
+        // pairs an all-Wall member with an open (district-terrain) member whose sole "Door" edge faces
+        // its own group-mate -- interior, never perimeter (verified directly against every district's
+        // raw .set data) -- so LayoutGroupStamper.TryClassify's mixed/open-member fallthrough (added
+        // this pass; see that method's own doc comment) lets it fall through to the OpenSetPiece
+        // corner-match branch instead of being rejected by the hasAnyDoorway/allCornersSolid gate.
+        // TryPlaceOpenSetPiece's site search needs only an open-terrain room tile, not a corridor/
+        // OpenLane boundary, so it is NOT subject to the SupportsWallRoomOpenLaneBoundary gap above --
+        // measured 96.7%-100% isolated placement (see OpenSetPiecePlacementRateTests.
+        // OfficeVinylEntryOnOfficeInteriors_NowPlacesInIsolation). Hallway1_Entry/Hallway2_Entry stay
+        // exempt for a genuinely DIFFERENT, still-open reason: their door-family edge is the literal
+        // crosser name "Hallway1"/"Hallway2", which IsAllowedMemberEdge rejects outright (not declared
+        // as a DoorSlotCrosser) before allCornersSolid/hasAnyDoorway are ever consulted -- see
+        // TileCoverageCensusTests' udp2 PilotAlternateVocabCrossers entry. Foyer_L/Foyer_U are smaller
+        // districts (7 groups each: Entry 2x1/Win/WinCrnr/Firepl/Stair_U or Stair_D/Stair2_U or
+        // Stair2_D/Grandstair_U or Grandstair_D) -- same shape family, Entry 2x1 wired the same way.
         //
         // Each variant redeclares SetPieceRoomCornerFloor(6) and DoorSlotCrossers("Door",
         // "Door_Garage_Sm", "Door_Garage_Lg") identically to the base profile: a variant may be selected
@@ -374,12 +378,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // needs the same room-size floor and door-slot vocabulary the base profile relies on for correct
         // real generation, not just census credit.
         //
-        // Census: 193/229 (84.3%) -> 211/229 (92.1%) -- the residual 18 tiles (9 Entry-shaped groups x 2
-        // members) are the shared-classifier gap above, not a per-district gap. See
-        // TileCoverageCensusTests' udp2 PilotAlternateVocabTerrains entry (now empty, the six district
-        // names removed the same way CastleInteriorStorage/Rich/Library/Jail emptied tic01's own entry)
-        // and PilotAlternateVocabCrossers entry (unchanged Door/Hallway1/Hallway2 bucket, now also
-        // covering every district's own Entry pair).
+        // Census: 193/229 (84.3%) -> 211/229 (92.1%) -> 225/229 (98.3%) -- the residual 4 tiles
+        // (Hallway1_Entry/Hallway2_Entry) are the DoorSlotCrossers-vocabulary gap above, not a
+        // per-district gap. See TileCoverageCensusTests' udp2 PilotAlternateVocabTerrains entry (now
+        // empty, the six district names removed the same way CastleInteriorStorage/Rich/Library/Jail
+        // emptied tic01's own entry) and PilotAlternateVocabCrossers entry (now just Hallway1/Hallway2).
         public const string OfficeInteriorsService = "officeinteriors_service";
         public const string OfficeInteriorsTiled = "officeinteriors_tiled";
         public const string OfficeInteriorsOfficeWood = "officeinteriors_office_wood";
@@ -3598,11 +3601,19 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // candidate anchor) with zero placed content. TileCoverageCensusTests still credits them
                 // (structural classification, independent of profile wiring, matching every other
                 // "optional config" mechanism this census already recognizes) -- see this file's own
-                // PilotExpectedExemptions entries. "elevator" (TILE66/67) additionally fails
-                // classification itself: TILE66 mixes Solid ("wall") and Open ("facility") corners on the
-                // SAME tile while also carrying a doorway edge, so TryClassify's hasAnyDoorway gate
-                // commits to the WallRoom branch (which requires allCornersSolid) before OpenSetPiece's
-                // solid-or-open tolerance is ever considered -- a second, narrower structural gap.
+                // PilotExpectedExemptions entries.
+                //
+                // "elevator" (TILE66/67) is a GENUINELY DIFFERENT shape and IS wired: TILE66 mixes Solid
+                // ("wall") and Open ("facility") corners on the SAME tile while also carrying a
+                // "doorway2" edge -- but that edge faces TILE67, its own group-mate, an interior seam,
+                // never the group's own perimeter (verified directly against the raw .set data), so it
+                // classifies as SetPieceOpenSetPiece via LayoutGroupStamper.TryClassify's mixed/
+                // open-member tolerance (see that method's own doc comment) instead of WallRoom --
+                // TryPlaceOpenSetPiece's site search needs only an open-terrain room tile, not a
+                // corridor/OpenLane boundary, so it is NOT subject to the SupportsWallRoomOpenLaneBoundary
+                // gap above. Placement proof: OpenSetPiecePlacementRateTests.
+                // ElevatorOnModernFacility_NowPlacesInIsolation.
+                .SetPiece("elevator")
                 .SetPiece("removed_panel")
                 .SetPiece("giant_cage")
                 .SetPiece("pillar", 3);
@@ -3659,17 +3670,28 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .DoorSlotCrossers("Door", "Door_Garage_Sm", "Door_Garage_Lg")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)
-                // Door-bearing groups (Office_Vinyl_Entry/SmRm1/SmRm2/MidRm1/MidRm2, Elevator1/2,
-                // Stairwell_U/UD/D, Restrooms, Break_Room) now structurally CLASSIFY as WallRoom the same
-                // way tbx78's do (LayoutGroupStamper.IsDoorwayEdge recognizes "Door" identically to the
-                // literal canonical "Doorway" string). They stay UNWIRED here for the identical reason
-                // documented on BaseGameTilesetProfiles.ModernFacility above: this tileset declares no
-                // Tunnel-mode corridor family and has no ungrouped boundary tile shape supporting an
-                // OpenLane WallRoom site (verified directly via TileResolver.HasCandidate against the
-                // real tile inventory; measured 0/30 seeds via a real LayoutSolver run before reverting
-                // the wiring), so IsWallRoomSiteValid can never find a legal site for any WallRoom group
-                // here either. TileCoverageCensusTests still credits them structurally -- see this file's
-                // own PilotExpectedExemptions/PilotAlternateVocabCrossers entries.
+                // Door-bearing groups (SmRm1/SmRm2/MidRm1/MidRm2, Elevator1/2, Stairwell_U/UD/D,
+                // Restrooms, Break_Room) now structurally CLASSIFY as WallRoom the same way tbx78's do
+                // (LayoutGroupStamper.IsDoorwayEdge recognizes "Door" identically to the literal
+                // canonical "Doorway" string). They stay UNWIRED here for the identical reason documented
+                // on BaseGameTilesetProfiles.ModernFacility above: this tileset declares no Tunnel-mode
+                // corridor family and has no ungrouped boundary tile shape supporting an OpenLane
+                // WallRoom site (verified directly via TileResolver.HasCandidate against the real tile
+                // inventory; measured 0/30 seeds via a real LayoutSolver run before reverting the
+                // wiring), so IsWallRoomSiteValid can never find a legal site for any WallRoom group here
+                // either. TileCoverageCensusTests still credits them structurally -- see this file's own
+                // PilotExpectedExemptions/PilotAlternateVocabCrossers entries.
+                //
+                // "Office_Vinyl_Entry 2x1" is a GENUINELY DIFFERENT shape and IS wired: an all-Wall
+                // member paired with an Office_Vinyl-open member whose sole "Door" edge faces its own
+                // group-mate (interior, never perimeter -- verified directly against the raw .set data),
+                // so it classifies as SetPieceOpenSetPiece via LayoutGroupStamper.TryClassify's
+                // mixed/open-member tolerance (see that method's own doc comment) instead of WallRoom --
+                // TryPlaceOpenSetPiece's site search needs only an open-terrain room tile, not a
+                // corridor/OpenLane boundary, so it is NOT subject to the SupportsWallRoomOpenLaneBoundary
+                // gap above. Placement proof: OpenSetPiecePlacementRateTests.
+                // OfficeVinylEntryOnOfficeInteriors_NowPlacesInIsolation.
+                .SetPiece("Office_Vinyl_Entry 2x1")
                 .SetPiece("Office_Vinyl_Win")
                 .SetPiece("Office_Vinyl_WinCrnr")
                 .SetPiece("Office_Vinyl_Firepl")
@@ -3687,7 +3709,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // base OfficeInteriors profile above uses. See OfficeInteriorsService's own doc comment
             // above for the full probe writeup (tile-for-tile parity with Office_Vinyl's own group
             // family, the WallRoom door-group classify-but-never-place verdict). PaletteVariant()
-            // excludes each from --matrix's full cross-product -- one showcase area each instead.
+            // excludes each from --matrix's full cross-product -- one showcase area each instead. Each
+            // district's own "*_Entry 2x1" pair is wired too, same shape/reasoning as Office_Vinyl_Entry
+            // above (all-Wall member + open member whose sole "Door" edge faces its own group-mate,
+            // interior-only, verified directly against this district's own raw .set data).
             _builder.Create(OfficeInteriorsService, "D20 Office Interiors UDP (Service)")
                 .Tileset("udp2")
                 .SetPieceRoomCornerFloor(6)
@@ -3696,6 +3721,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .TileLighting(0, 0, 0, 0)
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Service")
+                .SetPiece("Service_Entry 2x1")
                 .SetPiece("Service_Win")
                 .SetPiece("Service_WinCrnr")
                 .SetPiece("Service_Firepl")
@@ -3714,6 +3740,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .TileLighting(0, 0, 0, 0)
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Tiled")
+                .SetPiece("Tiled_Entry 2x1")
                 .SetPiece("Tiled_Win")
                 .SetPiece("Tiled_WinCrnr")
                 .SetPiece("Tiled_Firepl")
@@ -3732,6 +3759,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .TileLighting(0, 0, 0, 0)
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Office_Wood")
+                .SetPiece("Office_Wood_Entry 2x1")
                 .SetPiece("Office_Wood_Win")
                 .SetPiece("Office_Wood_WinCrnr")
                 .SetPiece("Office_Wood_Firepl")
@@ -3750,6 +3778,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .TileLighting(0, 0, 0, 0)
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Office_Alum")
+                .SetPiece("Office_Alum_Entry 2x1")
                 .SetPiece("Office_Alum_Win")
                 .SetPiece("Office_Alum_WinCrnr")
                 .SetPiece("Office_Alum_Firepl")
@@ -3765,7 +3794,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // ONE-DIRECTION stair trio (Foyer_L only ever carries the "_U" (up) member of Stair/Stair2/
             // Grandstair, Foyer_U only the "_D" (down) member -- verified directly, neither district has
             // the other's UD/opposite-direction piece). Same door-group classify-but-never-place descope
-            // as the four full-size districts above.
+            // as the four full-size districts above for Stair/Stair2/Grandstair; Entry 2x1 is wired
+            // (same OpenSetPiece shape/reasoning as Office_Vinyl_Entry above).
             _builder.Create(OfficeInteriorsFoyerL, "D20 Office Interiors UDP (Foyer L)")
                 .Tileset("udp2")
                 .SetPieceRoomCornerFloor(6)
@@ -3774,6 +3804,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .TileLighting(0, 0, 0, 0)
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Foyer_L")
+                .SetPiece("Foyer_L_Entry 2x1")
                 .SetPiece("Foyer_L_Win")
                 .SetPiece("Foyer_L_WinCrnr")
                 .SetPiece("Foyer_L_Firepl")
@@ -3794,6 +3825,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .MinimumOpeningWidth(2)
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Foyer_U")
+                .SetPiece("Foyer_U_Entry 2x1")
                 .SetPiece("Foyer_U_Win")
                 .SetPiece("Foyer_U_WinCrnr")
                 .SetPiece("Foyer_U_Firepl")

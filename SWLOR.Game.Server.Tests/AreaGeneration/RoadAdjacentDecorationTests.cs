@@ -142,6 +142,12 @@ public class RoadAdjacentDecorationTests
     /// at size 16 measures 0.944-0.945 for both profiles. 0.70 is a conservative floor well below the
     /// measured values that still cleanly rejects every pre-change configuration measured (0.38-0.52)
     /// without being seed-sensitive to the exact point estimate.
+    ///
+    /// Re-measured after LayoutRoadCarver.CarveRoads was reordered to run BEFORE
+    /// LayoutGroupStamper.Stamp (see that class's own doc comment: roads now carve first, buildings
+    /// prefer a street-fronting site): this test's own 30-seed run at size 16 now measures 0.913
+    /// (futcity) / 0.917 (futcity_plaza) -- essentially unchanged from the pre-reorder 0.944-0.945,
+    /// still well clear of the 0.70 floor.
     /// </summary>
     private const double MinRoadAdjacencyFraction = 0.70;
 
@@ -261,13 +267,23 @@ public class RoadAdjacentDecorationTests
     /// hand-built fcx01 group-tile share of 0.152 (19 decorated reference areas) vs 0.0 generated
     /// before the SetPieceRoomCornerFloor room-size pass (Complex's own MaxRoomCornerSize=5 caps rooms
     /// at 4x4 tiles -- physically too small for ANY multi-tile group's footprint + margin + spare
-    /// center tile) and 0.0217-0.0227 after it (mean 8.7-9.1 group tiles/area across 30 seeds/profile,
-    /// at most 1 zero-group area per 30). The remaining gap to hand-built is a measured geometric
-    /// ceiling, not a budget choice: LayoutParameterConstraints.RoomSizeBounds caps rooms at corner
-    /// size 6 (5x5 tiles) for a size-20 RoomsAndCorridors area, which only fits 2x2 groups (Tower00 /
-    /// Tower04 / d_build02); every 3x3+ group needs corner size 7 = size 21+ areas. The floors below
-    /// (aggregate share >= 0.008, at least 20/30 seeds with a nonzero group count) sit well under the
-    /// measured values while cleanly rejecting the pre-change 0.0/0-of-30 state.
+    /// center tile) and 0.0217-0.0227 after it (mean 8.7-9.1 group tiles/area across 30 seeds/profile).
+    ///
+    /// Reordered again since (LayoutRoadCarver.CarveRoads now runs BEFORE LayoutGroupStamper.Stamp, so
+    /// buildings can prefer road-adjacent sites -- see LayoutRoadCarver's own class doc comment):
+    /// measured 0.0143 (172/12000, 29/30 seeds with a stamped group) with the final design (road
+    /// anchors exclude building-candidate room centers -- see CarveRoads -- plus the Stamp-side road
+    /// exclusion/preference and CarveSpurs fallback). A real regression was measured and fixed along
+    /// the way: naively including every room's center as a road anchor pre-Stamp collapsed this to
+    /// 0.001 (roads claimed the exact tight interior Stamp needed); the current anchor exclusion
+    /// recovers most of the pre-reorder share while pushing building-road frontage from ~0 to ~0.97+
+    /// (see _scratch_decor/measure_generated_frontage.py) -- the actual goal of this pass. The
+    /// remaining gap to hand-built (and to the pre-reorder 0.0217-0.0227) is partly the same measured
+    /// geometric ceiling as before (LayoutParameterConstraints.RoomSizeBounds caps rooms at corner size
+    /// 6 for a size-20 RoomsAndCorridors area, fitting only 2x2 groups) and partly the frontage
+    /// preference itself trading a few raw placements for near-universal street frontage. The floors
+    /// below (aggregate share >= 0.008, at least 20/30 seeds with a nonzero group count) sit well under
+    /// the measured 0.0143/29-of-30 while cleanly rejecting a regressed 0.001-share state.
     /// </summary>
     [TestCase(BaseGameTilesetProfiles.FutCity)]
     [TestCase(BaseGameTilesetProfiles.FutCityPlaza)]

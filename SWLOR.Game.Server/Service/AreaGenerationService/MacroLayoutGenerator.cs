@@ -160,16 +160,29 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // painted corners -- see LayoutGroupStamper).
             LayoutReliefPainter.Paint(layout, parameters, tileset, random);
 
-            // Runs after transitions are anchored (so set pieces can avoid them) and before invariant
-            // validation (so a bad stamp still fails loudly instead of silently corrupting a layout).
+            // Reordered (was: Stamp then CarveRoads): CarveRoads now runs BEFORE Stamp, from transition
+            // anchors and room centers through open space that no building has claimed yet -- matching
+            // hand-built fcx01 evidence that real cities are streets-first (buildings front an already-
+            // laid-out road network, not the other way around; see _scratch_decor/
+            // measure_fcx01_frontage.py). Nothing is pinned yet at this point (LayoutGroupStamper is the
+            // only pass that writes PinnedTiles), so a lane threads directly between anchors instead of
+            // detouring around not-yet-existing buildings -- see LayoutRoadCarver's own doc comment for
+            // the full rationale and RoadCarverTests for the "never overlaps a stamped tile" invariant,
+            // which this order now enforces from the STAMPING side (IsOpenSetPieceSiteValid rejects any
+            // footprint cell that already carries a Road edge) rather than the carving side.
+            LayoutRoadCarver.CarveRoads(layout, parameters, tileset, random);
+
+            // Runs after transitions are anchored (so set pieces can avoid them) and after roads are
+            // carved (so OpenSetPiece site search can prefer a road-adjacent site and never stamp over a
+            // carved lane -- see IsOpenSetPieceSiteValid) and before invariant validation (so a bad stamp
+            // still fails loudly instead of silently corrupting a layout).
             if (tileset != null)
                 LayoutGroupStamper.Stamp(layout, parameters, tileset, random);
 
-            // Runs LAST, after set pieces are stamped: LayoutRoadCarver deliberately consults
-            // LayoutGroupStamper's own PinnedTiles as its "occupied by a building" signal so a carved
-            // lane routes between/around stamped groups instead of through them -- see that class's own
-            // doc comment for why this differs from AccentChannelCarver/FenceCarver's earlier slot.
-            LayoutRoadCarver.CarveRoads(layout, parameters, tileset, random);
+            // Runs immediately after Stamp: connects any stamped building whose site didn't land road-
+            // adjacent (most do, via TryPlaceOpenSetPiece's preference -- this is the fallback for the
+            // rest) to the street network with a short spur lane. See LayoutRoadCarver.CarveSpurs.
+            LayoutRoadCarver.CarveSpurs(layout, parameters, tileset, random);
 
             ValidateInvariants(layout, parameters);
 

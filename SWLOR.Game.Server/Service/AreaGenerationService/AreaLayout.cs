@@ -362,6 +362,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public Dictionary<(int X, int Y), (int TileId, int Orientation, int Height)> PinnedTiles { get; set; } = new();
 
         /// <summary>
+        /// Footprints (tile-coordinate lists, in stamp order) of every OpenSetPiece group
+        /// LayoutGroupStamper.Stamp placed this generation -- populated by
+        /// LayoutGroupStamper.CommitOpenSetPiece. Consumed by LayoutRoadCarver.CarveSpurs (which runs
+        /// immediately after Stamp -- see MacroLayoutGenerator.Generate's ordering) to connect any
+        /// building whose site didn't land road-adjacent to the street network, matching hand-built
+        /// fcx01's building-fronts-the-street pattern (see LayoutGroupStamper.IsOpenSetPieceSiteValid's
+        /// roadAdjacent preference). Always empty when the composition has no SetPieces configured, or
+        /// no group ever classifies/places as OpenSetPiece -- fully back-compat for every non-city
+        /// tileset.
+        /// </summary>
+        public List<List<(int X, int Y)>> StampedOpenSetPieceFootprints { get; set; } = new();
+
+        /// <summary>
         /// Carried from MacroLayoutParameters.ExitGroups by MacroLayoutGenerator.Generate — themed
         /// 1x1 "exit" group names (e.g. tdt01 Exit01-03) in priority order, consumed by
         /// GroupExitPlanner inside TileResolver.TryResolve. Empty = no group-exit substitution for

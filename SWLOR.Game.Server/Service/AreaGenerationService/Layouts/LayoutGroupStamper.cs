@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             foreach (var groupName in parameters.SetPieces.Keys.OrderBy(k => k, StringComparer.Ordinal))
             {
-                var maxCount = parameters.SetPieces[groupName];
+                var maxCount = EffectiveMaxCount(parameters, parameters.SetPieces[groupName]);
                 if (maxCount <= 0) continue;
 
                 var group = FindGroup(tileset, groupName);
@@ -202,6 +202,36 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     if (!placed) break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Scales a configured SetPiece budget up for larger road-declaring (city) compositions only --
+        /// gated on parameters.RoadCrosser being set, i.e. only FutCity/FutCityPlaza today. Every other
+        /// onboarded tileset's SetPieces budget was individually tuned (and measured/commented) against
+        /// its own hand-built reference at the machinery's usual 16-24 test sizes and stays untouched.
+        ///
+        /// Hand-built fcx01 areas with a real street network measure ~19.9 building tiles per 100 area
+        /// tiles (_scratch_decor/measure_fcx01_frontage.py, 15 areas). The configured per-tileset
+        /// budgets (e.g. FutCity's Tower00: 3) were tuned against a 20x20 baseline; a 32x32 area has
+        /// 2.56x the floor space (1024 vs 400 tiles) and, on PackedRooms/Complex-style layouts, a
+        /// correspondingly larger population of SetPieceRoomCornerFloor-sized rooms to host them, so
+        /// scaling the budget proportionally to area is the right first-order direction. This raises the
+        /// ATTEMPT count, not a guaranteed placement count -- Stamp's own loop above already stops at
+        /// the first failed placement attempt, so requesting more than a smaller area can host is
+        /// harmless (a few wasted attempts, never extra buildings) while a larger area can now actually
+        /// reach its real site ceiling instead of stopping at a small-area-tuned number.
+        /// </summary>
+        private static int EffectiveMaxCount(MacroLayoutParameters parameters, int configuredMax)
+        {
+            if (string.IsNullOrEmpty(parameters.RoadCrosser)) return configuredMax;
+
+            const int baselineTiles = 20 * 20;
+            var areaTiles = parameters.Width * parameters.Height;
+            if (areaTiles <= baselineTiles) return configuredMax;
+
+            var scale = (double)areaTiles / baselineTiles;
+            var scaled = (int)Math.Ceiling(configuredMax * scale);
+            return Math.Max(configuredMax, scaled);
         }
 
         private static TileGroupRecord FindGroup(TilesetModel tileset, string name)
@@ -1615,22 +1645,54 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             Shuffle(siteCandidates, random);
 
+            // Two-pass preference: on a road-declaring composition (LayoutRoadCarver.CarveRoads has
+            // already run -- see MacroLayoutGenerator.Generate's ordering), prefer the first valid site
+            // whose footprint fronts an already-carved Road lane (roadAdjacent -- see
+            // IsOpenSetPieceSiteValid), matching the hand-built fcx01 pattern of buildings fronting
+            // streets. Falls back to the first valid site of ANY kind when no road-adjacent site exists
+            // for this group (e.g. RoadCrosser unset, so roadAdjacent is always false and this degrades
+            // to the original first-valid-site behavior with zero extra RNG draws -- every non-city
+            // tileset is unaffected). A building that lands via the fallback gets a connector spur
+            // afterward -- see LayoutRoadCarver.CarveSpurs.
+            (LayoutRoom Room, List<(int X, int Y)> Footprint, (int X, int Y)? RelocatedCenter)? fallback = null;
+
             foreach (var (room, anchor) in siteCandidates)
             {
-                if (!IsOpenSetPieceSiteValid(layout, room, group, anchor, out var footprint, out var relocatedCenter))
+                if (!IsOpenSetPieceSiteValid(layout, parameters, room, group, anchor, out var footprint, out var relocatedCenter, out var roadAdjacent))
                     continue;
 
-                StampOpenSetPiece(layout, parameters, classified, room, footprint);
-                // See IsOpenSetPieceSiteValid's own doc comment: relocating happens AFTER every other
-                // pass that reads/reserves CenterTile has already run (Stamp is the last macro-layout
-                // pass before ValidateInvariants -- see MacroLayoutGenerator.Generate's ordering), so
-                // no earlier pass ever observes a stale center.
-                if (relocatedCenter.HasValue)
-                    room.CenterTile = relocatedCenter.Value;
+                if (roadAdjacent)
+                {
+                    CommitOpenSetPiece(layout, parameters, classified, room, footprint, relocatedCenter);
+                    return true;
+                }
+
+                fallback ??= (room, footprint, relocatedCenter);
+            }
+
+            if (fallback.HasValue)
+            {
+                CommitOpenSetPiece(layout, parameters, classified, fallback.Value.Room, fallback.Value.Footprint, fallback.Value.RelocatedCenter);
                 return true;
             }
 
             return false;
+        }
+
+        /// <summary>Commits a validated OpenSetPiece site: writes the tiles, records the footprint for
+        /// LayoutRoadCarver.CarveSpurs, and relocates the room's CenterTile when the site required it.
+        /// See IsOpenSetPieceSiteValid's own doc comment: relocating happens AFTER every other pass that
+        /// reads/reserves CenterTile has already run (Stamp runs after CarveRoads and before
+        /// ValidateInvariants -- see MacroLayoutGenerator.Generate's ordering), so no earlier pass ever
+        /// observes a stale center.</summary>
+        private static void CommitOpenSetPiece(
+            MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified, LayoutRoom room,
+            List<(int X, int Y)> footprint, (int X, int Y)? relocatedCenter)
+        {
+            StampOpenSetPiece(layout, parameters, classified, room, footprint);
+            layout.StampedOpenSetPieceFootprints.Add(footprint);
+            if (relocatedCenter.HasValue)
+                room.CenterTile = relocatedCenter.Value;
         }
 
         /// <summary>
@@ -1656,22 +1718,39 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// such alternate tile exists (the footprint + margin would consume the room's entire open
         /// interior), the site is rejected exactly as before -- there would be nothing left to anchor
         /// the room's own connectivity/spawn point to.
+        ///
+        /// Two additions for road-declaring compositions (parameters.RoadCrosser set -- see
+        /// LayoutRoadCarver, which now runs BEFORE Stamp): (1) a footprint cell that already carries the
+        /// Road crosser on any edge rejects the site outright -- WriteMember rewrites every edge of its
+        /// own footprint cells, so stamping over a carved lane would silently erase it. (2)
+        /// <paramref name="roadAdjacent"/> reports whether the footprint's OWN 1-cell margin ring (not
+        /// the footprint itself) touches a Road-crossed cell, letting TryPlaceOpenSetPiece prefer a
+        /// street-fronting site -- see that method's own doc comment. Both are no-ops (roadAdjacent
+        /// always false, no extra rejection) when RoadCrosser is empty, so every non-city tileset is
+        /// unaffected.
         /// </summary>
         private static bool IsOpenSetPieceSiteValid(
-            MacroLayout layout, LayoutRoom room, TileGroupRecord group, (int X, int Y) anchor,
-            out List<(int X, int Y)> footprint, out (int X, int Y)? relocatedCenter)
+            MacroLayout layout, MacroLayoutParameters parameters, LayoutRoom room, TileGroupRecord group, (int X, int Y) anchor,
+            out List<(int X, int Y)> footprint, out (int X, int Y)? relocatedCenter, out bool roadAdjacent)
         {
             footprint = null;
             relocatedCenter = null;
+            roadAdjacent = false;
 
             var roomTiles = new HashSet<(int X, int Y)>(room.Tiles);
             var transitionTiles = new HashSet<(int X, int Y)>(layout.Transitions.Select(t => t.Tile));
+            var roadCrosser = parameters.RoadCrosser;
 
             var fp = new List<(int X, int Y)>();
             for (var r = 0; r < group.Rows; r++)
             for (var c = 0; c < group.Columns; c++)
                 fp.Add((anchor.X + c, anchor.Y + r));
+            var fpSet = new HashSet<(int X, int Y)>(fp);
 
+            // Road exclusion/adjacency reads layout.Crossers, which is only safely indexable for real
+            // grid cells -- both checks below live INSIDE the extended loop, after roomTiles.Contains
+            // has already confirmed the cell is a real (in-bounds) room tile, exactly like every other
+            // per-cell check here (transitionTiles/PinnedTiles/CenterTile).
             var extended = new List<(int X, int Y)>();
             var touchesCenter = false;
             for (var y = anchor.Y - 1; y <= anchor.Y + group.Rows; y++)
@@ -1684,6 +1763,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     if (layout.PinnedTiles.ContainsKey(cell)) return false;
                     if (cell == room.CenterTile) touchesCenter = true;
                     extended.Add(cell);
+
+                    if (!string.IsNullOrEmpty(roadCrosser))
+                    {
+                        var cellHasRoadEdge = false;
+                        for (var slot = 0; slot < 4; slot++)
+                        {
+                            if (Eq(layout.Crossers.GetEdge(cell.X, cell.Y, slot), roadCrosser)) { cellHasRoadEdge = true; break; }
+                        }
+
+                        if (cellHasRoadEdge)
+                        {
+                            // A footprint cell that already carries a Road edge would have that edge
+                            // silently overwritten by WriteMember -- reject the whole site. A margin
+                            // (ring) cell carrying one instead means this footprint FRONTS a carved lane.
+                            if (fpSet.Contains(cell)) return false;
+                            roadAdjacent = true;
+                        }
+                    }
                 }
             }
 

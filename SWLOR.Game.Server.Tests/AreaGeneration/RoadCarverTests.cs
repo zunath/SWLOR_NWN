@@ -10,10 +10,12 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 
 /// <summary>
 /// ROAD (LayoutRoadCarver / RoadVocabularyCheck) system: street-style lanes carved between transition
-/// anchors and room centers, through open space, AFTER LayoutGroupStamper has already stamped set
-/// pieces -- see LayoutRoadCarver's own class doc comment for why it runs last and how it uses
-/// PinnedTiles as its "occupied by a building" signal. Same conventions as BridgeChannelTests/
-/// FenceAndAlleyTests: run the full pipeline against real fcx01 .set data across many seeds.
+/// anchors and (non-building-candidate) room centers, through open space, BEFORE LayoutGroupStamper
+/// stamps set pieces -- reordered so buildings can prefer a street-fronting site instead of streets
+/// routing around wherever buildings happened to land; see LayoutRoadCarver's own class doc comment
+/// for the full reorder rationale and how IsOpenSetPieceSiteValid now enforces "never overlaps a
+/// stamped tile" from the stamping side. Same conventions as BridgeChannelTests/FenceAndAlleyTests:
+/// run the full pipeline against real fcx01 .set data across many seeds.
 /// </summary>
 public class RoadCarverTests
 {

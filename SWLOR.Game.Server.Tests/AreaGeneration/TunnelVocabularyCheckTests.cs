@@ -232,6 +232,22 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.CityExteriorFieldstone,
         BaseGameTilesetProfiles.CityExteriorGothic,
         BaseGameTilesetProfiles.CityExteriorSigil,
+        // Frozen Wastes* (tti01): declares ZERO crossers at all (verified directly -- Count=0 in the
+        // .set data, more extreme than every prior exterior wave, which at least has SOME crosser
+        // family even when none is the canonical Corridor/Doorway pair). Complex downgrades to
+        // OpenLane for both profiles (base + the EvilCastle PaletteVariant) regardless of which
+        // terrain each composes as Solid. See BaseGameTilesetProfiles.FrozenWastes' own doc comment.
+        BaseGameTilesetProfiles.FrozenWastes,
+        BaseGameTilesetProfiles.FrozenWastesEvilCastle,
+        // Tropical* (ttz01): declares NO canonical "Corridor"/"Doorway" crosser at all (its 4 crossers
+        // are stream/wall1/wall2/road), the same shape as ttr01/tts01/tno01/tcn01's own exterior wave --
+        // Complex downgrades to OpenLane for all four profiles (base + Sand/Water/SandWater
+        // PaletteVariants) regardless of which terrain each composes as Solid. See
+        // BaseGameTilesetProfiles.Tropical's own doc comment.
+        BaseGameTilesetProfiles.Tropical,
+        BaseGameTilesetProfiles.TropicalSand,
+        BaseGameTilesetProfiles.TropicalWater,
+        BaseGameTilesetProfiles.TropicalSandWater,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

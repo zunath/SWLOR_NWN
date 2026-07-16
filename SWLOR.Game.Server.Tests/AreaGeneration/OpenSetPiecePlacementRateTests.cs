@@ -819,4 +819,266 @@ public class OpenSetPiecePlacementRateTests
                 "if it ever starts placing, generation changed and this test (and its doc comment) should be revisited, not silently deleted");
         }
     }
+
+    // ---------------- tti01 Frozen Wastes* placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.FrozenWastes' all-Floor OpenSetPiece family plus its
+    /// one Solid(Pit)-anchored group. Measured (seedBase 95000, 150 seeds each, Halls, all
+    /// successes=150): "Dragon Skeleton (1x2)" 68.7% (103/150), "Temple - Evil 1 (2x3)" 11.3% (17/150),
+    /// "Temple - Neutral (2x2)" 40.7% (61/150), "Temple - Evil 2 (2x3)" 11.3% (17/150), "Ship - Air,
+    /// Docked (3x1)" 29.3% (44/150), "Tower - Ice" 40.7% (61/150). "Ship - Air, Above Pit (3x1)"
+    /// (all-Pit, door-bearing) measures 100% (150/150) -- unlike RuralGrass's own "Ship - Air, Above
+    /// Trees (3x1)" (exempt there because Trees is never composed at all), Pit here IS this profile's
+    /// own composed Solid/wall terrain, so an all-solid-cornered 3x1 door group anchors trivially
+    /// against it. Thresholds set well under each measured floor for safety margin.
+    /// </summary>
+    [Test]
+    public void FrozenWastesOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.FrozenWastes];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minShare) in new[]
+                 {
+                     ("Dragon Skeleton (1x2)", 0.4),
+                     ("Temple - Evil 1 (2x3)", 0.05),
+                     ("Temple - Neutral (2x2)", 0.2),
+                     ("Temple - Evil 2 (2x3)", 0.05),
+                     ("Ship - Air, Above Pit (3x1)", 0.5),
+                     ("Ship - Air, Docked (3x1)", 0.15),
+                     ("Tower - Ice", 0.2),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.FrozenWastes' "Entrance - Evil" ExitGroup (base
+    /// profile, pure Floor corners) and FrozenWastesEvilCastle's own "Castle - Main Door/Breach/Small
+    /// Door, Evil" trio (only ever appear in a real corner grid once the EvilCastle PaletteVariant's
+    /// own SolidTerrainOverride("EvilCastle") composes that terrain as a genuine wall material, the
+    /// same shape as RuralGrassCastleDoorGroups_PlaceAsGroupExits above). Measured (seedBase 95000, 150
+    /// seeds each, all successes=150): "Entrance - Evil" 98.7% (148/150); all three castle groups 100%
+    /// (150/150). Thresholds set well under the measured floor for safety margin.
+    /// </summary>
+    [Test]
+    public void FrozenWastesExitGroups_PlaceAsGroupExits()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var profiles = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+
+        foreach (var (profileKey, groupName, minShare) in new[]
+                 {
+                     (BaseGameTilesetProfiles.FrozenWastes, "Entrance - Evil", 0.5),
+                     (BaseGameTilesetProfiles.FrozenWastesEvilCastle, "Castle - Main Door, Evil", 0.5),
+                     (BaseGameTilesetProfiles.FrozenWastesEvilCastle, "Castle - Breach, Evil", 0.5),
+                     (BaseGameTilesetProfiles.FrozenWastesEvilCastle, "Castle - Small Door, Evil", 0.5),
+                 })
+        {
+            var tilesetProfile = profiles[profileKey];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' on '{profileKey}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    // ---------------- ttz01 Tropical* placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.Tropical's SAFE (non-door) all-grass OpenSetPiece
+    /// family -- see that profile's own "KNOWN GAP" doc comment for why the nine DOOR-bearing siblings
+    /// (Barn01_2x2, Barn02_1x2, Barn03_1x2, Inn_1x2, Farm01_2x2, Farm02_1x2, Farm03_1x2, Barracks_1x2,
+    /// Windmill_2x2) are deliberately NOT wired here at all (a measured Organic-layout disconnection
+    /// risk) and so have no placement-rate test either. Measured (seedBase 95000, 150 seeds each, Halls,
+    /// all successes=150): "DragSkel_1x2" 62.7% (94/150), "Field01_2x2" 29.3% (44/150), "Field02_2x2"
+    /// 29.3% (44/150), "Field03_2x1" 62.7% (94/150), "Tower_1x2" 62.7% (94/150), "Warzone_1x2" 62.7%
+    /// (94/150), "Temple03_3x2" 7.3% (11/150), "Temple02_2x2" 29.3% (44/150), "Temple01_3x2" 7.3%
+    /// (11/150). Thresholds set well under each measured floor for safety margin.
+    /// </summary>
+    [Test]
+    public void TropicalOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Tropical];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minShare) in new[]
+                 {
+                     ("DragSkel_1x2", 0.4),
+                     ("Field01_2x2", 0.15),
+                     ("Field02_2x2", 0.15),
+                     ("Field03_2x1", 0.4),
+                     ("Tower_1x2", 0.4),
+                     ("Warzone_1x2", 0.4),
+                     ("Temple03_3x2", 0.03),
+                     ("Temple02_2x2", 0.15),
+                     ("Temple01_3x2", 0.03),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.TropicalSand's own OpenSetPiece family (all sand-
+    /// only groups, sand's own open-field composition). "Barracks_1x2(sand)" IS door-bearing but,
+    /// unlike its grass-side siblings, measured 0/300 Organic disconnections (ProbeTool) -- a genuinely
+    /// different outcome from Tropical's own door-bearing family, per that profile's own doc comment --
+    /// so it stays wired. Measured (seedBase 95000, 150 seeds each, Halls, all successes=150):
+    /// "DragSkel_1x2(sand)" 68.7% (103/150), "Temple01_3x2(sand)" 11.3% (17/150), "Temple02_2x2(sand)"
+    /// 40.7% (61/150), "Temple03_3x2(sand)" 11.3% (17/150), "Warzone_1x2(sand)" 68.7% (103/150),
+    /// "Barracks_1x2(sand)" 100% (150/150), "Tower_1x2(sand)" 68.7% (103/150).
+    /// </summary>
+    [Test]
+    public void TropicalSandOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.TropicalSand];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minShare) in new[]
+                 {
+                     ("DragSkel_1x2(sand)", 0.4),
+                     ("Temple01_3x2(sand)", 0.05),
+                     ("Temple02_2x2(sand)", 0.2),
+                     ("Temple03_3x2(sand)", 0.05),
+                     ("Warzone_1x2(sand)", 0.4),
+                     ("Barracks_1x2(sand)", 0.5),
+                     ("Tower_1x2(sand)", 0.4),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.TropicalWater's grass+water and all-Water
+    /// (Solid-anchored) OpenSetPiece family. Measured (seedBase 95000, 150 seeds each, Halls, all
+    /// successes=150): "ShipDocked01_2x2" 40.7% (61/150), "MerchantDocked01_3x2" 11.3% (17/150),
+    /// "WeatheredDocked01_3x2" 11.3% (17/150), "MerchantFloating_3x1" 100% (150/150), "MerchantWeathered"
+    /// 100% (150/150), "Lighthouse" 89.3% (134/150).
+    /// </summary>
+    [Test]
+    public void TropicalWaterOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.TropicalWater];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minShare) in new[]
+                 {
+                     ("ShipDocked01_2x2", 0.2),
+                     ("MerchantDocked01_3x2", 0.05),
+                     ("WeatheredDocked01_3x2", 0.05),
+                     ("MerchantFloating_3x1", 0.5),
+                     ("MerchantWeathered", 0.5),
+                     ("Lighthouse", 0.5),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.TropicalSandWater's sand+water OpenSetPiece family.
+    /// Measured (seedBase 95000, 150 seeds each, Halls, all successes=150): "ShipDocked03_2x2" 40.7%
+    /// (61/150), "MerchantDocked03_3x2" 11.3% (17/150), "WeatheredDocked03_3x2" 11.3% (17/150).
+    /// "Shipwreck" (3x3) measures 0/150 on BOTH Halls and Complex -- see
+    /// TropicalSandWaterShipwreck_StillDoesNotPlace_DocumentedCeiling below, the same "documented,
+    /// not silently regressed" shape as CastleExteriorRuralLargeFootprintPieces_StillDoNotPlace_
+    /// DocumentedCeilings above.
+    /// </summary>
+    [Test]
+    public void TropicalSandWaterOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.TropicalSandWater];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minShare) in new[]
+                 {
+                     ("ShipDocked03_2x2", 0.2),
+                     ("MerchantDocked03_3x2", 0.05),
+                     ("WeatheredDocked03_3x2", 0.05),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for TropicalSandWater's "Shipwreck" (3x3, the largest footprint in
+    /// this tileset family): measured 0/150 in isolation on BOTH Halls and Complex (ProbeTool) -- the
+    /// same "needs a larger contiguous open interior than a 20x20 area's rooms ever produce at this
+    /// size" shape CastleExteriorRuralLargeFootprintPieces_StillDoNotPlace_DocumentedCeilings documents
+    /// for tno01's "FantasyTower 4x4"/"Tower3 m69 3x3". If it ever starts placing, room generation
+    /// changed and this test (and its doc comment) should be revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void TropicalSandWaterShipwreck_StillDoesNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.TropicalSandWater];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var layoutKey in new[] { StandardLayoutProfiles.Halls, StandardLayoutProfiles.Complex })
+        {
+            var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[layoutKey];
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "Shipwreck", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                "'Shipwreck' has a documented placement ceiling at this size -- " +
+                "if it ever starts placing, generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.Tropical's "House01"/"House02"/"Mausoleum01"/
+    /// "Mausoleum02" ExitGroups (base profile, all-grass, no crosser). Measured (seedBase 95000, 150
+    /// seeds each, all successes=150): all four place 150/150 (100%) -- the same trivial-on-an-open-
+    /// field-with-no-wall-competition result RuralGrassCastleDoorGroups_PlaceAsGroupExits' own precedent
+    /// shows.
+    /// </summary>
+    [Test]
+    public void TropicalExitGroups_PlaceAsGroupExits()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Tropical];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "House01", "House02", "Mausoleum01", "Mausoleum02" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
 }

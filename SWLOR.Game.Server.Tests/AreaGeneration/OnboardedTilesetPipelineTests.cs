@@ -194,6 +194,18 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.CityExteriorFieldstone,
         BaseGameTilesetProfiles.CityExteriorGothic,
         BaseGameTilesetProfiles.CityExteriorSigil,
+        // Wave-11: Frozen Wastes* (tti01) -- base profile (plain Solid=Pit/Open=Floor composition, no
+        // crossers at all) plus the EvilCastle PaletteVariant. See
+        // BaseGameTilesetProfiles.FrozenWastes' own doc comment for the full composition writeup.
+        BaseGameTilesetProfiles.FrozenWastes,
+        BaseGameTilesetProfiles.FrozenWastesEvilCastle,
+        // Wave-12: Tropical* (ttz01) -- base grass open-field profile, plus Sand (a second open field
+        // on the SAME .set data), Water, and Sand+Water PaletteVariants. See
+        // BaseGameTilesetProfiles.Tropical's own doc comment for the full composition writeup.
+        BaseGameTilesetProfiles.Tropical,
+        BaseGameTilesetProfiles.TropicalSand,
+        BaseGameTilesetProfiles.TropicalWater,
+        BaseGameTilesetProfiles.TropicalSandWater,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

@@ -144,4 +144,53 @@ public class ReliefPiecePlacementRateTests
         successes.Should().BeGreaterThan(140);
         hits.Should().BeGreaterThan(0, "ttf01's raised, doorless, CityWall-crossered 'Ramp - City Wall' ReliefPiece must place on at least some of the successful seeds");
     }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.FrozenWastes' "Cave" (door-bearing) and "Ramp"
+    /// (doorless) ReliefPieces -- both all-Floor 1x1 groups, no RampCrosser declared at all (tti01 has
+    /// 0 crossers total; MaxElevationRegions/MaxReliefRegions still paint raised Floor rim edges via
+    /// corner-height alone). Measured (seedBase 95000, 150 seeds each, Complex, all successes=150):
+    /// "Cave" 97.3% (146/150), "Ramp" 97.3% (146/150) -- both statistically in line with the other
+    /// tilesets' own crosser-free "Ramp"/"[Cave] Ramp" control rate this file's own doc comment cites.
+    /// </summary>
+    [Test]
+    public void CaveAndRampOnFrozenWastesComplex_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.FrozenWastes];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "Cave", "Ramp" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"FrozenWastes' '{groupName}' ReliefPiece must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.Tropical's "Cave"/"DwarfCave"/"Ramp" ReliefPieces --
+    /// all-grass 1x1 groups, no RampCrosser declared (ttz01's 4 crossers are stream/wall1/wall2/road,
+    /// none a dedicated ramp lane; MaxReliefRegions still paints raised Grass rim edges via corner-
+    /// height alone). Measured (seedBase 95000, 150 seeds each, Complex, all successes=150): all three
+    /// 77.3% (116/150).
+    /// </summary>
+    [Test]
+    public void CaveDwarfCaveAndRampOnTropicalComplex_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Tropical];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "Cave", "DwarfCave", "Ramp" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"Tropical's '{groupName}' ReliefPiece must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
 }

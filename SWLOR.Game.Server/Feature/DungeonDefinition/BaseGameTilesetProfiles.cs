@@ -203,6 +203,28 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string CityExteriorGothic = "cityexterior_gothic";
         public const string CityExteriorSigil = "cityexterior_sigil";
 
+        // Wave-11: Frozen Wastes* (tti01, SWLOR_Haks/sw_t_frozen -- hak-only, 510 tiles / 19 groups,
+        // 0 crossers). See FrozenWastes' own doc comment for the full composition writeup: unlike
+        // every prior exterior wave, tti01's GENERAL Default ("Pit") and Floor ("Floor") are genuinely
+        // DIFFERENT terrains (no degenerate Default==Floor quirk), so the PLAIN default composition
+        // applies with no SolidTerrainOverride at all -- the same shape every interior tileset uses,
+        // just on an exterior-flavored hak.
+        public const string FrozenWastes = "frozenwastes";
+        public const string FrozenWastesEvilCastle = "frozenwastes_evilcastle";
+
+        // Wave-12: Tropical* (ttz01, SWLOR_Haks/sw_t_coastal -- hak-only, 442 tiles / 94 groups, 4
+        // terrains, 4 crossers). See Tropical's own doc comment for the full composition writeup: the
+        // ttr01/tts01 open-field shape (Border=Default=Floor="grass"), PLUS a second, equally-rich
+        // native open ground ("sand") the SAME .set data offers -- recomposed here as a genuinely new
+        // PaletteVariant shape (SolidTerrainOverride==PrimaryOpenTerrain, an open field on the OTHER
+        // terrain, not an inversion like every existing Castle/Water variant) -- PLUS a real
+        // water/dock/shipping roster (RuralGrassWater's own shape, twice: once against grass, once
+        // against sand).
+        public const string Tropical = "tropical";
+        public const string TropicalSand = "tropical_sand";
+        public const string TropicalWater = "tropical_water";
+        public const string TropicalSandWater = "tropical_sandwater";
+
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
@@ -5700,6 +5722,366 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // height-exemption safety-net convention as City's Wall - Tower/Gate - City above.
                 .SetPiece("[Sigil] Minaret", 1)
                 .SetPiece("[Sigil] Final Area (7x7)", 1);
+
+            // Frozen Wastes* (tti01, SWLOR_Haks/sw_t_frozen, 510 tiles, HasHeightTransition=1,
+            // Transition=5). GENERAL Border=Default="Pit", Floor="Floor" -- unlike EVERY prior exterior
+            // wave (ttd01/ttf01/ttf02/jac01/fcx01/tno01/tcn01), Default and Floor here are genuinely
+            // DIFFERENT terrains, so none of the usual "degenerate Default==Floor" inversion reasoning
+            // applies. Pathnode data confirms this is the PLAIN case instead: the 4 pure-Pit tiles
+            // never carry pathnode 'A' (G/T/N only, verified directly) -- Pit is a real impassable
+            // void/crevasse -- while the 47 pure-Floor tiles are dominated by pathnode 'A' (32/47).
+            // Direct 16-combo probe (TileResolver.HasCandidate) confirms Solid=Pit/Open=Floor reaches
+            // a full 16/16 (and, for what it's worth, so does the reverse pairing -- the Floor/Pit
+            // corner-blend family is rich enough, 21 flat ungrouped tiles, to support either direction
+            // structurally; pathnode data is what actually decides which one is gameplay-correct). No
+            // SolidTerrainOverride is declared at all: LayoutSolver.Solve's own empty-means-Default
+            // stamp already yields Solid="Pit", so this is the same plain composition shape every
+            // interior tileset uses (DungeonTilesetProfile.SolidTerrainOverride's own doc comment: "the
+            // tileset's declared Default terrain, which is correct for every interior tileset") --
+            // just happening to land on an exterior-flavored hak, a genuinely new shape among the
+            // exterior waves onboarded so far (neither RuralGrass/RuralWinter's "no wall concept at
+            // all" open field, nor ttd01/ttf01/jac01's "invert because Default==Floor" degenerate case).
+            //
+            // Terrains(3)=Pit,Floor,EvilCastle; Crossers(0) -- literally none. No Road, no Tunnel body/
+            // port pair, no Wall/Stream gate family, no ramp-lane crosser at all: every group and every
+            // elevation transition here resolves purely off corner terrain + door slots, never an edge
+            // crosser. Complex's Tunnel mode has nothing to key off and downgrades to OpenLane
+            // unconditionally (TunnelVocabularyCheck.SupportsTunnels returns false immediately -- no
+            // "Corridor"/"Doorway" crosser is even declared to check shapes for).
+            //
+            // EvilCastle (1 pure tile, pathnode 'A'; 9 Floor/EvilCastle corner-blend tiles; 3 GROUPs:
+            // "Castle - Main Door/Breach/Small Door, Evil") is the identical starved-but-group-bearing
+            // shape RuralGrass/RuralWinter's own Good/EvilCastle families are -- verified 16/16 both
+            // ways against Floor (Solid=EvilCastle/Open=Floor and the reverse), so it becomes the
+            // FrozenWastesEvilCastle PaletteVariant below rather than a base-profile terrain, mirroring
+            // RuralGrassEvilCastle/RuralWinterEvilCastle exactly. EvilCastle vs Pit itself only reaches
+            // 2/16 (they never appear together on any real tile -- no blend exists), which is irrelevant
+            // since no composition ever pairs them.
+            //
+            // Heights (79 of 510 tiles carry a nonzero corner height, all on Floor, e.g. TILE0's
+            // [1,1,0,1] -- verified directly, Pit and EvilCastle never carry height): MaxElevationRegions
+            // (2) and MaxReliefRegions(2), mirroring jac01's own caps (the closest structural analog:
+            // a natural, non-degenerate Solid/Open split with real height content). No RampCrosser or
+            // ReliefBlendTerrain is declared -- there is no dedicated ramp-lane crosser (0 crossers
+            // total) and no gentle-blend terrain (only Pit/Floor/EvilCastle exist) for either mechanism
+            // to key off; LayoutElevationPainter's rim-vocabulary/lane gates simply find no candidates
+            // and no-op, the same safe self-gating every other tileset's unset knobs rely on. The
+            // "Ramp" and "Cave" GROUPs (both 1x1, all-Floor, doorless/door respectively) are wired as
+            // SetPieces -- the same baked-mesh ReliefPiece stamping mechanism ttd01/ttf01/jac01's own
+            // "Ramp"/"Cave"/"SmallCave" groups use, stamped onto painted raised rim edges.
+            //
+            // MinimumOpeningWidth stays the verified default of 1 (PathNodeOpeningWidthAudit against
+            // Solid=Pit/Open=Floor finds a pathnode-'A' candidate among the 14 partially-open corner
+            // combos), matching every prior exterior wave.
+            //
+            // Group census: "Chessboard"/"Portal" (FeatureTile, same names/role as RuralGrass/
+            // RuralWinter's own) plus "Ice Creator"/"Market 1"/"Market 2"/"Crystal" (this tileset's own
+            // FeatureTile-shaped decor, all 1x1 doorless all-Floor). "Entrance - Evil" (1x1, door, pure
+            // Floor corners -- NOT an EvilCastle-terrain group) is wired as an ExitGroup on this base
+            // profile rather than the castle variant, since its footprint never touches EvilCastle at
+            // all. "Cave"/"Ramp" are SetPieces (ReliefPiece kind, see above). "Dragon Skeleton (1x2)",
+            // "Temple - Evil 1 (2x3)"/"Temple - Neutral (2x2)"/"Temple - Evil 2 (2x3)", "Ship - Air,
+            // Docked (3x1)", and "Tower - Ice" (2x2 footprint, no "(2x2)" in its own GROUP Name unlike
+            // its siblings) are ordinary all-Floor OpenSetPieces, maxPerArea 1
+            // each, matching the "one showcase building per area" convention every prior wave uses.
+            // "Ship - Air, Above Pit (3x1)" is all-Pit (door-bearing) -- unlike RuralGrass's own
+            // "Ship - Air, Above Trees (3x1)" (exempt there because Trees is a totally unwired,
+            // uncomposed terrain), Pit here IS this base profile's own composed Solid terrain, so this
+            // group is wired as a SetPiece too; see TileCoverageCensusTests/OnboardedTilesetPipelineTests
+            // for whether it actually places (an all-Solid-cornered door group anchored on the
+            // composition's own wall mass, structurally analogous to Desert/Forest's own Solid-anchored
+            // door groups).
+            //
+            // Lighting: 431 of 510 tiles (every ungrouped simple tile) uniformly carry MainLight1=1,
+            // MainLight2=1, SourceLight1=1, SourceLight2=1 (verified directly); the remaining 79 are
+            // hand-lit GROUP members with their own baked values, which TileLighting doesn't touch.
+            //
+            // No hand-built module areas exist stamping tti01 (verified: zero .are.json references to
+            // this resref anywhere in the module). No evidence-mined decoration palette is available
+            // either, so no bulk .Decoration(...)/.Vignette(...) palette is declared here -- matching
+            // the documented fallback rule (nearest-family reuse is a judgment call left for a future
+            // visual-review pass, not fabricated here without evidence).
+            _builder.Create(FrozenWastes, "Frozen Wastes*")
+                .Tileset("tti01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(1, 1, 1, 1)
+                .PrimaryOpenTerrain("Floor")
+                .MaxElevationRegions(2)
+                .MaxReliefRegions(2)
+                .FeatureTile("Chessboard")
+                .FeatureTile("Portal")
+                .FeatureTile("Ice Creator")
+                .FeatureTile("Market 1")
+                .FeatureTile("Market 2")
+                .FeatureTile("Crystal")
+                .ExitGroup("Entrance - Evil")
+                .SetPiece("Cave", 1)
+                .SetPiece("Ramp", 1)
+                .SetPiece("Dragon Skeleton (1x2)", 1)
+                .SetPiece("Temple - Evil 1 (2x3)", 1)
+                .SetPiece("Temple - Neutral (2x2)", 1)
+                .SetPiece("Temple - Evil 2 (2x3)", 1)
+                .SetPiece("Ship - Air, Above Pit (3x1)", 1)
+                .SetPiece("Ship - Air, Docked (3x1)", 1)
+                .SetPiece("Tower - Ice", 1);
+
+            // FrozenWastes' EvilCastle accent-slot palette -- PaletteVariant profile recomposing the
+            // SAME tti01 hak data the base FrozenWastes profile above uses, mirroring
+            // RuralGrassEvilCastle/RuralWinterEvilCastle exactly: SolidTerrainOverride("EvilCastle") +
+            // PrimaryOpenTerrain("Floor") gives a walled-castle-grounds composition (verified 16/16
+            // both ways above) that unlocks the "Castle - Main Door/Breach/Small Door, Evil" GROUPs as
+            // ExitGroups, the same door/breach/small-door trio role those exact GROUP names play on
+            // RuralGrass/RuralWinter's own castle variants.
+            _builder.Create(FrozenWastesEvilCastle, "Frozen Wastes* (Evil Castle)")
+                .Tileset("tti01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(1, 1, 1, 1)
+                .PaletteVariant()
+                .SolidTerrainOverride("EvilCastle")
+                .PrimaryOpenTerrain("Floor")
+                .ExitGroup("Castle - Main Door, Evil")
+                .ExitGroup("Castle - Breach, Evil")
+                .ExitGroup("Castle - Small Door, Evil");
+
+            // Tropical* (ttz01, SWLOR_Haks/sw_t_coastal, 442 tiles, HasHeightTransition=1). GENERAL
+            // Border=Default=Floor="grass" -- the same degenerate-into-simplicity shape ttr01/tts01
+            // already established: all three GENERAL slots are the SAME terrain, so the base
+            // composition is the ttr01/tts01 OPEN-FIELD shape (no SolidTerrainOverride at all; Solid
+            // defaults to "grass" == PrimaryOpenTerrain("grass")). Direct 16-combo probe confirms grass
+            // reaches a full 16/16 against every other terrain (water, trees, sand).
+            //
+            // Terrains(4)=grass,water,trees,sand; Crossers(4)=stream,wall1,wall2,road -- no canonical
+            // "Corridor"/"Doorway" pair (verified directly), the same shape as ttr01/tts01's own 5-
+            // crosser roster (Stream/Wall1/Wall2/Road/Slope) minus a ramp-lane crosser -- Complex
+            // downgrades to OpenLane unconditionally. RoadVocabularyCheck confirms "road" resolves all
+            // five shapes (stub/straight/turn/T/X) against grass AND water, so RoadCrosser("road") is
+            // declared on the grass-open profiles below; sand only resolves "stream", not "road" (2/5
+            // shapes fail), so no RoadCrosser is declared on the Sand variant. Wall1/Wall2/Stream are
+            // the identical WallRoom-eligible-but-Tunnel-vocab-starved family ttr01/tts01's own
+            // Wall1/Wall2/Stream already document (see PilotExpectedExemptions below) -- Complex having
+            // no Tunnel-mode wall mass at all here means these gate/bridge groups never get a chance to
+            // place regardless of crosser vocabulary.
+            //
+            // trees (1 pure tile, pathnode 'T' -- restricted, 20 grass/trees + 4 trees/water blend
+            // tiles, NO GROUP anywhere touches it, verified directly) is the identical starved-minor-
+            // family shape RuralGrass's own "Trees" is -- same PilotAlternateVocabTerrains treatment,
+            // no PaletteVariant needed.
+            //
+            // sand (160 corner instances across grass, 52 pure tiles, pathnode 'A' dominant (46/52) --
+            // genuinely walkable, NOT a minor accent) carries its OWN near-complete building roster
+            // (Well/Crystal/TreeHollow/Menhir/Shrine/AntHill/Granary/Tower/Warzone/Field/Temple01-03/
+            // Barracks/Tower_1x2/Portal/Chessboard, all suffixed "(sand)"/"(Sand)" -- 22 GROUPs) --
+            // structurally the SAME shape as grass's own roster, just missing the farm-village subset
+            // (Barn/Farm/Inn/House/Windmill/Mausoleum never got a sand counterpart). Direct 16-combo
+            // probe confirms Solid=sand/Open=sand (i.e. sand recomposed as its OWN open field, the same
+            // "no wall concept" shape the base grass profile uses) reaches full internal coverage, and
+            // sand vs water/grass both reach 16/16 either direction. This is a genuinely NEW
+            // PaletteVariant shape among this project's onboarded tilesets: every existing variant
+            // (Good/EvilCastle, Water, castlewall/keep) is an INVERSION (SolidTerrainOverride differs
+            // from PrimaryOpenTerrain, carving rooms/docks out of a wall/water mass). TropicalSand
+            // instead explicitly declares SolidTerrainOverride("sand") == PrimaryOpenTerrain("sand") --
+            // the SAME "no wall, no inversion" shape the base profile achieves via omission, just forced
+            // onto the OTHER native ground terrain (sand's own Default is "grass", so it must be
+            // declared explicitly here; leaving it unset would incorrectly stamp Solid="grass" while
+            // Open="sand"). This is a principled extension of the existing SolidTerrainOverride ==
+            // PrimaryOpenTerrain open-field rule (see RuralGrass's own doc comment), not a hack: LayoutSolver
+            // has no special-case for "which terrain", only whether Solid equals Open.
+            //
+            // water (57 pure tiles, pathnode MOSTLY non-'A' -- N=26/I=12/L=7/A=7/H=4/T=1, genuinely
+            // impassable open water except at a handful of shallow/dock tiles) carries a real
+            // shipping/dock roster (18 GROUPs: ShipDocked01-03, ShipFloating, MerchantDocked01-03,
+            // WeatheredDocked01-03, MerchantFloating, WeatheredFloating, MerchantWeathered, Lighthouse,
+            // Bridge_Door), split across two mixed-terrain families -- grass/water (ShipDocked01,
+            // MerchantDocked01/02, WeatheredDocked01/02, Lighthouse, MerchantWeathered) and sand/water
+            // (ShipDocked03, MerchantDocked03, WeatheredDocked03, Shipwreck) -- plus several all-water
+            // (Solid-anchored, the same "Ship - Air, Above Pit" shape FrozenWastes' own doc comment
+            // documents) pieces. TWO water PaletteVariants close both families: TropicalWater
+            // (SolidTerrainOverride("water") + PrimaryOpenTerrain("grass"), mirroring RuralGrassWater
+            // exactly) and TropicalSandWater (SolidTerrainOverride("water") + PrimaryOpenTerrain("sand"),
+            // the same water-solid shape recomposed onto the sand district) -- without the second
+            // variant, ShipDocked03/MerchantDocked03/WeatheredDocked03/Shipwreck could never classify
+            // under ANY composition (no variant ever pairs sand and water together otherwise).
+            //
+            // Two grass+sand MIXED groups -- "Mysterious_Cave" (2x2, flat, door) and "Cave(sand)" (1x1,
+            // raised, door, despite its "(sand)" suffix carrying grass corners too) -- never classify
+            // under any of the four compositions above: no variant ever composes BOTH grass and sand
+            // together as a Solid/Open pair (each variant's pair is grass/grass, sand/sand, water/grass,
+            // or water/sand), so a group whose own corners span BOTH grass and sand always has at least
+            // one corner matching neither terrain in the composition's binary. See
+            // TileCoverageCensusTests.PilotExpectedExemptions for both entries.
+            //
+            // Heights (verified directly: "Cave"/"DwarfCave"/"Ramp", all-grass, all raised with no
+            // crosser) get MaxReliefRegions(2) on both grass-open profiles (base Tropical and
+            // TropicalSand), the same corner-relief mechanism ttr01/tts01's own open-field profiles use
+            // -- NOT MaxElevationRegions, unlike FrozenWastes/jac01: those are non-open-field
+            // compositions with a real wall mass to constrain elevation blobs against. No RampCrosser
+            // (no dedicated ramp-lane crosser exists among the 4 declared crossers) and no
+            // ReliefBlendTerrain (no gentle-blend terrain exists -- only grass/water/trees/sand).
+            // "Cave"/"DwarfCave"/"Ramp" are wired as SetPieces (ReliefPiece kind, Complex layout only --
+            // see ReliefPiecePlacementRateTests' own doc comment on why only Complex ever paints a
+            // nonzero relief field).
+            //
+            // KNOWN GAP, measured directly (ProbeTool, retryCount=1, 300-seed sweep against the real
+            // BuildTilesetProfiles() output): nine door-bearing 1x2/2x2 GROUPs on this base profile --
+            // "Barn01_2x2", "Barn02_1x2", "Barn03_1x2", "Inn_1x2", "Farm01_2x2", "Farm02_1x2",
+            // "Farm03_1x2", "Barracks_1x2", "Windmill_2x2" (all classify as SetPieceWallAlcove, since
+            // allCornersSolid is trivially true the instant a composition sets Solid==Open) -- each
+            // measured a 36-39% single-attempt Organic disconnection rate in isolation (any one alone,
+            // maxPerArea 5, 100 seeds), and the FULL profile (all nine wired, maxPerArea 1 each,
+            // matching production) measured 60.3% (181/300) against Organic specifically; Complex/Halls
+            // are unaffected. This is NOT a general OrganicCave+WallAlcove gap: ttr01's own structurally
+            // IDENTICAL sibling groups ("Barn 1 (2x2)", "Windmill (2x2)", "Barracks (1x2)" -- verified
+            // tile-for-tile identical Rows/Columns/door-member layout against their ttz01 counterparts)
+            // measure 0/300 disconnections isolated the same way, and removing EVERY OTHER declared
+            // knob here (AccentTerrain, RoadCrosser, MaxReliefRegions, FeatureTiles, ExitGroups)
+            // individually does NOT fix it -- only removing the SetPieces (or these nine specifically)
+            // does. The root mechanism was not fully isolated within this pass (TryPlaceWallAlcove/
+            // WriteMember do not appear to touch layout.Corners.Labels for these tiles' own
+            // corners -- all-grass -- differently than any of the safe, non-door SetPieces below), so
+            // rather than ship content with a measured 60% single-attempt failure rate against a real
+            // layout style, these nine groups are deliberately left OUT of this profile's SetPieces and
+            // instead carry a named TileCoverageCensusTests.PilotExpectedExemptions entry citing this
+            // exact measurement. Flagged separately for a focused investigation into WHY WallAlcove
+            // placement interacts differently with ttz01's tile data than ttr01's structurally identical
+            // groups. The nine SAFE, non-door 2x2/2x3/1x2 groups below measured 0% disconnection both
+            // isolated and in the full sweep and are wired normally.
+            //
+            // MinimumOpeningWidth stays the verified default of 1 for all four Solid/Open pairings
+            // (grass/grass, sand/sand, water/grass, water/sand), matching every prior exterior wave.
+            //
+            // Lighting: all 442 tiles uniformly carry MainLight1=1, MainLight2=1, SourceLight1=1,
+            // SourceLight2=1 (verified directly) -- no mixed hand-lit GROUP members exist here, unlike
+            // FrozenWastes' 431/510 split.
+            //
+            // No hand-built module areas exist stamping ttz01 (verified: zero .are.json references to
+            // this resref anywhere in the module), so no evidence-mined decoration palette is declared
+            // here either -- the same documented-gap fallback rule FrozenWastes' own doc comment uses.
+            _builder.Create(Tropical, "Tropical*")
+                .Tileset("ttz01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(1, 1, 1, 1)
+                .PrimaryOpenTerrain("grass")
+                .AccentTerrain("water")
+                .RoadCrosser("road")
+                .MaxReliefRegions(2)
+                .FeatureTile("Well")
+                .FeatureTile("Shrine01")
+                .FeatureTile("Menhir")
+                .FeatureTile("Crystal")
+                .FeatureTile("TreeHollow")
+                .FeatureTile("AntHill")
+                .FeatureTile("Granary")
+                .FeatureTile("Field")
+                .FeatureTile("Orchard")
+                .FeatureTile("Warzone01")
+                .FeatureTile("Warzone02")
+                .FeatureTile("Garden01")
+                .FeatureTile("Garden02")
+                .FeatureTile("Tower")
+                .FeatureTile("Graves01")
+                .FeatureTile("Graves02")
+                .FeatureTile("Graves03")
+                .FeatureTile("Graves04")
+                .FeatureTile("Graves05")
+                .FeatureTile("Shrine02")
+                .FeatureTile("Tree")
+                .FeatureTile("Portal")
+                .FeatureTile("Chessboard")
+                .ExitGroup("House01")
+                .ExitGroup("House02")
+                .ExitGroup("Mausoleum01")
+                .ExitGroup("Mausoleum02")
+                .SetPiece("Cave", 1)
+                .SetPiece("DwarfCave", 1)
+                .SetPiece("Ramp", 1)
+                .SetPiece("DragSkel_1x2", 1)
+                .SetPiece("Field01_2x2", 1)
+                .SetPiece("Field02_2x2", 1)
+                .SetPiece("Field03_2x1", 1)
+                .SetPiece("Tower_1x2", 1)
+                .SetPiece("Warzone_1x2", 1)
+                .SetPiece("Temple03_3x2", 1)
+                .SetPiece("Temple02_2x2", 1)
+                .SetPiece("Temple01_3x2", 1);
+
+            // Tropical's Sand accent-slot palette -- PaletteVariant profile recomposing the SAME ttz01
+            // hak data the base Tropical profile above uses, but a genuinely NEW shape among this
+            // project's onboarded variants: SolidTerrainOverride("sand") == PrimaryOpenTerrain("sand"),
+            // an open field on sand rather than an inversion. See Tropical's own doc comment above for
+            // the full reasoning. No RoadCrosser (sand fails 2 of RoadVocabularyCheck's 5 shapes).
+            _builder.Create(TropicalSand, "Tropical* (Sand)")
+                .Tileset("ttz01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(1, 1, 1, 1)
+                .PaletteVariant()
+                .SolidTerrainOverride("sand")
+                .PrimaryOpenTerrain("sand")
+                .AccentTerrain("water")
+                .MaxReliefRegions(2)
+                .FeatureTile("Well(sand)")
+                .FeatureTile("Crystal(sand)")
+                .FeatureTile("TreeHollow(sand)")
+                .FeatureTile("Menhir(sand)")
+                .FeatureTile("Shrine(sand)")
+                .FeatureTile("AntHill(sand)")
+                .FeatureTile("Granary(sand)")
+                .FeatureTile("Tower(sand)")
+                .FeatureTile("Warzone01(sand)")
+                .FeatureTile("Warzone02(sand)")
+                .FeatureTile("Field(sand)")
+                .FeatureTile("Shrine02(sand)")
+                .FeatureTile("Tree(sand)")
+                .FeatureTile("Portal(Sand)")
+                .FeatureTile("Chessboard(Sand)")
+                .SetPiece("DragSkel_1x2(sand)", 1)
+                .SetPiece("Temple01_3x2(sand)", 1)
+                .SetPiece("Temple02_2x2(sand)", 1)
+                .SetPiece("Temple03_3x2(sand)", 1)
+                .SetPiece("Warzone_1x2(sand)", 1)
+                .SetPiece("Barracks_1x2(sand)", 1)
+                .SetPiece("Tower_1x2(sand)", 1);
+
+            // Tropical's Water accent-slot palette -- PaletteVariant profile recomposing the SAME ttz01
+            // hak data with SolidTerrainOverride("water") + PrimaryOpenTerrain("grass"), mirroring
+            // RuralGrassWater/RuralWinterWater exactly: a docks/shipping showcase carved out of an
+            // open-water mass. Unlocks the grass/water mixed family plus the all-water (Solid-anchored)
+            // pieces.
+            _builder.Create(TropicalWater, "Tropical* (Water)")
+                .Tileset("ttz01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(1, 1, 1, 1)
+                .PaletteVariant()
+                .SolidTerrainOverride("water")
+                .PrimaryOpenTerrain("grass")
+                .SetPiece("ShipDocked01_2x2", 1)
+                .SetPiece("ShipDocked02_2x2", 1)
+                .SetPiece("ShipFloating_2x1", 1)
+                .SetPiece("MerchantDocked01_3x2", 1)
+                .SetPiece("WeatheredDocked01_3x2", 1)
+                .SetPiece("WeatheredDocked02_3x2", 1)
+                .SetPiece("MerchantDocked02_3x2", 1)
+                .SetPiece("WeatheredFloating_3x1", 1)
+                .SetPiece("MerchantFloating_3x1", 1)
+                .SetPiece("MerchantWeathered", 1)
+                .SetPiece("Lighthouse", 1)
+                .SetPiece("Bridge_Door", 1);
+
+            // Tropical's Sand+Water accent-slot palette -- PaletteVariant profile recomposing the SAME
+            // ttz01 hak data with SolidTerrainOverride("water") + PrimaryOpenTerrain("sand") -- the same
+            // water-solid docks shape as TropicalWater, recomposed onto the sand district instead of
+            // grass, to close the sand/water mixed family (ShipDocked03/MerchantDocked03/
+            // WeatheredDocked03/Shipwreck) that never pairs with grass at all.
+            _builder.Create(TropicalSandWater, "Tropical* (Sand + Water)")
+                .Tileset("ttz01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(1, 1, 1, 1)
+                .PaletteVariant()
+                .SolidTerrainOverride("water")
+                .PrimaryOpenTerrain("sand")
+                .SetPiece("ShipDocked03_2x2", 1)
+                .SetPiece("MerchantDocked03_3x2", 1)
+                .SetPiece("WeatheredDocked03_3x2", 1)
+                .SetPiece("Shipwreck", 1);
 
             return _builder.Build();
         }

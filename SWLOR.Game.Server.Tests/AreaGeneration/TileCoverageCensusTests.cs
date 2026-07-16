@@ -1186,6 +1186,15 @@ public class TileCoverageCensusTests
             "SigilHill", "SigilBuilding",
             "PADDING",
         },
+        // tti01 (Frozen Wastes*): no starved/unwired terrain remains -- Pit and Floor are both wired
+        // (base profile's Solid/Open pair) and EvilCastle is wired too (FrozenWastesEvilCastle's own
+        // Solid/Open pair) -- every terrain this tileset declares is composed by some profile sharing
+        // its TilesetResref.
+        ["tti01"] = new(StringComparer.OrdinalIgnoreCase),
+        // ttz01 (Tropical*): "trees" is the identical starved, GROUP-free minor terrain RuralGrass's
+        // own "Trees" already documents (1 pure tile, pathnode 'T', no GROUP anywhere touches it,
+        // verified directly) -- grass/sand/water are all wired (base/Sand/Water/SandWater profiles).
+        ["ttz01"] = new(StringComparer.OrdinalIgnoreCase) { "trees" },
     };
 
     /// <summary>
@@ -1346,6 +1355,14 @@ public class TileCoverageCensusTests
         // dividers through open Cobble, none of which any current mechanism recognizes for this
         // composition).
         ["tcn01"] = new(StringComparer.OrdinalIgnoreCase) { "Wall", "Stream", "Alley" },
+        // tti01 (Frozen Wastes*): 0 crossers declared in the .set data at all -- there is no crosser
+        // vocabulary of any kind (wired or otherwise) for this tileset to have an alternate family of.
+        ["tti01"] = new(StringComparer.OrdinalIgnoreCase),
+        // ttz01 (Tropical*): Wall1/Wall2/Stream/Road are all declared crossers with SOME wired role
+        // (Road via RoadCrosser, the other three via the WallRoom-eligible-but-Tunnel-vocab-starved
+        // gate/bridge groups below, handled as named PilotExpectedExemptions entries the same way
+        // ttr01/tts01's own Wall1/Wall2/Stream are) -- no blanket alternate-vocab crosser bucket needed.
+        ["ttz01"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -1998,6 +2015,58 @@ public class TileCoverageCensusTests
         ("tcn01", "GROUP:[Gothic] Door - Bridge"),
         // City's OWN "Ship - Air, Above Buildings" alternate-vocab entry above already closes the
         // Building-cornered airship (auto-tagged); no manual entry needed for it here.
+
+        // ttz01 (Tropical*), verified directly against PilotEveryTileIsReachableOrExplicitlyExempted's
+        // own UNCLASSIFIED report (29 tiles across 12 GROUPs, all genuinely doorless/vocab-starved
+        // shapes -- no wiring change closes any of them):
+        //
+        // (1) "Mysterious_Cave" (2x2, 4 members): the ONLY grass+sand mixed-terrain GROUP in this
+        // tileset (2 members pure-grass, 2 members half-grass/half-sand) -- no composition among the
+        // four onboarded profiles (grass/grass, sand/sand, water/grass, water/sand) ever pairs grass
+        // and sand together, so this group always has at least one corner matching neither the
+        // composition's Solid nor Open terrain. See Tropical's own doc comment.
+        ("ttz01", "GROUP:Mysterious_Cave"),
+        //
+        // (2) "ShipDocked02_2x2"/"WeatheredDocked02_3x2"/"MerchantDocked02_3x2" (all-Water, TropicalWater):
+        // each carries a "road" edge on at least one member (a dock plank meeting the shoreline road) --
+        // the identical ClassifyMultiTileSetPiece.IsAllowedMemberEdge gate failure tcn01's own "[City]
+        // Ship - Carrack, Docked (4x2)" entry documents (a road-crossered member with no wired Tunnel
+        // body vocabulary this composition declares). MerchantDocked02_3x2 has a door on one member too,
+        // but the edge gate rejects the whole group before the door ever matters.
+        ("ttz01", "GROUP:ShipDocked02_2x2"),
+        ("ttz01", "GROUP:WeatheredDocked02_3x2"),
+        ("ttz01", "GROUP:MerchantDocked02_3x2"),
+        //
+        // (3) "ShipFloating_2x1"/"WeatheredFloating_3x1" (all-Water, doorless, crosser-free,
+        // TropicalWater): the identical all-Solid-cornered-doorless gap tcn01's own "[City] Boat"/"Ship
+        // - Small, Floating (1x2)" family documents -- no door means WallAlcove never triggers, no
+        // crosser means CorridorStubChain never triggers, and no Open corner (every corner is
+        // Water==Solid under this composition) means OpenSetPiece never triggers either.
+        ("ttz01", "GROUP:ShipFloating_2x1"),
+        ("ttz01", "GROUP:WeatheredFloating_3x1"),
+        //
+        // (4) "Footbridge"/"Ruined_Cart"/"Wall1Gate"/"Wall1GateRoad"/"Wall2Gate"/"Wall2GateRoad"
+        // (all-grass, flat): the identical WallRoom-eligible-but-Tunnel-vocab-starved family ttr01/
+        // tts01's own "Footbridge"/"Ruined Cart"/"Wall - Gate, Rural 1/2"/"Wall - Road Gate, Rural 1/2"
+        // already document -- this tileset has no canonical Doorway/Corridor crosser at all (verified
+        // directly, Complex downgrades to OpenLane unconditionally), so these Stream/Road/Wall1/Wall2
+        // gate and bridge tiles never get a wall mass to hang a WallRoom off of. Wall1GateRoad/
+        // Wall2GateRoad additionally carry TWO independent crosser families (Wall1/Wall2 AND Road) on
+        // perpendicular edge pairs of the same tile -- the same "crossroads" shape ttd01's own
+        // WallGate01/02 documents, an independent, second reason they can never classify.
+        ("ttz01", "GROUP:Footbridge"),
+        ("ttz01", "GROUP:Ruined_Cart"),
+        ("ttz01", "GROUP:Wall1Gate"),
+        ("ttz01", "GROUP:Wall1GateRoad"),
+        ("ttz01", "GROUP:Wall2Gate"),
+        ("ttz01", "GROUP:Wall2GateRoad"),
+        //
+        // (5) "Bridge_Door" (1x1, all-Water, TropicalWater): a door-bearing tile carrying a "road" edge
+        // on two opposite sides -- the same "Door - Bridge" shape (4) above documents: this composition
+        // never declares "road" as a Tunnel body/port crosser, so IsAllowedMemberEdge (single-tile
+        // groups go through the same gate as ClassifySetPiece's own edge check) rejects it regardless
+        // of the door.
+        ("ttz01", "GROUP:Bridge_Door"),
     };
 
     public static IEnumerable<string> PilotTilesetKeys => new[]
@@ -2014,6 +2083,8 @@ public class TileCoverageCensusTests
         "zde01",
         "zin01",
         "tcn01",
+        "tti01",
+        "ttz01",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -2050,6 +2121,8 @@ public class TileCoverageCensusTests
             "zde01" => BaseGameTilesetProfiles.CepDungeon,
             "zin01" => BaseGameTilesetProfiles.CepCityInterior,
             "tcn01" => BaseGameTilesetProfiles.CityExterior,
+            "tti01" => BaseGameTilesetProfiles.FrozenWastes,
+            "ttz01" => BaseGameTilesetProfiles.Tropical,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

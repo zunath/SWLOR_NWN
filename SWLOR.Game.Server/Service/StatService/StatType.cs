@@ -5333,6 +5333,12 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         BackAttackCriticalRatePercentAdjustment = 929,
+
+        /// <summary>
+        /// Additional traps the creature may keep active at the same time beyond the base allowance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AdditionalTrapCapacity = 930,
     }
 
     public class StatTypeAttribute : Attribute

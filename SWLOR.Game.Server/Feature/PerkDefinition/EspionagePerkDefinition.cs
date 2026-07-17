@@ -302,11 +302,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases maximum concurrent traps to 2.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 22)
+                .IncreasesStat(StatType.AdditionalTrapCapacity, 1)
 
                 .AddPerkLevel()
                 .Description("Increases maximum concurrent traps to 3 and improves trap detection range.")
                 .Price(4)
-                .RequirementSkill(SkillType.Espionage, 42);
+                .RequirementSkill(SkillType.Espionage, 42)
+                .IncreasesStat(StatType.AdditionalTrapCapacity, 2);
         }
 
         private void LastingCoatings()

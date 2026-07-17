@@ -23,7 +23,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             GapingSpider();
 
             CapstoneDathomirDungeonRares();
+            DathomirGrottoRareElites();
             return _builder.Build();
+        }
+
+        private void DathomirGrottoRareElites()
+        {
+            _builder.Create("DATHGROTTO_ALPHA_RARES").IsRare()
+                .AddItem("bone_guard", 1, 1, true).AddItem("thornhide", 1, 1, true).AddItem("bp_fanggaunt", 1, 1, true);
+            _builder.Create("DATHGROTTO_SPINE_RARES").IsRare()
+                .AddItem("quill_bracer", 1, 1, true).AddItem("beasthide", 1, 1, true).AddItem("bp_ridgeplate", 1, 1, true);
+            _builder.Create("DATHGROTTO_STALKER_RARES").IsRare()
+                .AddItem("totem_charm", 1, 1, true).AddItem("spirit_hide", 1, 1, true).AddItem("bp_ritecrown", 1, 1, true);
+            _builder.Create("DATHGROTTO_ALPHA_COMP").AddItem("alpha_fang", 1, 1);
+            _builder.Create("DATHGROTTO_SPINE_COMP").AddItem("spine_quill", 1, 1);
+            _builder.Create("DATHGROTTO_STALKER_COMP").AddItem("spirit_totem", 1, 1);
         }
 
         private void CapstoneDathomirDungeonRares()

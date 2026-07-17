@@ -75493,6 +75493,336 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Brawler’s Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "brawl_wraps"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Scarred Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "scar_cuirass"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Rig"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gunsling_rig"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Padded Longcoat"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "padded_coat"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hexweave Shawl"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hexweave"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warding Vestments"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ward_vest"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bloodied Arena Token"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "arena_token"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Spent Power Cell"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "spent_charge"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cracked Hex Focus"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hex_focus"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Pit-Forged Cestus"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_pitcestus"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Reinforced Duelist Vest"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_duelvest"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Charm-Woven Cowl"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_charmcowl"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pit-Forged Cestus"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "pit_cestus"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reinforced Duelist Vest"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "duel_vest"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Charm-Woven Cowl"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "charm_cowl"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bone-Ridge Guard"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bone_guard"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thornhide Vest"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thornhide"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quilled Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "quill_bracer"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Beasthide Wrap"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "beasthide"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Totem Charm"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "totem_charm"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Spirit-Bound Hide"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "spirit_hide"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apex Alpha Fang"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "alpha_fang"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Barbed Spine Quill"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "spine_quill"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bound Spirit Totem"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "spirit_totem"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Alpha-Fang Gauntlet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_fanggaunt"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Ridgebone Plate"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_ridgeplate"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Rite-Marked Crown"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_ritecrown"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Alpha-Fang Gauntlet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "fang_gaunt"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ridgebone Plate"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ridge_plate"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rite-Marked Crown"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rite_crown"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Marksman Bipod Rig"
                           },
                           "RESREF": {

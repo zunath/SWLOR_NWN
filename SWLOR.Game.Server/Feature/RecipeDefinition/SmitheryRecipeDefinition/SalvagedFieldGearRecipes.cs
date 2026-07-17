@@ -91,6 +91,34 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("signal_disr", 1)
                 .Component("elec_good", 4)
                 .Component("fiberp_good", 2);
+
+            // Fight Club Backrooms
+            _builder.Create(RecipeType.SalvagedPitCestus, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove).Resref("pit_cestus").Level(50).Quantity(1).RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("arena_token", 1).Component("elec_good", 3).Component("fiberp_good", 2);
+            _builder.Create(RecipeType.SalvagedDuelistVest, SkillType.Smithery)
+                .Category(RecipeCategoryType.Tunic).Resref("duel_vest").Level(50).Quantity(1).RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("spent_charge", 1).Component("elec_good", 4).Component("fiberp_good", 2);
+            _builder.Create(RecipeType.SalvagedCharmCowl, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet).Resref("charm_cowl").Level(50).Quantity(1).RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("hex_focus", 1).Component("elec_good", 4).Component("fiberp_good", 2);
+
+            // Dathomir Grotto Apex Den
+            _builder.Create(RecipeType.SalvagedFangGauntlet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove).Resref("fang_gaunt").Level(50).Quantity(1).RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("alpha_fang", 1).Component("lth_good", 3).Component("fiberp_good", 2);
+            _builder.Create(RecipeType.SalvagedRidgebonePlate, SkillType.Smithery)
+                .Category(RecipeCategoryType.Tunic).Resref("ridge_plate").Level(50).Quantity(1).RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("spine_quill", 1).Component("lth_good", 4).Component("fiberp_good", 2);
+            _builder.Create(RecipeType.SalvagedRiteCrown, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet).Resref("rite_crown").Level(50).Quantity(1).RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("spirit_totem", 1).Component("lth_good", 4).Component("fiberp_good", 2);
         }
     }
 }

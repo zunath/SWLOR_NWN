@@ -3108,6 +3108,12 @@ namespace SWLOR.Game.Server.Service.CraftService
         SalvagedPrecisionOptic = 5013,
         SalvagedDetoniteKnuckle = 5014,
         SalvagedJammerMesh = 5015,
+        SalvagedPitCestus = 5016,
+        SalvagedDuelistVest = 5017,
+        SalvagedCharmCowl = 5018,
+        SalvagedFangGauntlet = 5019,
+        SalvagedRidgebonePlate = 5020,
+        SalvagedRiteCrown = 5021,
 
         #endregion
 

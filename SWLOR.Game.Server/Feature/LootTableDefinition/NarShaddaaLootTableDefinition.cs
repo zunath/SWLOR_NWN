@@ -28,7 +28,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 			CapstoneSmugglersMoonDungeonRares();
 			CzerkaArmsRareElites();
+			FightClubRareElites();
 			return _builder.Build();
+		}
+
+		private void FightClubRareElites()
+		{
+			_builder.Create("FIGHTCLUB_IRONJAW_RARES").IsRare()
+				.AddItem("brawl_wraps", 1, 1, true).AddItem("scar_cuirass", 1, 1, true).AddItem("bp_pitcestus", 1, 1, true);
+			_builder.Create("FIGHTCLUB_QUICKDRAW_RARES").IsRare()
+				.AddItem("gunsling_rig", 1, 1, true).AddItem("padded_coat", 1, 1, true).AddItem("bp_duelvest", 1, 1, true);
+			_builder.Create("FIGHTCLUB_HEXCALLER_RARES").IsRare()
+				.AddItem("hexweave", 1, 1, true).AddItem("ward_vest", 1, 1, true).AddItem("bp_charmcowl", 1, 1, true);
+			_builder.Create("FIGHTCLUB_IRONJAW_COMP").AddItem("arena_token", 1, 1);
+			_builder.Create("FIGHTCLUB_QUICKDRAW_COMP").AddItem("spent_charge", 1, 1);
+			_builder.Create("FIGHTCLUB_HEXCALLER_COMP").AddItem("hex_focus", 1, 1);
 		}
 
 		// Named rare elite droids/troopers in the Czerka Arms Test Range: unique gear + a blueprint,

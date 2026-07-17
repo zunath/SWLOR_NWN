@@ -28,8 +28,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             SmugglersMoonFightClubBackrooms();
             CzerkaArmsTestRange();
             CzerkaArmsRareElites();
+            FightClubRareElites();
 
             return _builder.Build();
+        }
+
+        private void FightClubRareElites()
+        {
+            _builder.Create("FIGHTCLUB_BACKROOMS_RARES", "Fight Club Backrooms - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "ironjaw").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "quickdraw").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "hexcaller").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         // Dedicated rare table (tagged waypoint in pw_ar_czarmrange) so the capstone lesson table

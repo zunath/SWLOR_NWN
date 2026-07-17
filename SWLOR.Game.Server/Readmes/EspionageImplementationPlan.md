@@ -12,7 +12,7 @@ Implements the Espionage skill from the Design Bible Espionage tab (Infiltrator 
 
 ### 1. New skill: Espionage
 
-- Add `SkillType.Espionage` (next free enum value) in `Service/SkillService/SkillType.cs` with `[Skill(...)]` metadata: Utility category, max rank 50, contributes to skill cap, description from the Bible tab.
+- Add `SkillType.Espionage` (next free enum value) in `Service/SkillService/SkillType.cs` with `[Skill(...)]` metadata: Utility category, max rank 50, contributes to skill cap, description from the Bible tab, and `CharacterType.Standard` restriction — Espionage is Standard-only, mirroring Devices (Bible Char. Type column is `Standard` on every Espionage row).
 - Add the matching row to `SWLOR_Haks/sw_2da/iprp_skill.2da` (required per the SkillType file header).
 - XP sources: crafting poisons/traps (recipe path grants this automatically), successful lockbox/lock/terminal slicing, trap triggers on hostile NPCs, and time-in-stealth near hostiles (guardrail: only ticks XP when a hostile NPC is within detection range, to prevent AFK farming).
 
@@ -124,6 +124,7 @@ Custom implementation (placeable + scripted trigger), **not** native NWN traps �
 - Both capstones follow the standard capstone convention: Type `Capstone`, 6 SP, and for Ghost Protocol the shared Capstone recast timer at 90 seconds / 15 STM.
 - Each tree totals the standard 60 SP / 18 rows. The missing Espionage 32 step is filled by two new 4 SP traits: **Silent Stride** (Infiltrator — no stealth movement penalty, 20% slower stealth STM drain) and **Lasting Coatings** (Saboteur — applied weapon poisons last 50% longer before wearing off).
 - The six new stats are documented on the Bible **Character Stats** tab (rows 60–65), including the opposed-check formula and the applier-snapshot rule for Poison Bonus.
+- Espionage is **Standard-only** (Devices precedent; Force-sensitives keep Force/Lightsaber/Saberstaff exclusives). Alertness stays `All` so every character can counter stealth, and poison *usage* stays universal — only the skill and its perks are restricted.
 
 ## Open Decisions (resolve in Phase 0)
 

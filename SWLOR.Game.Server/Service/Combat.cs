@@ -1528,6 +1528,31 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
+        private static bool IsMatchingBackAttack(uint attacker, uint defender, SkillType skillType)
+        {
+            return skillType != SkillType.Invalid &&
+                   !IsRangedWeaponSkill(skillType) &&
+                   IsAttackerBehindTarget(attacker, defender);
+        }
+
+        public static int ApplyBackAttackDamageModifier(uint attacker, uint defender, SkillType skillType, int damage)
+        {
+            if (damage <= 0 || !IsMatchingBackAttack(attacker, defender, skillType))
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(attacker, StatType.BackAttackDamagePercentAdjustment);
+            return adjustment == 0
+                ? damage
+                : Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+        }
+
+        public static int GetBackAttackCriticalRateAdjustment(uint attacker, uint defender, SkillType skillType)
+        {
+            return IsMatchingBackAttack(attacker, defender, skillType)
+                ? Stat.GetStatAdjustment(attacker, StatType.BackAttackCriticalRatePercentAdjustment)
+                : 0;
+        }
+
         public static int ApplySideAttackEvasionIgnore(uint attacker, uint defender, SkillType skillType, int evasion)
         {
             if (evasion <= 0 || !IsMatchingSideAttack(attacker, defender, skillType))
@@ -1930,6 +1955,30 @@ namespace SWLOR.Game.Server.Service
             var angleDegrees = Math.Acos(dot) * 180.0 / Math.PI;
 
             return angleDegrees >= 45.0 && angleDegrees <= 135.0;
+        }
+
+        public static bool IsAttackerBehindTarget(uint attacker, uint defender)
+        {
+            if (!GetIsObjectValid(attacker) ||
+                !GetIsObjectValid(defender) ||
+                GetArea(attacker) != GetArea(defender))
+                return false;
+
+            var defenderPosition = GetPosition(defender);
+            var attackerPosition = GetPosition(attacker);
+            var deltaX = attackerPosition.X - defenderPosition.X;
+            var deltaY = attackerPosition.Y - defenderPosition.Y;
+            var distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            if (distance <= 0.001)
+                return false;
+
+            var facingRadians = GetFacing(defender) * Math.PI / 180.0;
+            var forwardX = Math.Cos(facingRadians);
+            var forwardY = Math.Sin(facingRadians);
+            var dot = Math.Clamp((forwardX * deltaX + forwardY * deltaY) / distance, -1.0, 1.0);
+            var angleDegrees = Math.Acos(dot) * 180.0 / Math.PI;
+
+            return angleDegrees > 135.0;
         }
 
         [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
@@ -6531,6 +6580,7 @@ namespace SWLOR.Game.Server.Service
             criticalRate += GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender);
             criticalRate += GetTargetStatusCriticalRateAdjustment(attacker, defender);
             criticalRate += GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
+            criticalRate += GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
 
             if (criticalRate < BaseCriticalRate)
                 criticalRate = BaseCriticalRate;

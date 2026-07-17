@@ -1,4 +1,4 @@
-﻿using NWN.Native.API;
+using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
@@ -541,6 +541,7 @@ namespace SWLOR.Game.Server.Native
 
             damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
 
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
 

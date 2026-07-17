@@ -73,16 +73,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Weapon attacks from behind a target deal +3% damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 5)
+                .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 3)
 
                 .AddPerkLevel()
                 .Description("Weapon attacks from behind a target deal +5% damage and gain +3% critical chance.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 18)
+                .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 5)
+                .IncreasesStat(StatType.BackAttackCriticalRatePercentAdjustment, 3)
 
                 .AddPerkLevel()
                 .Description("Weapon attacks from behind a target deal +8% damage and gain +5% critical chance.")
                 .Price(3)
-                .RequirementSkill(SkillType.Espionage, 38);
+                .RequirementSkill(SkillType.Espionage, 38)
+                .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 8)
+                .IncreasesStat(StatType.BackAttackCriticalRatePercentAdjustment, 5);
         }
 
         private void Slicing()

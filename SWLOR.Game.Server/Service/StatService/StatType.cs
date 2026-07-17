@@ -5321,6 +5321,18 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         PoisonCoatingDurationPercent = 927,
+
+        /// <summary>
+        /// Percent adjustment applied to melee weapon damage dealt while the attacker is behind the target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackDamagePercentAdjustment = 928,
+
+        /// <summary>
+        /// Critical rate percent adjustment applied to melee weapon attacks made while the attacker is behind the target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackCriticalRatePercentAdjustment = 929,
     }
 
     public class StatTypeAttribute : Attribute

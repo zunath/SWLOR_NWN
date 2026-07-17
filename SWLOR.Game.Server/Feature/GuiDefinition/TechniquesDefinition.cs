@@ -36,13 +36,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template.AddCell(cell =>
                                     {
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.UnequippedIcons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Stretch);
+                                        });
+
+                                        cell.SetWidth(40f);
+                                        cell.SetIsVariable(false);
+                                    });
+                                    template.AddCell(cell =>
+                                    {
                                         cell.AddToggleButton()
                                             .BindText(model => model.UnequippedNames)
                                             .BindIsToggled(model => model.UnequippedSelections)
+                                            .BindColor(model => model.UnequippedColors)
                                             .BindOnClicked(model => model.OnSelectUnequipped());
                                     });
                                 })
-                                .SetRowHeight(30f)
+                                .SetRowHeight(40f)
                                 .SetScrollbars(NuiScrollbars.Both)
                                 .BindRowCount(model => model.UnequippedNames);
                             });
@@ -96,13 +111,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template.AddCell(cell =>
                                     {
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.EquippedIcons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Stretch);
+                                        });
+
+                                        cell.SetWidth(40f);
+                                        cell.SetIsVariable(false);
+                                    });
+                                    template.AddCell(cell =>
+                                    {
                                         cell.AddToggleButton()
                                             .BindText(model => model.EquippedNames)
                                             .BindIsToggled(model => model.EquippedSelections)
+                                            .BindColor(model => model.EquippedColors)
                                             .BindOnClicked(model => model.OnSelectEquipped());
                                     });
                                 })
-                                .SetRowHeight(30f)
+                                .SetRowHeight(40f)
                                 .SetScrollbars(NuiScrollbars.Both)
                                 .BindRowCount(model => model.EquippedNames);
                             });
@@ -117,16 +147,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindText(model => model.SelectedDetails);
                     });
 
+                    // Slot budget shown both as text and as a visual fill bar (green with room,
+                    // red when full).
                     col.AddRow(row =>
                     {
+                        row.SetHeight(22f);
                         row.AddSpacer();
                         row.AddLabel()
                             .BindText(model => model.SlotsText)
                             .BindColor(model => model.SlotsColor)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Middle)
-                            .SetHeight(26f);
+                            .SetHeight(22f);
                         row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.SetHeight(16f);
+                        row.AddProgressBar()
+                            .BindValue(model => model.SlotsProgress)
+                            .BindColor(model => model.SlotsColor);
                     });
                 })
                 ;

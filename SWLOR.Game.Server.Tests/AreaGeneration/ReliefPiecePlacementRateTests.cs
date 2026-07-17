@@ -234,4 +234,25 @@ public class ReliefPiecePlacementRateTests
         hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
             $"EarlyWinter's 'HillCave1' ReliefPiece must place on a meaningful share of the {successes} successful seeds (got {hits})");
     }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.MedievalRural's "HillCave1" ReliefPiece (1x1,
+    /// non-flat [Grass 1,1,0,0], crosser-free, one door slot -- the IDENTICAL shape as trs02's own
+    /// "HillCave1", literally the same group name). Measured (seedBase 95000, 150 seeds, Complex,
+    /// successes=150): 77.3% (116/150) -- the exact same rate EarlyWinter's own HillCave1 measures (same
+    /// tile geometry, same shape).
+    /// </summary>
+    [Test]
+    public void HillCave1OnMedievalRuralComplex_PlacesInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalRural];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "HillCave1", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+        successes.Should().BeGreaterThan(140);
+        hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+            $"MedievalRural's 'HillCave1' ReliefPiece must place on a meaningful share of the {successes} successful seeds (got {hits})");
+    }
 }

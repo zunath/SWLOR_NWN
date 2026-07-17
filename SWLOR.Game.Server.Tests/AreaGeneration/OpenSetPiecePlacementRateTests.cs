@@ -1322,4 +1322,177 @@ public class OpenSetPiecePlacementRateTests
                 "if it ever starts placing, room generation changed and this test (and its doc comment) should be revisited, not silently deleted");
         }
     }
+
+    // ---------------- trm02 Medieval Rural 2 placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.MedievalRural's pure-Grass OpenSetPiece/WallAlcove
+    /// family and its ExitGroups (ProbeTool "placetrm", seedBase 95000, 150 seeds each, Halls, all
+    /// successes=150). Measured: "DragonSkeleton"/"Field3" 62.7% (94/150) -- identical rates to trs02's
+    /// own DragonSkeleton/Field3 (same tile geometry); "Field1"/"Field2" 28.7% (43/150, matching trs02's
+    /// own Field1/Field2 too); "CabbagePatch"/"GoblinHut1"/"HobbitHome1"/"HobbitHome4"/"ElfHouse1"/
+    /// "Farm2x2" 100% (150/150, WallAlcove); "GoblinHut2"/"PenGate"/"HobbitHome3"/"HobbitHome5"/
+    /// "TnoHouse1"/"TnoHouse2"/"SmallFarm2"/"SmallFarm3"/"Windmill"/"FarmShed" 100% (150/150, ExitGroup).
+    /// </summary>
+    [Test]
+    public void MedievalRuralOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalRural];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minShare) in new[]
+                 {
+                     ("DragonSkeleton", 0.4),
+                     ("Field1", 0.15),
+                     ("Field2", 0.15),
+                     ("Field3", 0.4),
+                     ("CabbagePatch", 0.5),
+                     ("GoblinHut1", 0.5),
+                     ("HobbitHome1", 0.5),
+                     ("HobbitHome4", 0.5),
+                     ("ElfHouse1", 0.5),
+                     ("Farm2x2", 0.5),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+
+        foreach (var groupName in new[]
+                 {
+                     "GoblinHut2", "PenGate", "HobbitHome3", "HobbitHome5", "TnoHouse1", "TnoHouse2",
+                     "SmallFarm2", "SmallFarm3", "Windmill", "FarmShed",
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.MedievalRuralMountain's pure Mountain+Grass
+    /// ExitGroups -- the corner shape that IS this profile's own real Solid/Open pair (ProbeTool
+    /// "placetrm", seedBase 95000, 150 seeds, Halls, all successes=150). Measured: "MountainCave2" 97.3%
+    /// (146/150); "MountainCave3"/"Mine1"/"Mine2" 100% (150/150) -- the exact same rates
+    /// EarlyWinterMountain's own identically-shaped ExitGroup family measures.
+    /// </summary>
+    [Test]
+    public void MedievalRuralMountainExitGroups_PlaceAsGroupExits()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalRuralMountain];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "MountainCave2", "MountainCave3", "Mine1", "Mine2" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for MedievalRural's Chasm-touching pieces (CliffCaveEntry/CliffPath2/
+    /// CliffRockFormation/CliffBottomCave1/CliffBottomCave2/CliffTopCave1): measured 0/150 in isolation
+    /// (ProbeTool "placetrm", Halls). Root cause identical to EarlyWinterChasmDistrictPieces_
+    /// StillDoNotPlace_DocumentedCeiling: SecondaryOpenTerrain districts only paint when CorridorMode is
+    /// Tunnel, and this composition has NO Tunnel vocabulary at all (Complex downgrades to OpenLane, see
+    /// TunnelVocabularyCheckTests' own trm02 entry), so Chasm never actually paints under any of this
+    /// project's three supported layouts -- structurally reachable (real census credit) but never
+    /// placeable today. If any of these ever start placing, district painting changed and this test (and
+    /// its doc comment) should be revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void MedievalRuralChasmDistrictPieces_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalRural];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "CliffCaveEntry", "CliffPath2", "CliffRockFormation" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling (SecondaryOpenTerrain never paints without Tunnel-mode CorridorMode) -- " +
+                "if it ever starts placing, district painting changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+
+        foreach (var groupName in new[] { "CliffBottomCave1", "CliffBottomCave2", "CliffTopCave1" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling (SecondaryOpenTerrain never paints without Tunnel-mode CorridorMode) -- " +
+                "if it ever starts placing, district painting changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for MedievalRural's two off-vocab single-tile ExitGroups: "Lighthouse"
+    /// (Grass+Water corners) and "SmallFarm1" (pure Grass2) are each ExitGroup-eligible regardless of
+    /// vocabulary (IsExitGroupEligible is structural/terrain-agnostic) and are wired as real GroupExits,
+    /// but Water/Grass2 are never painted anywhere on this profile's Grass-only grid (neither is
+    /// PrimaryOpenTerrain/SecondaryOpenTerrain/AccentTerrain), so no real boundary cell matching either
+    /// piece's own corner terrain ever exists for GroupExitPlanner's site search to attach to. Measured
+    /// 0/150 in isolation (ProbeTool "placetrm", Halls). If either ever starts placing, terrain painting
+    /// changed and this test (and its doc comment) should be revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void MedievalRuralWaterAndOffVocabSinglePieces_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalRural];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "Lighthouse", "SmallFarm1" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling (its own corner terrain is never painted on this grid) -- " +
+                "if it ever starts placing, terrain painting changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for MedievalRuralMountain's six third-terrain/concave-corner pieces
+    /// (MountainCave1/MountainCave4/CornerCave1/InnerCornerCave3 mix in an unwired grass2 corner;
+    /// SeaCave1 mixes in unwired water; InnerCornerCave1 needs a concave inner-corner boundary cell BSP
+    /// rectangle room carving never produces, despite using only wired Mountain/Grass terrain): measured
+    /// 0/150 in isolation (ProbeTool "placetrm", Halls) -- the exact same six-piece shape
+    /// EarlyWinterMountainThirdTerrainPieces_StillDoNotPlace_DocumentedCeiling documents for trs02. See
+    /// BaseGameTilesetProfiles.MedievalRuralMountain's own doc comment for the full per-group writeup. If
+    /// any of these ever start placing, room generation changed and this test (and its doc comment)
+    /// should be revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void MedievalRuralMountainThirdTerrainPieces_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalRuralMountain];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "MountainCave1", "MountainCave4", "CornerCave1", "InnerCornerCave1", "InnerCornerCave3", "SeaCave1" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling -- " +
+                "if it ever starts placing, room generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
 }

@@ -1211,6 +1211,11 @@ public class TileCoverageCensusTests
         // (verified directly, zero occurrences) -- included here defensively even though it can never
         // actually trigger.
         ["trs02"] = new(StringComparer.OrdinalIgnoreCase) { "Grass2", "Water", "Trees", "Dirt" },
+        // trm02 (Medieval Rural 2): Chasm is the wired SecondaryOpenTerrain (base profile); Mountain is
+        // the wired SolidTerrainOverride on the MedievalRuralMountain variant. Sand/Water/Trees/Grass2
+        // stay unwired this pass (time-boxed scope, the same shape trs02's own Grass2/Water/Trees
+        // writeup documents) -- see BaseGameTilesetProfiles.MedievalRural's own doc comment.
+        ["trm02"] = new(StringComparer.OrdinalIgnoreCase) { "Sand", "Water", "Trees", "Grass2" },
     };
 
     /// <summary>
@@ -1396,6 +1401,15 @@ public class TileCoverageCensusTests
         // identical Wall1/Wall2/Stream/Road gate-family precedent -- see
         // BaseGameTilesetProfiles.EarlyWinter's own doc comment.
         ["trs02"] = new(StringComparer.OrdinalIgnoreCase) { "Wall", "Ridge", "Stream", "Street", "path" },
+        // trm02 (Medieval Rural 2): Street is ALSO wired as RoadCrosser (a separate, real lane-carving
+        // mechanism, orthogonal to GROUP classification) -- that does not stop it from also gating real
+        // GROUP content with no declared DoorSlotCrosser this pass (StreetCave/StreetCave2/3,
+        // InnerCornerCave4, MageTower, SmallCastle's "street" edges, WaterMillStr's "street"+"stream"
+        // edges), the same as Road/Wall/Bridge/Ridge/Stream. "path" is a rare crosser found on exactly
+        // one group member (CliffPath1), the same shape trs02's own identical "path" entry documents.
+        // Matches ttr01/tts01/ttz01/trs02's own identical gate-family precedent -- see
+        // BaseGameTilesetProfiles.MedievalRural's own doc comment.
+        ["trm02"] = new(StringComparer.OrdinalIgnoreCase) { "Road", "Stream", "Wall", "Bridge", "Ridge", "Street", "path" },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -2156,6 +2170,7 @@ public class TileCoverageCensusTests
         "ttz01",
         "ttu01",
         "trs02",
+        "trm02",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -2196,6 +2211,7 @@ public class TileCoverageCensusTests
             "ttz01" => BaseGameTilesetProfiles.Tropical,
             "ttu01" => BaseGameTilesetProfiles.Underdark,
             "trs02" => BaseGameTilesetProfiles.EarlyWinter,
+            "trm02" => BaseGameTilesetProfiles.MedievalRural,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

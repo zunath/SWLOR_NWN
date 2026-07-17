@@ -416,6 +416,138 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // wiring closes them this pass.
         public const string EarlyWinterMountain = "earlywinter_mountain";
 
+        // Wave-15: Medieval Rural 2 (trm02, basegame_sets/trm02.set -- BIF-only, NO SWLOR_Haks copy
+        // exists, verified directly; 1644 tiles / 161 groups, 7 terrains, 6 crossers). UnlocalizedName
+        // is "Medieval Rural 2" verbatim (the .set file itself carries this UnlocalizedName, DisplayName
+        // is the unset -1 sentinel, so no TLK fallback is needed).
+        //
+        // GENERAL: Border=Default=Floor="Grass" -- a genuine open field, the same shape as
+        // ttr01/tts01/ttz01/trs02 (NOT the ttd01/ttf01-style inversion): Grass reaches a clean 16/16
+        // against EVERY other terrain (Sand/Water/Trees/Chasm/Grass2/Mountain, all verified directly via
+        // ProbeTool "matrixtrm"). SolidTerrainOverride is left UNSET -- LayoutSolver.Solve stamps
+        // Solid=Grass (==PrimaryOpenTerrain).
+        //
+        // trm02 shares its ENTIRE 7-terrain/6-crosser vocabulary shape with trs02 (Early Winter 2) --
+        // both are "Rural"-family Bioware exterior sets with the same Sand/Water/Trees/Grass/Chasm/
+        // Grass2/Mountain palette, and trm02 even ships an identically-named "HillCave1" ReliefPiece and
+        // "MountainCave1-4"/"Mine1-2"/"CornerCave1"/"InnerCornerCave1/3"/"SeaCave1" ExitGroup family --
+        // but trm02 is a materially richer, more populated set (1644 tiles/161 groups vs. trs02's
+        // 1306/94): a genuine medieval village roster (HobbitHome1-5, ElfHouse1-3, ElfForestTower,
+        // Smithy2x2, Merchant2x2, Windmill, Farm2x1/2x2 x8, Barn01/01r/02, FarmShed, Grainary, Mill2x2,
+        // WaterMillStr, SmallCastle, Castle3x5) absent from trs02 entirely. Solid=Mountain/Open=Grass
+        // ALSO reaches a clean 16/16 (verified directly) with MinimumOpeningWidth 1, so -- exactly
+        // mirroring EarlyWinter/EarlyWinterMountain's own precedent shape -- this tileset supports BOTH
+        // an open-field composition (this profile) and a second, INVERTED Mountain profile
+        // (MedievalRuralMountain, see its own doc comment) sharing the same .set data.
+        //
+        // Chasm (a genuine cliff/canyon district: CliffBottomCave1/2, CliffTopCave1, CliffCaveEntry,
+        // CliffPath1/2, CliffRockFormation, ChasmPond, ChasmBridgeWB1-5, CliffBridge1/2, CliffWillow) is
+        // wired as SecondaryOpenTerrain("Chasm") -- Grass/Chasm mixed corners reach 16/16 (verified
+        // directly). Measured real placement (ProbeTool "sweeptrm"/"placetrm"): the SecondaryOpenTerrain
+        // district pieces are structurally reachable (real census credit) but -- exactly like trs02's
+        // own Chasm district -- RoomsAndCorridorsLayout.Generate only ever paints a SecondaryOpenTerrain
+        // district under CorridorMode.Tunnel, and this composition has NO Tunnel vocabulary at all
+        // (verified via ProbeTool "matrixtrm": TunnelVocabularyCheck.SupportsTunnels returns FALSE for
+        // every ordered Solid/Open pairing against every one of this tileset's 6 crossers) -- so Complex
+        // downgrades to OpenLane and the Chasm pieces can never actually paint under any of this
+        // project's three supported layouts. Kept wired with a dedicated 0/150 ceiling proof rather than
+        // pulled -- see MedievalRuralChasmDistrictPieces_StillDoNotPlace_DocumentedCeiling.
+        //
+        // Sand (SharkCave, CoastCave, Crystal, CoastPond, Merfolk_Building_D_1x2) and Water (Boat1/2,
+        // Small_Cog, Ship_floating_1/2, Grass_boat_docked, DockedShip1x4/1x3_Grass, Lighthouse, Willow1)
+        // both also reach 16/16 against Grass but stay UNWIRED as accent slots this pass (time-boxed
+        // scope, matching trs02's own Grass2/Water/Trees writeup). "Lighthouse" (1x1, flat, crosser-free,
+        // one door slot, Grass+Water corners) is ExitGroup-eligible regardless (IsExitGroupEligible is
+        // vocab-independent/structural) and IS wired as a real GroupExit -- but measures a documented
+        // 0/150 (ProbeTool "placetrm", Halls): the same "its own corner terrain is never painted
+        // anywhere on the grid" ceiling as the Chasm-district pieces below, since Water is never wired as
+        // Primary/Secondary/Accent, so a real Grass+Water boundary cell never exists for
+        // GroupExitPlanner's site search to attach to. "SmallFarm1" (1x1, flat, crosser-free, one door
+        // slot, pure Grass2) is the identical shape/ceiling on the OTHER unwired terrain -- also a real
+        // wired GroupExit, also a documented 0/150, since Grass2 is likewise never painted anywhere on a
+        // Grass-only grid. Both are covered by
+        // MedievalRuralWaterAndOffVocabSinglePieces_StillDoNotPlace_DocumentedCeiling. Their multi-tile
+        // naval/Grass2 siblings (Boat1/2/Small_Cog/etc., Farm2x1_2/4/7/Barn01r_1x2) and
+        // SharkCave/CoastCave/Merfolk_Building_D_1x2 all fall to the automatic alternate-vocab exemption
+        // instead (no door-only escape hatch for a 2+-tile group) -- see PilotAlternateVocabTerrains
+        // ["trm02"].
+        //
+        // Trees (a single starved minor terrain: only ElfForestTower's pure-Trees 1x1 plus two
+        // ungrouped Grass/Trees boundary tiles InvisBridge/RiverEndNW use it) is the same "Trees" shape
+        // ttr01/tts01/trs02's own entries already document -- stays unwired.
+        //
+        // Crossers: Road/Stream/Wall/Bridge/Ridge/Street -- NONE is a canonical or near-canonical
+        // "Corridor"/"Doorway" pair (verified directly via ProbeTool "matrixtrm": TunnelVocabularyCheck
+        // returns FALSE for every ordered pairing), so Complex downgrades to OpenLane, the same verdict
+        // as every prior exterior wave. RoadVocabularyCheck.SupportsRoads confirms Street supports lanes
+        // against Grass/Grass2/Mountain (the broadest of the six, matching trs02's own Street pick) --
+        // wired as RoadCrosser. Road/Stream/Wall/Bridge/Ridge all gate real GROUP content (WallGate1/2
+        // grass+wall+door, Mill2x2 grass+road/stream, SmallCave1/2 grass2+ridge+door, Bridge1-3/
+        // CliffBridge1-2 grass/chasm+stream, ChasmBridgeWB1-5 chasm+bridge, WaterMillStr grass2+stream/
+        // street, etc.) but none is declared a DoorSlotCrosser this pass -- matching this project's own
+        // established ttr01/tts01/ttz01/trs02 precedent (leaving this class of shape undeclared/exempt
+        // rather than risk a door object never actually forming a real boundary). All six are folded
+        // into PilotAlternateVocabCrossers["trm02"] instead (plus "path", the same rare fifth crosser
+        // name trs02's own CliffPath1 sibling carries here too).
+        //
+        // "HillCave1" (1x1 GROUP, non-flat [Grass 1,1,0,0], crosser-free, one door slot) is the
+        // IDENTICAL shape to trs02's own "HillCave1" (both literally share the name) -- classifies via
+        // LayoutGroupStamper's door-tolerant ReliefPiece kind, and only ever PLACES under Complex (the
+        // one layout style that requests nonzero ReliefRegions). Measured (ProbeTool "placetrm",
+        // seedBase 95000, 150 seeds, Complex, retryCount 1): successes=150, hits=116 (77.3%) -- the exact
+        // same rate trs02's own HillCave1 measures (same tile geometry, same shape).
+        //
+        // Hand-built evidence: 11 real trm02 areas ship in the module (dan_colony/dan_colonyfarms/
+        // dan_destroyfarm/dan_enclosemount/dan_fieldtrail/dan_hiddenmount/dan_iriazfarm/dan_lakencave/
+        // dan_playerland2/dan_tribefields/dan_wildplain -- the Dantooine farmland/frontier content),
+        // 2858 placed tiles total (ProbeTool "evidence"). TileLighting(0,0,0,0) is the overwhelming
+        // plurality (2758/2858 tiles, 96.5%). Decoration palette mined from the same 11 areas' Placeable
+        // List (top resrefs by usage, excluding the functional "unwalkable_1" blocker): _mdrn_pl_wdfence
+        // (wooden fence, 449 uses), zep_flowers017 (215), zep_shrub041 (87), zep_bamboo002 (48),
+        // zep_blssmtree001 (38), _mdrn_pl_windmil (36), zep_shrub036 (36), zep_bamboo001 (30),
+        // zep_pinetr22 (26), swlor_0186/swlor_0212 ("[SWLOR] Wall, Naboo" column/wall dressing, 14/12).
+        public const string MedievalRural = "medievalrural";
+
+        // Medieval Rural 2 (Mountain) -- see MedievalRural's own doc comment above for the shared shape
+        // writeup. SolidTerrainOverride("mountain") + PrimaryOpenTerrain("grass") recomposes the SAME
+        // trm02 .set data as a genuine inversion (mirroring EarlyWinter/EarlyWinterMountain's own shape,
+        // not a PaletteVariant accent-slot recomposition): Mountain becomes real wall mass, and its door/
+        // cave family (MountainCave1-5, Mine1/2, CornerCave1-3, InnerCornerCave1-6, StreetCave1-3,
+        // SeaCave1, RiverCave1/2, WaterfallCave, MountainSlope, MageTower, SmallCastle, Castle3x5 -- all
+        // flat-or-height-exempt, crosser-free-or-street-gated, door-bearing 1x1/multi groups mixing
+        // Mountain with Grass/Grass2/Water/Trees corners) classify predominantly via IsExitGroupEligible's
+        // vocab-independent structural rule (ExitGroup needs only 1x1/flat/door/no-crosser --
+        // terrain-agnostic) and are wired here as real GroupExits rather than on the open-field base
+        // profile, matching this district's own mountain-fortress identity (the same EarlyWinterMountain
+        // shape).
+        //
+        // Real measured placement (ProbeTool "placetrm", 150 seeds, Halls, retryCount 1) splits sharply
+        // by corner composition, mirroring EarlyWinterMountain's own precedent exactly: the pure
+        // Mountain+Grass pairs -- this profile's own real Solid/Open pair -- place readily: "MountainCave2"
+        // 97.3% (146/150), "MountainCave3"/"Mine1"/"Mine2" 100% (150/150). "InnerCornerCave1" (pure
+        // Mountain/Grass, a 3-Mountain-1-Grass CONCAVE inner corner) measures 0/150 despite using only
+        // wired terrain -- BSP rectangle room carving (this profile's own room shape) never produces a
+        // concave inner-corner boundary cell, the same "irregular-growth-only" shape
+        // TileCoverageCensusTests' own IsElevationBlobReachable doc comment documents for the elevation
+        // painter (and the exact same result EarlyWinterMountain's own InnerCornerCave1 measures). The
+        // remaining four pieces mixing in a THIRD, unwired terrain (grass2 or water) also measure 0/150:
+        // "MountainCave1" (mountain/grass2), "MountainCave4" (mountain/grass2 -- BOTH same-named groups --
+        // trm02 legitimately ships two distinct groups sharing the literal name "MountainCave4", one
+        // non-flat pure Mountain/Grass at TILE99 [height-exempt, never wired] and one flat Mountain/Grass2
+        // at TILE119 [this ExitGroup, verified directly against the raw .set data]), "CornerCave1"
+        // (mountain/grass2), "InnerCornerCave3" (mountain/grass2), "SeaCave1" (mountain/water) -- their
+        // own grass2/water corner never appears anywhere in a grid painted only Grass/Mountain, a genuine
+        // geometric impossibility rather than bad luck. All six 0/150 pieces are kept wired (classify
+        // structurally, real census credit) -- see
+        // MedievalRuralMountainThirdTerrainPieces_StillDoNotPlace_DocumentedCeiling.
+        //
+        // The remaining mountain-cave family members (StreetCave1-3, MageTower, InnerCornerCave2/4/5/6,
+        // CornerCave2/3, WaterfallCave, MountainSlope, RiverCave1/2, SmallCastle, Castle3x5) are either
+        // non-flat (auto height-exempt) or crosser-gated by an undeclared Street/Stream edge (the same
+        // PilotAlternateVocabCrossers["trm02"] bucket the base profile documents) -- no additional wiring
+        // closes them this pass.
+        public const string MedievalRuralMountain = "medievalrural_mountain";
+
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
@@ -6398,6 +6530,124 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // above for the full inversion writeup.
             _builder.Create(EarlyWinterMountain, "Early Winter 2 (Mountain)")
                 .Tileset("trs02")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("mountain")
+                .PrimaryOpenTerrain("grass")
+                .ExitGroup("MountainCave1")
+                .ExitGroup("MountainCave2")
+                .ExitGroup("MountainCave3")
+                .ExitGroup("Mine1")
+                .ExitGroup("Mine2")
+                .ExitGroup("MountainCave4")
+                .ExitGroup("CornerCave1")
+                .ExitGroup("InnerCornerCave1")
+                .ExitGroup("InnerCornerCave3")
+                .ExitGroup("SeaCave1");
+
+            // Medieval Rural 2 (trm02) -- see this file's own MedievalRural const doc comment above for
+            // the full composition writeup (open field on Grass, SecondaryOpenTerrain("Chasm") for the
+            // cliff-canyon district, RoadCrosser("Street"), MaxReliefRegions for "HillCave1", and the
+            // Sand/Water/Trees/Grass2/Road/Stream/Wall/Bridge/Ridge/Street/path exemption accounting).
+            _builder.Create(MedievalRural, "Medieval Rural 2")
+                .Tileset("trm02")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PrimaryOpenTerrain("Grass")
+                .SecondaryOpenTerrain("Chasm")
+                .RoadCrosser("Street")
+                .MaxReliefRegions(2)
+                .FeatureTile("Spruce")
+                .FeatureTile("Spruces")
+                .FeatureTile("TreeBush1")
+                .FeatureTile("DeadTree1")
+                .FeatureTile("Anthill")
+                .FeatureTile("DeadTree2")
+                .FeatureTile("Pen")
+                .FeatureTile("Grainary")
+                .FeatureTile("Garden")
+                .FeatureTile("HugeTree")
+                .FeatureTile("HugeRockTree")
+                .FeatureTile("Birch")
+                .FeatureTile("CrystalG")
+                .FeatureTile("Groundhole")
+                .FeatureTile("Shroom1")
+                .FeatureTile("Shroom2")
+                .FeatureTile("ChickenCoop")
+                .FeatureTile("Well1")
+                .FeatureTile("GrassRockFormation")
+                .FeatureTile("PoisonWater")
+                .FeatureTile("MineShaft")
+                .FeatureTile("Camp1")
+                .FeatureTile("Camp2")
+                .FeatureTile("Camp3")
+                .FeatureTile("Garden3")
+                .FeatureTile("Orchard")
+                .FeatureTile("TowerRuins")
+                .FeatureTile("Crystal")
+                .FeatureTile("CoastPond")
+                .FeatureTile("ChasmPond")
+                .FeatureTile("Pond")
+                .FeatureTile("Camp2a")
+                .FeatureTile("Camp3a")
+                .FeatureTile("ElfForestTower")
+                .ExitGroup("Lighthouse")
+                .ExitGroup("GoblinHut2")
+                .ExitGroup("PenGate")
+                .ExitGroup("HobbitHome3")
+                .ExitGroup("HobbitHome5")
+                .ExitGroup("TnoHouse1")
+                .ExitGroup("TnoHouse2")
+                .ExitGroup("SmallFarm1")
+                .ExitGroup("SmallFarm2")
+                .ExitGroup("SmallFarm3")
+                .ExitGroup("Windmill")
+                .ExitGroup("FarmShed")
+                .ExitGroup("CliffBottomCave1")
+                .ExitGroup("CliffBottomCave2")
+                .ExitGroup("CliffTopCave1")
+                .SetPiece("DragonSkeleton", 1)
+                .SetPiece("Field1", 1)
+                .SetPiece("Field2", 1)
+                .SetPiece("Field3", 1)
+                .SetPiece("CabbagePatch", 1)
+                .SetPiece("GoblinHut1", 1)
+                .SetPiece("HobbitHome1", 1)
+                .SetPiece("HobbitHome2", 1)
+                .SetPiece("HobbitHome4", 1)
+                .SetPiece("ElfHouse1", 1)
+                .SetPiece("ElfHouse2", 1)
+                .SetPiece("ElfHouse3", 1)
+                .SetPiece("Smithy2x2", 1)
+                .SetPiece("Merchant2x2", 1)
+                .SetPiece("Farm2x1", 1)
+                .SetPiece("Barn02_1x2", 1)
+                .SetPiece("Farm2x1_3", 1)
+                .SetPiece("Farm2x1_5", 1)
+                .SetPiece("Farm2x2", 1)
+                .SetPiece("Barn01_1x2", 1)
+                .SetPiece("Farm2x1_8", 1)
+                .SetPiece("CliffCaveEntry", 1)
+                .SetPiece("CliffPath2", 1)
+                .SetPiece("CliffRockFormation", 1)
+                .SetPiece("HillCave1", 1)
+                .Decoration("_mdrn_pl_wdfence", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_flowers017", 3, DecorationContext.RoomCenter)
+                .Decoration("zep_shrub041", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_bamboo002", 2, DecorationContext.RoomCenter)
+                .Decoration("zep_blssmtree001", 2, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_windmil", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_shrub036", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_bamboo001", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_pinetr22", 1, DecorationContext.RoomCenter)
+                .Decoration("swlor_0186", 1, DecorationContext.WallAdjacent)
+                .Decoration("swlor_0212", 1, DecorationContext.WallAdjacent);
+
+            // Medieval Rural 2 (Mountain) -- see this file's own MedievalRuralMountain const doc comment
+            // above for the full inversion writeup.
+            _builder.Create(MedievalRuralMountain, "Medieval Rural 2 (Mountain)")
+                .Tileset("trm02")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)
                 .PaletteVariant()

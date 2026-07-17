@@ -257,6 +257,12 @@ public class TunnelVocabularyCheckTests
         // (base + Mountain inversion). See BaseGameTilesetProfiles.EarlyWinter's own doc comment.
         BaseGameTilesetProfiles.EarlyWinter,
         BaseGameTilesetProfiles.EarlyWinterMountain,
+        // Medieval Rural 2 (trm02): declares 6 crossers (Road/Stream/Wall/Bridge/Ridge/Street), none a
+        // canonical or near-canonical "Corridor"/"Doorway" pair -- Complex downgrades to OpenLane for
+        // both profiles (base + Mountain inversion). See BaseGameTilesetProfiles.MedievalRural's own
+        // doc comment.
+        BaseGameTilesetProfiles.MedievalRural,
+        BaseGameTilesetProfiles.MedievalRuralMountain,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

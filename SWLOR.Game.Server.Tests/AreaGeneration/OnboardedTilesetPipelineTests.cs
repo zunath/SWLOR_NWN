@@ -220,6 +220,16 @@ public class OnboardedTilesetPipelineTests
         // BaseGameTilesetProfiles.EarlyWinter's own doc comment for the full composition writeup.
         BaseGameTilesetProfiles.EarlyWinter,
         BaseGameTilesetProfiles.EarlyWinterMountain,
+        // Wave-15: Medieval Rural 2 (trm02, BIF-only -- no SWLOR_Haks copy exists) -- open-field base
+        // profile (Solid=Open=Grass, no override, plus SecondaryOpenTerrain("Chasm") for the
+        // cliff-canyon district) PLUS MedievalRuralMountain, a second, genuinely NEW-shape inversion
+        // (SolidTerrainOverride("mountain")) sharing the same .set data with an open-field sibling --
+        // the same two-profile shape as trs02/EarlyWinter+EarlyWinterMountain (trm02 shares its entire
+        // terrain/crosser vocabulary with trs02, but ships a materially richer medieval-village group
+        // roster). RoadCrosser("Street"). See BaseGameTilesetProfiles.MedievalRural's own doc comment
+        // for the full composition writeup.
+        BaseGameTilesetProfiles.MedievalRural,
+        BaseGameTilesetProfiles.MedievalRuralMountain,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

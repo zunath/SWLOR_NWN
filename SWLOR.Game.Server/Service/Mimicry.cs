@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
         private const float LearnMaxDistance = 40.0f;
 
         private const int BaseSlotsWithAnalyzer = 2;
-        private const int SlotsPerAnalyzerMemoryLevel = 1;
+        private const int SlotsPerAnalyzerMemoryLevel = 2;
         private const int OverclockedAnalyzerSlotBonus = 2;
         private const int SkillRanksPerTier = 15;
         private const int ResonancePotencyPerTechnique = 5;
@@ -85,10 +85,23 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 _techniques[feat] = detail;
-                _techniqueIcons[feat] = Get2DAString("feat", "ICON", (int)feat);
 
                 if (detail.MimicrySourceFeat != FeatType.Invalid)
                     _techniqueByNpcFeat[detail.MimicrySourceFeat] = feat;
+            }
+
+            // Resolve icon resrefs in a separate, guarded pass: Get2DAString requires a live engine,
+            // so a unit-test harness (no NWNCore.Init) would otherwise throw and abort the technique
+            // caching above. Icons are only consumed by the live Techniques UI, so leaving them
+            // unresolved in that harness is harmless.
+            try
+            {
+                foreach (var feat in _techniques.Keys)
+                    _techniqueIcons[feat] = Get2DAString("feat", "ICON", (int)feat);
+            }
+            catch
+            {
+                _techniqueIcons.Clear();
             }
         }
 

@@ -299,7 +299,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 text += $"{description}\n\n";
 
             text += $"Tier: {detail.MimicryTier}\n" +
-                    $"Slot Cost: {detail.MimicrySlotCost}\n";
+                    $"Slot Cost: {detail.MimicrySlotCost}\n" +
+                    $"Requires: Mimicry Rank {Mimicry.GetTierSkillRequirement(detail.MimicryTier)}\n";
 
             if (detail.IsMimicryTrait)
             {

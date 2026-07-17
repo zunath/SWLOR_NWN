@@ -554,23 +554,23 @@ public class MimicryTests
         var memoryLevel1 = new Player();
         memoryLevel1.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel1.Perks[PerkType.AnalyzerMemory] = 1;
-        Mimicry.GetMaxSlots(memoryLevel1).Should().Be(3);
+        Mimicry.GetMaxSlots(memoryLevel1).Should().Be(4, "Analyzer Memory grants +2 slots per rank");
 
         var memoryLevel2 = new Player();
         memoryLevel2.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel2.Perks[PerkType.AnalyzerMemory] = 2;
-        Mimicry.GetMaxSlots(memoryLevel2).Should().Be(4);
+        Mimicry.GetMaxSlots(memoryLevel2).Should().Be(6);
 
         var memoryLevel3 = new Player();
         memoryLevel3.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel3.Perks[PerkType.AnalyzerMemory] = 3;
-        Mimicry.GetMaxSlots(memoryLevel3).Should().Be(5);
+        Mimicry.GetMaxSlots(memoryLevel3).Should().Be(8);
 
         var overclocked = new Player();
         overclocked.Perks[PerkType.CombatAnalyzer] = 1;
         overclocked.Perks[PerkType.AnalyzerMemory] = 3;
         overclocked.Perks[PerkType.OverclockedAnalyzer] = 1;
-        Mimicry.GetMaxSlots(overclocked).Should().Be(7, "the Overclocked Analyzer capstone grants +2 slots");
+        Mimicry.GetMaxSlots(overclocked).Should().Be(10, "2 base + 6 from Analyzer Memory + 2 from the Overclocked Analyzer capstone");
     }
 
     [Test]

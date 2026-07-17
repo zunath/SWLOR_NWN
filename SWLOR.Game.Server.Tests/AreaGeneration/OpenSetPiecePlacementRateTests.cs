@@ -1532,4 +1532,38 @@ public class OpenSetPiecePlacementRateTests
                 "if it ever starts placing, room generation changed and this test (and its doc comment) should be revisited, not silently deleted");
         }
     }
+
+    // ---------------- tss13 Sea Ships placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.SeaShips' own all-Castle SetPiece family (see that
+    /// profile's own doc comment): "Boat 4" and "Lifeboat 1" (no door slot -- classify OpenSetPiece
+    /// under the open-field corner-match rule, the same shape RuralGrass's own family uses) and "Boat
+    /// 1" (one door-slot member -- classifies WallAlcove; allCornersSolid is trivially true the instant
+    /// SolidTerrainOverride(t) == PrimaryOpenTerrain(t), and IsWallAlcoveSiteValid's open-terrain touch
+    /// tolerance is satisfied by literally any neighbor cell since there is no separate wall mass to
+    /// fail against here, unlike vmr01's own more constrained real wall-ring boundary). Measured
+    /// (seedBase 95000, 150 seeds each, successes=150): "Boat 4" 67.3% (101/150), "Lifeboat 1" 89.3%
+    /// (134/150), "Boat 1" 100% (150/150 -- the WallAlcove kind's near-certain site validity, exactly
+    /// as predicted -- no comparable placement risk to Tropical's own measured 60.3% Organic-specific
+    /// WallAlcove disconnection gap is present here). Thresholds set well under the lowest measured
+    /// rate for safety margin. Halls is used below, matching this profile's own default composition;
+    /// Complex/Organic are covered by the full pipeline sweep in OnboardedTilesetPipelineTests instead.
+    /// </summary>
+    [Test]
+    public void SeaShipsOpenFieldSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.SeaShips];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var name in new[] { "Boat 4", "Lifeboat 1", "Boat 1" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, name, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.3),
+                $"'{name}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
 }

@@ -904,6 +904,108 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string CepCityInteriorElven = "cep_cityinterior_elven";
         public const string CepCityInteriorSigil = "cep_cityinterior_sigil";
 
+        // Wave-15: Sea Ships (tss13, basegame_sets/tss13.set -- BIF-only, verified: no SWLOR_Haks/tss13
+        // copy exists anywhere in the module). GENERAL Border=Default=Floor=Castle, HasHeightTransition=0,
+        // 404 tiles / 132 groups, ONE declared crosser ("gangplank"). Verified directly against the raw
+        // .set data: [TERRAIN TYPES] lists exactly four terrains -- Castle, City, Rural, Tropical -- and
+        // every one of the 132 GROUPs is uniformly single-terrain (all four of a group's member tiles'
+        // corners are the SAME terrain name; a direct scan of every GROUP's own corner list found zero
+        // mixed-terrain members anywhere), i.e. this tileset is FOUR pure single-terrain recolors of the
+        // identical ship/dock geometry stamped 33 groups/97 tiles apiece (Castle: TILE4-100, City:
+        // TILE101-197, Rural: TILE198-294, Tropical: TILE295-391) plus 4 plain, non-grouped open-water
+        // tiles per terrain (TILE0-3 and its three siblings) -- no wall/floor blend combination exists at
+        // all (the direct cross-terrain 16-combo probe the verdict pass ran found only 2/16, the
+        // degenerate all-same-corner combos, confirming "no wall concept" the same way every other
+        // open-field base-game exterior in this file already documents). Composed here as the SAME
+        // "SolidTerrainOverride(t) == PrimaryOpenTerrain(t)" open-field shape TropicalSand pioneered
+        // (this file's own Tropical const doc comment above has the full mechanical writeup) -- ONE base
+        // profile (Castle, the tileset's own declared GENERAL Default/Floor terrain, so no override is
+        // even needed to reach it) plus THREE PaletteVariant profiles (City/Rural/Tropical, each an
+        // explicit SolidTerrainOverride/PrimaryOpenTerrain pair onto its own terrain -- Tropical here is a
+        // per-terrain PALETTE within tss13's own four-terrain recolor, unrelated to and NOT to be confused
+        // with this file's separate ttz01 "Tropical" profile family above).
+        //
+        // Every one of the 132 group NAMES repeats identically across all four terrain blocks (Boat 1..8,
+        // Lifeboat 1..3, plus the gangplank-bearing families below) -- verified directly (each name
+        // appears exactly 4 times total in the .set GROUPS list, once per terrain, all structurally
+        // identical Rows/Columns/member layouts, just recolored). LayoutGroupStamper.FindGroup/
+        // GroupExitPlanner/TileResolver's feature lookup are all first-match-by-name (see this file's own
+        // CastleExteriorRural const doc comment for the established precedent), and the Castle terrain's
+        // copies are FIRST in file order, so EVERY duplicated name here always resolves to the CASTLE
+        // physical instance regardless of which profile declares it -- the identical "real, documented
+        // engine ceiling, not a wiring gap" CastleExteriorRural's grass/dirt duplicate-name pair already
+        // establishes, just a 4-way instead of 2-way collision. Consequently ONLY the base (Castle)
+        // profile below wires any SetPieces by name; the City/Rural/Tropical variants deliberately
+        // declare none (would be dead weight -- FindGroup would still hand them the Castle copy, whose
+        // corners never corner-match their own composition). Every terrain's own physical copies remain
+        // structurally classify-eligible regardless (the tile-coverage census credits a group if ANY
+        // profile sharing this TilesetResref classifies it, independent of FindGroup), so registering the
+        // three variant profiles (with their own SolidTerrainOverride/PrimaryOpenTerrain pair, even though
+        // they carry no SetPieces of their own) is still exactly what closes their own terrain's tile
+        // coverage -- the same "purely to close tile-coverage census exemptions and offer the palette as
+        // a composable option" role TropicalSand's own doc comment (DungeonTilesetProfile.IsPaletteVariant)
+        // already documents.
+        //
+        // 44 crosser-free groups (11/terrain: Boat 1-8, Lifeboat 1-3), verified directly against every
+        // member tile's raw edges -- none carries any crosser at all. Structural classification splits by
+        // whether a member carries a door slot (tolerated by both WallAlcove and OpenSetPiece, never
+        // spawns a door object): Boat 1/2/3/5/6/7 (one door-slot member each) classify WallAlcove --
+        // allCornersSolid is trivially true the instant SolidTerrainOverride(t) == PrimaryOpenTerrain(t),
+        // the IDENTICAL "SetPieceWallAlcove" shape this file's own Tropical const doc comment documents
+        // for ttz01's Barn/Farm/Inn/Windmill/Barracks family, and since Solid==Open here too,
+        // IsWallAlcoveSiteValid's open-terrain touch tolerance is satisfied by literally any neighbor cell
+        // (there is no separate wall mass to fail against) -- so, unlike Tropical's own measured 60.3%
+        // Organic-specific disconnection gap, no comparable placement risk is expected here. Boat 4/8 and
+        // Lifeboat 1-3 (no door slot) classify OpenSetPiece under the same open-field corner-match rule
+        // RuralGrass's own family uses. All 44 are wired below only where FindGroup can actually reach
+        // them (the Castle base profile) -- see this const's own duplicate-name paragraph above.
+        //
+        // 88 gangplank-bearing groups (22/terrain: three waves of Boat 1-7, one gangplank edge per member
+        // in a different slot/count per wave, plus one standalone 1x1 "Gangplank" piece carrying two
+        // gangplank edges) are EXEMPT: "gangplank" is not declared as Doorway, a stub/body crosser, or any
+        // other recognized vocabulary anywhere on any of the four profiles, so
+        // LayoutGroupStamper.TryClassify's IsAllowedMemberEdge rejects every one of these groups outright
+        // the instant it scans a member's edges (a perimeter connector edge on an otherwise open-cornered
+        // group, the exact shape that method's own doc comment names and deliberately excludes without a
+        // new GroupKind). See TileCoverageCensusTests.PilotExpectedExemptions' own "tss13" entries.
+        //
+        // CorridorStubChain hypothesis (explicitly tested, not just asserted, per this onboarding pass'
+        // own verification requirement): declaring "gangplank" as TunnelBodyCrosser under this same-
+        // terrain composition DOES let a gangplank-bearing Boat group structurally CLASSIFY as
+        // CorridorStubChain (hasAnyBodyCrosser + allCornersSolid + a perimeter body-crosser edge, all
+        // trivially satisfied once gangplank is a recognized body crosser and Solid==Open). It still never
+        // PLACES: TryPlaceCorridorStubChain only ever splices onto an existing Tunnel-mode chain network
+        // LayoutTunnelCarver wove through solid space, and an open-field (Solid==Open) composition never
+        // enters Tunnel mode at all (MacroLayoutGenerator downgrades CorridorMode whenever there is no
+        // real wall mass to carve through -- the same reason this file's every other open-field profile
+        // declares no Tunnel vocabulary) -- confirmed directly (see
+        // SeaShipsGangplankHypothesisTests): the classification mirror confirms a gangplank-bearing "Boat
+        // 1" DOES classify as CorridorStubChain once gangplank is a declared body crosser, but 0/150
+        // single-attempt (retryCount 1) placements result under Complex (the only layout that ever enters
+        // real Tunnel mode -- Halls/OpenLane never attempts CorridorStubChain placement at all, since it
+        // carves no Tunnel network to begin with), a synthetic profile with TunnelBodyCrosser("gangplank")
+        // isolated as the only configured SetPiece. Kept undeclared on every shipped profile below; the
+        // shipped gangplank exemption is not a missed unlock.
+        //
+        // No hand-built module areas exist stamping tss13 (verified: zero .are.json references to this
+        // resref anywhere in the module), so TileLighting and decoration stay at the neutral (0,0,0,0)/
+        // no-palette defaults pending a future evidence-mining pass -- the same documented-gap fallback
+        // rule Tropical/EarlyWinter's own doc comments use. No relief/elevation vocabulary is declared
+        // either: every one of the 404 tiles is flat (CornerHeights all zero, matching the tileset's own
+        // declared HasHeightTransition=0), so MaxReliefRegions/MaxElevationRegions/MaxPoolRegions all stay
+        // at their 0 (unset) defaults -- there is no raised geometry anywhere in this tileset to paint.
+        // No RoadCrosser either: gangplank is a narrow boat-to-shore connector family, not a general
+        // through-lane network, and is the tileset's only crosser.
+        //
+        // Theme pairing: an open dockside/harbor scene (moored boats, gangplanks, open water at the
+        // shoreline edge) -- suited to coastal settlement or naval/smuggler-dock content on an ocean or
+        // river-adjacent world, alongside this project's existing exterior waves (CityExterior's own Dock
+        // district, CastleExteriorRuralHarbor).
+        public const string SeaShips = "seaships";
+        public const string SeaShipsCity = "seaships_city";
+        public const string SeaShipsRural = "seaships_rural";
+        public const string SeaShipsTropical = "seaships_tropical";
+
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
         public Dictionary<string, DungeonTilesetProfile> BuildTilesetProfiles()
@@ -6677,6 +6779,67 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("InnerCornerCave1")
                 .ExitGroup("InnerCornerCave3")
                 .ExitGroup("SeaCave1");
+            // Sea Ships (tss13) -- see this file's own SeaShips const doc comment above for the full
+            // composition writeup. The Castle terrain block is FIRST in .set group order, so it is the
+            // only terrain FindGroup can ever resolve any of the 11 duplicated Boat/Lifeboat names to --
+            // wired here as the base profile accordingly. maxPerArea 1 per name (11 distinct pieces is
+            // already a full harbor scene's worth of variety at a 20x20 baseline).
+            _builder.Create(SeaShips, "Sea Ships")
+                .Tileset("tss13")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PrimaryOpenTerrain("Castle")
+                .SetPiece("Boat 1", 1)
+                .SetPiece("Boat 2", 1)
+                .SetPiece("Boat 3", 1)
+                .SetPiece("Boat 4", 1)
+                .SetPiece("Boat 5", 1)
+                .SetPiece("Boat 6", 1)
+                .SetPiece("Boat 7", 1)
+                .SetPiece("Boat 8", 1)
+                .SetPiece("Lifeboat 1", 1)
+                .SetPiece("Lifeboat 2", 1)
+                .SetPiece("Lifeboat 3", 1);
+
+            // Sea Ships (City) -- recomposes the SAME tss13 .set data onto its City terrain district.
+            // Declares NO SetPieces (see this file's own SeaShips const doc comment on why every
+            // duplicated Boat/Lifeboat name is unreachable here through FindGroup's first-match rule) --
+            // this profile exists purely to make the City terrain's own plain tiles and structurally-
+            // identical Boat/Lifeboat copies count as reachable in the tile-coverage census (the same
+            // "PaletteVariant... purely to close tile-coverage census exemptions and offer the palette as
+            // a composable option" role TropicalSand's own doc comment documents) and to offer City as a
+            // selectable open-field district in its own right.
+            _builder.Create(SeaShipsCity, "Sea Ships (City)")
+                .Tileset("tss13")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("City")
+                .PrimaryOpenTerrain("City");
+
+            // Sea Ships (Rural) -- same shape as SeaShipsCity above, recomposed onto the Rural terrain
+            // district. See this file's own SeaShips const doc comment for the full duplicate-name
+            // writeup on why no SetPieces are declared here.
+            _builder.Create(SeaShipsRural, "Sea Ships (Rural)")
+                .Tileset("tss13")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("Rural")
+                .PrimaryOpenTerrain("Rural");
+
+            // Sea Ships (Tropical) -- same shape as SeaShipsCity above, recomposed onto tss13's own
+            // Tropical terrain district (a per-terrain palette WITHIN this tileset's own four-terrain
+            // recolor -- unrelated to, and not to be confused with, this file's separate ttz01 "Tropical"
+            // profile family). See this file's own SeaShips const doc comment for the full duplicate-name
+            // writeup on why no SetPieces are declared here.
+            _builder.Create(SeaShipsTropical, "Sea Ships (Tropical)")
+                .Tileset("tss13")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("Tropical")
+                .PrimaryOpenTerrain("Tropical");
 
             return _builder.Build();
         }

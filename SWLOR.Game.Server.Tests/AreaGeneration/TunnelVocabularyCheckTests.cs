@@ -257,6 +257,15 @@ public class TunnelVocabularyCheckTests
         // (base + Mountain inversion). See BaseGameTilesetProfiles.EarlyWinter's own doc comment.
         BaseGameTilesetProfiles.EarlyWinter,
         BaseGameTilesetProfiles.EarlyWinterMountain,
+        // Sea Ships (tss13): "gangplank" is this tileset's only declared crosser, and it is not a
+        // canonical or near-canonical Corridor/Doorway pair -- Complex downgrades to OpenLane for the
+        // base profile and all three PaletteVariants. See BaseGameTilesetProfiles.SeaShips' own doc
+        // comment (including the CorridorStubChain hypothesis test confirming this stays correct even
+        // if gangplank were declared as a Tunnel body crosser).
+        BaseGameTilesetProfiles.SeaShips,
+        BaseGameTilesetProfiles.SeaShipsCity,
+        BaseGameTilesetProfiles.SeaShipsRural,
+        BaseGameTilesetProfiles.SeaShipsTropical,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

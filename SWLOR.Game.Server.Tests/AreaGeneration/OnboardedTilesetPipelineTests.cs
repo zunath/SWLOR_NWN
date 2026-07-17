@@ -220,6 +220,18 @@ public class OnboardedTilesetPipelineTests
         // BaseGameTilesetProfiles.EarlyWinter's own doc comment for the full composition writeup.
         BaseGameTilesetProfiles.EarlyWinter,
         BaseGameTilesetProfiles.EarlyWinterMountain,
+        // Wave-15: Sea Ships (tss13, BIF-only -- no SWLOR_Haks copy exists) -- four pure single-terrain
+        // recolors (Castle/City/Rural/Tropical) of identical ship/dock geometry, composed as the SAME
+        // "SolidTerrainOverride(t) == PrimaryOpenTerrain(t)" open-field shape TropicalSand pioneered.
+        // Castle is the tileset's own declared GENERAL Default/Floor terrain (base profile, no override
+        // needed); City/Rural/Tropical are PaletteVariant profiles. See
+        // BaseGameTilesetProfiles.SeaShips' own doc comment for the full composition writeup, including
+        // why only the Castle base profile carries SetPieces (a 4-way FindGroup duplicate-name ceiling,
+        // the same shape CastleExteriorRural's own grass/dirt pair already documents).
+        BaseGameTilesetProfiles.SeaShips,
+        BaseGameTilesetProfiles.SeaShipsCity,
+        BaseGameTilesetProfiles.SeaShipsRural,
+        BaseGameTilesetProfiles.SeaShipsTropical,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

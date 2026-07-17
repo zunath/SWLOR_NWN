@@ -1211,6 +1211,10 @@ public class TileCoverageCensusTests
         // (verified directly, zero occurrences) -- included here defensively even though it can never
         // actually trigger.
         ["trs02"] = new(StringComparer.OrdinalIgnoreCase) { "Grass2", "Water", "Trees", "Dirt" },
+        // tss13 (Sea Ships): all four declared terrains (Castle/City/Rural/Tropical) are wired -- the
+        // base profile composes Castle, and the three PaletteVariants each compose one of the others.
+        // No unwired terrain remains -- see BaseGameTilesetProfiles.SeaShips' own doc comment.
+        ["tss13"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     /// <summary>
@@ -1396,6 +1400,13 @@ public class TileCoverageCensusTests
         // identical Wall1/Wall2/Stream/Road gate-family precedent -- see
         // BaseGameTilesetProfiles.EarlyWinter's own doc comment.
         ["trs02"] = new(StringComparer.OrdinalIgnoreCase) { "Wall", "Ridge", "Stream", "Street", "path" },
+        // tss13 (Sea Ships): "gangplank" gates real GROUP content (every Boat-family gangplank-bearing
+        // wave, plus the standalone "Gangplank" piece) with no declared DoorSlotCrosser or Tunnel body/
+        // port role on any profile -- handled as named PilotExpectedExemptions entries instead of a
+        // blanket bucket here (matching ttz01/ttu01's own "no blanket alternate-vocab crosser bucket
+        // needed" precedent), since every gangplank-bearing shape here is a real GROUP, not a bare
+        // ungrouped tile this bucket would otherwise need to catch.
+        ["tss13"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -2138,6 +2149,30 @@ public class TileCoverageCensusTests
         ("ttu01", "GROUP:Ruin - Entrance, Straight 2"),
     };
 
+    // tss13 (Sea Ships) -- see BaseGameTilesetProfiles.SeaShips' own doc comment for the full writeup.
+    // "gangplank" is this tileset's only declared crosser and is never declared as Doorway, a stub/body
+    // crosser, or any other recognized vocabulary on any of the four profiles, so every gangplank-
+    // bearing group is rejected outright by IsAllowedMemberEdge/ClassifySetPiece's identical edge check
+    // the instant it scans a member's edges. UNLIKE every other tileset's PilotExpectedExemptions
+    // entries above, a name-keyed "GROUP:Boat N" entry cannot be used here: "Boat 1".."Boat 7" are
+    // reused for BOTH the crosser-free (covered) AND the gangplank-bearing (exempt) shapes under the
+    // SAME name (verified directly -- every prior tileset's duplicated names were pure ART recolors of
+    // IDENTICAL geometry, never two DIFFERENT shapes sharing one name), so a GROUP-keyed entry would
+    // over-exempt the reconstruction check by also claiming the already-Cover()'d crosser-free
+    // instances. Bare TILE{n} entries instead, one per exempted member tile -- the four contiguous
+    // gangplank-bearing tile-id ranges below (one per terrain: three gangplank waves of "Boat 1".."Boat
+    // 7" plus the standalone "Gangplank" 1x1 piece, 67 tiles/terrain = 268 total, verified directly
+    // against the raw .set data and against this test's own EXEMPT tile count) are added via a static
+    // constructor rather than 268 individual literal lines, for the same "must be EXACT, no silent
+    // drift" guarantee with far less visual duplication -- PilotEveryTileIsReachableOrExplicitlyExempted
+    // still reconstructs and compares the exact resulting label set unchanged.
+    static TileCoverageCensusTests()
+    {
+        foreach (var (first, last) in new[] { (34, 100), (131, 197), (228, 294), (325, 391) })
+        for (var tileId = first; tileId <= last; tileId++)
+            PilotExpectedExemptions.Add(("tss13", "TILE" + tileId));
+    }
+
     public static IEnumerable<string> PilotTilesetKeys => new[]
     {
         "tdc01", "tde01", "tin01",
@@ -2156,6 +2191,7 @@ public class TileCoverageCensusTests
         "ttz01",
         "ttu01",
         "trs02",
+        "tss13",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -2196,6 +2232,7 @@ public class TileCoverageCensusTests
             "ttz01" => BaseGameTilesetProfiles.Tropical,
             "ttu01" => BaseGameTilesetProfiles.Underdark,
             "trs02" => BaseGameTilesetProfiles.EarlyWinter,
+            "tss13" => BaseGameTilesetProfiles.SeaShips,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

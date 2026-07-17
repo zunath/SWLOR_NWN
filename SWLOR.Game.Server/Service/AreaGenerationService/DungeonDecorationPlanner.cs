@@ -366,7 +366,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var urban = tileset?.UrbanDressing == true;
             var organicSpin = namedProfile?.OrganicClutterRotation == true;
 
-            var palette = MergePalette(namedProfile?.Decorations ?? tileset?.Decorations, detail);
+            var palette = MergePalette(namedProfile?.Decorations ?? tileset?.Decorations, detail, urban);
             if (palette.Count == 0)
                 return plan;
 
@@ -554,6 +554,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // so consumedTiles is fully populated before any room decides its own wall-run placements.
             byContext.TryGetValue(DecorationContext.DoorwayFlank, out var doorwayEntries);
             var doorwayFallback = doorwayEntries is { Count: > 0 } ? doorwayEntries : byContext.GetValueOrDefault(DecorationContext.WallAdjacent);
+            // Flush-anchored entries never flank doorways free-standing (see
+            // DecorationAnchoring.WallFlush) -- a no-op Where for every palette without them.
+            doorwayFallback = doorwayFallback?.Where(e => e.Anchoring != DecorationAnchoring.WallFlush).ToList();
             foreach (var pair in doorwayFlankPairs)
             {
                 if (rng.NextDouble() >= doorwayFlankProbability || doorwayFallback == null || doorwayFallback.Count == 0)
@@ -723,14 +726,43 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// (DungeonDetail.Decorations) into one weighted pool per DecorationContext. The tileset
         /// supplies the visual bulk; the theme layers a few genuinely-theme-flavored extras on top —
         /// neither source alone need be exhaustive.
+        ///
+        /// Semantic anchoring guards (see <see cref="DecorationAnchoring"/>):
+        ///  - Entries classified Excluded (whole building fragments, zero-evidence blueprints) or
+        ///    RunSegment (fence segments/gates -- no run-composition mechanism exists; see the enum
+        ///    doc for the measured model-width rationale) are stripped from BOTH sources outright,
+        ///    so a misclassified curation can never reach a plan.
+        ///  - Under a tileset's URBAN grammar (<paramref name="urban"/>), theme accents must pass
+        ///    the same hand-built-evidence bar as the family palette itself: an accent resref the
+        ///    tileset's own mined palette never curates is dropped for that composition (the July
+        ///    2026 fcx01 review's Sith altar/monument standing in a clean sci-fi plaza). Non-urban
+        ///    tilesets keep every accent exactly as before -- semantic gating is opt-in per family
+        ///    (only fcx01 declares it), so every non-city plan stays byte-identical.
         /// </summary>
-        private static List<DungeonDecorationEntry> MergePalette(List<DungeonDecorationEntry> tilesetDecorations, DungeonDetail detail)
+        internal static List<DungeonDecorationEntry> MergePalette(
+            List<DungeonDecorationEntry> tilesetDecorations, DungeonDetail detail, bool urban)
         {
+            static bool Placeable(DungeonDecorationEntry e) =>
+                e.Anchoring is not (DecorationAnchoring.Excluded or DecorationAnchoring.RunSegment);
+
             var merged = new List<DungeonDecorationEntry>();
             if (tilesetDecorations != null)
-                merged.AddRange(tilesetDecorations);
+                merged.AddRange(tilesetDecorations.Where(Placeable));
+
             if (detail?.Decorations != null)
-                merged.AddRange(detail.Decorations);
+            {
+                var accents = detail.Decorations.Where(Placeable);
+                if (urban)
+                {
+                    var curated = new HashSet<string>(
+                        (tilesetDecorations ?? new List<DungeonDecorationEntry>()).Select(e => e.Resref),
+                        StringComparer.OrdinalIgnoreCase);
+                    accents = accents.Where(e => curated.Contains(e.Resref));
+                }
+
+                merged.AddRange(accents);
+            }
+
             return merged;
         }
 
@@ -928,6 +960,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     var wallDir = NearestWallDirection(tile, tileSet);
                     if (wallDir != null)
                     {
+                        // Flush-anchoring capability of THIS tile (see DecorationAnchoring.WallFlush):
+                        // a WallFlush entry may only be picked/placed here when a cardinal neighbor is
+                        // a stamped structure footprint cell whose face it can sit against. Null for
+                        // every palette without WallFlush entries -- purely a pick filter, no RNG.
+                        var flushDir = FlushStructureDirection(tile, layout);
+
                         string resref;
                         if (urban)
                         {
@@ -936,25 +974,44 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                             {
                                 var available = entries
                                     .Where(e => resrefUsageCounts.GetValueOrDefault((context, e.Resref)) < MaxSameResrefPerRoomContext)
+                                    .Where(e => e.Anchoring != DecorationAnchoring.WallFlush || flushDir != null)
                                     .ToList();
                                 rowResref = available.Count > 0 ? PickWeighted(available, rng) : null;
                             }
 
                             resref = rowResref;
-                            if (resref != null)
-                                resrefUsageCounts[(context, resref)] = resrefUsageCounts.GetValueOrDefault((context, resref)) + 1;
                         }
                         else
                         {
-                            resref = PickResrefUnderRoomCap(motifEntries, secondaryMotifEntries, entries, resrefUsageCounts, context, rng);
+                            resref = PickResrefUnderRoomCap(motifEntries, secondaryMotifEntries, entries, resrefUsageCounts,
+                                context, flushDir != null, rng);
                         }
 
                         if (resref != null)
                         {
-                            plan.Add(urban
-                                ? BuildUrbanWallPlacement(tile, wallDir.Value, resref, context, layout, roadCrosser)
-                                : BuildWallHuggingPlacement(tile, wallDir.Value, resref, context));
-                            segmentLength++;
+                            var entry = entries.FirstOrDefault(e => e.Resref == resref);
+                            PlannedDecoration placement = null;
+                            if (entry is { Anchoring: DecorationAnchoring.WallFlush })
+                            {
+                                // A row whose fixture is flush-anchored simply skips tiles with no
+                                // structure face (a gap in the row), rather than stranding the item
+                                // against a non-architecture room boundary.
+                                if (flushDir != null)
+                                    placement = BuildFlushStructurePlacement(tile, flushDir.Value, resref, context);
+                            }
+                            else
+                            {
+                                placement = urban
+                                    ? BuildUrbanWallPlacement(tile, wallDir.Value, resref, context, layout, roadCrosser)
+                                    : BuildWallHuggingPlacement(tile, wallDir.Value, resref, context);
+                            }
+
+                            if (placement != null)
+                            {
+                                plan.Add(placement);
+                                resrefUsageCounts[(context, resref)] = resrefUsageCounts.GetValueOrDefault((context, resref)) + 1;
+                                segmentLength++;
+                            }
                         }
                     }
 
@@ -981,29 +1038,32 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// has already reached <see cref="MaxSameResrefPerRoomContext"/> for this room+context — tried
         /// in tiers: the room's own primary small motif first, then its secondary motif (drawn lazily
         /// once the primary is exhausted — see PlaceWallRuns), then the full palette bucket as a last
-        /// resort so a heavily-capped room still keeps dressing rather than stopping early. Returns
-        /// null (place nothing at this tile) only once every candidate for this room+context is at cap.
+        /// resort so a heavily-capped room still keeps dressing rather than stopping early. Entries
+        /// anchored WallFlush are additionally ineligible on a tile with no flush structure face
+        /// (<paramref name="tileHasFlushAnchor"/>). Returns null (place nothing at this tile) only
+        /// once every candidate for this room+context is at cap. The caller records usage AFTER a
+        /// placement is actually emitted (see PlaceWallRuns), so a skipped flush placement never
+        /// consumes budget.
         /// </summary>
         private static string PickResrefUnderRoomCap(
             List<DungeonDecorationEntry> motifEntries, List<DungeonDecorationEntry> secondaryMotifEntries,
             List<DungeonDecorationEntry> fallbackEntries,
             Dictionary<(DecorationContext Context, string Resref), int> resrefUsageCounts,
-            DecorationContext context, System.Random rng)
+            DecorationContext context, bool tileHasFlushAnchor, System.Random rng)
         {
-            bool UnderCap(DungeonDecorationEntry e) =>
-                resrefUsageCounts.GetValueOrDefault((context, e.Resref)) < MaxSameResrefPerRoomContext;
+            bool Eligible(DungeonDecorationEntry e) =>
+                resrefUsageCounts.GetValueOrDefault((context, e.Resref)) < MaxSameResrefPerRoomContext &&
+                (e.Anchoring != DecorationAnchoring.WallFlush || tileHasFlushAnchor);
 
-            var available = motifEntries.Where(UnderCap).ToList();
+            var available = motifEntries.Where(Eligible).ToList();
             if (available.Count == 0)
-                available = secondaryMotifEntries.Where(UnderCap).ToList();
+                available = secondaryMotifEntries.Where(Eligible).ToList();
             if (available.Count == 0)
-                available = fallbackEntries.Where(UnderCap).ToList();
+                available = fallbackEntries.Where(Eligible).ToList();
             if (available.Count == 0)
                 return null;
 
-            var resref = PickWeighted(available, rng);
-            resrefUsageCounts[(context, resref)] = resrefUsageCounts.GetValueOrDefault((context, resref)) + 1;
-            return resref;
+            return PickWeighted(available, rng);
         }
 
         /// <summary>
@@ -1506,6 +1566,60 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             }
 
             return vignettes[^1];
+        }
+
+        /// <summary>
+        /// How far inside a stamped structure footprint's face a flush-anchored placement sits --
+        /// the "against the building wall" tolerance the WallFlush anchoring contract promises (see
+        /// <see cref="DecorationAnchoring.WallFlush"/>: hand-built flush cargo has median
+        /// building-architecture distance ~0).
+        /// </summary>
+        internal const float FlushWallGap = 0.4f;
+
+        /// <summary>
+        /// Cardinal direction from a room tile toward an adjacent stamped structure footprint cell
+        /// (deterministic probe order), or null when no cardinal neighbor is stamped structure --
+        /// the eligibility/geometry anchor for <see cref="DecorationAnchoring.WallFlush"/> entries.
+        /// Deliberately stricter than <see cref="IsStructureAdjacent"/> (which accepts diagonals):
+        /// a flush placement needs a real FACE to sit against, not mere corner proximity.
+        /// </summary>
+        internal static (int Dx, int Dy)? FlushStructureDirection((int X, int Y) tile, ResolvedLayout layout)
+        {
+            var stamped = layout?.StampedStructureTiles;
+            if (stamped == null || stamped.Count == 0)
+                return null;
+
+            foreach (var (dx, dy) in CardinalDirections)
+            {
+                if (stamped.Contains((tile.X + dx, tile.Y + dy)))
+                    return (dx, dy);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Builds one flush-anchored placement: the item stands <see cref="FlushWallGap"/> inside
+        /// the shared face between its room tile and the adjacent stamped structure cell, bearing =
+        /// that face's outward normal (cardinal, away from the structure, into the open) -- cargo
+        /// stacked against a tower wall, never floating mid-room.
+        /// </summary>
+        private static PlannedDecoration BuildFlushStructurePlacement(
+            (int X, int Y) tile, (int Dx, int Dy) structureDir, string resref, DecorationContext context)
+        {
+            var flatTile = TileCenter(tile.X, tile.Y);
+            var position = new Vector3(
+                flatTile.X + structureDir.Dx * (TileHalf - FlushWallGap),
+                flatTile.Y + structureDir.Dy * (TileHalf - FlushWallGap),
+                0f);
+
+            return new PlannedDecoration
+            {
+                Resref = resref,
+                Position = position,
+                Facing = CardinalFacing(-structureDir.Dx, -structureDir.Dy),
+                Context = context
+            };
         }
 
         private static PlannedDecoration BuildWallHuggingPlacement(

@@ -4273,19 +4273,23 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // set (bearing alignment, road integrity, facade rows, cargo grids, pile zone
                 // discipline) this declaration enables for the fcx01 family only.
                 .UrbanDressing()
-                // Sign panels / barrier fences relocated out of WallAdjacent (July 2026 city-density
-                // pass): generated WallAdjacent anchors against ANY room boundary -- usually a
-                // knee-high divider on fcx01 -- where a free-standing holo sign board reads as junk.
-                // Hand-built fcx01 measurement says these are street furniture, not divider dressing:
-                // swd_build007 31% road-adjacent / 2% building-adjacent, swd2_fence004 46% / 22%,
-                // swd2_fence010 46% / 0% (n=103/126/24), so all three now live in CorridorSide (the
-                // road-lining bucket -- see DungeonDecorationPlanner.IsRoadAdjacent). They were NOT
-                // moved to StructureAdjacent: the measured building adjacency above shows hand-built
-                // builders do not hang these on tower frontages either.
-                .Decoration("swd_build007", 3, DecorationContext.CorridorSide)
-                .Decoration("swd2_fence004", 2, DecorationContext.CorridorSide)
-                .Decoration("swd2_fence010", 2, DecorationContext.CorridorSide)
-                // Road-margin street furniture beyond the fences: barriers/barricades
+                // STRUCTURAL-ITEM REMOVALS (July 2026 semantic-context pass, user report "this gate
+                // without a wall ... doesn't make a lot of sense" -- see DecorationAnchoring and
+                // _scratch_decor/mine_r7_semantics.py):
+                //  - swd_build007 is GONE (Excluded class): its model measures 10.92x10.92m -- an
+                //    entire whole-tile building fragment, not dressing. The 103 hand-built
+                //    placements are builder-composed architecture (median 86m from other building
+                //    mass because it IS the building), which per-tile scatter cannot reproduce.
+                //  - swd2_fence004/swd2_fence010 are GONE (RunSegment class): hand-built fences
+                //    exist only as butt-jointed chains at model-width pitch (fence-family NN median
+                //    6.58m against the powered segment's 7.12m width; the closed-door piece
+                //    measures 11.87m -- wider than a whole 10m tile) with the door piece spliced
+                //    INSIDE a run. The per-tile stamping model has no sub-tile chain contract, so a
+                //    lone gate/fence segment was the exact reported artifact; composed fencing is
+                //    tile vocabulary (see tds01's LayoutFenceCarver + FenceDoor01/02 set pieces),
+                //    not placeable scatter. DungeonDecorationPlanner.MergePalette additionally
+                //    strips any future RunSegment/Excluded curation outright.
+                // Road-margin street furniture: barriers/barricades
                 // (_mdrn_pl_barr001 215 mined placements at 99% cardinal, _mdrn_pl_barrimw the clean
                 // white variant), public trash cans (_mdrn_pl_trshcn2 100% cardinal), and a
                 // floor-mounted console -- the market-row items that set back from the lane and face
@@ -4303,18 +4307,24 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // grids. Weights near-flat so no single type dominates (top-3 resref share stays
                 // under the hand-built 0.35). Rubbish/debris/dirt content is deliberately ABSENT --
                 // it lives in the "ruined" profile below.
+                // _mdrn_pl_crate09 ("Open Crate (Green), Baking Soda") is GONE (Excluded class):
+                // ZERO hand-built fcx01 placements -- no evidence it belongs to this family at all,
+                // and the blueprint itself is an anachronism. Flush-anchored cargo (conta42/crgc2h/
+                // conta001 -- median building-architecture distance 0.00) moved to the
+                // StructureAdjacent WallFlush entries below; loose piles keep the genuinely
+                // free-standing crate/container/barrel evidence.
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_crate07", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_crate06", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_crate09", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_conta39", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_conta36", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_conta54", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_conta42", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_crgc2h", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("swd_conta004", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("swd_conta006", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("swd_conta001", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                // Storage cylinder (23 hand-built placements) backfills the pool breadth the three
+                // flush-anchored movers left, keeping per-area top-3 resref share at the hand-built
+                // <=0.35 scale.
+                .Decoration("_mdrn_pl_kyru08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("swd_trash01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("swd_dump003", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 // Wall infrastructure accents (pipes hug real walls at 100% cardinal in the mined
@@ -4342,8 +4352,19 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // DungeonDecorationPlanner.IsStructureAdjacent) -- never free-standing.
                 .Decoration("_mdrn_pl_lamp4", 3, DecorationContext.StructureAdjacent)
                 .Decoration("_mdrn_pl_bldlit", 3, DecorationContext.StructureAdjacent)
-                .Decoration("swd_conta003", 2, DecorationContext.StructureAdjacent)
-                .Decoration("_mdrn_pl_df_chb", 2, DecorationContext.StructureAdjacent)
+                // FLUSH-ANCHORED cargo/furniture (semantic-context pass): hand-built builders put
+                // these against building architecture essentially always -- median
+                // building-architecture distance 0.00 with flush(<=1m) fractions 0.90/0.70/0.55/
+                // 0.75/0.71 (swd_conta003 n=321, _mdrn_pl_df_chb n=67, _mdrn_pl_conta42 n=71,
+                // _mdrn_pl_crgc2h n=34, swd_conta001 n=57). The WallFlush anchoring contract places
+                // them 0.4m inside a stamped structure footprint's cardinal face, bearing = the
+                // face normal, and NOWHERE else (no piles, no doorway flanks, no plain wall runs)
+                // -- see DecorationAnchoring.WallFlush.
+                .Decoration("swd_conta003", 2, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
+                .Decoration("_mdrn_pl_df_chb", 2, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
+                .Decoration("_mdrn_pl_conta42", 2, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
+                .Decoration("_mdrn_pl_crgc2h", 1, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
+                .Decoration("swd_conta001", 1, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
                 // Vehicles are LANDMARK one-offs (round-5 vignette-integrity fix): a crashed/parked
                 // speeder floating alone mid-plaza was a reported artifact, and the Landmark role
                 // guarantees these can never place in the RoomCenter/WallAdjacent buckets again --
@@ -4427,11 +4448,19 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("_mdrn_pl_rubb029", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_rubb032", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_pape019", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_debri20", 3, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_debri03", 3, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_debri01", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri20", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri03", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                // _mdrn_pl_debri01 ("Debris, Containment Cylinder") is GONE (semantic-context
+                // pass): zero hand-built fcx01 placements -- same zero-evidence bar that removed
+                // _mdrn_pl_crate09 from the standard palette. swd2_debr001 (26 hand-built
+                // placements) and _mdrn_pl_rubb028 (24) replace its pool breadth with
+                // evidence-backed junk. _mdrn_pl_wallblk stays: despite the "Wall Block" name it is
+                // a FALLEN debris chunk (30 hand-built placements as loose rubble), not standing
+                // architecture.
+                .Decoration("swd2_debr001", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_rubb028", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_wallblk", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("swd_jkpl002", 3, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_jkpl002", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 // Battered remnants of the ordinary cargo backbone, so a ruined district still
                 // reads as a looted city rather than a landfill.
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
@@ -4447,8 +4476,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // Street furniture survives ruination: corroded barricades line the roads, the lamp
                 // family keeps its road-surface license, and wrecked speeders park (crash) against
                 // building frontages as Landmark one-offs -- same anchoring contract as standard.
+                // swd2_fence004 is GONE here too (RunSegment class -- a lone powered-fence segment
+                // in ruins is exactly as nonsensical as in the clean city; see the standard
+                // palette's structural-item removal note).
                 .Decoration("_mdrn_pl_barrim2", 2, DecorationContext.CorridorSide)
-                .Decoration("swd2_fence004", 1, DecorationContext.CorridorSide)
                 .Decoration("_mdrn_pl_lights3", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
                 .Decoration("swd_streel01", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
                 .Decoration("_mdrn_pl_lghtpl3", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)

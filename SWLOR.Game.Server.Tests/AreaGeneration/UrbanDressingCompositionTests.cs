@@ -408,4 +408,230 @@ public class UrbanDressingCompositionTests
         plaza.UrbanDressing.Should().BeTrue("the Cobble2 variant dresses under the family's urban grammar");
         plaza.DecorationProfiles.Should().ContainKey("ruined", "named profiles travel with the standard palette");
     }
+
+    // ============================================================
+    // Semantic anchoring (round-7 "gate without a wall" pass): structural items
+    // are classified by what their art physically needs -- see DecorationAnchoring.
+    // ============================================================
+
+    /// <summary>Resrefs the July 2026 semantic-context pass removed from the fcx01 palettes:
+    /// whole building fragments (swd_build007's model measures 10.92x10.92m), fence run
+    /// segments/gates (butt-jointed chains at model-width pitch the per-tile stamping model cannot
+    /// compose; the door piece is 11.87m -- wider than a tile), and zero-hand-built-evidence
+    /// blueprints. See _scratch_decor/mine_r7_semantics.py.</summary>
+    private static readonly string[] StructuralOffenders =
+    {
+        "swd_build007", "swd2_fence004", "swd2_fence010", "_mdrn_pl_crate09", "_mdrn_pl_debri01"
+    };
+
+    /// <summary>Theme accents with zero hand-built fcx01 usage (Sith altars/monuments, a mine-wall
+    /// panel) that must never bypass the urban family's evidence bar via the theme channel.</summary>
+    private static readonly string[] ForeignThemeAccents =
+    {
+        "zep_altarevil1", "zep_monument001", "zep_altar002", "_mdrn_pl_colony9"
+    };
+
+    private static IEnumerable<(string Owner, DungeonDecorationEntry Entry)> AllCuratedEntries()
+    {
+        var tilesets = new Dictionary<string, DungeonTilesetProfile>();
+        var themes = new Dictionary<string, DungeonDetail>();
+        foreach (var type in typeof(IDungeonTilesetProfileListDefinition).Assembly.GetTypes()
+                     .Where(t => !t.IsAbstract && !t.IsInterface).OrderBy(t => t.Name))
+        {
+            if (typeof(IDungeonTilesetProfileListDefinition).IsAssignableFrom(type))
+            {
+                foreach (var (k, v) in ((IDungeonTilesetProfileListDefinition)Activator.CreateInstance(type)!).BuildTilesetProfiles())
+                    tilesets[k] = v;
+            }
+            else if (typeof(IDungeonListDefinition).IsAssignableFrom(type))
+            {
+                foreach (var (k, v) in ((IDungeonListDefinition)Activator.CreateInstance(type)!).BuildDungeons())
+                    themes[k] = v;
+            }
+        }
+
+        foreach (var (key, tileset) in tilesets)
+        {
+            foreach (var entry in tileset.Decorations)
+                yield return ($"tileset {key}", entry);
+            foreach (var (profileName, profile) in tileset.DecorationProfiles)
+            foreach (var entry in profile.Decorations)
+                yield return ($"tileset {key}/{profileName}", entry);
+        }
+
+        foreach (var (key, theme) in themes)
+        foreach (var entry in theme.Decorations)
+            yield return ($"theme {key}", entry);
+    }
+
+    [Test]
+    public void FutCityPalettes_CurateNoStructuralOffenders()
+    {
+        var tilesets = new BaseGameTilesetProfiles().BuildTilesetProfiles();
+        DungeonTilesetPaletteInheritance.Apply(tilesets);
+
+        foreach (var key in new[] { BaseGameTilesetProfiles.FutCity, BaseGameTilesetProfiles.FutCityPlaza })
+        {
+            var tileset = tilesets[key];
+            var everywhere = tileset.Decorations
+                .Concat(tileset.DecorationProfiles.Values.SelectMany(p => p.Decorations))
+                .Select(d => d.Resref)
+                .ToList();
+            everywhere.Should().NotContain(r => StructuralOffenders.Contains(r, StringComparer.OrdinalIgnoreCase),
+                $"{key}: building fragments, fence segments, and zero-evidence blueprints are out of the city palettes");
+        }
+    }
+
+    [Test]
+    public void NoCuratedEntry_DeclaresRunSegmentOrExcludedAnchoring()
+    {
+        // RunSegment has NO composition mechanism (see DecorationAnchoring.RunSegment) and Excluded
+        // means never place -- MergePalette strips both outright, so curating one is dead weight at
+        // best and a silent regression at worst. Keep them declaration-only classifications.
+        foreach (var (owner, entry) in AllCuratedEntries())
+        {
+            entry.Anchoring.Should().NotBe(DecorationAnchoring.RunSegment,
+                $"{owner} curates '{entry.Resref}' as RunSegment, but no run-composition mechanism exists -- remove the entry instead");
+            entry.Anchoring.Should().NotBe(DecorationAnchoring.Excluded,
+                $"{owner} curates '{entry.Resref}' as Excluded -- remove the entry instead");
+        }
+    }
+
+    [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, null)]
+    [TestCase(AlienRuinDungeonDefinition.ThemeKey, StandardLayoutProfiles.Halls, null)]
+    [TestCase(AlienRuinDungeonDefinition.ThemeKey, StandardLayoutProfiles.Halls, "ruined")]
+    public void FutCityPlan_EmitsNoStructuralOffenders_AndNoForeignThemeAccents(string themeKey, string layoutKey, string profile)
+    {
+        var c = Composition(themeKey, BaseGameTilesetProfiles.FutCity, layoutKey);
+        var banned = StructuralOffenders.Concat(ForeignThemeAccents).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        for (var i = 0; i < SeedCount; i++)
+        {
+            var (_, plan) = PlanFor(c, SeedBase + i, profile);
+            plan.Where(p => banned.Contains(p.Resref)).Should().BeEmpty(
+                $"seed {SeedBase + i}: structural offenders and foreign theme accents must never reach an fcx01 plan");
+        }
+    }
+
+    [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed)]
+    [TestCase(AlienRuinDungeonDefinition.ThemeKey, StandardLayoutProfiles.Halls)]
+    public void FutCityPlan_EveryResref_IsCuratedByTheFamilyPalette(string themeKey, string layoutKey)
+    {
+        // The urban semantic gate: theme accents may not bypass the family's hand-built-evidence
+        // bar, so every planned resref must come from the tileset's own curated palette.
+        var c = Composition(themeKey, BaseGameTilesetProfiles.FutCity, layoutKey);
+        var curated = c.Tileset.Decorations.Select(d => d.Resref)
+            .Concat(c.Tileset.Vignettes.SelectMany(v => v.Members).Select(m => m.Resref))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        for (var i = 0; i < SeedCount; i++)
+        {
+            var (_, plan) = PlanFor(c, SeedBase + i);
+            plan.Where(p => !curated.Contains(p.Resref)).Should().BeEmpty(
+                $"seed {SeedBase + i}: an uncurated resref reached the plan through the theme accent channel");
+        }
+    }
+
+    [Test]
+    public void MergePalette_UrbanGate_FiltersUncuratedAccents_AndKeepsThemForNonUrbanFamilies()
+    {
+        var tilesetPalette = new List<DungeonDecorationEntry>
+        {
+            new() { Resref = "family_item", Weight = 1, Context = DecorationContext.WallAdjacent }
+        };
+        var theme = new DungeonDetail();
+        theme.Decorations.Add(new DungeonDecorationEntry
+            { Resref = "zep_altarevil1", Weight = 1, Context = DecorationContext.RoomCenter });
+        theme.Decorations.Add(new DungeonDecorationEntry
+            { Resref = "FAMILY_ITEM", Weight = 1, Context = DecorationContext.RoomCenter });
+
+        var urban = DungeonDecorationPlanner.MergePalette(tilesetPalette, theme, urban: true);
+        urban.Select(e => e.Resref).Should().NotContain("zep_altarevil1",
+            "an accent with no family evidence is dropped under the urban semantic gate");
+        urban.Count(e => e.Resref.Equals("family_item", StringComparison.OrdinalIgnoreCase)).Should().Be(2,
+            "an accent the family palette itself curates passes the gate (case-insensitively)");
+
+        var nonUrban = DungeonDecorationPlanner.MergePalette(tilesetPalette, theme, urban: false);
+        nonUrban.Select(e => e.Resref).Should().Contain("zep_altarevil1",
+            "non-urban families keep every theme accent exactly as before -- semantic gating is opt-in per family");
+    }
+
+    [Test]
+    public void MergePalette_StripsRunSegmentAndExcludedEntries_FromBothSources()
+    {
+        var tilesetPalette = new List<DungeonDecorationEntry>
+        {
+            new() { Resref = "ok_item", Context = DecorationContext.WallAdjacent },
+            new() { Resref = "fence_segment", Context = DecorationContext.CorridorSide, Anchoring = DecorationAnchoring.RunSegment },
+            new() { Resref = "building_fragment", Context = DecorationContext.WallAdjacent, Anchoring = DecorationAnchoring.Excluded }
+        };
+        var theme = new DungeonDetail();
+        theme.Decorations.Add(new DungeonDecorationEntry
+            { Resref = "accent_fence", Context = DecorationContext.DoorwayFlank, Anchoring = DecorationAnchoring.RunSegment });
+
+        var merged = DungeonDecorationPlanner.MergePalette(tilesetPalette, theme, urban: false);
+        merged.Select(e => e.Resref).Should().BeEquivalentTo(new[] { "ok_item" });
+    }
+
+    // ============================================================
+    // WallFlush anchoring: flush cargo sits against a stamped structure face,
+    // bearing = the face normal -- or does not place at all.
+    // ============================================================
+
+    [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed)]
+    [TestCase(AlienRuinDungeonDefinition.ThemeKey, StandardLayoutProfiles.Halls)]
+    public void FutCityStandard_WallFlushPlacements_AreFlushAgainstStructureFaces(string themeKey, string layoutKey)
+    {
+        var c = Composition(themeKey, BaseGameTilesetProfiles.FutCity, layoutKey);
+        var flushResrefs = c.Tileset.Decorations
+            .Where(d => d.Anchoring == DecorationAnchoring.WallFlush)
+            .Select(d => d.Resref)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        flushResrefs.Should().NotBeEmpty("the fcx01 palette curates flush-anchored cargo");
+
+        var flushChecked = 0;
+        var violations = new List<string>();
+        const float tolerance = DungeonDecorationPlanner.FlushWallGap + 0.2f;
+
+        for (var i = 0; i < SeedCount; i++)
+        {
+            var (layout, plan) = PlanFor(c, SeedBase + i);
+            var stamped = layout.StampedStructureTiles;
+
+            foreach (var placement in plan.Where(p => flushResrefs.Contains(p.Resref)))
+            {
+                flushChecked++;
+                var tile = TileOf(placement);
+                var anchored = false;
+
+                foreach (var (dx, dy) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+                {
+                    if (!stamped.Contains((tile.X + dx, tile.Y + dy)))
+                        continue;
+
+                    // Distance from the placement to the shared face between its tile and the
+                    // stamped neighbor, and the face's outward (into-the-room) normal bearing.
+                    var faceDistance = dx != 0
+                        ? MathF.Abs(placement.Position.X - (dx > 0 ? (tile.X + 1) * 10f : tile.X * 10f))
+                        : MathF.Abs(placement.Position.Y - (dy > 0 ? (tile.Y + 1) * 10f : tile.Y * 10f));
+                    var expectedFacing = DungeonDecorationPlanner.CardinalFacing(-dx, -dy);
+                    var facingDelta = MathF.Abs(((placement.Facing - expectedFacing) % 360f + 540f) % 360f - 180f);
+
+                    if (faceDistance <= tolerance && facingDelta < 0.5f)
+                    {
+                        anchored = true;
+                        break;
+                    }
+                }
+
+                if (!anchored)
+                    violations.Add($"seed {SeedBase + i}: flush '{placement.Resref}' at {tile} " +
+                                   $"({placement.Position.X:F1},{placement.Position.Y:F1} facing {placement.Facing:F0}) has no flush structure face");
+            }
+        }
+
+        TestContext.WriteLine($"{themeKey}/{layoutKey}: {flushChecked} flush placements checked");
+        flushChecked.Should().BeGreaterThan(0, "the flush-anchoring mechanism must actually exercise");
+        violations.Should().BeEmpty(string.Join(Environment.NewLine, violations.Take(20)));
+    }
 }

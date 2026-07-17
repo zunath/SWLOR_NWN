@@ -26,9 +26,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> UnequippedIcons
+        public GuiBindingList<bool> UnequippedSelections
         {
-            get => Get<GuiBindingList<string>>();
+            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
@@ -38,33 +38,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<bool> UnequippedSelections
-        {
-            get => Get<GuiBindingList<bool>>();
-            set => Set(value);
-        }
-
         public GuiBindingList<string> EquippedNames
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public GuiBindingList<string> EquippedIcons
+        public GuiBindingList<bool> EquippedSelections
         {
-            get => Get<GuiBindingList<string>>();
+            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
         public GuiBindingList<GuiColor> EquippedColors
         {
             get => Get<GuiBindingList<GuiColor>>();
-            set => Set(value);
-        }
-
-        public GuiBindingList<bool> EquippedSelections
-        {
-            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
@@ -77,12 +65,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiColor SlotsColor
         {
             get => Get<GuiColor>();
-            set => Set(value);
-        }
-
-        public float SlotsProgress
-        {
-            get => Get<float>();
             set => Set(value);
         }
 
@@ -108,15 +90,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _unequippedFeats = new List<FeatType>();
             _equippedFeats = new List<FeatType>();
-
-            UnequippedNames = new GuiBindingList<string>();
-            UnequippedIcons = new GuiBindingList<string>();
-            UnequippedColors = new GuiBindingList<GuiColor>();
-            UnequippedSelections = new GuiBindingList<bool>();
-            EquippedNames = new GuiBindingList<string>();
-            EquippedIcons = new GuiBindingList<string>();
-            EquippedColors = new GuiBindingList<GuiColor>();
-            EquippedSelections = new GuiBindingList<bool>();
         }
 
         protected override void Initialize(TechniquesPayload initialPayload)
@@ -138,13 +111,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var equippedFeats = Mimicry.GetEquippedTechniques(dbPlayer);
 
             var unequippedNames = new GuiBindingList<string>();
-            var unequippedIcons = new GuiBindingList<string>();
-            var unequippedColors = new GuiBindingList<GuiColor>();
             var unequippedSelections = new GuiBindingList<bool>();
+            var unequippedColors = new GuiBindingList<GuiColor>();
             var equippedNames = new GuiBindingList<string>();
-            var equippedIcons = new GuiBindingList<string>();
-            var equippedColors = new GuiBindingList<GuiColor>();
             var equippedSelections = new GuiBindingList<bool>();
+            var equippedColors = new GuiBindingList<GuiColor>();
 
             _unequippedFeats = new List<FeatType>();
             _equippedFeats = new List<FeatType>();
@@ -164,39 +135,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 _unequippedFeats.Add(feat);
                 unequippedNames.Add(BuildRowText(detail));
-                unequippedIcons.Add(GetTechniqueIcon(feat));
-                unequippedColors.Add(GetUnequippedRowColor(detail, skillRank, usedSlots, maxSlots));
                 unequippedSelections.Add(false);
+                unequippedColors.Add(GetUnequippedRowColor(detail, skillRank, usedSlots, maxSlots));
             }
 
             foreach (var (feat, detail) in equippedFeats)
             {
                 _equippedFeats.Add(feat);
                 equippedNames.Add(BuildRowText(detail));
-                equippedIcons.Add(GetTechniqueIcon(feat));
-                // Equipped techniques are active and always meet their requirements; the blue
-                // matches the Perk window's "maxed/active" tone.
-                equippedColors.Add(EquippedColor);
                 equippedSelections.Add(false);
+                equippedColors.Add(EquippedColor);
             }
 
             UnequippedNames = unequippedNames;
-            UnequippedIcons = unequippedIcons;
-            UnequippedColors = unequippedColors;
             UnequippedSelections = unequippedSelections;
+            UnequippedColors = unequippedColors;
             EquippedNames = equippedNames;
-            EquippedIcons = equippedIcons;
-            EquippedColors = equippedColors;
             EquippedSelections = equippedSelections;
+            EquippedColors = equippedColors;
 
             RefreshSlots(dbPlayer);
         }
 
         // Perk-window color convention, reused for consistency.
-        private static readonly GuiColor LockedColor = GuiColor.Grey;              // requirement not met
-        private static readonly GuiColor NoRoomColor = new(230, 180, 70);         // met, but no free slots
-        private static readonly GuiColor EquippableColor = new(60, 200, 90);      // ready to equip
-        private static readonly GuiColor EquippedColor = new(90, 170, 230);       // currently equipped / active
+        private static readonly GuiColor LockedColor = GuiColor.Grey;         // requirement not met (skill rank)
+        private static readonly GuiColor NoRoomColor = new(230, 180, 70);     // met, but no free slots
+        private static readonly GuiColor EquippableColor = new(60, 200, 90);  // ready to equip
+        private static readonly GuiColor EquippedColor = new(90, 170, 230);   // currently equipped / active
 
         private static GuiColor GetUnequippedRowColor(AbilityDetail detail, int skillRank, int usedSlots, int maxSlots)
         {
@@ -207,12 +172,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return NoRoomColor;
 
             return EquippableColor;
-        }
-
-        // The technique's hotbar/feat icon resref, read from feat.2da (same source the perk window uses).
-        private static string GetTechniqueIcon(FeatType feat)
-        {
-            return Get2DAString("feat", "ICON", (int)feat);
         }
 
         private static string BuildRowText(AbilityDetail detail)
@@ -227,8 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var max = Mimicry.GetMaxSlots(dbPlayer);
 
             SlotsText = $"Slots: {used} / {max}";
-            SlotsColor = used >= max ? GuiColor.Red : EquippableColor;
-            SlotsProgress = max > 0 ? (float)used / max : 0f;
+            SlotsColor = used >= max ? GuiColor.Red : GuiColor.White;
         }
 
         private void ClearSelections()

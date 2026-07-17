@@ -1,8 +1,6 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -38,20 +36,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template.AddCell(cell =>
                                     {
-                                        cell.AddGroup(group =>
-                                        {
-                                            group.AddImage()
-                                                .BindResref(model => model.UnequippedIcons)
-                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                                .SetAspect(NuiAspect.Stretch);
-                                        });
-
-                                        cell.SetWidth(40f);
-                                        cell.SetIsVariable(false);
-                                    });
-                                    template.AddCell(cell =>
-                                    {
                                         cell.AddToggleButton()
                                             .BindText(model => model.UnequippedNames)
                                             .BindIsToggled(model => model.UnequippedSelections)
@@ -59,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .BindOnClicked(model => model.OnSelectUnequipped());
                                     });
                                 })
-                                .SetRowHeight(40f)
+                                .SetRowHeight(30f)
                                 .SetScrollbars(NuiScrollbars.Both)
                                 .BindRowCount(model => model.UnequippedNames);
                             });
@@ -113,20 +97,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template.AddCell(cell =>
                                     {
-                                        cell.AddGroup(group =>
-                                        {
-                                            group.AddImage()
-                                                .BindResref(model => model.EquippedIcons)
-                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                                .SetAspect(NuiAspect.Stretch);
-                                        });
-
-                                        cell.SetWidth(40f);
-                                        cell.SetIsVariable(false);
-                                    });
-                                    template.AddCell(cell =>
-                                    {
                                         cell.AddToggleButton()
                                             .BindText(model => model.EquippedNames)
                                             .BindIsToggled(model => model.EquippedSelections)
@@ -134,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .BindOnClicked(model => model.OnSelectEquipped());
                                     });
                                 })
-                                .SetRowHeight(40f)
+                                .SetRowHeight(30f)
                                 .SetScrollbars(NuiScrollbars.Both)
                                 .BindRowCount(model => model.EquippedNames);
                             });
@@ -149,41 +119,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindText(model => model.SelectedDetails);
                     });
 
-                    // Slot budget shown both as text and as a visual fill bar (green with room,
-                    // red when full).
                     col.AddRow(row =>
                     {
-                        row.SetHeight(22f);
                         row.AddSpacer();
                         row.AddLabel()
                             .BindText(model => model.SlotsText)
                             .BindColor(model => model.SlotsColor)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Middle)
-                            .SetHeight(22f);
+                            .SetHeight(26f);
                         row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.SetHeight(16f);
-                        row.AddProgressBar()
-                            .BindValue(model => model.SlotsProgress)
-                            .BindColor(model => model.SlotsColor);
                     });
                 })
                 ;
 
-            var window = _builder.Build();
-
-            // DIAGNOSTIC (temporary): dump the constructed layout JSON so the exact structure the
-            // client receives can be inspected server-side. Remove once the render issue is resolved.
-            var layout = window.PartialViews.TryGetValue("%%WINDOW_MAIN%%", out var mainPartial)
-                ? mainPartial
-                : window.Window;
-            Log.Write(LogGroup.Error, "TECHNIQUES_JSON_DUMP_BEGIN\n" + JsonDump(layout, 2) + "\nTECHNIQUES_JSON_DUMP_END", true);
-
-            return window;
+            return _builder.Build();
         }
     }
 }

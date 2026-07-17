@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Tier1()
         {
             _builder.Create("ESPIONAGE_LOCKBOX_1")
+                .AddItem("espn_ring_1", 3, 1, true)
+                .AddItem("espn_neck_1", 3, 1, true)
+                .AddItem("espn_belt_1", 3, 1, true)
                 .AddItem("scrap_metal", 30)
                 .AddItem("elec_ruined", 20)
                 .AddItem("lth_ruined", 20)
@@ -40,6 +43,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Tier2()
         {
             _builder.Create("ESPIONAGE_LOCKBOX_2")
+                .AddItem("espn_ring_2", 3, 1, true)
+                .AddItem("espn_neck_2", 3, 1, true)
+                .AddItem("espn_belt_2", 3, 1, true)
                 .AddItem("elec_flawed", 25)
                 .AddItem("lth_flawed", 25)
                 .AddItem("fiberp_flawed", 20)
@@ -53,6 +59,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Tier3()
         {
             _builder.Create("ESPIONAGE_LOCKBOX_3")
+                .AddItem("espn_ring_3", 3, 1, true)
+                .AddItem("espn_neck_3", 3, 1, true)
+                .AddItem("espn_belt_3", 3, 1, true)
                 .AddItem("elec_high", 20)
                 .AddItem("lth_high", 20)
                 .AddItem("fiberp_high", 20)
@@ -66,6 +75,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Tier4()
         {
             _builder.Create("ESPIONAGE_LOCKBOX_4")
+                .AddItem("espn_ring_4", 3, 1, true)
+                .AddItem("espn_neck_4", 3, 1, true)
+                .AddItem("espn_belt_4", 3, 1, true)
                 .AddItem("ref_gostian", 20)
                 .AddItem("elec_high", 15)
                 .AddItem("lth_high", 15)
@@ -79,6 +91,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Tier5()
         {
             _builder.Create("ESPIONAGE_LOCKBOX_5")
+                .AddItem("espn_ring_5", 3, 1, true)
+                .AddItem("espn_neck_5", 3, 1, true)
+                .AddItem("espn_belt_5", 3, 1, true)
                 .AddItem("ref_arkoxit", 15)
                 .AddItem("fine_wood", 10)
                 .AddGold(250, 15)

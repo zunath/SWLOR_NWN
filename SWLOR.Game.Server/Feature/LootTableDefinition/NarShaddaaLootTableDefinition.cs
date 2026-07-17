@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 				.AddItem("map_99", 2, 1, true)
 				.AddItem("map_100", 2, 1, true)
 				.AddItem("map_101", 2, 1, true)
-				.AddItem("lockbox_t2", 2, 1, true);
+				.AddItem("lockbox_t3", 2, 1, true);
 
 		}
 

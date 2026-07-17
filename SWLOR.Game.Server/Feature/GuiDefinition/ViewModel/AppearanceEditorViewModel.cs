@@ -1349,6 +1349,64 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
+        public Action OnDecreaseHeadScale() => () =>
+        {
+            var appearanceType = GetAppearanceType(_target);
+            if (!_racialAppearances.ContainsKey(appearanceType))
+            {
+                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                return;
+            }
+
+            var appearance = _racialAppearances[appearanceType];
+            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            if (scale <= 0f)
+                scale = 1.0f;
+
+            const float Increment = 0.01f;
+
+            if (scale - Increment < appearance.MinimumHeadScale)
+            {
+                SendMessageToPC(_target, "You cannot decrease your head size any further.");
+            }
+            else
+            {
+                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale - Increment,
+                    nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+                SendMessageToPC(_target, $"Head Size: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale, nScope: ObjectVisualTransformDataScopeType.CreatureHead)}");
+            }
+        };
+
+        public Action OnIncreaseHeadScale() => () =>
+        {
+            var appearanceType = GetAppearanceType(_target);
+            if (!_racialAppearances.ContainsKey(appearanceType))
+            {
+                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                return;
+            }
+
+            var appearance = _racialAppearances[appearanceType];
+            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            if (scale <= 0f)
+                scale = 1.0f;
+
+            const float Increment = 0.01f;
+
+            if (scale + Increment > appearance.MaximumHeadScale)
+            {
+                SendMessageToPC(_target, "You cannot increase your head size any further.");
+            }
+            else
+            {
+                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale + Increment,
+                    nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+                SendMessageToPC(_target, $"Head Size: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale, nScope: ObjectVisualTransformDataScopeType.CreatureHead)}");
+            }
+        };
+
         public Action OnSelectColorCategory() => () =>
         {
             ToggleItemEquippedFlags();
@@ -1775,8 +1833,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
+            var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+            SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, headScale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
         };
 
         public Action OnClickSaveSettings() => () =>
@@ -1789,6 +1850,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var newHeight = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             dbPlayer.AppearanceScale = newHeight;
+
+            var newHeadScale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            if (newHeadScale <= 0f)
+                newHeadScale = 1.0f;
+            dbPlayer.HeadAppearanceScale = newHeadScale;
 
             DB.Set(dbPlayer);
             SendMessageToPC(_target, ColorToken.Green("Appearance settings saved successfully."));

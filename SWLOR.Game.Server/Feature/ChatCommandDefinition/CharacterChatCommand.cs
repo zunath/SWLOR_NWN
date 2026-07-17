@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ToggleEmoteStyle();
             ConcentrationAbility();
             Customize();
+            HeadScale();
             AlwaysWalk();
             AssociateCommands();
             Follow();
@@ -371,6 +372,91 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     var payload = new AppearanceEditorPayload(user);
                     Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, payload, OBJECT_INVALID, uiTarget);
+                });
+        }
+
+        private void HeadScale()
+        {
+            const float MinScale = 0.85f;
+            const float MaxScale = 1.15f;
+            const float Increment = 0.01f;
+
+            _builder.Create("headscale")
+                .Description($"Adjusts your head size separately from body height. Usage: /headscale [value|{MinScale}-{MaxScale}|+/-]. Omit value to view current size.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    if (GetIsDM(user) || GetIsDMPossessed(user))
+                    {
+                        return "This command can only be used by players.";
+                    }
+
+                    if (args.Length <= 0)
+                        return string.Empty;
+
+                    var arg = args[0];
+                    if (arg == "+" || arg == "-" || arg.Equals("up", StringComparison.OrdinalIgnoreCase) ||
+                        arg.Equals("down", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return string.Empty;
+                    }
+
+                    if (!float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+                    {
+                        return $"Please specify a value between {MinScale} and {MaxScale}, or use + / -.";
+                    }
+
+                    if (value < MinScale || value > MaxScale)
+                    {
+                        return $"Please specify a value between {MinScale} and {MaxScale}.";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    var playerId = GetObjectUUID(user);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var current = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
+                    float newScale;
+
+                    if (args.Length <= 0)
+                    {
+                        SendMessageToPC(user, $"Head Size: {current:0.##} (range {MinScale}-{MaxScale}). Use /headscale <value>, /headscale +, or /headscale -.");
+                        return;
+                    }
+
+                    var arg = args[0];
+                    if (arg == "+" || arg.Equals("up", StringComparison.OrdinalIgnoreCase))
+                    {
+                        newScale = Math.Min(MaxScale, current + Increment);
+                    }
+                    else if (arg == "-" || arg.Equals("down", StringComparison.OrdinalIgnoreCase))
+                    {
+                        newScale = Math.Max(MinScale, current - Increment);
+                    }
+                    else
+                    {
+                        newScale = float.Parse(arg, NumberStyles.Float, CultureInfo.InvariantCulture);
+                    }
+
+                    if (Math.Abs(newScale - current) < 0.0001f &&
+                        (arg == "+" || arg == "-" || arg.Equals("up", StringComparison.OrdinalIgnoreCase) ||
+                         arg.Equals("down", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        SendMessageToPC(user, newScale >= MaxScale
+                            ? "You cannot increase your head size any further."
+                            : "You cannot decrease your head size any further.");
+                        return;
+                    }
+
+                    dbPlayer.HeadAppearanceScale = newScale;
+                    DB.Set(dbPlayer);
+
+                    SetObjectVisualTransform(user, ObjectVisualTransform.Scale, newScale,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+
+                    SendMessageToPC(user, $"Head Size: {newScale:0.##}");
                 });
         }
 

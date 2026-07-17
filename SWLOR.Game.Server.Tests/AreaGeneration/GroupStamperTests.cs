@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
+using SWLOR.Game.Server.Service.AreaGenerationService.Layouts;
 
 namespace SWLOR.Game.Server.Tests.AreaGeneration;
 
@@ -693,5 +694,162 @@ public class GroupStamperTests
 
         var northTile = model.Tiles[group.TileIds[1]];
         northTile.GetEdgeAt(0, EdgeSlot.Top).Should().Be("Doorway");
+    }
+
+    // ---------------- Custom-mode tunnel-body-crosser hardcoded-literal fix (synthetic tilesets) ----------------
+
+    /// <summary>
+    /// Hand-built minimal TilesetModel/MacroLayout (bypassing MacroLayoutGenerator's carving and
+    /// TileResolver entirely -- LayoutGroupStamper.Stamp is `internal`, reachable directly via this
+    /// assembly's InternalsVisibleTo) isolating exactly the bug fixed in LayoutGroupStamper:
+    /// TryPlaceDoorwayCorridorInsert/IsValidFlankingChainCell hardcoded the literal canonical "Corridor"
+    /// crosser when searching for a straight tunnel-body chain cell to splice a Doorway-pair
+    /// CorridorInsert into, instead of also accepting a Custom-mode composition's own declared
+    /// TunnelBodyCrosser (e.g. tdc01's "GreyCorridor") -- so a Custom-mode composition could NEVER
+    /// place a Doorway-pair CorridorInsert (like tdt01's real "Door_Trans", proven working under
+    /// canonical Corridor by DoorwayPairCorridorInsert_PlacesAndAgreesAcrossSeeds above) even though
+    /// classification (TryClassifyCorridorInsert, which already threads TunnelBodyCrosser through
+    /// CorridorInsertCrossersFor at classify time) recognized the shape correctly. Grid: three solid
+    /// cells in a row, (0,0)-(1,0)-(2,0), pre-carved as a straight "GreyCorridor" chain (Left+Right
+    /// edges on all three cells, Top/Bottom left blank); the candidate insert tile has an opposite
+    /// Doorway pair (Left+Right) on all-solid corners, matching the real Door_Trans shape. A second,
+    /// unrelated tile (never a SetPiece) declares a canonical Corridor|Doorway adapter pair purely so
+    /// HasCorridorDoorwayAdapter's OWN (unrelated, still-hardcoded-canonical, out of this fix's scope)
+    /// capability probe passes -- isolating this test to the site-search bug this fix actually
+    /// addresses. Empirically confirmed against this exact scenario: 0 pins with the pre-fix hardcoded
+    /// "Corridor" check (git-reverted LayoutGroupStamper.cs), 1 pin after the fix.
+    /// </summary>
+    [Test]
+    public void CustomBodyCrosserDoorwayPairCorridorInsert_PlacesAgainstRenamedTunnelBody()
+    {
+        var model = new TilesetModel
+        {
+            Resref = "synthetic_customcorridor",
+            DefaultTerrain = "Wall",
+            FloorTerrain = "Floor",
+            Tiles = new List<TileRecord>
+            {
+                // Tile 0: the Doorway-pair CorridorInsert candidate (mirrors tdt01's real "Door_Trans").
+                new TileRecord
+                {
+                    TileId = 0,
+                    Corners = new[] { "Wall", "Wall", "Wall", "Wall" },
+                    Edges = new[] { "", "Doorway", "", "Doorway" }, // Top,Right,Bottom,Left -- Left+Right pair
+                    CornerHeights = new[] { 0, 0, 0, 0 }
+                },
+                // Tile 1: unrelated canonical Corridor|Doorway adapter tile, satisfying
+                // HasCorridorDoorwayAdapter's own (separately hardcoded, out-of-scope-for-this-fix)
+                // capability probe. Never registered as a SetPiece.
+                new TileRecord
+                {
+                    TileId = 1,
+                    Corners = new[] { "Wall", "Wall", "Wall", "Wall" },
+                    Edges = new[] { "Corridor", "", "Doorway", "" }, // Top=Corridor, Bottom=Doorway -- opposite pair
+                    CornerHeights = new[] { 0, 0, 0, 0 }
+                }
+            },
+            Groups = new List<TileGroupRecord>
+            {
+                new TileGroupRecord { Name = "TestDoorTrans", Rows = 1, Columns = 1, TileIds = new List<int> { 0 } }
+            }
+        };
+
+        var parameters = new MacroLayoutParameters
+        {
+            Width = 3,
+            Height = 1,
+            SolidTerrain = "Wall",
+            OpenTerrain = string.Empty,
+            CorridorCrosserType = CorridorCrosserType.Custom,
+            TunnelBodyCrosser = "GreyCorridor",
+            TunnelPortCrosser = "Doorway",
+            SetPieces = new Dictionary<string, int> { ["TestDoorTrans"] = 1 }
+        };
+
+        var layout = new MacroLayout(new CornerTerrainGrid(3, 1, "Wall"));
+
+        // Pre-carve a straight "GreyCorridor" chain across all three cells (Left+Right on each,
+        // Top/Bottom left blank -- IsStraightCorridorCell's required shape).
+        layout.Crossers.SetEdge(0, 0, EdgeSlot.Left, "GreyCorridor");
+        layout.Crossers.SetEdge(0, 0, EdgeSlot.Right, "GreyCorridor"); // = cell (1,0) Left, shared storage
+        layout.Crossers.SetEdge(1, 0, EdgeSlot.Right, "GreyCorridor"); // = cell (2,0) Left, shared storage
+        layout.Crossers.SetEdge(2, 0, EdgeSlot.Right, "GreyCorridor");
+
+        LayoutGroupStamper.Stamp(layout, parameters, model, new Random(1));
+
+        layout.PinnedTiles.Should().ContainSingle(
+            "a Custom-mode composition's own renamed tunnel-body crosser (GreyCorridor) must be recognized as a " +
+            "valid straight chain to splice a Doorway-pair CorridorInsert into, the same way canonical Corridor already is");
+        var pin = layout.PinnedTiles[(1, 0)];
+        pin.TileId.Should().Be(0);
+        layout.Crossers.GetEdge(1, 0, EdgeSlot.Left).Should().Be("Doorway");
+        layout.Crossers.GetEdge(1, 0, EdgeSlot.Right).Should().Be("Doorway");
+    }
+
+    /// <summary>
+    /// Same synthetic-model technique as CustomBodyCrosserDoorwayPairCorridorInsert_PlacesAgainstRenamedTunnelBody
+    /// above, isolating the OTHER hardcoded-literal site this fix addresses: IsWallRoomSiteValid's
+    /// neighborHasCorridor check. A 1x1 WallRoom candidate (single Doorway port, all-solid corners) is
+    /// anchored at (0,0) in a 2x1 grid; its ONLY perimeter neighbor, cell (1,0), carries the
+    /// composition's renamed "GreyCorridor" body crosser on its OWN far edge (never on the shared edge
+    /// with the candidate, which must stay blank for the candidate's own footprint to qualify).
+    /// OpenTerrain is deliberately left empty so SupportsWallRoomOpenLaneBoundary's capability probe
+    /// can never return true, forcing corridor-adjacency to be the ONLY possible site-validity path --
+    /// unlike every currently-onboarded Custom-mode profile's own "Door - Transition"-style WallRoom
+    /// group, whose port always faces a genuine open-terrain room boundary in practice (see this
+    /// session's own measurement notes), so the OpenLane fallback masks this exact bug for all
+    /// currently-wired content. Empirically confirmed against this exact scenario: 0 pins pre-fix
+    /// (git-reverted LayoutGroupStamper.cs), 1 pin after.
+    /// </summary>
+    [Test]
+    public void CustomBodyCrosserWallRoom_PlacesAgainstRenamedTunnelBody_WithNoOpenLaneFallback()
+    {
+        var model = new TilesetModel
+        {
+            Resref = "synthetic_customcorridor_wallroom",
+            DefaultTerrain = "Wall",
+            FloorTerrain = "Floor",
+            Tiles = new List<TileRecord>
+            {
+                new TileRecord
+                {
+                    TileId = 0,
+                    Corners = new[] { "Wall", "Wall", "Wall", "Wall" },
+                    Edges = new[] { "", "Doorway", "", "" }, // single Right-facing Doorway port
+                    CornerHeights = new[] { 0, 0, 0, 0 }
+                }
+            },
+            Groups = new List<TileGroupRecord>
+            {
+                new TileGroupRecord { Name = "TestWallRoom", Rows = 1, Columns = 1, TileIds = new List<int> { 0 } }
+            }
+        };
+
+        var parameters = new MacroLayoutParameters
+        {
+            Width = 2,
+            Height = 1,
+            SolidTerrain = "Wall",
+            OpenTerrain = string.Empty, // forces SupportsWallRoomOpenLaneBoundary false -- no fallback masking
+            CorridorCrosserType = CorridorCrosserType.Custom,
+            TunnelBodyCrosser = "GreyCorridor",
+            TunnelPortCrosser = "Doorway",
+            SetPieces = new Dictionary<string, int> { ["TestWallRoom"] = 1 }
+        };
+
+        var layout = new MacroLayout(new CornerTerrainGrid(2, 1, "Wall"));
+
+        // (1,0)'s own far (Right) edge carries the renamed tunnel body crosser -- never the shared
+        // edge with (0,0), which must stay blank for (0,0)'s WallRoom footprint to qualify.
+        layout.Crossers.SetEdge(1, 0, EdgeSlot.Right, "GreyCorridor");
+
+        LayoutGroupStamper.Stamp(layout, parameters, model, new Random(1));
+
+        layout.PinnedTiles.Should().ContainSingle(
+            "a WallRoom port whose only neighbor is a Custom-mode renamed tunnel-body chain cell (GreyCorridor) " +
+            "must validate via corridor-adjacency the same way canonical Corridor already does, even with no " +
+            "OpenLane-boundary fallback available");
+        var pin = layout.PinnedTiles[(0, 0)];
+        pin.TileId.Should().Be(0);
     }
 }

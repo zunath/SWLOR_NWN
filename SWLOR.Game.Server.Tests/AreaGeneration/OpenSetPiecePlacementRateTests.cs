@@ -142,7 +142,19 @@ public class OpenSetPiecePlacementRateTests
     /// </summary>
     private static (int Successes, int Hits) MeasureIsolatedGroupHits(
         DungeonTilesetProfile tilesetProfile, DungeonLayoutProfile layoutProfile, TilesetModel model,
-        string groupName, int maxPerArea, int seedBase, int seedCount, int seedStride = 13)
+        string groupName, int maxPerArea, int seedBase, int seedCount, int seedStride = 13) =>
+        MeasureIsolatedGroupHitsAtSize(tilesetProfile, layoutProfile, model, groupName, maxPerArea, Size, seedBase, seedCount, seedStride);
+
+    /// <summary>
+    /// Same isolation technique as <see cref="MeasureIsolatedGroupHits"/> (this class's own standard
+    /// helper, which delegates here at this file's standard 20x20 <see cref="Size"/>), but with an
+    /// explicit, independent square area size -- used by the tib01 Beholder secondary-color
+    /// re-measurement (see BeholderSecondaryColor* tests below), whose "Room - Big"/Door-family groups
+    /// only ever surface under Complex at 32x32/40x40, not this file's own 20x20 default.
+    /// </summary>
+    private static (int Successes, int Hits) MeasureIsolatedGroupHitsAtSize(
+        DungeonTilesetProfile tilesetProfile, DungeonLayoutProfile layoutProfile, TilesetModel model,
+        string groupName, int maxPerArea, int size, int seedBase, int seedCount, int seedStride = 13)
     {
         // In-place mutation of this test's own freshly-built profile instance -- BuildTilesetProfiles()
         // returns a brand-new dictionary/profile graph each call, so this never leaks into any other
@@ -158,7 +170,7 @@ public class OpenSetPiecePlacementRateTests
         {
             var seed = seedBase + i * seedStride;
             var composition = new DungeonComposition { Tileset = tilesetProfile, Layout = layoutProfile };
-            var result = LayoutSolver.Solve(composition.BuildLayoutParameters(), model, Size, Size, seed, tilesetProfile.PrimaryOpenTerrain, retryCount: 1);
+            var result = LayoutSolver.Solve(composition.BuildLayoutParameters(), model, size, size, seed, tilesetProfile.PrimaryOpenTerrain, retryCount: 1);
             if (!result.Success) continue;
             successes++;
 
@@ -255,6 +267,146 @@ public class OpenSetPiecePlacementRateTests
             hits.Should().Be(0,
                 $"'Room - Big, Lava' has a documented placement ceiling at this size on {layoutKey} -- " +
                 "if it ever starts placing, generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
+    // ---------------- tib01 Beholder secondary-color Room-Big/Door-family post-fix proofs ----------------
+
+    /// <summary>
+    /// Placement proof for the tib01 secondary-color "Room - Big, &lt;color&gt;" wiring (see
+    /// BaseGameTilesetProfiles.Beholder's own KNOWN CALIBRATION FINDING #2 for the full post-fix
+    /// re-measurement writeup): unplaceable before the LayoutGroupStamper site-search fix (0/300 at
+    /// sizes 20/32/40 combined -- IsWallRoomSiteValid's hardcoded literal "Corridor" check never
+    /// recognized a "CorridorBlood" chain neighbor), now places at essentially the same rate as the
+    /// byte-identical "Room - Big, Lava" shape once the site search accepts the composition's own
+    /// Custom-mode TunnelBodyCrosser. Measured (Blood, seedBase 95000, seedStride 13, 150 seeds,
+    /// Complex): 0/150 at size 20 (still a documented ceiling -- see
+    /// BeholderRoomBigLava_StillDoesNotPlaceAt20_DocumentedCeiling above, same shape), 6/150 (4.0%) at
+    /// size 32, 8/150 (5.3%) at size 40. Two independent seed-base sweeps confirm stability
+    /// (seedBase 30000: 5/150 at 32, 12/150 at 40; seedBase 60000: 6/150 at 32, 11/150 at 40).
+    /// </summary>
+    [Test]
+    public void BeholderRoomBigSecondaryColor_PlacesAtLargerSizes_DocumentedSize20Ceiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.BeholderBlood];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successesAt20, hitsAt20) = MeasureIsolatedGroupHitsAtSize(tilesetProfile, layoutProfile, model, "Room - Big, Blood", maxPerArea: 5, size: 20, seedBase: 95000, seedCount: 150);
+        successesAt20.Should().BeGreaterThan(140);
+        hitsAt20.Should().Be(0,
+            "'Room - Big, Blood' has the same documented size-20 placement ceiling as 'Room - Big, Lava' -- " +
+            "if it ever starts placing at this size, generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+
+        foreach (var (size, expectedRate) in new[] { (32, 0.02), (40, 0.03) })
+        {
+            var freshProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.BeholderBlood];
+            var (successes, hits) = MeasureIsolatedGroupHitsAtSize(freshProfile, layoutProfile, model, "Room - Big, Blood", maxPerArea: 5, size: size, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            // Measured 4.0% (6/150) at size 32, 5.3% (8/150) at size 40 -- essentially identical to
+            // "Room - Big, Lava"'s own 4.7-9.3% range. Threshold set well under the measured floor.
+            hits.Should().BeGreaterOrEqualTo((int)(successes * expectedRate),
+                $"'Room - Big, Blood' must place on a meaningful share of the {successes} successful seeds at size {size} now that LayoutGroupStamper's site search accepts a renamed Custom-mode body crosser (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for the tib01 secondary-color Door-family junction wiring (see
+    /// BaseGameTilesetProfiles.Beholder's own KNOWN CALIBRATION FINDING #2 for the full writeup,
+    /// including the classification breakdown verified against the raw tile edge data): "Door - I" (an
+    /// opposite Door pair) is the Doorway-pair CorridorInsert splice; "Door - Alcove/L/T" (one/two/
+    /// three Door ports, all-Wall corners) are 1x1 WallRooms whose every perimeter port needs a
+    /// corridor-chain neighbor -- both placement paths were blocked by the same hardcoded-literal
+    /// site-search bug and both are exercised here. All four place at this file's own standard 20x20
+    /// probe size (unlike "Room - Big", which needs a larger area -- see
+    /// BeholderRoomBigSecondaryColor_PlacesAtLargerSizes_DocumentedSize20Ceiling above). Measured
+    /// (Blood, seedBase 95000, seedCount 150, size 20, Complex): Alcove 128/150 (85.3%), I 124/150
+    /// (82.7%), L 37/150 (24.7%), T 3/150 (2.0% -- low but genuinely nonzero, the same "low and noisy
+    /// but real" shape as "Room - Big, Lava"'s own wiring; the monotonic fall with port count is
+    /// structural -- see the Finding #2 writeup). Thresholds set well under each group's own measured
+    /// floor.
+    /// </summary>
+    [Test]
+    public void BeholderDoorFamilySecondaryColor_PlacesAtStandardSize()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+
+        foreach (var (groupName, minRate) in new[]
+                 {
+                     ("Door - Alcove, Blood", 0.5),
+                     ("Door - I, Blood", 0.5),
+                     ("Door - L, Blood", 0.15),
+                     ("Door - T, Blood", 0.01),
+                 })
+        {
+            var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.BeholderBlood];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedGroupHitsAtSize(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, size: 20, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minRate),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds at this file's own standard size (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// "Door - X, &lt;color&gt;" (the rarest tib01 secondary-color junction shape) never places at this
+    /// file's own 20x20 probe size -- measured 0/150 (Complex), seedBase 95000, the standard
+    /// MeasureIsolatedGroupHits methodology, same as "Room - Big, &lt;color&gt;"'s own size-20 ceiling
+    /// above. It IS wired anyway (see BaseGameTilesetProfiles.Beholder's own KNOWN CALIBRATION FINDING
+    /// #2): unlike "Room - Pit/Pillar", a 1x1 wall-embedded WallRoom (four perimeter Door ports, the
+    /// structural reason for its rarity -- see the Finding #2 classification breakdown) carries no
+    /// disconnection risk, and it does place -- very rarely -- at larger sizes (0-2/150 across three
+    /// independent seed-base sweeps at size 32/40, Blood). Locked in here so a future change to
+    /// room/corridor generation at this size is a deliberate, visible decision rather than a silent
+    /// behavior drift.
+    /// </summary>
+    [Test]
+    public void BeholderDoorXSecondaryColor_StillDoesNotPlaceAt20_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.BeholderBlood];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successes, hits) = MeasureIsolatedGroupHitsAtSize(tilesetProfile, layoutProfile, model, "Door - X, Blood", maxPerArea: 5, size: 20, seedBase: 95000, seedCount: 150);
+
+        successes.Should().BeGreaterThan(140);
+        hits.Should().Be(0,
+            "'Door - X, Blood' has a documented placement ceiling at this size -- " +
+            "if it ever starts placing, generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+    }
+
+    /// <summary>
+    /// Confirms the tib01 secondary-color Room-Big/Door-family rates measured above are byte-identical
+    /// across all five secondary colors (Blood/Magic/Sewer/Urine/Water), not assumed from Blood alone --
+    /// each color recomposes the SAME underlying tile geometry (see BaseGameTilesetProfiles.Beholder's
+    /// own doc comment), so a per-color spot check at one representative size/group pair is sufficient
+    /// to confirm parity rather than re-running the full sweep five times. Measured (seedBase 95000,
+    /// seedCount 150, size 32, Complex): every color lands exactly 6/150 (4.0%) for "Room - Big" --
+    /// identical to Blood's own measurement above.
+    /// </summary>
+    [Test]
+    public void BeholderRoomBigAllSecondaryColors_MeasureIdentically()
+    {
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+
+        foreach (var (color, key) in new[]
+                 {
+                     ("Blood", BaseGameTilesetProfiles.BeholderBlood),
+                     ("Magic", BaseGameTilesetProfiles.BeholderMagic),
+                     ("Sewer", BaseGameTilesetProfiles.BeholderSewer),
+                     ("Urine", BaseGameTilesetProfiles.BeholderUrine),
+                     ("Water", BaseGameTilesetProfiles.BeholderWater),
+                 })
+        {
+            var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[key];
+            var model = LoadTileset(tilesetProfile.TilesetResref);
+            var (successes, hits) = MeasureIsolatedGroupHitsAtSize(tilesetProfile, layoutProfile, model, $"Room - Big, {color}", maxPerArea: 5, size: 32, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(6,
+                $"'Room - Big, {color}' should measure identically to 'Room - Big, Blood' (6/150) -- every secondary color recomposes the same tile geometry (got {hits}/{successes})");
         }
     }
 

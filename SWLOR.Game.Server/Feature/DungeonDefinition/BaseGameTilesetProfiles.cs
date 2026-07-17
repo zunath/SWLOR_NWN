@@ -7261,40 +7261,73 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // same "declared but structurally unreachable under this layout style" ceiling trs02 already
             // documents, not a silent no-op.
             //
-            // KNOWN CALIBRATION FINDING #2 (a genuine shared-engine gap discovered while chasing this
-            // pass's own room-size question, NOT a tib01-specific issue -- reported separately rather
-            // than fixed here, see below): "Room - Big, <color>"/"Door - Alcove/I/L/T/X, <color>" for
-            // the FIVE SECONDARY colors (Blood/Magic/Sewer/Urine/Water) are deliberately NOT wired as
-            // SetPieces on their own color profiles, even though they classify correctly (WallRoom /
-            // CorridorInsert respectively) and their own TunnelCrossers("Corridor<Color>", "Door")
-            // Custom-mode vocabulary genuinely carves real "Corridor<Color>" tunnel-body edges (confirmed
-            // directly: TunnelVocabularyCheck.SupportsTunnels returns true and a solved layout actually
-            // contains "CorridorBlood" chain edges). The reason they never place is
-            // LayoutGroupStamper's OWN site-search code, not this tileset's data: IsWallRoomSiteValid's
-            // Tunnel-chain-neighbor check (`Eq(edge, CorridorCrosser)`) and
-            // TryPlaceDoorwayCorridorInsert/IsValidFlankingChainCell's straight-chain search (both call
-            // IsStraightCorridorCell with the hardcoded literal "Corridor" constant) never consult
-            // MacroLayoutParameters.TunnelBodyCrosser -- unlike CorridorInsertCrossersFor/
-            // CorridorStubCrossersFor (used for CLASSIFICATION) and HasCorridorDoorwayAdapter's sibling
-            // capability probe, which already generalize correctly. So a WallRoom or Doorway-pair
-            // CorridorInsert can never find a placement SITE on any composition whose Custom-mode body
-            // crosser isn't literally "Corridor" (case-insensitive) -- confirmed by direct isolated
-            // measurement: "Room - Big, Blood" and all five "Door - <shape>, Blood" groups, tested alone
-            // and combined, at sizes 20/32/40 across three independent 150-seed sweeps each (1350+ solved
-            // layouts total), placed ZERO instances, while the byte-identical "Room - Big, Lava" shape
-            // (Lava's body crosser IS the literal "Corridor") places normally under the exact same
-            // composition/size/seed methodology. Wiring the secondary colors' SetPieces anyway would
-            // silently register dead RNG draws for zero placed content, the same anti-pattern this
-            // codebase already avoids elsewhere (see BaseGameTilesetProfiles.OfficeInteriors' own
-            // Hallway1/Hallway2 writeup). Fixing LayoutGroupStamper's two hardcoded-literal call sites to
-            // resolve the composition's EFFECTIVE body crosser (canonical "Corridor" or
-            // MacroLayoutParameters.TunnelBodyCrosser when set) would very likely unlock this -- and
-            // would also affect several OTHER already-onboarded tilesets with a renamed Custom-mode body
-            // (CryptGrey's "GreyCorridor", MinesAndCavernsDesert/Organic's "DesertCorridor"/
-            // "OrganicCorridor", the MinesAndCavernsTracks family, CityExterior's Dock/FieldDock/
-            // GothicDock) -- a cross-cutting shared-machinery change with its own re-verification burden
-            // across every tileset that declares a renamed body crosser, out of scope for a single-
-            // tileset onboarding pass. Flagged as a follow-up rather than fixed inline here.
+            // KNOWN CALIBRATION FINDING #2 (RESOLVED -- LayoutGroupStamper's site-search bug that
+            // blocked this is now fixed; see IsCorridorTunnelBodyEdge/IsStraightTunnelBodyCell in
+            // LayoutGroupStamper and the "Accept declared tunnel body crossers in placement-time site
+            // searches" commit). Originally: "Room - Big, <color>"/"Door - Alcove/I/L/T/X, <color>" for
+            // the FIVE SECONDARY colors (Blood/Magic/Sewer/Urine/Water) classified correctly (see the
+            // Door-family classification breakdown below) and their own TunnelCrossers("Corridor<Color>", "Door")
+            // Custom-mode vocabulary genuinely carved real "Corridor<Color>" tunnel-body edges, but never
+            // PLACED -- IsWallRoomSiteValid's Tunnel-chain-neighbor check and
+            // TryPlaceDoorwayCorridorInsert/IsValidFlankingChainCell's straight-chain search both called
+            // IsStraightCorridorCell with the hardcoded literal "Corridor" constant, never consulting
+            // MacroLayoutParameters.TunnelBodyCrosser -- so a WallRoom or Doorway-pair CorridorInsert
+            // could never find a placement SITE on any composition whose Custom-mode body crosser wasn't
+            // literally "Corridor". That gap is now closed: IsWallRoomSiteValid and
+            // TryPlaceDoorwayCorridorInsert/IsValidFlankingChainCell resolve the composition's EFFECTIVE
+            // body crosser (canonical "Corridor" always accepted, plus MacroLayoutParameters.
+            // TunnelBodyCrosser under Custom mode), mirroring CorridorInsertCrossersFor exactly.
+            //
+            // POST-FIX RE-MEASUREMENT (isolated single-group probes, Complex only -- Halls stays 0
+            // across every group here, confirmed directly: "Room - Big, Blood" measured 0/147 on Halls
+            // at size 32, matching Lava's own documented Halls ceiling -- Halls carves no Tunnel-mode
+            // corridors for a WallRoom/CorridorInsert to hang off of). Rates are byte-identical across
+            // all five secondary colors -- re-measured per-color, not assumed from one flagship (seedBase
+            // 95000, 150 seeds, seedStride 13, every color landed the exact same hit counts):
+            //   "Room - Big, <color>": 0/150 at size 20 (still a documented ceiling, same shape as
+            //     "Room - Big, Lava"'s own size-20 ceiling below), 6/150 (4.0%) at size 32, 8/150 (5.3%)
+            //     at size 40 -- essentially identical to Lava's own 4.7-9.3% range. Two additional
+            //     independent seed-base sweeps (30000/60000, Blood only) confirm seed-base independence:
+            //     5-6/150 at size 32, 11-12/150 at size 40. Wired plain, budget 3, matching Lava's own
+            //     precedent exactly.
+            //   "Door - Alcove, <color>": 128/150 (85.3%) at size 20, 150/150 (100%) at size 32/40.
+            //   "Door - I, <color>": 124/150 (82.7%) at size 20, 150/150 (100%) at size 32/40.
+            //   "Door - L, <color>": 37/150 (24.7%) at size 20, 99/150 (66.0%) at size 32, 112/150
+            //     (74.7%) at size 40.
+            //   "Door - T, <color>": 3/150 (2.0%) at size 20, 8/150 (5.3%) at size 32, 18/150 (12.0%) at
+            //     size 40 -- low but genuinely nonzero even at the standard size, the same "low and
+            //     noisy but real" shape as "Room - Big, Lava"'s own wiring.
+            //   "Door - X, <color>": 0/150 at size 20 (a documented ceiling, the rarest junction shape),
+            //     but genuinely nonzero at larger sizes -- 0-1/150 at size 32 and 1-2/150 at size 40
+            //     across three independent seed-base sweeps (95000/30000/60000, Blood), never zero across
+            //     all three at size 40.
+            //
+            // Door-family classification (verified against the raw tile edge data, TILE511/512/515/517/
+            // 518 for Blood): only "Door - I" (an opposite Door pair) is the Doorway-pair CorridorInsert
+            // splice; "Door - Alcove/L/T/X" (one/two-adjacent/three/four Door ports, all-Wall corners)
+            // classify as 1x1 WallRooms whose EVERY perimeter port must find a corridor-chain neighbor
+            // at the site -- which is exactly why the measured rates fall monotonically with port count
+            // (Alcove 85% > L 25% > T 2% > X 0% at size 20) while "Door - I" places near-universally by
+            // splicing into any straight chain cell. Both placement paths (IsWallRoomSiteValid's
+            // perimeter-neighbor check and the doorway-pair insert's flanking-chain scan) were blocked
+            // by the same hardcoded literal and are both fixed. All five are 1x1 wall-embedded pieces
+            // with no disconnection risk (unlike Room - Pit/Pillar's hole-shaped OpenSetPiece -- see
+            // this file's own Pit/Pillar exclusion writeup above), so even Door - X's very low rate is
+            // safe to wire rather than a reason to exclude it.
+            //
+            // All eleven groups (Room - Big plus all five Door-family shapes) are now wired as SetPieces
+            // on every one of the five secondary-color profiles below -- Room - Big at budget 3 (Lava's
+            // own convention), each Door-family shape at budget 1 (this file's own convention for 1x1
+            // insert/gate groups, e.g. "Door - Big 1/2" above). See OpenSetPiecePlacementRateTests for the
+            // placement-proof tests pinned to these measured rates.
+            //
+            // This fix is a shared LayoutGroupStamper change, not tib01-specific -- it also affects every
+            // OTHER already-onboarded tileset with a renamed Custom-mode body crosser (CryptGrey's
+            // "GreyCorridor", MinesAndCavernsDesert/Organic's "DesertCorridor"/"OrganicCorridor", the
+            // MinesAndCavernsTracks family, CityExterior's Dock/FieldDock/GothicDock), all re-measured at
+            // 145-150/150 (unchanged) when the fix landed -- their wired door-transition wall rooms
+            // always had an open-boundary fallback masking the bug, so the fix is additive there, not a
+            // behavior change.
             //
             // Layout support: Halls and Complex both generate this palette at ~100% success (Halls
             // 145-150/150, Complex 145-150/150 across every size/floor combination probed); ONLY Complex
@@ -7342,11 +7375,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
 
             // Beholder Interior* (Blood) -- PaletteVariant recomposing the SAME tib01 hak data against
             // RoomBlood/CorridorBlood (see the base Beholder profile's own doc comment above for the
-            // full verification writeup shared by every color variant). "Room - Big, Blood"/"Door -
-            // Alcove/I/L/T/X, Blood" are deliberately NOT wired -- see KNOWN CALIBRATION FINDING #2
-            // above (a LayoutGroupStamper site-search gap, not a tib01/Blood-specific one). Decorations/
-            // lighting inherit from the base Beholder profile via DungeonTilesetPaletteInheritance (no
-            // per-color evidence exists).
+            // full verification writeup shared by every color variant). "Room - Big, Blood" and all
+            // five "Door - Alcove/I/L/T/X, Blood" junction groups are now wired -- see KNOWN
+            // CALIBRATION FINDING #2 above for the post-fix re-measurement (LayoutGroupStamper's site-
+            // search bug is fixed; this is no longer a placement-bug exemption). Budgets/rates are
+            // byte-identical across all five secondary colors (re-measured per-color, not assumed) --
+            // see the base profile's finding #2 writeup for the shared numbers. Decorations/lighting
+            // inherit from the base Beholder profile via DungeonTilesetPaletteInheritance (no per-color
+            // evidence exists).
             _builder.Create(BeholderBlood, "Beholder Interior* (Blood)")
                 .Tileset("tib01")
                 .Placeholder("gen_placeholder1")
@@ -7354,11 +7390,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .PrimaryOpenTerrain("RoomBlood")
                 .DoorSlotCrossers("Door")
-                .TunnelCrossers("CorridorBlood", "Door");
+                .TunnelCrossers("CorridorBlood", "Door")
+                .SetPiece("Room - Big, Blood", 3)
+                .SetPiece("Door - Alcove, Blood", 1)
+                .SetPiece("Door - I, Blood", 1)
+                .SetPiece("Door - L, Blood", 1)
+                .SetPiece("Door - T, Blood", 1)
+                .SetPiece("Door - X, Blood", 1);
 
             // Beholder Interior* (Magic) -- see Blood's own doc comment immediately above; identical
             // shape against RoomMagic/CorridorMagic. "Room - Big, Magic"/"Door - Alcove/I/L/T/X, Magic"
-            // are NOT wired for the same LayoutGroupStamper site-search reason.
+            // are wired for the same post-fix reason (byte-identical measured rates).
             _builder.Create(BeholderMagic, "Beholder Interior* (Magic)")
                 .Tileset("tib01")
                 .Placeholder("gen_placeholder1")
@@ -7366,11 +7408,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .PrimaryOpenTerrain("RoomMagic")
                 .DoorSlotCrossers("Door")
-                .TunnelCrossers("CorridorMagic", "Door");
+                .TunnelCrossers("CorridorMagic", "Door")
+                .SetPiece("Room - Big, Magic", 3)
+                .SetPiece("Door - Alcove, Magic", 1)
+                .SetPiece("Door - I, Magic", 1)
+                .SetPiece("Door - L, Magic", 1)
+                .SetPiece("Door - T, Magic", 1)
+                .SetPiece("Door - X, Magic", 1);
 
             // Beholder Interior* (Sewer) -- see Blood's own doc comment above; identical shape against
-            // RoomSewer/CorridorSewer. "Room - Big, Sewer"/"Door - Alcove/I/L/T/X, Sewer" are NOT wired
-            // for the same LayoutGroupStamper site-search reason.
+            // RoomSewer/CorridorSewer. "Room - Big, Sewer"/"Door - Alcove/I/L/T/X, Sewer" are wired for
+            // the same post-fix reason (byte-identical measured rates).
             _builder.Create(BeholderSewer, "Beholder Interior* (Sewer)")
                 .Tileset("tib01")
                 .Placeholder("gen_placeholder1")
@@ -7378,11 +7426,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .PrimaryOpenTerrain("RoomSewer")
                 .DoorSlotCrossers("Door")
-                .TunnelCrossers("CorridorSewer", "Door");
+                .TunnelCrossers("CorridorSewer", "Door")
+                .SetPiece("Room - Big, Sewer", 3)
+                .SetPiece("Door - Alcove, Sewer", 1)
+                .SetPiece("Door - I, Sewer", 1)
+                .SetPiece("Door - L, Sewer", 1)
+                .SetPiece("Door - T, Sewer", 1)
+                .SetPiece("Door - X, Sewer", 1);
 
             // Beholder Interior* (Urine) -- see Blood's own doc comment above; identical shape against
-            // RoomUrine/CorridorUrine. "Room - Big, Urine"/"Door - Alcove/I/L/T/X, Urine" are NOT wired
-            // for the same LayoutGroupStamper site-search reason.
+            // RoomUrine/CorridorUrine. "Room - Big, Urine"/"Door - Alcove/I/L/T/X, Urine" are wired for
+            // the same post-fix reason (byte-identical measured rates).
             _builder.Create(BeholderUrine, "Beholder Interior* (Urine)")
                 .Tileset("tib01")
                 .Placeholder("gen_placeholder1")
@@ -7390,11 +7444,17 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .PrimaryOpenTerrain("RoomUrine")
                 .DoorSlotCrossers("Door")
-                .TunnelCrossers("CorridorUrine", "Door");
+                .TunnelCrossers("CorridorUrine", "Door")
+                .SetPiece("Room - Big, Urine", 3)
+                .SetPiece("Door - Alcove, Urine", 1)
+                .SetPiece("Door - I, Urine", 1)
+                .SetPiece("Door - L, Urine", 1)
+                .SetPiece("Door - T, Urine", 1)
+                .SetPiece("Door - X, Urine", 1);
 
             // Beholder Interior* (Water) -- see Blood's own doc comment above; identical shape against
-            // RoomWater/CorridorWater. "Room - Big, Water"/"Door - Alcove/I/L/T/X, Water" are NOT wired
-            // for the same LayoutGroupStamper site-search reason.
+            // RoomWater/CorridorWater. "Room - Big, Water"/"Door - Alcove/I/L/T/X, Water" are wired for
+            // the same post-fix reason (byte-identical measured rates).
             _builder.Create(BeholderWater, "Beholder Interior* (Water)")
                 .Tileset("tib01")
                 .Placeholder("gen_placeholder1")
@@ -7402,7 +7462,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .PrimaryOpenTerrain("RoomWater")
                 .DoorSlotCrossers("Door")
-                .TunnelCrossers("CorridorWater", "Door");
+                .TunnelCrossers("CorridorWater", "Door")
+                .SetPiece("Room - Big, Water", 3)
+                .SetPiece("Door - Alcove, Water", 1)
+                .SetPiece("Door - I, Water", 1)
+                .SetPiece("Door - L, Water", 1)
+                .SetPiece("Door - T, Water", 1)
+                .SetPiece("Door - X, Water", 1);
             // Medieval City 2 (tcm02) -- see this file's own MedievalCity const doc comment above for
             // the full composition writeup (Solid=Water/Open=Cobble canal city, Bridge tunnel crosser,
             // Building/Wall/Stream/Road/Rock/path exemption accounting).

@@ -481,7 +481,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to craft poisons, traps, employ stealth, and slice security systems.",
             true,
-            false,
+            true,
             false,
             CombatPointCategoryType.Utility,
             CharacterType.Standard)]

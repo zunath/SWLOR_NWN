@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service
         private const float BlastRadiusMeters = 3f;
         private const float LifetimeSeconds = 300f;
         private const float ProximityCheckIntervalSeconds = 1f;
+        private const int TrapTriggerXP = 150;
 
         private class TrapRecord
         {
@@ -154,6 +155,10 @@ namespace SWLOR.Game.Server.Service
             if (triggered)
             {
                 record.IsLive = false;
+                if (GetIsPC(record.Owner) && !GetIsDM(record.Owner))
+                {
+                    Skill.GiveSkillXP(record.Owner, SkillType.Espionage, TrapTriggerXP, false, false);
+                }
                 CombatAreaPulses.ApplyCombatPulse(
                     record.Owner,
                     record.Location,

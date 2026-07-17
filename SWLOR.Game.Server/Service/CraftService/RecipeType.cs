@@ -3117,5 +3117,15 @@ namespace SWLOR.Game.Server.Service.CraftService
 
         #endregion
 
+        #region Espionage: 6001-7000
+
+        VenomCoating1 = 6001,
+        VenomCoating2 = 6002,
+        VenomCoating3 = 6003,
+        VenomCoating4 = 6004,
+        VenomCoating5 = 6005,
+
+        #endregion
+
     }
 }

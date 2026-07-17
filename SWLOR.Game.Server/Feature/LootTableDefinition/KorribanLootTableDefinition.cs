@@ -429,6 +429,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("KORRIBAN_SITH_ROGUE_RARES")
                 .IsRare()
                 .AddItem("map_56", 11, 1, true)
+                .AddItem("lockbox_t4", 4, 1, true)
                 .AddGold(32, 5);
         }
         private void Tukata()

@@ -589,6 +589,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         // PilotAlternateVocabCrossers["trm02"] bucket the base profile documents) -- no additional wiring
         // closes them this pass.
         public const string MedievalRuralMountain = "medievalrural_mountain";
+        // Wave-15: Beholder Interior* (tib01, SWLOR_Haks/sw_t_beholder -- hak-only, 868 tiles / 43
+        // groups, 9 terrains, 11 crossers). See Beholder's own doc comment (below, next to the profile
+        // itself) for the full composition writeup, the KNOWN CALIBRATION FINDING on Room-Big/Room-Pit/
+        // Room-Pillar, and the ChultDoorway/ChultCorridor exemption.
+        public const string Beholder = "beholder";
+        public const string BeholderBlood = "beholder_blood";
+        public const string BeholderMagic = "beholder_magic";
+        public const string BeholderSewer = "beholder_sewer";
+        public const string BeholderUrine = "beholder_urine";
+        public const string BeholderWater = "beholder_water";
 
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
@@ -7083,6 +7093,217 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .PaletteVariant()
                 .SolidTerrainOverride("Tropical")
                 .PrimaryOpenTerrain("Tropical");
+            // Beholder Interior* (tib01, SWLOR_Haks/sw_t_beholder -- hak-only, UnlocalizedName
+            // "Beholder Interior*"; a custom 868-tile/43-group expansion of vanilla's 105-tile tib01,
+            // verified directly against the raw .set). Composes correctly with NO SolidTerrainOverride:
+            // Default=Border=Floor="Wall" is already the solid mass, the ordinary interior shape.
+            // PrimaryOpenTerrain("Room") is the base ("Lava") palette; five same-shape PaletteVariant
+            // siblings below recompose the SAME hak data against RoomBlood/RoomMagic/RoomSewer/
+            // RoomUrine/RoomWater -- each a genuinely separate terrain (not a district repaint of one
+            // shared terrain), verified 14/16 on the Wall/<color> 16-combo matrix for every one of the
+            // 6 colors, missing only the two pure-diagonal combos -- the same accepted-exemption shape
+            // TileCoverageCensusTests already documents elsewhere (e.g. Underdark's alt-palette
+            // exemptions). TERRAIN7/8 (RoomIce/RoomBlack) and CROSSER7/8 (CorridorIce/CorridorBlack) are
+            // genuinely vestigial: 0 pure tiles, 0 crosser-edge occurrences, 0/16 (or 1/16, the lone
+            // solid-only combo) on every matrix pairing -- these two declared colors were never actually
+            // modeled in this hak and are excluded outright, not merely left unwired.
+            //
+            // DECISIVE (re-verified directly): DoorSlotCrossers("Door") + TunnelCrossers("Corridor",
+            // "Door") gives this palette's real, full Custom-mode Tunnel vocabulary --
+            // TunnelVocabularyCheck.SupportsTunnels(..., CorridorCrosserType.Custom, "Corridor", "Door",
+            // extraDoorSlot: "Door") returns TRUE for every one of the 6 real room colors, each pairing
+            // its OWN color-specific corridor BODY crosser ("Corridor"/"CorridorBlood"/"CorridorMagic"/
+            // "CorridorSewer"/"CorridorUrine"/"CorridorWater") with the SAME universal "Door" PORT
+            // crosser shared by every color -- confirmed via a direct 10-shape body/port breakdown
+            // (straight/turn/T/X, bare and with-port, both double-port combos) all TRUE, plus the
+            // open-room-to-Wall boundary junction carrying a Door edge, also TRUE for all 6 colors.
+            // MinimumOpeningWidth stays the default 1 (fresh pathnode audit confirms 1, not 2).
+            //
+            // A genuinely UNUSED second junction family exists in the raw tile data: 18 ChultDoorway +
+            // 23 ChultCorridor tile-edge occurrences (18 ungrouped Wall-solid tiles, TILE850-867, model
+            // prefix "zdc04" -- a foreign/borrowed reskin, not this hak's own "tib01"/"zib01" naming),
+            // with the full internal 10-shape body/port vocabulary verified TRUE in isolation. Excluded
+            // here rather than wired as an alternate TunnelCrossers pairing: the open-room-to-Wall
+            // BOUNDARY junction carrying a ChultDoorway edge is FALSE for every one of the 6 real room
+            // colors (0/6 -- re-checked directly) -- this family only forms a closed maze inside the
+            // solid Wall mass with no doorway into any playable room terrain, so it can never actually
+            // connect to a generated layout regardless of which palette composes it. Documented exempt,
+            // not silently unwired.
+            //
+            // KNOWN CALIBRATION FINDING #1 (measured directly against the real solver, not assumed from
+            // the FutCity precedent): "Room - Big, <color>" (5x5, one per color including Lava)
+            // classifies as a WallRoom (a chamber hanging off a Tunnel-mode corridor carved through
+            // solid space), NOT an OpenSetPiece -- so SetPieceRoomCornerFloor/SetPieceRoomSupplyScaling
+            // (the FutCity-style "floor the ROOM envelope" knobs, which only affect OpenSetPiece siting
+            // inside already-carved room floor) have NO effect on its placement rate: measured identical
+            // Big-hit rates at SetPieceRoomCornerFloor 0/5/7/8/9/10 (Complex, sizes 24-64, 150 seeds
+            // each -- the floor is a pure no-op for this shape). Declaring the floor anyway is actively
+            // harmful once paired with "Room - Pit/Pillar, <color>" (a 3x3, hole-shaped OpenSetPiece: a
+            // plus of untouched open-Room "hole" cells around a solid, diagonal-cornered curb) -- the
+            // floor is what makes Pit/Pillar's footprint reachable at all (0 hits, never even attempted,
+            // at floor 0 -- the baseline Halls/Complex room ceiling is too small), and every attempt that
+            // IS reached corrupts the layout: isolated bisection (Lava AND Blood, Halls AND Complex,
+            // cornerFloor 7, 100 seeds each) measured 91-94% "RoomsAndCorridors layout produced
+            // disconnected open space" failures with ZERO successful Pit/Pillar placements among the
+            // rare survivors -- every real placement attempt disconnects the area, not merely most of
+            // them. This is a genuine shape incompatibility, not a room-size tuning gap -- "Room - Pit,
+            // <color>"/"Room - Pillar, <color>" (12 groups total) are excluded outright per the
+            // placement-honesty convention (see trs02's own documented Chasm-district ceiling exemption
+            // for the same "measured, not silently wired" shape). Neither SetPieceRoomCornerFloor nor
+            // SetPieceRoomSupplyScaling is declared on ANY profile below.
+            //
+            // "Room - Big, Lava" is instead wired plain (no floor), budget 3 (FutCity's own "set above
+            // the observed per-area site ceiling" convention): measured hit rate is low and noisy (0% at
+            // this pipeline's own 20x20 gate size, rising to 4.7-9.3% of areas at 32x32-40x40, Complex
+            // only, seed-base-independent -- 3 independent 150-seed sweeps at seed bases 30000/60000/
+            // 95000 each landed 7-14 hits) but NEVER disconnects, and ONLY ever surfaces under Complex
+            // (Tunnel-mode corridors carve the solid mass a WallRoom needs to hang off of) -- Halls
+            // (OpenLane mode) measured 0/450 Big hits across every size/seed-base combination tested, the
+            // same "declared but structurally unreachable under this layout style" ceiling trs02 already
+            // documents, not a silent no-op.
+            //
+            // KNOWN CALIBRATION FINDING #2 (a genuine shared-engine gap discovered while chasing this
+            // pass's own room-size question, NOT a tib01-specific issue -- reported separately rather
+            // than fixed here, see below): "Room - Big, <color>"/"Door - Alcove/I/L/T/X, <color>" for
+            // the FIVE SECONDARY colors (Blood/Magic/Sewer/Urine/Water) are deliberately NOT wired as
+            // SetPieces on their own color profiles, even though they classify correctly (WallRoom /
+            // CorridorInsert respectively) and their own TunnelCrossers("Corridor<Color>", "Door")
+            // Custom-mode vocabulary genuinely carves real "Corridor<Color>" tunnel-body edges (confirmed
+            // directly: TunnelVocabularyCheck.SupportsTunnels returns true and a solved layout actually
+            // contains "CorridorBlood" chain edges). The reason they never place is
+            // LayoutGroupStamper's OWN site-search code, not this tileset's data: IsWallRoomSiteValid's
+            // Tunnel-chain-neighbor check (`Eq(edge, CorridorCrosser)`) and
+            // TryPlaceDoorwayCorridorInsert/IsValidFlankingChainCell's straight-chain search (both call
+            // IsStraightCorridorCell with the hardcoded literal "Corridor" constant) never consult
+            // MacroLayoutParameters.TunnelBodyCrosser -- unlike CorridorInsertCrossersFor/
+            // CorridorStubCrossersFor (used for CLASSIFICATION) and HasCorridorDoorwayAdapter's sibling
+            // capability probe, which already generalize correctly. So a WallRoom or Doorway-pair
+            // CorridorInsert can never find a placement SITE on any composition whose Custom-mode body
+            // crosser isn't literally "Corridor" (case-insensitive) -- confirmed by direct isolated
+            // measurement: "Room - Big, Blood" and all five "Door - <shape>, Blood" groups, tested alone
+            // and combined, at sizes 20/32/40 across three independent 150-seed sweeps each (1350+ solved
+            // layouts total), placed ZERO instances, while the byte-identical "Room - Big, Lava" shape
+            // (Lava's body crosser IS the literal "Corridor") places normally under the exact same
+            // composition/size/seed methodology. Wiring the secondary colors' SetPieces anyway would
+            // silently register dead RNG draws for zero placed content, the same anti-pattern this
+            // codebase already avoids elsewhere (see BaseGameTilesetProfiles.OfficeInteriors' own
+            // Hallway1/Hallway2 writeup). Fixing LayoutGroupStamper's two hardcoded-literal call sites to
+            // resolve the composition's EFFECTIVE body crosser (canonical "Corridor" or
+            // MacroLayoutParameters.TunnelBodyCrosser when set) would very likely unlock this -- and
+            // would also affect several OTHER already-onboarded tilesets with a renamed Custom-mode body
+            // (CryptGrey's "GreyCorridor", MinesAndCavernsDesert/Organic's "DesertCorridor"/
+            // "OrganicCorridor", the MinesAndCavernsTracks family, CityExterior's Dock/FieldDock/
+            // GothicDock) -- a cross-cutting shared-machinery change with its own re-verification burden
+            // across every tileset that declares a renamed body crosser, out of scope for a single-
+            // tileset onboarding pass. Flagged as a follow-up rather than fixed inline here.
+            //
+            // Layout support: Halls and Complex both generate this palette at ~100% success (Halls
+            // 145-150/150, Complex 145-150/150 across every size/floor combination probed); ONLY Complex
+            // (Tunnel mode) ever surfaces "Room - Big, Lava" (the sole SetPiece wired this pass), matching
+            // every other Tunnel-gated tileset in this file.
+            //
+            // Decoration: exactly one hand-built tib01 area exists in the module (Module/are/
+            // ziyhutdung1c.are.json, 256 tiles) -- thin evidence (n=1) but real. Lighting sampled
+            // directly: (MainLight1,MainLight2,SrcLight1,SrcLight2)=(0,0,0,0) is the plurality (45.3%),
+            // used as TileLighting. Placeable palette below is the subset of that area's decorations
+            // that carry a real Module/utp blueprint (AllDungeonDefinitions_DecorationsExistAndAreVisible
+            // requires this) -- several hand-built resrefs (plc_boulder, plc_rubble, x3_plc_rubble1-3,
+            // plc_spdcocoon, x3_plc_skelmage/skelwar/skelwar2, plc_bones) have no module blueprint and
+            // are omitted rather than wired blind. Corpse-pile pair (zep_cps_pile_001/002) placed as
+            // RoomCenter; everything else (blood decals/stains, alien-hive growths, scattered corpses,
+            // misc clutter) as WallAdjacent, weighted by the sampled occurrence counts. qionhiveslime00*/
+            // _mdrn_pl_alnhve* pull from the same alien-hive family QionHiveDungeonDefinition/
+            // AlienRuinDungeonDefinition already use -- the closest existing content-theme pairing for
+            // this tileset (no theme change made here; this pass onboards the tileset profile only).
+            _builder.Create(Beholder, "Beholder Interior*")
+                .Tileset("tib01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PrimaryOpenTerrain("Room")
+                .DoorSlotCrossers("Door")
+                .TunnelCrossers("Corridor", "Door")
+                .SetPiece("Room - Big, Lava", 3)
+                .Decoration("zep_blood_004", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_blood_005", 3, DecorationContext.WallAdjacent)
+                .Decoration("zep_blood_006", 3, DecorationContext.WallAdjacent)
+                .Decoration("qionhiveslime002", 2, DecorationContext.WallAdjacent)
+                .Decoration("qionhiveslime003", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_alnhve1", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_alnhve2", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_cps_pile_001", 1, DecorationContext.RoomCenter)
+                .Decoration("zep_cps_pile_002", 1, DecorationContext.RoomCenter)
+                .Decoration("_mdrn_pl_corpsh4", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_corps02", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_corpsh8", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_corpsh6", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_bloodstain2", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_bloodstain3", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_bloodstain6", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_datapd3", 1, DecorationContext.WallAdjacent);
+
+            // Beholder Interior* (Blood) -- PaletteVariant recomposing the SAME tib01 hak data against
+            // RoomBlood/CorridorBlood (see the base Beholder profile's own doc comment above for the
+            // full verification writeup shared by every color variant). "Room - Big, Blood"/"Door -
+            // Alcove/I/L/T/X, Blood" are deliberately NOT wired -- see KNOWN CALIBRATION FINDING #2
+            // above (a LayoutGroupStamper site-search gap, not a tib01/Blood-specific one). Decorations/
+            // lighting inherit from the base Beholder profile via DungeonTilesetPaletteInheritance (no
+            // per-color evidence exists).
+            _builder.Create(BeholderBlood, "Beholder Interior* (Blood)")
+                .Tileset("tib01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("RoomBlood")
+                .DoorSlotCrossers("Door")
+                .TunnelCrossers("CorridorBlood", "Door");
+
+            // Beholder Interior* (Magic) -- see Blood's own doc comment immediately above; identical
+            // shape against RoomMagic/CorridorMagic. "Room - Big, Magic"/"Door - Alcove/I/L/T/X, Magic"
+            // are NOT wired for the same LayoutGroupStamper site-search reason.
+            _builder.Create(BeholderMagic, "Beholder Interior* (Magic)")
+                .Tileset("tib01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("RoomMagic")
+                .DoorSlotCrossers("Door")
+                .TunnelCrossers("CorridorMagic", "Door");
+
+            // Beholder Interior* (Sewer) -- see Blood's own doc comment above; identical shape against
+            // RoomSewer/CorridorSewer. "Room - Big, Sewer"/"Door - Alcove/I/L/T/X, Sewer" are NOT wired
+            // for the same LayoutGroupStamper site-search reason.
+            _builder.Create(BeholderSewer, "Beholder Interior* (Sewer)")
+                .Tileset("tib01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("RoomSewer")
+                .DoorSlotCrossers("Door")
+                .TunnelCrossers("CorridorSewer", "Door");
+
+            // Beholder Interior* (Urine) -- see Blood's own doc comment above; identical shape against
+            // RoomUrine/CorridorUrine. "Room - Big, Urine"/"Door - Alcove/I/L/T/X, Urine" are NOT wired
+            // for the same LayoutGroupStamper site-search reason.
+            _builder.Create(BeholderUrine, "Beholder Interior* (Urine)")
+                .Tileset("tib01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("RoomUrine")
+                .DoorSlotCrossers("Door")
+                .TunnelCrossers("CorridorUrine", "Door");
+
+            // Beholder Interior* (Water) -- see Blood's own doc comment above; identical shape against
+            // RoomWater/CorridorWater. "Room - Big, Water"/"Door - Alcove/I/L/T/X, Water" are NOT wired
+            // for the same LayoutGroupStamper site-search reason.
+            _builder.Create(BeholderWater, "Beholder Interior* (Water)")
+                .Tileset("tib01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .PrimaryOpenTerrain("RoomWater")
+                .DoorSlotCrossers("Door")
+                .TunnelCrossers("CorridorWater", "Door");
 
             return _builder.Build();
         }

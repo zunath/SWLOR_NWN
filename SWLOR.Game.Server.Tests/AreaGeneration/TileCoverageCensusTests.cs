@@ -1227,6 +1227,12 @@ public class TileCoverageCensusTests
         // base profile composes Castle, and the three PaletteVariants each compose one of the others.
         // No unwired terrain remains -- see BaseGameTilesetProfiles.SeaShips' own doc comment.
         ["tss13"] = new(StringComparer.OrdinalIgnoreCase),
+        // tib01 (Beholder Interior*): all 6 real room colors (Room/RoomBlood/RoomMagic/RoomSewer/
+        // RoomUrine/RoomWater) are wired as PrimaryOpenTerrain across the base Beholder profile and its
+        // 5 PaletteVariant siblings -- no unwired terrain remains. RoomIce/RoomBlack (TERRAIN7/8) never
+        // appear on ANY tile corner at all (verified directly, zero occurrences, pure OR blended) --
+        // genuinely vestigial declarations with nothing to exempt.
+        ["tib01"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     /// <summary>
@@ -1436,6 +1442,14 @@ public class TileCoverageCensusTests
         // needed" precedent), since every gangplank-bearing shape here is a real GROUP, not a bare
         // ungrouped tile this bucket would otherwise need to catch.
         ["tss13"] = new(StringComparer.OrdinalIgnoreCase),
+        // tib01 (Beholder Interior*): ChultDoorway/ChultCorridor form a genuinely UNUSED second
+        // junction family -- full internal 10-shape body/port vocabulary verified TRUE in isolation, but
+        // the open-room-to-Wall BOUNDARY junction carrying a ChultDoorway edge is FALSE for every one of
+        // the 6 real room colors (0/6, re-checked directly): a closed maze inside the solid Wall mass
+        // with no doorway into any playable room terrain, so it can never connect to a generated layout
+        // regardless of which palette composes it -- see BaseGameTilesetProfiles.Beholder's own doc
+        // comment (mirrors tdc01's own ChultDoorway/ChultCorridor exemption above, same shape).
+        ["tib01"] = new(StringComparer.OrdinalIgnoreCase) { "ChultDoorway", "ChultCorridor" },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -2256,6 +2270,7 @@ public class TileCoverageCensusTests
         "trm02",
         "tss13",
         "tts02",
+        "tib01",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -2299,6 +2314,7 @@ public class TileCoverageCensusTests
             "trm02" => BaseGameTilesetProfiles.MedievalRural,
             "tss13" => BaseGameTilesetProfiles.SeaShips,
             "tts02" => BaseGameTilesetProfiles.RuralWinterFacelift,
+            "tib01" => BaseGameTilesetProfiles.Beholder,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

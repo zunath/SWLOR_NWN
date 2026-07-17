@@ -228,6 +228,36 @@ public class OpenSetPiecePlacementRateTests
             "if this ever starts placing, Complex's room-size policy changed and this test (and its doc comment) should be revisited, not silently deleted");
     }
 
+    /// <summary>
+    /// "Room - Big, Lava" (tib01/Beholder Interior*'s 5x5 WallRoom -- a chamber hanging off a Tunnel-
+    /// mode corridor through solid space, not an OpenSetPiece) never places at this file's own 20x20
+    /// probe size on EITHER layout: measured 0/150 (Complex) and 0/146 (Halls), seedBase 95000, the
+    /// standard MeasureIsolatedGroupHits methodology. It DOES place at larger area sizes (a separate,
+    /// non-standard-size measurement: 4.7-9.3% of areas across three independent 150-seed sweeps at
+    /// 32x32/40x40, Complex only -- see BaseGameTilesetProfiles.Beholder's own doc comment), so this is
+    /// a genuine small-area site-availability ceiling, not a structural gap or a disconnection risk
+    /// (unlike "Room - Pit/Pillar, <color>", which is excluded from every profile's SetPieces entirely --
+    /// see the same doc comment). Locked in here so a future change to room/corridor generation at this
+    /// size is a deliberate, visible decision rather than a silent behavior drift.
+    /// </summary>
+    [Test]
+    public void BeholderRoomBigLava_StillDoesNotPlaceAt20_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Beholder];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var layoutKey in new[] { StandardLayoutProfiles.Complex, StandardLayoutProfiles.Halls })
+        {
+            var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[layoutKey];
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "Room - Big, Lava", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'Room - Big, Lava' has a documented placement ceiling at this size on {layoutKey} -- " +
+                "if it ever starts placing, generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
     // ---------------- Mixed/open-member-with-interior-doorway-edge OpenSetPiece proofs ----------------
 
     /// <summary>

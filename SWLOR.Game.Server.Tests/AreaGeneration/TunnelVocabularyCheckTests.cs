@@ -280,6 +280,22 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.RuralWinterFacelift,
         BaseGameTilesetProfiles.RuralWinterFaceliftWater,
         BaseGameTilesetProfiles.RuralWinterFaceliftFort,
+        // Beholder Interior* (tib01): declares 11 crossers (Corridor/Door/CorridorBlood/CorridorMagic/
+        // CorridorSewer/CorridorUrine/CorridorWater/CorridorIce/CorridorBlack/ChultDoorway/
+        // ChultCorridor), but NO literal "Doorway" crosser at all (its universal port crosser is named
+        // "Door", not "Doorway") -- the bare canonical Corridor+Doorway probe this test runs fails for
+        // all six profiles regardless of which color each composes as PrimaryOpenTerrain. Each profile's
+        // own TunnelCrossers("Corridor"/"CorridorBlood"/etc., "Door") + DoorSlotCrossers("Door")
+        // declaration is what gives it REAL Custom-mode Tunnel support instead (verified directly via
+        // TunnelVocabularyCheck.SupportsTunnels(Custom, ...) -- see BaseGameTilesetProfiles.Beholder's
+        // own doc comment), which this canonical-only check doesn't exercise -- same shape as
+        // CityExterior's Dock/FieldDock/GothicDock families above.
+        BaseGameTilesetProfiles.Beholder,
+        BaseGameTilesetProfiles.BeholderBlood,
+        BaseGameTilesetProfiles.BeholderMagic,
+        BaseGameTilesetProfiles.BeholderSewer,
+        BaseGameTilesetProfiles.BeholderUrine,
+        BaseGameTilesetProfiles.BeholderWater,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

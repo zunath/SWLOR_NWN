@@ -136,6 +136,40 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         }
 
         /// <summary>
+        /// True when <paramref name="edge"/> is the canonical "Corridor" tunnel-body crosser, or this
+        /// composition's own Custom-mode TunnelBodyCrosser (e.g. tdc01's "GreyCorridor", tdm01's
+        /// "DesertCorridor"/"OrganicCorridor") -- the Corridor-only analogue of IsBodyCrosserName (no
+        /// Alley) used by the Doorway-pair CorridorInsert splice (TryPlaceDoorwayCorridorInsert/
+        /// IsValidFlankingChainCell) and the WallRoom perimeter-neighbor check (IsWallRoomSiteValid) to
+        /// recognize a genuine wall-embedded tunnel chain cell regardless of which body-crosser family
+        /// this district composed with. Deliberately excludes Alley: those two call sites already only
+        /// ever matched canonical "Corridor" pre-generalization, and this fix must stay a no-op for
+        /// that existing behavior.
+        /// </summary>
+        private static bool IsCorridorTunnelBodyEdge(string edge, MacroLayoutParameters parameters) =>
+            Eq(edge, CorridorCrosser) ||
+            (parameters.CorridorCrosserType == CorridorCrosserType.Custom &&
+             !string.IsNullOrEmpty(parameters.TunnelBodyCrosser) && Eq(edge, parameters.TunnelBodyCrosser));
+
+        /// <summary>
+        /// IsStraightCorridorCell against the effective tunnel-body crosser for this composition: tries
+        /// the canonical "Corridor" family first, then this composition's own Custom-mode
+        /// TunnelBodyCrosser (see IsCorridorTunnelBodyEdge) when the canonical check doesn't match. Two
+        /// concrete-string passes rather than a predicate because IsStraightCorridorCell requires the
+        /// SAME crosser value on both opposite edges (a chain is homogeneous; it never mixes the
+        /// canonical and Custom-mode names on one straight segment).
+        /// </summary>
+        private static bool IsStraightTunnelBodyCell(
+            EdgeCrosserGrid crossers, MacroLayoutParameters parameters, (int X, int Y) cell, out bool isVertical)
+        {
+            if (IsStraightCorridorCell(crossers, cell, CorridorCrosser, out isVertical)) return true;
+
+            return parameters.CorridorCrosserType == CorridorCrosserType.Custom &&
+                   !string.IsNullOrEmpty(parameters.TunnelBodyCrosser) &&
+                   IsStraightCorridorCell(crossers, cell, parameters.TunnelBodyCrosser, out isVertical);
+        }
+
+        /// <summary>
         /// Same recognition as <see cref="IsDoorwayEdge"/>, but also returns the SPECIFIC crosser
         /// string that matched (canonical "Doorway" or whichever declared alternate) rather than just
         /// a bool. Needed wherever the matched name itself must be threaded onward instead of assumed
@@ -1115,7 +1149,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     if (layout.PinnedTiles.ContainsKey(cell)) continue;
                     if (transitionTiles.Contains(cell)) continue;
                     if (!IsFullySolidCell(corners, cell, parameters.SolidTerrain)) continue;
-                    if (!IsStraightCorridorCell(crossers, cell, CorridorCrosser, out var isVertical)) continue;
+                    if (!IsStraightTunnelBodyCell(crossers, parameters, cell, out var isVertical)) continue;
 
                     var (dxA, dyA) = isVertical ? (0, 1) : (1, 0); // Top or Right direction
                     var neighborA = (X: cell.X + dxA, Y: cell.Y + dyA);
@@ -1132,7 +1166,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             foreach (var cell in candidates)
             {
-                IsStraightCorridorCell(crossers, cell, CorridorCrosser, out var isVertical);
+                IsStraightTunnelBodyCell(crossers, parameters, cell, out var isVertical);
 
                 for (var orientation = 0; orientation < 4; orientation++)
                 {
@@ -1185,7 +1219,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             if (transitionTiles.Contains(neighbor)) return false;
             if (!IsFullySolidCell(corners, neighbor, parameters.SolidTerrain)) return false;
 
-            return IsStraightCorridorCell(crossers, neighbor, CorridorCrosser, out var neighborIsVertical) &&
+            return IsStraightTunnelBodyCell(crossers, parameters, neighbor, out var neighborIsVertical) &&
                    neighborIsVertical == axisIsVertical;
         }
 
@@ -1384,7 +1418,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 for (var slot2 = 0; slot2 < 4; slot2++)
                 {
                     var edge = crossers.GetEdge(neighbor.X, neighbor.Y, slot2);
-                    if (Eq(edge, CorridorCrosser)) neighborHasCorridor = true;
+                    if (IsCorridorTunnelBodyEdge(edge, parameters)) neighborHasCorridor = true;
                     if (IsDoorwayEdge(edge, parameters)) neighborHasDoorway = true;
                 }
 

@@ -3105,6 +3105,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         SalvagedReactorPlate = 5010,
         SalvagedPistonGauntlet = 5011,
         SalvagedSiegeOptics = 5012,
+        SalvagedPrecisionOptic = 5013,
+        SalvagedDetoniteKnuckle = 5014,
+        SalvagedJammerMesh = 5015,
 
         #endregion
 

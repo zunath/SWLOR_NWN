@@ -27,7 +27,35 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			FightClubBackroomsRares();
 
 			CapstoneSmugglersMoonDungeonRares();
+			CzerkaArmsRareElites();
 			return _builder.Build();
+		}
+
+		// Named rare elite droids/troopers in the Czerka Arms Test Range: unique gear + a blueprint,
+		// plus a guaranteed encounter-specific salvage component the recipe requires.
+		private void CzerkaArmsRareElites()
+		{
+			_builder.Create("CZERKA_OVERWATCH_RARES")
+				.IsRare()
+				.AddItem("bipod_rig", 1, 1, true)
+				.AddItem("barrel_shroud", 1, 1, true)
+				.AddItem("bp_precoptic", 1, 1, true);
+			_builder.Create("CZERKA_BLASTBREAKER_RARES")
+				.IsRare()
+				.AddItem("deton_cestus", 1, 1, true)
+				.AddItem("blast_vest", 1, 1, true)
+				.AddItem("bp_detonknuck", 1, 1, true);
+			_builder.Create("CZERKA_SUPPRESSOR_RARES")
+				.IsRare()
+				.AddItem("jammer_array", 1, 1, true)
+				.AddItem("riot_harness", 1, 1, true)
+				.AddItem("bp_jammermesh", 1, 1, true);
+			_builder.Create("CZERKA_OVERWATCH_COMP")
+				.AddItem("targeting_mod", 1, 1);
+			_builder.Create("CZERKA_BLASTBREAKER_COMP")
+				.AddItem("detonite_chg", 1, 1);
+			_builder.Create("CZERKA_SUPPRESSOR_COMP")
+				.AddItem("signal_disr", 1, 1);
 		}
 
 		private void CapstoneSmugglersMoonDungeonRares()

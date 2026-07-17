@@ -75493,6 +75493,171 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Marksman Bipod Rig"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bipod_rig"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Vented Barrel Shroud"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "barrel_shroud"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Detonation Cestus"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "deton_cestus"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blast-Plated Vest"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blast_vest"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Signal Jammer Array"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "jammer_array"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Riot Control Harness"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "riot_harness"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Czerka Targeting Module"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "targeting_mod"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Detonite Charge"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "detonite_chg"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Signal Disruptor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "signal_disr"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Precision Optic"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_precoptic"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Detonite Knuckle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_detonknuck"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Jammer Mesh"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_jammermesh"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Precision Optic"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "precision_optic"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Detonite Knuckle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "detonite_knuck"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jammer Mesh"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "jammer_mesh"
+                          }
+                        },
+{
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Reactor-Forged Plating"
                           },
                           "RESREF": {

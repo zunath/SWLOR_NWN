@@ -55,6 +55,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("targeting_lens", 1)
                 .Component("elec_good", 4)
                 .Component("fiberp_good", 2);
+
+            // Precision Optic (helmet) - Czerka Arms Test Range
+            _builder.Create(RecipeType.SalvagedPrecisionOptic, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("precision_optic")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("targeting_mod", 1)
+                .Component("elec_good", 4)
+                .Component("fiberp_good", 2);
+
+            // Detonite Knuckle (gloves) - Czerka Arms Test Range
+            _builder.Create(RecipeType.SalvagedDetoniteKnuckle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("detonite_knuck")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("detonite_chg", 1)
+                .Component("elec_good", 3)
+                .Component("fiberp_good", 2);
+
+            // Jammer Mesh (chest) - Czerka Arms Test Range
+            _builder.Create(RecipeType.SalvagedJammerMesh, SkillType.Smithery)
+                .Category(RecipeCategoryType.Tunic)
+                .Resref("jammer_mesh")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("signal_disr", 1)
+                .Component("elec_good", 4)
+                .Component("fiberp_good", 2);
         }
     }
 }

@@ -27,8 +27,33 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DragonLoot();
             SmugglersMoonFightClubBackrooms();
             CzerkaArmsTestRange();
+            CzerkaArmsRareElites();
 
             return _builder.Build();
+        }
+
+        // Dedicated rare table (tagged waypoint in pw_ar_czarmrange) so the capstone lesson table
+        // stays exactly the general enemy steps.
+        private void CzerkaArmsRareElites()
+        {
+            _builder.Create("CZERKA_ARMS_TEST_RANGE_RARES", "Czerka Arms Test Range - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "overwatch")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "blastbreaker")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "suppressor")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
         }
 
         private void RedBladeGang()

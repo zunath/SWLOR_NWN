@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Service.AreaGenerationService.Layouts;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
@@ -27,6 +29,39 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             if (random == null) throw new ArgumentNullException(nameof(random));
 
+            var wasCloned = false;
+
+            // Terrain-label case unification. A .set file can spell the SAME terrain differently
+            // across its own sections (ttz01: [GENERAL] Default=Grass but [TERRAIN0] Name=grass with
+            // lowercase tile-corner labels), and profile-declared labels are hand-typed strings, so
+            // two effective parameter labels can case-insensitively denote one terrain while differing
+            // ordinally (ttz01/Tropical: SolidTerrain="Grass" stamped from Default by LayoutSolver,
+            // OpenTerrain="grass" from the profile). That split is incoherent: the layout styles,
+            // ValidateInvariants' open-connectivity check, and LayoutCornerUtils' HashSet label sets
+            // all compare corner labels ORDINALLY, while classification/site-search/resolution
+            // (LayoutGroupStamper.Eq, TileResolver) compare case-insensitively -- so an intended
+            // Solid==Open open-field composition actually generates as a two-label cave, and
+            // LayoutGroupStamper.WriteMember's Canonicalize (which checks SolidTerrain FIRST) rewrites
+            // a stamped group's open-spelled corners to the solid spelling, physically converting open
+            // corners to solid. Measured on ttz01/Tropical/Organic: each door-bearing WallAlcove group
+            // in isolation produced 36-40% single-attempt "disconnected open space" failures (a stamp
+            // adjacent to the open blob's edge pinches off a pocket); unifying the spelling measured 0
+            // failures on the same seeds. Unifies each split group of labels to the tileset's own
+            // declared [TERRAIN] spelling (falling back to the first spelling seen when the label is
+            // not a declared terrain), on a clone so the caller's object is never mutated. Gated on an
+            // actual split existing: every composition whose labels already agree (all onboarded
+            // profiles except ttz01's grass-open pair) takes zero clones and zero behavior change.
+            if (tileset != null)
+            {
+                var caseFixes = TerrainLabelCaseFixes(parameters, tileset);
+                if (caseFixes.Count != 0)
+                {
+                    parameters = parameters.Clone();
+                    wasCloned = true;
+                    ApplyTerrainLabelCaseFixes(parameters, caseFixes);
+                }
+            }
+
             // The Alley crosser vocabulary exists only in vmr01, and even there only against Plaza (not
             // every secondary district terrain -- districts never activate under Alley mode anyway, see
             // TunnelVocabularyCheck). Composing an Alley-corridor layout (Streets) with a tileset that
@@ -38,16 +73,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // universally-verified Corridor/Doorway vocabulary instead — Streets then reads as regular
             // tunnels on tilesets without full Alley coverage. Adjusted on a clone so the caller's
             // parameters object is never mutated.
-            var wasCloned = false;
             if (tileset != null &&
                 parameters.CorridorCrosserType == CorridorCrosserType.Alley &&
                 !TunnelVocabularyCheck.SupportsTunnels(
                     tileset, parameters.OpenTerrain, parameters.SecondaryOpenTerrain, parameters.SolidTerrain,
                     CorridorCrosserType.Alley, extraDoorSlotCrossers: parameters.DoorSlotCrossers))
             {
-                parameters = parameters.Clone();
+                if (!wasCloned)
+                {
+                    parameters = parameters.Clone();
+                    wasCloned = true;
+                }
+
                 parameters.CorridorCrosserType = CorridorCrosserType.Corridor;
-                wasCloned = true;
             }
 
             // Tunnel mode (Corridor or Custom crosser type, post Alley-downgrade above) needs the full
@@ -203,6 +241,85 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             ValidateInvariants(layout, parameters);
 
             return layout;
+        }
+
+        /// <summary>
+        /// Detects case-split terrain labels among the composition's effective terrain-label
+        /// parameters (see the unification block in <see cref="Generate"/> for the full rationale and
+        /// the measured ttz01 evidence): groups the non-empty labels case-insensitively, and for any
+        /// group carrying more than one ordinal spelling, emits (From, To) fixes mapping every
+        /// non-canonical spelling to the canonical one -- the tileset's own declared [TERRAIN]
+        /// spelling when the label is a declared terrain, else the group's first spelling in field
+        /// order. Returns an empty list (the overwhelmingly common case: no clone, no change) when
+        /// every label group already agrees on one spelling.
+        /// </summary>
+        private static List<(string From, string To)> TerrainLabelCaseFixes(MacroLayoutParameters parameters, TilesetModel tileset)
+        {
+            var labels = TerrainLabelFields(parameters);
+            var fixes = new List<(string From, string To)>();
+
+            foreach (var group in labels
+                         .Where(l => !string.IsNullOrEmpty(l))
+                         .GroupBy(l => l, StringComparer.OrdinalIgnoreCase))
+            {
+                var spellings = group.Distinct(StringComparer.Ordinal).ToList();
+                if (spellings.Count < 2) continue;
+
+                var canonical = tileset.Terrains
+                                    .FirstOrDefault(t => string.Equals(t, group.Key, StringComparison.OrdinalIgnoreCase))
+                                ?? spellings[0];
+
+                foreach (var spelling in spellings)
+                {
+                    if (!string.Equals(spelling, canonical, StringComparison.Ordinal))
+                        fixes.Add((spelling, canonical));
+                }
+            }
+
+            return fixes;
+        }
+
+        /// <summary>Applies <see cref="TerrainLabelCaseFixes"/>' (From, To) respellings to every
+        /// terrain-label field on <paramref name="parameters"/> (always a clone -- see the unification
+        /// block in <see cref="Generate"/>). Matching is ordinal: only the exact split spelling is
+        /// rewritten, never an unrelated label.</summary>
+        private static void ApplyTerrainLabelCaseFixes(MacroLayoutParameters parameters, List<(string From, string To)> fixes)
+        {
+            string Fix(string label)
+            {
+                foreach (var (from, to) in fixes)
+                {
+                    if (string.Equals(label, from, StringComparison.Ordinal))
+                        return to;
+                }
+
+                return label;
+            }
+
+            parameters.SolidTerrain = Fix(parameters.SolidTerrain);
+            parameters.OpenTerrain = Fix(parameters.OpenTerrain);
+            parameters.SecondaryOpenTerrain = Fix(parameters.SecondaryOpenTerrain);
+            parameters.AccentTerrain = Fix(parameters.AccentTerrain);
+            parameters.ChannelTerrain = Fix(parameters.ChannelTerrain);
+            parameters.PoolTerrain = Fix(parameters.PoolTerrain);
+            parameters.ReliefBlendTerrain = Fix(parameters.ReliefBlendTerrain);
+        }
+
+        /// <summary>Every terrain-label field a macro layout composition writes into (or compares
+        /// against) the corner-label grid, in a stable field order. Crosser names are a separate
+        /// vocabulary (edge grid, never corner labels) and deliberately excluded.</summary>
+        private static string[] TerrainLabelFields(MacroLayoutParameters parameters)
+        {
+            return new[]
+            {
+                parameters.SolidTerrain,
+                parameters.OpenTerrain,
+                parameters.SecondaryOpenTerrain,
+                parameters.AccentTerrain,
+                parameters.ChannelTerrain,
+                parameters.PoolTerrain,
+                parameters.ReliefBlendTerrain
+            };
         }
 
         private static void ValidateInvariants(MacroLayout layout, MacroLayoutParameters parameters)

@@ -895,15 +895,18 @@ public class OpenSetPiecePlacementRateTests
     // ---------------- ttz01 Tropical* placement proofs ----------------
 
     /// <summary>
-    /// Placement proof for BaseGameTilesetProfiles.Tropical's SAFE (non-door) all-grass OpenSetPiece
-    /// family -- see that profile's own "KNOWN GAP" doc comment for why the nine DOOR-bearing siblings
-    /// (Barn01_2x2, Barn02_1x2, Barn03_1x2, Inn_1x2, Farm01_2x2, Farm02_1x2, Farm03_1x2, Barracks_1x2,
-    /// Windmill_2x2) are deliberately NOT wired here at all (a measured Organic-layout disconnection
-    /// risk) and so have no placement-rate test either. Measured (seedBase 95000, 150 seeds each, Halls,
-    /// all successes=150): "DragSkel_1x2" 62.7% (94/150), "Field01_2x2" 29.3% (44/150), "Field02_2x2"
-    /// 29.3% (44/150), "Field03_2x1" 62.7% (94/150), "Tower_1x2" 62.7% (94/150), "Warzone_1x2" 62.7%
-    /// (94/150), "Temple03_3x2" 7.3% (11/150), "Temple02_2x2" 29.3% (44/150), "Temple01_3x2" 7.3%
-    /// (11/150). Thresholds set well under each measured floor for safety margin.
+    /// Placement proof for BaseGameTilesetProfiles.Tropical's non-door all-grass OpenSetPiece family.
+    /// The nine DOOR-bearing siblings (Barn01_2x2, Barn02_1x2, Barn03_1x2, Inn_1x2, Farm01_2x2,
+    /// Farm02_1x2, Farm03_1x2, Barracks_1x2, Windmill_2x2) route SetPieceWallAlcove instead and are
+    /// wired on the profile since the terrain-label case unification resolved their measured
+    /// Organic-disconnection gap -- see the profile's own "RESOLVED GAP" doc comment and
+    /// TerrainLabelCaseUnificationTests. Measured post-unification (seedBase 95000, 150 seeds each,
+    /// Halls, all successes=150): "DragSkel_1x2" 62.7% (94/150), "Field01_2x2" 28.7% (43/150),
+    /// "Field02_2x2" 28.7% (43/150), "Field03_2x1" 62.7% (94/150), "Tower_1x2" 62.7% (94/150),
+    /// "Warzone_1x2" 62.7% (94/150), "Temple03_3x2" 6.7% (10/150), "Temple02_2x2" 28.7% (43/150),
+    /// "Temple01_3x2" 6.7% (10/150) -- within a hit or two of the pre-unification measurements (the
+    /// unified spelling changes the composition's internal label regime, not its open-field shape).
+    /// Thresholds set well under each measured floor for safety margin.
     /// </summary>
     [Test]
     public void TropicalOpenSetPieces_PlaceInIsolation()
@@ -934,10 +937,44 @@ public class OpenSetPiecePlacementRateTests
     }
 
     /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.Tropical's nine door-bearing 1x2/2x2 groups, which
+    /// route SetPieceWallAlcove on this Solid==Open composition (allCornersSolid is trivially true)
+    /// and are wired since the terrain-label case unification resolved their measured Organic
+    /// disconnection gap (see the profile's own "RESOLVED GAP" doc comment and
+    /// TerrainLabelCaseUnificationTests, which pins the disconnection side). Measured (seedBase 95000,
+    /// 150 seeds each, Halls, all successes=150): every one of the nine places on 100% (150/150) of
+    /// seeds -- on an open-field composition a WallAlcove site (fully "solid" by the case-insensitive
+    /// check, flat, crosser-free, unpinned, door member touching open space) exists practically
+    /// everywhere. Threshold 0.5 for safety margin.
+    /// </summary>
+    [Test]
+    public void TropicalWallAlcoves_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Tropical];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[]
+                 {
+                     "Barn01_2x2", "Barn02_1x2", "Barn03_1x2", "Inn_1x2", "Farm01_2x2",
+                     "Farm02_1x2", "Farm03_1x2", "Barracks_1x2", "Windmill_2x2",
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 1, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a WallAlcove on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
     /// Placement proof for BaseGameTilesetProfiles.TropicalSand's own OpenSetPiece family (all sand-
-    /// only groups, sand's own open-field composition). "Barracks_1x2(sand)" IS door-bearing but,
-    /// unlike its grass-side siblings, measured 0/300 Organic disconnections (ProbeTool) -- a genuinely
-    /// different outcome from Tropical's own door-bearing family, per that profile's own doc comment --
+    /// only groups, sand's own open-field composition). "Barracks_1x2(sand)" IS door-bearing but
+    /// measured 0/300 Organic disconnections (ProbeTool) even before the terrain-label case
+    /// unification fix: its explicit SolidTerrainOverride("sand")==PrimaryOpenTerrain("sand") pair is
+    /// one string, so it never had grass-open's Solid/Open case split (see the Tropical profile's own
+    /// "RESOLVED GAP" doc comment and TerrainLabelCaseUnificationTests) --
     /// so it stays wired. Measured (seedBase 95000, 150 seeds each, Halls, all successes=150):
     /// "DragSkel_1x2(sand)" 68.7% (103/150), "Temple01_3x2(sand)" 11.3% (17/150), "Temple02_2x2(sand)"
     /// 40.7% (61/150), "Temple03_3x2(sand)" 11.3% (17/150), "Warzone_1x2(sand)" 68.7% (103/150),

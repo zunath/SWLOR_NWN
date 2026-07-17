@@ -6112,30 +6112,35 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // see ReliefPiecePlacementRateTests' own doc comment on why only Complex ever paints a
             // nonzero relief field).
             //
-            // KNOWN GAP, measured directly (ProbeTool, retryCount=1, 300-seed sweep against the real
-            // BuildTilesetProfiles() output): nine door-bearing 1x2/2x2 GROUPs on this base profile --
-            // "Barn01_2x2", "Barn02_1x2", "Barn03_1x2", "Inn_1x2", "Farm01_2x2", "Farm02_1x2",
-            // "Farm03_1x2", "Barracks_1x2", "Windmill_2x2" (all classify as SetPieceWallAlcove, since
-            // allCornersSolid is trivially true the instant a composition sets Solid==Open) -- each
-            // measured a 36-39% single-attempt Organic disconnection rate in isolation (any one alone,
-            // maxPerArea 5, 100 seeds), and the FULL profile (all nine wired, maxPerArea 1 each,
-            // matching production) measured 60.3% (181/300) against Organic specifically; Complex/Halls
-            // are unaffected. This is NOT a general OrganicCave+WallAlcove gap: ttr01's own structurally
-            // IDENTICAL sibling groups ("Barn 1 (2x2)", "Windmill (2x2)", "Barracks (1x2)" -- verified
-            // tile-for-tile identical Rows/Columns/door-member layout against their ttz01 counterparts)
-            // measure 0/300 disconnections isolated the same way, and removing EVERY OTHER declared
-            // knob here (AccentTerrain, RoadCrosser, MaxReliefRegions, FeatureTiles, ExitGroups)
-            // individually does NOT fix it -- only removing the SetPieces (or these nine specifically)
-            // does. The root mechanism was not fully isolated within this pass (TryPlaceWallAlcove/
-            // WriteMember do not appear to touch layout.Corners.Labels for these tiles' own
-            // corners -- all-grass -- differently than any of the safe, non-door SetPieces below), so
-            // rather than ship content with a measured 60% single-attempt failure rate against a real
-            // layout style, these nine groups are deliberately left OUT of this profile's SetPieces and
-            // instead carry a named TileCoverageCensusTests.PilotExpectedExemptions entry citing this
-            // exact measurement. Flagged separately for a focused investigation into WHY WallAlcove
-            // placement interacts differently with ttz01's tile data than ttr01's structurally identical
-            // groups. The nine SAFE, non-door 2x2/2x3/1x2 groups below measured 0% disconnection both
-            // isolated and in the full sweep and are wired normally.
+            // RESOLVED GAP (was: nine door-bearing WallAlcove groups measured 36-39% isolated / 60.3%
+            // full-wire single-attempt "disconnected open space" failures against Organic, so they
+            // shipped unwired). Root cause, pinned with pass-by-pass instrumentation (ProbeTool
+            // "dissect", seed 3, Barn01_2x2 isolated): ttz01.set spells the SAME terrain two ways --
+            // [GENERAL] Default=Grass (capital) but [TERRAIN0] Name=grass with lowercase tile-corner
+            // labels -- so with no SolidTerrainOverride declared here, LayoutSolver stamped
+            // SolidTerrain="Grass" (from Default) while OpenTerrain="grass" (this profile), and the
+            // intended Solid==Open open-field composition actually ran as a TWO-label mixed regime:
+            // ordinal comparers (OrganicCaveLayout's ==, ValidateInvariants' HashSet open-label
+            // connectivity) saw a real solid-mass cave, while case-insensitive comparers
+            // (LayoutGroupStamper.Eq classification/site checks, TileResolver) saw one degenerate
+            // terrain. Door-bearing groups route WallAlcove, whose "fully solid" site search (Eq)
+            // accepted fully-OPEN field cells anywhere, and WriteMember's Canonicalize checks
+            // SolidTerrain FIRST -- rewriting the stamped tiles' lowercase "grass" corners to capital
+            // "Grass", i.e. physically converting open corners to solid. A stamp landing against the
+            // open blob's edge pinches off a pocket => disconnection. Door-free groups route
+            // OpenSetPiece (room-interior + full margin ring, which cannot enclose anything -- and on
+            // Organic they rarely find a site at all), hence the exact door=True discriminator.
+            // ttr01/tts01 never hit this because their .set files spell Default and [TERRAIN0]
+            // identically ("Grass"/"Snow") and their profiles match that spelling; TropicalSand's
+            // explicit SolidTerrainOverride("sand")==PrimaryOpenTerrain("sand") is likewise one
+            // string. Fixed generally in MacroLayoutGenerator's terrain-label case unification (case-
+            // split labels are snapped to the tileset's declared [TERRAIN] spelling on a clone before
+            // dispatch; gated so agreeing compositions are byte-identical). Post-fix measurements
+            // (ProbeTool, retryCount=1): Barn01_2x2 isolated maxPerArea=5 0/60 disconnections (was
+            // 24/60 on the same seeds), full production wiring 0/300 (was 181/300), ttr01 siblings and
+            // Barracks_1x2(sand) stay 0. TerrainLabelCaseUnificationTests pins all of this. The nine
+            // groups are wired below (maxPerArea 1 each) alongside the nine always-safe door-free
+            // groups.
             //
             // MinimumOpeningWidth stays the verified default of 1 for all four Solid/Open pairings
             // (grass/grass, sand/sand, water/grass, water/sand), matching every prior exterior wave.
@@ -6193,7 +6198,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("Warzone_1x2", 1)
                 .SetPiece("Temple03_3x2", 1)
                 .SetPiece("Temple02_2x2", 1)
-                .SetPiece("Temple01_3x2", 1);
+                .SetPiece("Temple01_3x2", 1)
+                .SetPiece("Barn01_2x2", 1)
+                .SetPiece("Barn02_1x2", 1)
+                .SetPiece("Barn03_1x2", 1)
+                .SetPiece("Inn_1x2", 1)
+                .SetPiece("Farm01_2x2", 1)
+                .SetPiece("Farm02_1x2", 1)
+                .SetPiece("Farm03_1x2", 1)
+                .SetPiece("Barracks_1x2", 1)
+                .SetPiece("Windmill_2x2", 1);
 
             // Tropical's Sand accent-slot palette -- PaletteVariant profile recomposing the SAME ttz01
             // hak data the base Tropical profile above uses, but a genuinely NEW shape among this

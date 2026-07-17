@@ -236,29 +236,24 @@ namespace SWLOR.Game.Server.Feature
             // zero decorations at low base densities even though the theme curates a real palette, so
             // asserting DecorationsPlaced > 0 outright would be a false-failure risk, not a real
             // invariant. What IS a real, RNG-independent invariant is that whatever the planner
-            // decided gets spawned exactly — re-running the same deterministic Plan() against this
-            // same resolved layout/request must match DungeonContentPlacer's own spawn count 1:1;
-            // any mismatch means CreateObject/spawn tracking broke, not that RNG rolled unluckily.
+            // decided gets spawned exactly — the deterministic plan count is recorded on the result
+            // (DecorationsPlanned) and the batched spawn (see DungeonContentPlacer.PlaceDecorations,
+            // which chains large city-density plans across scheduler ticks) must converge on it 1:1;
+            // any shortfall means CreateObject/spawn tracking broke, not that RNG rolled unluckily.
+            // The count assertion therefore runs in the deferred block below, after the batches have
+            // had time to drain.
             var detail = DungeonContentPlacer.GetDungeonDetail(themeKey);
-            var tilesetKey = string.IsNullOrEmpty(instance.Request?.TilesetProfileKey) ? detail.TilesetProfileKey : instance.Request.TilesetProfileKey;
-            DungeonContentPlacer.GetAllTilesetProfiles().TryGetValue(tilesetKey, out var tileset);
-            var decorationDensityPercent = instance.Request?.DecorationDensityPercent ?? 100;
-            var expectedDecorations = DungeonDecorationPlanner.Plan(instance.Layout, tileset, detail, decorationDensityPercent);
-            if (population.DecorationsPlaced != expectedDecorations.Count)
-                throw new InvalidOperationException(
-                    $"{themeKey}: decoration spawn count {population.DecorationsPlaced} does not match the " +
-                    $"deterministic plan count {expectedDecorations.Count} — spawning likely failed for some planned decoration(s).");
-
-            if (expectedDecorations.Count == 0 && detail.Decorations.Count > 0 && detail.DecorationBaseDensity > 0)
+            if (population.DecorationsPlanned == 0 && detail.Decorations.Count > 0 && detail.DecorationBaseDensity > 0)
                 Report($"{themeKey}: decoration pass planned zero placeables this run (RNG); palette and density are both non-empty, so this is not treated as a failure.");
 
             Report($"{themeKey}: content placed — {population.CreaturesSpawned} creatures in {population.RoomsPopulated} rooms, " +
                    $"boss '{population.BossResref}', treasure container present, exit present, " +
                    $"{population.DoorsCreated}/{doorTransitions} transition doors created, " +
-                   $"{population.DecorationsPlaced} decoration(s) placed.");
+                   $"{population.DecorationsPlaced}/{population.DecorationsPlanned} decoration(s) placed so far.");
 
             // The treasure fill happens on a later tick (placeable inventories reject items in
-            // their creation script context), so its assertion and teardown defer once more.
+            // their creation script context), so its assertion and teardown defer once more — as
+            // does the decoration spawn-count assertion (batched across ticks, see above).
             Scheduler.Schedule(() =>
             {
                 try
@@ -267,6 +262,15 @@ namespace SWLOR.Game.Server.Feature
                         throw new InvalidOperationException($"{themeKey}: treasure fill produced no items.");
 
                     Report($"{themeKey}: treasure filled with {population.TreasureItemsSpawned} item(s).");
+
+                    if (!population.DecorationsSpawnComplete)
+                        throw new InvalidOperationException(
+                            $"{themeKey}: batched decoration spawning did not complete within the deferred window " +
+                            $"({population.DecorationsPlaced}/{population.DecorationsPlanned} spawned).");
+                    if (population.DecorationsPlaced != population.DecorationsPlanned)
+                        throw new InvalidOperationException(
+                            $"{themeKey}: decoration spawn count {population.DecorationsPlaced} does not match the " +
+                            $"deterministic plan count {population.DecorationsPlanned} — spawning likely failed for some planned decoration(s).");
 
                     if (!AreaGeneration.DestroyGeneratedArea(result.InstanceId, out var destroyFailure))
                         throw new InvalidOperationException($"{themeKey}: teardown failed: {destroyFailure}");

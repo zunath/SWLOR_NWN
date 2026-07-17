@@ -53,7 +53,60 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// curated here never free-stand in the open -- the reported "sign panel next to a knee-high
         /// divider" artifact.
         /// </summary>
-        StructureAdjacent = 6
+        StructureAdjacent = 6,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): a member of a composed
+        /// clutter pile (see DungeonDecorationPlanner.PlanClutterPile) -- 3-8 junk items packed
+        /// within a ~1.2-2.5m radius, drawn from the room's own junk motif over the palette's
+        /// <see cref="DecorationRole.Clutter"/> entries. This is the dominant hand-built arrangement
+        /// (75% of hand-built fcx01 decoratives sit within 3m of another decorative; all-NN median
+        /// 1.6m) that independent per-tile scatter cannot produce.
+        /// </summary>
+        ClutterPile = 7,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): a ground decal (dirt patch,
+        /// floor stain, floor marking) layered UNDER a clutter pile -- see
+        /// DungeonDecorationPlanner.PlanClutterPile. Decals never stand alone: hand-built areas use
+        /// them exclusively as layering beneath junk arrangements, so the planner only ever emits a
+        /// <see cref="DecorationRole.GroundDecal"/> entry through a pile (or as a courtyard center
+        /// that gets clutter layered on top).
+        /// </summary>
+        GroundDecal = 8
+    }
+
+    /// <summary>
+    /// Semantic role of a curated decoration entry, driving which ARRANGEMENT mechanisms may place
+    /// it (see DungeonDecorationPlanner). Independent of <see cref="DecorationContext"/> (where a
+    /// single placement may anchor): the role says what KIND of thing the art is, mined from how
+    /// hand-built reference areas actually arrange that resref.
+    /// </summary>
+    public enum DecorationRole
+    {
+        /// <summary>Default: an ordinary fixture placed by the run/centerpiece/flank/courtyard
+        /// mechanisms exactly as before roles existed.</summary>
+        Fixture = 0,
+        /// <summary>
+        /// Pile-able junk (crates, containers, barrels, rubble, trash): eligible for the clutter-pile
+        /// arrangement (see DungeonDecorationPlanner.PlanClutterPile) IN ADDITION to whatever context
+        /// bucket the entry is curated under. A palette with no Clutter entries gets no pile pass at
+        /// all (and an unchanged budget split / RNG stream).
+        /// </summary>
+        Clutter = 1,
+        /// <summary>
+        /// A flat ground decal (dirt patch, stain, floor marking). NEVER placed stand-alone by any
+        /// run/centerpiece/flank mechanism -- only layered under a clutter pile, or as a courtyard
+        /// center that receives clutter on top. Hand-built evidence: decals appear as layering under
+        /// junk arrangements, not as lone patches in open plazas.
+        /// </summary>
+        GroundDecal = 2,
+        /// <summary>
+        /// A large narrative one-off (parked/crashed vehicle, monument, altar). Must read as
+        /// anchored to something: only placed via StructureAdjacent/CorridorSide (road-side)
+        /// buckets, doorway flanks, or as a curated vignette member -- the planner strips Landmark
+        /// entries out of the RoomCenter and WallAdjacent buckets so one can never float alone in
+        /// the middle of an open plaza.
+        /// </summary>
+        Landmark = 3
     }
 
     /// <summary>
@@ -66,6 +119,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public string Resref { get; set; } = string.Empty;
         public int Weight { get; set; } = 1;
         public DecorationContext Context { get; set; } = DecorationContext.WallAdjacent;
+        /// <summary>Semantic role driving arrangement eligibility -- see <see cref="DecorationRole"/>.</summary>
+        public DecorationRole Role { get; set; } = DecorationRole.Fixture;
     }
 
     /// <summary>
@@ -410,6 +465,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// Inherited the same way as <see cref="Decorations"/> for palette variants.
         /// </summary>
         public List<DungeonVignette> Vignettes { get; set; } = new();
+
+        /// <summary>
+        /// This tileset FAMILY's own evidence-derived decorative-placeable density (placeables per
+        /// total area tile at 100% request density), overriding the composed theme's
+        /// <see cref="DungeonDetail.DecorationBaseDensity"/> when set (&gt; 0). Dressing INTENSITY is
+        /// a property of the visual family, not the content theme: hand-built fcx01 city areas
+        /// measure ~1.6 decoratives/tile aggregate while cave families measure ~0.15 -- a theme
+        /// composed onto a city tileset must dress at CITY density. 0 (the default) keeps the
+        /// theme-owned density, so families without their own mined density band behave exactly as
+        /// before this override existed. Inherited by palette variants the same way as
+        /// <see cref="Decorations"/> (see DungeonTilesetPaletteInheritance).
+        /// </summary>
+        public double DecorationDensityPerTile { get; set; }
     }
 
     /// <summary>
@@ -1121,15 +1189,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// bulk of a generated area's visual dressing should live; theme definitions should only add a
         /// small handful of their own genuinely theme-flavored accents.
         /// </summary>
-        public DungeonTilesetProfileBuilder Decoration(string resref, int weight, DecorationContext context)
+        public DungeonTilesetProfileBuilder Decoration(string resref, int weight, DecorationContext context,
+            DecorationRole role = DecorationRole.Fixture)
         {
             _active.Decorations.Add(new DungeonDecorationEntry
             {
                 Resref = resref,
                 Weight = weight,
-                Context = context
+                Context = context,
+                Role = role
             });
 
+            return this;
+        }
+
+        /// <summary>
+        /// Sets this tileset family's own evidence-derived decorative density (placeables per total
+        /// area tile at 100% request density), overriding the composed theme's own base density --
+        /// see <see cref="DungeonTilesetProfile.DecorationDensityPerTile"/>.
+        /// </summary>
+        public DungeonTilesetProfileBuilder DecorationDensity(double perTile)
+        {
+            _active.DecorationDensityPerTile = perTile;
             return this;
         }
 
@@ -1187,18 +1268,34 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             foreach (var profile in profiles.Values)
             {
-                if (!profile.IsPaletteVariant || profile.Decorations.Count > 0 || profile.Vignettes.Count > 0)
+                if (!profile.IsPaletteVariant)
                     continue;
 
-                var basis = profiles.Values.FirstOrDefault(p =>
-                    !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
-                    (p.Decorations.Count > 0 || p.Vignettes.Count > 0));
+                if (profile.Decorations.Count == 0 && profile.Vignettes.Count == 0)
+                {
+                    var basis = profiles.Values.FirstOrDefault(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                        (p.Decorations.Count > 0 || p.Vignettes.Count > 0));
 
-                if (basis == null)
-                    continue;
+                    if (basis != null)
+                    {
+                        profile.Decorations = basis.Decorations;
+                        profile.Vignettes = basis.Vignettes;
+                    }
+                }
 
-                profile.Decorations = basis.Decorations;
-                profile.Vignettes = basis.Vignettes;
+                // Family density (see DungeonTilesetProfile.DecorationDensityPerTile) inherits
+                // independently of the palette lists: a variant that curated its own small palette
+                // still dresses at its family's own measured intensity unless it declared one.
+                if (profile.DecorationDensityPerTile <= 0)
+                {
+                    var densityBasis = profiles.Values.FirstOrDefault(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                        p.DecorationDensityPerTile > 0);
+
+                    if (densityBasis != null)
+                        profile.DecorationDensityPerTile = densityBasis.DecorationDensityPerTile;
+                }
             }
         }
     }

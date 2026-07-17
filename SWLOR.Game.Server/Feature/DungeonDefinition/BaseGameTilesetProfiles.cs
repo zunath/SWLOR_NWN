@@ -4244,6 +4244,16 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // WallAdjacent/DoorwayFlank entries so road-anchored placements draw real street furniture,
             // not just the crosswalk decal.
             _builder
+                // City dressing intensity is a family property: the 19 decorated hand-built fcx01
+                // areas measure 1.61 decorative placeables per tile AGGREGATE (flagship promenade
+                // areas 2.8-4.6), versus ~0.10-0.15 the theme-owned densities produced here -- the
+                // round-5 reported "vast empty plaza" gap. The declared 2.6 target realizes ~1.4-1.5
+                // per TOTAL tile on Packed (rooms cover about half the grid; the arrangement
+                // mechanisms' own per-room caps absorb the rest) and ~0.65 per total tile on Halls,
+                // whose chambers cover only ~70/400 tiles -- per ROOM tile both land at the
+                // hand-built flagship 2.5-3.5 band (measured in the _scratch_decor round-5 harness);
+                // see DungeonTilesetProfile.DecorationDensityPerTile.
+                .DecorationDensity(2.6)
                 // Sign panels / barrier fences relocated out of WallAdjacent (July 2026 city-density
                 // pass): generated WallAdjacent anchors against ANY room boundary -- usually a
                 // knee-high divider on fcx01 -- where a free-standing holo sign board reads as junk.
@@ -4256,8 +4266,36 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("swd_build007", 3, DecorationContext.CorridorSide)
                 .Decoration("swd2_fence004", 2, DecorationContext.CorridorSide)
                 .Decoration("swd2_fence010", 2, DecorationContext.CorridorSide)
-                .Decoration("swd_trash01", 2, DecorationContext.WallAdjacent)
-                .Decoration("_mdrn_pl_lights3", 3, DecorationContext.WallAdjacent)
+                // CLUTTER BACKBONE (round-5 palette-share fix): the hand-built fcx01 palette
+                // backbone is junk -- _mdrn_pl_crate08 (352 mined placements), _mdrn_pl_conta39/36
+                // (459 combined), _mdrn_pl_barr001 (215), _mdrn_pl_rubb031 (248), plus debris/trash
+                // -- while street furniture (lamps/kiosks) is only ~4% of placements. Clutter-role
+                // entries feed the clutter-pile arrangement (see DungeonDecorationPlanner.
+                // PlanClutterPile) AND their curated WallAdjacent bucket, so walls read as junk
+                // lines and piles rather than lamp grids. Weights near-flat so no single junk type
+                // dominates the aggregate (top-3 resref share stays under the hand-built 0.35).
+                .Decoration("swd_trash01", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_crate07", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_conta39", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_conta36", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_conta54", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_rubb031", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_rubb030", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri01", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri20", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri03", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_crate09", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                // GROUND DECALS (round-5): _mdrn_pl_dirtyg1/g3 are the two most-placed hand-built
+                // fcx01 resrefs (674 combined) and swd_floorm01 the top structured floor piece (360)
+                // -- but hand-built areas use them as LAYERING UNDER clutter, never as lone patches.
+                // GroundDecal-role entries are stripped from every stand-alone bucket and only ever
+                // emitted underneath a committed clutter pile (see DungeonDecorationPlanner.
+                // PlanClutterPile) or as a courtyard center that receives clutter on top.
+                .Decoration("_mdrn_pl_dirtyg1", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("_mdrn_pl_dirtyg3", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("swd_floorm01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
                 // StructureAdjacent (building-frontage) bucket -- the items hand-built fcx01 actually
                 // anchors against stamped tower/building footprints (Chebyshev<=1 building adjacency,
                 // n>=51 each): _mdrn_pl_lamp4 52% building-adjacent AND 100% road-adjacent (a
@@ -4270,12 +4308,27 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("_mdrn_pl_bldlit", 3, DecorationContext.StructureAdjacent)
                 .Decoration("swd_conta003", 2, DecorationContext.StructureAdjacent)
                 .Decoration("_mdrn_pl_df_chb", 2, DecorationContext.StructureAdjacent)
-                .Decoration("swd2_vehi006", 1, DecorationContext.RoomCenter)
-                .Decoration("swd2_vehi003", 1, DecorationContext.RoomCenter)
-                .Decoration("swd2_vehi007", 1, DecorationContext.RoomCenter)
+                // Vehicles are LANDMARK one-offs (round-5 vignette-integrity fix): a crashed/parked
+                // speeder floating alone mid-plaza was a reported artifact, and the Landmark role
+                // guarantees these can never place in the RoomCenter/WallAdjacent buckets again --
+                // they now park against stamped building frontages only (StructureAdjacent is gated
+                // on a real stamped footprint within one tile).
+                .Decoration("swd2_vehi006", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
+                .Decoration("swd2_vehi003", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
+                .Decoration("swd2_vehi007", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
+                // Freestanding pillar as the plaza-interior centerpiece instead of the vehicles that
+                // used to float here -- _mdrn_pl_pillr04 is the top hand-built interior fixture (363
+                // mined placements, 241 interior).
+                .Decoration("_mdrn_pl_pillr04", 2, DecorationContext.RoomCenter)
                 .Decoration("swd2_kiosk004", 2, DecorationContext.DoorwayFlank)
                 .Decoration("swd_streel01", 2, DecorationContext.DoorwayFlank)
-                .Decoration("_mdrn_pl_crswlk", 1, DecorationContext.CorridorSide)
+                // Street furniture stays road-anchored (CorridorSide is the road-lining bucket) and
+                // is now ACCENT-scale: the round-5 wall-run budget share shrinks to ~9% once the
+                // clutter-pile share is carved out, matching the hand-built ~4% lamp share.
+                // _mdrn_pl_lights3's old WallAdjacent entry is deliberately gone -- lamps strung
+                // along arbitrary room dividers were the reported "sparse even grid of glowing
+                // pillars" backbone. _mdrn_pl_crswlk (crosswalk decal) is gone for the same reason
+                // decals moved to GroundDecal: a lone road decal reads as a bare dirt patch.
                 .Decoration("_mdrn_pl_lights3", 3, DecorationContext.CorridorSide)
                 .Decoration("swd_streel01", 2, DecorationContext.CorridorSide)
                 .Decoration("swd2_kiosk004", 2, DecorationContext.CorridorSide)
@@ -4291,7 +4344,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // pillars (_mdrn_pl_pillr04, 241 interior occurrences), bus shelters
                 // (_mdrn_pl_busshel), and kiosks (swd2_kiosk004 -- also the mission-reported "kiosk
                 // cluster" pattern). Weights follow those measured frequencies.
-                .Decoration("swd_floorm01", 3, DecorationContext.CourtyardCenter)
+                // swd_floorm01 is a flat floor marking (GroundDecal role): as a courtyard center it
+                // additionally receives 1-2 ring-motif items layered on top (see
+                // DungeonDecorationPlanner.PlanCourtyard) so the decal never reads as a lone patch.
+                .Decoration("swd_floorm01", 3, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
                 .Decoration("_mdrn_pl_lghtflr", 2, DecorationContext.CourtyardCenter)
                 .Decoration("_mdrn_pl_floor27", 2, DecorationContext.CourtyardCenter)
                 .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.Courtyard)

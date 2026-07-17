@@ -177,6 +177,88 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         private const int CorridorLikeMaxSpan = 2;
 
         /// <summary>
+        /// Share of the total decoration budget reserved for clutter piles (see PlanClutterPile) --
+        /// ONLY carved out when the composed palette curates <see cref="DecorationRole.Clutter"/>
+        /// entries AND at least one room offers an anchor tile (0 otherwise, so every palette
+        /// without curated clutter keeps its exact pre-pile budget split and RNG sequence). This is
+        /// the DOMINANT share on purpose: hand-built fcx01 city dressing is piles, not spread
+        /// singles -- 75% of hand-built decoratives sit within 3m of another decorative (all-NN
+        /// median 1.6m, p25 0.5m), and the palette backbone is crates/containers/barrels/rubble
+        /// with street furniture at only ~4% of placements.
+        /// </summary>
+        private const double ClutterPileTargetShare = 0.55;
+
+        /// <summary>Member count bounds for one pile (junk items, excluding the optional decal
+        /// underneath). Hand-built junk arrangements measure roughly 3-10 items; 8 caps a single
+        /// pile so one roll can't eat a whole room's budget.</summary>
+        internal const int PileMinItems = 3;
+        internal const int PileMaxItems = 8;
+
+        /// <summary>Pile radius band (world units): members land within this disc around the pile
+        /// center. Matches the hand-built within-3m clustering (all-NN median 1.6m).</summary>
+        internal const float PileMinRadius = 1.3f;
+        internal const float PileMaxRadius = 2.8f;
+
+        /// <summary>How far a wall-anchored pile's center sits off the tile center toward the wall
+        /// -- slightly inside <see cref="WallOffset"/> so the pile's own radius stays on the tile.</summary>
+        private const float PileWallOffset = 2.5f;
+
+        /// <summary>Center jitter for an interior (no wall direction) pile anchor.</summary>
+        private const float PileCenterJitter = 1.5f;
+
+        /// <summary>
+        /// Chance a pile gets a <see cref="DecorationRole.GroundDecal"/> entry layered underneath --
+        /// hand-built dirt/stain decals appear as layering under junk arrangements (the two dirt
+        /// decals plus the floor-marking decal total ~1000 of the mined fcx01 placements, always
+        /// co-located with clutter), never as lone patches.
+        /// </summary>
+        private const double DecalUnderPileChance = 0.65;
+
+        /// <summary>Rejection-sampling attempts per pile member before giving up on that member.</summary>
+        private const int PilePlacementAttempts = 6;
+
+        /// <summary>Minimum separation between two members of the same pile -- hand-built piles pack
+        /// tightly (same-resref NN p25 0.5m) but distinct placeables z-fight when near-coincident.</summary>
+        private const float PileMemberMinSeparation = 0.9f;
+
+        /// <summary>Members never land closer than this to the anchor tile's boundary, so a pile can
+        /// never spill over the neighboring cell (which may be a hole/chasm/foreign room on exterior
+        /// tilesets where "solid" is a platform gap, not a wall).</summary>
+        private const float PileTileEdgeMargin = 0.8f;
+
+        /// <summary>A pile commits only when at least this many members landed; otherwise nothing is
+        /// planned for the anchor (a 0-1-item "pile" is just scatter, and the decal must never end
+        /// up effectively alone).</summary>
+        private const int PileCommitMinItems = 2;
+
+        /// <summary>
+        /// Anchor-pool weight multiplier for tiles hugging a stamped structure footprint (see
+        /// IsStructureAdjacent) -- tower/building bases preferentially collect piles, closing the
+        /// reported "stamped tower groups with completely bare bases" gap while the same mechanism
+        /// still dresses ordinary wall lines and room interiors.
+        /// </summary>
+        private const double PileStructureAnchorWeight = 2.0;
+
+        /// <summary>
+        /// Two-level junk motif bounds: each ROOM draws a junk POOL (the wider clutter subset its
+        /// piles share -- room-level coherence), and each PILE draws its own small 2-3-type motif
+        /// from that pool (a real junk stack mixes only a couple of types). The two levels together
+        /// keep one room's piles related without letting three junk types dominate a whole area --
+        /// measured per-area top-3 resref share drops to the hand-built scale (&lt;= ~0.35) versus
+        /// ~0.44 with a single flat per-room motif.
+        /// </summary>
+        private const int PileRoomPoolMinResrefs = 6;
+        private const int PileRoomPoolMaxResrefs = 9;
+        private const int PileMotifMinResrefs = 2;
+        private const int PileMotifMaxResrefs = 3;
+
+        /// <summary>Ring radius band for the 1-2 clutter items layered ON a courtyard whose center
+        /// is a ground decal (see PlanCourtyard) -- keeps the decal from reading as a lone patch at
+        /// the middle of an otherwise wide (5.0-6.5m) courtyard ring.</summary>
+        private const float CourtyardDecalToppingMinRadius = 0.6f;
+        private const float CourtyardDecalToppingMaxRadius = 1.4f;
+
+        /// <summary>
         /// Largest number of consecutive placements PlaceWallRuns emits along one (context, wall
         /// direction) bucket before forcing a real gap and starting a fresh segment — round-3
         /// decoration-quality fix for the reported "ring" artifact: an open room's perimeter used to
@@ -268,11 +350,31 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 return plan;
 
             var densityFraction = densityPercent / 100.0;
-            var targetCount = detail.DecorationBaseDensity * layout.Width * layout.Height * densityFraction;
+            // Dressing intensity is a property of the VISUAL family when the tileset declares its
+            // own mined density band (see DungeonTilesetProfile.DecorationDensityPerTile) -- a theme
+            // composed onto a city tileset dresses at city density; otherwise the theme's own
+            // evidence-derived density applies exactly as before the override existed.
+            var baseDensity = tileset != null && tileset.DecorationDensityPerTile > 0
+                ? tileset.DecorationDensityPerTile
+                : detail.DecorationBaseDensity;
+            var targetCount = baseDensity * layout.Width * layout.Height * densityFraction;
             if (targetCount <= 0)
                 return plan;
 
+            // Role-based pools (see DecorationRole): ground decals are NEVER placed stand-alone by
+            // the run/centerpiece/flank mechanisms -- they only exist layered under clutter piles or
+            // as courtyard centers -- so they are stripped from the context buckets entirely (except
+            // the courtyard-center bucket, whose arrangement composes clutter on top -- see
+            // PlanCourtyard). Landmark entries (vehicles, monuments) are stripped from the
+            // RoomCenter/WallAdjacent buckets so a large narrative one-off can never float alone in
+            // the middle of an open plaza -- they remain placeable road-side, structure-anchored,
+            // at doorway flanks, or as curated vignette members.
+            var decalEntries = palette.Where(d => d.Role == DecorationRole.GroundDecal).ToList();
+            var clutterEntries = palette.Where(d => d.Role == DecorationRole.Clutter).ToList();
             var byContext = palette
+                .Where(d => d.Role != DecorationRole.GroundDecal || d.Context == DecorationContext.CourtyardCenter)
+                .Where(d => d.Role != DecorationRole.Landmark ||
+                            d.Context is not (DecorationContext.RoomCenter or DecorationContext.WallAdjacent))
                 .GroupBy(d => d.Context)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
@@ -320,9 +422,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var wallEligibleCount = 0;
             var centerEligibleRoomCount = 0;
             var vignetteEligibleRoomCount = 0;
+            var pileAnchorWeightTotal = 0.0;
+            var pilesCurated = clutterEntries.Count > 0;
             var courtyardEligibleRoomCount = rooms.Count(r => r.CourtyardAnchor != null);
             foreach (var (room, isCorridorLike, tileSet, _) in rooms)
             {
+                if (pilesCurated)
+                {
+                    foreach (var tile in room.Tiles)
+                    {
+                        if (excluded.Contains(tile) || tile == room.CenterTile)
+                            continue;
+                        if (TileCarriesRoadEdge(tile, layout, roadCrosser))
+                            continue;
+
+                        pileAnchorWeightTotal += IsStructureAdjacent(tile, layout) ? PileStructureAnchorWeight : 1.0;
+                    }
+                }
+
                 if (!isCorridorLike && room.Tiles.Count >= MinCenterpieceRoomTiles &&
                     byContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntriesProbe) &&
                     centerEntriesProbe.Count > 0 &&
@@ -360,7 +477,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var courtyardTarget = courtyardsCurated && courtyardEligibleRoomCount > 0
                 ? targetCount * CourtyardTargetShare
                 : 0.0;
-            var wallTarget = Math.Max(0.0, targetCount - centerTarget - doorwayFlankTarget - vignetteTarget - courtyardTarget);
+            // Strictly zero unless the palette curates Clutter-role entries AND an anchor tile
+            // exists -- palettes without clutter keep the exact pre-pile budget split and RNG
+            // stream (same gating convention as courtyards above).
+            var pileTarget = pilesCurated && pileAnchorWeightTotal > 0
+                ? targetCount * ClutterPileTargetShare
+                : 0.0;
+            var wallTarget = Math.Max(0.0, targetCount - centerTarget - doorwayFlankTarget - vignetteTarget - courtyardTarget - pileTarget);
 
             var wallProbability = wallEligibleCount > 0 ? Math.Min(1.0, wallTarget / wallEligibleCount) : 0.0;
             var centerProbability = centerEligibleRoomCount > 0 ? Math.Min(0.95, centerTarget / centerEligibleRoomCount) : 0.0;
@@ -377,6 +500,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var courtyardExpectedItems = 1.0 + (CourtyardMinRingItems + CourtyardMaxRingItems) / 2.0;
             var courtyardProbability = courtyardTarget > 0
                 ? Math.Min(0.9, (courtyardTarget / courtyardExpectedItems) / courtyardEligibleRoomCount)
+                : 0.0;
+            // One pile EVENT places (PileMinItems+PileMaxItems)/2 members on average plus the
+            // optional decal underneath, so the per-anchor roll targets the event count -- same
+            // convention as the courtyard/doorway-pair math above. The probability is per unit of
+            // anchor WEIGHT (structure-adjacent anchors count double -- see
+            // PileStructureAnchorWeight), so the expected event count still converges on the target
+            // while tower bases preferentially collect the piles.
+            // The 0.6 per-anchor cap is a saturation guard for layouts whose rooms cover only a
+            // small slice of the grid (fcx01 Halls chambers): without it, every chamber tile rolls
+            // a pile and the room reads as wall-to-wall junk rather than dressed space.
+            var pileExpectedItems = (PileMinItems + PileMaxItems) / 2.0 + DecalUnderPileChance;
+            var pileProbability = pileTarget > 0
+                ? Math.Min(0.6, (pileTarget / pileExpectedItems) / pileAnchorWeightTotal)
                 : 0.0;
 
             var rng = new System.Random(layout.Seed ^ SeedSalt);
@@ -465,6 +601,41 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         var wallDir = NearestWallDirection(anchor.Value, tileSet)!.Value;
                         PlaceVignette(plan, anchor.Value, wallDir, vignette);
                         consumedTiles.Add(anchor.Value);
+                    }
+                }
+
+                // Clutter piles: the dominant hand-built arrangement (see ClutterPileTargetShare).
+                // Runs BEFORE the wall runs so a piled tile is consumed and never double-dressed by
+                // a run placement. Anchors roll per eligible tile in the room's own stored
+                // (deterministic) order; the room's junk motif is drawn lazily on its first
+                // successful roll so a room with no pile consumes no motif RNG.
+                if (pileProbability > 0)
+                {
+                    List<DungeonDecorationEntry> junkMotif = null;
+                    foreach (var tile in room.Tiles)
+                    {
+                        if (excluded.Contains(tile) || tile == room.CenterTile || tile == centerpieceAnchor ||
+                            consumedTiles.Contains(tile))
+                            continue;
+                        if (TileCarriesRoadEdge(tile, layout, roadCrosser))
+                            continue;
+
+                        var anchorWeight = IsStructureAdjacent(tile, layout) ? PileStructureAnchorWeight : 1.0;
+                        if (rng.NextDouble() >= Math.Min(0.95, pileProbability * anchorWeight))
+                            continue;
+
+                        junkMotif ??= PickJunkMotif(clutterEntries, rng);
+                        if (PlanClutterPile(plan, tile, tileSet, junkMotif, decalEntries, rng) &&
+                            !IsStructureAdjacent(tile, layout))
+                        {
+                            // A piled tile is consumed so the wall runs never double-dress it --
+                            // EXCEPT structure-frontage tiles: hand-built building frontages layer
+                            // wall lamps and frontage containers OVER their junk (the
+                            // StructureAdjacent bucket must keep dressing tower bases even when a
+                            // pile landed there first, since structure anchors preferentially
+                            // collect piles via PileStructureAnchorWeight).
+                            consumedTiles.Add(tile);
+                        }
                     }
                 }
 
@@ -870,10 +1041,182 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             });
             plan.AddRange(members);
 
+            // A ground-decal courtyard center must never read as a lone patch: layer 1-2 of the
+            // ring's own motif items directly on top of the decal (hand-built decals exist as
+            // LAYERING under arrangements), well inside the ring's 5.0-6.5m radius. Emitted under
+            // ClutterPile -- these are junk layered ON the decal, not ring members, so the ring's
+            // own radius-band/facing geometry contract (see CourtyardCompositionTests) stays
+            // scoped to the actual ring.
+            var centerEntry = centerEntries.FirstOrDefault(e => e.Resref == centerResref);
+            if (centerEntry is { Role: DecorationRole.GroundDecal })
+            {
+                var toppingCount = 1 + rng.Next(2);
+                for (var i = 0; i < toppingCount; i++)
+                {
+                    var angle = rng.NextDouble() * Math.PI * 2.0;
+                    var r = CourtyardDecalToppingMinRadius +
+                            (float)(rng.NextDouble() * (CourtyardDecalToppingMaxRadius - CourtyardDecalToppingMinRadius));
+                    plan.Add(new PlannedDecoration
+                    {
+                        Resref = motif[i % motif.Count],
+                        Position = new Vector3(
+                            center.X + (float)Math.Cos(angle) * r,
+                            center.Y + (float)Math.Sin(angle) * r,
+                            0f),
+                        Facing = (float)(rng.NextDouble() * 360.0),
+                        Context = DecorationContext.ClutterPile
+                    });
+                }
+            }
+
             consumedTiles.Add(anchor);
             foreach (var tile in memberTiles)
                 consumedTiles.Add(tile);
 
+            return true;
+        }
+
+        /// <summary>
+        /// Draws a room's junk POOL: the wider (5-8 distinct resref) subset of the palette's
+        /// <see cref="DecorationRole.Clutter"/> entries this room's piles share -- weighted sample
+        /// without replacement (see the two-level motif doc on PileRoomPoolMinResrefs). Each pile
+        /// then draws its own small motif from this pool inside PlanClutterPile.
+        /// </summary>
+        private static List<DungeonDecorationEntry> PickJunkMotif(List<DungeonDecorationEntry> clutterEntries, System.Random rng)
+        {
+            var distinct = clutterEntries.Select(e => e.Resref).Distinct().Count();
+            var poolSize = Math.Min(distinct, PileRoomPoolMinResrefs + rng.Next(PileRoomPoolMaxResrefs - PileRoomPoolMinResrefs + 1));
+
+            var pool = new List<DungeonDecorationEntry>(clutterEntries);
+            var roomPool = new List<DungeonDecorationEntry>();
+            for (var i = 0; i < poolSize && pool.Count > 0; i++)
+            {
+                var pick = PickWeighted(pool, rng);
+                roomPool.AddRange(pool.Where(e => e.Resref == pick));
+                pool.RemoveAll(e => e.Resref == pick);
+            }
+
+            return roomPool.Count > 0 ? roomPool : clutterEntries;
+        }
+
+        /// <summary>
+        /// Composes one clutter pile at an anchor tile: 3-8 junk items (from the room's junk motif)
+        /// packed in a 1.2-2.5m-radius disc, optionally layered over a ground decal (see
+        /// DecalUnderPileChance). A wall-eligible anchor hugs its wall (center offset toward the
+        /// wall direction, like every other wall-hugging mechanism); an interior anchor jitters
+        /// around the tile center -- so the same generic mechanism dresses wall lines, stamped
+        /// tower bases (structure footprints removed from room.Tiles read as walls), and open
+        /// plaza interiors. Members rejection-sample for a minimum mutual separation and NEVER
+        /// leave the anchor tile (see PileTileEdgeMargin -- the neighbor cell may be a chasm).
+        /// Commits only when at least <see cref="PileCommitMinItems"/> members landed; the decal is
+        /// only emitted alongside a committed pile, so a decal can never stand alone.
+        /// </summary>
+        private static bool PlanClutterPile(
+            List<PlannedDecoration> plan, (int X, int Y) anchor, HashSet<(int X, int Y)> tileSet,
+            List<DungeonDecorationEntry> junkMotif, List<DungeonDecorationEntry> decalEntries, System.Random rng)
+        {
+            var flat = TileCenter(anchor.X, anchor.Y);
+            var wallDir = NearestWallDirection(anchor, tileSet);
+
+            Vector3 center;
+            if (wallDir != null)
+            {
+                center = new Vector3(flat.X + wallDir.Value.Dx * PileWallOffset, flat.Y + wallDir.Value.Dy * PileWallOffset, 0f);
+            }
+            else
+            {
+                var jitterAngle = rng.NextDouble() * Math.PI * 2.0;
+                var jitterRadius = rng.NextDouble() * PileCenterJitter;
+                center = new Vector3(
+                    flat.X + (float)(Math.Cos(jitterAngle) * jitterRadius),
+                    flat.Y + (float)(Math.Sin(jitterAngle) * jitterRadius),
+                    0f);
+            }
+
+            var memberCount = PileMinItems + rng.Next(PileMaxItems - PileMinItems + 1);
+            var radius = PileMinRadius + (float)(rng.NextDouble() * (PileMaxRadius - PileMinRadius));
+
+            // This pile's own small motif: 2-3 distinct types from the room's junk pool (see the
+            // two-level motif doc on PileRoomPoolMinResrefs) -- a real junk stack mixes only a
+            // couple of types even when the room's overall junk family is wider.
+            var distinctInPool = junkMotif.Select(e => e.Resref).Distinct().Count();
+            var pileMotifSize = Math.Min(distinctInPool, PileMotifMinResrefs + rng.Next(PileMotifMaxResrefs - PileMotifMinResrefs + 1));
+            var motifPool = new List<DungeonDecorationEntry>(junkMotif);
+            var pileMotif = new List<DungeonDecorationEntry>();
+            for (var i = 0; i < pileMotifSize && motifPool.Count > 0; i++)
+            {
+                var pick = PickWeighted(motifPool, rng);
+                pileMotif.AddRange(motifPool.Where(e => e.Resref == pick));
+                motifPool.RemoveAll(e => e.Resref == pick);
+            }
+            if (pileMotif.Count == 0)
+                pileMotif = junkMotif;
+
+            var hasDecal = decalEntries.Count > 0 && rng.NextDouble() < DecalUnderPileChance;
+            var decalResref = hasDecal ? PickWeighted(decalEntries, rng) : null;
+            var decalFacing = hasDecal ? (float)(rng.NextDouble() * 360.0) : 0f;
+
+            var members = new List<PlannedDecoration>();
+            for (var i = 0; i < memberCount; i++)
+            {
+                Vector3? position = null;
+                for (var attempt = 0; attempt < PilePlacementAttempts && position == null; attempt++)
+                {
+                    var angle = rng.NextDouble() * Math.PI * 2.0;
+                    // sqrt for a uniform disc rather than a center-heavy one.
+                    var r = Math.Sqrt(rng.NextDouble()) * radius;
+                    var candidate = new Vector3(
+                        center.X + (float)(Math.Cos(angle) * r),
+                        center.Y + (float)(Math.Sin(angle) * r),
+                        0f);
+
+                    if (MathF.Abs(candidate.X - flat.X) > TileHalf - PileTileEdgeMargin ||
+                        MathF.Abs(candidate.Y - flat.Y) > TileHalf - PileTileEdgeMargin)
+                        continue;
+
+                    var tooClose = false;
+                    foreach (var member in members)
+                    {
+                        var dx = member.Position.X - candidate.X;
+                        var dy = member.Position.Y - candidate.Y;
+                        if (dx * dx + dy * dy < PileMemberMinSeparation * PileMemberMinSeparation)
+                        {
+                            tooClose = true;
+                            break;
+                        }
+                    }
+
+                    if (!tooClose)
+                        position = candidate;
+                }
+
+                if (position == null)
+                    continue;
+
+                members.Add(new PlannedDecoration
+                {
+                    Resref = PickWeighted(pileMotif, rng),
+                    Position = position.Value,
+                    Facing = (float)(rng.NextDouble() * 360.0),
+                    Context = DecorationContext.ClutterPile
+                });
+            }
+
+            if (members.Count < PileCommitMinItems)
+                return false;
+
+            if (decalResref != null)
+            {
+                plan.Add(new PlannedDecoration
+                {
+                    Resref = decalResref,
+                    Position = center,
+                    Facing = decalFacing,
+                    Context = DecorationContext.GroundDecal
+                });
+            }
+
+            plan.AddRange(members);
             return true;
         }
 

@@ -26,9 +26,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public bool ExitPlaced => ExitsPlaced > 0;
         /// <summary>How many transitions were realized as real door objects (vs exit placeables).</summary>
         public int DoorsCreated { get; set; }
-        /// <summary>How many "set dressing" decoration placeables were spawned (0 when the request
-        /// disabled decorations, the theme has no curated palette, or density rolled zero).</summary>
+        /// <summary>How many "set dressing" decoration placeables have been spawned SO FAR (0 when
+        /// the request disabled decorations, the theme has no curated palette, or density rolled
+        /// zero). Decoration spawning is batched across scheduler ticks (see
+        /// DungeonContentPlacer.PlaceDecorations), so this keeps climbing for a moment after
+        /// Populate returns -- compare against <see cref="DecorationsPlanned"/> once
+        /// <see cref="DecorationsSpawnComplete"/> reports true.</summary>
         public int DecorationsPlaced { get; set; }
+        /// <summary>Total decoration placements the deterministic plan produced for this instance --
+        /// the count <see cref="DecorationsPlaced"/> converges to as the batched spawn completes.</summary>
+        public int DecorationsPlanned { get; set; }
+        /// <summary>True once every batched decoration spawn tick has run (or the pass was skipped
+        /// entirely). See DungeonContentPlacer.PlaceDecorations.</summary>
+        public bool DecorationsSpawnComplete { get; set; }
     }
 
     /// <summary>
@@ -276,6 +286,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// Ruin content generated on the Futuristic City tileset) still dresses with THAT tileset's own
         /// bulk palette instead of a mismatched one.
         /// </summary>
+        /// <summary>How many decoration placeables spawn per scheduler tick. City-density plans run
+        /// to ~600 placements at 20x20 and ~1500 at 32x32 (see DungeonTilesetProfile.
+        /// DecorationDensityPerTile) -- spawning them all in one tick would hitch the main loop, so
+        /// the plan spawns in batches chained across ticks. 150 per tick keeps a 32x32 city plan
+        /// under ~10 ticks (~1s) while a typical non-city plan (30-90 placements) still completes
+        /// in its very first, synchronous batch exactly as before.</summary>
+        private const int DecorationSpawnBatchSize = 150;
+
+        /// <summary>Delay between chained decoration spawn batches.</summary>
+        private static readonly System.TimeSpan DecorationSpawnBatchDelay = System.TimeSpan.FromMilliseconds(100);
+
         private static void PlaceDecorations(
             uint area,
             RuntimeAreaInstance instance,
@@ -284,7 +305,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         {
             var enabled = instance.Request?.EnableDecorations ?? true;
             if (!enabled)
+            {
+                result.DecorationsSpawnComplete = true;
                 return;
+            }
 
             var tilesetKey = string.IsNullOrEmpty(instance.Request?.TilesetProfileKey)
                 ? detail.TilesetProfileKey
@@ -294,9 +318,36 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             var densityPercent = instance.Request?.DecorationDensityPercent ?? 100;
             var plan = DungeonDecorationPlanner.Plan(instance.Layout, tileset, detail, densityPercent);
+            result.DecorationsPlanned = plan.Count;
 
-            foreach (var planned in plan)
+            SpawnDecorationBatch(area, instance, result, plan, 0);
+        }
+
+        /// <summary>
+        /// Spawns one batch of the decoration plan (index <paramref name="startIndex"/> onward, up
+        /// to <see cref="DecorationSpawnBatchSize"/>) and chains the next batch onto a later
+        /// scheduler tick until the plan is exhausted -- the first batch runs synchronously inside
+        /// Populate, so small plans behave exactly as the original single-pass spawn did. A chained
+        /// batch re-validates the area first: if the instance was torn down (DestroyGeneratedArea)
+        /// while batches were pending, the remainder is dropped cleanly.
+        /// </summary>
+        private static void SpawnDecorationBatch(
+            uint area,
+            RuntimeAreaInstance instance,
+            DungeonPopulationResult result,
+            List<PlannedDecoration> plan,
+            int startIndex)
+        {
+            if (!GetIsObjectValid(area))
             {
+                result.DecorationsSpawnComplete = true;
+                return;
+            }
+
+            var end = System.Math.Min(plan.Count, startIndex + DecorationSpawnBatchSize);
+            for (var i = startIndex; i < end; i++)
+            {
+                var planned = plan[i];
                 var position = GroundedPosition(area, planned.Position.X, planned.Position.Y);
                 var location = Location(area, position, planned.Facing);
 
@@ -307,6 +358,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 instance.SpawnedObjects.Add(placeable);
                 result.DecorationsPlaced++;
             }
+
+            if (end >= plan.Count)
+            {
+                result.DecorationsSpawnComplete = true;
+                return;
+            }
+
+            Scheduler.Schedule(() => SpawnDecorationBatch(area, instance, result, plan, end), DecorationSpawnBatchDelay);
         }
 
         private static void PopulateStandardRoom(

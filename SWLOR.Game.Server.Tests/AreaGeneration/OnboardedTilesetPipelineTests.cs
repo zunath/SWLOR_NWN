@@ -206,6 +206,20 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.TropicalSand,
         BaseGameTilesetProfiles.TropicalWater,
         BaseGameTilesetProfiles.TropicalSandWater,
+        // Wave-13: Underdark* (ttu01) -- SolidTerrainOverride("Rock")/PrimaryOpenTerrain("Floor")
+        // inversion (the same degenerate Default==Floor shape as the ttd01/ttf01/ttf02/jac01/fcx01
+        // wave), AccentTerrain("Water"), RoadCrosser("Wall"). No Tunnel vocabulary at all (verified via
+        // TunnelVocabularyCheckTests' own ttu01 entry) -- Complex downgrades to OpenLane. See
+        // BaseGameTilesetProfiles.Underdark's own doc comment for the full composition writeup.
+        BaseGameTilesetProfiles.Underdark,
+        // Wave-14: Early Winter 2 (trs02, BIF-only -- no SWLOR_Haks copy exists) -- open-field base
+        // profile (Solid=Open=Grass, no override, plus SecondaryOpenTerrain("Chasm") for the
+        // cliff-canyon district) PLUS EarlyWinterMountain, a second, genuinely NEW-shape inversion
+        // (SolidTerrainOverride("mountain")) sharing the same .set data with an open-field sibling
+        // rather than recomposing a single accent slot. RoadCrosser("Street"). See
+        // BaseGameTilesetProfiles.EarlyWinter's own doc comment for the full composition writeup.
+        BaseGameTilesetProfiles.EarlyWinter,
+        BaseGameTilesetProfiles.EarlyWinterMountain,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

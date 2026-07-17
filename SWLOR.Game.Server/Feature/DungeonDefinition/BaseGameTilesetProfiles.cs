@@ -225,6 +225,197 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string TropicalWater = "tropical_water";
         public const string TropicalSandWater = "tropical_sandwater";
 
+        // Wave-13: Underdark* (ttu01, SWLOR_Haks/sw_t_underdark -- hak wins over the basegame_sets
+        // fallback, 559 tiles / 53 groups, 7 terrains, 5 crossers). The hak copy also silently fixes a
+        // genuine Bioware typo present in the vanilla basegame_sets/ttu01.set: vanilla declares a
+        // terrain literally spelled "Chasym" (486+ occurrences), but SWLOR_Haks/sw_t_underdark/
+        // ttu01.set spells it correctly as "Chasm" throughout (verified directly against both raw .set
+        // files) -- since TilesetSetSource always resolves the hak copy first, every profile below uses
+        // the corrected "Chasm" spelling, which is what the runtime model actually reports.
+        //
+        // GENERAL: Border="Rock", Default="Floor", Floor="Floor" -- Default and Floor are the SAME
+        // terrain, the identical degenerate quirk the ttd01/ttf01/ttf02/jac01/fcx01 exterior wave
+        // documents, and pathnode data confirms it here too: Floor is overwhelmingly pathnode A
+        // (134/181 pure tiles) while Rock's lone pure tile is pathnode R (restricted). Composing with
+        // the engine's plain Solid=Default rule would carve unwalkable Rock "rooms" out of a walkable
+        // Floor "wall" -- inverted for gameplay -- so this profile declares
+        // SolidTerrainOverride("Rock") + PrimaryOpenTerrain("Floor"), the same inversion shape as that
+        // whole wave. Direct 16-combo probe confirms Rock/Floor reaches 16/16 in both orientations
+        // (ProbeTool "matrix2"), and PathNodeOpeningWidthAudit against Solid=Rock/Open=Floor returns 1
+        // (MinimumOpeningWidth stays the default).
+        //
+        // Water and Chasm are the tileset's two "hazard gap" terrains -- both reach a clean 16/16
+        // against EITHER Rock or Floor (verified directly), but Water-vs-Chasm itself only reaches
+        // 2/16 (they never blend against each other), so only one can be a wired accent slot at a time.
+        // Water is the richer of the two -- a real naval roster (Ship - Longboat/Drow Boat, Docked;
+        // Ship - Air, Above Water; Dock) plus "Door - Bridge, Water" (a real Bridge-crossered
+        // CorridorInsert shape once AccentTerrain("Water") is declared) -- so Water is this profile's
+        // wired AccentTerrain; Chasm stays unwired (its own "Door - Bridge, Chasm"/"Ship - Air, Above
+        // Chasm" siblings are the identical shape on the other accent, the same "unwired sibling
+        // district" treatment MinesAndCaverns gives tdm01's Pit/Lava, see PilotAlternateVocabTerrains
+        // ["ttu01"]). Drow/Svirfneblin/Poor are minor per-building doorway-threshold terrains (one pure
+        // tile each) that only ever appear on ten ungrouped, flat, door-bearing, CROSSER-FREE tiles
+        // (TileResolver's door-slot admission gate requires a crosser to credit a door at all, so these
+        // structurally can never resolve) -- also folded into PilotAlternateVocabTerrains["ttu01"].
+        //
+        // Crossers: Wall/Stream/Bridge/RuinWall/Slope -- none is a canonical or near-canonical "Corridor"
+        // /"Doorway" pair (verified directly: TunnelVocabularyCheck.SupportsTunnels returns FALSE for
+        // every ordered Solid/Open pairing against every crosser), so Tunnel-mode composition has NO
+        // wall-embedded corridor vocabulary here -- Complex's Tunnel mode downgrades to OpenLane, the
+        // same verdict as the whole ttd01/ttf01/ttf02/jac01/fcx01 wave. RoadVocabularyCheck.SupportsRoads
+        // confirms real lane support for Wall and Stream against Open=Floor; Wall is wired as
+        // RoadCrosser (a plausible drow-built walkway/railing reading over open cavern floor). "RuinWall"
+        // (the ruined-outpost gate family: Ruin - Gates/House 5/Entrance Straight 1&2/Entrance Corner)
+        // and "Wall" on "Door - Wall" all gate an OPEN(Floor)-cornered 1x1 group with a perimeter
+        // crosser edge -- LayoutGroupStamper's WallRoom/CorridorStubChain both require all-SOLID corners
+        // for a body/port edge, and the mixed-shape doorway branch explicitly rejects any PERIMETER
+        // doorway-like edge (a 1x1 group's edges are always perimeter) -- so none of these six groups
+        // structurally classify under any current mechanism, matching MinesAndCaverns'/Tropical's own
+        // "shape doesn't reach a shipped mechanism, stays an honest exemption" precedent (see
+        // PilotExpectedExemptions). "Slope" (15 tile-edge occurrences, height-transition tiles only,
+        // never inside a GROUP) is left undeclared as a RampCrosser -- LayoutElevationPainter's own
+        // ramp-lane check hardcodes the literal crosser name "Ramp" (not the profile's configurable
+        // RampCrosser), so it could never recognize "Slope" regardless; non-flat Slope tiles fall to the
+        // automatic height exemption bucket (no manual justification needed). MaxElevationRegions(2)/
+        // MaxReliefRegions(2) ARE declared (mirroring FrozenWastes' identical no-RampCrosser shape) --
+        // both paint raised Floor rim edges via corner-height alone, which the census's own
+        // ElevationBlob(10)/TerrainRelief(7)/PoolBank(3) hit counts already confirm resolve against this
+        // tileset's real inventory.
+        //
+        // "Cave" (1x1 GROUP, non-flat [Floor 1,1,0,0], crosser-free, one door slot) is the identical
+        // baked-mesh cave-mouth shape as tdm01's "[Cave] Cave Entrance" and ttf01's own Cave/SmallCave
+        // family -- classifies via LayoutGroupStamper's door-tolerant ReliefPiece kind, and (like every
+        // ReliefPiece precedent) only ever PLACES under Complex, the one layout style that requests
+        // nonzero ElevationRegions/ReliefRegions at all (Halls/Organic leave those knobs at 0). Measured
+        // (ProbeTool "placeundk", seedBase 95000, 150 seeds, Complex, retryCount 1): successes=150,
+        // hits=146 (97.3%) -- in line with FrozenWastes' own identically-shaped "Cave" ReliefPiece rate.
+        //
+        // "Tower - Drow (3x3)"/"Illithid Grand Lair (3x3)"/"Observation Dome (3x3)" are the largest
+        // footprint in this tileset (all pure-Floor OpenSetPieces) -- measured 0/150 on BOTH Halls and
+        // Complex (ProbeTool "placeundk"), the same "needs a larger contiguous open interior than a 20x20
+        // area's rooms ever produce at this size" documented ceiling CastleExteriorRuralLargeFootprintPieces_
+        // StillDoNotPlace_DocumentedCeilings/TropicalSandWaterShipwreck_StillDoesNotPlace_DocumentedCeiling
+        // already establish -- kept wired (they still classify structurally) with a dedicated ceiling
+        // test proving 0/N rather than silently claiming real placement.
+        //
+        // Naval "Docked"/"Above Water" pieces (Ship - Longboat Docked, Ship - Drow Boat Docked, Dock
+        // (1x2), Ship - Drow Boat (1x2), Ship - Air Above Water) carry pure-or-mixed WATER corners with
+        // no crosser -- OpenSetPiece only matches Solid/Open corners, never a bare Accent terrain, so
+        // none of these structurally classify (the identical gap MinesAndCaverns' own "[Cave] Ship -
+        // Docked" already documents) and stay PilotExpectedExemptions. "Ship - Air, Docked" is the one
+        // naval piece that DOES classify -- its three members are pure Floor (Open), not Water.
+        //
+        // Hand-built evidence: 3 real ttu01 areas ship in the module (pw_ar_sc_arkcave, pw_sc_dath_apexd,
+        // pw_sc_dath_sden -- the Kashyyyk/Dathomir Underdark-adjacent cave content), 432 placed tiles
+        // total (ProbeTool "evidence" command, reading Tile_List from the .are.json + Placeable List
+        // from the sibling .git.json). TileLighting(0,0,0,0) is the real plurality (181/432 tiles,
+        // 41.9%); the runner-up combos are hand-lit variety, not a second systematic default. Only
+        // three GROUPS appear in this real placed content (Ramp - Up x3, Ramp - Down x2, Ruin - Gates
+        // x1) -- sparse, but genuine. Decoration palette mined from the same three areas' Placeable
+        // List: swd_florrd01/swd_floorm01/swd_florrt01/swd_florrt02/swd_florre01 (floor debris),
+        // swd3_wall001/002/003 (wall growths), zep_shrub036/zep_mushroom/zep_mushroom002 (cavern
+        // flora), zep_geiser002 (a steam/mineral vent), crystalspire (a large crystal formation).
+        public const string Underdark = "underdark";
+
+        // Wave-14: Early Winter 2 (trs02, basegame_sets/trs02.set -- BIF-only, NO SWLOR_Haks copy
+        // exists, verified directly; 1306 tiles / 94 groups, 7 terrains, 4 crossers). UnlocalizedName
+        // is "Early Winter 2" verbatim (no trailing asterisk, unlike every hak-customized exterior wave
+        // -- the .set file itself carries this UnlocalizedName, no TLK fallback needed).
+        //
+        // GENERAL: Border=Default=Floor="Grass" -- a genuine open field (matching ttr01/tts01/ttz01's
+        // own shape, NOT the ttd01/ttf01-style inversion): Grass reaches a clean 16/16 against EVERY
+        // other terrain (Water/Trees/Chasm/Grass2/Mountain, all verified directly via ProbeTool
+        // "matrix2"). SolidTerrainOverride is left UNSET -- LayoutSolver.Solve stamps Solid=Grass
+        // (==PrimaryOpenTerrain), identical to RuralGrass/RuralWinter/Tropical's own base profile.
+        //
+        // Unlike those three siblings, trs02 ALSO carries a second, genuinely rich non-Grass family:
+        // Mountain (144 pure tiles, overwhelmingly pathnode-restricted -- L/H/N/I/T dominate, only 3
+        // pure tiles are pathnode A) hosts by far the largest door/cave GROUP roster in this tileset
+        // (MountainCave1-5, Mine1/2, CornerCave1-3, InnerCornerCave1-6, StreetCave1-3, SeaCave1,
+        // WaterfallCave, MountainSlope, SmallCastle -- ~25 groups, mostly mountain-cornered or
+        // mountain/grass mixed). Solid=Mountain/Open=Grass ALSO reaches a clean 16/16 (verified
+        // directly) with MinimumOpeningWidth 1, so this tileset supports BOTH shapes simultaneously,
+        // not one-or-the-other: the base profile below is the open field (Grass, no override), and
+        // EarlyWinterMountain (see its own doc comment) is a second, INVERTED profile
+        // (SolidTerrainOverride("mountain")) recomposing the SAME .set data to unlock that door/cave
+        // family as real dungeon-style wall content -- a genuinely new shape among this project's
+        // onboarded variants: not a PaletteVariant recomposition of an existing accent slot (like
+        // Tropical's Sand) but a second FULL inversion sharing the tileset with an open-field sibling.
+        //
+        // Chasm (40 pure tiles: CliffBottomCave1/2, CliffTopCave1, CliffPath1/2, CliffCaveEntry,
+        // ChasmPond, ChasmRoad1/2, ChasmRoadWB1-5) is wired as SecondaryOpenTerrain("Chasm") on the
+        // base (Grass) profile -- Grass/Chasm mixed corners reach 16/16 (verified directly), giving
+        // CliffCaveEntry/CliffPath2/CliffBottomCave1/CliffBottomCave2/CliffTopCave1 real OpenSetPiece/
+        // ExitGroup census credit. Measured real placement (ProbeTool "placeew", 150 seeds, Halls):
+        // ALL FIVE are 0/150. Root cause verified directly in RoomsAndCorridorsLayout.Generate:
+        // SecondaryOpenTerrain districts only ever paint when useDistricts is true, which requires
+        // CorridorMode.Tunnel -- and this composition has NO Tunnel vocabulary at all (verified via
+        // TunnelVocabularyCheckTests' own trs02 entry, Complex downgrades to OpenLane unconditionally),
+        // so Chasm is structurally reachable (matchesSecondary, real census credit) but can never
+        // actually paint under any of this project's three supported layouts. Kept wired (matches this
+        // project's "keep it wired, document the ceiling" convention, e.g.
+        // TropicalSandWaterShipwreck_StillDoesNotPlace_DocumentedCeiling) with a dedicated 0/150 proof
+        // rather than pulled or silently claimed as real content -- see
+        // EarlyWinterChasmDistrictPieces_StillDoNotPlace_DocumentedCeiling. Grass2 (62 pure tiles: SmallCave1/2,
+        // WallGate1R/2R, MountainCave1/4, CornerCave1, InnerCornerCave3, Pen2, Waterfall1NW/2NW) and
+        // Water (20 pure tiles, all-naval Boat1/Small_Cog/Grass_boat_docked/Ship_floating_1/2/Bulge) and
+        // Trees (1 pure tile, only ever mixed into two ungrouped door-bearing boundary tiles,
+        // TILE155/TILE1112 -- the identical starved-minor-terrain shape ttr01/tts01's own "Trees" entry
+        // documents) all stay UNWIRED this pass (time-boxed scope, like SecretBase's decoration
+        // palette) -- see PilotAlternateVocabTerrains["trs02"].
+        //
+        // Crossers: Stream/Wall/Ridge/Street -- NONE is a canonical or near-canonical "Corridor"/
+        // "Doorway" pair (verified directly, TunnelVocabularyCheck.SupportsTunnels false for every
+        // ordered pairing), so Complex downgrades to OpenLane, the same verdict as every prior exterior
+        // wave. RoadVocabularyCheck.SupportsRoads confirms Street supports lanes against Grass/Chasm/
+        // Grass2/Mountain (the broadest of the four) -- wired as RoadCrosser. Wall/Ridge/Stream all gate
+        // real GROUP content (WallGate1/2 grass+wall+door, SmallCave1 grass2+ridge+door, Bridge1/2
+        // grass+stream, RiverCave1/StreetCave mountain+stream/street+door, etc.) but none is declared a
+        // DoorSlotCrosser this pass -- an open-cornered (Grass=Solid=Open) 1x1 group with a perimeter
+        // crosser edge would classify as WallRoom if declared, but this project's own established
+        // precedent (ttr01/tts01/ttz01's identical Wall1/Wall2/Stream/Road gate families, see those
+        // profiles' PilotExpectedExemptions writeups) leaves this class of shape undeclared/exempt
+        // rather than risk a door object never actually forming a real boundary; all four crossers are
+        // folded into PilotAlternateVocabCrossers["trs02"] instead (plus "path", a fifth, rare crosser
+        // name found on exactly one group member, CliffPath1's TILE582 -- not in the tileset's own
+        // 4-crosser summary at all, verified directly against the raw .set data).
+        public const string EarlyWinter = "earlywinter";
+
+        // Early Winter 2 (Mountain) -- see EarlyWinter's own doc comment above for the shared shape
+        // writeup. SolidTerrainOverride("mountain") + PrimaryOpenTerrain("grass") recomposes the SAME
+        // trs02 .set data as a genuine inversion (mirroring the ttd01/ttf01/jac01/fcx01/ttu01 wave's
+        // shape, not a PaletteVariant accent-slot recomposition): Mountain becomes real wall mass, and
+        // its door/cave family (MountainCave1-5, Mine1/2, CornerCave1, InnerCornerCave1/3, SeaCave1 --
+        // all flat, crosser-free, door-bearing 1x1 groups mixing mountain with grass/grass2/water
+        // corners) all classify via IsExitGroupEligible's vocab-independent structural rule (ExitGroup
+        // needs only 1x1/flat/door/no-crosser -- terrain-agnostic) and are wired here as real GroupExits
+        // rather than on the open-field base profile, matching this district's own mountain-fortress
+        // identity.
+        //
+        // Real measured placement (ProbeTool "placeew", 150 seeds, Halls, retryCount 1) splits sharply
+        // by corner composition: the pure Mountain+Grass pairs -- "MountainCave2" 97.3% (146/150),
+        // "MountainCave3"/"Mine1"/"Mine2" 100% (150/150) -- place readily, since Grass/Mountain is this
+        // profile's own real Solid/Open pair and a generated room boundary genuinely produces that
+        // corner shape. The four that mix in a THIRD, unwired terrain (grass2 or water) all measure
+        // 0/150: "MountainCave1" (mountain/grass2), "CornerCave1" (mountain/grass2 x3), "SeaCave1"
+        // (mountain/water) -- their own grass2/water corner never appears anywhere in a grid painted
+        // only Grass/Mountain, so the exact site their door needs to attach to can never occur, a
+        // genuine geometric impossibility rather than bad luck. "InnerCornerCave1" (pure mountain/grass,
+        // a 3-mountain-1-grass CONCAVE inner corner) also measures 0/150 despite using only wired
+        // terrain -- BSP rectangle room carving (this profile's own room shape) never produces a concave
+        // inner-corner boundary cell, the same "irregular-growth-only" shape TileCoverageCensusTests'
+        // own IsElevationBlobReachable doc comment documents for the elevation painter. "MountainCave4"
+        // (mountain/grass2, ALSO 0/150) combines both gaps. All four are kept wired (classify
+        // structurally, real census credit) with a dedicated 0/150 ceiling proof rather than pulled --
+        // see EarlyWinterMountainThirdTerrainPieces_StillDoNotPlace_DocumentedCeiling.
+        //
+        // The remaining mountain-cave family members (StreetCave1-3, MageTower, InnerCornerCave2/4/5/6,
+        // CornerCave2/3, WaterfallCave, MountainSlope, RiverCave1/2, SmallCastle) are either non-flat
+        // (auto height-exempt) or crosser-gated by an undeclared Wall/Ridge/Stream/Street/path edge (the
+        // same PilotAlternateVocabCrossers["trs02"] bucket the base profile documents) -- no additional
+        // wiring closes them this pass.
+        public const string EarlyWinterMountain = "earlywinter_mountain";
+
         // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
@@ -6082,6 +6273,146 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .SetPiece("MerchantDocked03_3x2", 1)
                 .SetPiece("WeatheredDocked03_3x2", 1)
                 .SetPiece("Shipwreck", 1);
+
+            // Underdark* (ttu01) -- see this file's own Underdark const doc comment above for the full
+            // composition writeup (SolidTerrainOverride("Rock")/PrimaryOpenTerrain("Floor") inversion,
+            // AccentTerrain("Water") vs the unwired Chasm sibling, RoadCrosser("Wall"), the RuinWall/
+            // Wall gate-family exemptions, and the naval Docked-piece exemptions).
+            _builder.Create(Underdark, "Underdark*")
+                .Tileset("ttu01")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .SolidTerrainOverride("Rock")
+                .PrimaryOpenTerrain("Floor")
+                .AccentTerrain("Water")
+                .RoadCrosser("Wall")
+                .MaxElevationRegions(2)
+                .MaxReliefRegions(2)
+                .FeatureTile("Market - Duergar")
+                .FeatureTile("Market - Illithid")
+                .FeatureTile("Market - Beholder")
+                .FeatureTile("Market - Drow")
+                .FeatureTile("Ruin - Old Square")
+                .FeatureTile("Ruin - House 1")
+                .FeatureTile("Ruin - House 2")
+                .FeatureTile("Ruin - House 3")
+                .ExitGroup("Building - Duergar")
+                .ExitGroup("Door - Dome")
+                .ExitGroup("Entrance - Catacombs")
+                .ExitGroup("Ruin - Cellar 1")
+                .ExitGroup("Ruin - Cellar 2")
+                .ExitGroup("Ruin - House 4")
+                .ExitGroup("Tower - Square")
+                .ExitGroup("Tower - Round")
+                .SetPiece("Stairs - Down (2x2)", 1)
+                .SetPiece("Stairs - Up (2x2)", 1)
+                .SetPiece("Ramp - Up", 2)
+                .SetPiece("Ramp - Down", 2)
+                .SetPiece("Door - Bridge, Water", 1)
+                .SetPiece("Slave Trade Post (2x2)", 1)
+                .SetPiece("Building - Illithid 1 (2x2)", 1)
+                .SetPiece("Building - Drow (2x2)", 1)
+                .SetPiece("Tower - Drow (3x3)", 1)
+                .SetPiece("Building - Illithid 2 (2x2)", 1)
+                .SetPiece("Building - Svirfneblin 1 (2x2)", 1)
+                .SetPiece("Building - Svirfneblin 2 (2x3)", 1)
+                .SetPiece("Rock Formation (2x2)", 1)
+                .SetPiece("Temple - Drow (2x2)", 1)
+                .SetPiece("Slave Huts (2x2)", 1)
+                .SetPiece("Illithid Grand Lair (3x3)", 1)
+                .SetPiece("Entrance - Beholder", 2)
+                .SetPiece("Gates (2x3)", 1)
+                .SetPiece("Door - Rock", 2)
+                .SetPiece("Observation Dome (3x3)", 1)
+                .SetPiece("Entrance - Dungeon (1x2)", 1)
+                .SetPiece("Ship - Air, Docked (3x1)", 1)
+                .SetPiece("Cave", 1)
+                .Decoration("swd_florrd01", 3, DecorationContext.RoomCenter)
+                .Decoration("swd_floorm01", 2, DecorationContext.RoomCenter)
+                .Decoration("swd_florrt01", 1, DecorationContext.RoomCenter)
+                .Decoration("swd_florrt02", 2, DecorationContext.RoomCenter)
+                .Decoration("swd_florre01", 1, DecorationContext.RoomCenter)
+                .Decoration("swd3_wall001", 3, DecorationContext.WallAdjacent)
+                .Decoration("swd3_wall002", 2, DecorationContext.WallAdjacent)
+                .Decoration("swd3_wall003", 1, DecorationContext.WallAdjacent)
+                .Decoration("zep_shrub036", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_mushroom", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_mushroom002", 1, DecorationContext.CorridorSide)
+                .Decoration("zep_geiser002", 1, DecorationContext.RoomCenter)
+                .Decoration("crystalspire", 1, DecorationContext.RoomCenter);
+
+            // Early Winter 2 (trs02) -- see this file's own EarlyWinter const doc comment above for the
+            // full composition writeup (open field on Grass, SecondaryOpenTerrain("Chasm") for the
+            // cliff-canyon district, RoadCrosser("Street"), and the Grass2/Water/Trees/Wall/Ridge/
+            // Stream/path exemption accounting). No hand-built module areas exist for this tileset
+            // (verified: zero .are.json entries reference trs02 outside this pass's own probing), so
+            // TileLighting and decoration stay at the neutral (0,0,0,0)/no-palette defaults pending a
+            // future evidence-mining pass -- the same time-boxed scope decision SecretBase's own doc
+            // comment documents for its palette.
+            _builder.Create(EarlyWinter, "Early Winter 2")
+                .Tileset("trs02")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PrimaryOpenTerrain("Grass")
+                .SecondaryOpenTerrain("Chasm")
+                .RoadCrosser("Street")
+                .MaxReliefRegions(2)
+                .FeatureTile("Boat1")
+                .FeatureTile("ChasmPond")
+                .FeatureTile("Spruce")
+                .FeatureTile("Spruces")
+                .FeatureTile("TreeBush1")
+                .FeatureTile("DeadTree1")
+                .FeatureTile("Anthill")
+                .FeatureTile("DeadTree2")
+                .FeatureTile("Pen")
+                .FeatureTile("Pond")
+                .FeatureTile("HugeTree")
+                .FeatureTile("HugeRockTree")
+                .FeatureTile("Birch")
+                .FeatureTile("CrystalG")
+                .FeatureTile("Groundhole")
+                .FeatureTile("Shroom1")
+                .FeatureTile("Shroom2")
+                .FeatureTile("GrassRockFormation")
+                .FeatureTile("PoisonWater")
+                .FeatureTile("MineShaft")
+                .FeatureTile("Camp1")
+                .FeatureTile("Orchard")
+                .ExitGroup("GoblinHut2")
+                .ExitGroup("PenGate")
+                .ExitGroup("CliffBottomCave1")
+                .ExitGroup("CliffBottomCave2")
+                .ExitGroup("CliffTopCave1")
+                .SetPiece("DragonSkeleton", 1)
+                .SetPiece("Field1", 1)
+                .SetPiece("Field2", 1)
+                .SetPiece("Field3", 1)
+                .SetPiece("CabbagePatch", 1)
+                .SetPiece("GoblinHut1", 1)
+                .SetPiece("CliffCaveEntry", 1)
+                .SetPiece("CliffPath2", 1)
+                .SetPiece("HillCave1", 1);
+
+            // Early Winter 2 (Mountain) -- see this file's own EarlyWinterMountain const doc comment
+            // above for the full inversion writeup.
+            _builder.Create(EarlyWinterMountain, "Early Winter 2 (Mountain)")
+                .Tileset("trs02")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("mountain")
+                .PrimaryOpenTerrain("grass")
+                .ExitGroup("MountainCave1")
+                .ExitGroup("MountainCave2")
+                .ExitGroup("MountainCave3")
+                .ExitGroup("Mine1")
+                .ExitGroup("Mine2")
+                .ExitGroup("MountainCave4")
+                .ExitGroup("CornerCave1")
+                .ExitGroup("InnerCornerCave1")
+                .ExitGroup("InnerCornerCave3")
+                .ExitGroup("SeaCave1");
 
             return _builder.Build();
         }

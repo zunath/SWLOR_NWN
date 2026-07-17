@@ -193,4 +193,45 @@ public class ReliefPiecePlacementRateTests
                 $"Tropical's '{groupName}' ReliefPiece must place on a meaningful share of the {successes} successful seeds (got {hits})");
         }
     }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.Underdark's "Cave" ReliefPiece (1x1, non-flat
+    /// [Floor 1,1,0,0], crosser-free, one door slot -- the identical shape as tdm01's "[Cave] Cave
+    /// Entrance"). Measured (seedBase 95000, 150 seeds, Complex, successes=150): 97.3% (146/150) -- in
+    /// line with FrozenWastes' own identically-shaped "Cave" ReliefPiece rate this file's own doc
+    /// comment cites.
+    /// </summary>
+    [Test]
+    public void CaveOnUnderdarkComplex_PlacesInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Underdark];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "Cave", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+        successes.Should().BeGreaterThan(140);
+        hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+            $"Underdark's 'Cave' ReliefPiece must place on a meaningful share of the {successes} successful seeds (got {hits})");
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.EarlyWinter's "HillCave1" ReliefPiece (1x1, non-flat
+    /// [Grass 1,1,0,0], crosser-free, one door slot -- the identical shape as tdm01's "[Cave] Cave
+    /// Entrance"/Underdark's own "Cave"). Measured (seedBase 95000, 150 seeds, Complex, successes=150):
+    /// 77.3% (116/150).
+    /// </summary>
+    [Test]
+    public void HillCave1OnEarlyWinterComplex_PlacesInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.EarlyWinter];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "HillCave1", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+        successes.Should().BeGreaterThan(140);
+        hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+            $"EarlyWinter's 'HillCave1' ReliefPiece must place on a meaningful share of the {successes} successful seeds (got {hits})");
+    }
 }

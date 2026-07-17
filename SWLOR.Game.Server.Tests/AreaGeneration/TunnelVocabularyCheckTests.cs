@@ -248,6 +248,15 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.TropicalSand,
         BaseGameTilesetProfiles.TropicalWater,
         BaseGameTilesetProfiles.TropicalSandWater,
+        // Underdark* (ttu01): declares 5 crossers (Wall/Stream/Bridge/RuinWall/Slope), none a canonical
+        // or near-canonical "Corridor"/"Doorway" pair -- Complex downgrades to OpenLane. See
+        // BaseGameTilesetProfiles.Underdark's own doc comment.
+        BaseGameTilesetProfiles.Underdark,
+        // Early Winter 2 (trs02): declares 4 crossers (Stream/Wall/Ridge/Street), none a canonical or
+        // near-canonical "Corridor"/"Doorway" pair -- Complex downgrades to OpenLane for both profiles
+        // (base + Mountain inversion). See BaseGameTilesetProfiles.EarlyWinter's own doc comment.
+        BaseGameTilesetProfiles.EarlyWinter,
+        BaseGameTilesetProfiles.EarlyWinterMountain,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

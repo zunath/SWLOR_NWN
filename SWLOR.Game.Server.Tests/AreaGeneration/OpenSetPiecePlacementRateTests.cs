@@ -1081,4 +1081,245 @@ public class OpenSetPiecePlacementRateTests
                 $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
         }
     }
+
+    // ---------------- ttu01 Underdark* placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.Underdark's OpenSetPiece family (ProbeTool
+    /// "placeundk", seedBase 95000, 150 seeds each, Halls, isolation technique -- "successes" varies
+    /// per group since isolating a different single SetPiece perturbs the RNG draw sequence, the same
+    /// effect this file's other per-tileset proofs already show for pieces with differing successes
+    /// counts). Measured: "Stairs - Down (2x2)"/"Stairs - Up (2x2)"/"Slave Trade Post (2x2)"/
+    /// "Building - Illithid 1 (2x2)"/"Building - Drow (2x2)"/"Building - Illithid 2 (2x2)"/
+    /// "Building - Svirfneblin 1 (2x2)"/"Rock Formation (2x2)"/"Temple - Drow (2x2)"/
+    /// "Slave Huts (2x2)" (all-Floor, successes=135) each 23.7% (32/135); "Building - Svirfneblin 2
+    /// (2x3)" (successes=135) 4.4% (6/135); "Door - Bridge, Water" (successes=135, the CorridorInsert
+    /// shape) 44.4% (60/135); "Ramp - Up"/"Ramp - Down"/"Entrance - Beholder"/"Door - Rock" (the
+    /// Floor/Rock diagonal-split shape, successes=65) each 72.3% (47/65); "Gates (2x3)" (successes=134,
+    /// mixed Floor/Rock) 3.7% (5/134); "Entrance - Dungeon (1x2)" (successes=95, Floor/Rock) 40.0%
+    /// (38/95); "Ship - Air, Docked (3x1)" (successes=135, pure Floor) 23.0% (31/135).
+    /// </summary>
+    [Test]
+    public void UnderdarkOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Underdark];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minSuccesses, minShare) in new[]
+                 {
+                     ("Stairs - Down (2x2)", 120, 0.15),
+                     ("Stairs - Up (2x2)", 120, 0.15),
+                     ("Door - Bridge, Water", 120, 0.3),
+                     ("Slave Trade Post (2x2)", 120, 0.15),
+                     ("Building - Illithid 1 (2x2)", 120, 0.15),
+                     ("Building - Drow (2x2)", 120, 0.15),
+                     ("Building - Illithid 2 (2x2)", 120, 0.15),
+                     ("Building - Svirfneblin 1 (2x2)", 120, 0.15),
+                     ("Building - Svirfneblin 2 (2x3)", 120, 0.02),
+                     ("Rock Formation (2x2)", 120, 0.15),
+                     ("Temple - Drow (2x2)", 120, 0.15),
+                     ("Slave Huts (2x2)", 120, 0.15),
+                     ("Ramp - Up", 50, 0.5),
+                     ("Ramp - Down", 50, 0.5),
+                     ("Entrance - Beholder", 50, 0.5),
+                     ("Door - Rock", 50, 0.5),
+                     ("Gates (2x3)", 120, 0.02),
+                     ("Entrance - Dungeon (1x2)", 80, 0.3),
+                     ("Ship - Air, Docked (3x1)", 120, 0.15),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(minSuccesses);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.Underdark's ExitGroup family (all 1x1, all-Floor,
+    /// crosser-free doorways). Measured (ProbeTool "placeundk", seedBase 95000, 150 seeds, successes=135
+    /// uniformly): all eight place identically at 34.8% (47/135).
+    /// </summary>
+    [Test]
+    public void UnderdarkExitGroups_PlaceAsGroupExits()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Underdark];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[]
+                 {
+                     "Building - Duergar", "Door - Dome", "Entrance - Catacombs", "Ruin - Cellar 1",
+                     "Ruin - Cellar 2", "Ruin - House 4", "Tower - Square", "Tower - Round",
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(120);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.25),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for Underdark's three 3x3 OpenSetPieces (the largest footprint in
+    /// this tileset, all pure-Floor): measured 0/150 in isolation on BOTH Halls and Complex (ProbeTool
+    /// "placeundk") -- the same "needs a larger contiguous open interior than a 20x20 area's rooms ever
+    /// produce at this size" shape CastleExteriorRuralLargeFootprintPieces_StillDoNotPlace_
+    /// DocumentedCeilings/TropicalSandWaterShipwreck_StillDoesNotPlace_DocumentedCeiling document. If
+    /// any of these ever start placing, room generation changed and this test (and its doc comment)
+    /// should be revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void UnderdarkLargeFootprintPieces_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.Underdark];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "Tower - Drow (3x3)", "Illithid Grand Lair (3x3)", "Observation Dome (3x3)" })
+        foreach (var layoutKey in new[] { StandardLayoutProfiles.Halls, StandardLayoutProfiles.Complex })
+        {
+            var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[layoutKey];
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(120);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling at this size on {layoutKey} -- " +
+                "if it ever starts placing, generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
+    // ---------------- trs02 Early Winter 2 placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.EarlyWinter's pure-Grass OpenSetPiece/WallAlcove
+    /// family and its two ExitGroups (ProbeTool "placeew", seedBase 95000, 150 seeds each, Halls, all
+    /// successes=150). Measured: "DragonSkeleton"/"Field3" 62.7% (94/150); "Field1"/"Field2" 28.7%
+    /// (43/150); "CabbagePatch"/"GoblinHut1" 100% (150/150, WallAlcove); "GoblinHut2"/"PenGate" 100%
+    /// (150/150, ExitGroup).
+    /// </summary>
+    [Test]
+    public void EarlyWinterOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.EarlyWinter];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minShare) in new[]
+                 {
+                     ("DragonSkeleton", 0.4),
+                     ("Field1", 0.15),
+                     ("Field2", 0.15),
+                     ("Field3", 0.4),
+                     ("CabbagePatch", 0.5),
+                     ("GoblinHut1", 0.5),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+
+        foreach (var groupName in new[] { "GoblinHut2", "PenGate" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.EarlyWinterMountain's pure Mountain+Grass
+    /// ExitGroups -- the corner shape that IS this profile's own real Solid/Open pair (ProbeTool
+    /// "placeew", seedBase 95000, 150 seeds, Halls, all successes=150). Measured: "MountainCave2" 97.3%
+    /// (146/150); "MountainCave3"/"Mine1"/"Mine2" 100% (150/150).
+    /// </summary>
+    [Test]
+    public void EarlyWinterMountainExitGroups_PlaceAsGroupExits()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.EarlyWinterMountain];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "MountainCave2", "MountainCave3", "Mine1", "Mine2" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for EarlyWinter's five Chasm-touching pieces (CliffCaveEntry/
+    /// CliffPath2/CliffBottomCave1/CliffBottomCave2/CliffTopCave1): measured 0/150 in isolation
+    /// (ProbeTool "placeew", Halls). Root cause verified directly in RoomsAndCorridorsLayout.Generate:
+    /// SecondaryOpenTerrain districts only paint when CorridorMode is Tunnel, and this composition has
+    /// NO Tunnel vocabulary at all (Complex downgrades to OpenLane, see TunnelVocabularyCheckTests'
+    /// own trs02 entry), so Chasm never actually paints under any of this project's three supported
+    /// layouts -- structurally reachable (real census credit via matchesSecondary) but never placeable
+    /// today. If any of these ever start placing, district painting changed and this test (and its doc
+    /// comment) should be revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void EarlyWinterChasmDistrictPieces_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.EarlyWinter];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "CliffCaveEntry", "CliffPath2" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling (SecondaryOpenTerrain never paints without Tunnel-mode CorridorMode) -- " +
+                "if it ever starts placing, district painting changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+
+        foreach (var groupName in new[] { "CliffBottomCave1", "CliffBottomCave2", "CliffTopCave1" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling (SecondaryOpenTerrain never paints without Tunnel-mode CorridorMode) -- " +
+                "if it ever starts placing, district painting changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for EarlyWinterMountain's four third-terrain pieces
+    /// (MountainCave1/CornerCave1/SeaCave1 mix in an unwired grass2/water corner that never appears in
+    /// a grid painted only Grass/Mountain; InnerCornerCave1/MountainCave4 need a concave inner-corner
+    /// boundary cell BSP rectangle room carving never produces): measured 0/150 in isolation (ProbeTool
+    /// "placeew", Halls). See BaseGameTilesetProfiles.EarlyWinterMountain's own doc comment for the full
+    /// per-group writeup. If any of these ever start placing, room generation changed and this test
+    /// (and its doc comment) should be revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void EarlyWinterMountainThirdTerrainPieces_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.EarlyWinterMountain];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "MountainCave1", "MountainCave4", "CornerCave1", "InnerCornerCave1", "InnerCornerCave3", "SeaCave1" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling -- " +
+                "if it ever starts placing, room generation changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
 }

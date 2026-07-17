@@ -1195,6 +1195,22 @@ public class TileCoverageCensusTests
         // own "Trees" already documents (1 pure tile, pathnode 'T', no GROUP anywhere touches it,
         // verified directly) -- grass/sand/water are all wired (base/Sand/Water/SandWater profiles).
         ["ttz01"] = new(StringComparer.OrdinalIgnoreCase) { "trees" },
+        // ttu01 (Underdark*): Water is the wired AccentTerrain (base profile); Chasm is its unwired
+        // sibling accent (the identical "Door - Bridge, <accent>"/"Ship - Air, Above <accent>" shape on
+        // the other hazard-gap terrain -- see MinesAndCaverns' own Pit/Lava precedent). Drow/
+        // Svirfneblin/Poor are minor per-building doorway-threshold terrains (one pure tile each) that
+        // only ever appear on ten ungrouped, flat, door-bearing, CROSSER-FREE tiles -- TileResolver's
+        // door-slot admission gate requires a crosser to credit a door at all, so these can never
+        // structurally resolve regardless of vocabulary. See BaseGameTilesetProfiles.Underdark's own
+        // doc comment.
+        ["ttu01"] = new(StringComparer.OrdinalIgnoreCase) { "Chasm", "Drow", "Svirfneblin", "Poor" },
+        // trs02 (Early Winter 2): Chasm is the wired SecondaryOpenTerrain (base profile); Mountain is
+        // the wired SolidTerrainOverride on the EarlyWinterMountain variant. Grass2/Water/Trees stay
+        // unwired this pass (time-boxed scope) -- see BaseGameTilesetProfiles.EarlyWinter's own doc
+        // comment. "Dirt" is declared in the .set terrain palette but never appears on ANY tile corner
+        // (verified directly, zero occurrences) -- included here defensively even though it can never
+        // actually trigger.
+        ["trs02"] = new(StringComparer.OrdinalIgnoreCase) { "Grass2", "Water", "Trees", "Dirt" },
     };
 
     /// <summary>
@@ -1363,6 +1379,23 @@ public class TileCoverageCensusTests
         // gate/bridge groups below, handled as named PilotExpectedExemptions entries the same way
         // ttr01/tts01's own Wall1/Wall2/Stream are) -- no blanket alternate-vocab crosser bucket needed.
         ["ttz01"] = new(StringComparer.OrdinalIgnoreCase),
+        // ttu01 (Underdark*): Wall is wired as RoadCrosser; Bridge is wired via AccentTerrain("Water")'s
+        // CorridorInsert shape ("Door - Bridge, Water"). RuinWall's own gate family and "Door - Wall"
+        // (both open-cornered 1x1 groups with a perimeter crosser edge -- no mechanism admits either
+        // shape, see BaseGameTilesetProfiles.Underdark's own doc comment) are handled as named
+        // PilotExpectedExemptions entries instead of a blanket bucket here. Stream/Slope touch no GROUP
+        // at all -- every Stream/Slope-crossered tile is an ordinary ungrouped tile, already
+        // CornerEdgeResolver-reachable regardless of vocabulary.
+        ["ttu01"] = new(StringComparer.OrdinalIgnoreCase),
+        // trs02 (Early Winter 2): Street is ALSO wired as RoadCrosser (a separate, real lane-carving
+        // mechanism, orthogonal to GROUP classification) -- that does not stop it from also gating real
+        // GROUP content with no declared DoorSlotCrosser this pass (StreetCave1-3/SmallCastle/
+        // InnerCornerCave4/MageTower's "street" edges), the same as Wall/Ridge/Stream. "path" is a
+        // fifth, rare crosser found on exactly one group member, CliffPath1's TILE582, not in the
+        // tileset's own 4-crosser summary at all (verified directly). Matches ttr01/tts01/ttz01's own
+        // identical Wall1/Wall2/Stream/Road gate-family precedent -- see
+        // BaseGameTilesetProfiles.EarlyWinter's own doc comment.
+        ["trs02"] = new(StringComparer.OrdinalIgnoreCase) { "Wall", "Ridge", "Stream", "Street", "path" },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -2067,6 +2100,42 @@ public class TileCoverageCensusTests
         // groups go through the same gate as ClassifySetPiece's own edge check) rejects it regardless
         // of the door.
         ("ttz01", "GROUP:Bridge_Door"),
+
+        // ttu01 (Underdark*), verified directly against PilotEveryTileIsReachableOrExplicitlyExempted's
+        // own UNCLASSIFIED report:
+        //
+        // (1) "Ship - Longboat, Docked"/"Ship - Drow Boat, Docked" (2x2, Water/mixed corners)/
+        // "Dock (1x2)" (shares its two tiles with Ship - Longboat, Docked)/"Ship - Drow Boat (1x2)"
+        // (1x2, all-Water): the identical "naval Docked piece with a bare Accent (Water) corner, no
+        // Solid/Open corner, no crosser, no door" gap MinesAndCaverns' own "[Cave] Ship - Docked"
+        // documents -- OpenSetPiece only ever matches Solid/Open corners, never a bare Accent terrain.
+        ("ttu01", "GROUP:Ship - Longboat, Docked"),
+        ("ttu01", "GROUP:Ship - Drow Boat, Docked"),
+        ("ttu01", "GROUP:Dock (1x2)"),
+        ("ttu01", "GROUP:Ship - Drow Boat (1x2)"),
+        //
+        // (2) "Ship - Air, Above Water (3x1)" (all-Water, doorless, crosser-free): the same bare-Accent
+        // gap as (1) -- no Solid/Open corner means OpenSetPiece never triggers, no door means WallAlcove
+        // never triggers, no crosser means CorridorStubChain never triggers.
+        ("ttu01", "GROUP:Ship - Air, Above Water (3x1)"),
+        //
+        // (3) "Door - Wall" (1x1, all-Floor/Open corners, "Wall" edges on an opposite pair, 1 door) and
+        // "Ruin - Gates"/"Ruin - House 5"/"Ruin - Entrance, Straight 1"/"Ruin - Entrance, Corner"/
+        // "Ruin - Entrance, Straight 2" (1x1, all-Floor/Open corners, "RuinWall" edges, some door-bearing):
+        // an OPEN-cornered 1x1 group with a perimeter crosser edge. LayoutGroupStamper's WallRoom and
+        // CorridorStubChain both require ALL-SOLID corners for a door/body-crosser edge to count; the
+        // mixed-shape doorway branch explicitly rejects any PERIMETER doorway-like edge (a 1x1 group's
+        // edges are always perimeter, since it has no sibling member to be interior-facing toward) --
+        // verified directly (declaring "Wall"/"RuinWall" as DoorSlotCrossers does not change the
+        // outcome, it only proves the group reaches -- and is rejected by -- that exact branch). No
+        // mechanism admits an open-ground gate/arch shape today. See BaseGameTilesetProfiles.Underdark's
+        // own doc comment.
+        ("ttu01", "GROUP:Door - Wall"),
+        ("ttu01", "GROUP:Ruin - Gates"),
+        ("ttu01", "GROUP:Ruin - House 5"),
+        ("ttu01", "GROUP:Ruin - Entrance, Straight 1"),
+        ("ttu01", "GROUP:Ruin - Entrance, Corner"),
+        ("ttu01", "GROUP:Ruin - Entrance, Straight 2"),
     };
 
     public static IEnumerable<string> PilotTilesetKeys => new[]
@@ -2085,6 +2154,8 @@ public class TileCoverageCensusTests
         "tcn01",
         "tti01",
         "ttz01",
+        "ttu01",
+        "trs02",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -2123,6 +2194,8 @@ public class TileCoverageCensusTests
             "tcn01" => BaseGameTilesetProfiles.CityExterior,
             "tti01" => BaseGameTilesetProfiles.FrozenWastes,
             "ttz01" => BaseGameTilesetProfiles.Tropical,
+            "ttu01" => BaseGameTilesetProfiles.Underdark,
+            "trs02" => BaseGameTilesetProfiles.EarlyWinter,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

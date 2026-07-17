@@ -26,6 +26,10 @@ namespace SWLOR.Game.Server.Service
         // Technique feat -> its cached ability detail. Populated after Ability's cache runs.
         private static readonly Dictionary<FeatType, AbilityDetail> _techniques = new();
 
+        // Technique feat -> its feat.2da ICON resref. Resolved once at cache time so the Techniques
+        // window never has to read the 2da per-row on open (mirrors how perks cache detail.IconResref).
+        private static readonly Dictionary<FeatType, string> _techniqueIcons = new();
+
         // Source NPC feat -> the technique feat it teaches.
         private static readonly Dictionary<FeatType, FeatType> _techniqueByNpcFeat = new();
 
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Service
         {
             _techniques.Clear();
             _techniqueByNpcFeat.Clear();
+            _techniqueIcons.Clear();
 
             if (!_witnessSweepScheduled)
             {
@@ -80,10 +85,20 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 _techniques[feat] = detail;
+                _techniqueIcons[feat] = Get2DAString("feat", "ICON", (int)feat);
 
                 if (detail.MimicrySourceFeat != FeatType.Invalid)
                     _techniqueByNpcFeat[detail.MimicrySourceFeat] = feat;
             }
+        }
+
+        /// <summary>
+        /// Returns the cached feat.2da ICON resref for a technique, resolved once at cache time.
+        /// Empty string if the feat is not a registered technique.
+        /// </summary>
+        public static string GetTechniqueIcon(FeatType feat)
+        {
+            return _techniqueIcons.TryGetValue(feat, out var icon) ? icon : string.Empty;
         }
 
         /// <summary>

@@ -38,6 +38,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> UnequippedIcons
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> EquippedNames
         {
             get => Get<GuiBindingList<string>>();
@@ -53,6 +59,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<GuiColor> EquippedColors
         {
             get => Get<GuiBindingList<GuiColor>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> EquippedIcons
+        {
+            get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
@@ -119,9 +131,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var unequippedNames = new GuiBindingList<string>();
             var unequippedSelections = new GuiBindingList<bool>();
             var unequippedColors = new GuiBindingList<GuiColor>();
+            var unequippedIcons = new GuiBindingList<string>();
             var equippedNames = new GuiBindingList<string>();
             var equippedSelections = new GuiBindingList<bool>();
             var equippedColors = new GuiBindingList<GuiColor>();
+            var equippedIcons = new GuiBindingList<string>();
 
             _unequippedFeats = new List<FeatType>();
             _equippedFeats = new List<FeatType>();
@@ -143,6 +157,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 unequippedNames.Add(BuildRowText(detail));
                 unequippedSelections.Add(false);
                 unequippedColors.Add(GetUnequippedRowColor(detail, skillRank, usedSlots, maxSlots));
+                unequippedIcons.Add(Mimicry.GetTechniqueIcon(feat));
             }
 
             foreach (var (feat, detail) in equippedFeats)
@@ -151,14 +166,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 equippedNames.Add(BuildRowText(detail));
                 equippedSelections.Add(false);
                 equippedColors.Add(EquippedColor);
+                equippedIcons.Add(Mimicry.GetTechniqueIcon(feat));
             }
 
             UnequippedNames = unequippedNames;
             UnequippedSelections = unequippedSelections;
             UnequippedColors = unequippedColors;
+            UnequippedIcons = unequippedIcons;
             EquippedNames = equippedNames;
             EquippedSelections = equippedSelections;
             EquippedColors = equippedColors;
+            EquippedIcons = equippedIcons;
 
             RefreshSlots(dbPlayer);
         }

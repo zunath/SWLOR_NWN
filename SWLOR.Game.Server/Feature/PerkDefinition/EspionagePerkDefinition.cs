@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -35,27 +36,29 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.Stealth)
                 .Name("Stealth")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Stealth1)
                 .Description("Enter stealth, increasing stealth effectiveness by 15% while active. Drains STM over time and breaks on hostile action. Usable only while out of combat.")
                 .Price(2)
                 .IncreasesStat(StatType.StealthEffectivenessPercent, 15)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Stealth2)
                 .Description("Enter stealth, increasing stealth effectiveness by 25% while active. Drains STM over time and breaks on hostile action. Usable only while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 15)
                 .IncreasesStat(StatType.StealthEffectivenessPercent, 25)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Stealth3)
                 .Description("Enter stealth, increasing stealth effectiveness by 35% while active. Drains STM over time and breaks on hostile action. Usable only while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 28)
                 .IncreasesStat(StatType.StealthEffectivenessPercent, 35)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Stealth4)
                 .Description("Enter stealth, increasing stealth effectiveness by 45% while active. Drains STM over time and breaks on hostile action. Usable only while out of combat.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)
@@ -66,10 +69,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.BackAttack)
                 .Name("Back Attack")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BackAttackTrait)
                 .Description("Weapon attacks from behind a target deal +3% damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 5)
@@ -94,10 +96,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.Slicing)
                 .Name("Slicing")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SlicingTrait)
                 .Description("Can pick and hack tier 1 locks and terminals.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 8)
@@ -127,15 +128,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.TacticalEscape)
                 .Name("Tactical Escape")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TacticalEscape1)
                 .Description("Reduces your enmity by 35% and increases Evasion by 8% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 12)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TacticalEscape2)
                 .Description("Reduces your enmity by 60%, removes movement slow, and increases Evasion by 12% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 35);
@@ -145,15 +146,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.ShadowStep)
                 .Name("Shadow Step")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ShadowStep1)
                 .Description("Dash behind one hostile target within 5m and increase Evasion by 10% for 30 seconds. Does not grant invisibility.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 25)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ShadowStep2)
                 .Description("Dash behind one hostile target within 5m, cleanse movement impairing effects, and increase Evasion by 15% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 45);
@@ -163,10 +164,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.SilentStride)
                 .Name("Silent Stride")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SilentStrideTrait)
                 .Description("Movement speed while stealthed is no longer reduced, and stealth drains STM 20% slower.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 32)
@@ -177,10 +177,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.GhostProtocol)
                 .Name("Ghost Protocol")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GhostProtocol)
                 .Description("Drop most enmity, enter stealth for 30 seconds, and cause your next back attack within 30 seconds to critically hit and inflict Exposed.")
                 .Price(6)
                 .RequirementSkill(SkillType.Espionage, 50);
@@ -190,10 +189,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageSaboteur, PerkType.Poisoncraft)
                 .Name("Poisoncraft")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PoisoncraftTrait)
                 .Description("Can craft tier 1 weapon poisons.")
                 .Price(2)
 
@@ -222,10 +220,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageSaboteur, PerkType.Trapcraft)
                 .Name("Trapcraft")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TrapcraftTrait)
                 .Description("Can craft, place, detect, and disarm tier 1 traps.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 5)
@@ -250,10 +247,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageSaboteur, PerkType.VenomExpertise)
                 .Name("Venom Expertise")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.VenomExpertiseTrait)
                 .Description("Weapon poisons applied by you deal 10% more damage or last 10% longer, based on poison type.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 8)
@@ -270,15 +266,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageSaboteur, PerkType.RazorTrap)
                 .Name("Razor Trap")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RazorTrap1)
                 .Description("Places a visible trap that arms after 3 seconds. Triggered enemies take 14 physical DMG plus PER scaling and Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 12)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RazorTrap2)
                 .Description("Places a visible trap that arms after 3 seconds. Triggered enemies take 30 physical DMG plus PER scaling and Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 38);
@@ -288,10 +284,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageSaboteur, PerkType.ShockTrap)
                 .Name("Shock Trap")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ShockTrap)
                 .Description("Places a visible trap that arms after 3 seconds. Triggered enemies take 22 electrical DMG plus PER scaling and suffer Shock for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 25);
@@ -301,10 +296,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageSaboteur, PerkType.TrapManagement)
                 .Name("Trap Management")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TrapManagementTrait)
                 .Description("Increases maximum concurrent traps to 2.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 22)
@@ -319,10 +313,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageSaboteur, PerkType.LastingCoatings)
                 .Name("Lasting Coatings")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.LastingCoatingsTrait)
                 .Description("Weapon poisons you apply last 50% longer before wearing off.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 32)
@@ -333,10 +326,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageSaboteur, PerkType.MasterSaboteur)
                 .Name("Master Saboteur")
-                // Purchasable once the trait feat and icon slice lands.
-                .Inactive()
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MasterSaboteurTrait)
                 .Description("Can craft, place, detect, and disarm tier 5 traps. Your trap effect strength increases by 10% and your poisons gain +10% potency.")
                 .Price(6)
                 .RequirementSkill(SkillType.Espionage, 50)

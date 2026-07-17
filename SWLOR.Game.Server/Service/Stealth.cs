@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class Stealth
     {
+        public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
+
         private const float DetectionCheckIntervalSeconds = 30f;
         private const int CachePruneThreshold = 2000;
 
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (GetIsInCombat(creature))
+            if (GetIsInCombat(creature) && GetLocalInt(creature, CombatEntryWindowVariable) == 0)
             {
                 EventsPlugin.SkipEvent();
                 SendMessageToPC(creature, ColorToken.Red("You cannot enter stealth while in combat."));

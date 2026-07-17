@@ -220,6 +220,18 @@ public class OnboardedTilesetPipelineTests
         // BaseGameTilesetProfiles.EarlyWinter's own doc comment for the full composition writeup.
         BaseGameTilesetProfiles.EarlyWinter,
         BaseGameTilesetProfiles.EarlyWinterMountain,
+        // Wave-15: Rural Winter - Facelift (tts02, BIF-only -- no SWLOR_Haks copy exists). A byte-for-
+        // byte content mirror of vanilla basegame_sets/tts01.set (NOT RuralWinter's SWLOR-hak-renamed
+        // profile), open-field base profile (Solid=Open=Snow, no override) plus a Water PaletteVariant
+        // (same shape as RuralWinter/RuralGrass's own Water district) and a genuinely NEW Fort
+        // PaletteVariant (SolidTerrainOverride("Fort"), a single unified wall district unlike the
+        // Good/EvilCastle factional split elsewhere, and the first PaletteVariant on this tileset family
+        // needing an explicit MinimumOpeningWidth(2) override). See
+        // BaseGameTilesetProfiles.RuralWinterFacelift's own doc comment for the full mirror-check
+        // writeup and composition details.
+        BaseGameTilesetProfiles.RuralWinterFacelift,
+        BaseGameTilesetProfiles.RuralWinterFaceliftWater,
+        BaseGameTilesetProfiles.RuralWinterFaceliftFort,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

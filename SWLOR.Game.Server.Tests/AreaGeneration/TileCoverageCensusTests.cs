@@ -1126,6 +1126,13 @@ public class TileCoverageCensusTests
         // CornerEdgeResolver's admission gate regardless of vocab. See
         // BaseGameTilesetProfiles.RuralWinter's own doc comment.
         ["tts01"] = new(StringComparer.OrdinalIgnoreCase) { "Trees" },
+        // tts02 (Rural Winter - Facelift): the identical shape as tts01 (verified directly against
+        // tts02's own .set data -- TILE60/TILE74 carry the SAME TileIds and the SAME Snow/Trees mixed,
+        // door-bearing, Stream/Road crosser shape as tts01's own copy). Water and Fort are both
+        // registered PaletteVariant profiles (RuralWinterFaceliftWater/RuralWinterFaceliftFort), so
+        // ungrouped tiles carrying them were already CornerEdgeResolver-reachable regardless of this
+        // bucket. See BaseGameTilesetProfiles.RuralWinterFacelift's own doc comment.
+        ["tts02"] = new(StringComparer.OrdinalIgnoreCase) { "Trees" },
         // tno01 (Castle Exterior, Rural*): "cliff"/"castlewall"/"keep"/"water" are all registered as
         // real profiles (base CastleExteriorRural + the CastleWall/Keep/Water PaletteVariants), so
         // ungrouped tiles carrying them were already CornerEdgeResolver-reachable regardless of this
@@ -1302,6 +1309,14 @@ public class TileCoverageCensusTests
         // cells) are handled via PilotExpectedExemptions, not this bucket -- see
         // BaseGameTilesetProfiles.RuralWinter's own doc comment.
         ["tts01"] = new(StringComparer.OrdinalIgnoreCase),
+        // tts02: Road is wired directly on the base RuralWinterFacelift profile (RoadCrosser) -- no
+        // Slope crosser exists in this tileset at all (a RuralWinter hak-only addition, verified
+        // directly). Stream/Wall1/Wall2 have no dedicated wiring -- their doorless, ungrouped tiles
+        // resolve via CornerEdgeResolver directly regardless, and the door-bearing "Wall1GateRoad"/
+        // "Wall2GateRoad" dual-crosser cells (plus the doorless "Wall1OverStream"/"Wall2OverStream"
+        // dual-crosser cells) are handled via PilotExpectedExemptions, not this bucket -- see
+        // BaseGameTilesetProfiles.RuralWinterFacelift's own doc comment.
+        ["tts02"] = new(StringComparer.OrdinalIgnoreCase),
         // tno01: ridge/road are wired directly on the base CastleExteriorRural profile (RampCrosser/
         // RoadCrosser). stonewall/smallwall/sandbank/river/bridge have no dedicated crosser-slot wiring
         // -- their doorless, ungrouped tiles resolve via CornerEdgeResolver directly regardless, and the
@@ -1716,6 +1731,39 @@ public class TileCoverageCensusTests
         // path of its own (same reasoning as ttr01's own writeup).
         ("tts01", "TILE229"),
         ("tts01", "TILE230"),
+
+        // Rural Winter - Facelift (tts02) -- a byte-for-byte content mirror of vanilla tts01 (see
+        // BaseGameTilesetProfiles.RuralWinterFacelift's own doc comment for the full mirror-check
+        // writeup), so the identical wall-boundary/dual-crosser exemption family carries over,
+        // re-verified directly against tts02's own (different) TileIds: "Footbridge"/Stream and
+        // "RuinedCart"/Road (solo, all-Snow, one door-implying crosser edge); "Wall1Gate"/"Wall2Gate"
+        // (solo, all-Snow, one Wall1/Wall2 edge plus a real door); "Wall1GateRoad"/"Wall2GateRoad" (the
+        // same shape plus a second independent Road edge -- dual-crosser crossroads gap);
+        // "Wall1OverStream"/"Wall2OverStream" (dual-crosser, Stream+Wall1/Wall2, doorless) -- all the
+        // identical WallRoom-eligible-but-Tunnel-vocab-starved shape (no Corridor/Doorway/Alley
+        // vocabulary at all here). On the RuralWinterFaceliftWater PaletteVariant: "BridgeDoor"/Road
+        // (solo, all-Water, one door-implying crosser edge) is the identical ceiling over a Water solid.
+        // The five Fort-district groups (WallBreach/WatchTower/CampFort/WellFort/SnowyDipFort) are
+        // deliberately NOT here: all five are genuinely reachable through the RuralWinterFaceliftFort
+        // PaletteVariant (WallBreach/WatchTower as OpenSetPieces at a measured 89-100% isolated rate,
+        // CampFort/WellFort/SnowyDipFort as FeatureTiles sprinkling onto the composed Fort mass at
+        // 100/100 -- ProbeTool "fortprobe") and are wired for real on that profile.
+        // "ShipDocked02_2x2"'s TileIds are [230, 180, HOLE, 179] and "ShipFloating_2x1"'s
+        // are [229, 179] -- verified directly against tts02's own data. TILE179/TILE180 are shared
+        // physical tiles already Cover()'ed under "ShipDocked01_2x2" (claimed first); the bare
+        // TILE229 (all-Water, no door, no crosser) and TILE230 (all-Water, one Road edge, no door) have
+        // no path of their own, the identical shared-tile-id residue tts01's own writeup documents.
+        ("tts02", "GROUP:Footbridge"),
+        ("tts02", "GROUP:RuinedCart"),
+        ("tts02", "GROUP:Wall1Gate"),
+        ("tts02", "GROUP:Wall2Gate"),
+        ("tts02", "GROUP:Wall1GateRoad"),
+        ("tts02", "GROUP:Wall2GateRoad"),
+        ("tts02", "GROUP:Wall1OverStream"),
+        ("tts02", "GROUP:Wall2OverStream"),
+        ("tts02", "GROUP:BridgeDoor"),
+        ("tts02", "TILE229"),
+        ("tts02", "TILE230"),
 
         // Castle Exterior, Rural* (tno01) -- see BaseGameTilesetProfiles.CastleExteriorRural's own doc
         // comment for the composition/variant writeup. Six proof-backed exemption families:
@@ -2156,6 +2204,7 @@ public class TileCoverageCensusTests
         "ttz01",
         "ttu01",
         "trs02",
+        "tts02",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -2196,6 +2245,7 @@ public class TileCoverageCensusTests
             "ttz01" => BaseGameTilesetProfiles.Tropical,
             "ttu01" => BaseGameTilesetProfiles.Underdark,
             "trs02" => BaseGameTilesetProfiles.EarlyWinter,
+            "tts02" => BaseGameTilesetProfiles.RuralWinterFacelift,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

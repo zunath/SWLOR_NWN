@@ -75489,7 +75489,7 @@
                             "value": "adamguard_w1"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75500,7 +75500,7 @@
                             "value": "brawl_wraps"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75511,7 +75511,7 @@
                             "value": "scar_cuirass"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75522,7 +75522,7 @@
                             "value": "gunsling_rig"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75533,7 +75533,7 @@
                             "value": "padded_coat"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75544,7 +75544,7 @@
                             "value": "hexweave"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75555,7 +75555,7 @@
                             "value": "ward_vest"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75566,7 +75566,7 @@
                             "value": "arena_token"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75577,7 +75577,7 @@
                             "value": "spent_charge"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75588,7 +75588,7 @@
                             "value": "hex_focus"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75599,7 +75599,7 @@
                             "value": "bp_pitcestus"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75610,7 +75610,7 @@
                             "value": "bp_duelvest"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75621,7 +75621,7 @@
                             "value": "bp_charmcowl"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75632,7 +75632,7 @@
                             "value": "pit_cestus"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75643,7 +75643,7 @@
                             "value": "duel_vest"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75654,7 +75654,7 @@
                             "value": "charm_cowl"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75665,7 +75665,7 @@
                             "value": "bone_guard"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75676,7 +75676,7 @@
                             "value": "thornhide"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75687,7 +75687,7 @@
                             "value": "quill_bracer"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75698,7 +75698,7 @@
                             "value": "beasthide"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75709,7 +75709,7 @@
                             "value": "totem_charm"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75720,7 +75720,7 @@
                             "value": "spirit_hide"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75731,7 +75731,7 @@
                             "value": "alpha_fang"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75742,7 +75742,7 @@
                             "value": "spine_quill"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75753,7 +75753,7 @@
                             "value": "spirit_totem"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75764,7 +75764,7 @@
                             "value": "bp_fanggaunt"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75775,7 +75775,7 @@
                             "value": "bp_ridgeplate"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75786,7 +75786,7 @@
                             "value": "bp_ritecrown"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75797,7 +75797,7 @@
                             "value": "fang_gaunt"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75808,7 +75808,7 @@
                             "value": "ridge_plate"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75819,7 +75819,7 @@
                             "value": "rite_crown"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75830,7 +75830,7 @@
                             "value": "bipod_rig"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75841,7 +75841,7 @@
                             "value": "barrel_shroud"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75852,7 +75852,7 @@
                             "value": "deton_cestus"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75863,7 +75863,7 @@
                             "value": "blast_vest"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75874,7 +75874,7 @@
                             "value": "jammer_array"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75885,7 +75885,7 @@
                             "value": "riot_harness"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75896,7 +75896,7 @@
                             "value": "targeting_mod"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75907,7 +75907,7 @@
                             "value": "detonite_chg"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75918,7 +75918,7 @@
                             "value": "signal_disr"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75929,7 +75929,7 @@
                             "value": "bp_precoptic"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75940,7 +75940,7 @@
                             "value": "bp_detonknuck"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75951,7 +75951,7 @@
                             "value": "bp_jammermesh"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75962,7 +75962,7 @@
                             "value": "precision_optic"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75973,7 +75973,7 @@
                             "value": "detonite_knuck"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75984,7 +75984,7 @@
                             "value": "jammer_mesh"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -75995,7 +75995,7 @@
                             "value": "reactor_plate"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76006,7 +76006,7 @@
                             "value": "piston_gaunt"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76017,7 +76017,7 @@
                             "value": "siege_optics"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76028,7 +76028,7 @@
                             "value": "reactor_core"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76039,7 +76039,7 @@
                             "value": "crusher_piston"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76050,7 +76050,7 @@
                             "value": "targeting_lens"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76061,7 +76061,7 @@
                             "value": "bp_reactorpl"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76072,7 +76072,7 @@
                             "value": "bp_pistongaunt"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76083,7 +76083,7 @@
                             "value": "bp_siegeoptic"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76094,7 +76094,7 @@
                             "value": "yard_plate"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76105,7 +76105,7 @@
                             "value": "servo_frame"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76116,7 +76116,7 @@
                             "value": "slag_crusher"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76127,7 +76127,7 @@
                             "value": "reclaim_gaunt"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76138,7 +76138,7 @@
                             "value": "ord_rig"
                           }
                         },
-{
+                        {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
@@ -76543,6 +76543,1491 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "vet_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Invictus Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "invictuscr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Invictus Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "invictusda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Invictus Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "invictusdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Invictus Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "invictuscm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Invictus Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_invictus"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ruptor Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ruptorvanecr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ruptor Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ruptorvaneda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ruptor Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ruptorvanedb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ruptor Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ruptorvanecm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Ruptor Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_ruptorvane"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blackout Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blackoutwrdcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blackout Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blackoutwrdda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blackout Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blackoutwrddb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blackout Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blackoutwrdcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Blackout Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_blackoutwrd"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sabrae Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sabraetrialcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sabrae Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sabraetrialda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sabrae Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sabraetrialdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sabrae Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sabraetrialcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Sabrae Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_sabraetrial"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sentinel Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "enclavesentlcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sentinel Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "enclavesentlda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sentinel Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "enclavesentldb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sentinel Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "enclavesentlcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Sentinel Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_enclavesentl"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cyclone Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cycloneadptcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cyclone Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cycloneadptda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cyclone Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cycloneadptdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cyclone Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cycloneadptcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Cyclone Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_cycloneadpt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Forge Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "forgewrightcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Forge Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "forgewrightda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Forge Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "forgewrightdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Forge Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "forgewrightcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Forge Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_forgewright"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flame Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flameweavercr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flame Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flameweaverda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flame Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flameweaverdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flame Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flameweavercm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Flame Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_flameweaver"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bane Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "banecallercr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bane Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "banecallerda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bane Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "banecallerdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bane Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "banecallercm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Bane Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_banecaller"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Canyon Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "canyonbulwrkcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Canyon Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "canyonbulwrkda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Canyon Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "canyonbulwrkdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Canyon Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "canyonbulwrkcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Canyon Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_canyonbulwrk"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Deadeye Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dunedeadeyecr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Deadeye Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dunedeadeyeda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Deadeye Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dunedeadeyedb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Deadeye Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dunedeadeyecm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Deadeye Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_dunedeadeye"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DeadHand Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "deadhandzephcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DeadHand Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "deadhandzephda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DeadHand Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "deadhandzephdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "DeadHand Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "deadhandzephcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: DeadHand Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_deadhandzeph"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flurry Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flurrychampcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flurry Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flurrychampda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flurry Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flurrychampdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flurry Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flurrychampcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Flurry Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_flurrychamp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thermal Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thermlancercr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thermal Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thermlancerda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thermal Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thermlancerdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thermal Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thermlancercm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Thermal Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_thermlancer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Barrier Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "barrieroversecr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Barrier Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "barrieroverseda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Barrier Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "barrieroversedb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Barrier Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "barrieroversecm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Barrier Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_barrieroverse"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Crypt Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cryptwardencr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Crypt Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cryptwardenda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Crypt Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cryptwardendb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Crypt Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cryptwardencm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Crypt Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_cryptwarden"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunger Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "markahungercr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunger Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "markahungerda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunger Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "markahungerdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunger Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "markahungercm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Hunger Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_markahunger"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eclipse Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eclipseshadecr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eclipse Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eclipseshadeda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eclipse Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eclipseshadedb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Eclipse Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "eclipseshadecm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Eclipse Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_eclipseshade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bunker Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bunkerbreakcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bunker Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bunkerbreakda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bunker Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bunkerbreakdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bunker Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bunkerbreakcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Bunker Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_bunkerbreak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Beacon Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "beaconmarkscr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Beacon Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "beaconmarksda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Beacon Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "beaconmarksdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Beacon Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "beaconmarkscm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Beacon Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_beaconmarks"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Decurion Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decurioncmdcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Decurion Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decurioncmdda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Decurion Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decurioncmddb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Decurion Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "decurioncmdcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Decurion Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_decurioncmd"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Triage Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "triagewardencr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Triage Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "triagewardenda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Triage Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "triagewardendb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Triage Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "triagewardencm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Triage Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_triagewarden"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chem Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chemslingercr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chem Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chemslingerda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chem Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chemslingerdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chem Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chemslingercm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Chem Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_chemslinger"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Conduit Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "conduitmatrncr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Conduit Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "conduitmatrnda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Conduit Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "conduitmatrndb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Conduit Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "conduitmatrncm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Conduit Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_conduitmatrn"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apex Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tarnapexmawcr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apex Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tarnapexmawda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apex Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tarnapexmawdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Apex Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tarnapexmawcm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Apex Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_tarnapexmaw"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quill Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "quillstalkercr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quill Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "quillstalkerda"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quill Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "quillstalkerdb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quill Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "quillstalkercm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Quill Visor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_quillstalker"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rhydel Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rhydelalphacr"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rhydel Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rhydelalphada"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rhydel Plating"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rhydelalphadb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rhydel Salvage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rhydelalphacm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Rhydel Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_rhydelalpha"
                           }
                         }
                       ]

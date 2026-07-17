@@ -24,7 +24,35 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             DantooineHerb();
 
             CapstoneDantooineDungeonRares();
+            DanenclaveRareElites();
+            DanmedRareElites();
             return _builder.Build();
+        }
+
+        private void DanmedRareElites()
+        {
+            _builder.Create("DANMED_TRIAGE_RARES").IsRare()
+                .AddItem("triagewardenda", 1, 1, true).AddItem("triagewardendb", 1, 1, true).AddItem("bp_triagewarden", 1, 1, true);
+            _builder.Create("DANMED_CHEM_RARES").IsRare()
+                .AddItem("chemslingerda", 1, 1, true).AddItem("chemslingerdb", 1, 1, true).AddItem("bp_chemslinger", 1, 1, true);
+            _builder.Create("DANMED_CONDUIT_RARES").IsRare()
+                .AddItem("conduitmatrnda", 1, 1, true).AddItem("conduitmatrndb", 1, 1, true).AddItem("bp_conduitmatrn", 1, 1, true);
+            _builder.Create("DANMED_TRIAGE_COMP").AddItem("triagewardencm", 1, 1);
+            _builder.Create("DANMED_CHEM_COMP").AddItem("chemslingercm", 1, 1);
+            _builder.Create("DANMED_CONDUIT_COMP").AddItem("conduitmatrncm", 1, 1);
+        }
+
+        private void DanenclaveRareElites()
+        {
+            _builder.Create("DANENCLAVE_SABRAE_RARES").IsRare()
+                .AddItem("sabraetrialda", 1, 1, true).AddItem("sabraetrialdb", 1, 1, true).AddItem("bp_sabraetrial", 1, 1, true);
+            _builder.Create("DANENCLAVE_SENTINEL_RARES").IsRare()
+                .AddItem("enclavesentlda", 1, 1, true).AddItem("enclavesentldb", 1, 1, true).AddItem("bp_enclavesentl", 1, 1, true);
+            _builder.Create("DANENCLAVE_CYCLONE_RARES").IsRare()
+                .AddItem("cycloneadptda", 1, 1, true).AddItem("cycloneadptdb", 1, 1, true).AddItem("bp_cycloneadpt", 1, 1, true);
+            _builder.Create("DANENCLAVE_SABRAE_COMP").AddItem("sabraetrialcm", 1, 1);
+            _builder.Create("DANENCLAVE_SENTINEL_COMP").AddItem("enclavesentlcm", 1, 1);
+            _builder.Create("DANENCLAVE_CYCLONE_COMP").AddItem("cycloneadptcm", 1, 1);
         }
 
         private void CapstoneDantooineDungeonRares()

@@ -109,7 +109,7 @@ Magnitudes are likewise capped to Bible norms: Accuracy debuffs at −10%, movem
 
 ### Loadout economy (technique slots)
 
-The slot budget is the primary limiter on simultaneous power, since a player can freely swap techniques out of combat and cheaply learns the entire pool. Combat Analyzer grants **2** slots; Analyzer Memory adds **+1 per rank** (3 ranks) and the Overclocked Analyzer capstone adds **+2**, for a maximum of **7**. With slot costs of 1–3 (rising with tier), a fully-invested analyst runs roughly 2–3 techniques at once — a deliberate jack-of-all-trades kit that must be tailored per encounter rather than a standing library of every effect.
+The slot budget is the primary limiter on simultaneous power, since a player can freely swap techniques out of combat and cheaply learns the entire pool. Combat Analyzer grants **2** slots; Analyzer Memory adds **+2 per rank** (3 ranks = +6) and the Overclocked Analyzer capstone adds **+2**, for a maximum of **10**. With slot costs of 1–3 (rising with tier), a fully-invested analyst runs roughly 4–6 techniques at once — enough to build a real per-encounter kit while still forcing choices, rather than a standing library of every effect.
 
 ### Tier-4 signature mechanics
 

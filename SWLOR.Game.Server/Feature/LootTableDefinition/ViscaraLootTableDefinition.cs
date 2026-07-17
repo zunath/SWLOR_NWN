@@ -48,7 +48,35 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             CoxxionCrate();
 
             CapstoneViscaraDungeonRares();
+            VelesRareElites();
+            VisbunkerRareElites();
             return _builder.Build();
+        }
+
+        private void VisbunkerRareElites()
+        {
+            _builder.Create("VISBUNKER_BUNKER_RARES").IsRare()
+                .AddItem("bunkerbreakda", 1, 1, true).AddItem("bunkerbreakdb", 1, 1, true).AddItem("bp_bunkerbreak", 1, 1, true);
+            _builder.Create("VISBUNKER_BEACON_RARES").IsRare()
+                .AddItem("beaconmarksda", 1, 1, true).AddItem("beaconmarksdb", 1, 1, true).AddItem("bp_beaconmarks", 1, 1, true);
+            _builder.Create("VISBUNKER_DECURION_RARES").IsRare()
+                .AddItem("decurioncmdda", 1, 1, true).AddItem("decurioncmddb", 1, 1, true).AddItem("bp_decurioncmd", 1, 1, true);
+            _builder.Create("VISBUNKER_BUNKER_COMP").AddItem("bunkerbreakcm", 1, 1);
+            _builder.Create("VISBUNKER_BEACON_COMP").AddItem("beaconmarkscm", 1, 1);
+            _builder.Create("VISBUNKER_DECURION_COMP").AddItem("decurioncmdcm", 1, 1);
+        }
+
+        private void VelesRareElites()
+        {
+            _builder.Create("VELES_INVICTUS_RARES").IsRare()
+                .AddItem("invictusda", 1, 1, true).AddItem("invictusdb", 1, 1, true).AddItem("bp_invictus", 1, 1, true);
+            _builder.Create("VELES_RUPTOR_RARES").IsRare()
+                .AddItem("ruptorvaneda", 1, 1, true).AddItem("ruptorvanedb", 1, 1, true).AddItem("bp_ruptorvane", 1, 1, true);
+            _builder.Create("VELES_BLACKOUT_RARES").IsRare()
+                .AddItem("blackoutwrdda", 1, 1, true).AddItem("blackoutwrddb", 1, 1, true).AddItem("bp_blackoutwrd", 1, 1, true);
+            _builder.Create("VELES_INVICTUS_COMP").AddItem("invictuscm", 1, 1);
+            _builder.Create("VELES_RUPTOR_COMP").AddItem("ruptorvanecm", 1, 1);
+            _builder.Create("VELES_BLACKOUT_COMP").AddItem("blackoutwrdcm", 1, 1);
         }
 
         private void CapstoneViscaraDungeonRares()

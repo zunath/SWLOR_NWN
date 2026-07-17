@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using PlayerEntity = SWLOR.Game.Server.Entity.Player;
 
@@ -31,6 +32,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<GuiColor> UnequippedColors
+        {
+            get => Get<GuiBindingList<GuiColor>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> UnequippedIcons
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> EquippedNames
         {
             get => Get<GuiBindingList<string>>();
@@ -43,6 +56,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<GuiColor> EquippedColors
+        {
+            get => Get<GuiBindingList<GuiColor>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> EquippedIcons
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public string SlotsText
         {
             get => Get<string>();
@@ -52,6 +77,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiColor SlotsColor
         {
             get => Get<GuiColor>();
+            set => Set(value);
+        }
+
+        public float SlotsProgress
+        {
+            get => Get<float>();
             set => Set(value);
         }
 
@@ -73,6 +104,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        // Search box; category filter (0 = all, else a TechniqueCategory value); sort order.
+        public string SearchText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public int SelectedCategoryId
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int SelectedSortOrderId
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public TechniquesViewModel()
         {
             _unequippedFeats = new List<FeatType>();
@@ -85,7 +135,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEquipEnabled = false;
             IsUnequipEnabled = false;
 
+            SearchText = string.Empty;
+            SelectedCategoryId = 0;
+            SelectedSortOrderId = 0;
+
             LoadLists();
+
+            // Re-filter/sort the Learned list whenever the player changes the search box,
+            // category dropdown, or sort dropdown (the same reactive pattern the Perks window uses).
+            WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.SelectedCategoryId);
+            WatchOnClient(model => model.SelectedSortOrderId);
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(SearchText) ||
+                propertyName == nameof(SelectedCategoryId) ||
+                propertyName == nameof(SelectedSortOrderId))
+            {
+                LoadLists();
+            }
         }
 
         private void LoadLists()
@@ -99,22 +169,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var unequippedNames = new GuiBindingList<string>();
             var unequippedSelections = new GuiBindingList<bool>();
+            var unequippedColors = new GuiBindingList<GuiColor>();
+            var unequippedIcons = new GuiBindingList<string>();
             var equippedNames = new GuiBindingList<string>();
             var equippedSelections = new GuiBindingList<bool>();
+            var equippedColors = new GuiBindingList<GuiColor>();
+            var equippedIcons = new GuiBindingList<string>();
 
             _unequippedFeats = new List<FeatType>();
             _equippedFeats = new List<FeatType>();
 
             var equippedFeatSet = equippedFeats.Select(x => x.Feat).ToHashSet();
 
-            foreach (var (feat, detail) in learnedFeats)
-            {
-                if (equippedFeatSet.Contains(feat))
-                    continue;
+            // Requirement state, computed once, drives the per-row color (mirrors the Perk window's
+            // grey = locked / amber = met-but-can't-afford / green = actionable convention).
+            var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
+            var usedSlots = Mimicry.GetUsedSlots(dbPlayer);
+            var maxSlots = Mimicry.GetMaxSlots(dbPlayer);
 
+            // The Learned list honors the search box, category dropdown, and sort dropdown.
+            var search = (SearchText ?? string.Empty).Trim().ToLower();
+            var learnedView = learnedFeats
+                .Where(x => !equippedFeatSet.Contains(x.Feat))
+                .Where(x => SelectedCategoryId == 0 || GetTechniqueCategoryId(x.Detail) == SelectedCategoryId)
+                .Where(x => search.Length == 0 || x.Detail.Name.ToLower().Contains(search));
+
+            learnedView = SelectedSortOrderId switch
+            {
+                1 => learnedView.OrderByDescending(x => x.Detail.Name),
+                2 => learnedView.OrderBy(x => x.Detail.MimicryTier).ThenBy(x => x.Detail.Name),
+                3 => learnedView.OrderByDescending(x => x.Detail.MimicryTier).ThenBy(x => x.Detail.Name),
+                _ => learnedView.OrderBy(x => x.Detail.Name),
+            };
+
+            foreach (var (feat, detail) in learnedView)
+            {
                 _unequippedFeats.Add(feat);
                 unequippedNames.Add(BuildRowText(detail));
                 unequippedSelections.Add(false);
+                unequippedColors.Add(GetUnequippedRowColor(detail, skillRank, usedSlots, maxSlots));
+                unequippedIcons.Add(Mimicry.GetTechniqueIcon(feat));
             }
 
             foreach (var (feat, detail) in equippedFeats)
@@ -122,14 +216,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _equippedFeats.Add(feat);
                 equippedNames.Add(BuildRowText(detail));
                 equippedSelections.Add(false);
+                equippedColors.Add(EquippedColor);
+                equippedIcons.Add(Mimicry.GetTechniqueIcon(feat));
             }
 
             UnequippedNames = unequippedNames;
             UnequippedSelections = unequippedSelections;
+            UnequippedColors = unequippedColors;
+            UnequippedIcons = unequippedIcons;
             EquippedNames = equippedNames;
             EquippedSelections = equippedSelections;
+            EquippedColors = equippedColors;
+            EquippedIcons = equippedIcons;
 
             RefreshSlots(dbPlayer);
+        }
+
+        // Perk-window color convention, reused for consistency.
+        private static readonly GuiColor LockedColor = GuiColor.Grey;         // requirement not met (skill rank)
+        private static readonly GuiColor NoRoomColor = new(230, 180, 70);     // met, but no free slots
+        private static readonly GuiColor EquippableColor = new(60, 200, 90);  // ready to equip
+        private static readonly GuiColor EquippedColor = new(90, 170, 230);   // currently equipped / active
+
+        // Category ids match the dropdown option values in TechniquesDefinition:
+        // 1 Single-Target, 2 Area, 3 Stance, 4 Support, 5 Passive Trait. Trait/stance/support are
+        // checked first because they take precedence over the ability's targeting shape.
+        private static int GetTechniqueCategoryId(AbilityDetail detail)
+        {
+            if (detail.IsMimicryTrait) return 5;
+            if (detail.IsMimicryStance) return 3;
+            if (detail.IsMimicryUtility) return 4;
+            if (detail.IsAreaAbility) return 2;
+            return 1;
+        }
+
+        private static GuiColor GetUnequippedRowColor(AbilityDetail detail, int skillRank, int usedSlots, int maxSlots)
+        {
+            if (skillRank < Mimicry.GetTierSkillRequirement(detail.MimicryTier))
+                return LockedColor;
+
+            if (usedSlots + detail.MimicrySlotCost > maxSlots)
+                return NoRoomColor;
+
+            return EquippableColor;
         }
 
         private static string BuildRowText(AbilityDetail detail)
@@ -145,6 +274,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SlotsText = $"Slots: {used} / {max}";
             SlotsColor = used >= max ? GuiColor.Red : GuiColor.White;
+            SlotsProgress = max > 0 ? (float)used / max : 0f;
         }
 
         private void ClearSelections()
@@ -169,7 +299,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 text += $"{description}\n\n";
 
             text += $"Tier: {detail.MimicryTier}\n" +
-                    $"Slot Cost: {detail.MimicrySlotCost}\n";
+                    $"Slot Cost: {detail.MimicrySlotCost}\n" +
+                    $"Requires: Mimicry Rank {Mimicry.GetTierSkillRequirement(detail.MimicryTier)}\n";
 
             if (detail.IsMimicryTrait)
             {

@@ -24,7 +24,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             CapstoneDathomirDungeonRares();
             DathomirGrottoRareElites();
+            DathtarnRareElites();
             return _builder.Build();
+        }
+
+        private void DathtarnRareElites()
+        {
+            _builder.Create("DATHTARN_APEX_RARES").IsRare()
+                .AddItem("tarnapexmawda", 1, 1, true).AddItem("tarnapexmawdb", 1, 1, true).AddItem("bp_tarnapexmaw", 1, 1, true);
+            _builder.Create("DATHTARN_QUILL_RARES").IsRare()
+                .AddItem("quillstalkerda", 1, 1, true).AddItem("quillstalkerdb", 1, 1, true).AddItem("bp_quillstalker", 1, 1, true);
+            _builder.Create("DATHTARN_RHYDEL_RARES").IsRare()
+                .AddItem("rhydelalphada", 1, 1, true).AddItem("rhydelalphadb", 1, 1, true).AddItem("bp_rhydelalpha", 1, 1, true);
+            _builder.Create("DATHTARN_APEX_COMP").AddItem("tarnapexmawcm", 1, 1);
+            _builder.Create("DATHTARN_QUILL_COMP").AddItem("quillstalkercm", 1, 1);
+            _builder.Create("DATHTARN_RHYDEL_COMP").AddItem("rhydelalphacm", 1, 1);
         }
 
         private void DathomirGrottoRareElites()

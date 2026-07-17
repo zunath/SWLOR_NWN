@@ -13,11 +13,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Techniques)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 560f, 540f)
+                .SetInitialGeometry(0, 0, 560f, 600f)
                 .SetTitle("Techniques")
 
                 .AddColumn(col =>
                 {
+                    // Category filter + sort order, filtering/ordering the Learned list. Fixed-width
+                    // combo boxes centered with flexing spacers (the Perks/Key Items pattern) so this
+                    // row fills the window without pinning the content width.
+                    col.AddRow(row =>
+                    {
+                        row.SetHeight(32f);
+                        row.AddSpacer();
+                        row.AddComboBox()
+                            .BindSelectedIndex(model => model.SelectedCategoryId)
+                            .SetWidth(240f)
+                            .AddOption("All Types", 0)
+                            .AddOption("Single-Target", 1)
+                            .AddOption("Area", 2)
+                            .AddOption("Stance", 3)
+                            .AddOption("Support", 4)
+                            .AddOption("Passive Trait", 5);
+
+                        row.AddComboBox()
+                            .BindSelectedIndex(model => model.SelectedSortOrderId)
+                            .SetWidth(180f)
+                            .AddOption("Name (A-Z)", 0)
+                            .AddOption("Name (Z-A)", 1)
+                            .AddOption("Tier (Low-High)", 2)
+                            .AddOption("Tier (High-Low)", 3);
+                        row.AddSpacer();
+                    });
+
+                    // Search box (filters the Learned list by technique name as you type).
+                    col.AddRow(row =>
+                    {
+                        row.SetHeight(30f);
+                        row.AddTextEdit()
+                            .SetPlaceholder("Search")
+                            .BindValue(model => model.SearchText);
+                    });
+
                     col.AddRow(row =>
                     {
                         // Learned list column: no fixed width, so it flexes to fill the space left
@@ -36,14 +72,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template.AddCell(cell =>
                                     {
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.UnequippedIcons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Stretch);
+                                        });
+
+                                        cell.SetWidth(40f);
+                                        cell.SetIsVariable(false);
+                                    });
+                                    template.AddCell(cell =>
+                                    {
                                         cell.AddToggleButton()
                                             .BindText(model => model.UnequippedNames)
                                             .BindIsToggled(model => model.UnequippedSelections)
+                                            .BindColor(model => model.UnequippedColors)
                                             .BindOnClicked(model => model.OnSelectUnequipped());
                                     });
                                 })
-                                .SetRowHeight(30f)
-                                .SetScrollbars(NuiScrollbars.Both)
+                                .SetRowHeight(40f)
+                                .SetScrollbars(NuiScrollbars.Y)
                                 .BindRowCount(model => model.UnequippedNames);
                             });
                         });
@@ -96,14 +147,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template.AddCell(cell =>
                                     {
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.EquippedIcons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Stretch);
+                                        });
+
+                                        cell.SetWidth(40f);
+                                        cell.SetIsVariable(false);
+                                    });
+                                    template.AddCell(cell =>
+                                    {
                                         cell.AddToggleButton()
                                             .BindText(model => model.EquippedNames)
                                             .BindIsToggled(model => model.EquippedSelections)
+                                            .BindColor(model => model.EquippedColors)
                                             .BindOnClicked(model => model.OnSelectEquipped());
                                     });
                                 })
-                                .SetRowHeight(30f)
-                                .SetScrollbars(NuiScrollbars.Both)
+                                .SetRowHeight(40f)
+                                .SetScrollbars(NuiScrollbars.Y)
                                 .BindRowCount(model => model.EquippedNames);
                             });
                         });
@@ -127,6 +193,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetVerticalAlign(NuiVerticalAlign.Middle)
                             .SetHeight(26f);
                         row.AddSpacer();
+                    });
+
+                    // Visual slot-usage bar beneath the "Slots: x / y" label.
+                    col.AddRow(row =>
+                    {
+                        row.AddProgressBar()
+                            .BindValue(model => model.SlotsProgress)
+                            .BindColor(model => model.SlotsColor)
+                            .SetHeight(16f);
                     });
                 })
                 ;

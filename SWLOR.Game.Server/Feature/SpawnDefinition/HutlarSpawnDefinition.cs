@@ -18,7 +18,16 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             QionHive();
             HutlarQionTestSite();
 
+            HutqionRareElites();
             return _builder.Build();
+        }
+
+        private void HutqionRareElites()
+        {
+            _builder.Create("HUTLAR_QION_TEST_SITE_RARES", "Hutlar Qion Test Site - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "flurrychamp").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "thermlancer").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "barrieroverse").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void Byysk()

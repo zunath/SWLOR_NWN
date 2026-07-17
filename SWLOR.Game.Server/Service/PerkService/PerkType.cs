@@ -746,6 +746,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         TrapManagement = 797,
         LastingCoatings = 798,
         MasterSaboteur = 799,
-        // IDs 650 and 801+ are free. 800 is reserved for Alertness (arrives with the Espionage trait feat/icon slice).
+        Alertness = 800,
+
+        // IDs 650 and 801+ are free.
     }
 }

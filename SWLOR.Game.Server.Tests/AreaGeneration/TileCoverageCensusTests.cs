@@ -1233,6 +1233,16 @@ public class TileCoverageCensusTests
         // appear on ANY tile corner at all (verified directly, zero occurrences, pure OR blended) --
         // genuinely vestigial declarations with nothing to exempt.
         ["tib01"] = new(StringComparer.OrdinalIgnoreCase),
+        // tcm02 (Medieval City 2): "Building" fails every terrain pairing in the 16-combo matrix (2/16
+        // or 8/16 against every other terrain, never 16/16) -- it cannot function as this tileset's
+        // Solid, Open, or Secondary terrain under any composition, so it is composed only as an
+        // ordinary decorative facade corner on house/shop/estate GROUPs. "Trees" and "Castle" are NOT
+        // here: Trees never appears on any GROUP (only ungrouped grass/water blend tiles, already
+        // CornerEdgeResolver-reachable regardless of vocab), and every Castle-cornered GROUP (CastleSmall
+        // Door/CastleHugeGate/CastleTowerGate1-2/PrisonTower/CastleWell/CastleSmallDoor2/
+        // CastleHugeGateGrass) classifies via IsExitGroupEligible/IsFeatureTileEligible's
+        // terrain-agnostic rule -- see BaseGameTilesetProfiles.MedievalCity's own doc comment.
+        ["tcm02"] = new(StringComparer.OrdinalIgnoreCase) { "Building" },
     };
 
     /// <summary>
@@ -1450,6 +1460,17 @@ public class TileCoverageCensusTests
         // regardless of which palette composes it -- see BaseGameTilesetProfiles.Beholder's own doc
         // comment (mirrors tdc01's own ChultDoorway/ChultCorridor exemption above, same shape).
         ["tib01"] = new(StringComparer.OrdinalIgnoreCase) { "ChultDoorway", "ChultCorridor" },
+        // tcm02 (Medieval City 2): "Wall" (Battlement*/CornerTower*/Drawbridge*/RiverWall1/Stable/
+        // CliffWallCave) has no verified body/port/road vocabulary, and declaring it as a
+        // DoorSlotCrosser does not help -- every carrier is a 1x1 group, and a non-Solid-cornered 1x1
+        // group's own doorway-equivalent edge is always "perimeter" (no sibling member to be interior
+        // toward), which ClassifyMultiTileSetPiece's mixed-shape tolerance explicitly rejects (verified
+        // directly). "Stream" (streamWillow/Bridge1/Bridge2/CliffBridge1-2/CliffWillow), "Road"
+        // (RuinedCart), and "Rock" (only ever paired with non-flat groups already auto height-exempt)
+        // carry no wired vocabulary this pass either. "path" is a fifth, rare crosser found on exactly
+        // one group member, CliffPath1's sole member tile, not in the tileset's own 5-crosser summary at
+        // all (verified directly) -- the same rare-crosser quirk trs02's own "path" entry documents.
+        ["tcm02"] = new(StringComparer.OrdinalIgnoreCase) { "Wall", "Stream", "Road", "Rock", "path" },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -2223,6 +2244,73 @@ public class TileCoverageCensusTests
         ("ttu01", "GROUP:Ruin - Entrance, Straight 1"),
         ("ttu01", "GROUP:Ruin - Entrance, Corner"),
         ("ttu01", "GROUP:Ruin - Entrance, Straight 2"),
+
+        // tcm02 (Medieval City 2), verified directly against
+        // PilotEveryTileIsReachableOrExplicitlyExempted's own UNCLASSIFIED report:
+        //
+        // (1) "Small_Cog" (2x1, all-Water, doorless, crosser-free): the same bare-Solid "naval piece
+        // with no Open corner, no door, no crosser" gap tcn01's own "[City] Boat"/ttz01's own
+        // "ShipFloating_2x1" family documents -- OpenSetPiece never triggers without an Open corner,
+        // WallAlcove never triggers without a door.
+        ("tcm02", "GROUP:Small_Cog"),
+        //
+        // (2) "CliffRockFormation" (2x2, all-Chasm, doorless, crosser-free): all corners equal
+        // MedievalCityCliffs' own Solid (Chasm) with zero Open (Grass) corners present -- the identical
+        // bare-Solid, no-door, no-crosser gap as (1), just on the Cliffs variant's own Solid terrain
+        // instead of the base profile's Water.
+        ("tcm02", "GROUP:CliffRockFormation"),
+        //
+        // (3) "CliffPond" (2x1, Chasm+Cobble, doorless, crosser-free): mixes Chasm with Cobble, a
+        // terrain PAIR neither registered profile composes (base is Water/Cobble, Cliffs is
+        // Chasm/Grass) -- every corner would need to match one of {Water, Cobble} or {Chasm, Grass},
+        // and Chasm+Cobble matches neither pair.
+        ("tcm02", "GROUP:CliffPond"),
+        //
+        // (4) "Grass_boat_docked" (1x2, Water+Grass, doorless, crosser-free), "DockedShip1x4_Grass"
+        // (4x2, Water+Grass, 1 door, crosser-free), and "DockedShip1x3_Grass" (3x2, Water+Grass, 1
+        // door, crosser-free): the identical unregistered-terrain-pair gap as (3) -- Water+Grass
+        // matches neither the base profile's Water/Cobble pair nor the Cliffs variant's Chasm/Grass
+        // pair.
+        ("tcm02", "GROUP:Grass_boat_docked"),
+        ("tcm02", "GROUP:DockedShip1x4_Grass"),
+        ("tcm02", "GROUP:DockedShip1x3_Grass"),
+        //
+        // (5) "Willow1" (1x1, Grass+Water corners, pathNode B, doorless, crosser-free): fails
+        // IsFeatureTileEligible (pathNode is not 'A') and the same unregistered Water+Grass pair as (4)
+        // blocks OpenSetPiece.
+        ("tcm02", "GROUP:Willow1"),
+        //
+        // (6) "Pub2x1" (1x2, Cobble+Grass, 2 doors, crosser-free): mixes Cobble with Grass, a terrain
+        // pair neither registered profile composes (base is Water/Cobble; Cliffs is Chasm/Grass) --
+        // Cobble+Grass matches neither pair, and the door-bearing WallAlcove path requires ALL corners
+        // equal Solid, which this mixed footprint never satisfies either.
+        ("tcm02", "GROUP:Pub2x1"),
+        //
+        // (7) 17 ungrouped Castle+Cobble / Castle+Grass boundary tiles (TILE1182/1188/1192/1193/1195/
+        // 1196/1199/1220/1223/1276/1277/1279/1280/1283/1301/1302/1305), each a single physical door
+        // slot with NO crosser edge at all (all four edges blank): the identical "plain building
+        // entrance door with no crosser, no CornerEdgeResolver/TileDoorPlanner mechanism applies" shape
+        // tcn01's own 42-tile Cobble/Building boundary-door bucket and ttf01/ttr01's own RuralTrees/
+        // RuralWater entries document -- IsCornerEdgeResolverReachable's own "door implies a crosser"
+        // guard excludes a crosser-free door tile outright, and IsDoorTransitionReachable requires a
+        // genuine Doorway edge (never present here) rather than a bare physical door slot.
+        ("tcm02", "TILE1182"),
+        ("tcm02", "TILE1188"),
+        ("tcm02", "TILE1192"),
+        ("tcm02", "TILE1193"),
+        ("tcm02", "TILE1195"),
+        ("tcm02", "TILE1196"),
+        ("tcm02", "TILE1199"),
+        ("tcm02", "TILE1220"),
+        ("tcm02", "TILE1223"),
+        ("tcm02", "TILE1276"),
+        ("tcm02", "TILE1277"),
+        ("tcm02", "TILE1279"),
+        ("tcm02", "TILE1280"),
+        ("tcm02", "TILE1283"),
+        ("tcm02", "TILE1301"),
+        ("tcm02", "TILE1302"),
+        ("tcm02", "TILE1305"),
     };
 
     // tss13 (Sea Ships) -- see BaseGameTilesetProfiles.SeaShips' own doc comment for the full writeup.
@@ -2271,6 +2359,7 @@ public class TileCoverageCensusTests
         "tss13",
         "tts02",
         "tib01",
+        "tcm02",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -2315,6 +2404,7 @@ public class TileCoverageCensusTests
             "tss13" => BaseGameTilesetProfiles.SeaShips,
             "tts02" => BaseGameTilesetProfiles.RuralWinterFacelift,
             "tib01" => BaseGameTilesetProfiles.Beholder,
+            "tcm02" => BaseGameTilesetProfiles.MedievalCity,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

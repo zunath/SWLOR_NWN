@@ -269,6 +269,17 @@ public class OnboardedTilesetPipelineTests
         BaseGameTilesetProfiles.BeholderSewer,
         BaseGameTilesetProfiles.BeholderUrine,
         BaseGameTilesetProfiles.BeholderWater,
+        // Wave-15: Medieval City 2 (tcm02, BIF-only -- no SWLOR_Haks copy exists) -- a canal-city base
+        // profile (SolidTerrainOverride("Water") + default Cobble open, TunnelCrossers("Bridge",
+        // "Bridge")) mirroring tcn01's own City Exterior* composition, plus MedievalCityCliffs, a
+        // genuinely separate Chasm/Grass inversion for the tileset's own cliff/cave sub-family
+        // (SolidTerrainOverride("Chasm") + PrimaryOpenTerrain("Grass")). See
+        // BaseGameTilesetProfiles.MedievalCity's own doc comment for the full composition writeup.
+        BaseGameTilesetProfiles.MedievalCity,
+        BaseGameTilesetProfiles.MedievalCityCliffs,
+        // Medieval City 2's Castle garrison sub-family -- see BaseGameTilesetProfiles.MedievalCityCastle's
+        // own doc comment.
+        BaseGameTilesetProfiles.MedievalCityCastle,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a

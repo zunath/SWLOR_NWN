@@ -68,6 +68,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public float SlotsProgress
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
         public string SelectedDetails
         {
             get => Get<string>();
@@ -187,6 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SlotsText = $"Slots: {used} / {max}";
             SlotsColor = used >= max ? GuiColor.Red : GuiColor.White;
+            SlotsProgress = max > 0 ? (float)used / max : 0f;
         }
 
         private void ClearSelections()

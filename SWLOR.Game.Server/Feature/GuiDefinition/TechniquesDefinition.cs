@@ -130,6 +130,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(26f);
                         row.AddSpacer();
                     });
+
+                    // Visual slot-usage bar beneath the "Slots: x / y" label.
+                    col.AddRow(row =>
+                    {
+                        row.AddProgressBar()
+                            .BindValue(model => model.SlotsProgress)
+                            .BindColor(model => model.SlotsColor)
+                            .SetHeight(16f);
+                    });
                 })
                 ;
 

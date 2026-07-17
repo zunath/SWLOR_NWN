@@ -34,9 +34,12 @@ public class ClutterPileDecorationTests
     private const int SeedBase = 7001;
     private const int SeedCount = 10;
 
+    // The STANDARD clean-city palette's decals (signage/markings). The dirt decals
+    // (_mdrn_pl_dirtyg*) moved to the "ruined" decoration profile in the round-6 destruction split
+    // -- see UrbanDressingCompositionTests for the ruined-profile coverage.
     private static readonly HashSet<string> GroundDecalResrefs = new(StringComparer.OrdinalIgnoreCase)
     {
-        "_mdrn_pl_dirtyg1", "_mdrn_pl_dirtyg3", "swd_floorm01"
+        "swd_floorm01", "swd_flormh01", "swd_florrd01"
     };
 
     private static (DungeonDetail Detail, DungeonTilesetProfile Tileset, DungeonLayoutProfile Layout, TilesetModel Model)

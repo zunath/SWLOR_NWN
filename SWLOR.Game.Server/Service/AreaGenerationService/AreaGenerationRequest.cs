@@ -76,6 +76,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// denser pass). See DungeonDecorationPlanner.Plan.
         /// </summary>
         public int DecorationDensityPercent { get; set; } = 100;
+
+        /// <summary>
+        /// Named decoration profile of the composed tileset to dress with (see
+        /// DungeonTilesetProfile.DecorationProfiles -- e.g. fcx01's "ruined" destruction palette).
+        /// Empty (the default) defers to the theme's own DungeonDetail.DecorationProfile declaration,
+        /// which itself defaults to the tileset's standard palette. An unknown name falls back to the
+        /// standard palette.
+        /// </summary>
+        public string DecorationProfile { get; set; } = string.Empty;
     }
 
     public class AreaGenerationResult

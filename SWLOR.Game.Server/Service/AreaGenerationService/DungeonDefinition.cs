@@ -121,6 +121,43 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DecorationContext Context { get; set; } = DecorationContext.WallAdjacent;
         /// <summary>Semantic role driving arrangement eligibility -- see <see cref="DecorationRole"/>.</summary>
         public DecorationRole Role { get; set; } = DecorationRole.Fixture;
+
+        /// <summary>
+        /// True only for street-furniture entries that legitimately stand ON a carved road lane
+        /// (streetlight/lamp-family fixtures -- hand-built fcx01 streets carry their lamps and light
+        /// strips on the road surface itself). Under a tileset's urban placement grammar (see
+        /// <see cref="DungeonTilesetProfile.UrbanDressing"/>) every OTHER placement keeps the road
+        /// ribbon clear: a tile whose own edges carry the road crosser only ever hosts entries with
+        /// this flag; everything else sets back to the adjacent road-margin tiles, facing the street.
+        /// Inert (never read) for tilesets without the urban grammar.
+        /// </summary>
+        public bool AllowOnRoadSurface { get; set; }
+    }
+
+    /// <summary>
+    /// A NAMED alternate decoration palette a tileset profile can declare alongside its standard one
+    /// (see <see cref="DungeonTilesetProfile.DecorationProfiles"/>) -- e.g. fcx01's "ruined" profile,
+    /// which carries the wreckage/rubble/debris/dirt-decal destruction content the STANDARD clean
+    /// city palette deliberately excludes. A named profile fully REPLACES the standard
+    /// Decorations/Vignettes lists when selected (no merging), so each profile reads as one coherent
+    /// visual statement; the theme's own small accent list still layers on top as usual. Selected via
+    /// <see cref="DungeonDetail.DecorationProfile"/> (theme declaration) or
+    /// AreaGenerationRequest.DecorationProfile / the review tooling's decoration-profile override
+    /// (explicit per-request pick). Unknown/empty names fall back to the standard palette.
+    /// </summary>
+    public class DungeonDecorationProfile
+    {
+        public string Name { get; set; } = string.Empty;
+        public List<DungeonDecorationEntry> Decorations { get; set; } = new();
+        public List<DungeonVignette> Vignettes { get; set; } = new();
+
+        /// <summary>
+        /// True when this profile's clutter is genuinely organic junk (collapse debris, rubble
+        /// drifts) whose pile members keep fully random rotations even under the tileset's urban
+        /// placement grammar -- the one sanctioned exception to bearing alignment. The standard
+        /// clean-city palette leaves this false so cargo reads as stacked/aligned goods.
+        /// </summary>
+        public bool OrganicClutterRotation { get; set; }
     }
 
     /// <summary>
@@ -478,6 +515,34 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <see cref="Decorations"/> (see DungeonTilesetPaletteInheritance).
         /// </summary>
         public double DecorationDensityPerTile { get; set; }
+
+        /// <summary>
+        /// NAMED alternate decoration palettes (key = profile name, case-insensitive) selectable per
+        /// theme/request -- see <see cref="DungeonDecorationProfile"/>. The standard palette stays in
+        /// <see cref="Decorations"/>/<see cref="Vignettes"/>; entries here fully replace it when
+        /// selected. Inherited by palette variants alongside the standard palette (see
+        /// DungeonTilesetPaletteInheritance).
+        /// </summary>
+        public Dictionary<string, DungeonDecorationProfile> DecorationProfiles { get; set; } =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// True for a tileset whose hand-built reference areas follow an URBAN placement grammar,
+        /// enabling DungeonDecorationPlanner's city composition rules for this family only (every
+        /// other tileset's plan stays byte-identical): bearing alignment (placements face the wall/
+        /// road/facade they belong to, quantized to cardinals -- hand-built fcx01 measures 73%
+        /// cardinal-aligned vs 29% for random spin), road integrity (the carved road ribbon stays a
+        /// clear walkway; only <see cref="DungeonDecorationEntry.AllowOnRoadSurface"/> lamp-family
+        /// entries may stand on it, everything else sets back and faces the street), facade rows
+        /// (road-margin and structure-frontage runs repeat a single resref at an even rhythm with a
+        /// shared bearing), cargo grids (structure/corner clutter snaps to a small wall-aligned grid
+        /// instead of a loose disc), and zone discipline (clutter piles anchor only against walls,
+        /// structure bases, and corners -- never free-floating in plaza centers, which are reserved
+        /// for composed courtyards/centerpieces). Evidence: the July 2026 city review pass measured
+        /// generated fcx01 areas at chance-level bearing alignment with kiosks standing on the road
+        /// ribbon and junk piles mid-plaza -- "a scattering of different objects randomly placed".
+        /// </summary>
+        public bool UrbanDressing { get; set; }
     }
 
     /// <summary>
@@ -536,6 +601,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// Empty = no decoration pass for this theme (DungeonDecorationPlanner.Plan returns nothing).
         /// </summary>
         public List<DungeonDecorationEntry> Decorations { get; set; } = new();
+
+        /// <summary>
+        /// Name of the composed tileset's decoration profile this theme requests (see
+        /// <see cref="DungeonTilesetProfile.DecorationProfiles"/>) -- e.g. a ruin-flavored theme may
+        /// request a city tileset's "ruined" destruction palette. Empty (the default) = the
+        /// tileset's standard palette. A per-request override (AreaGenerationRequest.
+        /// DecorationProfile) wins over this declaration; a name the composed tileset never declared
+        /// falls back to the standard palette.
+        /// </summary>
+        public string DecorationProfile { get; set; } = string.Empty;
 
         /// <summary>
         /// Target decorative placeables PER TOTAL AREA TILE (layout.Width * layout.Height) at 100%
@@ -816,6 +891,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
+        /// Requests a NAMED decoration profile of whatever tileset this theme composes with -- see
+        /// <see cref="DungeonDetail.DecorationProfile"/>. Falls back to the tileset's standard
+        /// palette when the composed tileset never declared the name.
+        /// </summary>
+        public DungeonDefinitionBuilder DecorationProfile(string profileName)
+        {
+            _activeDungeon.DecorationProfile = profileName ?? string.Empty;
+            return this;
+        }
+
+        /// <summary>
         /// Starts a new tier definition. Tiers must be declared in contiguous order starting at 1
         /// (enforced by DungeonDefinitionTests, not at runtime).
         /// </summary>
@@ -905,6 +991,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 DisplayName = displayName
             };
             _profiles[key] = _active;
+            _activeDecorationProfile = null;
+            _activeVignette = null;
             return this;
         }
 
@@ -1183,21 +1271,56 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             return this;
         }
 
+        private DungeonDecorationProfile _activeDecorationProfile;
+
+        /// <summary>
+        /// Starts a NAMED alternate decoration palette on this tileset profile (see
+        /// <see cref="DungeonTilesetProfile.DecorationProfiles"/>): every subsequent
+        /// <see cref="Decoration"/>/<see cref="Vignette"/>/<see cref="VignetteMember"/> call routes
+        /// into it instead of the standard palette, until the next Create()/DecorationProfile() call.
+        /// Declare the standard palette FIRST, then each named profile.
+        /// </summary>
+        public DungeonTilesetProfileBuilder DecorationProfile(string name, bool organicClutterRotation = false)
+        {
+            _activeDecorationProfile = new DungeonDecorationProfile
+            {
+                Name = name,
+                OrganicClutterRotation = organicClutterRotation
+            };
+            _active.DecorationProfiles[name] = _activeDecorationProfile;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares this tileset family as following an urban placement grammar -- see
+        /// <see cref="DungeonTilesetProfile.UrbanDressing"/>. Only declare it for families whose
+        /// hand-built reference areas measurably follow the grammar (bearing alignment, clear road
+        /// ribbons, facade rows); every non-declaring tileset's plan stays byte-identical.
+        /// </summary>
+        public DungeonTilesetProfileBuilder UrbanDressing()
+        {
+            _active.UrbanDressing = true;
+            return this;
+        }
+
         /// <summary>
         /// Adds a weighted decorative placeable to this tileset FAMILY's own bulk palette for one
         /// placement context — see <see cref="DungeonTilesetProfile.Decorations"/>. This is where the
         /// bulk of a generated area's visual dressing should live; theme definitions should only add a
-        /// small handful of their own genuinely theme-flavored accents.
+        /// small handful of their own genuinely theme-flavored accents. Routes into the active NAMED
+        /// decoration profile instead once <see cref="DecorationProfile"/> has been called.
         /// </summary>
         public DungeonTilesetProfileBuilder Decoration(string resref, int weight, DecorationContext context,
-            DecorationRole role = DecorationRole.Fixture)
+            DecorationRole role = DecorationRole.Fixture, bool allowOnRoadSurface = false)
         {
-            _active.Decorations.Add(new DungeonDecorationEntry
+            var target = _activeDecorationProfile?.Decorations ?? _active.Decorations;
+            target.Add(new DungeonDecorationEntry
             {
                 Resref = resref,
                 Weight = weight,
                 Context = context,
-                Role = role
+                Role = role,
+                AllowOnRoadSurface = allowOnRoadSurface
             });
 
             return this;
@@ -1218,12 +1341,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
         /// <summary>
         /// Starts a new evidence-backed vignette grouping (see <see cref="DungeonVignette"/>) on this
-        /// tileset profile. Follow with one or more <see cref="VignetteMember"/> calls.
+        /// tileset profile. Follow with one or more <see cref="VignetteMember"/> calls. Routes into
+        /// the active NAMED decoration profile once <see cref="DecorationProfile"/> has been called.
         /// </summary>
         public DungeonTilesetProfileBuilder Vignette(string key, int weight = 1)
         {
             _activeVignette = new DungeonVignette { Key = key, Weight = weight };
-            _active.Vignettes.Add(_activeVignette);
+            (_activeDecorationProfile?.Vignettes ?? _active.Vignettes).Add(_activeVignette);
             return this;
         }
 
@@ -1281,7 +1405,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     {
                         profile.Decorations = basis.Decorations;
                         profile.Vignettes = basis.Vignettes;
+                        // Named alternate palettes travel with the standard one: a variant that
+                        // declared no dressing of its own offers the same selectable profiles
+                        // (e.g. fcx01's "ruined") as its family basis. Shared reference is fine --
+                        // palettes are never mutated after build, only read.
+                        if (profile.DecorationProfiles.Count == 0)
+                            profile.DecorationProfiles = basis.DecorationProfiles;
                     }
+                }
+
+                // The urban placement grammar is a family property like density below: a variant of
+                // an urban family dresses under the same grammar unless it declared its own palette
+                // AND its evidence genuinely differs (in which case declare UrbanDressing on the
+                // variant directly).
+                if (!profile.UrbanDressing)
+                {
+                    profile.UrbanDressing = profiles.Values.Any(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref && p.UrbanDressing);
                 }
 
                 // Family density (see DungeonTilesetProfile.DecorationDensityPerTile) inherits

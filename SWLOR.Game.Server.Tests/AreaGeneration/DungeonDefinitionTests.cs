@@ -263,6 +263,19 @@ public class DungeonDefinitionTests
             foreach (var member in vignette.Members)
                 CheckDecoration($"tileset '{profileKey}' vignette '{vignette.Key}'",
                     new DungeonDecorationEntry { Resref = member.Resref, Context = DecorationContext.WallAdjacent });
+
+            // Named alternate palettes (e.g. fcx01's "ruined") carry their own resrefs and are held
+            // to the same exists-and-is-visible bar as the standard palette.
+            foreach (var (profileName, decorationProfile) in profile.DecorationProfiles)
+            {
+                foreach (var decoration in decorationProfile.Decorations)
+                    CheckDecoration($"tileset '{profileKey}' profile '{profileName}'", decoration);
+
+                foreach (var vignette in decorationProfile.Vignettes)
+                foreach (var member in vignette.Members)
+                    CheckDecoration($"tileset '{profileKey}' profile '{profileName}' vignette '{vignette.Key}'",
+                        new DungeonDecorationEntry { Resref = member.Resref, Context = DecorationContext.WallAdjacent });
+            }
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));

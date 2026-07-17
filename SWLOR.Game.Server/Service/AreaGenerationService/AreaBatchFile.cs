@@ -24,11 +24,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public int Seed { get; set; }
         public int Size { get; set; }
 
-        /// <summary>Mirrors AreaGenerationRequest.EnableDecorations/DecorationDensityPercent. Both are
-        /// OPTIONAL with these same defaults, so an older --areas-file entry (or a v1 Content Builder
-        /// project saved before decorations existed) without them still deserializes correctly.</summary>
+        /// <summary>Mirrors AreaGenerationRequest.EnableDecorations/DecorationDensityPercent/
+        /// DecorationProfile. All OPTIONAL with these same defaults, so an older --areas-file entry
+        /// (or a v1 Content Builder project saved before decorations existed) without them still
+        /// deserializes correctly.</summary>
         public bool EnableDecorations { get; set; } = true;
         public int DecorationDensityPercent { get; set; } = 100;
+        public string DecorationProfile { get; set; } = string.Empty;
 
         public MacroLayoutParameters Parameters { get; set; } = new();
     }

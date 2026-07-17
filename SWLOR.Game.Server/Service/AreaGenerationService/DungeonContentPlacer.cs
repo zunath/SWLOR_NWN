@@ -317,7 +317,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 tileset = null;
 
             var densityPercent = instance.Request?.DecorationDensityPercent ?? 100;
-            var plan = DungeonDecorationPlanner.Plan(instance.Layout, tileset, detail, densityPercent);
+            var decorationProfile = instance.Request?.DecorationProfile ?? string.Empty;
+            var plan = DungeonDecorationPlanner.Plan(instance.Layout, tileset, detail, densityPercent, decorationProfile);
             result.DecorationsPlanned = plan.Count;
 
             SpawnDecorationBatch(area, instance, result, plan, 0);

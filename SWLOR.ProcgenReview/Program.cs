@@ -27,11 +27,13 @@ using SWLOR.ProcgenReview;
 // form (entrances/exits default to 1/1, doors defaults to "door", decorations default to "dec"/100),
 // the 7-segment "theme:tileset:layout:seed:size:entrances:exits" form, the 8-segment
 // "theme:tileset:layout:seed:size:entrances:exits:doors" form (doors is "door" or "plac"), the
-// 9-segment "...:doors:decorations" form (decorations is "dec" or "nodec"), or the 10-segment
+// 9-segment "...:doors:decorations" form (decorations is "dec" or "nodec"), the 10-segment
 // "...:decorations:densitypercent" form (an integer percent of the theme's curated base density,
-// 0-200; only meaningful when the decorations segment is "dec"). tileset/layout may be left empty to
-// use the theme's own defaults. When given, ONLY these areas are generated — no default set, no
-// matrix.
+// 0-200; only meaningful when the decorations segment is "dec"), or the 11-segment
+// "...:densitypercent:profile" form (a NAMED tileset decoration profile, e.g. fcx01's "ruined" --
+// see DungeonTilesetProfile.DecorationProfiles; empty/unknown means the standard palette).
+// tileset/layout may be left empty to use the theme's own defaults. When given, ONLY these areas
+// are generated — no default set, no matrix.
 // --areas-file <path>: JSON array of full-fidelity area entries (see AreaBatchFileEntry /
 // AreaBatchFile) — { resref?, themeKey, tilesetKey, layoutKey, seed, size, enableDecorations,
 // decorationDensityPercent, parameters }, where parameters is a complete MacroLayoutParameters
@@ -147,9 +149,9 @@ try
         foreach (var entry in argValue.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             var parts = entry.Split(':');
-            if (parts.Length != 5 && parts.Length != 7 && parts.Length != 8 && parts.Length != 9 && parts.Length != 10)
+            if (parts.Length != 5 && parts.Length != 7 && parts.Length != 8 && parts.Length != 9 && parts.Length != 10 && parts.Length != 11)
             {
-                Console.Error.WriteLine($"{flagName} entry '{entry}': expected theme:tileset:layout:seed:size, theme:tileset:layout:seed:size:entrances:exits, theme:tileset:layout:seed:size:entrances:exits:doors, theme:tileset:layout:seed:size:entrances:exits:doors:decorations, or theme:tileset:layout:seed:size:entrances:exits:doors:decorations:densitypercent — skipped");
+                Console.Error.WriteLine($"{flagName} entry '{entry}': expected theme:tileset:layout:seed:size, theme:tileset:layout:seed:size:entrances:exits, theme:tileset:layout:seed:size:entrances:exits:doors, theme:tileset:layout:seed:size:entrances:exits:doors:decorations, theme:tileset:layout:seed:size:entrances:exits:doors:decorations:densitypercent, or theme:tileset:layout:seed:size:entrances:exits:doors:decorations:densitypercent:profile — skipped");
                 continue;
             }
 
@@ -199,12 +201,14 @@ try
                 }
             }
 
-            if (parts.Length == 10 && !int.TryParse(parts[9], out entryDecorationDensity))
+            if (parts.Length >= 10 && !int.TryParse(parts[9], out entryDecorationDensity))
             {
                 Console.Error.WriteLine($"{flagName} entry '{entry}': decoration density percent must be an integer — skipped");
                 n++;
                 continue;
             }
+
+            var entryDecorationProfile = parts.Length == 11 ? parts[10] : string.Empty;
 
             var composition = ResolveComposition(themes, tilesetProfiles, layoutProfiles, themeKey, tilesetOverride, layoutOverride);
             if (composition == null)
@@ -216,7 +220,8 @@ try
             var resref = UniqueResref($"{resrefPrefix}{n}_{entrySeed}", usedResrefs);
             var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, entrySeed);
             specs.Add(new AreaSpec(resref, display, composition, entrySeed, entrySize, entryEntrances, entryExits, entryDoors,
-                EnableDecorations: entryDecorations, DecorationDensityPercent: entryDecorationDensity));
+                EnableDecorations: entryDecorations, DecorationDensityPercent: entryDecorationDensity,
+                DecorationProfile: entryDecorationProfile));
             n++;
         }
     }
@@ -254,7 +259,8 @@ try
             var display = ComposeDisplayName(composition.Content.DisplayName, composition.Tileset.DisplayName, composition.Layout.DisplayName, entry.Seed);
             specs.Add(new AreaSpec(resref, display, composition, entry.Seed, entry.Size,
                 entry.Parameters.EntranceCount, entry.Parameters.ExitCount, entry.Parameters.DoorTransitions,
-                entry.Parameters, entry.EnableDecorations, entry.DecorationDensityPercent));
+                entry.Parameters, entry.EnableDecorations, entry.DecorationDensityPercent,
+                entry.DecorationProfile ?? string.Empty));
             n++;
         }
     }
@@ -421,7 +427,8 @@ try
 
         var layout = solved.Resolved;
         var decorationsPlaced = EmitArea(layout, tileset, spec.Resref, spec.DisplayName, placeholderAre, placeholderGit, stage,
-            spec.Composition.Content, spec.EnableDecorations, spec.DecorationDensityPercent, decorationAppearances);
+            spec.Composition.Content, spec.EnableDecorations, spec.DecorationDensityPercent, decorationAppearances,
+            spec.DecorationProfile);
 
         var entrance = layout.Rooms.First(r => r.Role == RoomRole.Entrance);
         areas.Add((spec.Resref, entrance.CenterTile.X * 10f + 5f, entrance.CenterTile.Y * 10f + 5f));
@@ -564,7 +571,7 @@ static string UniqueResref(string baseResref, HashSet<string> used)
 static int EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string resref, string display,
     string placeholderArePath, string placeholderGitPath, string stage,
     DungeonDetail detail, bool enableDecorations, int decorationDensityPercent,
-    Dictionary<string, int> decorationAppearances)
+    Dictionary<string, int> decorationAppearances, string decorationProfile = "")
 {
     var lighting = tileset.Lighting;
     var tiles = string.Join(",\n", layout.Tiles.Select(t => TileEntry(t.TileId, t.Orientation, t.Height,
@@ -621,7 +628,7 @@ static int EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string
     var decorationsPlaced = 0;
     if (detail != null && enableDecorations)
     {
-        var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, decorationDensityPercent);
+        var plan = DungeonDecorationPlanner.Plan(layout, tileset, detail, decorationDensityPercent, decorationProfile);
         var placeables = BuildPlaceableEntries(plan, decorationAppearances);
         if (!string.IsNullOrEmpty(placeables))
         {
@@ -1037,6 +1044,10 @@ static Dictionary<string, int> LoadDecorationAppearances(
         .Select(d => d.Resref)
         .Concat(tilesetProfiles.SelectMany(t => t.Decorations).Select(d => d.Resref))
         .Concat(tilesetProfiles.SelectMany(t => t.Vignettes).SelectMany(v => v.Members).Select(m => m.Resref))
+        // Named alternate palettes (e.g. fcx01's "ruined") ship their own resrefs too.
+        .Concat(tilesetProfiles.SelectMany(t => t.DecorationProfiles.Values)
+            .SelectMany(p => p.Decorations.Select(d => d.Resref)
+                .Concat(p.Vignettes.SelectMany(v => v.Members).Select(m => m.Resref))))
         .Distinct(StringComparer.OrdinalIgnoreCase);
 
     foreach (var resref in resrefs)
@@ -1439,4 +1450,4 @@ static void ConvertJsonToGff(string stage, string gffTool)
 /// stay meaningful even for those entries (mirrored from the snapshot) for logging/display symmetry
 /// with the string-spec kinds.
 /// </summary>
-record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1, bool DoorTransitions = true, MacroLayoutParameters OverrideParameters = null, bool EnableDecorations = true, int DecorationDensityPercent = 100);
+record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1, bool DoorTransitions = true, MacroLayoutParameters OverrideParameters = null, bool EnableDecorations = true, int DecorationDensityPercent = 100, string DecorationProfile = "");

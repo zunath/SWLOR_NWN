@@ -60,6 +60,11 @@ namespace SWLOR.ContentBuilder.Services
         public bool EnableDecorations { get; init; } = true;
         public int DecorationDensityPercent { get; init; } = 100;
 
+        /// <summary>Named tileset decoration profile to dress with (see DungeonTilesetProfile.
+        /// DecorationProfiles, e.g. fcx01's "ruined"); empty = the standard palette. Content, not a
+        /// layout knob -- same contract as the two decoration knobs above.</summary>
+        public string DecorationProfile { get; init; } = string.Empty;
+
         public void ApplyTo(MacroLayoutParameters parameters, DungeonTilesetProfile tileset)
         {
             parameters.Style = Style;
@@ -131,7 +136,9 @@ namespace SWLOR.ContentBuilder.Services
             if (solved.Success && composition.Content != null && (overrides?.EnableDecorations ?? true))
             {
                 var densityPercent = overrides?.DecorationDensityPercent ?? 100;
-                plannedDecorationCount = DungeonDecorationPlanner.Plan(solved.Resolved, composition.Tileset, composition.Content, densityPercent).Count;
+                var decorationProfile = overrides?.DecorationProfile ?? string.Empty;
+                plannedDecorationCount = DungeonDecorationPlanner.Plan(
+                    solved.Resolved, composition.Tileset, composition.Content, densityPercent, decorationProfile).Count;
             }
 
             return new GenerationResult

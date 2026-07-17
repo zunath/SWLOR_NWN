@@ -35,6 +35,9 @@ namespace SWLOR.ContentBuilder.Models
         public bool DoorTransitions { get; init; } = true;
         public bool EnableDecorations { get; init; } = true;
         public int DecorationDensityPercent { get; init; } = 100;
+        /// <summary>Named tileset decoration profile (empty = standard) -- mirrors
+        /// AreaBatchFileEntry.DecorationProfile.</summary>
+        public string DecorationProfile { get; init; } = string.Empty;
         public MacroLayoutParameters Parameters { get; init; }
     }
 }

@@ -4229,20 +4229,31 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
 
             // Futuristic City's own bulk palette — mined from the fcx01 user-named exemplar
             // (decoration_evidence/evidence_named_exemplars.json['pw_ar_narpromena'], "Smuggler's Moon
-            // Promenade"): streetlights, holo-sign kiosks, planters/fences, parked speeders — this is
-            // the fix for the reported "Alien Ruin content dressed with Alien Ruin's own palette
-            // regardless of the Futuristic City tileset it was actually generated on" bug. Strongest
-            // structural pairing: a holo kiosk lit by a nearby streetlight -> vignette.
+            // Promenade") and the 24 hand-built fcx01 areas' decorative inventory (10477 placeables,
+            // re-mined July 2026 city review pass): streetlights, holo-sign kiosks, cargo, benches,
+            // consoles, parked speeders — this is the fix for the reported "Alien Ruin content dressed
+            // with Alien Ruin's own palette regardless of the Futuristic City tileset it was actually
+            // generated on" bug. Strongest structural pairing: a holo kiosk lit by a nearby
+            // streetlight -> vignette.
+            //
+            // STANDARD-vs-RUINED SPLIT (city review round 6, user directive "if you're going to do
+            // things like destruction, these need to be separate profiles"): the STANDARD palette
+            // below is CLEAN urban dressing only -- neat cargo (crates/containers/barrels), street
+            // furniture (lamps/kiosks/benches/consoles/barricades), and floor decals that read as
+            // signage/markings (swd_floorm01/flormh01/florrd01). Every wreckage/rubble/debris/
+            // dirt-decal resref lives exclusively in the named "ruined" DecorationProfile declared
+            // after the vignette -- selected only via a theme's DecorationProfile declaration or an
+            // explicit request/review override, never by default.
             //
             // CorridorSide additionally doubles as this family's "street-side" bucket: LayoutRoadCarver
             // (post-road-carving pass) makes DungeonDecorationPlanner route any wall-eligible tile
             // within one cell of a carved Routes lane into CorridorSide regardless of the owning room's
             // shape (see DungeonDecorationPlanner.IsRoadAdjacent), matching pw_ar_narpromena's own
             // pattern of streetlights and holo kiosks strung along its streets rather than confined to
-            // corridor-shaped rooms or doorways. _mdrn_pl_lights3/swd_streel01 (streetlight-class) and
-            // swd2_kiosk004 (kiosk-class) are additionally curated here alongside their existing
-            // WallAdjacent/DoorwayFlank entries so road-anchored placements draw real street furniture,
-            // not just the crosswalk decal.
+            // corridor-shaped rooms or doorways. Lamp-family entries are flagged AllowOnRoadSurface:
+            // under the urban grammar they are the ONLY dressing allowed to stand ON the carved road
+            // ribbon (hand-built streets carry their lamps/light strips on the lane surface itself);
+            // everything else sets back to the road margin and faces the street.
             _builder
                 // City dressing intensity is a family property: the 19 decorated hand-built fcx01
                 // areas measure 1.61 decorative placeables per tile AGGREGATE (flagship promenade
@@ -4254,6 +4265,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // hand-built flagship 2.5-3.5 band (measured in the _scratch_decor round-5 harness);
                 // see DungeonTilesetProfile.DecorationDensityPerTile.
                 .DecorationDensity(2.6)
+                // Urban placement grammar (round 6, "it still feels like a scattering of different
+                // objects randomly placed"): hand-built fcx01 dressing is 73% cardinal-aligned
+                // (within 7.5 degrees of 0/90/180/270 -- measured across all 24 areas' 10477
+                // decoratives) and same-resref groups share a dominant orientation; generated areas
+                // measured 29% (chance). See DungeonTilesetProfile.UrbanDressing for the full rule
+                // set (bearing alignment, road integrity, facade rows, cargo grids, pile zone
+                // discipline) this declaration enables for the fcx01 family only.
+                .UrbanDressing()
                 // Sign panels / barrier fences relocated out of WallAdjacent (July 2026 city-density
                 // pass): generated WallAdjacent anchors against ANY room boundary -- usually a
                 // knee-high divider on fcx01 -- where a free-standing holo sign board reads as junk.
@@ -4266,36 +4285,53 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("swd_build007", 3, DecorationContext.CorridorSide)
                 .Decoration("swd2_fence004", 2, DecorationContext.CorridorSide)
                 .Decoration("swd2_fence010", 2, DecorationContext.CorridorSide)
-                // CLUTTER BACKBONE (round-5 palette-share fix): the hand-built fcx01 palette
-                // backbone is junk -- _mdrn_pl_crate08 (352 mined placements), _mdrn_pl_conta39/36
-                // (459 combined), _mdrn_pl_barr001 (215), _mdrn_pl_rubb031 (248), plus debris/trash
-                // -- while street furniture (lamps/kiosks) is only ~4% of placements. Clutter-role
-                // entries feed the clutter-pile arrangement (see DungeonDecorationPlanner.
-                // PlanClutterPile) AND their curated WallAdjacent bucket, so walls read as junk
-                // lines and piles rather than lamp grids. Weights near-flat so no single junk type
-                // dominates the aggregate (top-3 resref share stays under the hand-built 0.35).
-                .Decoration("swd_trash01", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                // Road-margin street furniture beyond the fences: barriers/barricades
+                // (_mdrn_pl_barr001 215 mined placements at 99% cardinal, _mdrn_pl_barrimw the clean
+                // white variant), public trash cans (_mdrn_pl_trshcn2 100% cardinal), and a
+                // floor-mounted console -- the market-row items that set back from the lane and face
+                // it under the urban grammar.
+                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_barrimw", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_trshcn2", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_conso05", 1, DecorationContext.CorridorSide)
+                // CLUTTER BACKBONE -- NEAT CARGO ONLY (round-6 destruction split): the hand-built
+                // fcx01 cargo backbone is crates/containers/barrels (crate08 352 mined placements,
+                // conta39/36 459 combined, conta004/006/001 262, conta42/crate06/crgc2h 152), placed
+                // as tight piles and stacked rows. Clutter-role entries feed the clutter-pile
+                // arrangement (see DungeonDecorationPlanner.PlanClutterPile) AND their curated
+                // WallAdjacent bucket, so walls read as cargo lines and depots rather than lamp
+                // grids. Weights near-flat so no single type dominates (top-3 resref share stays
+                // under the hand-built 0.35). Rubbish/debris/dirt content is deliberately ABSENT --
+                // it lives in the "ruined" profile below.
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_crate07", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_crate06", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_crate09", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_conta39", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_conta36", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                 .Decoration("_mdrn_pl_conta54", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_rubb031", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_rubb030", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_debri01", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_debri20", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_debri03", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_crate09", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                // GROUND DECALS (round-5): _mdrn_pl_dirtyg1/g3 are the two most-placed hand-built
-                // fcx01 resrefs (674 combined) and swd_floorm01 the top structured floor piece (360)
-                // -- but hand-built areas use them as LAYERING UNDER clutter, never as lone patches.
-                // GroundDecal-role entries are stripped from every stand-alone bucket and only ever
-                // emitted underneath a committed clutter pile (see DungeonDecorationPlanner.
-                // PlanClutterPile) or as a courtyard center that receives clutter on top.
-                .Decoration("_mdrn_pl_dirtyg1", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
-                .Decoration("_mdrn_pl_dirtyg3", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("_mdrn_pl_conta42", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_crgc2h", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_conta004", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_conta006", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_conta001", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_trash01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_dump003", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                // Wall infrastructure accents (pipes hug real walls at 100% cardinal in the mined
+                // reference).
+                .Decoration("_mdrn_pl_pip3s", 1, DecorationContext.WallAdjacent)
+                .Decoration("_mdrn_pl_pip2s", 1, DecorationContext.WallAdjacent)
+                // GROUND DECALS -- SIGNAGE/MARKINGS ONLY (round-6 destruction split): swd_floorm01
+                // (top structured floor piece, 360 mined placements at 100% cardinal), the hex/road
+                // floor plates (flormh01/florrd01, both 100% cardinal). Hand-built areas use decals
+                // as LAYERING UNDER arrangements, never lone patches, so GroundDecal-role entries
+                // are only ever emitted underneath a committed clutter pile or as a courtyard
+                // center that receives clutter on top. The dirt-stain decals (_mdrn_pl_dirtyg*)
+                // moved to the "ruined" profile -- dirt is destruction dressing, not clean-city
+                // signage.
                 .Decoration("swd_floorm01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("swd_flormh01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("swd_florrd01", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
                 // StructureAdjacent (building-frontage) bucket -- the items hand-built fcx01 actually
                 // anchors against stamped tower/building footprints (Chebyshev<=1 building adjacency,
                 // n>=51 each): _mdrn_pl_lamp4 52% building-adjacent AND 100% road-adjacent (a
@@ -4329,8 +4365,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // along arbitrary room dividers were the reported "sparse even grid of glowing
                 // pillars" backbone. _mdrn_pl_crswlk (crosswalk decal) is gone for the same reason
                 // decals moved to GroundDecal: a lone road decal reads as a bare dirt patch.
-                .Decoration("_mdrn_pl_lights3", 3, DecorationContext.CorridorSide)
-                .Decoration("swd_streel01", 2, DecorationContext.CorridorSide)
+                // The lamp FAMILY (light strips, street lights, the double street lamps -- all
+                // 94-100% cardinal in the mined reference) is flagged AllowOnRoadSurface: the one
+                // dressing class that legitimately stands ON the carved road ribbon.
+                .Decoration("_mdrn_pl_lights3", 3, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
+                .Decoration("swd_streel01", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
+                .Decoration("_mdrn_pl_strtlm2", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
+                .Decoration("_mdrn_pl_strtlm4", 1, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
                 .Decoration("swd2_kiosk004", 2, DecorationContext.CorridorSide)
                 // Courtyard arrangement buckets (see DungeonDecorationPlanner.PlanCourtyard), mined
                 // from hand-built fcx01 INTERIOR items (>2 tiles from walls/roads across the 19
@@ -4361,7 +4402,73 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("swd2_kiosk004", 1, DecorationContext.Courtyard)
                 .Vignette("PromenadeKioskLight", 3)
                 .VignetteMember("swd2_kiosk004", 0f, 0f)
-                .VignetteMember("_mdrn_pl_lights3", 0.7f, 0.5f);
+                .VignetteMember("_mdrn_pl_lights3", 0.7f, 0.5f)
+
+                // ============================================================================
+                // "ruined" -- the DESTRUCTION decoration profile (round-6 split): every
+                // wreckage/rubble/debris/dirt-decal resref the standard clean-city palette
+                // deliberately excludes, mined from the same 24 hand-built fcx01 areas
+                // (rubb029-032 388 combined placements, pape019 69, debri01/03/20 mined round 5,
+                // wallblk 30, jkpl002 44, dirtyg1-4 815 combined). Selected ONLY via a theme's
+                // DecorationProfile declaration or an explicit request/review override -- the
+                // default for every composition (including the Alien Ruin showcases) stays the
+                // standard profile. Organic clutter rotation: collapse debris genuinely tumbles,
+                // so pile members keep full random spin (the one sanctioned exception to the urban
+                // grammar's bearing alignment); everything else -- lamps, barricades, decal
+                // markings, the wrecked-vehicle landmarks -- still anchors and aligns exactly like
+                // the standard profile, because a ruined CITY is still a city: destruction hugs the
+                // walls, structure bases, and corners it fell from, never free-floating mid-plaza
+                // (the urban pile zone discipline applies to this profile too).
+                // ============================================================================
+                .DecorationProfile("ruined", organicClutterRotation: true)
+                // Rubble/debris/junk backbone (Clutter role feeds the pile arrangement).
+                .Decoration("_mdrn_pl_rubb031", 3, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_rubb030", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_rubb029", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_rubb032", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_pape019", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri20", 3, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri03", 3, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri01", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_wallblk", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_jkpl002", 3, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                // Battered remnants of the ordinary cargo backbone, so a ruined district still
+                // reads as a looted city rather than a landfill.
+                .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_conta39", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_trash01", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("swd_dump003", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                // Dirt/stain decals -- destruction layering under the rubble piles (never lone
+                // patches; the pile mechanism is the only emitter).
+                .Decoration("_mdrn_pl_dirtyg1", 3, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("_mdrn_pl_dirtyg3", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("_mdrn_pl_dirtyg2", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("_mdrn_pl_dirtyg4", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                // Street furniture survives ruination: corroded barricades line the roads, the lamp
+                // family keeps its road-surface license, and wrecked speeders park (crash) against
+                // building frontages as Landmark one-offs -- same anchoring contract as standard.
+                .Decoration("_mdrn_pl_barrim2", 2, DecorationContext.CorridorSide)
+                .Decoration("swd2_fence004", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_lights3", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
+                .Decoration("swd_streel01", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
+                .Decoration("_mdrn_pl_lghtpl3", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
+                .Decoration("_mdrn_pl_lamp4", 3, DecorationContext.StructureAdjacent)
+                .Decoration("_mdrn_pl_bldlit", 2, DecorationContext.StructureAdjacent)
+                .Decoration("swd2_vehi006", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
+                .Decoration("swd2_vehi003", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
+                .Decoration("swd2_vehi007", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
+                .Decoration("_mdrn_pl_pillr04", 2, DecorationContext.RoomCenter)
+                .Decoration("swd_streel01", 2, DecorationContext.DoorwayFlank)
+                // Courtyards persist as scorched gathering circles: a stained centerpiece ringed by
+                // corroded lamps and battered containers (ring members still face the center; the
+                // ring is a composed arrangement, not scatter).
+                .Decoration("_mdrn_pl_dirtyg1", 2, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
+                .Decoration("swd_floorm01", 2, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
+                .Decoration("_mdrn_pl_lghtflr", 1, DecorationContext.CourtyardCenter)
+                .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.Courtyard)
+                .Decoration("_mdrn_pl_conta36", 2, DecorationContext.Courtyard)
+                .Decoration("_mdrn_pl_crate08", 2, DecorationContext.Courtyard)
+                .Decoration("_mdrn_pl_barrim2", 1, DecorationContext.Courtyard);
 
             // D20 Futuristic City SW (fcx01) -- Cobble2 ("d_"-prefixed) district, a PaletteVariant
             // profile recomposing the SAME fcx01 hak data the base FutCity profile above uses (identical

@@ -67,6 +67,11 @@ namespace SWLOR.ContentBuilder.Models
         public bool DecorationsEnabled { get; set; } = true;
         public int DecorationDensityPercent { get; set; } = 100;
 
+        /// <summary>Optional, defaults empty (the standard palette): named tileset decoration
+        /// profile (see DungeonTilesetProfile.DecorationProfiles). An older project without the
+        /// property loads as Standard; an unknown name falls back to Standard on apply.</summary>
+        public string DecorationProfile { get; set; } = string.Empty;
+
         public int Seed { get; set; }
 
         /// <summary>"schematic" or "mapgraphics" -- MainWindow.SchematicModeKey/MapGraphicsModeKey.</summary>

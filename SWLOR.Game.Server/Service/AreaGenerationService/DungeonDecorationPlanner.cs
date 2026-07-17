@@ -320,9 +320,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
         /// <summary>
         /// Plans the decoration pass for a resolved layout. Deterministic: identical
-        /// (layout.Seed, tileset, detail, densityPercent) always produces an identical plan, in the
-        /// same order. Returns an empty plan when the merged palette (tileset family palette + theme
-        /// accents) is empty or densityPercent is 0 (the toggle-off case).
+        /// (layout.Seed, tileset, detail, densityPercent, decorationProfile) always produces an
+        /// identical plan, in the same order. Returns an empty plan when the merged palette (tileset
+        /// family palette + theme accents) is empty or densityPercent is 0 (the toggle-off case).
+        ///
+        /// decorationProfile selects a NAMED alternate palette on the tileset (see
+        /// DungeonTilesetProfile.DecorationProfiles -- e.g. fcx01's "ruined" destruction palette);
+        /// null/empty falls back to the theme's own declared DungeonDetail.DecorationProfile, and an
+        /// empty/unknown name means the standard palette.
         ///
         /// Calibration: DungeonDetail.DecorationBaseDensity is evidence-derived as placeables PER TOTAL
         /// AREA TILE (layout.Width * layout.Height) from the hand-built reference areas — see
@@ -339,13 +344,29 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// deterministic, evenly-SPACED run (see PlaceWallRuns) rather than an independent per-tile coin
         /// flip — same expected count, real cadence instead of noise.
         /// </summary>
-        public static List<PlannedDecoration> Plan(ResolvedLayout layout, DungeonTilesetProfile tileset, DungeonDetail detail, int densityPercent)
+        public static List<PlannedDecoration> Plan(ResolvedLayout layout, DungeonTilesetProfile tileset, DungeonDetail detail, int densityPercent,
+            string decorationProfile = null)
         {
             var plan = new List<PlannedDecoration>();
             if (layout == null || detail == null || densityPercent <= 0)
                 return plan;
 
-            var palette = MergePalette(tileset, detail);
+            // Named-profile resolution: an explicit per-request pick wins, then the theme's own
+            // declaration; an empty/unknown name is the standard palette. A named profile fully
+            // REPLACES the standard tileset Decorations/Vignettes (no merging) -- see
+            // DungeonDecorationProfile.
+            var profileName = !string.IsNullOrWhiteSpace(decorationProfile) ? decorationProfile : detail.DecorationProfile;
+            DungeonDecorationProfile namedProfile = null;
+            if (!string.IsNullOrWhiteSpace(profileName) && tileset?.DecorationProfiles != null)
+                tileset.DecorationProfiles.TryGetValue(profileName, out namedProfile);
+
+            // Urban placement grammar (see DungeonTilesetProfile.UrbanDressing): bearing alignment,
+            // road integrity, facade rows, cargo grids, and pile zone discipline -- active only for
+            // tilesets that declare it, so every other family's plan stays byte-identical.
+            var urban = tileset?.UrbanDressing == true;
+            var organicSpin = namedProfile?.OrganicClutterRotation == true;
+
+            var palette = MergePalette(namedProfile?.Decorations ?? tileset?.Decorations, detail);
             if (palette.Count == 0)
                 return plan;
 
@@ -378,7 +399,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 .GroupBy(d => d.Context)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            var vignettes = tileset?.Vignettes ?? new List<DungeonVignette>();
+            var vignettes = namedProfile?.Vignettes ?? tileset?.Vignettes ?? new List<DungeonVignette>();
             var roadCrosser = tileset?.RoadCrosser ?? string.Empty;
 
             var excluded = BuildExclusionSet(layout);
@@ -435,6 +456,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                             continue;
                         if (TileCarriesRoadEdge(tile, layout, roadCrosser))
                             continue;
+                        // Urban zone discipline: piles anchor only against walls, structure bases,
+                        // and corners -- open plaza centers are reserved for composed courtyards/
+                        // centerpieces, never loose junk (see DungeonTilesetProfile.UrbanDressing).
+                        if (urban && NearestWallDirection(tile, tileSet) == null && !IsStructureAdjacent(tile, layout))
+                            continue;
 
                         pileAnchorWeightTotal += IsStructureAdjacent(tile, layout) ? PileStructureAnchorWeight : 1.0;
                     }
@@ -455,8 +481,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (NearestWallDirection(tile, tileSet) == null)
                         continue;
 
-                    if (TryResolveContext(tile, isCorridorLike, layout, roadCrosser, byContext, out _, out _))
+                    if (TryResolveContext(tile, isCorridorLike, layout, roadCrosser, byContext, out _, out var tileEntries))
                     {
+                        // Urban road integrity: an on-road tile with no lamp-family entry in its
+                        // bucket hosts nothing, so it is not part of the eligible pool either --
+                        // keeps the probability calibration honest (see RoadSurfaceEligible).
+                        if (urban && RoadSurfaceEligible(tileEntries, tile, layout, roadCrosser).Count == 0)
+                            continue;
+
                         wallEligibleCount++;
                         roomHasWallTile = true;
                     }
@@ -528,6 +560,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     continue;
 
                 var resref = PickWeighted(doorwayFallback, rng);
+                var doorwayEntry = doorwayFallback.FirstOrDefault(e => e.Resref == resref);
                 foreach (var tile in new[] { pair.A, pair.B })
                 {
                     var roomIndex = tileToRoom[tile];
@@ -535,7 +568,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (wallDir == null)
                         continue;
 
-                    plan.Add(BuildWallHuggingPlacement(tile, wallDir.Value, resref, DecorationContext.DoorwayFlank));
+                    // Urban road integrity: a flank tile on the road ribbon stays clear unless the
+                    // picked entry is lamp-family road furniture.
+                    if (urban && TileCarriesRoadEdge(tile, layout, roadCrosser) && doorwayEntry?.AllowOnRoadSurface != true)
+                        continue;
+
+                    plan.Add(urban
+                        ? BuildUrbanWallPlacement(tile, wallDir.Value, resref, DecorationContext.DoorwayFlank, layout, roadCrosser)
+                        : BuildWallHuggingPlacement(tile, wallDir.Value, resref, DecorationContext.DoorwayFlank));
                     consumedTiles.Add(tile);
                 }
             }
@@ -556,7 +596,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 {
                     courtyardPlaced = PlanCourtyard(
                         plan, room, tileSet, courtyardAnchor.Value, courtyardCenterEntries, courtyardRingEntries,
-                        excluded, consumedTiles, layout, roadCrosser, rng);
+                        excluded, consumedTiles, layout, roadCrosser, rng, urban);
                     if (courtyardPlaced)
                         centerpieceAnchor = courtyardAnchor;
                 }
@@ -570,6 +610,29 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     // content placement (see DungeonContentPlacer.PopulateBossRoom/PlaceExit) — so
                     // pick the nearest OTHER room tile to stand the centerpiece on instead.
                     var anchor = NearestOtherTile(room.CenterTile, room.Tiles, excluded);
+                    // Urban road integrity: the set piece steps off the street ribbon to the nearest
+                    // non-road tile instead (the plaza stays intentional, the walkway stays clear).
+                    if (urban && anchor != null && TileCarriesRoadEdge(anchor.Value, layout, roadCrosser))
+                    {
+                        anchor = null;
+                        var bestDistSq = int.MaxValue;
+                        foreach (var candidate in room.Tiles)
+                        {
+                            if (candidate == room.CenterTile || excluded.Contains(candidate) ||
+                                TileCarriesRoadEdge(candidate, layout, roadCrosser))
+                                continue;
+
+                            var dx = candidate.X - room.CenterTile.X;
+                            var dy = candidate.Y - room.CenterTile.Y;
+                            var distSq = dx * dx + dy * dy;
+                            if (distSq < bestDistSq)
+                            {
+                                bestDistSq = distSq;
+                                anchor = candidate;
+                            }
+                        }
+                    }
+
                     if (anchor != null)
                     {
                         centerpieceAnchor = anchor;
@@ -586,7 +649,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         {
                             Resref = resref,
                             Position = position,
-                            Facing = (float)(rng.NextDouble() * 360.0),
+                            // Urban bearing rule: an intentional plaza set piece squares up with the
+                            // surrounding grid instead of spinning randomly.
+                            Facing = urban ? 90f * rng.Next(4) : (float)(rng.NextDouble() * 360.0),
                             Context = DecorationContext.RoomCenter
                         });
                     }
@@ -594,7 +659,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                 if (vignettes.Count > 0 && rng.NextDouble() < vignetteProbability)
                 {
-                    var anchor = FindVignetteAnchor(room, tileSet, excluded, consumedTiles, centerpieceAnchor);
+                    var anchor = FindVignetteAnchor(room, tileSet, excluded, consumedTiles, centerpieceAnchor,
+                        urban ? layout : null, roadCrosser);
                     if (anchor != null)
                     {
                         var vignette = PickWeightedVignette(vignettes, rng);
@@ -619,13 +685,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                             continue;
                         if (TileCarriesRoadEdge(tile, layout, roadCrosser))
                             continue;
+                        // Urban zone discipline (mirrors the PASS-1 pool count): no free-floating
+                        // junk in plaza centers -- piles need a wall, structure base, or corner.
+                        if (urban && NearestWallDirection(tile, tileSet) == null && !IsStructureAdjacent(tile, layout))
+                            continue;
 
                         var anchorWeight = IsStructureAdjacent(tile, layout) ? PileStructureAnchorWeight : 1.0;
                         if (rng.NextDouble() >= Math.Min(0.95, pileProbability * anchorWeight))
                             continue;
 
                         junkMotif ??= PickJunkMotif(clutterEntries, rng);
-                        if (PlanClutterPile(plan, tile, tileSet, junkMotif, decalEntries, rng) &&
+                        if (PlanClutterPile(plan, tile, tileSet, junkMotif, decalEntries, rng,
+                                urban, organicSpin, IsStructureAdjacent(tile, layout)) &&
                             !IsStructureAdjacent(tile, layout))
                         {
                             // A piled tile is consumed so the wall runs never double-dress it --
@@ -640,23 +711,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 }
 
                 PlaceWallRuns(plan, room, tileSet, isCorridorLike, layout, roadCrosser, byContext, excluded,
-                    consumedTiles, centerpieceAnchor, wallProbability, rng, motifCache);
+                    consumedTiles, centerpieceAnchor, wallProbability, rng, motifCache, urban);
             }
 
             return plan;
         }
 
         /// <summary>
-        /// Merges the tileset family's bulk palette (see DungeonTilesetProfile.Decorations) with the
-        /// theme's small accent list (DungeonDetail.Decorations) into one weighted pool per
-        /// DecorationContext. The tileset supplies the visual bulk; the theme layers a few
-        /// genuinely-theme-flavored extras on top — neither source alone need be exhaustive.
+        /// Merges the tileset family's bulk palette (the standard Decorations list, or a selected
+        /// named profile's replacement list) with the theme's small accent list
+        /// (DungeonDetail.Decorations) into one weighted pool per DecorationContext. The tileset
+        /// supplies the visual bulk; the theme layers a few genuinely-theme-flavored extras on top —
+        /// neither source alone need be exhaustive.
         /// </summary>
-        private static List<DungeonDecorationEntry> MergePalette(DungeonTilesetProfile tileset, DungeonDetail detail)
+        private static List<DungeonDecorationEntry> MergePalette(List<DungeonDecorationEntry> tilesetDecorations, DungeonDetail detail)
         {
             var merged = new List<DungeonDecorationEntry>();
-            if (tileset?.Decorations != null)
-                merged.AddRange(tileset.Decorations);
+            if (tilesetDecorations != null)
+                merged.AddRange(tilesetDecorations);
             if (detail?.Decorations != null)
                 merged.AddRange(detail.Decorations);
             return merged;
@@ -730,15 +802,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             ResolvedLayout layout, string roadCrosser, Dictionary<DecorationContext, List<DungeonDecorationEntry>> byContext,
             HashSet<(int X, int Y)> excluded, HashSet<(int X, int Y)> consumedTiles,
             (int X, int Y)? centerpieceAnchor, double wallProbability, System.Random rng,
-            Dictionary<(int RoomId, DecorationContext Context), List<string>> motifCache)
+            Dictionary<(int RoomId, DecorationContext Context), List<string>> motifCache, bool urban)
         {
             if (wallProbability <= 0)
                 return;
 
             // Bucket this room's eligible tiles by (context, quantized wall direction) — each bucket is
             // one straight run. Iterate room.Tiles in its own stored (deterministic) order so bucket
-            // membership order, and therefore the whole pass, stays reproducible per seed.
-            var runs = new Dictionary<(DecorationContext Context, int Direction), List<(int X, int Y)>>();
+            // membership order, and therefore the whole pass, stays reproducible per seed. Under the
+            // urban grammar, on-road tiles form their own lamp-line bucket (only AllowOnRoadSurface
+            // entries may stand on the street ribbon -- see RoadSurfaceEligible); OnRoad is always
+            // false otherwise, so non-urban bucketing is unchanged.
+            var runs = new Dictionary<(DecorationContext Context, int Direction, bool OnRoad), List<(int X, int Y)>>();
 
             foreach (var tile in room.Tiles)
             {
@@ -749,11 +824,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (wallDir == null)
                     continue;
 
-                if (!TryResolveContext(tile, isCorridorLike, layout, roadCrosser, byContext, out var context, out _))
+                if (!TryResolveContext(tile, isCorridorLike, layout, roadCrosser, byContext, out var context, out var tileEntries))
                     continue;
 
+                var onRoad = false;
+                if (urban && TileCarriesRoadEdge(tile, layout, roadCrosser))
+                {
+                    if (!tileEntries.Any(e => e.AllowOnRoadSurface))
+                        continue;
+                    onRoad = true;
+                }
+
                 var direction = QuantizeDirection(wallDir.Value.Dx, wallDir.Value.Dy);
-                var key = (context, direction);
+                var key = (context, direction, onRoad);
                 if (!runs.TryGetValue(key, out var list))
                 {
                     list = new List<(int X, int Y)>();
@@ -776,7 +859,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // "a room repeats a small handful of fixture types" pattern PickMotif exists to encode).
             var secondaryMotifCache = new Dictionary<DecorationContext, List<string>>();
 
-            foreach (var ((context, direction), tiles) in runs.OrderBy(kv => kv.Key.Direction).ThenBy(kv => kv.Key.Context))
+            foreach (var ((context, direction, onRoad), tiles) in runs
+                         .OrderBy(kv => kv.Key.Direction).ThenBy(kv => kv.Key.Context).ThenBy(kv => kv.Key.OnRoad))
             {
                 // Sort along the run's own axis: a wall facing +/-X runs along Y, a wall facing +/-Y
                 // runs along X — this is what makes the run a real straight line rather than an
@@ -789,6 +873,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     entries = byContext.GetValueOrDefault(DecorationContext.WallAdjacent);
                 if (entries == null || entries.Count == 0)
                     continue;
+
+                // A lamp-line bucket draws exclusively from the road-surface-allowed subset; the
+                // bucketing above guarantees it is non-empty for at least the resolved context, but
+                // the WallAdjacent fallback may not curate any -- skip then.
+                if (onRoad)
+                {
+                    entries = entries.Where(e => e.AllowOnRoadSurface).ToList();
+                    if (entries.Count == 0)
+                        continue;
+                }
 
                 var motifKey = (room.Id, context);
                 if (!motifCache.TryGetValue(motifKey, out var motif))
@@ -816,9 +910,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 // artificial. jitterRange = spacing gives a uniform-distributed step with CV ~0.58, a
                 // conservative move toward that measured irregularity without risking a degenerate
                 // (near-zero or negative) step.
+                //
+                // URBAN EXCEPTION (facade rows): hand-built CITY frontages are the opposite -- the
+                // strongest "designed city" signal in the fcx01 reference areas is an evenly-spaced
+                // row of one repeated fixture sharing one bearing (same-resref groups share a
+                // dominant 15-degree orientation bin at a median 50% share). Urban buckets therefore
+                // walk at the EXACT spacing and repeat a single row resref per segment, with a real
+                // gap and a fresh resref between segments.
                 var jitterRange = Math.Max(1, spacing);
                 var i = rng.Next(spacing);
                 var segmentLength = 0;
+                string rowResref = null;
 
                 while (i < ordered.Count)
                 {
@@ -826,15 +928,37 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     var wallDir = NearestWallDirection(tile, tileSet);
                     if (wallDir != null)
                     {
-                        var resref = PickResrefUnderRoomCap(motifEntries, secondaryMotifEntries, entries, resrefUsageCounts, context, rng);
+                        string resref;
+                        if (urban)
+                        {
+                            if (rowResref == null ||
+                                resrefUsageCounts.GetValueOrDefault((context, rowResref)) >= MaxSameResrefPerRoomContext)
+                            {
+                                var available = entries
+                                    .Where(e => resrefUsageCounts.GetValueOrDefault((context, e.Resref)) < MaxSameResrefPerRoomContext)
+                                    .ToList();
+                                rowResref = available.Count > 0 ? PickWeighted(available, rng) : null;
+                            }
+
+                            resref = rowResref;
+                            if (resref != null)
+                                resrefUsageCounts[(context, resref)] = resrefUsageCounts.GetValueOrDefault((context, resref)) + 1;
+                        }
+                        else
+                        {
+                            resref = PickResrefUnderRoomCap(motifEntries, secondaryMotifEntries, entries, resrefUsageCounts, context, rng);
+                        }
+
                         if (resref != null)
                         {
-                            plan.Add(BuildWallHuggingPlacement(tile, wallDir.Value, resref, context));
+                            plan.Add(urban
+                                ? BuildUrbanWallPlacement(tile, wallDir.Value, resref, context, layout, roadCrosser)
+                                : BuildWallHuggingPlacement(tile, wallDir.Value, resref, context));
                             segmentLength++;
                         }
                     }
 
-                    var step = Math.Max(1, spacing + rng.Next(-jitterRange, jitterRange + 1));
+                    var step = urban ? spacing : Math.Max(1, spacing + rng.Next(-jitterRange, jitterRange + 1));
                     if (segmentLength >= MaxRunSegmentLength)
                     {
                         // Force a real gap before starting the next segment — this is what makes a
@@ -842,6 +966,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         // run (or, worst case, a run that wraps the room's entire perimeter).
                         step += spacing * (RunSegmentGapExtraSteps + 1);
                         segmentLength = 0;
+                        // Urban rows also swap fixtures between segments so a long facade reads as
+                        // several distinct rows, never one endless line of the same object.
+                        rowResref = null;
                     }
 
                     i += step;
@@ -973,7 +1100,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             List<PlannedDecoration> plan, LayoutRoom room, HashSet<(int X, int Y)> tileSet, (int X, int Y) anchor,
             List<DungeonDecorationEntry> centerEntries, List<DungeonDecorationEntry> ringEntries,
             HashSet<(int X, int Y)> excluded, HashSet<(int X, int Y)> consumedTiles,
-            ResolvedLayout layout, string roadCrosser, System.Random rng)
+            ResolvedLayout layout, string roadCrosser, System.Random rng, bool urban = false)
         {
             var centerResref = PickWeighted(centerEntries, rng);
             var center = TileCenter(anchor.X, anchor.Y);
@@ -1036,7 +1163,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             {
                 Resref = centerResref,
                 Position = center,
-                Facing = (float)(rng.NextDouble() * 360.0),
+                // Urban bearing rule: the courtyard's centerpiece squares up with the plaza grid.
+                Facing = urban ? 90f * rng.Next(4) : (float)(rng.NextDouble() * 360.0),
                 Context = DecorationContext.CourtyardCenter
             });
             plan.AddRange(members);
@@ -1063,7 +1191,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                             center.X + (float)Math.Cos(angle) * r,
                             center.Y + (float)Math.Sin(angle) * r,
                             0f),
-                        Facing = (float)(rng.NextDouble() * 360.0),
+                        Facing = urban ? 90f * rng.Next(4) : (float)(rng.NextDouble() * 360.0),
                         Context = DecorationContext.ClutterPile
                     });
                 }
@@ -1113,7 +1241,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         private static bool PlanClutterPile(
             List<PlannedDecoration> plan, (int X, int Y) anchor, HashSet<(int X, int Y)> tileSet,
-            List<DungeonDecorationEntry> junkMotif, List<DungeonDecorationEntry> decalEntries, System.Random rng)
+            List<DungeonDecorationEntry> junkMotif, List<DungeonDecorationEntry> decalEntries, System.Random rng,
+            bool urban = false, bool organicSpin = false, bool structureAdjacent = false)
         {
             var flat = TileCenter(anchor.X, anchor.Y);
             var wallDir = NearestWallDirection(anchor, tileSet);
@@ -1154,52 +1283,131 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             var hasDecal = decalEntries.Count > 0 && rng.NextDouble() < DecalUnderPileChance;
             var decalResref = hasDecal ? PickWeighted(decalEntries, rng) : null;
-            var decalFacing = hasDecal ? (float)(rng.NextDouble() * 360.0) : 0f;
+            // Urban bearing rule: even the layered ground decal squares up with the grid (it reads
+            // as floor marking/signage in the clean city palette, not a random dirt splash).
+            var decalFacing = hasDecal
+                ? urban ? 90f * rng.Next(4) : (float)(rng.NextDouble() * 360.0)
+                : 0f;
+
+            // Urban base bearing: the pile faces away from its anchoring wall (cardinal), and every
+            // member shares it (with small jitter, or 90-degree turns in the cargo grid) -- the
+            // hand-built same-resref orientation-coherence evidence (median 50% share of one
+            // 15-degree bin). The Ruined profile's organic junk keeps full random spin instead.
+            var baseFacing = wallDir != null
+                ? CardinalFacing(-wallDir.Value.Dx, -wallDir.Value.Dy)
+                : 0f;
+
+            // Cargo grid (urban, non-organic, structure-frontage or wall-corner anchors): members
+            // snap to a small lattice aligned with the anchoring wall/structure instead of a loose
+            // disc -- the hand-built stacked-depot look (crate rows against tower bases). Lattice
+            // axes derive from the quantized wall normal; rows stack away from the wall, columns run
+            // along it.
+            var wallNeighborCount = 0;
+            foreach (var (dx, dy) in CardinalDirections)
+            {
+                if (!tileSet.Contains((anchor.X + dx, anchor.Y + dy)))
+                    wallNeighborCount++;
+            }
+
+            var gridMode = urban && !organicSpin && (structureAdjacent || wallNeighborCount >= 2);
 
             var members = new List<PlannedDecoration>();
-            for (var i = 0; i < memberCount; i++)
+            if (gridMode)
             {
-                Vector3? position = null;
-                for (var attempt = 0; attempt < PilePlacementAttempts && position == null; attempt++)
+                var normalIndex = wallDir != null ? QuantizeDirection(wallDir.Value.Dx, wallDir.Value.Dy) : 3;
+                var (nx, ny) = normalIndex switch
                 {
-                    var angle = rng.NextDouble() * Math.PI * 2.0;
-                    // sqrt for a uniform disc rather than a center-heavy one.
-                    var r = Math.Sqrt(rng.NextDouble()) * radius;
+                    0 => (1f, 0f),
+                    1 => (-1f, 0f),
+                    2 => (0f, 1f),
+                    _ => (0f, -1f)
+                };
+                // Lateral axis runs along the wall (perpendicular to the normal).
+                var (lx, ly) = (-ny, nx);
+
+                const float gridPitch = 1.4f;
+                const float gridJitter = 0.15f;
+                var columns = Math.Clamp((int)Math.Ceiling(Math.Sqrt(memberCount)), 2, 3);
+
+                for (var k = 0; k < memberCount; k++)
+                {
+                    var column = k % columns - (columns - 1) / 2f;
+                    var row = k / columns;
+
+                    var jx = (float)((rng.NextDouble() - 0.5) * 2.0 * gridJitter);
+                    var jy = (float)((rng.NextDouble() - 0.5) * 2.0 * gridJitter);
                     var candidate = new Vector3(
-                        center.X + (float)(Math.Cos(angle) * r),
-                        center.Y + (float)(Math.Sin(angle) * r),
+                        center.X + lx * column * gridPitch - nx * row * gridPitch + jx,
+                        center.Y + ly * column * gridPitch - ny * row * gridPitch + jy,
                         0f);
 
                     if (MathF.Abs(candidate.X - flat.X) > TileHalf - PileTileEdgeMargin ||
                         MathF.Abs(candidate.Y - flat.Y) > TileHalf - PileTileEdgeMargin)
                         continue;
 
-                    var tooClose = false;
-                    foreach (var member in members)
+                    members.Add(new PlannedDecoration
                     {
-                        var dx = member.Position.X - candidate.X;
-                        var dy = member.Position.Y - candidate.Y;
-                        if (dx * dx + dy * dy < PileMemberMinSeparation * PileMemberMinSeparation)
+                        Resref = PickWeighted(pileMotif, rng),
+                        Position = candidate,
+                        // Shared bearing with occasional quarter turns -- still cardinal-aligned.
+                        Facing = (baseFacing + 90f * rng.Next(2)) % 360f,
+                        Context = DecorationContext.ClutterPile
+                    });
+                }
+            }
+            else
+            {
+                for (var i = 0; i < memberCount; i++)
+                {
+                    Vector3? position = null;
+                    for (var attempt = 0; attempt < PilePlacementAttempts && position == null; attempt++)
+                    {
+                        var angle = rng.NextDouble() * Math.PI * 2.0;
+                        // sqrt for a uniform disc rather than a center-heavy one.
+                        var r = Math.Sqrt(rng.NextDouble()) * radius;
+                        var candidate = new Vector3(
+                            center.X + (float)(Math.Cos(angle) * r),
+                            center.Y + (float)(Math.Sin(angle) * r),
+                            0f);
+
+                        if (MathF.Abs(candidate.X - flat.X) > TileHalf - PileTileEdgeMargin ||
+                            MathF.Abs(candidate.Y - flat.Y) > TileHalf - PileTileEdgeMargin)
+                            continue;
+
+                        var tooClose = false;
+                        foreach (var member in members)
                         {
-                            tooClose = true;
-                            break;
+                            var dx = member.Position.X - candidate.X;
+                            var dy = member.Position.Y - candidate.Y;
+                            if (dx * dx + dy * dy < PileMemberMinSeparation * PileMemberMinSeparation)
+                            {
+                                tooClose = true;
+                                break;
+                            }
                         }
+
+                        if (!tooClose)
+                            position = candidate;
                     }
 
-                    if (!tooClose)
-                        position = candidate;
+                    if (position == null)
+                        continue;
+
+                    // Aligned members under the urban grammar (base bearing +-6 degrees stays inside
+                    // the cardinal band); full random spin for non-urban tilesets and the sanctioned
+                    // organic-junk profiles.
+                    var facing = urban && !organicSpin
+                        ? (baseFacing + (float)((rng.NextDouble() - 0.5) * 12.0) + 360f) % 360f
+                        : (float)(rng.NextDouble() * 360.0);
+
+                    members.Add(new PlannedDecoration
+                    {
+                        Resref = PickWeighted(pileMotif, rng),
+                        Position = position.Value,
+                        Facing = facing,
+                        Context = DecorationContext.ClutterPile
+                    });
                 }
-
-                if (position == null)
-                    continue;
-
-                members.Add(new PlannedDecoration
-                {
-                    Resref = PickWeighted(pileMotif, rng),
-                    Position = position.Value,
-                    Facing = (float)(rng.NextDouble() * 360.0),
-                    Context = DecorationContext.ClutterPile
-                });
             }
 
             if (members.Count < PileCommitMinItems)
@@ -1223,14 +1431,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>
         /// Finds the first tile in a room (in stored, deterministic order) eligible to anchor a
         /// vignette: not excluded/CenterTile/centerpiece/already consumed, with a real wall direction.
+        /// When <paramref name="urbanLayout"/> is non-null (urban grammar active), tiles carrying the
+        /// road crosser are additionally skipped -- vignettes never squat on the clear street ribbon.
         /// </summary>
         internal static (int X, int Y)? FindVignetteAnchor(
             LayoutRoom room, HashSet<(int X, int Y)> tileSet, HashSet<(int X, int Y)> excluded,
-            HashSet<(int X, int Y)> consumedTiles, (int X, int Y)? centerpieceAnchor)
+            HashSet<(int X, int Y)> consumedTiles, (int X, int Y)? centerpieceAnchor,
+            ResolvedLayout urbanLayout = null, string roadCrosser = "")
         {
             foreach (var tile in room.Tiles)
             {
                 if (excluded.Contains(tile) || tile == room.CenterTile || tile == centerpieceAnchor || consumedTiles.Contains(tile))
+                    continue;
+
+                if (urbanLayout != null && TileCarriesRoadEdge(tile, urbanLayout, roadCrosser))
                     continue;
 
                 if (NearestWallDirection(tile, tileSet) != null)
@@ -1313,6 +1527,96 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 Facing = facing,
                 Context = context
             };
+        }
+
+        /// <summary>
+        /// Cardinal bearing (degrees) for a direction vector, quantized by dominant component --
+        /// the urban placement grammar's bearing rule (hand-built city dressing is 73%
+        /// cardinal-aligned: objects face the walls/roads/facades they belong to, not a random
+        /// heading). Shares <see cref="QuantizeDirection"/>'s bucketing so a placement's bearing can
+        /// never disagree with the run axis it was grouped under.
+        /// </summary>
+        internal static float CardinalFacing(float dx, float dy)
+        {
+            return QuantizeDirection(dx, dy) switch
+            {
+                0 => 0f,
+                1 => 180f,
+                2 => 90f,
+                _ => 270f
+            };
+        }
+
+        /// <summary>
+        /// Road-margin facing rule (urban grammar): a placement standing on a tile that does NOT
+        /// itself carry the road, but cardinally borders a road-carrying tile, faces INTO the street
+        /// (the market-row look -- kiosks/planters/benches set back from the lane, fronting it).
+        /// Returns false for on-road tiles (lamp-family fixtures keep their wall-derived cardinal
+        /// bearing) and for tiles with no cardinal road neighbor. Deterministic: cardinal probe
+        /// order breaks ties.
+        /// </summary>
+        private static bool TryGetRoadFacing((int X, int Y) tile, ResolvedLayout layout, string roadCrosser, out float facing)
+        {
+            facing = 0f;
+            if (string.IsNullOrEmpty(roadCrosser) || TileCarriesRoadEdge(tile, layout, roadCrosser))
+                return false;
+
+            foreach (var (dx, dy) in CardinalDirections)
+            {
+                if (TileCarriesRoadEdge((tile.X + dx, tile.Y + dy), layout, roadCrosser))
+                {
+                    facing = CardinalFacing(dx, dy);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Builds one wall-hugging placement under the urban grammar: same wall-offset position as
+        /// <see cref="BuildWallHuggingPlacement"/>, but the bearing is road-facing when the tile
+        /// borders the carved street (see <see cref="TryGetRoadFacing"/>) and cardinal-quantized
+        /// into-the-room otherwise -- never the raw diagonal a corner tile's averaged wall direction
+        /// produces.
+        /// </summary>
+        private static PlannedDecoration BuildUrbanWallPlacement(
+            (int X, int Y) tile, (float Dx, float Dy) wallDir, string resref, DecorationContext context,
+            ResolvedLayout layout, string roadCrosser)
+        {
+            var flatTile = TileCenter(tile.X, tile.Y);
+            var position = new Vector3(
+                flatTile.X + wallDir.Dx * WallOffset,
+                flatTile.Y + wallDir.Dy * WallOffset,
+                0f);
+
+            var facing = TryGetRoadFacing(tile, layout, roadCrosser, out var roadFacing)
+                ? roadFacing
+                : CardinalFacing(-wallDir.Dx, -wallDir.Dy);
+
+            return new PlannedDecoration
+            {
+                Resref = resref,
+                Position = position,
+                Facing = facing,
+                Context = context
+            };
+        }
+
+        /// <summary>
+        /// Road-integrity gate (urban grammar): a tile whose own edges carry the road crosser is
+        /// part of the clear walkway ribbon -- only lamp-family entries flagged
+        /// <see cref="DungeonDecorationEntry.AllowOnRoadSurface"/> may stand there. Returns the
+        /// eligible subset for the tile (the full list off-road, the flagged subset on-road --
+        /// possibly empty, in which case the tile hosts nothing).
+        /// </summary>
+        private static List<DungeonDecorationEntry> RoadSurfaceEligible(
+            List<DungeonDecorationEntry> entries, (int X, int Y) tile, ResolvedLayout layout, string roadCrosser)
+        {
+            if (entries == null || !TileCarriesRoadEdge(tile, layout, roadCrosser))
+                return entries;
+
+            return entries.Where(e => e.AllowOnRoadSurface).ToList();
         }
 
         /// <summary>

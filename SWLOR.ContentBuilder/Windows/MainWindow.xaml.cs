@@ -91,6 +91,7 @@ namespace SWLOR.ContentBuilder.Windows
 
         private CheckBox _decorationsCheckBox;
         private Slider _decorationDensitySlider;
+        private ComboBox _decorationProfileCombo;
         private TextBox _decorationDensityValueBox;
 
         private TextBox _seedTextBox;
@@ -263,6 +264,10 @@ namespace SWLOR.ContentBuilder.Windows
                 contentGroup, "Decoration Density",
                 AreaSettingsBounds.DecorationDensityPercentMin, AreaSettingsBounds.DecorationDensityPercentMax,
                 100, suffix: "%");
+            // Decoration Profile: "Standard" plus whatever NAMED alternate palettes the selected
+            // tileset declares (e.g. fcx01's "ruined" destruction dressing) -- see
+            // DungeonTilesetProfile.DecorationProfiles. Repopulated on tileset change.
+            _decorationProfileCombo = AddComboRow(contentGroup, "Decoration Profile");
 
             var (_, overrides) = AddGroup(advancedContent, "Layout overrides");
             _styleCombo = AddComboRow(overrides, "Style");
@@ -302,7 +307,15 @@ namespace SWLOR.ContentBuilder.Windows
             var seedLabel = new TextBlock { Text = "Seed", VerticalAlignment = VerticalAlignment.Center };
             Grid.SetColumn(seedLabel, 0);
             seedRow.Children.Add(seedLabel);
-            _seedTextBox = new TextBox { Text = NewRandomSeedText(), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 4, 0) };
+            // Deterministic default seed (round-6 reproducibility fix): the seed box used to
+            // initialize to Random.Shared.Next() on every app launch and defaults-reset, so each
+            // "Build Review Module" session minted areas at fresh random seeds (pgb1_950837285 one
+            // session, pgb1_1091305452 the next) and successive review modules could never be
+            // compared area-for-area in the toolset. A fixed default (4242, the same seed
+            // SWLOR.ProcgenReview's own default set leads with) makes the default build reproduce
+            // identically across sessions; the "Random" button remains the explicit way to roll a
+            // fresh seed.
+            _seedTextBox = new TextBox { Text = DefaultSeedText, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 4, 0) };
             Grid.SetColumn(_seedTextBox, 1);
             seedRow.Children.Add(_seedTextBox);
             _randomSeedButton = new Button { Content = "Random", Padding = new Thickness(6, 0, 6, 0) };
@@ -342,6 +355,7 @@ namespace SWLOR.ContentBuilder.Windows
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Doors", Binding = new Binding(nameof(BatchItem.DoorTransitions)), Width = new DataGridLength(48) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Dec", Binding = new Binding(nameof(BatchItem.EnableDecorations)), Width = new DataGridLength(40) });
             _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Dec%", Binding = new Binding(nameof(BatchItem.DecorationDensityPercent)), Width = new DataGridLength(42) });
+            _batchGrid.Columns.Add(new DataGridTextColumn { Header = "Prof", Binding = new Binding(nameof(BatchItem.DecorationProfile)), Width = new DataGridLength(52) });
             batchGroup.Children.Add(_batchGrid);
 
             // Two rows: list-management actions on top, build outputs below. The build buttons split
@@ -545,6 +559,7 @@ namespace SWLOR.ContentBuilder.Windows
             _decorationsCheckBox.Checked += (_, _) => OnDecorationsCheckChanged();
             _decorationsCheckBox.Unchecked += (_, _) => OnDecorationsCheckChanged();
             WireKnobSlider(_decorationDensitySlider, nameof(_decorationDensitySlider));
+            _decorationProfileCombo.SelectionChanged += (_, _) => { if (_suppressEvents) return; RegeneratePreview(); };
 
             _doorTransitionsCheckBox.Checked += (_, _) => { if (_suppressEvents) return; MarkOverride(nameof(_doorTransitionsCheckBox)); RegeneratePreview(); };
             _doorTransitionsCheckBox.Unchecked += (_, _) => { if (_suppressEvents) return; MarkOverride(nameof(_doorTransitionsCheckBox)); RegeneratePreview(); };
@@ -648,6 +663,7 @@ namespace SWLOR.ContentBuilder.Windows
                 // filtered against it (RepopulateLayoutCombo).
                 if (_tilesetCombo.Items.Count > 0) _tilesetCombo.SelectedIndex = 0;
                 RepopulateLayoutCombo();
+                RepopulateDecorationProfileCombo();
 
                 // Seed the initial Theme from the tileset's own matching theme (see
                 // AutoDefaultThemeForTileset) when one exists. There is no prior user-set Theme to
@@ -726,6 +742,42 @@ namespace SWLOR.ContentBuilder.Windows
             if (combo.Items.Count > 0) combo.SelectedIndex = 0;
         }
 
+        private const string StandardDecorationProfileLabel = "Standard";
+
+        /// <summary>
+        /// Repopulates the Decoration Profile combo for the currently selected tileset: "Standard"
+        /// plus each named alternate palette the tileset declares (see
+        /// DungeonTilesetProfile.DecorationProfiles). Keeps the previous selection when the new
+        /// tileset declares the same name; falls back to Standard otherwise.
+        /// </summary>
+        private void RepopulateDecorationProfileCombo()
+        {
+            var previous = GetSelectedDecorationProfile();
+            var tileset = SelectedTilesetProfile();
+
+            var wasSuppressed = _suppressEvents;
+            _suppressEvents = true;
+            try
+            {
+                _decorationProfileCombo.Items.Clear();
+                _decorationProfileCombo.Items.Add(new KeyedItem(string.Empty, StandardDecorationProfileLabel));
+                if (tileset != null)
+                {
+                    foreach (var name in tileset.DecorationProfiles.Keys.OrderBy(n => n))
+                        _decorationProfileCombo.Items.Add(new KeyedItem(name, name));
+                }
+
+                SelectComboByKey(_decorationProfileCombo, previous ?? string.Empty);
+            }
+            finally
+            {
+                _suppressEvents = wasSuppressed;
+            }
+        }
+
+        private string GetSelectedDecorationProfile() =>
+            (_decorationProfileCombo?.SelectedItem as KeyedItem)?.Key ?? string.Empty;
+
         private DungeonDetail SelectedTheme()
         {
             var key = (_themeCombo.SelectedItem as KeyedItem)?.Key;
@@ -778,6 +830,7 @@ namespace SWLOR.ContentBuilder.Windows
         {
             AutoDefaultThemeForTileset();
             RepopulateLayoutCombo();
+            RepopulateDecorationProfileCombo();
             UpdateAccentAvailability();
             UpdateFeatureAvailability();
             UpdateElevationAvailability();
@@ -843,7 +896,9 @@ namespace SWLOR.ContentBuilder.Windows
                 {
                     _widthSlider.Value = 16;
                     _heightSlider.Value = 16;
-                    _seedTextBox.Text = NewRandomSeedText();
+                    // Deterministic (see the seed box's own construction comment): resets return to
+                    // the fixed default seed; only the explicit "Random" button rolls a fresh one.
+                    _seedTextBox.Text = DefaultSeedText;
                 }
                 finally
                 {
@@ -1116,7 +1171,8 @@ namespace SWLOR.ContentBuilder.Windows
                 FeatureDensityPercent = (int)_featureDensitySlider.Value,
                 ElevationRegions = (int)_elevationRegionsSlider.Value,
                 EnableDecorations = _decorationsCheckBox.IsChecked == true,
-                DecorationDensityPercent = (int)_decorationDensitySlider.Value
+                DecorationDensityPercent = (int)_decorationDensitySlider.Value,
+                DecorationProfile = GetSelectedDecorationProfile()
             };
 
             var width = (int)_widthSlider.Value;
@@ -1214,6 +1270,11 @@ namespace SWLOR.ContentBuilder.Windows
             AppendLog(text);
         }
 
+        /// <summary>Fixed default for the seed box (app launch / defaults reset) so successive
+        /// default review-module builds regenerate identical areas -- see the seed box construction
+        /// comment. Matches SWLOR.ProcgenReview's own leading default seed.</summary>
+        private const string DefaultSeedText = "4242";
+
         private static string NewRandomSeedText() =>
             System.Random.Shared.Next(0, MaxSeed + 1).ToString(CultureInfo.InvariantCulture);
 
@@ -1270,6 +1331,7 @@ namespace SWLOR.ContentBuilder.Windows
                 DoorTransitions = _doorTransitionsCheckBox.IsChecked == true,
                 EnableDecorations = _decorationsCheckBox.IsChecked == true,
                 DecorationDensityPercent = (int)_decorationDensitySlider.Value,
+                DecorationProfile = GetSelectedDecorationProfile(),
                 Parameters = _lastResult.Parameters.Clone()
             };
 
@@ -1312,6 +1374,7 @@ namespace SWLOR.ContentBuilder.Windows
                     Size = b.Size,
                     EnableDecorations = b.EnableDecorations,
                     DecorationDensityPercent = b.DecorationDensityPercent,
+                    DecorationProfile = b.DecorationProfile,
                     Parameters = b.Parameters
                 }).ToList();
 
@@ -1395,6 +1458,7 @@ namespace SWLOR.ContentBuilder.Windows
                     Size = b.Size,
                     EnableDecorations = b.EnableDecorations,
                     DecorationDensityPercent = b.DecorationDensityPercent,
+                    DecorationProfile = b.DecorationProfile,
                     Parameters = b.Parameters
                 }).ToList();
 
@@ -1708,6 +1772,7 @@ namespace SWLOR.ContentBuilder.Windows
                     DoorTransitions = _doorTransitionsCheckBox.IsChecked == true,
                     DecorationsEnabled = _decorationsCheckBox.IsChecked == true,
                     DecorationDensityPercent = (int)_decorationDensitySlider.Value,
+                    DecorationProfile = GetSelectedDecorationProfile(),
                     Seed = GetSeedValue(),
                     PreviewMode = (PreviewModeCombo.SelectedItem as KeyedItem)?.Key ?? SchematicModeKey,
                     RoomOverlay = RoomOverlayCheckBox.IsChecked == true
@@ -1721,6 +1786,7 @@ namespace SWLOR.ContentBuilder.Windows
                     Size = b.Size,
                     EnableDecorations = b.EnableDecorations,
                     DecorationDensityPercent = b.DecorationDensityPercent,
+                    DecorationProfile = b.DecorationProfile,
                     Parameters = b.Parameters?.Clone() ?? new MacroLayoutParameters()
                 }).ToList()
             };
@@ -1791,6 +1857,11 @@ namespace SWLOR.ContentBuilder.Windows
                 _doorTransitionsCheckBox.IsChecked = s.DoorTransitions;
                 _decorationsCheckBox.IsChecked = s.DecorationsEnabled;
                 _decorationDensitySlider.Value = s.DecorationDensityPercent;
+                // The tileset selection above may have changed which named profiles exist; rebuild
+                // the combo against the loaded tileset before selecting the saved name (an unknown
+                // name falls back to Standard, matching the planner's own fallback).
+                RepopulateDecorationProfileCombo();
+                SelectComboByKey(_decorationProfileCombo, s.DecorationProfile ?? string.Empty);
                 _seedTextBox.Text = s.Seed.ToString(CultureInfo.InvariantCulture);
 
                 // Re-derive the tightened/coupled bounds now that every real value is in place.
@@ -1866,6 +1937,7 @@ namespace SWLOR.ContentBuilder.Windows
                     DoorTransitions = entry.Parameters.DoorTransitions,
                     EnableDecorations = entry.EnableDecorations,
                     DecorationDensityPercent = entry.DecorationDensityPercent,
+                    DecorationProfile = entry.DecorationProfile ?? string.Empty,
                     Parameters = entry.Parameters
                 });
             }

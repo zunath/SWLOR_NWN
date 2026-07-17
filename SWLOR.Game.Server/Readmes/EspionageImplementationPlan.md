@@ -144,3 +144,8 @@ Custom implementation (placeable + scripted trigger), **not** native NWN traps �
 - Item-stat chain example (Evasion): `SWLOR.NWN.API/NWScript/Enum/Item/ItemPropertyType.cs`, `SWLOR_Haks/sw_2da/itempropdef.2da`, `Feature/EquipmentStats.cs`
 - Facing math: `Service/Combat.cs:1876` (`IsAttackerBesideTarget`)
 - Recipe-to-skill linkage: `Service/CraftService/RecipeBuilder.cs` (`Create(RecipeType, SkillType)`)
+
+## Implementation Status
+
+- **2026-07-16 — Phases 1-2 foundation slice** (branch `feature/espionage-skill`): `SkillType.Espionage` (49, Standard-only, Utility), nine StatTypes (919-927), six item-stat ItemPropertyTypes (136-141) with the full EquipmentStats/Player-entity/`Stat.Adjust*` chain, `Stat.GetDetection`/`Stat.GetStealth` accessors, `Service/Stealth.cs` (perk + out-of-combat entry gate, cached 30s opposed spot verdicts, listen suppression), `StealthStatusEffect` (6s STM drain, zero-STM stealth break, drain slowed by `StealthStaminaDrainReductionPercent`), and `EspionagePerkDefinition` with all 16 perks. Stealth effectiveness and Silent Stride/Venom Expertise/Lasting Coatings/Master Saboteur bonuses flow through `IncreasesStat` — no perk checks in shared systems.
+- **Deferred to the trait feat/icon slice**: all Espionage perks are `.Inactive()` and Alertness is not yet registered (`PerkType` 800 reserved) because every purchasable perk must resolve a feat icon (`ActivePerks_ResolveAnIconFromGrantedFeats`); also deferred: `iprp_skill.2da` row 49, feat.2da rows/TLK/icons for actives, hostile-action stealth break polish, and Back Attack combat-pipeline consumption (Phase 3).

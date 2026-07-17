@@ -746,6 +746,72 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies a player's stealth by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustStealth(Player entity, int adjustBy)
+        {
+            entity.Stealth += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's detection by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustDetection(Player entity, int adjustBy)
+        {
+            entity.Detection += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's trap bonus by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustTrapBonus(Player entity, int adjustBy)
+        {
+            entity.TrapBonus += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's trap disarm by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustTrapDisarm(Player entity, int adjustBy)
+        {
+            entity.TrapDisarm += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's poison bonus by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustPoisonBonus(Player entity, int adjustBy)
+        {
+            entity.PoisonBonus += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's lockpicking by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustLockpicking(Player entity, int adjustBy)
+        {
+            entity.Lockpicking += adjustBy;
+        }
+
+        /// <summary>
         /// Modifies a player's attack by a certain amount. Attack affects damage output.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
@@ -1357,6 +1423,64 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves a creature's detection rating, used against Stealth in the opposed stealth detection check.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>The detection rating of a creature.</returns>
+        public static int GetDetection(uint creature)
+        {
+            var detection = GetAbilityScore(creature, AbilityType.Perception);
+
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                detection += dbPlayer.Detection;
+            }
+            else
+            {
+                detection += GetNPCSkinStat(creature, ItemPropertyType.Detection);
+            }
+
+            detection += GetStatAdjustment(creature, StatType.Detection);
+
+            if (GetActionMode(creature, ActionMode.Detect))
+            {
+                detection += 5;
+            }
+
+            return detection;
+        }
+
+        /// <summary>
+        /// Retrieves a creature's stealth rating, used against Detection in the opposed stealth detection check.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>The stealth rating of a creature.</returns>
+        public static int GetStealth(uint creature)
+        {
+            var stealth = GetAbilityScore(creature, AbilityType.Agility);
+
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                stealth += dbPlayer.Stealth;
+            }
+            else
+            {
+                stealth += GetNPCSkinStat(creature, ItemPropertyType.Stealth);
+            }
+
+            stealth += GetStatAdjustment(creature, StatType.Stealth);
+
+            var effectivenessPercent = GetStatAdjustment(creature, StatType.StealthEffectivenessPercent);
+            return (stealth * (100 + effectivenessPercent)) / 100;
+        }
+
+        /// <summary>
         /// Retrieves a creature's evasion rating from a native context.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
@@ -1679,6 +1803,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             return bonus;
+        }
+
+        private static int GetNPCSkinStat(uint creature, ItemPropertyType type)
+        {
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
+            var value = 0;
+
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == type)
+                    value += GetItemPropertyCostTableValue(ip);
+            }
+
+            return value;
         }
 
         private static int ApplyPostAccuracyStatusModifiers(uint creature, int accuracy)

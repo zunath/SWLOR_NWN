@@ -5267,6 +5267,60 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         PhysicalDamageReflectionPercentAdjustment = 918,
+
+        /// <summary>
+        /// Flat bonus to the stealth side of the opposed stealth detection check.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Stealth = 919,
+
+        /// <summary>
+        /// Flat bonus to the detection side of the opposed stealth detection check.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Detection = 920,
+
+        /// <summary>
+        /// Increases the effect strength of traps placed by the creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapBonus = 921,
+
+        /// <summary>
+        /// Improves the creature's ability to disarm hostile traps.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapDisarm = 922,
+
+        /// <summary>
+        /// Increases the potency of weapon poisons applied by the creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonBonus = 923,
+
+        /// <summary>
+        /// Improves the creature's ability to slice locks, terminals, and lockboxes.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Lockpicking = 924,
+
+        /// <summary>
+        /// Percent multiplier applied to the creature's total Stealth stat while stealthed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthEffectivenessPercent = 925,
+
+        /// <summary>
+        /// Percent by which stamina drain while stealthed is slowed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthStaminaDrainReductionPercent = 926,
+
+        /// <summary>
+        /// Percent adjustment to how long weapon poison coatings applied by the creature last.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonCoatingDurationPercent = 927,
     }
 
     public class StatTypeAttribute : Attribute

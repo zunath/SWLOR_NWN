@@ -474,6 +474,18 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             CombatPointCategoryType.Utility)]
         Mimicry = 48,
+
+        [Skill(SkillCategoryType.Utility,
+            "Espionage",
+            50,
+            true,
+            "Ability to craft poisons, traps, employ stealth, and slice security systems.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Utility,
+            CharacterType.Standard)]
+        Espionage = 49,
     }
 
     public class SkillAttribute : Attribute

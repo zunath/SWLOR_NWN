@@ -166,6 +166,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Mimicry", true)]
         Mimicry = 57,
+
+        [PerkCategory("Espionage - Infiltrator", true)]
+        EspionageInfiltrator = 58,
+
+        [PerkCategory("Espionage - Saboteur", true)]
+        EspionageSaboteur = 59,
     }
 
     public class PerkCategoryAttribute : Attribute

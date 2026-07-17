@@ -13,11 +13,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Techniques)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 560f, 540f)
+                .SetInitialGeometry(0, 0, 560f, 600f)
                 .SetTitle("Techniques")
 
                 .AddColumn(col =>
                 {
+                    // Category filter + sort order, filtering/ordering the Learned list. Fixed-width
+                    // combo boxes centered with flexing spacers (the Perks/Key Items pattern) so this
+                    // row fills the window without pinning the content width.
+                    col.AddRow(row =>
+                    {
+                        row.SetHeight(32f);
+                        row.AddSpacer();
+                        row.AddComboBox()
+                            .BindSelectedIndex(model => model.SelectedCategoryId)
+                            .SetWidth(240f)
+                            .AddOption("All Types", 0)
+                            .AddOption("Single-Target", 1)
+                            .AddOption("Area", 2)
+                            .AddOption("Stance", 3)
+                            .AddOption("Support", 4)
+                            .AddOption("Passive Trait", 5);
+
+                        row.AddComboBox()
+                            .BindSelectedIndex(model => model.SelectedSortOrderId)
+                            .SetWidth(180f)
+                            .AddOption("Name (A-Z)", 0)
+                            .AddOption("Name (Z-A)", 1)
+                            .AddOption("Tier (Low-High)", 2)
+                            .AddOption("Tier (High-Low)", 3);
+                        row.AddSpacer();
+                    });
+
+                    // Search box (filters the Learned list by technique name as you type).
+                    col.AddRow(row =>
+                    {
+                        row.SetHeight(30f);
+                        row.AddTextEdit()
+                            .SetPlaceholder("Search")
+                            .BindValue(model => model.SearchText);
+                    });
+
                     col.AddRow(row =>
                     {
                         // Learned list column: no fixed width, so it flexes to fill the space left

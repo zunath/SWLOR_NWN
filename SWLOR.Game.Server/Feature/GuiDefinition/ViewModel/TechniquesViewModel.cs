@@ -104,6 +104,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        // Search box; category filter (0 = all, else a TechniqueCategory value); sort order.
+        public string SearchText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public int SelectedCategoryId
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int SelectedSortOrderId
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public TechniquesViewModel()
         {
             _unequippedFeats = new List<FeatType>();
@@ -116,7 +135,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEquipEnabled = false;
             IsUnequipEnabled = false;
 
+            SearchText = string.Empty;
+            SelectedCategoryId = 0;
+            SelectedSortOrderId = 0;
+
             LoadLists();
+
+            // Re-filter/sort the Learned list whenever the player changes the search box,
+            // category dropdown, or sort dropdown (the same reactive pattern the Perks window uses).
+            WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.SelectedCategoryId);
+            WatchOnClient(model => model.SelectedSortOrderId);
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(SearchText) ||
+                propertyName == nameof(SelectedCategoryId) ||
+                propertyName == nameof(SelectedSortOrderId))
+            {
+                LoadLists();
+            }
         }
 
         private void LoadLists()
@@ -148,11 +187,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var usedSlots = Mimicry.GetUsedSlots(dbPlayer);
             var maxSlots = Mimicry.GetMaxSlots(dbPlayer);
 
-            foreach (var (feat, detail) in learnedFeats)
-            {
-                if (equippedFeatSet.Contains(feat))
-                    continue;
+            // The Learned list honors the search box, category dropdown, and sort dropdown.
+            var search = (SearchText ?? string.Empty).Trim().ToLower();
+            var learnedView = learnedFeats
+                .Where(x => !equippedFeatSet.Contains(x.Feat))
+                .Where(x => SelectedCategoryId == 0 || GetTechniqueCategoryId(x.Detail) == SelectedCategoryId)
+                .Where(x => search.Length == 0 || x.Detail.Name.ToLower().Contains(search));
 
+            learnedView = SelectedSortOrderId switch
+            {
+                1 => learnedView.OrderByDescending(x => x.Detail.Name),
+                2 => learnedView.OrderBy(x => x.Detail.MimicryTier).ThenBy(x => x.Detail.Name),
+                3 => learnedView.OrderByDescending(x => x.Detail.MimicryTier).ThenBy(x => x.Detail.Name),
+                _ => learnedView.OrderBy(x => x.Detail.Name),
+            };
+
+            foreach (var (feat, detail) in learnedView)
+            {
                 _unequippedFeats.Add(feat);
                 unequippedNames.Add(BuildRowText(detail));
                 unequippedSelections.Add(false);
@@ -186,6 +237,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly GuiColor NoRoomColor = new(230, 180, 70);     // met, but no free slots
         private static readonly GuiColor EquippableColor = new(60, 200, 90);  // ready to equip
         private static readonly GuiColor EquippedColor = new(90, 170, 230);   // currently equipped / active
+
+        // Category ids match the dropdown option values in TechniquesDefinition:
+        // 1 Single-Target, 2 Area, 3 Stance, 4 Support, 5 Passive Trait. Trait/stance/support are
+        // checked first because they take precedence over the ability's targeting shape.
+        private static int GetTechniqueCategoryId(AbilityDetail detail)
+        {
+            if (detail.IsMimicryTrait) return 5;
+            if (detail.IsMimicryStance) return 3;
+            if (detail.IsMimicryUtility) return 4;
+            if (detail.IsAreaAbility) return 2;
+            return 1;
+        }
 
         private static GuiColor GetUnequippedRowColor(AbilityDetail detail, int skillRank, int usedSlots, int maxSlots)
         {

@@ -74,16 +74,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var potency = Stat.GetStatAdjustment(user, StatType.PoisonBonus);
+                    var coatingDurationBonus = Stat.GetStatAdjustment(user, StatType.PoisonCoatingDurationPercent);
+                    var charges = BaseCharges * (100 + coatingDurationBonus) / 100;
 
                     SetLocalInt(target, PoisonCoatingTierVariable, tier);
-                    var coatingDurationBonus = Stat.GetStatAdjustment(user, StatType.PoisonCoatingDurationPercent);
-            var charges = BaseCharges * (100 + coatingDurationBonus) / 100;
-            SetLocalInt(target, PoisonCoatingChargesVariable, charges);
+                    SetLocalInt(target, PoisonCoatingChargesVariable, charges);
                     SetLocalInt(target, PoisonCoatingPotencyVariable, potency);
 
                     Item.ReduceItemStack(item, 1);
 
-                    SendMessageToPC(user, $"You coat {GetName(target)} in Tier {_tierLabels[tier]} venom. ({BaseCharges} charges)");
+                    SendMessageToPC(user, $"You coat {GetName(target)} in Tier {_tierLabels[tier]} venom. ({charges} charges)");
                 });
         }
     }

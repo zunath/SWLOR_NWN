@@ -31,8 +31,10 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(defender) || GetIsDead(defender))
                 return;
 
-            var weapon = FindCoatedWeapon(attacker);
-            if (weapon == OBJECT_INVALID)
+            // Consume the coating on the exact weapon that landed the hit so a dual-wielder's two
+            // coatings are spent independently instead of always draining the right hand.
+            var weapon = StringToObject(EventsPlugin.GetEventData("WEAPON"));
+            if (!GetIsObjectValid(weapon) || GetLocalInt(weapon, CoatingChargesVariable) <= 0)
                 return;
 
             var now = (int)(DateTime.UtcNow - _epoch).TotalSeconds;
@@ -58,19 +60,6 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalInt(weapon, CoatingChargesVariable);
             DeleteLocalInt(weapon, CoatingPotencyVariable);
             SendMessageToPC(attacker, $"The venom coating on {GetName(weapon)} has worn off.");
-        }
-
-        private static uint FindCoatedWeapon(uint attacker)
-        {
-            var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
-            if (GetIsObjectValid(rightHand) && GetLocalInt(rightHand, CoatingChargesVariable) > 0)
-                return rightHand;
-
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
-            if (GetIsObjectValid(leftHand) && GetLocalInt(leftHand, CoatingChargesVariable) > 0)
-                return leftHand;
-
-            return OBJECT_INVALID;
         }
 
         private static float GetVenomDurationSeconds(int tier, int potency)

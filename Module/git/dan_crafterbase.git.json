@@ -12890,7 +12890,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Terminal"
+            "0": "Espionage Workbench"
           }
         },
         "OnClick": {

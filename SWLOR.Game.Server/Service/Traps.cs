@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service
             public Guid Id { get; } = Guid.NewGuid();
             public uint Owner { get; init; }
             public Location Location { get; init; }
+            public uint Marker { get; set; } = OBJECT_INVALID;
             public bool IsLive { get; set; } = true;
         }
 
@@ -40,7 +41,9 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetTrapCapacity(uint owner)
         {
-            return BaseTrapCapacity + Stat.GetStatAdjustment(owner, StatType.AdditionalTrapCapacity);
+            return Math.Max(
+                BaseTrapCapacity,
+                BaseTrapCapacity + Stat.GetStatAdjustment(owner, StatType.AdditionalTrapCapacity));
         }
 
         /// <summary>
@@ -77,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             while (ownerTraps.Count >= GetTrapCapacity(owner))
             {
                 var oldest = ownerTraps[0];
-                oldest.IsLive = false;
+                Deactivate(oldest);
                 ownerTraps.RemoveAt(0);
                 SendMessageToPC(owner, "Your oldest trap deactivates as you place a new one.");
             }
@@ -94,7 +97,7 @@ namespace SWLOR.Game.Server.Service
             };
             ownerTraps.Add(record);
 
-            DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
+            record.Marker = DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
                 location,
                 markerVisualEffect,
                 1.5f,
@@ -119,10 +122,22 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var record in ownerTraps)
             {
-                record.IsLive = false;
+                Deactivate(record);
             }
 
             _trapsByOwner.Remove(owner);
+        }
+
+        // Single deactivation path so every route - eviction, clearing, triggering, expiry - both
+        // marks the trap dead and removes its visible marker instead of leaving inert props behind.
+        private static void Deactivate(TrapRecord record)
+        {
+            record.IsLive = false;
+            if (GetIsObjectValid(record.Marker))
+            {
+                DestroyObject(record.Marker);
+                record.Marker = OBJECT_INVALID;
+            }
         }
 
         private static IEnumerable<TrapRecord> AllLiveTraps()
@@ -148,14 +163,15 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var triggered = CombatAreaPulses
+            var hostileCreatures = CombatAreaPulses
                 .GetHostileCreatures(record.Owner, record.Location, TriggerRadiusMeters)
-                .Any();
+                .ToList();
+            var triggeredByNonPlayerCharacter = hostileCreatures.Any(creature => !GetIsPC(creature));
 
-            if (triggered)
+            if (hostileCreatures.Count > 0)
             {
-                record.IsLive = false;
-                if (GetIsPC(record.Owner) && !GetIsDM(record.Owner))
+                Deactivate(record);
+                if (triggeredByNonPlayerCharacter && GetIsPC(record.Owner) && !GetIsDM(record.Owner))
                 {
                     Skill.GiveSkillXP(record.Owner, SkillType.Espionage, TrapTriggerXP, false, false);
                 }
@@ -185,7 +201,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void Expire(TrapRecord record)
         {
-            record.IsLive = false;
+            Deactivate(record);
             if (_trapsByOwner.TryGetValue(record.Owner, out var ownerTraps))
             {
                 ownerTraps.Remove(record);

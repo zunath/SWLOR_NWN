@@ -63,7 +63,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int ColorHeightCells = 11;
 
         private static readonly Dictionary<AppearanceType, IArmorAppearanceDefinition> _armorAppearances = new();
-        private static readonly Dictionary<AppearanceType, IRacialAppearanceDefinition> _racialAppearances = new();
         private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
 
@@ -78,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadAppearances()
         {
-            LoadRacialAppearances();
+            RacialAppearanceRegistry.EnsureLoaded();
             LoadArmorAppearances();
             LoadWeaponAppearances();
         }
@@ -101,30 +100,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (Gui.IsWindowOpen(dm, GuiWindowType.AppearanceEditor))
                     Gui.TogglePlayerWindow(dm, GuiWindowType.AppearanceEditor);
             }
-        }
-
-        private static void LoadRacialAppearances()
-        {
-            _racialAppearances[AppearanceType.Human] = new HumanRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Bothan] = new BothanRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Chiss] = new ChissRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Zabrak] = new ZabrakRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Twilek] = new TwilekRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Mirialan] = new MirialanRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Echani] = new EchaniRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.KelDor] = new KelDorRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Cyborg] = new CyborgRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Cathar] = new CatharRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Rodian] = new RodianRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Trandoshan] = new TrandoshanRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Togruta] = new TogrutaRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Wookiee] = new WookieeRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.MonCalamari] = new MonCalamariRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Ugnaught] = new UgnaughtRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Droid] = new DroidRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Nautolan] = new NautolanRacialAppearanceDefinition(); 
-            _racialAppearances[AppearanceType.Ewok] = new EwokRacialAppearanceDefinition();
-            
         }
 
         private static void LoadArmorAppearances()
@@ -1018,13 +993,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var appearanceType = GetAppearanceType(_target);
             var gender = GetGender(_target);
 
-            if (!_racialAppearances.ContainsKey(appearanceType))
+            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
                 Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
 
-            var appearance = _racialAppearances[appearanceType];
             int[] partIds;
             int selectedPartId;
 
@@ -1304,13 +1278,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnDecreaseAppearanceScale() => () =>
         {
             var appearanceType = GetAppearanceType(_target);
-            if (!_racialAppearances.ContainsKey(appearanceType))
+            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
                 Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
 
-            var appearance = _racialAppearances[appearanceType];
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
 
@@ -1327,13 +1300,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnIncreaseAppearanceScale() => () =>
         {
             var appearanceType = GetAppearanceType(_target);
-            if (!_racialAppearances.ContainsKey(appearanceType))
+            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
                 Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
-
-            var appearance = _racialAppearances[appearanceType];
 
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             const float Increment = 0.01f;
@@ -1352,13 +1323,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnDecreaseHeadScale() => () =>
         {
             var appearanceType = GetAppearanceType(_target);
-            if (!_racialAppearances.ContainsKey(appearanceType))
+            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
                 Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
 
-            var appearance = _racialAppearances[appearanceType];
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
                 nScope: ObjectVisualTransformDataScopeType.CreatureHead);
             if (scale <= 0f)
@@ -1381,13 +1351,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnIncreaseHeadScale() => () =>
         {
             var appearanceType = GetAppearanceType(_target);
-            if (!_racialAppearances.ContainsKey(appearanceType))
+            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
                 Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
 
-            var appearance = _racialAppearances[appearanceType];
             var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
                 nScope: ObjectVisualTransformDataScopeType.CreatureHead);
             if (scale <= 0f)
@@ -1654,7 +1623,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var appearanceType = GetAppearanceType(_target);
             var gender = GetGender(_target);
-            var appearance = _racialAppearances[appearanceType];
+            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
+                return;
 
             switch (SelectedPartCategoryIndex)
             {

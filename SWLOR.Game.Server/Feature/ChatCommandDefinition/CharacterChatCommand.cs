@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
@@ -377,18 +378,21 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         private void HeadScale()
         {
-            const float MinScale = 0.85f;
-            const float MaxScale = 1.15f;
             const float Increment = 0.01f;
 
             _builder.Create("headscale")
-                .Description($"Adjusts your head size separately from body height. Usage: /headscale [value|{MinScale}-{MaxScale}|+/-]. Omit value to view current size.")
+                .Description("Adjusts your head size separately from body height. Usage: /headscale [value|+/-]. Omit value to view current size. Limits depend on your race.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
                     if (GetIsDM(user) || GetIsDMPossessed(user))
                     {
                         return "This command can only be used by players.";
+                    }
+
+                    if (!RacialAppearanceRegistry.TryGet(GetAppearanceType(user), out var appearance))
+                    {
+                        return "Your appearance type does not support head scaling.";
                     }
 
                     if (args.Length <= 0)
@@ -403,18 +407,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     if (!float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
                     {
-                        return $"Please specify a value between {MinScale} and {MaxScale}, or use + / -.";
+                        return $"Please specify a value between {appearance.MinimumHeadScale} and {appearance.MaximumHeadScale}, or use + / -.";
                     }
 
-                    if (value < MinScale || value > MaxScale)
+                    if (value < appearance.MinimumHeadScale || value > appearance.MaximumHeadScale)
                     {
-                        return $"Please specify a value between {MinScale} and {MaxScale}.";
+                        return $"Please specify a value between {appearance.MinimumHeadScale} and {appearance.MaximumHeadScale}.";
                     }
 
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>
                 {
+                    if (!RacialAppearanceRegistry.TryGet(GetAppearanceType(user), out var appearance))
+                    {
+                        SendMessageToPC(user, "Your appearance type does not support head scaling.");
+                        return;
+                    }
+
+                    var minScale = appearance.MinimumHeadScale;
+                    var maxScale = appearance.MaximumHeadScale;
                     var playerId = GetObjectUUID(user);
                     var dbPlayer = DB.Get<Player>(playerId);
                     var current = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
@@ -422,18 +434,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     if (args.Length <= 0)
                     {
-                        SendMessageToPC(user, $"Head Size: {current:0.##} (range {MinScale}-{MaxScale}). Use /headscale <value>, /headscale +, or /headscale -.");
+                        SendMessageToPC(user, $"Head Size: {current:0.##} (range {minScale}-{maxScale}). Use /headscale <value>, /headscale +, or /headscale -.");
                         return;
                     }
 
                     var arg = args[0];
                     if (arg == "+" || arg.Equals("up", StringComparison.OrdinalIgnoreCase))
                     {
-                        newScale = Math.Min(MaxScale, current + Increment);
+                        newScale = Math.Min(maxScale, current + Increment);
                     }
                     else if (arg == "-" || arg.Equals("down", StringComparison.OrdinalIgnoreCase))
                     {
-                        newScale = Math.Max(MinScale, current - Increment);
+                        newScale = Math.Max(minScale, current - Increment);
                     }
                     else
                     {
@@ -444,7 +456,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         (arg == "+" || arg == "-" || arg.Equals("up", StringComparison.OrdinalIgnoreCase) ||
                          arg.Equals("down", StringComparison.OrdinalIgnoreCase)))
                     {
-                        SendMessageToPC(user, newScale >= MaxScale
+                        SendMessageToPC(user, newScale >= maxScale
                             ? "You cannot increase your head size any further."
                             : "You cannot decrease your head size any further.");
                         return;

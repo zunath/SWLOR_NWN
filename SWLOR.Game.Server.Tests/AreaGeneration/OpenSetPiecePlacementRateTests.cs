@@ -665,6 +665,125 @@ public class OpenSetPiecePlacementRateTests
             $"'Ship - Air, Above Water (3x1)' must place on a meaningful share of the {airSuccesses} successful seeds (got {airHits})");
     }
 
+    // ---------------- tts02 Rural Winter - Facelift placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.RuralWinterFacelift's own all-Snow OpenSetPiece
+    /// family: three groups carried over from RuralWinter's own already-verified roster plus
+    /// "Turfhouse_2x2" (the vanilla-underscored name for RuralWinter's "Turf House (2x2)"). Measured
+    /// (ProbeTool, seedBase 95000, 150 seeds each, all successes=150): all four place 150/150 (100%) --
+    /// the same trivial open-field result RuralWinterOpenSetPieces_PlaceInIsolation measures on tts01.
+    /// Threshold set well under the measured floor for safety margin.
+    /// </summary>
+    [Test]
+    public void RuralWinterFaceliftOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.RuralWinterFacelift];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var name in new[] { "Barn01_2x2", "GoodTemple_3x3", "Windmill_2x2", "Turfhouse_2x2" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, name, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{name}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.RuralWinterFacelift's door-bearing ExitGroups:
+    /// "House01" (carried over from RuralWinter's own roster) and "HouseV2"/"HouseV3" (tts02-only
+    /// additions with no RuralWinter counterpart -- two more house-model variants sharing the identical
+    /// flat/crosser-free/uniform-Snow/real-door shape). Measured (seedBase 95000, 150 seeds,
+    /// successes=150): all three place 150/150 (100%).
+    /// </summary>
+    [Test]
+    public void RuralWinterFaceliftDoorBearingExitGroups_PlaceAsGroupExits()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.RuralWinterFacelift];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "House01", "HouseV2", "HouseV3" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.RuralWinterFaceliftWater's Snow+Water mixed
+    /// OpenSetPiece "ShipDocked01_2x2" (flat, the vanilla-underscored name for RuralWinter's "Ship -
+    /// Docked 1 (2x2)"). Measured (seedBase 95000, 150 seeds, successes=150): places at 40.7% (61/150)
+    /// -- the IDENTICAL rate RuralWinterWaterOpenSetPieces_PlaceInIsolation measures on tts01's own copy,
+    /// confirmed independently against tts02's own (different) TileIds, not assumed from the shared
+    /// vanilla lineage. tts02 has no "Ship - Air, Above Water" counterpart (see
+    /// BaseGameTilesetProfiles.RuralWinterFaceliftWater's own doc comment), so there is no matching
+    /// second group to measure here.
+    /// </summary>
+    [Test]
+    public void RuralWinterFaceliftWaterOpenSetPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.RuralWinterFaceliftWater];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (dockedSuccesses, dockedHits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "ShipDocked01_2x2", maxPerArea: 5, seedBase: 95000, seedCount: 150);
+        dockedSuccesses.Should().BeGreaterThan(140);
+        // Measured 40.7% (61/150). Safety margin under the measured rate.
+        dockedHits.Should().BeGreaterOrEqualTo((int)(dockedSuccesses * 0.2),
+            $"'ShipDocked01_2x2' must place on a meaningful share of the {dockedSuccesses} successful seeds (got {dockedHits})");
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.RuralWinterFaceliftFort's sole ExitGroup,
+    /// "WallGate3" (Fort+Snow mixed corners, one real door -- only ever a candidate once
+    /// SolidTerrainOverride("Fort") composes Fort as a genuine wall material, the same mechanism as
+    /// RuralWinterCastleDoorGroups_PlaceAsGroupExits above). Measured (seedBase 95000, 150 seeds,
+    /// successes=150): places 150/150 (100%).
+    /// </summary>
+    [Test]
+    public void RuralWinterFaceliftFortDoorGroup_PlacesAsGroupExit()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.RuralWinterFaceliftFort];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, "WallGate3", seedBase: 95000, seedCount: 150);
+        successes.Should().BeGreaterThan(140);
+        hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+            $"'WallGate3' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.RuralWinterFaceliftFort's two doorless Fort+Snow
+    /// boundary OpenSetPieces, "WallBreach" and "WatchTower" -- only ever candidates once
+    /// SolidTerrainOverride("Fort") composes Fort as a genuine Solid. Measured (ProbeTool "fortprobe",
+    /// seedBase 95000, 100 seeds each, all successes=100): 89/100 each on Halls, 90/100 on Complex,
+    /// 100/100 on Organic. Threshold set well under the measured floor for safety margin.
+    /// </summary>
+    [Test]
+    public void RuralWinterFaceliftFortBoundaryPieces_PlaceInIsolation()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.RuralWinterFaceliftFort];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var name in new[] { "WallBreach", "WatchTower" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, name, maxPerArea: 5, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{name}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
     // ---------------- tno01 Castle Exterior, Rural* placement proofs ----------------
 
     /// <summary>

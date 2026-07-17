@@ -272,6 +272,14 @@ public class TunnelVocabularyCheckTests
         BaseGameTilesetProfiles.SeaShipsCity,
         BaseGameTilesetProfiles.SeaShipsRural,
         BaseGameTilesetProfiles.SeaShipsTropical,
+        // Rural Winter - Facelift (tts02): declares NO canonical "Corridor"/"Doorway" crosser at all
+        // (its 4 crossers are Stream/Wall1/Wall2/Road, verified directly), the same shape as
+        // RuralWinter/RuralGrass's own exterior wave -- Complex downgrades to OpenLane for all three
+        // profiles (base + Water/Fort PaletteVariants) regardless of which terrain each composes as
+        // Solid. See BaseGameTilesetProfiles.RuralWinterFacelift's own doc comment.
+        BaseGameTilesetProfiles.RuralWinterFacelift,
+        BaseGameTilesetProfiles.RuralWinterFaceliftWater,
+        BaseGameTilesetProfiles.RuralWinterFaceliftFort,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]

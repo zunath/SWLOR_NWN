@@ -121,7 +121,8 @@ Custom implementation (placeable + scripted trigger), **not** native NWN traps �
 - Back Attack damage progression is **+3/+5/+8%** (crit +3/+5% at ranks II/III).
 - Poisons **cannot be applied to lightsabers or saberstaffs**; only crafting is perk-gated — anyone may apply and use crafted poisons (noted on the Poisoncraft I Bible row).
 - Espionage actives are **player-only** — no droid instruction AI slots.
-- Both capstones follow the standard capstone convention: Type `Capstone`, 6 SP, and for Ghost Protocol the shared Capstone recast timer at 90 seconds / 15 STM. Espionage tree totals are now 56 + 56 = 112 SP.
+- Both capstones follow the standard capstone convention: Type `Capstone`, 6 SP, and for Ghost Protocol the shared Capstone recast timer at 90 seconds / 15 STM.
+- Each tree totals the standard 60 SP / 18 rows. The missing Espionage 32 step is filled by two new 4 SP traits: **Silent Stride** (Infiltrator — no stealth movement penalty, 20% slower stealth STM drain) and **Lasting Coatings** (Saboteur — applied weapon poisons last 50% longer before wearing off).
 - The six new stats are documented on the Bible **Character Stats** tab (rows 60–65), including the opposed-check formula and the applier-snapshot rule for Poison Bonus.
 
 ## Open Decisions (resolve in Phase 0)

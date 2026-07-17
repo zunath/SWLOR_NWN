@@ -1322,4 +1322,271 @@ public class OpenSetPiecePlacementRateTests
                 "if it ever starts placing, room generation changed and this test (and its doc comment) should be revisited, not silently deleted");
         }
     }
+
+    // ---------------- tcm02 Medieval City 2 placement proofs ----------------
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.MedievalCity's Water/Cobble OpenSetPiece/WallAlcove
+    /// family (ProbeTool "place", seedBase 95000, 150 seeds each, Halls, all successes=150). Measured:
+    /// "House1_2x2" 40.7% (61/150); "Docks_City" 67.3% (101/150); "Jetty" 89.3% (134/150);
+    /// "Ship_floating_1" 100% (150/150, WallAlcove); "Ship_3x1_Docked" 11.3% (17/150).
+    /// </summary>
+    [Test]
+    public void MedievalCityOpenSetPieces_PlaceAcrossMeaningfulShareOfSeeds()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCity];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var (groupName, minShare) in new[]
+                 {
+                     ("House1_2x2", 0.3),
+                     ("Docks_City", 0.5),
+                     ("Jetty", 0.7),
+                     ("Ship_floating_1", 0.9),
+                     ("Ship_3x1_Docked", 0.05),
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, groupName, maxPerArea: 1, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * minShare),
+                $"'{groupName}' must place on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.MedievalCity's pure-Cobble/Cobble+Water ExitGroups
+    /// (ProbeTool "place", seedBase 95000, 150 seeds each, Halls, all successes=150). Measured:
+    /// "House1_1x1"/"House4_1x1"/"House8"/"Watertower" 100% (150/150); "SewerEntrance03"/
+    /// "SewerEntrance04" 100% (150/150).
+    /// </summary>
+    [Test]
+    public void MedievalCityExitGroups_PlaceAsGroupExits()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCity];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "House1_1x1", "House4_1x1", "House8", "Watertower", "SewerEntrance03", "SewerEntrance04" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for MedievalCity's three 3x3+/4x2 pieces ("DockedShip_City" 4x2,
+    /// "Arena" 3x3, "Temple3x3" 3x3): measured 0/150 in isolation under BOTH Halls and Complex (ProbeTool
+    /// "place"). The same room-size ceiling as this project's other oversized-set-piece families (a 3x3
+    /// footprint + 1-cell margin + one spare relocation tile needs a room strictly larger than 5x5
+    /// tiles -- corner size 7+ -- which neither Halls (corner ceiling 6) nor Complex (corner ceiling 5)
+    /// ever produces at this project's 20x20 tuning baseline). If any of these ever start placing, room
+    /// size scaling changed and this test (and its doc comment) should be revisited, not silently
+    /// deleted.
+    /// </summary>
+    [Test]
+    public void MedievalCityLargeRoomPieces_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCity];
+        var layoutProfiles = new StandardLayoutProfiles().BuildLayoutProfiles();
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var layoutKey in new[] { StandardLayoutProfiles.Halls, StandardLayoutProfiles.Complex })
+        foreach (var groupName in new[] { "DockedShip_City", "Arena", "Temple3x3" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfiles[layoutKey], model, groupName, maxPerArea: 1, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' on '{layoutKey}' has a documented room-size placement ceiling -- " +
+                "if it ever starts placing, room size scaling changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for EVERY MedievalCity ExitGroup whose corners mix a terrain the
+    /// base profile's Water/Cobble composition never paints (each classifies via IsExitGroupEligible's
+    /// terrain-agnostic rule -- real census credit -- but GroupExitPlanner's exact corner-match
+    /// requirement can never find a real site for a corner terrain that never appears in the grid).
+    /// Measured 0/150 in isolation for ALL 21 groups (ProbeTool "place", Halls, seedBase 95000, all
+    /// successes=150), split by unpainted terrain family: Building+Cobble ("BuildingBad1"/"Shop1"/
+    /// "Shop2"/"Bakery"/"Museum"/"PatriciansHouse"/"Smithy"/"StairHouse"/"CornerShop1"/"CornerShop2"/
+    /// "CornerPub"/"BurntHouse1"/"BurntHouse2"/"CornerBTower1"/"CornerBTower2a"), Castle+Grass
+    /// ("CastleSmallDoor2"/"CastleHugeGateGrass"), Chasm+Grass ("CliffBottomCave1"/"CliffBottomCave2"/
+    /// "CliffTopCave1"), and Water+Grass ("Lighthouse"). By contrast every pure-Cobble/Cobble+Water
+    /// ExitGroup measured 100% (see MedievalCityExitGroups_PlaceAsGroupExits, plus House2_1x1/
+    /// House3_1x1/House5_1x1/House9/House10, each independently measured 150/150). The five
+    /// Castle+COBBLE groups this same gap used to apply to (CastleSmallDoor/CastleHugeGate/
+    /// CastleTowerGate1-2/PrisonTower) were moved OFF this profile onto MedievalCityCastle instead (see
+    /// that profile's own doc comment) precisely because Castle can be composed as a real Solid
+    /// elsewhere -- the same "recompose onto a variant where the terrain is real" fix
+    /// ForestGoodCastle/RuralGrassGoodCastle already document. Building can NOT get the same treatment
+    /// (it fails every 16-combo pairing as Solid or Open -- see BaseGameTilesetProfiles.MedievalCity),
+    /// and CliffBottomCave1-2/CliffTopCave1 pair Chasm with GRASS, not the Cliffs variant's own painted
+    /// boundary shape (they need a Chasm/Grass room BOUNDARY, which the Cliffs variant does produce --
+    /// they are wired there too and measured separately). All stay wired per this project's "keep it
+    /// wired, document the ceiling" convention (EarlyWinter's own Chasm-district precedent). If any
+    /// ever starts placing, terrain painting changed and this test (and its doc comment) should be
+    /// revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void MedievalCityUnpaintedTerrainExitGroups_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCity];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[]
+                 {
+                     "BuildingBad1", "Shop1", "Shop2", "Bakery", "Museum", "PatriciansHouse", "Smithy",
+                     "StairHouse", "CornerShop1", "CornerShop2", "CornerPub", "BurntHouse1", "BurntHouse2",
+                     "CornerBTower1", "CornerBTower2a",
+                     "CastleSmallDoor2", "CastleHugeGateGrass",
+                     "CliffBottomCave1", "CliffBottomCave2", "CliffTopCave1",
+                     "Lighthouse",
+                 })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' has a documented placement ceiling (its own corner terrain never paints under this composition) -- " +
+                "if it ever starts placing, terrain painting changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.MedievalCityCastle's Castle+Cobble door family
+    /// (ProbeTool "place", seedBase 95000, 150 seeds, Halls, all successes=150): every one of the five
+    /// groups now places at a real, measured rate now that Castle is composed as this variant's own
+    /// Solid terrain (the identical fix ForestGoodCastle/RuralGrassGoodCastle already document).
+    /// Measured: "CastleSmallDoor"/"CastleHugeGate"/"CastleTowerGate1"/"CastleTowerGate2" 100%
+    /// (150/150); "PrisonTower" 97.3% (146/150).
+    /// </summary>
+    [Test]
+    public void MedievalCityCastleDoorGroups_PlaceAsGroupExits()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCityCastle];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "CastleSmallDoor", "CastleHugeGate", "CastleTowerGate1", "CastleTowerGate2", "PrisonTower" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for BaseGameTilesetProfiles.MedievalCityCliffs' Chasm+Grass OpenSetPiece family
+    /// and its ChasmBridgeWB1 CorridorStub (ProbeTool "place", seedBase 95000, 150 seeds, all
+    /// successes=150). Measured: "CliffCaveEntry" 68.7% (103/150, Halls, OpenSetPiece); "ChasmBridgeWB1"
+    /// 0% under Halls (OpenLane carves no wall mass to stub off of) but 96.7% (145/150) under Complex
+    /// (Tunnel mode) -- the expected CorridorStub shape, only ever placeable in Tunnel-mode corridors.
+    /// </summary>
+    [Test]
+    public void MedievalCityCliffsOpenSetPieces_PlaceAcrossMeaningfulShareOfSeeds()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCityCliffs];
+        var layoutProfiles = new StandardLayoutProfiles().BuildLayoutProfiles();
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfiles[StandardLayoutProfiles.Halls], model, "CliffCaveEntry", maxPerArea: 1, seedBase: 95000, seedCount: 150);
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.4),
+                $"'CliffCaveEntry' must place on a meaningful share of the {successes} successful Halls seeds (got {hits})");
+        }
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfiles[StandardLayoutProfiles.Complex], model, "ChasmBridgeWB1", maxPerArea: 1, seedBase: 95000, seedCount: 150);
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.8),
+                $"'ChasmBridgeWB1' must place on a meaningful share of the {successes} successful Complex/Tunnel seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for MedievalCityCliffs' Chasm+Grass cave-door ExitGroups (the same three groups
+    /// the base profile documents a 0% ceiling for -- see
+    /// MedievalCityUnpaintedTerrainExitGroups_StillDoNotPlace_DocumentedCeiling): on THIS variant the
+    /// Chasm/Grass pair is the composition's own Solid/Open boundary, so GroupExitPlanner finds real
+    /// sites. Measured (ProbeTool "place", seedBase 95000, 150 seeds, Halls, all successes=150):
+    /// "CliffBottomCave1"/"CliffBottomCave2"/"CliffTopCave1" all 100% (150/150).
+    /// </summary>
+    [Test]
+    public void MedievalCityCliffsCaveDoorGroups_PlaceAsGroupExits()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCityCliffs];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Halls];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var groupName in new[] { "CliffBottomCave1", "CliffBottomCave2", "CliffTopCave1" })
+        {
+            var (successes, hits) = MeasureIsolatedExitGroupHits(tilesetProfile, layoutProfile, model, groupName, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+                $"'{groupName}' must place as a GroupExit on a meaningful share of the {successes} successful seeds (got {hits})");
+        }
+    }
+
+    /// <summary>
+    /// Placement proof for MedievalCityCliffs' MaxReliefRegions(2) declaration: "HillCave1" (a raised,
+    /// SetPieceReliefPiece-classified 1x1 group) measured 0/150 under BOTH Halls and Complex before this
+    /// cap was declared (LayoutReliefPainter never paints without a composition actually requesting
+    /// ReliefRegions, and DungeonComposition.BuildLayoutParameters clamps every request to the tileset's
+    /// own cap). With MaxReliefRegions(2) declared, Complex (which requests relief regions -- Halls does
+    /// not) now places it at a real, measured rate: 0% (Halls, unchanged) but 74.7% (112/150, Complex).
+    /// </summary>
+    [Test]
+    public void MedievalCityCliffsHillCave_PlacesOnceReliefIsRequested()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCityCliffs];
+        var layoutProfile = new StandardLayoutProfiles().BuildLayoutProfiles()[StandardLayoutProfiles.Complex];
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfile, model, "HillCave1", maxPerArea: 1, seedBase: 95000, seedCount: 150);
+
+        successes.Should().BeGreaterThan(140);
+        hits.Should().BeGreaterOrEqualTo((int)(successes * 0.5),
+            $"'HillCave1' must place on a meaningful share of the {successes} successful Complex seeds now that MaxReliefRegions is declared (got {hits})");
+    }
+
+    /// <summary>
+    /// Documented placement ceiling for MedievalCityCliffs' bare-Solid multi-tile fillers
+    /// ("CliffRockFormation", all-Chasm, no door/crosser) and its 3x3 room-size-ceiling piece
+    /// ("CliffPath2"): measured 0/150 in isolation under BOTH Halls and Complex (ProbeTool "place").
+    /// "CliffRockFormation" classifies via matchesPrimary's trivial "every corner already equals Solid"
+    /// allowance but LayoutGroupStamper's real OpenSetPiece site search needs a genuine Open-terrain
+    /// anchor to relocate the room center onto, which an all-Solid footprint never offers -- the same
+    /// bare-Solid gap "Small_Cog"/tcn01's own "[City] Boat" family documents. "CliffPath2" is a 3x3
+    /// piece hitting the identical room-size ceiling as MedievalCity's own Arena/Temple3x3. If either
+    /// ever starts placing, the relevant mechanism changed and this test (and its doc comment) should be
+    /// revisited, not silently deleted.
+    /// </summary>
+    [Test]
+    public void MedievalCityCliffsBareCornerPieces_StillDoNotPlace_DocumentedCeiling()
+    {
+        var tilesetProfile = new BaseGameTilesetProfiles().BuildTilesetProfiles()[BaseGameTilesetProfiles.MedievalCityCliffs];
+        var layoutProfiles = new StandardLayoutProfiles().BuildLayoutProfiles();
+        var model = LoadTileset(tilesetProfile.TilesetResref);
+
+        foreach (var layoutKey in new[] { StandardLayoutProfiles.Halls, StandardLayoutProfiles.Complex })
+        foreach (var groupName in new[] { "CliffRockFormation", "CliffPath2" })
+        {
+            var (successes, hits) = MeasureIsolatedGroupHits(tilesetProfile, layoutProfiles[layoutKey], model, groupName, maxPerArea: 1, seedBase: 95000, seedCount: 150);
+
+            successes.Should().BeGreaterThan(140);
+            hits.Should().Be(0,
+                $"'{groupName}' on '{layoutKey}' has a documented placement ceiling -- " +
+                "if it ever starts placing, the relevant mechanism changed and this test (and its doc comment) should be revisited, not silently deleted");
+        }
+    }
 }

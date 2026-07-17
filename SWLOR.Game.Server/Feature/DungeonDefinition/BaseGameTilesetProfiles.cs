@@ -772,6 +772,106 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
         public const string CepCityInteriorElven = "cep_cityinterior_elven";
         public const string CepCityInteriorSigil = "cep_cityinterior_sigil";
 
+        // Medieval City 2 (tcm02, BIF-only -- verified no SWLOR_Haks copy exists; 1872 tiles / 204
+        // groups). GENERAL Border=Default=Floor="Cobble" (the ttd01/ttf01/ttf02/fcx01 degenerate quirk:
+        // Default==Floor forces an explicit composition decision rather than the ordinary interior
+        // Default-is-the-wall default). Seven terrains (Cobble, Building, Water, Trees, Grass, Chasm,
+        // Castle); five crossers (Road, Stream, Wall, Bridge, Rock). Direct 16-combo probes (ProbeTool
+        // "matrix tcm02", every ordered terrain pair, both orientations, plus same-terrain open-field)
+        // decided the composition: Solid=Water/Open=Cobble reaches 16/16 (both directions), and
+        // TunnelVocabularyCheck.SupportsTunnels(open=Cobble, solid=Water, Custom body=port=Bridge)
+        // verifies TRUE -- the same "canal city" shape as tcn01's own City Exterior* (Water the genuine
+        // solid mass, Cobble the walkable street/district space, Bridge the wall-embedded tunnel
+        // crosser), so this profile mirrors that precedent rather than trs02's open-field shape for its
+        // base composition. TunnelCrossers("Bridge","Bridge") is wired accordingly.
+        //
+        // "Building" fails EVERY terrain pairing in the 16-combo matrix (2/16 or 8/16 against every
+        // other terrain, never 16/16 either direction) -- it cannot function as this tileset's Solid,
+        // Open, or Secondary terrain under any composition, the identical structural dead-end tcn01's
+        // own Building/EvilCastle/GoodCastle bucket documents. It is composed only as an ordinary
+        // decorative facade corner on house/shop/estate GROUPs (Estate1-4/Shop-family/Guildhouse2x2/
+        // SmallSquare/BridgePark/BuildCorn2x1/Townhall/CraneTower(Ship)/ArchHouse1-2/Lighthouse2x3/
+        // RiverBridge1-2's building-mixed variant/etc.) -- see PilotAlternateVocabTerrains["tcm02"].
+        // Many of these SAME group names still classify via IsFeatureTileEligible/IsExitGroupEligible
+        // regardless (both mechanisms are structurally terrain-agnostic -- see WitcherShop/BuildingSite/
+        // Shop1-3/Bakery/Museum/PatriciansHouse/Smithy/StairHouse/CornerShop1-2/CornerPub/BurntHouse1-2/
+        // BuildingBad1/CornerBTower1/CornerBTower2a/InnerCornerEmpty1-2/OuterCornerEmpty1-3/
+        // StraightEmpty1-2/DoubleCornerEmpty1 below), so only the genuinely MULTI-TILE building-cornered
+        // groups fall through to the alternate-vocab bucket.
+        //
+        // "Wall" (Battlement*/CornerTower*/Drawbridge*/RiverWall1/Stable/CliffWallCave -- a
+        // door-bearing crosser family) has no verified body/port/road vocabulary, and -- unlike
+        // Barrows' "door_corridor" -- declaring it as a DoorSlotCrosser would not help: every carrier is
+        // a 1x1 group, and IsDoorwayEdge admission on a non-Solid-cornered 1x1 group hits
+        // ClassifyMultiTileSetPiece's "mixed shape tolerated only when every doorway edge is interior,
+        // never perimeter" rule head-on (a 1x1 group's own edge is always perimeter by construction) --
+        // verified directly, declaring it only trades one rejection branch for another. "Stream"/"Road"/
+        // "Rock" carry no wired body/port/road-lane vocabulary this pass either (their few flat,
+        // crosser-bearing GROUP carriers -- streamWillow/Bridge1/Bridge2/RuinedCart/CliffBridge1-2/
+        // CliffWillow -- fail the same structural gate). All four are folded into
+        // PilotAlternateVocabCrossers["tcm02"], alongside "path" (a fifth, rare crosser found on exactly
+        // one group member, CliffPath1's single member tile, not in the tileset's own 5-crosser summary
+        // at all -- the same rare-crosser quirk trs02's own "path" entry documents).
+        //
+        // Lighting sampled directly from the one hand-built tcm02 area (Module/are/dan_centcolony.
+        // are.json, 160 tiles): uniform MainLight1=0/MainLight2=0/SrcLight1=0/SrcLight2=0, matching
+        // every other exterior profile's daylight convention. That area's placeable inventory reads as
+        // a Dantooine colony reskin of this tileset (modern fences/furniture/kiosks/tents, not generic
+        // medieval dressing) -- the curated decoration palette below is drawn from its genuinely
+        // decorative entries (excluding collision blockers and invisible marker objects) rather than
+        // invented wholesale, the same "thin, reskinned evidence" caveat tcn01's own garrison-skewed
+        // palette documents.
+        //
+        // THEME PAIRING: no theme/content registration happens here, matching every profile in this
+        // file. Natural future pairing: a walled trading-town or river-port settlement world (matching
+        // the Water-canal/Bridge composition and CastleTowerGate/PrisonTower/CastleHugeGate garrison
+        // vocabulary below).
+        public const string MedievalCity = "medievalcity";
+
+        // Medieval City 2's Chasm/cliff sub-family -- CliffPath1-2/CliffCaveEntry/CliffBottomCave1-2/
+        // CliffTopCave1/ChasmPond/ChasmBridgeWB1-5/CliffRockFormation/HillCave1 all pair Chasm with
+        // Grass (never Cobble), a physically SEPARATE composition from the base profile's Water/Cobble
+        // canal-city shape (a composition carries only one Solid/Open pair) -- recomposing the SAME
+        // tcm02 data with SolidTerrainOverride("Chasm") + PrimaryOpenTerrain("Grass") the same way
+        // RuralGrassEvilCastle/FrozenWastesEvilCastle recompose their own base tileset's data with a
+        // different Solid/Open pair, hence PaletteVariant(). Direct 16-combo probe confirms Chasm/Grass
+        // reaches 16/16 both directions; MinimumOpeningWidth is 2 here (verified via ProbeTool "width"),
+        // unlike the base profile's 1. TunnelVocabularyCheck.SupportsTunnels(open=Grass, solid=Chasm,
+        // Custom body=port=Bridge) verifies TRUE -- the SAME "Bridge" crosser name the base profile uses
+        // against Water, independently reverified against Chasm here (a composition-local re-check, not
+        // assumed from the base profile's own verification) -- wired as this variant's own
+        // TunnelCrossers pair, closing the ChasmBridgeWB1-5 family as SetPieceCorridorStub (all-Chasm
+        // corners, a single Bridge edge each). CliffPath2/CliffCaveEntry (Chasm+Grass mixed corners, no
+        // crosser) classify as SetPieceOpenSetPiece under this pair directly; CliffRockFormation
+        // (all-Chasm, no door/crosser) also classifies as SetPieceOpenSetPiece since an all-Solid
+        // multi-tile blob still satisfies the "every corner in {Solid, Open}" rule trivially.
+        // CliffBottomCave1-2/CliffTopCave1 (Chasm+Grass, 1x1, door-bearing, crosser-free) and HillCave1
+        // (Grass, non-flat, crosser-free -- a SetPieceReliefPiece against this variant's own
+        // PrimaryOpenTerrain) close via the SAME vocab-independent/Open-dependent mechanisms the base
+        // profile's own castle-door family below already relies on. CliffPath1 (Chasm/Grass +
+        // its own rare "path" crosser) and CliffWillow/CliffBridge1-2 (Chasm + "Stream") stay unwired
+        // this pass -- see PilotAlternateVocabCrossers["tcm02"]. CliffPond (Chasm+Cobble) and
+        // Grass_boat_docked/DockedShip1x4_Grass (Water+Grass) mix a terrain pair neither this variant
+        // nor the base profile composes; see this class's own PilotExpectedExemptions-equivalent
+        // writeup in TileCoverageCensusTests for the exact accounting.
+        public const string MedievalCityCliffs = "medievalcity_cliffs";
+
+        // Medieval City 2's Castle garrison sub-family -- CastleSmallDoor/CastleHugeGate/
+        // CastleTowerGate1-2/PrisonTower (all Castle+Cobble corners) classify as ExitGroups on the base
+        // profile too (IsExitGroupEligible is terrain-agnostic), but measure a documented 0% real
+        // placement ceiling there: GroupExitPlanner needs the group's own corner pattern to match a
+        // REAL site in the generated grid, and Castle terrain never gets painted anywhere under the
+        // base profile's Water/Cobble composition (verified directly, ProbeTool "place" 150 seeds each,
+        // Halls -- 0/150 for all five). Recomposing the SAME tcm02 data with
+        // SolidTerrainOverride("Castle") (Castle/Cobble reaches 16/16, MinimumOpeningWidth 2) makes
+        // Castle a genuine wall material, the identical fix ForestGoodCastle/RuralGrassGoodCastle's own
+        // doc comments document for their own Castle-door families -- all five now place at a real,
+        // measured rate. CastleSmallDoor2/CastleHugeGateGrass (Castle+GRASS corners) are NOT moved here:
+        // a profile carries only one PrimaryOpenTerrain, already claimed by Cobble for the five
+        // Castle+Cobble groups above, so those two stay on the base profile with their own documented
+        // 0% ceiling.
+        public const string MedievalCityCastle = "medievalcity_castle";
+
         private readonly DungeonTilesetProfileBuilder _builder = new();
 
         public Dictionary<string, DungeonTilesetProfile> BuildTilesetProfiles()
@@ -6413,6 +6513,163 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .ExitGroup("InnerCornerCave1")
                 .ExitGroup("InnerCornerCave3")
                 .ExitGroup("SeaCave1");
+
+            // Medieval City 2 (tcm02) -- see this file's own MedievalCity const doc comment above for
+            // the full composition writeup (Solid=Water/Open=Cobble canal city, Bridge tunnel crosser,
+            // Building/Wall/Stream/Road/Rock/path exemption accounting).
+            _builder.Create(MedievalCity, "Medieval City 2")
+                .Tileset("tcm02")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .SolidTerrainOverride("Water")
+                .TunnelCrossers("Bridge", "Bridge")
+                .FeatureTile("Cobbles_Grasspatch")
+                .FeatureTile("Cobbles_Puddle")
+                .FeatureTile("Cobbles_Rock")
+                .FeatureTile("Cobbles_uneven")
+                .FeatureTile("Cobbles_missing")
+                .FeatureTile("Fountain1")
+                .FeatureTile("Fountain2")
+                .FeatureTile("Tree1")
+                .FeatureTile("Tree2")
+                .FeatureTile("Destroyed01")
+                .FeatureTile("Destroyed02")
+                .FeatureTile("SewerEntrance01")
+                .FeatureTile("Boat1")
+                .FeatureTile("Boat2")
+                .FeatureTile("InnerCornerEmpty1")
+                .FeatureTile("InnerCornerEmpty2")
+                .FeatureTile("OuterCornerEmpty1")
+                .FeatureTile("OuterCornerEmpty2")
+                .FeatureTile("OuterCornerEmpty3")
+                .FeatureTile("StraightEmpty1")
+                .FeatureTile("StraightEmpty2")
+                .FeatureTile("DoubleCornerEmpty1")
+                .ExitGroup("House1_1x1")
+                .ExitGroup("House2_1x1")
+                .ExitGroup("House3_1x1")
+                .ExitGroup("House4_1x1")
+                .ExitGroup("House5_1x1")
+                .ExitGroup("House8")
+                .ExitGroup("House9")
+                .ExitGroup("House10")
+                .ExitGroup("Watertower")
+                .ExitGroup("BuildingBad1")
+                .ExitGroup("Lighthouse")
+                .ExitGroup("CastleSmallDoor2")
+                .ExitGroup("CastleHugeGateGrass")
+                .ExitGroup("CliffBottomCave1")
+                .ExitGroup("CliffBottomCave2")
+                .ExitGroup("CliffTopCave1")
+                .ExitGroup("SewerEntrance03")
+                .ExitGroup("SewerEntrance04")
+                .ExitGroup("Shop1")
+                .ExitGroup("Shop2")
+                .ExitGroup("Bakery")
+                .ExitGroup("Museum")
+                .ExitGroup("PatriciansHouse")
+                .ExitGroup("Smithy")
+                .ExitGroup("StairHouse")
+                .ExitGroup("CornerShop1")
+                .ExitGroup("CornerShop2")
+                .ExitGroup("CornerPub")
+                .ExitGroup("BurntHouse1")
+                .ExitGroup("BurntHouse2")
+                .ExitGroup("CornerBTower1")
+                .ExitGroup("CornerBTower2a")
+                .SetPiece("House1_2x2")
+                .SetPiece("House1_1x2")
+                .SetPiece("Inn_2x3")
+                .SetPiece("Inn2_2x3")
+                .SetPiece("Temple1_2x2")
+                .SetPiece("Plaza1")
+                .SetPiece("Arena", 1)
+                .SetPiece("Dolphins")
+                .SetPiece("CityWatch")
+                .SetPiece("House2x1")
+                .SetPiece("Destroyed03")
+                .SetPiece("ParkL2x2")
+                .SetPiece("Docks_City")
+                .SetPiece("DockedShip_City", 1)
+                .SetPiece("City_boat_docked")
+                .SetPiece("Ship_3x1_Docked", 1)
+                .SetPiece("Docks_Crane")
+                .SetPiece("Jetty")
+                .SetPiece("CityBoat2")
+                .SetPiece("SewerEntrance02")
+                .SetPiece("Temple3x3", 1)
+                .SetPiece("ShipNotSailing1", 1)
+                .SetPiece("ShipNotSailing2", 1)
+                .SetPiece("Ship_floating_1", 1)
+                .SetPiece("Ship_floating_2", 1)
+                .Decoration("_mdrn_pl_wdfence", 3, DecorationContext.WallAdjacent)
+                .Decoration("swd_floorm01", 2, DecorationContext.CourtyardCenter)
+                .Decoration("zep_bamboo001", 2, DecorationContext.CorridorSide)
+                .Decoration("zep_shrub041", 2, DecorationContext.WallAdjacent)
+                .Decoration("zep_shrub036", 1, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_strtlm4", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_flowpp1", 1, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_buildg7", 1, DecorationContext.StructureAdjacent)
+                .Decoration("_mdrn_pl_df_kios", 1, DecorationContext.StructureAdjacent)
+                .Decoration("frn_bench_swlr02", 1, DecorationContext.Courtyard)
+                .Decoration("zep_log001", 1, DecorationContext.CorridorSide);
+
+            // Medieval City 2's Chasm/cliff sub-family -- see this file's own MedievalCityCliffs const
+            // doc comment above for the full writeup (SolidTerrainOverride("Chasm") +
+            // PrimaryOpenTerrain("Grass"), MinimumOpeningWidth(2), TunnelCrossers("Bridge","Bridge")
+            // independently reverified against Chasm).
+            _builder.Create(MedievalCityCliffs, "Medieval City 2 (Cliffs)")
+                .Tileset("tcm02")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("Chasm")
+                .PrimaryOpenTerrain("Grass")
+                .MinimumOpeningWidth(2)
+                .TunnelCrossers("Bridge", "Bridge")
+                // HillCave1 (a raised, ReliefPiece-classified 1x1 group) measured 0/150 under BOTH
+                // Halls and Complex with MaxReliefRegions left at the default 0: DungeonComposition.
+                // BuildLayoutParameters clamps every ReliefRegions request down to this cap, so
+                // LayoutReliefPainter never actually paints the specific corner/height field the piece
+                // needs regardless of layout style. MaxReliefRegions(2) lets the composition request
+                // real relief painting, closing the gap -- see
+                // MedievalCityCliffsHillCave_PlacesOnceReliefIsRequested.
+                .MaxReliefRegions(2)
+                .FeatureTile("ChasmPond")
+                // Also wired on the base profile (where they measure a documented 0% ceiling --
+                // Chasm/Grass corners never paint under Water/Cobble); HERE the Chasm/Grass pair is
+                // this variant's own Solid/Open boundary, so GroupExitPlanner finds real sites -- see
+                // MedievalCityCliffsCaveDoorGroups_PlaceAsGroupExits.
+                .ExitGroup("CliffBottomCave1")
+                .ExitGroup("CliffBottomCave2")
+                .ExitGroup("CliffTopCave1")
+                .SetPiece("CliffPath2", 1)
+                .SetPiece("CliffCaveEntry", 1)
+                .SetPiece("CliffRockFormation", 1)
+                .SetPiece("HillCave1", 1)
+                .SetPiece("ChasmBridgeWB1", 1)
+                .SetPiece("ChasmBridgeWB2", 1)
+                .SetPiece("ChasmBridgeWB3", 1)
+                .SetPiece("ChasmBridgeWB4", 1)
+                .SetPiece("ChasmBridgeWB5", 1);
+
+            // Medieval City 2's Castle garrison sub-family -- see this file's own MedievalCityCastle
+            // const doc comment above for the full writeup (SolidTerrainOverride("Castle"),
+            // MinimumOpeningWidth(2), moving CastleSmallDoor/CastleHugeGate/CastleTowerGate1-2/
+            // PrisonTower off the base profile's documented-0%-ceiling ExitGroups onto a composition
+            // where Castle is a real wall material).
+            _builder.Create(MedievalCityCastle, "Medieval City 2 (Castle)")
+                .Tileset("tcm02")
+                .Placeholder("gen_placeholder1")
+                .TileLighting(0, 0, 0, 0)
+                .PaletteVariant()
+                .SolidTerrainOverride("Castle")
+                .MinimumOpeningWidth(2)
+                .ExitGroup("CastleSmallDoor")
+                .ExitGroup("CastleHugeGate")
+                .ExitGroup("CastleTowerGate1")
+                .ExitGroup("CastleTowerGate2")
+                .ExitGroup("PrisonTower");
 
             return _builder.Build();
         }

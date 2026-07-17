@@ -257,6 +257,20 @@ public class TunnelVocabularyCheckTests
         // (base + Mountain inversion). See BaseGameTilesetProfiles.EarlyWinter's own doc comment.
         BaseGameTilesetProfiles.EarlyWinter,
         BaseGameTilesetProfiles.EarlyWinterMountain,
+        // Medieval City 2* (tcm02): declares NO canonical "Corridor"/"Doorway" crosser at all (its five
+        // crossers are Road/Stream/Wall/Bridge/Rock) -- the same shape as tcn01's own exterior wave.
+        // Complex downgrades to OpenLane under the canonical probe this test runs regardless of which
+        // terrain each profile composes as Solid; each profile's own TunnelCrossers("Bridge","Bridge")
+        // declaration is what gives it REAL Custom-mode Tunnel support instead (verified via
+        // MedievalCity_SupportsCustomTunnels_BridgeBridge/MedievalCityCliffs_SupportsCustomTunnels_BridgeBridge
+        // below), which this canonical-only check doesn't exercise. See
+        // BaseGameTilesetProfiles.MedievalCity's own doc comment.
+        BaseGameTilesetProfiles.MedievalCity,
+        BaseGameTilesetProfiles.MedievalCityCliffs,
+        // Medieval City 2's Castle garrison sub-family: no TunnelCrossers declared (ExitGroups only) --
+        // Complex downgrades to OpenLane, the same "no body/port vocabulary wired" shape as every other
+        // ExitGroup-only PaletteVariant in this file. See BaseGameTilesetProfiles.MedievalCityCastle.
+        BaseGameTilesetProfiles.MedievalCityCastle,
     };
 
     [TestCaseSource(typeof(OnboardedTilesetPipelineTests), nameof(OnboardedTilesetPipelineTests.OnboardedTilesetKeys))]
@@ -335,6 +349,24 @@ public class TunnelVocabularyCheckTests
         TunnelVocabularyCheck.SupportsTunnels(
                 model, "DwarvenFloor", string.Empty, model.DefaultTerrain, CorridorCrosserType.Custom, "DwarvenCorridor", "DwarvenDoorway")
             .Should().BeFalse("tdc01's [Dwarven] district renames BOTH halves of the pair and has no resolvable DwarvenFloor|Wall boundary tile carrying a lone \"DwarvenDoorway\" edge -- a genuine gap, not merely an unwired name (matches ExpectedUnsupported above)");
+    }
+
+    [Test]
+    public void MedievalCity_SupportsCustomTunnels_BridgeBridge()
+    {
+        var model = LoadTileset("tcm02");
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, "Cobble", string.Empty, "Water", CorridorCrosserType.Custom, "Bridge", "Bridge")
+            .Should().BeTrue("tcm02's canal-city composition (Solid=Water/Open=Cobble) fully resolves the Bridge body/port pair, the same shape tcn01's own Dock crosser documents against its Water solid");
+    }
+
+    [Test]
+    public void MedievalCityCliffs_SupportsCustomTunnels_BridgeBridge()
+    {
+        var model = LoadTileset("tcm02");
+        TunnelVocabularyCheck.SupportsTunnels(
+                model, "Grass", string.Empty, "Chasm", CorridorCrosserType.Custom, "Bridge", "Bridge")
+            .Should().BeTrue("tcm02's Chasm/Grass cliff composition independently reverifies the SAME Bridge crosser name against a different Solid terrain, closing the ChasmBridgeWB1-5 family as SetPieceCorridorStub");
     }
 
     [Test]

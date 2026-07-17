@@ -220,6 +220,21 @@ public class OnboardedTilesetPipelineTests
         // BaseGameTilesetProfiles.EarlyWinter's own doc comment for the full composition writeup.
         BaseGameTilesetProfiles.EarlyWinter,
         BaseGameTilesetProfiles.EarlyWinterMountain,
+        // Wave-15: Beholder Interior* (tib01) -- base Lava profile (PrimaryOpenTerrain("Room"),
+        // DoorSlotCrossers("Door"), TunnelCrossers("Corridor", "Door"), Custom-mode Tunnel vocabulary
+        // verified TRUE) plus five same-shape PaletteVariant siblings recomposing the SAME hak data
+        // against RoomBlood/RoomMagic/RoomSewer/RoomUrine/RoomWater, each with its own color-specific
+        // corridor body crosser but the same universal "Door" port. Verified 0/15 failures across every
+        // (profile x Complex/Halls/Organic) pairing at this test's own size/seed range before being
+        // added here. See BaseGameTilesetProfiles.Beholder's own doc comment for the full composition
+        // writeup, including why Room-Pit/Room-Pillar (a disconnection-causing OpenSetPiece shape) are
+        // deliberately excluded from every profile's SetPieces.
+        BaseGameTilesetProfiles.Beholder,
+        BaseGameTilesetProfiles.BeholderBlood,
+        BaseGameTilesetProfiles.BeholderMagic,
+        BaseGameTilesetProfiles.BeholderSewer,
+        BaseGameTilesetProfiles.BeholderUrine,
+        BaseGameTilesetProfiles.BeholderWater,
     };
 
     // Every onboarded tileset lacks the Alley crosser vocabulary EXCEPT Ruins (tdr01, which has a
@@ -502,6 +517,15 @@ public class OnboardedTilesetPipelineTests
     [TestCase(BaseGameTilesetProfiles.MinesAndCavernsTracks, "Tracks")]
     [TestCase(BaseGameTilesetProfiles.MinesAndCavernsDesertTracks, "DesertTracks")]
     [TestCase(BaseGameTilesetProfiles.MinesAndCavernsOrganicTracks, "OrganicTracks")]
+    // Beholder Interior* (tib01): each of the six color profiles declares TunnelCrossers with its own
+    // color-specific corridor body crosser paired with the universal "Door" port -- see
+    // BaseGameTilesetProfiles.Beholder's own doc comment.
+    [TestCase(BaseGameTilesetProfiles.Beholder, "Corridor")]
+    [TestCase(BaseGameTilesetProfiles.BeholderBlood, "CorridorBlood")]
+    [TestCase(BaseGameTilesetProfiles.BeholderMagic, "CorridorMagic")]
+    [TestCase(BaseGameTilesetProfiles.BeholderSewer, "CorridorSewer")]
+    [TestCase(BaseGameTilesetProfiles.BeholderUrine, "CorridorUrine")]
+    [TestCase(BaseGameTilesetProfiles.BeholderWater, "CorridorWater")]
     public void CustomCrosserProfile_ComplexActuallyCarvesTheDeclaredBodyCrosser(string tilesetKey, string expectedBodyCrosser)
     {
         var tilesetProfile = TilesetProfiles[tilesetKey];

@@ -1211,6 +1211,12 @@ public class TileCoverageCensusTests
         // (verified directly, zero occurrences) -- included here defensively even though it can never
         // actually trigger.
         ["trs02"] = new(StringComparer.OrdinalIgnoreCase) { "Grass2", "Water", "Trees", "Dirt" },
+        // tib01 (Beholder Interior*): all 6 real room colors (Room/RoomBlood/RoomMagic/RoomSewer/
+        // RoomUrine/RoomWater) are wired as PrimaryOpenTerrain across the base Beholder profile and its
+        // 5 PaletteVariant siblings -- no unwired terrain remains. RoomIce/RoomBlack (TERRAIN7/8) never
+        // appear on ANY tile corner at all (verified directly, zero occurrences, pure OR blended) --
+        // genuinely vestigial declarations with nothing to exempt.
+        ["tib01"] = new(StringComparer.OrdinalIgnoreCase),
     };
 
     /// <summary>
@@ -1396,6 +1402,14 @@ public class TileCoverageCensusTests
         // identical Wall1/Wall2/Stream/Road gate-family precedent -- see
         // BaseGameTilesetProfiles.EarlyWinter's own doc comment.
         ["trs02"] = new(StringComparer.OrdinalIgnoreCase) { "Wall", "Ridge", "Stream", "Street", "path" },
+        // tib01 (Beholder Interior*): ChultDoorway/ChultCorridor form a genuinely UNUSED second
+        // junction family -- full internal 10-shape body/port vocabulary verified TRUE in isolation, but
+        // the open-room-to-Wall BOUNDARY junction carrying a ChultDoorway edge is FALSE for every one of
+        // the 6 real room colors (0/6, re-checked directly): a closed maze inside the solid Wall mass
+        // with no doorway into any playable room terrain, so it can never connect to a generated layout
+        // regardless of which palette composes it -- see BaseGameTilesetProfiles.Beholder's own doc
+        // comment (mirrors tdc01's own ChultDoorway/ChultCorridor exemption above, same shape).
+        ["tib01"] = new(StringComparer.OrdinalIgnoreCase) { "ChultDoorway", "ChultCorridor" },
     };
 
     private static bool UsesOnlyAlternateVocab(TilesetModel model, IEnumerable<TileRecord> members, string tilesetResref)
@@ -2156,6 +2170,7 @@ public class TileCoverageCensusTests
         "ttz01",
         "ttu01",
         "trs02",
+        "tib01",
     };
 
     [TestCaseSource(nameof(PilotTilesetKeys))]
@@ -2196,6 +2211,7 @@ public class TileCoverageCensusTests
             "ttz01" => BaseGameTilesetProfiles.Tropical,
             "ttu01" => BaseGameTilesetProfiles.Underdark,
             "trs02" => BaseGameTilesetProfiles.EarlyWinter,
+            "tib01" => BaseGameTilesetProfiles.Beholder,
             _ => throw new ArgumentOutOfRangeException(nameof(tilesetResref))
         };
         // A tile/group counts as reachable if ANY profile sharing this TilesetResref composes it --

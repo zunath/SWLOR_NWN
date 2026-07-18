@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class StimCanisterStatusEffect : StatusEffectBase
     {
         public override string Name => "Stim Canister";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.StimCanisterStatusEffect;
 
         public StimCanisterStatusEffect()
         {

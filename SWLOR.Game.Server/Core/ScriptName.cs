@@ -207,6 +207,7 @@ namespace SWLOR.Game.Server.Core
 
         // Craft events
         public const string OnCraftUsed = "craft_on_used";
+        public const string OnEspionageTrapUsed = "espn_trap_used";
         public const string OnCraftSuccess = "craft_success";
         public const string OnRefineryUsed = "refinery_used";
         public const string OnResearchTerminal = "research_term";

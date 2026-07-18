@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private const float AuraBuffDurationSeconds = 9.0f;
 
         public override string Name => "Warden Wall";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.WardenWallStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public override float Frequency => 6f;
 

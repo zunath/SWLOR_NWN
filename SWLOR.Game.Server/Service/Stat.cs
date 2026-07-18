@@ -1854,7 +1854,15 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(1, ApplyPercentAdjustment(defense, adjustment));
         }
 
-        private static int GetDefensePercentAdjustment(uint creature, CombatDamageType type)
+        /// <summary>
+        /// Retrieves the total percentage adjustment applied to a creature's defense for a damage type.
+        /// This combines the general defense adjustment with the type-specific adjustment, including
+        /// the shield-only bonus when a shield is equipped.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="type">The damage type.</param>
+        /// <returns>The percentage adjustment applied to defense.</returns>
+        public static int GetDefensePercentAdjustment(uint creature, CombatDamageType type)
         {
             return GetStatAdjustment(creature, StatType.DefensePercentAdjustment) + (type switch
             {
@@ -1894,8 +1902,9 @@ namespace SWLOR.Game.Server.Service
         {
             var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat];
             var perkAdjustment = Perk.GetStatBonus(creature, stat);
+            var mimicryTraitAdjustment = Mimicry.GetStatBonus(creature, stat);
 
-            return statusAdjustment + perkAdjustment;
+            return statusAdjustment + perkAdjustment + mimicryTraitAdjustment;
         }
 
         public static int ApplyHealingReceivedAdjustment(uint creature, int amount)

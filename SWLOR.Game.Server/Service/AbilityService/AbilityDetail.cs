@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -77,11 +78,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         /// <summary>
         /// When true this mimicked technique is a passive trait rather than an activated ability:
-        /// equipping it applies <see cref="MimicryTraitStatusEffect"/> for as long as it is slotted
-        /// (granting flat stats, a self-buff, or an on-hit proc chance) and it has no hotbar action.
+        /// while it is slotted its <see cref="MimicryTraitStats"/> and <see cref="MimicryTraitResistances"/>
+        /// are summed into the wielder's totals, and it has no hotbar action.
         /// </summary>
         public bool IsMimicryTrait { get; set; }
-        public Type MimicryTraitStatusEffect { get; set; }
+
+        /// <summary>
+        /// Flat stat adjustments contributed by this trait while it is equipped. Read directly by the
+        /// stat pipeline rather than applied as a status effect, so the bonus cannot drift out of sync
+        /// with the equipped loadout (status effects are cleared on death and would need re-granting).
+        /// </summary>
+        public Dictionary<StatType, int> MimicryTraitStats { get; set; }
+
+        /// <summary>
+        /// Resistance adjustments contributed by this trait while it is equipped.
+        /// </summary>
+        public Dictionary<ResistanceType, int> MimicryTraitResistances { get; set; }
 
         /// <summary>
         /// When true this mimicked technique is a self-toggle stance (via the toggle model) rather than
@@ -135,6 +147,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
             StatusEffectTypesRemovedOnPerkRefund = new List<Type>();
             MimicrySourceFeat = FeatType.Invalid;
             MimicryElement = CombatDamageType.Invalid;
+            MimicryTraitStats = new Dictionary<StatType, int>();
+            MimicryTraitResistances = new Dictionary<ResistanceType, int>();
         }
     }
 }

@@ -91512,6 +91512,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Espionage Workbench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "espionage_bench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fabrication Terminal"
                     },
                     "RESREF": {

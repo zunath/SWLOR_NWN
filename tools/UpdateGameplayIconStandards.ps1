@@ -585,8 +585,8 @@ function Get-EffectIconLabel([pscustomobject]$entry) {
 }
 
 function Get-AbilitySemanticCategory([string]$label) {
-    # Disruption Field is an instant area silence, not a placed object, so the "Field" name must not
-    # pull it into Deployable. Its player-facing intent is control (it blocks Force ability use).
+    # Disruption Field is an instant area silence, not a placed object, so the "Field" in its
+    # name must not pull it into Deployable. Its player-facing intent is control.
     if ($label -match "DisruptionField") {
         return "Control"
     }

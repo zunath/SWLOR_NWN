@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         private const int EnmityReductionPercent = 80;
         private const float StealthWindowSeconds = 30f;
         private const int PrimedBackAttackCriticalRate = 100;
+        private const int PrimedBackAttackExposedPercent = 20;
+        private const int PrimedBackAttackExposedDurationSeconds = 30;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -66,6 +68,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 activator,
                 StatType.BackAttackCriticalRatePercentAdjustment,
                 PrimedBackAttackCriticalRate,
+                StealthWindowSeconds,
+                PrimedCriticalModifierGroup);
+
+            // The primed back attack also inflicts Exposed; the combat damage stage consumes both
+            // halves of this primer on the landed hit.
+            TemporaryStatModifier.Replace(
+                activator,
+                StatType.BackAttackExposedPercent,
+                PrimedBackAttackExposedPercent,
+                StealthWindowSeconds,
+                PrimedCriticalModifierGroup);
+            TemporaryStatModifier.Replace(
+                activator,
+                StatType.BackAttackExposedDurationSeconds,
+                PrimedBackAttackExposedDurationSeconds,
                 StealthWindowSeconds,
                 PrimedCriticalModifierGroup);
 

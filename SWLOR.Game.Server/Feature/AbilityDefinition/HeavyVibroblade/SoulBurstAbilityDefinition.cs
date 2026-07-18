@@ -28,6 +28,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.SoulBurst, 60f)
+                .HasTargetingCone(
+                    Spell.SoulBurst1,
+                    5f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction(SoulBurst1ImpactAction)
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()

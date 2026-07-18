@@ -878,34 +878,56 @@ namespace SWLOR.Game.Server.Service
             // FoodBonus, DroidStat) does round-trip, so those still only merge same-subtype.
             var hasSubType = !string.IsNullOrWhiteSpace(Get2DAString("itempropdef", "SubTypeResRef", (int)type));
 
-            // Sum every existing match into the incoming amount and remove it. Item
-            // property handles from GetFirstItemProperty/GetNextItemProperty are only
-            // valid during that single walk - stashing them and calling RemoveItemProperty
-            // after the walk has ended is unreliable (the stale handle no-ops, so the
-            // "merged" total gets added alongside the untouched original, e.g. two
-            // Accuracy Bonus lines from two kits). Removing mid-walk is just as bad: it
-            // shifts the list and the cursor skips every other match. Re-walk from the
-            // top after each removal instead, so every handle acted on is fresh and each
-            // match is counted exactly once (removed matches can't be revisited).
-            bool removedMatch;
-            var removalGuard = 0;
-            do
+            var matchSubType = hasSubType ? subType : -1;
+
+            int CountMatches()
             {
-                removedMatch = false;
+                var count = 0;
                 for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
                 {
                     if (GetItemPropertyType(property) == type &&
                         (!hasSubType || GetItemPropertySubType(property) == subType))
                     {
-                        amount += GetItemPropertyCostTableValue(property);
-                        RemoveItemProperty(item, property);
-                        removedMatch = true;
-                        break;
+                        count++;
                     }
                 }
-                // A fresh handle should always remove; bound the loop anyway so a
-                // hypothetical failed removal can never spin forever.
-            } while (removedMatch && ++removalGuard < 64);
+
+                return count;
+            }
+
+            // Sum every existing match into the incoming amount. This is a read-only
+            // pass on purpose: the total is computed exactly once, so nothing below can
+            // inflate it by revisiting a property.
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == type &&
+                    (!hasSubType || GetItemPropertySubType(property) == subType))
+                {
+                    amount += GetItemPropertyCostTableValue(property);
+                }
+            }
+
+            // Now drop the originals so only the summed property remains. Removal goes
+            // through the engine's own type/subtype matcher rather than item property
+            // handles stashed from an earlier walk: those handles do not reliably
+            // resolve back to the property once the walk that produced them has ended,
+            // so the removal silently no-opped and the pre-merge value survived next to
+            // the merged total - the "+10" and "+5" duplicate accuracy lines seen when
+            // two enhancement kits of the same stat were socketed. The helper removes
+            // while iterating and therefore skips every other match, so repeat it; bail
+            // the moment a pass stops making progress, which keeps a removal that cannot
+            // take effect from looping and from ever re-counting a value.
+            var remainingMatches = CountMatches();
+            while (remainingMatches > 0)
+            {
+                BiowareXP2.IPRemoveMatchingItemProperties(item, type, DurationType.Invalid, matchSubType);
+
+                var afterRemoval = CountMatches();
+                if (afterRemoval >= remainingMatches)
+                    break;
+
+                remainingMatches = afterRemoval;
+            }
 
             var unpacked = ItemPropertyPlugin.UnpackIP(ip);
             unpacked.CostTableValue = amount;

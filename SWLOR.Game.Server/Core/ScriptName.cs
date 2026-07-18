@@ -207,6 +207,7 @@ namespace SWLOR.Game.Server.Core
 
         // Craft events
         public const string OnCraftUsed = "craft_on_used";
+        public const string OnEspionageTrapUsed = "espn_trap_used";
         public const string OnCraftSuccess = "craft_success";
         public const string OnRefineryUsed = "refinery_used";
         public const string OnResearchTerminal = "research_term";
@@ -311,9 +312,6 @@ namespace SWLOR.Game.Server.Core
 
         // Telegraph events
         public const string TelegraphEffect = "telegraph_effect";
-        public const string TelegraphApplied = "telegraph_applied";
-        public const string TelegraphTicked = "telegraph_ticked";
-        public const string TelegraphRemoved = "telegraph_removed";
 
         // Communication events
         public const string OnNWNXChat = "on_nwnx_chat";

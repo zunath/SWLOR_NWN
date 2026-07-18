@@ -2998,7 +2998,13 @@ namespace SWLOR.Game.Server.Service
             return ColorToken.Combat($"{defenderName}'s Critical Ward negates {attackerName}'s critical hit.");
         }
 
-        private static int GetGuardDamageReductionPercent(uint defender)
+        /// <summary>
+        /// Retrieves the percentage of damage a successful Guard removes from an incoming hit,
+        /// including stat adjustments and the effective minimum and maximum bounds.
+        /// </summary>
+        /// <param name="defender">The creature to check.</param>
+        /// <returns>The damage reduction percentage applied on a guarded hit.</returns>
+        public static int GetGuardDamageReductionPercent(uint defender)
         {
             var adjustment = Stat.GetStatAdjustment(defender, StatType.GuardDamageReductionPercentAdjustment);
             return Math.Clamp(

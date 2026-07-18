@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     BroadcastNearby(target, ColorToken.Green($"{GetName(target)}'s HP is now {current}/{max}."));
 
                     if (HpTrackerWindow.IsStaff(user))
-                        Log.Write(LogGroup.DM, $"HP tracker set: Actor={GetName(user)}, Target={GetName(target)}, Before={before.Current}/{before.Max}, After={current}/{max}");
+                        Log.Write(LogGroup.DM, $"HP tracker set: Actor={GetName(user)} ({GetPCPublicCDKey(user)}), Target={GetName(target)}, Before={before.Current}/{before.Max}, After={current}/{max}");
                 });
         }
 
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, ColorToken.Green($"HP tracker removed from {GetName(target)}."));
 
                     if (HpTrackerWindow.IsStaff(user))
-                        Log.Write(LogGroup.DM, $"HP tracker removed: Actor={GetName(user)}, Target={GetName(target)}, Before={removedCurrent}/{removedMax}");
+                        Log.Write(LogGroup.DM, $"HP tracker removed: Actor={GetName(user)} ({GetPCPublicCDKey(user)}), Target={GetName(target)}, Before={removedCurrent}/{removedMax}");
                 });
         }
 
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             BroadcastNearby(target, ColorToken.Green($"{GetName(target)}'s HP is now {current}/{max}."));
 
             if (HpTrackerWindow.IsStaff(user))
-                Log.Write(LogGroup.DM, $"HP tracker adjusted: Actor={GetName(user)}, Target={GetName(target)}, Delta={delta}, Before={beforeCurrent}/{beforeMax}, After={current}/{max}");
+                Log.Write(LogGroup.DM, $"HP tracker adjusted: Actor={GetName(user)} ({GetPCPublicCDKey(user)}), Target={GetName(target)}, Delta={delta}, Before={beforeCurrent}/{beforeMax}, After={current}/{max}");
         }
 
         /// <summary>

@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HpTrackerWindow.RefreshOpenWindows();
 
                 if (HpTrackerWindow.IsStaff(Player))
-                    Log.Write(LogGroup.DM, $"HP tracker set (window): Actor={GetName(Player)}, Target={GetName(creature)}, After={hp}/{hp}");
+                    Log.Write(LogGroup.DM, $"HP tracker set (window): Actor={GetName(Player)} ({GetPCPublicCDKey(Player)}), Target={GetName(creature)}, After={hp}/{hp}");
             });
         };
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HpTrackerWindow.RefreshOpenWindows();
 
             if (HpTrackerWindow.IsStaff(Player))
-                Log.Write(LogGroup.DM, $"HP tracker removed (window): Actor={GetName(Player)}, Target={GetName(creature)}, Before={before.Current}/{before.Max}");
+                Log.Write(LogGroup.DM, $"HP tracker removed (window): Actor={GetName(Player)} ({GetPCPublicCDKey(Player)}), Target={GetName(creature)}, Before={before.Current}/{before.Max}");
         };
 
         private void AdjustAtRow(int delta)
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (HpTrackerWindow.IsStaff(Player))
             {
                 var after = HPTracker.Has(creature) ? HPTracker.Get(creature) : (Current: 0, Max: 0);
-                Log.Write(LogGroup.DM, $"HP tracker adjusted (window): Actor={GetName(Player)}, Target={GetName(creature)}, Delta={delta}, Before={before.Current}/{before.Max}, After={after.Current}/{after.Max}");
+                Log.Write(LogGroup.DM, $"HP tracker adjusted (window): Actor={GetName(Player)} ({GetPCPublicCDKey(Player)}), Target={GetName(creature)}, Delta={delta}, Before={before.Current}/{before.Max}, After={after.Current}/{after.Max}");
             }
         }
 

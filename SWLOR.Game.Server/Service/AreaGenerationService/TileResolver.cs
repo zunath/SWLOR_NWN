@@ -82,6 +82,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // Cells that have already received a feature tile this resolve, tracked for the spacing
             // rule (no two features within Chebyshev distance 2 of each other).
             var placedFeatures = new List<(int X, int Y)>();
+            // The same cells mapped to their feature GROUP name, carried onto ResolvedLayout so
+            // downstream dressing can compose an ensemble on area-marking feature tiles (see
+            // ResolvedLayout.FeatureTileCells).
+            var placedFeatureCells = new Dictionary<(int X, int Y), string>();
 
             // Bottom-up, row-major order — matches ResolvedLayout.Tiles indexing (index = y * Width + x,
             // y = 0 at the south edge). This is also the "first unresolvable cell" order used for
@@ -209,6 +213,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                                 tileId = featurePick.TileId;
                                 orientation = featurePick.Orientation;
                                 placedFeatures.Add((x, y));
+                                placedFeatureCells[(x, y)] = featurePick.GroupName;
                             }
                         }
                         else
@@ -265,7 +270,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 Crossers = layout.Crossers,
                 StampedStructureTiles = layout.StampedOpenSetPieceFootprints
                     .SelectMany(f => f)
-                    .ToHashSet()
+                    .ToHashSet(),
+                FeatureTileCells = placedFeatureCells
             };
             failureReason = null;
             return true;
@@ -417,7 +423,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         private class FeatureCandidateSet
         {
-            public List<(int TileId, int Orientation, int Weight)> Candidates { get; } = new();
+            public List<(int TileId, int Orientation, int Weight, string GroupName)> Candidates { get; } = new();
             public int TotalWeight { get; set; }
         }
 
@@ -486,7 +492,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         lookup[key] = set;
                     }
 
-                    set.Candidates.Add((tile.TileId, orientation, weight));
+                    // Recorded under the CONFIGURED group name (the FeatureTiles key), so downstream
+                    // dressing lookups (FeatureTileDressings, keyed the same way) match trivially.
+                    set.Candidates.Add((tile.TileId, orientation, weight, groupName));
                     set.TotalWeight += weight;
                 }
             }
@@ -495,7 +503,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>Weighted roll over a feature candidate set's entries, consuming one random.Next call.</summary>
-        private static (int TileId, int Orientation) PickWeighted(FeatureCandidateSet set, System.Random random)
+        private static (int TileId, int Orientation, string GroupName) PickWeighted(FeatureCandidateSet set, System.Random random)
         {
             var roll = random.Next(set.TotalWeight);
             var cumulative = 0;
@@ -503,13 +511,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             {
                 cumulative += candidate.Weight;
                 if (roll < cumulative)
-                    return (candidate.TileId, candidate.Orientation);
+                    return (candidate.TileId, candidate.Orientation, candidate.GroupName);
             }
 
             // Unreachable given TotalWeight is the sum of all Weight values, but keeps the compiler
             // and any future refactor honest.
             var last = set.Candidates[^1];
-            return (last.TileId, last.Orientation);
+            return (last.TileId, last.Orientation, last.GroupName);
         }
 
         private static bool IsDoorway(string edge)

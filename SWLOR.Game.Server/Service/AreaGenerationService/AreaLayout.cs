@@ -795,6 +795,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public HashSet<(int X, int Y)> StampedStructureTiles { get; set; } = new();
 
+        /// <summary>
+        /// Every cell TileResolver's feature sprinkling actually replaced with a 1x1 feature group
+        /// tile, mapped to the configured feature group's NAME (see
+        /// DungeonTilesetProfile.FeatureTiles) -- the same carry-through convention as
+        /// <see cref="Crossers"/>/<see cref="StampedStructureTiles"/>. DungeonDecorationPlanner
+        /// reads this to dress area-marking feature tiles (a grass lawn patch, a fountain court)
+        /// with a composed ensemble instead of leaving a bare zone marker -- see
+        /// DungeonTilesetProfile.FeatureTileDressings. Empty for every composition without feature
+        /// tiles (and for height-aware layouts, where feature sprinkling is disabled).
+        /// </summary>
+        public Dictionary<(int X, int Y), string> FeatureTileCells { get; set; } = new();
+
         public ResolvedTile GetTile(int x, int y)
         {
             return Tiles[y * Width + x];

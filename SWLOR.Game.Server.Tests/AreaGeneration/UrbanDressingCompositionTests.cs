@@ -213,10 +213,13 @@ public class UrbanDressingCompositionTests
         var violations = new List<string>();
         var singlesChecked = 0;
 
-        // Interior contexts are intentional set pieces (courtyards/centerpieces), never scatter.
+        // Interior contexts are intentional set pieces (courtyards/centerpieces/ensembles/depot
+        // blocks), never scatter -- their composure is asserted by their own suites
+        // (CourtyardCompositionTests, InteriorEnsembleCompositionTests).
         var intentionalContexts = new[]
         {
-            DecorationContext.RoomCenter, DecorationContext.CourtyardCenter, DecorationContext.Courtyard
+            DecorationContext.RoomCenter, DecorationContext.CourtyardCenter, DecorationContext.Courtyard,
+            DecorationContext.EnsembleCenter, DecorationContext.EnsembleMember, DecorationContext.DepotRow
         };
 
         for (var i = 0; i < SeedCount; i++)
@@ -305,11 +308,12 @@ public class UrbanDressingCompositionTests
 
             // Wrecks/rubble anchor against walls, structure bases, and corners -- never
             // free-floating in plaza centers (pile zone discipline applies to this profile too).
-            // Courtyard decal toppings are the sanctioned interior exception: PlanCourtyard layers
-            // 1-2 items ON a decal centerpiece (emitted under ClutterPile) as part of the composed
-            // courtyard arrangement -- exclude anything within topping range of a CourtyardCenter.
+            // Composed interior arrangements are the sanctioned exceptions: PlanCourtyard layers
+            // 1-2 items ON a decal centerpiece (emitted under ClutterPile), and a committed
+            // mid-room ensemble stands its base decal directly under its own centerpiece+satellite
+            // court -- exclude anything within topping range of either center.
             var courtyardCenters = plan
-                .Where(p => p.Context == DecorationContext.CourtyardCenter)
+                .Where(p => p.Context is DecorationContext.CourtyardCenter or DecorationContext.EnsembleCenter)
                 .Select(p => new Vector2(p.Position.X, p.Position.Y))
                 .ToList();
 

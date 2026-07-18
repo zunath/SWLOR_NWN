@@ -4164,8 +4164,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .TileLighting(0, 0, 0, 0)
                 .FeatureTile("b_arbre")
                 .FeatureTile("b_arbre2")
-                .FeatureTile("b_herbe")
-                .FeatureTile("b_fountain")
+                // Zone-marking feature tiles obligate a composed ensemble (round 9 "a park with no
+                // park" fix -- see FeatureZoneDressing/DungeonDecorationPlanner.PlanZoneDressings):
+                // the flat grass lawn composes a PARK (tree/monument + facing bench ring); the
+                // fountain court composes its seating surround. Tree/water tiles fill their own
+                // cell and stay untouched.
+                .FeatureTile("b_herbe", dressing: FeatureZoneDressing.Lawn)
+                .FeatureTile("b_fountain", dressing: FeatureZoneDressing.Centerpiece)
                 .FeatureTile("b_water")
                 // Tower00 is the only fcx01 Cobble-district group that fits the rooms a size-20-24
                 // city area actually carves (2x2; the 3x3+ towers need corner-size-7 rooms, which
@@ -4266,8 +4271,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // Round 8 recalibration: 2.6 -> 3.3 -- district-scoped pools plus per-area caps
                 // shave realized pile density ~15%, and 3.0 restores the packed20 realized band
                 // (~1.25-1.35 per total tile) without touching any mechanism share.
+                // Round 9 recalibration: 3.3 -> 3.8 -- composed ensembles/depot blocks commit
+                // partially (satellite skips, segment margins), industrial pile damping trades
+                // loose singles for depot rows, and the pile mechanism runs at its saturation cap
+                // (so budget alone cannot restore it); measured packed20 realized 1.16 at 3.3 and
+                // ~1.24 at 3.6 with the urban cap/floor adjustments -- 3.8 keeps the realized band
+                // (1.2-1.35 per total tile) with margin.
                 // see DungeonTilesetProfile.DecorationDensityPerTile.
-                .DecorationDensity(3.3)
+                .DecorationDensity(3.8)
                 // Urban placement grammar (round 6, "it still feels like a scattering of different
                 // objects randomly placed"): hand-built fcx01 dressing is 73% cardinal-aligned
                 // (within 7.5 degrees of 0/90/180/270 -- measured across all 24 areas' 10477
@@ -4429,12 +4440,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("swd_grate01", 1, DecorationContext.WallAdjacent)
                     .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 1))
                 // Industrial floor hatchways (GroundDecal role: layered under yard piles, 100%
-                // cardinal in the mined reference -- flrhch4 59 placements).
-                .Decoration("_mdrn_pl_flrhch4", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                // cardinal in the mined reference -- flrhch4 59 placements). Size Small (1.6m
+                // models): these are the PILE-scale pads under the round-9 decal size-matching
+                // rule (see DungeonDecorationPlanner.PickUrbanDecal).
+                .Decoration("_mdrn_pl_flrhch4", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Industrial, 2))
-                .Decoration("_mdrn_pl_flrhch1", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("_mdrn_pl_flrhch1", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1))
-                .Decoration("_mdrn_pl_flrhch2", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("_mdrn_pl_flrhch2", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Industrial, 1))
                 // GROUND DECALS -- SIGNAGE/MARKINGS ONLY (round-6 destruction split): swd_floorm01
                 // (top structured floor piece, 360 mined placements at 100% cardinal), the hex/road
@@ -4444,11 +4457,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // center that receives clutter on top. The dirt-stain decals (_mdrn_pl_dirtyg*)
                 // moved to the "ruined" profile -- dirt is destruction dressing, not clean-city
                 // signage. flormh01 (metal hex) is the CIVIC floor signature (82 of its 92 mined
-                // placements sit in civic areas).
-                .Decoration("swd_floorm01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
-                .Decoration("swd_flormh01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                // placements sit in civic areas). Size Large (8.5-9.6m PLATES, measured from the
+                // decompiled models -- round-9 decal size discipline): a whole-tile plate may base
+                // a composed ensemble/courtyard with verified clearance, but never pads a 2m junk
+                // pile -- the reported "same square gray decal under every cluster" motif.
+                .Decoration("swd_floorm01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Large)
+                .Decoration("swd_flormh01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1))
-                .Decoration("swd_florrd01", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                .Decoration("swd_florrd01", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Large)
                 // StructureAdjacent (building-frontage) bucket -- the items hand-built fcx01 actually
                 // anchors against stamped tower/building footprints (Chebyshev<=1 building adjacency):
                 // _mdrn_pl_lamp4 52% building-adjacent AND 100% road-adjacent (all 89 mined
@@ -4574,15 +4590,30 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // benches/kiosks/holotrees around the lit floor strips, industrial yards ring
                 // containers/barriers around work-floor markings -- so a courtyard tells you which
                 // neighborhood you are standing in.
-                .Decoration("swd_floorm01", 3, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
-                .Decoration("swd_flormh01", 1, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
+                .Decoration("swd_floorm01", 3, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal, size: DecorationSize.Large)
+                .Decoration("swd_flormh01", 1, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Civic, 2))
-                .Decoration("_mdrn_pl_lghtflr", 2, DecorationContext.CourtyardCenter)
+                // The 10m floor light strips carry Size Large so the round-9 ensemble/park
+                // mechanisms never stand one as a CENTERPIECE (a standing item's slot); they remain
+                // courtyard centers exactly as before.
+                .Decoration("_mdrn_pl_lghtflr", 2, DecorationContext.CourtyardCenter, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Industrial, 1))
-                .Decoration("_mdrn_pl_floor27", 2, DecorationContext.CourtyardCenter)
+                .Decoration("_mdrn_pl_floor27", 2, DecorationContext.CourtyardCenter, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Commercial, 1))
                 .Decoration("swd_holog01", 1, DecorationContext.CourtyardCenter)
                     .Districts((DistrictFlavor.Civic, 1))
+                // Round-9 mid-room ensemble centerpieces (see DungeonDecorationPlanner.
+                // PlanInteriorEnsemble/PlanZoneDressings): the holotree "planter" tree centers park
+                // lawns and civic gardens (holot03 is the mined commercial/civic greenery -- 17
+                // commercial placements), the market kiosk and fruit stand center commercial plaza
+                // ISLANDS (the kiosk + seating + trash + sign moment; swd2_kiosk004 is also the
+                // mined "kiosk cluster" pattern).
+                .Decoration("swd_holot03", 2, DecorationContext.CourtyardCenter)
+                    .Districts((DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1))
+                .Decoration("swd2_kiosk004", 1, DecorationContext.CourtyardCenter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 2))
+                .Decoration("_mdrn_pl_marktfr", 1, DecorationContext.CourtyardCenter)
+                    .Districts((DistrictFlavor.Commercial, 1))
                 .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.Courtyard)
                 .Decoration("_mdrn_pl_conta36", 3, DecorationContext.Courtyard, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Industrial, 3), (DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1))
@@ -4703,8 +4734,8 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // corroded lamps and battered containers (ring members still face the center; the
                 // ring is a composed arrangement, not scatter).
                 .Decoration("_mdrn_pl_dirtyg1", 2, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
-                .Decoration("swd_floorm01", 2, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
-                .Decoration("_mdrn_pl_lghtflr", 1, DecorationContext.CourtyardCenter)
+                .Decoration("swd_floorm01", 2, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal, size: DecorationSize.Large)
+                .Decoration("_mdrn_pl_lghtflr", 1, DecorationContext.CourtyardCenter, size: DecorationSize.Large)
                 .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.Courtyard)
                 .Decoration("_mdrn_pl_conta36", 2, DecorationContext.Courtyard)
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.Courtyard)
@@ -4757,7 +4788,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // cornered TILE212-216 physical variants instead -- see FutCity's own RoadCrosser
                 // comment above.
                 .RoadCrosser("Routes")
-                .FeatureTile("d_herbe")
+                // d_herbe is the Plaza district's grass lawn -- same Lawn ensemble obligation as
+                // the base profile's b_herbe (see FeatureZoneDressing); d_eau is open water and
+                // stays untouched.
+                .FeatureTile("d_herbe", dressing: FeatureZoneDressing.Lawn)
                 .FeatureTile("d_eau")
                 // Tower04/d_build02 (2x2) are the Cobble2 district's only groups that fit size-20-24
                 // rooms -- same site-limited ceiling reasoning as FutCity's Tower00 budget above.

@@ -79,7 +79,30 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// tiles at shared bearing, in an <see cref="DistrictFlavor.Industrial"/>-flavor room. The
         /// ONLY mechanism that may place Huge art.
         /// </summary>
-        CargoYard = 9
+        CargoYard = 9,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): the central item of a
+        /// composed mid-room ensemble (see DungeonDecorationPlanner.PlanInteriorEnsemble /
+        /// PlanZoneDressings) -- a civic monument garden's monument, a commercial plaza island's
+        /// kiosk, a park lawn's tree. Always committed together with at least the ensemble's
+        /// minimum satellite count, never free-standing.
+        /// </summary>
+        EnsembleCenter = 10,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): a satellite member of a
+        /// composed mid-room ensemble (benches/planters/lamps facing the
+        /// <see cref="EnsembleCenter"/> item, or the facing surround of a dressed feature tile).
+        /// </summary>
+        EnsembleMember = 11,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): one crate/cargo unit of a
+        /// composed industrial DEPOT block (see DungeonDecorationPlanner.PlanDepotBlock) -- dense
+        /// butt-jointed rows at near-model-width pitch with a shared bearing, mixed crate heights,
+        /// and end-of-row satellite props. The hand-built shipyard/dock storage pattern
+        /// (crate-family nearest-neighbor median under 1m, 93% within 2.2m, colinear runs of 4-12,
+        /// cluster bearing dominant-share 0.81 -- _scratch_decor/mine_r9_interiors.py).
+        /// </summary>
+        DepotRow = 12
     }
 
     /// <summary>
@@ -194,6 +217,33 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>Civic plazas: pillars/colonnades, holo monuments, clean floors, courtyards.
         /// Prefers rooms with a real interior (courtyard anchor).</summary>
         Civic = 3
+    }
+
+    /// <summary>
+    /// How a 1x1 area-marking FEATURE TILE (see <see cref="DungeonTilesetProfile.FeatureTiles"/>)
+    /// obligates set dressing when it lands inside an open room under a tileset's urban placement
+    /// grammar -- the "empty zone decal" rule: a large area-marking tile IMPLIES content (a grass
+    /// patch implies a park; a fountain court implies seating), so placing one obligates a composed
+    /// ensemble instead of a bare marker (the reported "a park with no park" artifact -- a bare
+    /// green lawn tile standing in a civic plaza). Declared per feature group name via
+    /// DungeonTilesetProfileBuilder.FeatureTile; consumed by
+    /// DungeonDecorationPlanner.PlanZoneDressings. Feature tiles whose own art already fills the
+    /// cell (trees, water pools, treasure mounds, pillars) declare nothing and stay untouched.
+    /// </summary>
+    public enum FeatureZoneDressing
+    {
+        /// <summary>No dressing obligation (default; every pre-existing feature tile).</summary>
+        None = 0,
+        /// <summary>
+        /// A flat, empty area marker (grass lawn, bare court): obligates a FULL ensemble ON the
+        /// tile -- a centerpiece (tree/monument) plus a facing satellite ring (benches, lights).
+        /// </summary>
+        Lawn = 1,
+        /// <summary>
+        /// The tile's own art occupies the cell center (a fountain): obligates only a facing
+        /// satellite surround at the tile margin -- no centerpiece item.
+        /// </summary>
+        Centerpiece = 2
     }
 
     /// <summary>
@@ -483,6 +533,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// time and silently drops any that fail rather than trusting this list blindly.
         /// </summary>
         public Dictionary<string, int> FeatureTiles { get; set; } = new();
+
+        /// <summary>
+        /// Dressing obligation per feature group name (see <see cref="FeatureZoneDressing"/>): an
+        /// area-marking feature tile (grass lawn, fountain court) that lands inside an open room
+        /// must carry a composed ensemble rather than standing bare. Only consumed under the urban
+        /// placement grammar (<see cref="UrbanDressing"/>); feature groups absent from this map
+        /// (trees, water, treasure mounds -- art that already fills the cell) are never dressed.
+        /// </summary>
+        public Dictionary<string, FeatureZoneDressing> FeatureTileDressings { get; set; } =
+            new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Tileset "group" set pieces (wall-bounded rooms hanging off Tunnel corridors, or floor-level
@@ -1282,9 +1342,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// treasure mounds are commonly weighted 2). TileResolver re-verifies the named group's
         /// structural eligibility at resolve time rather than trusting this call blindly.
         /// </summary>
-        public DungeonTilesetProfileBuilder FeatureTile(string groupName, int weight = 1)
+        public DungeonTilesetProfileBuilder FeatureTile(string groupName, int weight = 1,
+            FeatureZoneDressing dressing = FeatureZoneDressing.None)
         {
             _active.FeatureTiles[groupName] = weight;
+            if (dressing != FeatureZoneDressing.None)
+                _active.FeatureTileDressings[groupName] = dressing;
             return this;
         }
 

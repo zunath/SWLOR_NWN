@@ -4,6 +4,8 @@
     {
         public virtual float MaximumScale => 1.15f;
         public virtual float MinimumScale => 0.85f;
+        public virtual float MaximumHeadScale => 1.15f;
+        public virtual float MinimumHeadScale => 0.85f;
         public abstract int[] MaleHeads { get; }
         public abstract int[] FemaleHeads { get; }
         public virtual int[] Torsos { get; } = { 1, 2};

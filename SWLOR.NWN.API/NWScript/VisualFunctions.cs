@@ -95,10 +95,16 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">Any valid Creature, Placeable, Item or Door</param>
         /// <param name="nTransform">One of OBJECT_VISUAL_TRANSFORM_* constants</param>
+        /// <param name="bCurrentLerp">If true, returns the current interpolated value; otherwise the final set value</param>
+        /// <param name="nScope">One of OBJECT_VISUAL_TRANSFORM_DATA_SCOPE_* constants, specific to the object type being transformed</param>
         /// <returns>The current (or default) value of the visual transform</returns>
-        public static float GetObjectVisualTransform(uint oObject, ObjectVisualTransform nTransform)
+        public static float GetObjectVisualTransform(
+            uint oObject,
+            ObjectVisualTransform nTransform,
+            bool bCurrentLerp = false,
+            ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base)
         {
-            return global::NWN.Core.NWScript.GetObjectVisualTransform(oObject, (int)nTransform);
+            return global::NWN.Core.NWScript.GetObjectVisualTransform(oObject, (int)nTransform, bCurrentLerp ? 1 : 0, (int)nScope);
         }
 
         /// <summary>

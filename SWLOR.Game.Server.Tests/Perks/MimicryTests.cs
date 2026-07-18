@@ -211,12 +211,42 @@ public class MimicryTests
             .Should().Throw<ArgumentException>("an Invalid resistance is not a real resistance");
 
         // Both helpers require MimicryTrait first, so a plain technique cannot accrue trait stats.
-        new AbilityBuilder()
+        static AbilityBuilder PlainTechnique() => new AbilityBuilder()
             .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
             .Name("Contract Test")
-            .MimicryTechnique(FeatType.ToxicSpit, 1, 1)
-            .Invoking(b => b.MimicryTraitStat(StatType.AccuracyPercentAdjustment, 4))
+            .MimicryTechnique(FeatType.ToxicSpit, 1, 1);
+
+        PlainTechnique().Invoking(b => b.MimicryTraitStat(StatType.AccuracyPercentAdjustment, 4))
             .Should().Throw<ArgumentException>("only traits declare trait stats");
+        PlainTechnique().Invoking(b => b.MimicryTraitResistance(ResistanceType.Fire, 20))
+            .Should().Throw<ArgumentException>("only traits declare trait resistances");
+    }
+
+    // The declaration tests above prove traits carry data, but not that the data is ever read. The
+    // stat and resistance pipelines are where a trait actually becomes a bonus, and deleting either
+    // hook would silently zero every trait while leaving all the declaration tests green. A true
+    // runtime assertion is not possible here -- Mimicry.GetStatBonus calls GetIsPC and DB.Get, and
+    // this suite has no engine or database -- so the integration points are pinned at the source
+    // level, matching how CombatDamageTests guards its own wiring.
+    [Test]
+    public void MimicryTraitBonuses_AreWiredIntoTheStatAndResistancePipelines()
+    {
+        var root = FindRepositoryRoot();
+        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Resistance.cs"));
+        var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Mimicry.cs"));
+
+        statSource.Should().Contain("Mimicry.GetStatBonus(creature, stat)",
+            "equipped trait stats reach the player only through the stat pipeline");
+        resistanceSource.Should().Contain("Mimicry.GetResistanceBonus(creature, type)",
+            "equipped trait resistances reach the player only through the resistance pipeline");
+
+        // Traits are deliberately not status effects: nothing should grant or revoke them, and the
+        // resonance set bonus is derived on read rather than re-applied on loadout change.
+        mimicrySource.Should().NotContain("TechniqueResonanceStatusEffect",
+            "the elemental-resonance set bonus is derived from the loadout, not applied as an effect");
+        mimicrySource.Should().NotContain("MimicryTraitStatusEffect",
+            "traits contribute static stats and no longer apply a status effect");
     }
 
     // Active damage techniques must register their damage element so the elemental-resonance

@@ -1325,11 +1325,6 @@ namespace SWLOR.Game.Server.Service
             if (flashDuration <= 0f || lengthOrRadius <= 0f)
                 return;
 
-            if (shape != CombatImpactAreaShape.Sphere &&
-                shape != CombatImpactAreaShape.Cone &&
-                shape != CombatImpactAreaShape.Line)
-                return;
-
             var rotation = GetImpactRotationRadians(activator, target, targetLocation);
 
             switch (shape)

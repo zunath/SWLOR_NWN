@@ -53,9 +53,13 @@ public class TelegraphTests
     {
         // Guards the wiring itself: the zero-telegraph branch must still render something.
         var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
-        var instantBranch = source[source.IndexOf("if (telegraphDuration <= 0f)", StringComparison.Ordinal)..];
+        var branchStart = source.IndexOf("if (telegraphDuration <= 0f)", StringComparison.Ordinal);
 
-        instantBranch.IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
+        branchStart.Should().BeGreaterThan(
+            -1,
+            "the instant-cast branch must still be recognisable; update this test's anchor if it was reworded");
+
+        source[branchStart..].IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1, "the instant-cast path must flash the area it just struck");
     }
 

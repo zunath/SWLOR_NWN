@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Service
     /// An in-memory, temporary, *narrative* hit-point tracker. Tracked creatures (PCs or NPCs) appear in
     /// nearby players' "HP Tracker" NUI windows (opened with /hptracker). It never applies damage or heal
     /// effects and never touches a creature's real combat HP, and it is never persisted: trackers are
-    /// cleared on removal, on the tracked creature's destruction / a tracked player's logout, and on
-    /// server restart.
+    /// cleared on removal, on the tracked creature's death or destruction / a tracked player's logout, and
+    /// on server restart.
     ///
     /// This class is pure state + pure formatting helpers (so it is easy to unit test). Window refresh
     /// and object lifecycle are coordinated by <c>HpTrackerWindow</c>.
@@ -62,22 +62,34 @@ namespace SWLOR.Game.Server.Service
         public static List<uint> GetTrackedInArea(uint viewer)
         {
             var area = GetArea(viewer);
-            var result = new List<uint>();
+
+            // A viewer with no valid area (dead in Limbo, mid-transition) would otherwise match every tracked
+            // creature that is likewise arealess, exposing unrelated trackers. Show nothing until in an area.
+            if (!GetIsObjectValid(area))
+                return new List<uint>();
+
+            // Cache each name once up front: GetName crosses the C#/C++ interop boundary, and the comparator
+            // below would otherwise call it O(N log N) times on every heartbeat while the window is open.
+            var inArea = new List<(uint Id, string Name)>();
 
             foreach (var creature in _trackers.Keys)
             {
                 if (GetIsObjectValid(creature) && GetArea(creature) == area)
-                    result.Add(creature);
+                    inArea.Add((creature, GetName(creature)));
             }
 
             // Stable, deterministic order (name, then object id). Dictionary key order is not stable, and
             // the window rebuilds on every heartbeat — without this the rows would reorder on their own,
             // which flickers and, worse, makes a per-row button act on whoever slid into that row index.
-            result.Sort((a, b) =>
+            inArea.Sort((a, b) =>
             {
-                var byName = string.CompareOrdinal(GetName(a), GetName(b));
-                return byName != 0 ? byName : a.CompareTo(b);
+                var byName = string.CompareOrdinal(a.Name, b.Name);
+                return byName != 0 ? byName : a.Id.CompareTo(b.Id);
             });
+
+            var result = new List<uint>(inArea.Count);
+            foreach (var item in inArea)
+                result.Add(item.Id);
 
             return result;
         }

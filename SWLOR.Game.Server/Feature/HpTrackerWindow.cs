@@ -40,6 +40,17 @@ namespace SWLOR.Game.Server.Feature
             RefreshOpenWindows();
         }
 
+        /// <summary>
+        /// A dead creature drops its tracker at the moment of death. A corpse can linger valid-but-dead for
+        /// a long time before OnObjectDestroyed fires, so death is the right trigger to stop tracking it.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
+        public static void RemoveTrackerOnDeath()
+        {
+            if (HPTracker.Remove(OBJECT_SELF))
+                RefreshOpenWindows();
+        }
+
         /// <summary>A destroyed creature drops its tracker (its object id can be reused).</summary>
         [NWNEventHandler(ScriptName.OnObjectDestroyed)]
         public static void RemoveTrackerOnDestroyed()

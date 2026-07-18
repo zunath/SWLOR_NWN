@@ -61,7 +61,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 cell.SetIsVariable(false);
                                 cell.SetWidth(6f);
-                                cell.AddLabel().SetText("");
+                                cell.AddLabel()
+                                    .SetText("");
                             });
                             // Name — variable-width label fills the row (proven Bank pattern) so it shows
                             // the full name and stretches the window's inner width.

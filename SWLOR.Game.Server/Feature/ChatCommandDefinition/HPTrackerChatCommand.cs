@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
@@ -104,9 +105,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         max = current;
                     }
 
+                    var before = HPTracker.Has(target) ? HPTracker.Get(target) : (Current: 0, Max: 0);
                     HPTracker.Set(target, current, max);
                     HpTrackerWindow.RefreshOpenWindows();
                     BroadcastNearby(target, ColorToken.Green($"{GetName(target)}'s HP is now {current}/{max}."));
+
+                    if (HpTrackerWindow.IsStaff(user))
+                        Log.Write(LogGroup.DM, $"HP tracker set: Actor={GetName(user)}, Target={GetName(target)}, Before={before.Current}/{before.Max}, After={current}/{max}");
                 });
         }
 
@@ -146,9 +151,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    var (removedCurrent, removedMax) = HPTracker.Get(target);
                     HPTracker.Remove(target);
                     HpTrackerWindow.RefreshOpenWindows();
                     SendMessageToPC(user, ColorToken.Green($"HP tracker removed from {GetName(target)}."));
+
+                    if (HpTrackerWindow.IsStaff(user))
+                        Log.Write(LogGroup.DM, $"HP tracker removed: Actor={GetName(user)}, Target={GetName(target)}, Before={removedCurrent}/{removedMax}");
                 });
         }
 
@@ -182,10 +191,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 return;
             }
 
+            var (beforeCurrent, beforeMax) = HPTracker.Get(target);
             HPTracker.Adjust(target, delta);
             HpTrackerWindow.RefreshOpenWindows();
             var (current, max) = HPTracker.Get(target);
             BroadcastNearby(target, ColorToken.Green($"{GetName(target)}'s HP is now {current}/{max}."));
+
+            if (HpTrackerWindow.IsStaff(user))
+                Log.Write(LogGroup.DM, $"HP tracker adjusted: Actor={GetName(user)}, Target={GetName(target)}, Delta={delta}, Before={beforeCurrent}/{beforeMax}, After={current}/{max}");
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SustainBurnStatusEffect : StatusEffectBase
     {
         public override string Name => "Sustain Burn";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.SustainBurnStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
         public override IStatusEffect Clone()

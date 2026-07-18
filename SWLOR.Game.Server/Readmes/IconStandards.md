@@ -35,6 +35,14 @@ Status effects use the same semantic frame location, but their color assignment 
 - Neutral or system status effects may use Utility only when they are neither beneficial nor detrimental.
 - A paired self buff and enemy debuff may share a motif, but they must differ by both semantic color and a visible shape/sigil.
 
+## Every Applied Status Effect Carries an Icon
+
+If an effect is applied to a creature, it **must** declare a real `EffectIconType` — never `EffectIconType.Invalid`. The apply path in `StatusEffect.BuildNativeStatusEffect` only links an `EffectIcon` when the icon is not `Invalid`, and there is no fallback: an `Invalid` icon means the effect changes the player's stats with nothing shown on the status bar. `Invalid` also collapses icon-keyed lookups (`GetStatusEffectsFromIcon`), so dispel/cleanse/query logic cannot tell those effects apart.
+
+If an effect has nothing worth showing — because its magnitude never varies for as long as it is held, so there is no transient state to communicate — then it should not be a status effect at all. Model it as a static stat contribution read by the stat pipeline instead (as the Mimicry passive traits do via `MimicryTraitStat` / `MimicryTraitResistance`). Status effects are for state that starts, changes, or ends; static bonuses belong to whatever grants them.
+
+`tools/UpdateGameplayIconStandards.ps1` enforces this: status effect discovery does not skip `Invalid` declarations, so any new effect without an icon fails the audit until it has an `effecticons.2da` row, artwork, and a custom TLK entry.
+
 ## Force Alignment Marker
 
 Force power icons carry a **second, orthogonal axis** on top of the semantic frame: a small "gem" marker in the **top-left corner** that shows the power's Force alignment. The semantic frame still communicates effect role (Harmful, Beneficial, Control, …); the corner gem communicates the side of the Force. This lets a player read both facts at once, and complements the Perks window, which groups Force powers by discipline (Alter / Control / Sense).

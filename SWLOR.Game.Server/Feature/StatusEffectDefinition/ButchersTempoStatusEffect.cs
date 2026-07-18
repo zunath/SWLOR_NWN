@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _attackPercent;
 
         public override string Name => $"Butcher's Tempo (+{_attackPercent}% Attack)";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.ButchersTempoStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

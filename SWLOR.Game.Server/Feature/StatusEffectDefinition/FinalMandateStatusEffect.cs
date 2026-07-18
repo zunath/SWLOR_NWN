@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class FinalMandateStatusEffect : StatusEffectBase
     {
         public override string Name => "Final Mandate";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.FinalMandateStatusEffect;
 
         public FinalMandateStatusEffect()
         {

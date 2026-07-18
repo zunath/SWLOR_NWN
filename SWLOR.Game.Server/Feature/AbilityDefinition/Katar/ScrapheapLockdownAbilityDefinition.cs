@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                Spell.ScrapheapLockdown1,
                 AbilityTargetingShapeType.Sphere,
                 5.0f,
                 0.0f,

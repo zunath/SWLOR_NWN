@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                Spell.KillBox1,
                 AbilityTargetingShapeType.Sphere,
                 5.0f,
                 0.0f,

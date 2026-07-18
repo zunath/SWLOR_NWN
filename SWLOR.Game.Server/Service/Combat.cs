@@ -1540,10 +1540,32 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0 || !IsMatchingBackAttack(attacker, defender, skillType))
                 return damage;
 
+            ApplyBackAttackExposed(attacker, defender);
+
             var adjustment = Stat.GetStatAdjustment(attacker, StatType.BackAttackDamagePercentAdjustment);
             return adjustment == 0
                 ? damage
                 : Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+        }
+
+        // A primed back attack (Ghost Protocol) inflicts Exposed on the landed hit. Both halves of
+        // the primer are consumed together so the rider fires exactly once per priming.
+        private static void ApplyBackAttackExposed(uint attacker, uint defender)
+        {
+            var exposedPercent = Stat.GetStatAdjustment(attacker, StatType.BackAttackExposedPercent);
+            var exposedDuration = Stat.GetStatAdjustment(attacker, StatType.BackAttackExposedDurationSeconds);
+            if (exposedPercent <= 0 || exposedDuration <= 0)
+                return;
+
+            TemporaryStatModifier.Consume(attacker, StatType.BackAttackExposedPercent);
+            TemporaryStatModifier.Consume(attacker, StatType.BackAttackExposedDurationSeconds);
+
+            StatusEffect.ApplyStatusEffect(
+                attacker,
+                defender,
+                new ExposedStatusEffect(exposedPercent),
+                exposedDuration,
+                CombatDamageType.Physical);
         }
 
         public static int GetBackAttackCriticalRateAdjustment(uint attacker, uint defender, SkillType skillType)

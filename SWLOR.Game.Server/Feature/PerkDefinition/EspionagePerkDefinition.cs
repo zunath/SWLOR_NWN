@@ -263,11 +263,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 30)
                 .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.TrapPlacementSpeedPercent, 20)
 
                 .AddPerkLevel()
                 .Description("Can craft, place, detect, and disarm tier 4 traps. Trap placement is 30% faster.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.TrapPlacementSpeedPercent, 30)
                 .RequirementSkill(SkillType.Espionage, 45);
         }
 
@@ -343,6 +345,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 42)
                 .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.TrapDetectionRangeBonus, 5)
                 .IncreasesStat(StatType.AdditionalTrapCapacity, 2);
         }
 

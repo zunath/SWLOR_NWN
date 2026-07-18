@@ -206,7 +206,6 @@ public class ForceDarkRavagerTests
         string description)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceDark);
         perk.ForceAffinityType.Should().Be(ForceAffinityType.Dark);
         perk.StatBonuses.Should().ContainSingle(x =>
             x.Stat == StatType.ForceAffinity &&

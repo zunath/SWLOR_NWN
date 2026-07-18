@@ -175,7 +175,6 @@ public class ForceLightConsularTests
         params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceLight);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForcePush()
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForcePush)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.ForcePush)
                 .Name("Force Push")
 
                 .AddPerkLevel()
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ThrowLightsaber()
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ThrowLightsaber)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber")
 
                 .AddPerkLevel()
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceLeap()
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceLeap)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.ForceLeap)
                 .Name("Force Leap")
 
                 .AddPerkLevel()
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Precognition()
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.Precognition)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.Precognition)
                 .Name("Precognition")
 
                 .AddPerkLevel()
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceConvergence()
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceConvergence)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.ForceConvergence)
                 .Name("Force Convergence")
 
                 .AddPerkLevel()

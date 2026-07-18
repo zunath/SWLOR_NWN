@@ -578,11 +578,12 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("PlayerName.DeleteKnownNameReferences(identityKey)");
         disguiseSource.Should().Contain("DB.Delete<PlayerDisguise>(disguise.Id)");
         disguiseSource.Should().Contain("public const int ActivationDelayMinutes = 30;");
-        disguiseSource.Should().Contain("private static readonly TimeSpan ActivationDelay = TimeSpan.FromMinutes(ActivationDelayMinutes);");
+        disguiseSource.Should().Contain("public const int MinimumActivationDelayMinutes = 5;");
+        disguiseSource.Should().Contain("public static TimeSpan GetActivationDelay(uint player)");
         disguiseSource.Should().Contain("public static ActivateDisguiseResult Activate");
-        disguiseSource.Should().Contain("ValidateActivationDelay(playerId)");
+        disguiseSource.Should().Contain("ValidateActivationDelay(player, playerId)");
         disguiseSource.Should().Contain("GetLatestActivationDate(playerId)");
-        disguiseSource.Should().Contain("There is a {ActivationDelayMinutes}-minute delay between disguise activations.");
+        disguiseSource.Should().Contain("There is a {delayMinutes}-minute delay between disguise activations.");
         disguiseSource.Should().Contain("Deactivation is available immediately.");
         disguiseSource.Should().Contain("DateLastActivated = DateTime.UtcNow");
         disguiseSource.Should().Contain("public static int ResetActivationCooldowns(uint player)");

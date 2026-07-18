@@ -747,7 +747,9 @@ namespace SWLOR.Game.Server.Service.PerkService
         LastingCoatings = 798,
         MasterSaboteur = 799,
         Alertness = 800,
+        FalseIdentities = 801,
+        CoverStory = 802,
 
-        // IDs 650 and 801+ are free.
+        // IDs 650 and 803+ are free.
     }
 }

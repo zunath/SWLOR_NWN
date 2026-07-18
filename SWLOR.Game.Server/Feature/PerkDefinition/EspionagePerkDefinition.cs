@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             TacticalEscape();
             ShadowStep();
             SilentStride();
+            FalseIdentities();
+            CoverStory();
             GhostProtocol();
 
             Poisoncraft();
@@ -189,6 +191,55 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Espionage, 32)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.StealthStaminaDrainReductionPercent, 20);
+        }
+
+        private void FalseIdentities()
+        {
+            _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.FalseIdentities)
+                .Name("False Identities")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.FalseIdentitiesTrait)
+                .Description("Increases the number of disguises you may keep on file to 2.")
+                .Price(2)
+                .RequirementSkill(SkillType.Espionage, 10)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.AdditionalDisguiseSlots, 1)
+
+                .AddPerkLevel()
+                .Description("Increases the number of disguises you may keep on file to 3.")
+                .Price(3)
+                .RequirementSkill(SkillType.Espionage, 28)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.AdditionalDisguiseSlots, 2)
+
+                .AddPerkLevel()
+                .Description("Increases the number of disguises you may keep on file to 4.")
+                .Price(4)
+                .RequirementSkill(SkillType.Espionage, 44)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.AdditionalDisguiseSlots, 3);
+        }
+
+        private void CoverStory()
+        {
+            _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.CoverStory)
+                .Name("Cover Story")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CoverStoryTrait)
+                .Description("Reduces the delay between disguise activations by 40%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Espionage, 20)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.DisguiseSwapCooldownReductionPercent, 40)
+
+                .AddPerkLevel()
+                .Description("Reduces the delay between disguise activations by 70%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Espionage, 40)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.DisguiseSwapCooldownReductionPercent, 70);
         }
 
         private void GhostProtocol()

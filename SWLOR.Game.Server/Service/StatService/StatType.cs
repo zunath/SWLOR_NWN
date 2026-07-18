@@ -5364,6 +5364,18 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TrapDetectionRangeBonus = 934,
+
+        /// <summary>
+        /// Additional disguise identities the player may keep on file beyond the base allowance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AdditionalDisguiseSlots = 935,
+
+        /// <summary>
+        /// Percent reduction to the delay between disguise activations. Deactivation is unaffected.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DisguiseSwapCooldownReductionPercent = 936,
     }
 
     public class StatTypeAttribute : Attribute

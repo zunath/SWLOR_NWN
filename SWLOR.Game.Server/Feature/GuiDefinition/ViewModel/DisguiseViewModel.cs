@@ -548,7 +548,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var usedSlots = Disguise.CountUsedSlots(playerId);
-            var slotLimit = Disguise.GetDisguiseSlotLimit(dbPlayer);
+            var slotLimit = Disguise.GetDisguiseSlotLimit(Player, dbPlayer);
             SlotCountText = $"Slots Used: {usedSlots} / {slotLimit}";
             SlotBarLabel = $"Disguise Slots   {usedSlots} / {slotLimit}";
             SlotUsageProgress = slotLimit <= 0

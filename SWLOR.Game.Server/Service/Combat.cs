@@ -658,8 +658,13 @@ namespace SWLOR.Game.Server.Service
 
             if (finalSharedDamage > 0)
             {
+                // The attacker dealt this damage, so it has to be dispatched under them for the
+                // combat log to attribute it correctly - the mitigation above already treats them
+                // as the source. Running it under the defender instead makes a warded ally look
+                // like they damaged their own bond target. Fall back only if the attacker is gone.
+                var damageSource = GetIsObjectValid(attacker) ? attacker : defender;
                 AssignCommand(
-                    defender,
+                    damageSource,
                     () => ApplyEffectToObject(
                         DurationType.Instant,
                         EffectDamage(finalSharedDamage, SharedDamageType.GetNWScriptDamageType()),

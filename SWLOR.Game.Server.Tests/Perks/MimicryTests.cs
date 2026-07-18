@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -163,11 +164,13 @@ public class MimicryTests
         }
     }
 
-    // Trait techniques are passive: equipping them applies a status effect instead of granting a
-    // hotbar action. They must declare that status effect, have no impact action, and (being
-    // non-damaging) must not declare a combat scaling attribute.
+    // Trait techniques are passive: while equipped they contribute static stats read straight from
+    // the loadout, rather than applying a status effect. They must declare at least one stat or
+    // resistance, have no impact action, and (being non-damaging) must not declare a combat scaling
+    // attribute. Traits deliberately apply no status effect: the bonus never changes while the trait
+    // is slotted, so there is no transient state for the status icon bar to communicate.
     [Test]
-    public void MimicryTraits_ArePassiveAndDeclareAStatusEffect()
+    public void MimicryTraits_ArePassiveAndDeclareStaticStats()
     {
         var traits = BuildAllAbilities(MimicryTechniqueNamespace)
             .Where(t => t.Detail.IsMimicryTrait)
@@ -177,8 +180,11 @@ public class MimicryTests
 
         foreach (var trait in traits)
         {
-            trait.Detail.MimicryTraitStatusEffect.Should().NotBeNull(
-                $"{trait.Feat} is a trait and should declare the status effect applied while equipped");
+            (trait.Detail.MimicryTraitStats.Count + trait.Detail.MimicryTraitResistances.Count)
+                .Should().BeGreaterThan(0,
+                    $"{trait.Feat} is a trait and should declare the stats granted while equipped");
+            trait.Detail.MimicryTraitStats.Keys.Should().NotContain(StatType.Invalid,
+                $"{trait.Feat} should not declare an invalid stat");
             trait.Detail.ImpactAction.Should().BeNull(
                 $"{trait.Feat} is a passive trait and should not have an activated impact action");
             trait.Detail.CombatImpactDamageAbility.Should().Be(AbilityType.Invalid,

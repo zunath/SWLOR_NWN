@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
-        IGuiRefreshable<PerkRefundedRefreshEvent>
+        IGuiRefreshable<PerkRefundedRefreshEvent>,
+        IGuiRefreshable<TechniqueChangedRefreshEvent>
     {
         private const int MaxPurchasedAttributeScore = 26;
         private const int RacialAttributeBonus = 1;
@@ -217,6 +218,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public int Attack
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int ForceAttack
         {
             get => Get<int>();
             set => Set(value);
@@ -832,6 +839,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
+            ForceAttack = Stat.GetAttack(_target, AbilityType.Willpower, SkillType.Force);
             PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
@@ -895,7 +903,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better.");
             AddStat("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better.");
             AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Hit chance adjustment for physical weapon and Force abilities.");
-            AddStat("Force Attack", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ForceAttackPercentAdjustment)), "Bonus or penalty applied to Attack when using Force-typed attacks and abilities.");
+            AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "Bonus or penalty applied to Attack when using physical attacks and abilities.");
+            AddStat("Force Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ForceAttackPercentAdjustment)), "Bonus or penalty applied to Attack when using Force-typed attacks and abilities.");
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
             AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
@@ -1254,6 +1263,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             LoadData();
+        }
+
+        public void Refresh(TechniqueChangedRefreshEvent payload)
+        {
+            if (!GetIsPC(_target))
+                return;
+
+            RefreshStats();
+            RefreshEquipmentStats();
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

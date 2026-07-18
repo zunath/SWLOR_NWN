@@ -1,14 +1,15 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -32,6 +33,13 @@ namespace SWLOR.Game.Server.Service
 
         // Source NPC feat -> the technique feat it teaches.
         private static readonly Dictionary<FeatType, FeatType> _techniqueByNpcFeat = new();
+
+        // Stat -> the trait feats that adjust it, and by how much. Inverted at cache time so the stat
+        // pipeline (a hot path) only walks traits that are relevant to the stat being queried.
+        private static readonly Dictionary<StatType, Dictionary<FeatType, int>> _traitStatsByStat = new();
+
+        // Resistance -> the trait feats that adjust it, and by how much.
+        private static readonly Dictionary<ResistanceType, Dictionary<FeatType, int>> _traitResistancesByResistance = new();
 
         // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
         private static readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
@@ -72,6 +80,8 @@ namespace SWLOR.Game.Server.Service
             _techniques.Clear();
             _techniqueByNpcFeat.Clear();
             _techniqueIcons.Clear();
+            _traitStatsByStat.Clear();
+            _traitResistancesByResistance.Clear();
 
             if (!_witnessSweepScheduled)
             {
@@ -88,6 +98,31 @@ namespace SWLOR.Game.Server.Service
 
                 if (detail.MimicrySourceFeat != FeatType.Invalid)
                     _techniqueByNpcFeat[detail.MimicrySourceFeat] = feat;
+
+                if (!detail.IsMimicryTrait)
+                    continue;
+
+                foreach (var (stat, amount) in detail.MimicryTraitStats)
+                {
+                    if (!_traitStatsByStat.TryGetValue(stat, out var statContributors))
+                    {
+                        statContributors = new Dictionary<FeatType, int>();
+                        _traitStatsByStat[stat] = statContributors;
+                    }
+
+                    statContributors[feat] = amount;
+                }
+
+                foreach (var (resistance, amount) in detail.MimicryTraitResistances)
+                {
+                    if (!_traitResistancesByResistance.TryGetValue(resistance, out var resistContributors))
+                    {
+                        resistContributors = new Dictionary<FeatType, int>();
+                        _traitResistancesByResistance[resistance] = resistContributors;
+                    }
+
+                    resistContributors[feat] = amount;
+                }
             }
 
             // Resolve icon resrefs in a separate, guarded pass: Get2DAString requires a live engine,
@@ -103,6 +138,67 @@ namespace SWLOR.Game.Server.Service
             {
                 _techniqueIcons.Clear();
             }
+        }
+
+        /// <summary>
+        /// Sums the stat adjustments contributed by a creature's equipped Mimicry traits, plus the
+        /// elemental-resonance set bonus. Read directly by the stat pipeline: trait bonuses are static
+        /// for as long as the trait is slotted, so they are a property of the loadout rather than a
+        /// status effect that could be cleared on death or drift out of sync with the equipped set.
+        /// </summary>
+        public static int GetStatBonus(uint creature, StatType stat)
+        {
+            var hasStatContributors = _traitStatsByStat.TryGetValue(stat, out var contributors);
+
+            if (!hasStatContributors && stat != StatType.MimicryPotencyPercent)
+                return 0;
+
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return 0;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
+            if (dbPlayer == null)
+                return 0;
+
+            var bonus = stat == StatType.MimicryPotencyPercent
+                ? GetSetBonusPotency(dbPlayer)
+                : 0;
+
+            if (!hasStatContributors)
+                return bonus;
+
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                if (contributors.TryGetValue(feat, out var amount))
+                    bonus += amount;
+            }
+
+            return bonus;
+        }
+
+        /// <summary>
+        /// Sums the resistance adjustments contributed by a creature's equipped Mimicry traits.
+        /// </summary>
+        public static int GetResistanceBonus(uint creature, ResistanceType resistance)
+        {
+            if (!_traitResistancesByResistance.TryGetValue(resistance, out var contributors))
+                return 0;
+
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return 0;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
+            if (dbPlayer == null)
+                return 0;
+
+            var bonus = 0;
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                if (contributors.TryGetValue(feat, out var amount))
+                    bonus += amount;
+            }
+
+            return bonus;
         }
 
         /// <summary>
@@ -478,22 +574,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Recomputes the elemental-resonance set bonus from the current loadout and re-applies it,
-        /// replacing any prior resonance effect. Called whenever the equipped set changes.
-        /// </summary>
-        private static void RecomputeSetBonus(uint player, Player dbPlayer)
-        {
-            if (!GetIsObjectValid(player))
-                return;
-
-            StatusEffect.RemoveStatusEffect(player, typeof(TechniqueResonanceStatusEffect), player, false);
-
-            var potency = GetSetBonusPotency(dbPlayer);
-            if (potency > 0)
-                StatusEffect.ApplyStatusEffect(player, player, new TechniqueResonanceStatusEffect(potency), 0f);
-        }
-
-        /// <summary>
         /// Returns the number of technique slots currently used by a player's equipped techniques.
         /// </summary>
         public static int GetUsedSlots(uint player)
@@ -602,7 +682,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             GrantTechniqueFeat(player, feat);
-            RecomputeSetBonus(player, dbPlayer);
+            Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
         }
@@ -629,7 +709,7 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
             RevokeTechniqueFeat(player, feat);
-            RecomputeSetBonus(player, dbPlayer);
+            Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
         }
@@ -683,7 +763,7 @@ namespace SWLOR.Game.Server.Service
             if (changed)
             {
                 DB.Set(dbPlayer);
-                RecomputeSetBonus(player, dbPlayer);
+                Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
             }
         }
 
@@ -709,7 +789,7 @@ namespace SWLOR.Game.Server.Service
             var unequippedCount = dbPlayer.EquippedTechniques.Count;
             dbPlayer.EquippedTechniques.Clear();
             DB.Set(dbPlayer);
-            RecomputeSetBonus(player, dbPlayer);
+            Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             Log.WriteStructured(
                 LogGroup.Mimicry,
@@ -741,7 +821,6 @@ namespace SWLOR.Game.Server.Service
                 GrantTechniqueFeat(player, feat);
             }
 
-            RecomputeSetBonus(player, dbPlayer);
         }
 
         /// <summary>
@@ -761,13 +840,12 @@ namespace SWLOR.Game.Server.Service
             {
                 // Passive traits are never usable: they must not be granted as a castable feat nor
                 // placed on the hotbar. Strip any feat/hotbar entry an earlier grant (or a prior
-                // version that granted the feat unconditionally) left behind, then apply the trait's
-                // status effect for as long as it stays equipped.
+                // version that granted the feat unconditionally) left behind. The trait's stats need
+                // no grant step - the stat pipeline reads them from the equipped list directly.
                 if (GetHasFeat(feat, player))
                     CreaturePlugin.RemoveFeat(player, feat);
 
                 RemoveFeatFromHotBar(player, feat);
-                ApplyTraitStatusEffect(player, feat);
                 return;
             }
 
@@ -780,40 +858,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Removes the technique's feat and any hotbar slot referencing it, and clears the passive
-        /// status effect if the technique is a trait.
+        /// Removes the technique's feat and any hotbar slot referencing it. Trait stats need no
+        /// revoke step; they stop applying as soon as the feat leaves the equipped list.
         /// </summary>
         private static void RevokeTechniqueFeat(uint player, FeatType feat)
         {
             if (!GetIsObjectValid(player))
                 return;
 
-            RemoveTraitStatusEffect(player, feat);
             CreaturePlugin.RemoveFeat(player, feat);
             RemoveFeatFromHotBar(player, feat);
-        }
-
-        /// <summary>
-        /// Applies a trait technique's passive status effect to the wielder for as long as it stays
-        /// equipped (permanent duration; removed on unequip or slot-budget enforcement). No-ops for
-        /// active techniques, which are driven from the hotbar instead.
-        /// </summary>
-        private static void ApplyTraitStatusEffect(uint player, FeatType feat)
-        {
-            var detail = GetTechniqueDetail(feat);
-            if (detail == null || !detail.IsMimicryTrait || detail.MimicryTraitStatusEffect == null)
-                return;
-
-            StatusEffect.ApplyStatusEffect(player, player, detail.MimicryTraitStatusEffect, 0f);
-        }
-
-        private static void RemoveTraitStatusEffect(uint player, FeatType feat)
-        {
-            var detail = GetTechniqueDetail(feat);
-            if (detail == null || !detail.IsMimicryTrait || detail.MimicryTraitStatusEffect == null)
-                return;
-
-            StatusEffect.RemoveStatusEffect(player, detail.MimicryTraitStatusEffect, player, false);
         }
 
         private static bool IsFeatOnHotBar(uint player, FeatType feat)

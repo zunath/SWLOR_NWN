@@ -210,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundValueRow(combatCol, "Off Hand", model => model.OffHandDMG, "Estimated off-hand weapon damage.", model => model.OffHandTooltip, 94f);
                             AddBoundValueRow(combatCol, "Atk Delay", model => model.AttackDelay, "Estimated time between auto attacks.", model => model.AttackDelayTooltip, 94f);
                             AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical damage bonus.", null, 94f);
+                    AddBoundValueRow(combatCol, "Force Attack", model => model.ForceAttack, "Force damage bonus.", null, 94f);
                             AddBoundValueRow(combatCol, "Accuracy", model => model.Accuracy, "Chance to hit.", null, 94f);
                             AddBoundValueRow(combatCol, "Evasion", model => model.Evasion, "Chance to dodge.", null, 94f);
                             AddBoundValueRow(combatCol, "Physical DEF", model => model.PhysicalDefense, "Defense against physical attacks.", null, 94f);

@@ -1770,6 +1770,11 @@ def profile_property_lines(row, level, primary_status):
     if max_targets:
         add_profile_property("MaximumAreaTargets", str(max_targets))
 
+    # TelegraphDuration is deliberately not derived from CastingTime. The pre-cast telegraph is
+    # already drawn by UsePerkFeat from the activation delay; this one runs at impact, after the
+    # cast has finished, so setting it from CastingTime would delay damage twice and draw the shape
+    # twice. It stays 0 unless a definition hand-sets it for a genuinely delayed detonation.
+
     match = re.search(
         r"If you attacked this target in the last (\d+) seconds, .*?\+(\d+) DMG",
         description,

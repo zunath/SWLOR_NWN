@@ -92,7 +92,7 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
   **State the size in the description.** The generator reads the numbers out of the Bible line — "in an 8m x 2.5m line" and "enemies within 3m" produce those exact sizes — and only falls back to an archetype default when the line names none. A description that omits its size silently inherits a default that may not be what you intended.
 
   Two traps in that parsing, both of which shipped bugs before:
-  - The hostile-area marker is **"enemies within"**, not a bare "within Nm". Many descriptions use "within Nm" for something that is not an area attack — an ally buff ("allies within 5m"), a passive proximity condition ("each bleeding enemy within 10m"), or a leash range ("while within 20m"). Widening area detection to bare "within Nm" would reclassify roughly 40 non-area perks as hostile spheres.
+  - A radius area is recognised by the **noun**, not by "within Nm" alone: "enemies within 5m", "all targets within 6m" and "hostile targets within 5m" are areas. A bare "within Nm" is not, because the Bible also uses it for an ally buff ("allies within 5m"), a leash range ("while within 20m") and a placement range ("a field within 15m"). The singular form is also excluded — "one enemy within 5m" is a reach check, not a shape.
   - A `line`/`cone` is only recognised in the "in a line" form or immediately after a stated size ("8m x 2.5m line"). A bare mention of the word does not count, because "anchors a defensive line" is a radius buff. Matching the literal phrase alone used to miss the sized form entirely and infer a self-centered Sphere for an aimed line — losing the cursor.
 
   `Earthshatter I/II` is the reference implementation for an aimed line.

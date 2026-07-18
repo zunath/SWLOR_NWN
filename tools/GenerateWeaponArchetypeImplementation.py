@@ -2231,7 +2231,10 @@ def is_area(description):
         "enemies in",
         "secondary targets",
     ]
-    return any(marker in lowered for marker in markers)
+    if any(marker in lowered for marker in markers):
+        return True
+
+    return hostile_radius_phrase(lowered) is not None
 
 
 def is_aimed_area(row):
@@ -2277,6 +2280,29 @@ def targeting_flags_expression(flags):
     if numeric_flags & 16:
         expression += " | AbilityTargetingFlags.OriginOnSelf"
     return expression
+
+
+HOSTILE_RADIUS_PATTERN = re.compile(
+    r'\b(?P<count>one|a|an|single)?\s*(?:all\s+|nearby\s+)?(?:hostile\s+)?'
+    r'(?:enemies|enemy|foes|hostiles|targets)\s+within\s+(?P<radius>\d+(?:\.\d+)?)\s*(?:m\b|meters?\b)')
+
+
+def hostile_radius_phrase(lowered):
+    """Radius of a hostile "<enemies> within Nm" area, or None when the phrase is not one.
+
+    A bare "within Nm" is not enough to call something an area: the Bible uses that wording for
+    ally buffs ("allies within 5m"), leash ranges ("while within 20m") and placement ranges
+    ("a field within 15m"). What makes it an area is the noun it applies to, so this keys off a
+    hostile plural and rejects the single-target form ("one enemy within 5m", "dash behind one
+    hostile target within 5m"), which is a reach check rather than a shape.
+    """
+    for match in HOSTILE_RADIUS_PATTERN.finditer(lowered):
+        if match.group("count"):
+            continue
+
+        return float(match.group("radius"))
+
+    return None
 
 
 def describes_shape(lowered, shape_word):
@@ -2349,9 +2375,10 @@ def infer_targeting_from_description(row):
         "in the area" in lowered or
         "enemies within" in lowered or
         "sphere" in lowered or
-        "all enemies" in lowered
+        "all enemies" in lowered or
+        hostile_radius_phrase(lowered) is not None
     ):
-        radius = stated[0] if stated else 5.0
+        radius = hostile_radius_phrase(lowered) or (stated[0] if stated else 5.0)
         return (
             "AbilityTargetingShapeType.Sphere",
             f"{radius:.1f}f",

@@ -165,10 +165,12 @@ public class MimicryTests
     }
 
     // Trait techniques are passive: while equipped they contribute static stats read straight from
-    // the loadout, rather than applying a status effect. They must declare at least one stat or
-    // resistance, have no impact action, and (being non-damaging) must not declare a combat scaling
-    // attribute. Traits deliberately apply no status effect: the bonus never changes while the trait
-    // is slotted, so there is no transient state for the status icon bar to communicate.
+    // the loadout, rather than applying a status effect to the wearer. They must declare at least one
+    // stat or resistance, have no impact action, and (being non-damaging) must not declare a combat
+    // scaling attribute. Equipping a trait deliberately applies no persistent status effect: the
+    // bonus never changes while the trait is slotted, so there is no transient state for the status
+    // icon bar to communicate. On-hit proc traits still inflict status effects on their targets;
+    // that is a combat payload, not part of the trait's own lifecycle.
     [Test]
     public void MimicryTraits_ArePassiveAndDeclareStaticStats()
     {

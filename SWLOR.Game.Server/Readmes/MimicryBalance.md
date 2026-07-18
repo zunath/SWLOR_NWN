@@ -65,7 +65,9 @@ Cooldowns are banded by tier and shape (higher tiers and area techniques recast 
 
 Twenty-one techniques are **passive traits** rather than activated abilities. They do not appear on the hotbar, cost no Stamina, and deal no direct damage; equipping one contributes static stats for as long as it occupies a technique slot (see the `IsMimicryTrait` model). A trait's power *is* its passive effect, listed here.
 
-Traits declare their bonuses on the ability builder (`MimicryTraitStat` / `MimicryTraitResistance`) and the stat and resistance pipelines read them straight off the equipped loadout. They deliberately apply **no** status effect: the bonus never varies while the trait is slotted, so there is no transient state for the status icon bar to communicate, and no apply/remove lifecycle that could drift out of sync with the equipped set. The elemental-resonance set bonus is derived the same way.
+Traits declare their bonuses on the ability builder (`MimicryTraitStat` / `MimicryTraitResistance`) and the stat and resistance pipelines read them straight off the equipped loadout. Equipping a trait deliberately applies **no persistent status effect to the wearer**: the bonus never varies while the trait is slotted, so there is no transient state for the status icon bar to communicate, and no apply/remove lifecycle that could drift out of sync with the equipped set. The elemental-resonance set bonus is derived the same way.
+
+That is a statement about the trait's own lifecycle, not about what it does in combat. An on-hit proc trait still inflicts an ordinary status effect on its *target* when it fires (see below); those are transient, carry their own icons, and are unaffected by this.
 
 Each trait grants a **unique** effect, and effect strength scales with tier so a higher-tier trait is always worth more than a lower-tier one (no two traits are interchangeable). Two flavours exist:
 

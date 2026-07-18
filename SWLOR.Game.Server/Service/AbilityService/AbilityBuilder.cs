@@ -797,9 +797,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// Otherwise identical to a technique for learning, slot budgeting, and tier gating.
         ///
         /// Declare the trait's bonuses with <see cref="MimicryTraitStat"/> and
-        /// <see cref="MimicryTraitResistance"/>. Traits deliberately do not apply a status effect: the
-        /// bonus is static for the whole time it is slotted, so there is no state to show on the status
-        /// icon bar and nothing to keep in sync across death or relog.
+        /// <see cref="MimicryTraitResistance"/>. Equipping a trait deliberately applies no persistent
+        /// status effect to the wearer: the bonus is static for the whole time it is slotted, so there
+        /// is no state to show on the status icon bar and nothing to keep in sync across death or
+        /// relog. That covers the trait's own lifecycle only — an on-hit proc trait still inflicts an
+        /// ordinary status effect on its target when it fires.
         /// </summary>
         /// <param name="sourceCreatureFeat">The NPC feat this trait is copied from.</param>
         /// <param name="tier">The Mimicry tier of this trait, used to gate learning by skill rank.</param>

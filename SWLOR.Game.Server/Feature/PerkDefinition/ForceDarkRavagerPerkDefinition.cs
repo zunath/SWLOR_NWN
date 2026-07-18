@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceSpark()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceSpark)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.ForceSpark)
                 .Name("Force Spark")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceLightning()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceLightning)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.ForceLightning)
                 .Name("Force Lightning")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void UnstablePressure()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.UnstablePressure)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.UnstablePressure)
                 .Name("Unstable Pressure")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceDrain()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceDrain)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.ForceDrain)
                 .Name("Force Drain")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FuryStance()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.FuryStance)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.FuryStance)
                 .Name("Fury Stance")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DevouringStrike()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.DevouringStrike)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.DevouringStrike)
                 .Name("Devouring Strike")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CruelMomentum()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.CruelMomentum)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.CruelMomentum)
                 .Name("Cruel Momentum")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void HungerOfTheDark()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.HungerOfTheDark)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.HungerOfTheDark)
                 .Name("Hunger of the Dark")
                 .ForceAffinity(ForceAffinityType.Dark)
 

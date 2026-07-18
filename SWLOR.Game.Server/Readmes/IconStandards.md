@@ -35,6 +35,20 @@ Status effects use the same semantic frame location, but their color assignment 
 - Neutral or system status effects may use Utility only when they are neither beneficial nor detrimental.
 - A paired self buff and enemy debuff may share a motif, but they must differ by both semantic color and a visible shape/sigil.
 
+## Force Alignment Marker
+
+Force power icons carry a **second, orthogonal axis** on top of the semantic frame: a small "gem" marker in the **top-left corner** that shows the power's Force alignment. The semantic frame still communicates effect role (Harmful, Beneficial, Control, …); the corner gem communicates the side of the Force. This lets a player read both facts at once, and complements the Perks window, which groups Force powers by discipline (Alter / Control / Sense).
+
+Marker rules:
+
+- **Scope:** only the Force-tree powers, stances, and passive traits (the five Force perk trees). No other icon carries the marker — including Force-*flavored* NPC, creature, or other-weapon icons.
+- **Colors:** `Dark = black (#17171B)`, `Light = light grey (#C4CAD3)`, `Universal/Neutral = yellow (#FFCC1A)`.
+- **Construction:** a dark outer ring, a mid-grey bevel ring, then the alignment-colored fill, with a small highlight. The two-tone bezel keeps every gem legible on any underlying art, and the mid-grey bevel gives all three fills (black, light grey, yellow) the same crisp rim.
+- **Placement:** top-left, so it never collides with the bottom-right status-effect rank-badge slot. The gem sits on top of the finished icon and never alters the central artwork or the semantic frame.
+- **Data source of truth:** the `Alignment` column in `GameplayIconManifest.csv` (`Light` / `Dark` / `Neutral`; blank = no marker).
+
+The marker is stamped and audited by `tools/UpdateFeatSpellIconBorders.ps1` (`-Apply` / `-AuditOnly`), which reads the `Alignment` column. Stamping is idempotent — re-running skips already-marked icons. Because the marker is composited onto the flattened production TGA, changing the palette requires restoring pristine art first (`tools/RestoreAbilityIconArtwork.ps1`) and then re-stamping with `-Force`; do not paint a new marker over an old one.
+
 ## Uniqueness
 
 Gameplay icons must be globally unique across abilities, status effects, feats, spells, and other gameplay uses. A player should not see the same visible icon and need context to know whether it means an ability, a status effect, an item action, or another gameplay effect.

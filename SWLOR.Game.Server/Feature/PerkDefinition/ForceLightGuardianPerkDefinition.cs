@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardianWard()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.GuardianWard)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.GuardianWard)
                 .Name("Guardian Ward")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeflectivePresence()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.LightGuardianDeflectivePresence)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.LightGuardianDeflectivePresence)
                 .Name("Protective Presence")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CourageousResolve()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.CourageousResolve)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.CourageousResolve)
                 .Name("Courageous Resolve")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceIntercept()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceIntercept)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.ForceIntercept)
                 .Name("Force Intercept")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ReflectiveBarrier()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ReflectiveBarrier)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.ReflectiveBarrier)
                 .Name("Reflective Barrier")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PurifyingWave()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.PurifyingWave)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.PurifyingWave)
                 .Name("Purifying Wave")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LastStandOfTheLight()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.LastStandOfTheLight)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.LastStandOfTheLight)
                 .Name("Last Stand of the Light")
                 .ForceAffinity(ForceAffinityType.Light)
 

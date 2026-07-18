@@ -2143,6 +2143,9 @@ public class CombatUpgradeBibleSyncTests
             ("First Aid", "Trauma Medic") => PerkCategoryType.FirstAidTraumaMedic,
             ("Engineering", "Droidcraft") => PerkCategoryType.Engineering,
             ("Fabrication", "Invention") => PerkCategoryType.Fabrication,
+            ("Force", "Alter") => PerkCategoryType.ForceAlter,
+            ("Force", "Control") => PerkCategoryType.ForceControl,
+            ("Force", "Sense") => PerkCategoryType.ForceSense,
             ("Gathering", "General") => PerkCategoryType.Gathering,
             ("Gathering", "Harvesting") => PerkCategoryType.Gathering,
             ("Gathering", "Scavenging") => PerkCategoryType.Gathering,
@@ -2183,16 +2186,6 @@ public class CombatUpgradeBibleSyncTests
 
     private static PerkCategoryType[] GetExpectedCategories(BiblePerkRow row)
     {
-        if (row.Tab.Equals("Force", StringComparison.OrdinalIgnoreCase))
-        {
-            return new[]
-            {
-                PerkCategoryType.ForceLight,
-                PerkCategoryType.ForceDark,
-                PerkCategoryType.ForceUniversal
-            };
-        }
-
         var category = TryGetExpectedCategory(row);
         return category.HasValue
             ? new[] { category.Value }

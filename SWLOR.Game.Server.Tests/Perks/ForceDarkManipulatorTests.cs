@@ -274,7 +274,6 @@ public class ForceDarkManipulatorTests
         string description)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceDark);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);

@@ -44,9 +44,9 @@ public class CombatReleaseBalanceAuditTests
 
     private static readonly PerkCategoryType[] SupportPackages =
     {
-        PerkCategoryType.ForceUniversal,
-        PerkCategoryType.ForceLight,
-        PerkCategoryType.ForceDark,
+        PerkCategoryType.ForceAlter,
+        PerkCategoryType.ForceControl,
+        PerkCategoryType.ForceSense,
         PerkCategoryType.General,
         PerkCategoryType.Leadership,
         PerkCategoryType.LeadershipVanguardCommand,
@@ -526,7 +526,7 @@ public class CombatReleaseBalanceAuditTests
             Archetype(packages, "Two weapon-line hybrid", PerkCategoryType.VibrobladeOffense, PerkCategoryType.HeavyVibrobladeOffense),
             Archetype(packages, "Three weapon-line combat maximizer", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.SpearDamage, PerkCategoryType.StaffCrusher),
             Archetype(packages, "Weapon plus Leadership", PerkCategoryType.VibrobladeOffense, PerkCategoryType.LeadershipVanguardCommand),
-            Archetype(packages, "Weapon plus Force support", PerkCategoryType.LightsaberOffense, PerkCategoryType.ForceUniversal, PerkCategoryType.ForceLight),
+            Archetype(packages, "Weapon plus Force support", PerkCategoryType.LightsaberOffense, PerkCategoryType.ForceControl, PerkCategoryType.ForceSense),
             Archetype(packages, "Weapon plus Devices support", PerkCategoryType.RifleMarksman, PerkCategoryType.DevicesFieldSupport),
             Archetype(packages, "Weapon plus First Aid sustain", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.FirstAidTraumaMedic),
             Archetype(packages, "Weapon plus Beast pressure", PerkCategoryType.SpearDamage, PerkCategoryType.BeastDamage),

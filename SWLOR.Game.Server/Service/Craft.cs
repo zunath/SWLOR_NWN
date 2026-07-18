@@ -862,39 +862,58 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Scan for matches first and remove them in a separate pass afterward -
-            // removing an item property while GetNextItemProperty is still iterating
-            // shifts the underlying list, which silently skips every other match.
-            //
-            // Subtype matching is judged off the INCOMING property's subtype, not the
-            // existing property's. Property types with no subtype table in
-            // itempropdef.2da (DMG, Attack, ForceAttack, Evasion, HPBonus, FP, Stamina,
-            // ShieldDeflection, CombatReadiness, StructureBonus, ...) are always packed
-            // with subtype -1, but re-querying that -1 back off a property already
-            // attached to a live item is not reliable - the engine has no subtype table
-            // to round-trip it through. Trusting the freshly-built incoming property's
-            // subtype instead of re-reading the attached one is what actually holds: if
-            // the enhancement never had a meaningful subtype to begin with, any existing
-            // property of the same type is a match; if it does (Defense, Resistance,
-            // FoodBonus, DroidStat), only the same subtype matches.
-            var matches = new List<ItemProperty>();
-            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
-            {
-                if (GetItemPropertyType(property) == type &&
-                    (subType == -1 || GetItemPropertySubType(property) == subType))
-                {
-                    amount += GetItemPropertyCostTableValue(property);
-                    matches.Add(property);
-                }
-            }
+            // Whether two properties of the same type should merge is decided by
+            // whether that type even has a subtype: itempropdef.2da's SubTypeResRef
+            // column is the source of truth. Types with no subtype table (Accuracy/
+            // AttackBonus, DMG, Attack, ForceAttack, Evasion, HP, FP, Stamina,
+            // ShieldDeflection, CombatReadiness, StructureBonus, ...) carry no
+            // meaningful subtype, but the value the engine reports for GetItemPropertySubType
+            // on them is not dependable: it is not necessarily -1 when freshly built,
+            // and it does not reliably round-trip once the property has been attached to
+            // a live item. Earlier code keyed the merge off the incoming property's
+            // subtype and treated -1 as "match any of this type"; when the engine handed
+            // back some other value instead, two identical accuracy kits failed that
+            // check. Ignore the reported subtype entirely for these types and match on
+            // type alone. A type with a real subtype table (Defense, Resistance,
+            // FoodBonus, DroidStat) does round-trip, so those still only merge same-subtype.
+            var hasSubType = !string.IsNullOrWhiteSpace(Get2DAString("itempropdef", "SubTypeResRef", (int)type));
 
-            foreach (var property in matches)
+            // Sum every existing match into the incoming amount and remove it. Item
+            // property handles from GetFirstItemProperty/GetNextItemProperty are only
+            // valid during that single walk - stashing them and calling RemoveItemProperty
+            // after the walk has ended is unreliable (the stale handle no-ops, so the
+            // "merged" total gets added alongside the untouched original, e.g. two
+            // Accuracy Bonus lines from two kits). Removing mid-walk is just as bad: it
+            // shifts the list and the cursor skips every other match. Re-walk from the
+            // top after each removal instead, so every handle acted on is fresh and each
+            // match is counted exactly once (removed matches can't be revisited).
+            bool removedMatch;
+            var removalGuard = 0;
+            do
             {
-                RemoveItemProperty(item, property);
-            }
+                removedMatch = false;
+                for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(property) == type &&
+                        (!hasSubType || GetItemPropertySubType(property) == subType))
+                    {
+                        amount += GetItemPropertyCostTableValue(property);
+                        RemoveItemProperty(item, property);
+                        removedMatch = true;
+                        break;
+                    }
+                }
+                // A fresh handle should always remove; bound the loop anyway so a
+                // hypothetical failed removal can never spin forever.
+            } while (removedMatch && ++removalGuard < 64);
 
             var unpacked = ItemPropertyPlugin.UnpackIP(ip);
             unpacked.CostTableValue = amount;
+            // A no-subtype property can arrive with an undependable subtype; write it
+            // back canonically so the merged property is stored the same way every time
+            // instead of persisting whatever value the engine happened to report.
+            if (!hasSubType)
+                unpacked.SubType = -1;
             ip = ItemPropertyPlugin.PackIP(unpacked);
 
             BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);

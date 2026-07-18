@@ -153,7 +153,6 @@ public class ForceUniversalTests
         string description)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceUniversal);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);

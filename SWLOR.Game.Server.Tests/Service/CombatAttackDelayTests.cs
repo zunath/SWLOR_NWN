@@ -199,6 +199,79 @@ public class CombatAttackDelayTests
         totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
     }
 
+    // A no-delay buff (Venom Tempo, Fast Strikes, the Lightsaber critical no-delay, Last Word) is
+    // applied by lowering the effective delay to MinimumAttackDelayMilliseconds. That is a no-op for
+    // a build already at that floor, so ConsumeAttacksPerSwing guarantees the buff is worth an extra
+    // attack regardless of how fast the attacker already swings.
+
+    [TestCase(1750, TestName = "NoDelayBuff_GrantsExtraAttack_SlowBuild")]
+    [TestCase(3500, TestName = "NoDelayBuff_GrantsExtraAttack_DualWieldBuild")]
+    [TestCase(875, TestName = "NoDelayBuff_GrantsExtraAttack_HastedBuild")]
+    [TestCase(750, TestName = "NoDelayBuff_GrantsExtraAttack_HeavilyHastedBuild")]
+    public void ConsumeAttacksPerSwing_NoDelayBuffAlwaysBeatsTheUnbuffedSwing(int unbuffedDelay)
+    {
+        const uint attacker = 0x7F000001;
+        Combat.ClearAttackSwingDebt(attacker);
+        var unbuffed = Combat.ConsumeAttacksPerSwing(attacker, unbuffedDelay, unbuffedDelay);
+
+        Combat.ClearAttackSwingDebt(attacker);
+        var buffed = Combat.ConsumeAttacksPerSwing(
+            attacker,
+            Combat.MinimumAttackDelayMilliseconds,
+            unbuffedDelay);
+
+        Combat.ClearAttackSwingDebt(attacker);
+
+        buffed.Should().BeGreaterThan(
+            unbuffed,
+            "a no-delay buff must be worth at least one extra attack even when the attacker is " +
+            "already at the attack-delay floor");
+        buffed.Should().BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_AtTheDelayFloor_NoDelayBuffIsNotANoOp()
+    {
+        // Regression: a heavily hasted or dual-wielding Vibroknife build sits at the floor already,
+        // so overriding the delay with the same floor value used to change nothing at all.
+        const uint attacker = 0x7F000002;
+        Combat.ClearAttackSwingDebt(attacker);
+        var unbuffed = Combat.ConsumeAttacksPerSwing(
+            attacker,
+            Combat.MinimumAttackDelayMilliseconds,
+            Combat.MinimumAttackDelayMilliseconds);
+
+        Combat.ClearAttackSwingDebt(attacker);
+        var buffed = Combat.ConsumeAttacksPerSwing(
+            attacker,
+            Combat.MinimumAttackDelayMilliseconds,
+            Combat.MinimumAttackDelayMilliseconds + 1);
+
+        Combat.ClearAttackSwingDebt(attacker);
+
+        unbuffed.Should().Be(2);
+        buffed.Should().Be(3);
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_WithoutABuff_IsUnchanged()
+    {
+        // The guarantee must only engage when the buffed and unbuffed delays actually differ, so
+        // ordinary swings keep their existing attack counts and debt accounting.
+        const uint attacker = 0x7F000003;
+        foreach (var delay in new[] { 3500, 1750, 875, Combat.MinimumAttackDelayMilliseconds })
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+            var viaOverload = Combat.ConsumeAttacksPerSwing(attacker, delay, delay);
+
+            Combat.ClearAttackSwingDebt(attacker);
+            var viaOriginal = Combat.ConsumeAttacksPerSwing(attacker, delay);
+
+            Combat.ClearAttackSwingDebt(attacker);
+            viaOverload.Should().Be(viaOriginal, $"delay {delay} should be unaffected by the guarantee");
+        }
+    }
+
     [Test]
     public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
     {

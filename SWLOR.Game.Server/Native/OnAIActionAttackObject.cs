@@ -393,6 +393,11 @@ namespace SWLOR.Game.Server.Native
                 var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
                 var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
 
+                // The delay the attacker would have without a no-delay buff. Lowering the delay to
+                // the floor is meaningless for a build already at the floor, so this is passed to
+                // ConsumeAttacksPerSwing to guarantee the buff is worth an extra attack either way.
+                var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, false);
+
                 // Check attack delay before starting or processing combat
                 // First attack is always instant, subsequent attacks respect delay
                 // Skip delay check if target is dead
@@ -535,7 +540,10 @@ namespace SWLOR.Game.Server.Native
                                                 if (nWeaponAttackType == WEAPON_ATTACK_TYPE_MAINHAND ||
                                                     nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
                                                 {
-                                                    nAttacks = Combat.ConsumeAttacksPerSwing(pCreature.m_idSelf, effectiveAttackDelay);
+                                                    nAttacks = Combat.ConsumeAttacksPerSwing(
+                                                        pCreature.m_idSelf,
+                                                        effectiveAttackDelay,
+                                                        unbuffedAttackDelay);
 
                                                     if (nAttacks > 1)
                                                     {

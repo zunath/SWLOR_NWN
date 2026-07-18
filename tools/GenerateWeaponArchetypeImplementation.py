@@ -2229,6 +2229,24 @@ def is_area(description):
     return any(marker in lowered for marker in markers)
 
 
+def is_aimed_area(row):
+    """True when the area is directional and the player must aim it.
+
+    "in a line" / "in a cone" areas let the player choose a direction, so they present a
+    targeting cursor (feat.2da TARGETSELF blank, HostileFeat=1) exactly like Earthshatter.
+    Radius areas ("within Nm", "nearby enemies") always originate on the caster and must not
+    prompt. See the Ability Definitions section of AGENTS.md.
+    """
+    inferred = infer_targeting_from_description(row)
+    if not inferred:
+        return False
+
+    return inferred[0] in (
+        "AbilityTargetingShapeType.Rect",
+        "AbilityTargetingShapeType.Cone",
+    )
+
+
 def format_float_literal(value):
     if not value or value == "****":
         return "0.0f"
@@ -2297,14 +2315,13 @@ def targeting_arguments_for_row(row, feat, spell_targeting):
     inferred = infer_targeting_from_description(row)
     if not targeting:
         if inferred:
-            shape, size_x, size_y, flags = inferred
-            return (
-                "Spell.Invalid",
-                shape,
-                size_x,
-                size_y,
-                flags,
-            )
+            # A real shape with Spell.Invalid is a silent failure: ApplyTargetingMetadata drops
+            # all client targeting, so the ability loses both its cursor and its ground area
+            # marker with no error anywhere. Every rank needs its own spells.2da row.
+            raise SystemExit(
+                f"{feat}: description implies {inferred[0]} but there is no spells.2da row for it. "
+                f"Add a '{feat}' row to SWLOR_Haks/sw_2da/spells.2da and a matching Spell enum "
+                f"value before regenerating. See AGENTS.md > Ability Definitions.")
         return (
             "Spell.Invalid",
             "AbilityTargetingShapeType.None",
@@ -2439,9 +2456,10 @@ def add_missing_feats(rows):
             target_self = is_self_targeting_active(row, base)
             # Queued weapon actives fire on the wearer's next landed auto-attack, and self-centered
             # area actives originate on the caster. Neither should present a manual target cursor
-            # (TARGETSELF=1 / HostileFeat cleared); only single-target hostile casts pick a target.
+            # (TARGETSELF=1 / HostileFeat cleared). Single-target hostile casts and *aimed* areas
+            # ("in a line" / "in a cone") do pick a target, because the player chooses the direction.
             is_queued = row.get("CastingTime", "").strip().lower() == "queued"
-            is_self_origin_area = is_area(row["Description"])
+            is_self_origin_area = is_area(row["Description"]) and not is_aimed_area(row)
             no_manual_target = target_self or is_queued or is_self_origin_area
             hostile = (
                 row["Type"] == "Combat" and

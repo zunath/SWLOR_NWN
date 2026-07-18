@@ -534,6 +534,12 @@ function Get-EffectIconLabel([pscustomobject]$entry) {
 }
 
 function Get-AbilitySemanticCategory([string]$label) {
+    # Disruption Field is an instant area silence, not a placed object, so the "Field" in its
+    # name must not pull it into Deployable. Its player-facing intent is control.
+    if ($label -match "DisruptionField") {
+        return "Control"
+    }
+
     if ($label -match "Beacon|Field|Standard|Bunker|RemoteCharge|Killzone|KillZone|DampeningField|IncendiaryField|EmergencyBunker") {
         return "Deployable"
     }

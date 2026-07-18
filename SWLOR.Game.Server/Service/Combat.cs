@@ -644,11 +644,16 @@ namespace SWLOR.Game.Server.Service
             var sharedDamage = Math.Min(
                 damage,
                 GameMath.PercentOf(damage, Math.Min(100, sharePercent)));
+
+            // The bond itself carries the damage across, so the redirected portion always
+            // arrives as Force damage regardless of what type the original hit dealt. The
+            // share target mitigates it with Force defense, not the attacker's damage type.
+            const CombatDamageType SharedDamageType = CombatDamageType.Force;
             var finalSharedDamage = ApplyDamageTakenModifiers(
                 shareTarget,
                 sharedDamage,
                 attacker,
-                damageType,
+                SharedDamageType,
                 CombatDamageDeliveryType.Transferred);
 
             if (finalSharedDamage > 0)
@@ -657,7 +662,7 @@ namespace SWLOR.Game.Server.Service
                     defender,
                     () => ApplyEffectToObject(
                         DurationType.Instant,
-                        EffectDamage(finalSharedDamage, damageType.GetNWScriptDamageType()),
+                        EffectDamage(finalSharedDamage, SharedDamageType.GetNWScriptDamageType()),
                         shareTarget));
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), shareTarget);
             }
@@ -4099,6 +4104,7 @@ namespace SWLOR.Game.Server.Service
             ApplySingleTargetAbilityUsedAttackDeflection(activator, ability, isSingleTargetAbility);
             ApplyAreaAbilityUsedEvasion(activator, ability, skillType);
             ApplyHostileAbilityForceAttack(activator, ability);
+            ApplyHostileAbilityFPSpendForceAttack(activator, ability);
             ApplyAbilityUsedNearbyAllyDefense(activator);
             ApplyAbilityUsedPerkCategoryNearbyAllyAttackDeflection(activator, ability);
             ApplyAbilityUsedPerkCategorySelfDefense(activator, ability);
@@ -4192,7 +4198,41 @@ namespace SWLOR.Game.Server.Service
                 duration,
                 maximum,
                 StatType.HostileAbilityForceAttackPercentPerStack,
-                1);
+                1,
+                refreshExistingStacks: true);
+        }
+
+        /// <summary>
+        /// Grants stacking Force Attack when the activated hostile ability costs at least the
+        /// configured minimum FP. Drives the Lightsaber Severance "Overpower" trait.
+        /// </summary>
+        private static void ApplyHostileAbilityFPSpendForceAttack(uint activator, AbilityDetail ability)
+        {
+            if (ability == null || !ability.IsHostileAbility)
+                return;
+
+            var forceAttack = Stat.GetStatAdjustment(activator, StatType.HostileAbilityFPSpendForceAttackPercent);
+            var duration = Stat.GetStatAdjustment(activator, StatType.HostileAbilityFPSpendForceAttackDurationSeconds);
+            var maximum = Stat.GetStatAdjustment(activator, StatType.HostileAbilityFPSpendForceAttackMaxPercent);
+            var minimumFPCost = Stat.GetStatAdjustment(activator, StatType.HostileAbilityFPSpendForceAttackMinFPCost);
+            if (forceAttack <= 0 || duration <= 0 || maximum <= 0 || minimumFPCost <= 0)
+                return;
+
+            var fpCost = ability.Requirements
+                .OfType<AbilityRequirementFP>()
+                .Sum(x => x.RequiredFP);
+            if (fpCost < minimumFPCost)
+                return;
+
+            TemporaryStatModifier.AddCapped(
+                activator,
+                StatType.ForceAttackPercentAdjustment,
+                forceAttack,
+                duration,
+                maximum,
+                StatType.HostileAbilityFPSpendForceAttackPercent,
+                1,
+                refreshExistingStacks: true);
         }
 
         private static void ApplyHostileAbilityUsedAttackAdjustment(uint activator, AbilityDetail ability)
@@ -4217,7 +4257,8 @@ namespace SWLOR.Game.Server.Service
                 duration,
                 maximum,
                 StatType.HostileAbilityUsedAttackPercentAdjustment,
-                1);
+                1,
+                refreshExistingStacks: true);
 
             var currentTotal = TemporaryStatModifier.GetStatAdjustment(
                 activator,
@@ -8952,8 +8993,43 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The number of attacks to resolve in this swing.</returns>
         public static int ConsumeAttacksPerSwing(uint attacker, int effectiveDelayMilliseconds)
         {
+            return ConsumeAttacksPerSwing(attacker, effectiveDelayMilliseconds, effectiveDelayMilliseconds);
+        }
+
+        /// <summary>
+        /// Determines how many attacks the attacker's next swing should resolve and updates the
+        /// attacker's carried fractional attack debt.
+        /// </summary>
+        /// <param name="attacker">The attacking creature.</param>
+        /// <param name="effectiveDelayMilliseconds">The effective per-attack delay in milliseconds.</param>
+        /// <param name="unbuffedDelayMilliseconds">
+        /// The effective delay the attacker would have without a no-delay buff. When it differs from
+        /// <paramref name="effectiveDelayMilliseconds"/> the buff is active, and it must be worth at
+        /// least one extra attack on this swing. Without that guarantee a no-delay buff only lowers
+        /// the delay to <see cref="MinimumAttackDelayMilliseconds"/>, which does nothing at all for a
+        /// build already sitting at that floor (heavily hasted or dual-wielding).
+        /// </param>
+        /// <returns>The number of attacks to resolve in this swing.</returns>
+        public static int ConsumeAttacksPerSwing(
+            uint attacker,
+            int effectiveDelayMilliseconds,
+            int unbuffedDelayMilliseconds)
+        {
             _attackSwingDebts.TryGetValue(attacker, out var attackDebt);
             var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt);
+
+            if (unbuffedDelayMilliseconds != effectiveDelayMilliseconds)
+            {
+                var unbuffedAttacks = CalculateAttacksPerSwing(unbuffedDelayMilliseconds, attackDebt, out _);
+                var guaranteedAttacks = Math.Clamp(unbuffedAttacks + 1, 1, MaxAttacksPerSwing);
+                if (guaranteedAttacks > attacks)
+                {
+                    // The extra attack is granted outright rather than drawn from carried debt, so
+                    // remove it from the debt the swing would otherwise bank for later swings.
+                    updatedAttackDebt = Math.Max(0f, updatedAttackDebt - (guaranteedAttacks - attacks));
+                    attacks = guaranteedAttacks;
+                }
+            }
 
             if (updatedAttackDebt <= 0f)
                 _attackSwingDebts.Remove(attacker);

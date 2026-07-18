@@ -80,7 +80,18 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - Each distinct gameplay ability must have its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for that ability. Do not group unrelated abilities into broad definition files such as creature, combat, NPC, or package-level collections. Multiple ranks of the same ability may live in that ability's own definition file.
 - Ability-specific targeting metadata must be declared through the ability definition builder/detail pattern. Do not maintain separate explicit production lists of abilities for targeting behavior; shared targeting systems should consume the cached ability definitions.
-- An active ability presents a manual target cursor only when it is a single-target hostile *cast*. Queued weapon abilities (fire on the wearer's next landed auto-attack) and self-centered area abilities (originate on the caster) must NOT prompt for a target: in `feat.2da` they use `TARGETSELF=1` with `HostileFeat` cleared, and in C# they must not call `RequiresTarget()` (`ConfigureGeneratedWeaponAbility` already skips it for `IsQueuedWeaponAbility`). `tools/GenerateWeaponArchetypeImplementation.py` encodes this: a Combat active is `HostileFeat` only when it is neither self-targeting, queued (`CastingTime == "queued"`), nor a self-origin area. When adding or regenerating a queued or self-centered-area weapon active, verify its `feat.2da` row is `TARGETSELF=1`, then rebuild the haks and repack the module so the change deploys.
+- An active ability presents a manual target cursor only when it is a single-target hostile *cast* or an **aimed** area. Queued weapon abilities (fire on the wearer's next landed auto-attack) and **self-centered** area abilities must NOT prompt for a target: in `feat.2da` they use `TARGETSELF=1` with `HostileFeat` cleared, and in C# they must not call `RequiresTarget()` (`ConfigureGeneratedWeaponAbility` already skips it for `IsQueuedWeaponAbility`).
+- **Aimed vs self-centered is decided by the area's shape, and the shape must match the Design Bible wording.** An ability whose Bible description says "in a line" or "in a cone" is *aimed*: the player chooses the direction, so it needs a cursor. An ability whose description says "within Nm" (or otherwise names only a radius) is *self-centered*: it always originates on the caster and needs no cursor.
+
+  | Bible wording | `AbilityTargetingShapeType` | Cursor | `feat.2da` | C# targeting spell |
+  |---|---|---|---|---|
+  | "in a line" | `Rect` (sizeX = length, sizeY = width) | yes | `TARGETSELF` blank, `HostileFeat=1` | real `Spell`, **per rank** |
+  | "in a cone" | `Cone` (sizeX = length, sizeY = width) | yes | `TARGETSELF` blank, `HostileFeat=1` | real `Spell`, **per rank** |
+  | "within Nm" | `Sphere` (sizeX = radius, sizeY = `0`) | no | `TARGETSELF=1`, `HostileFeat` blank | real `Spell`, **per rank** |
+
+  `Earthshatter I/II` is the reference implementation for an aimed line.
+- **Every rank of an area ability needs its own `spells.2da` row and its own `Spell` enum value.** `ApplyTargetingMetadata` silently drops all client targeting when the spell is `Spell.Invalid`, which costs the ability its cursor *and* its ground area marker with no error anywhere. Never leave `Spell.Invalid` on a rank that declares a real `AbilityTargetingShapeType`.
+- `tools/GenerateWeaponArchetypeImplementation.py` encodes the table above, and `SWLOR.Game.Server.Tests/Perks/AreaAbilityTargetingTests.cs` enforces it by reflecting over every `IAbilityListDefinition` and cross-checking `feat.2da`. Keep that test green rather than adding explicit per-ability lists. After changing any of this, rebuild the haks and repack the module so the change deploys.
 
 ## Ability Icons
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -16,6 +17,71 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _selectedSearchIndex = -1;
         private readonly List<(string Resref, string Name)> _searchResults = new();
         private float _appliedContentWidth = -1f;
+
+        // Row DTO replacing the three hand-synced parallel GuiBindingList instances
+        // (labels/toggles/icons) LoadObjectives used to build in lockstep.
+        private sealed class ObjectiveListRow
+        {
+            public string Label { get; }
+            public bool Toggle { get; }
+            public string IconResref { get; }
+
+            public ObjectiveListRow(string label, bool toggle, string iconResref)
+            {
+                Label = label;
+                Toggle = toggle;
+                IconResref = iconResref;
+            }
+        }
+
+        private static readonly GuiTableSource<QuestContractEditorViewModel, ObjectiveListRow> ObjectiveListTable =
+            new GuiTableSource<QuestContractEditorViewModel, ObjectiveListRow>()
+                .Column((m, v) => m.ObjectiveLabels = v, r => r.Label)
+                .Column((m, v) => m.ObjectiveToggles = v, r => r.Toggle)
+                .Column((m, v) => m.ObjectiveIconResrefs = v, r => r.IconResref);
+
+        // Row DTO replacing the two hand-synced parallel GuiBindingList instances
+        // (icons/labels) LoadRewardItems used to build in lockstep.
+        private sealed class RewardItemRow
+        {
+            public string IconResref { get; }
+            public string Label { get; }
+
+            public RewardItemRow(string iconResref, string label)
+            {
+                IconResref = iconResref;
+                Label = label;
+            }
+        }
+
+        private static readonly GuiTableSource<QuestContractEditorViewModel, RewardItemRow> RewardItemTable =
+            new GuiTableSource<QuestContractEditorViewModel, RewardItemRow>()
+                .Column((m, v) => m.RewardItemIconResrefs = v, r => r.IconResref)
+                .Column((m, v) => m.RewardItemLabels = v, r => r.Label);
+
+        // Row DTO replacing the three hand-synced parallel GuiBindingList instances
+        // (labels/toggles/icons) OnClickSearchItems used to build in lockstep.
+        private sealed class SearchResultRow
+        {
+            public (string Resref, string Name) Result { get; }
+            public string Label { get; }
+            public bool Toggle { get; }
+            public string IconResref { get; }
+
+            public SearchResultRow((string Resref, string Name) result, string label, bool toggle, string iconResref)
+            {
+                Result = result;
+                Label = label;
+                Toggle = toggle;
+                IconResref = iconResref;
+            }
+        }
+
+        private static readonly GuiTableSource<QuestContractEditorViewModel, SearchResultRow> SearchResultTable =
+            new GuiTableSource<QuestContractEditorViewModel, SearchResultRow>()
+                .Column((m, v) => m.SearchResultLabels = v, r => r.Label)
+                .Column((m, v) => m.SearchResultToggles = v, r => r.Toggle)
+                .Column((m, v) => m.SearchResultIconResrefs = v, r => r.IconResref);
 
         /// <summary>
         /// Regenerates the form layout for the current window width and swaps it in. NUI layout
@@ -249,24 +315,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadObjectives()
         {
             var draft = QuestContractBoard.GetDraft(Player);
-            var labels = new GuiBindingList<string>();
-            var toggles = new GuiBindingList<bool>();
-            var icons = new GuiBindingList<string>();
-
             var objectives = draft?.Objectives ?? new List<QuestContractObjective>();
+
+            var rows = new List<ObjectiveListRow>();
 
             for (var index = 0; index < objectives.Count; index++)
             {
                 var objective = objectives[index];
 
-                labels.Add($"{objective.Quantity}x {objective.ItemName}");
-                toggles.Add(index == _selectedObjectiveIndex);
-                icons.Add(Cache.GetItemIconByResref(objective.ItemResref));
+                rows.Add(new ObjectiveListRow(
+                    $"{objective.Quantity}x {objective.ItemName}",
+                    index == _selectedObjectiveIndex,
+                    Cache.GetItemIconByResref(objective.ItemResref)));
             }
 
-            ObjectiveLabels = labels;
-            ObjectiveToggles = toggles;
-            ObjectiveIconResrefs = icons;
+            ObjectiveListTable.Refresh(this, rows);
 
             UpdateAddObjectiveEnabled();
             LoadObjectiveDetail(draft);
@@ -296,19 +359,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadRewardItems()
         {
             var draft = QuestContractBoard.GetDraft(Player);
-            var icons = new GuiBindingList<string>();
-            var labels = new GuiBindingList<string>();
-
             var rewardItems = draft?.RewardItems ?? new List<QuestContractItem>();
+
+            var rows = new List<RewardItemRow>();
 
             foreach (var rewardItem in rewardItems)
             {
-                icons.Add(QuestContractBoard.ResolveContractItemIcon(rewardItem));
-                labels.Add(rewardItem.StackSize > 1 ? $"{rewardItem.StackSize}x {rewardItem.Name}" : rewardItem.Name);
+                rows.Add(new RewardItemRow(
+                    QuestContractBoard.ResolveContractItemIcon(rewardItem),
+                    rewardItem.StackSize > 1 ? $"{rewardItem.StackSize}x {rewardItem.Name}" : rewardItem.Name));
             }
 
-            RewardItemIconResrefs = icons;
-            RewardItemLabels = labels;
+            RewardItemTable.Refresh(this, rows);
             IsAddRewardItemEnabled = rewardItems.Count < QuestContractBoard.MaxRewardItems;
         }
 
@@ -368,22 +430,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var results = Cache.SearchItemsByName(ItemSearchText, QuestContractBoard.MaxItemSearchResults);
 
-            _searchResults.Clear();
-            var labels = new GuiBindingList<string>();
-            var toggles = new GuiBindingList<bool>();
-            var icons = new GuiBindingList<string>();
+            var rows = new List<SearchResultRow>();
 
             foreach (var result in results)
             {
-                _searchResults.Add(result);
-                labels.Add(result.Name);
-                toggles.Add(false);
-                icons.Add(Cache.GetItemIconByResref(result.Resref));
+                rows.Add(new SearchResultRow(result, result.Name, false, Cache.GetItemIconByResref(result.Resref)));
             }
 
-            SearchResultLabels = labels;
-            SearchResultToggles = toggles;
-            SearchResultIconResrefs = icons;
+            // Row-index lookups (OnClickSelectSearchResult, OnClickAddObjective) index into
+            // this in lockstep with the bound lists.
+            _searchResults.Clear();
+            foreach (var row in rows)
+                _searchResults.Add(row.Result);
+
+            SearchResultTable.Refresh(this, rows);
 
             if (results.Count == 0)
                 StatusText = "No items found. Try a different search.";

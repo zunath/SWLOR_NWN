@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -85,6 +86,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        // One row DTO per listing, replacing the five hand-synced parallel
+        // GuiBindingList instances LoadData used to build in lockstep.
+        private sealed class MarketListingEntry
+        {
+            public string Id { get; }
+            public int Price { get; }
+            public string IconResref { get; }
+            public string Name { get; }
+            public string PriceText { get; }
+            public bool Listed { get; }
+            public bool ListingCheckboxEnabled { get; }
+
+            public MarketListingEntry(
+                string id,
+                int price,
+                string iconResref,
+                string name,
+                string priceText,
+                bool listed,
+                bool listingCheckboxEnabled)
+            {
+                Id = id;
+                Price = price;
+                IconResref = iconResref;
+                Name = name;
+                PriceText = priceText;
+                Listed = listed;
+                ListingCheckboxEnabled = listingCheckboxEnabled;
+            }
+        }
+
+        private static readonly GuiTableSource<MarketListingViewModel, MarketListingEntry> MarketListingTable =
+            new GuiTableSource<MarketListingViewModel, MarketListingEntry>()
+                .Column((m, v) => m.ItemIconResrefs = v, r => r.IconResref)
+                .Column((m, v) => m.ItemNames = v, r => r.Name)
+                .Column((m, v) => m.ItemPriceNames = v, r => r.PriceText)
+                .Column((m, v) => m.ItemListed = v, r => r.Listed)
+                .Column((m, v) => m.ListingCheckboxEnabled = v, r => r.ListingCheckboxEnabled);
+
         private int GetMarketListingLimit()
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
@@ -93,14 +133,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadData()
         {
-            var itemIconResrefs = new GuiBindingList<string>();
-            var itemNames = new GuiBindingList<string>();
-            var itemPriceNames = new GuiBindingList<string>();
-            var itemListed = new GuiBindingList<bool>();
-            var listingCheckboxEnabled = new GuiBindingList<bool>();
-
-            _itemIds.Clear();
-            _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
             var market = PlayerMarket.GetMarketRegion(_regionType);
             var query = new DBQuery<MarketItem>()
@@ -110,6 +142,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var records = DB.Search(query);
             var count = 0;
 
+            var rows = new List<MarketListingEntry>();
+
             foreach (var record in records)
             {
                 count++;
@@ -118,23 +152,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     !record.Name.ToLower().Contains(SearchText.ToLower()))
                     continue;
 
-                _itemIds.Add(record.Id);
-                itemIconResrefs.Add(record.IconResref);
-                itemNames.Add($"{record.Quantity}x {record.Name}");
-                _itemPrices.Add(record.Price);
-                itemPriceNames.Add($"{record.Price} cr");
-                itemListed.Add(record.IsListed && record.Price > 0);
-                listingCheckboxEnabled.Add(record.Price > 0);
+                rows.Add(new MarketListingEntry(
+                    record.Id,
+                    record.Price,
+                    record.IconResref,
+                    $"{record.Quantity}x {record.Name}",
+                    $"{record.Price} cr",
+                    record.IsListed && record.Price > 0,
+                    record.Price > 0));
+            }
+
+            // Row-index lookups (OnClickRemove, OnClickSaveChanges, OnClickChangePrice,
+            // ChangePrice) index into these in lockstep with the bound lists.
+            _itemIds.Clear();
+            _itemPrices.Clear();
+            foreach (var row in rows)
+            {
+                _itemIds.Add(row.Id);
+                _itemPrices.Add(row.Price);
             }
 
             _itemCount = count;
             UpdateItemCount();
 
-            ItemIconResrefs = itemIconResrefs;
-            ItemNames = itemNames;
-            ItemPriceNames = itemPriceNames;
-            ItemListed = itemListed;
-            ListingCheckboxEnabled = listingCheckboxEnabled;
+            MarketListingTable.Refresh(this, rows);
 
             var dbPlayer = DB.Get<Player>(playerId);
             ShopTill = $"Till: {dbPlayer.MarketTill} cr";

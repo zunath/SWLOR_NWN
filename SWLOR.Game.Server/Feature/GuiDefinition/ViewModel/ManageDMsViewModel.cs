@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,6 +14,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new List<string>();
+
+        // One row DTO per authorized DM/Admin user, replacing the two hand-synced
+        // parallel GuiBindingList instances Initialize used to build in lockstep.
+        private sealed class UserEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+
+            public UserEntry(string id, string name)
+            {
+                Id = id;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<ManageDMsViewModel, UserEntry> UsersTable =
+            new GuiTableSource<ManageDMsViewModel, UserEntry>()
+                .Column((m, v) => m.Names = v, r => r.Name)
+                .Column((m, v) => m.UserToggles = v, r => false);
 
         public string StatusText
         {
@@ -75,22 +95,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActiveUserName = string.Empty;
             SelectedRoleId = 0;
 
-            _userIds.Clear();
             var query = new DBQuery<AuthorizedDM>();
             var users = DB.Search(query);
 
-            var names = new GuiBindingList<string>();
-            var toggles = new GuiBindingList<bool>();
+            var rows = new List<UserEntry>();
 
             foreach (var user in users)
             {
-                _userIds.Add(user.Id.ToString());
-                names.Add(user.Name);
-                toggles.Add(false);
+                rows.Add(new UserEntry(user.Id.ToString(), user.Name));
             }
 
-            Names = names;
-            UserToggles = toggles;
+            // OnSelectUser/OnClickDeleteUser/OnClickSave/OnClickDiscardChanges index
+            // into this in lockstep with the bound lists.
+            _userIds.Clear();
+            foreach (var row in rows)
+                _userIds.Add(row.Id);
+
+            UsersTable.Refresh(this, rows);
 
             WatchOnClient(model => model.ActiveUserCDKey);
             WatchOnClient(model => model.ActiveUserName);

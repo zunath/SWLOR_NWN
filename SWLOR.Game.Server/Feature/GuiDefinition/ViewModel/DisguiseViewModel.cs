@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -15,6 +16,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ContentRetiredPartial = "DISGUISE_CONTENT_RETIRED";
         public const string ContentEditPartial = "DISGUISE_CONTENT_EDIT";
         public const string ContentEmptyPartial = "DISGUISE_CONTENT_EMPTY";
+
+        // One row DTO per disguise, replacing the three hand-synced parallel
+        // GuiBindingList instances LoadList used to build in lockstep.
+        private sealed class DisguiseEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+            public bool IsSelected { get; }
+            public GuiColor Color { get; }
+
+            public DisguiseEntry(string id, string name, bool isSelected, GuiColor color)
+            {
+                Id = id;
+                Name = name;
+                IsSelected = isSelected;
+                Color = color;
+            }
+        }
+
+        private static readonly GuiTableSource<DisguiseViewModel, DisguiseEntry> DisguiseTable =
+            new GuiTableSource<DisguiseViewModel, DisguiseEntry>()
+                .Column((m, v) => m.DisguiseNames = v, r => r.Name)
+                .Column((m, v) => m.DisguiseToggles = v, r => r.IsSelected)
+                .Column((m, v) => m.DisguiseColors = v, r => r.Color);
 
         private const int SoundSetPageSize = 25;
 
@@ -557,10 +582,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SlotUsageColor = usedSlots >= slotLimit ? _slotFullColor : _slotFreeColor;
 
             var disguises = Disguise.GetDisguises(playerId, IsRetiredSelected);
-            var disguiseNames = new GuiBindingList<string>();
-            var disguiseToggles = new GuiBindingList<bool>();
-            var disguiseColors = new GuiBindingList<GuiColor>();
-            _disguiseIds.Clear();
+            var rows = new List<DisguiseEntry>();
 
             foreach (var disguise in disguises)
             {
@@ -569,15 +591,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (isActive)
                     name += " (Active)";
 
-                _disguiseIds.Add(disguise.Id);
-                disguiseNames.Add(name);
-                disguiseToggles.Add(disguise.Id == selectedDisguiseId);
-                disguiseColors.Add(isActive ? _rowActiveColor : _rowNormalColor);
+                rows.Add(new DisguiseEntry(
+                    disguise.Id,
+                    name,
+                    disguise.Id == selectedDisguiseId,
+                    isActive ? _rowActiveColor : _rowNormalColor));
             }
 
-            DisguiseNames = disguiseNames;
-            DisguiseToggles = disguiseToggles;
-            DisguiseColors = disguiseColors;
+            // Row-index lookups (SelectDisguiseAtIndex, LoadList's own selection
+            // restore below) index into this in lockstep with the bound lists.
+            _disguiseIds.Clear();
+            foreach (var row in rows)
+                _disguiseIds.Add(row.Id);
+
+            DisguiseTable.Refresh(this, rows);
 
             if (!string.IsNullOrWhiteSpace(selectedDisguiseId) && _disguiseIds.Contains(selectedDisguiseId))
             {

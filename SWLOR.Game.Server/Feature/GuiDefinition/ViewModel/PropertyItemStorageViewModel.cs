@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -17,6 +18,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int MaxNumberOfCategories = 20;
 
         private readonly List<string> _categoryIds = new();
+
+        // One row DTO per property category, replacing the three hand-synced
+        // parallel GuiBindingList instances Initialize used to build in lockstep.
+        private sealed class CategoryEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+            public bool IsSelected { get; }
+            public bool IsEnabled { get; }
+
+            public CategoryEntry(string id, string name, bool isSelected, bool isEnabled)
+            {
+                Id = id;
+                Name = name;
+                IsSelected = isSelected;
+                IsEnabled = isEnabled;
+            }
+        }
+
+        private static readonly GuiTableSource<PropertyItemStorageViewModel, CategoryEntry> CategoriesTable =
+            new GuiTableSource<PropertyItemStorageViewModel, CategoryEntry>()
+                .Column((m, v) => m.CategoryNames = v, r => r.Name)
+                .Column((m, v) => m.CategoryToggles = v, r => r.IsSelected)
+                .Column((m, v) => m.CategoryEnables = v, r => r.IsEnabled);
 
         public string Instructions
         {
@@ -63,6 +88,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private readonly List<string> _itemIds = new();
+
+        // One row DTO per stored item, replacing the three hand-synced parallel
+        // GuiBindingList instances LoadCategory used to build in lockstep.
+        private sealed class ItemEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+            public bool IsSelected { get; }
+            public string IconResref { get; }
+
+            public ItemEntry(string id, string name, bool isSelected, string iconResref)
+            {
+                Id = id;
+                Name = name;
+                IsSelected = isSelected;
+                IconResref = iconResref;
+            }
+        }
+
+        private static readonly GuiTableSource<PropertyItemStorageViewModel, ItemEntry> ItemsTable =
+            new GuiTableSource<PropertyItemStorageViewModel, ItemEntry>()
+                .Column((m, v) => m.ItemNames = v, r => r.Name)
+                .Column((m, v) => m.ItemToggles = v, r => r.IsSelected)
+                .Column((m, v) => m.ItemResrefs = v, r => r.IconResref);
 
         public GuiBindingList<string> ItemNames
         {
@@ -203,26 +252,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
             var permissions = DB.Search(permissionQuery).ToList();
 
-            var categoryNames = new GuiBindingList<string>();
-            var categoryToggles = new GuiBindingList<bool>();
-            var categoryEnables = new GuiBindingList<bool>();
+            var rows = new List<CategoryEntry>();
 
             foreach (var category in categories)
             {
                 var permission = permissions.SingleOrDefault(x => x.PropertyId == category.Id);
 
-                _categoryIds.Add(category.Id);
-                categoryNames.Add(category.Name);
-                categoryToggles.Add(false);
-                categoryEnables.Add(permission != null && permission.Permissions[PropertyPermissionType.AccessStorage]);
+                rows.Add(new CategoryEntry(
+                    category.Id,
+                    category.Name,
+                    false,
+                    permission != null && permission.Permissions[PropertyPermissionType.AccessStorage]));
             }
+
+            // Row-index lookups (OnDeleteCategory, OnEditPermissions, OnSaveName,
+            // OnStoreItem, OnRetrieveItem, OnSelectCategory) index into this in
+            // lockstep with the bound lists.
+            _categoryIds.Clear();
+            foreach (var row in rows)
+                _categoryIds.Add(row.Id);
 
             RefreshItemCount(
                 categories.Sum(x => x.Items.Count),
                 property.ItemStorageCount);
-            CategoryNames = categoryNames;
-            CategoryToggles = categoryToggles;
-            CategoryEnables = categoryEnables;
+            CategoriesTable.Refresh(this, rows);
             CanAddCategory = propertyPermission.Permissions[PropertyPermissionType.EditCategories];
 
             LoadCategory();
@@ -233,10 +286,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadCategory()
         {
             var playerId = GetObjectUUID(Player);
-            _itemIds.Clear();
-            var itemNames = new GuiBindingList<string>();
-            var itemToggles = new GuiBindingList<bool>();
-            var itemResrefs = new GuiBindingList<string>();
+            var rows = new List<ItemEntry>();
 
             if (SelectedCategoryIndex > -1)
             {
@@ -249,10 +299,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 foreach (var (itemId, item) in category.Items)
                 {
-                    _itemIds.Add(itemId);
-                    itemNames.Add($"{item.Quantity}x {item.Name}");
-                    itemToggles.Add(false);
-                    itemResrefs.Add(item.IconResref);
+                    rows.Add(new ItemEntry(itemId, $"{item.Quantity}x {item.Name}", false, item.IconResref));
                 }
 
                 IsCategorySelected = true;
@@ -270,9 +317,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CanEditPermissions = false;
             }
 
-            ItemNames = itemNames;
-            ItemToggles = itemToggles;
-            ItemResrefs = itemResrefs;
+            // Row-index lookups (OnRetrieveItem, OnExamineItem, OnSelectItem)
+            // index into this in lockstep with the bound lists.
+            _itemIds.Clear();
+            foreach (var row in rows)
+                _itemIds.Add(row.Id);
+
+            ItemsTable.Refresh(this, rows);
         }
 
         public Action OnAddCategory() => () =>

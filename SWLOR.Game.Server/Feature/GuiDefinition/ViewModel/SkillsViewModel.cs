@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -15,6 +16,66 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<RPXPRefreshEvent>
     {
         private readonly List<SkillType> _viewableSkills = new();
+
+        // One row DTO per skill, replacing the eleven hand-synced parallel
+        // GuiBindingList instances LoadSkills used to build in lockstep.
+        private sealed class SkillEntry
+        {
+            public SkillType Type { get; }
+            public string Name { get; }
+            public int Level { get; }
+            public string Title { get; }
+            public float Progress { get; }
+            public string RawXPAmount { get; }
+            public string Description { get; }
+            public string DecayLockText { get; }
+            public GuiColor DecayLockColor { get; }
+            public bool DecayLockEnabled { get; }
+            public bool DistributeRPXPEnabled { get; }
+            public string DistributeRPXPTooltip { get; }
+
+            public SkillEntry(
+                SkillType type,
+                string name,
+                int level,
+                string title,
+                float progress,
+                string rawXPAmount,
+                string description,
+                string decayLockText,
+                GuiColor decayLockColor,
+                bool decayLockEnabled,
+                bool distributeRPXPEnabled,
+                string distributeRPXPTooltip)
+            {
+                Type = type;
+                Name = name;
+                Level = level;
+                Title = title;
+                Progress = progress;
+                RawXPAmount = rawXPAmount;
+                Description = description;
+                DecayLockText = decayLockText;
+                DecayLockColor = decayLockColor;
+                DecayLockEnabled = decayLockEnabled;
+                DistributeRPXPEnabled = distributeRPXPEnabled;
+                DistributeRPXPTooltip = distributeRPXPTooltip;
+            }
+        }
+
+        private static readonly GuiTableSource<SkillsViewModel, SkillEntry> SkillsTable =
+            new GuiTableSource<SkillsViewModel, SkillEntry>()
+                .Column((m, v) => m.SkillNames = v, r => r.Name)
+                .Column((m, v) => m.Levels = v, r => r.Level)
+                .Column((m, v) => m.Titles = v, r => r.Title)
+                .Column((m, v) => m.Progresses = v, r => r.Progress)
+                .Column((m, v) => m.RawXPAmounts = v, r => r.RawXPAmount)
+                .Column((m, v) => m.Descriptions = v, r => r.Description)
+                .Column((m, v) => m.DecayLockTexts = v, r => r.DecayLockText)
+                .Column((m, v) => m.DecayLockColors = v, r => r.DecayLockColor)
+                .Column((m, v) => m.DecayLockButtonEnabled = v, r => r.DecayLockEnabled)
+                .Column((m, v) => m.DistributeRPXPButtonEnabled = v, r => r.DistributeRPXPEnabled)
+                .Column((m, v) => m.DistributeRPXPButtonTooltips = v, r => r.DistributeRPXPTooltip);
 
         public string AvailableXP
         {
@@ -125,18 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            _viewableSkills.Clear();
-            var skillNames = new GuiBindingList<string>();
-            var levels = new GuiBindingList<int>();
-            var titles = new GuiBindingList<string>();
-            var progresses = new GuiBindingList<float>();
-            var rawXPAmounts = new GuiBindingList<string>();
-            var descriptions = new GuiBindingList<string>();
-            var decayLockTexts = new GuiBindingList<string>();
-            var decayLockColors = new GuiBindingList<GuiColor>();
-            var decayLockButtonEnabled = new GuiBindingList<bool>();
-            var distributeRPXPButtonEnabled = new GuiBindingList<bool>();
-            var distributeRPXPTooltips = new GuiBindingList<string>();
+            var rows = new List<SkillEntry>();
 
             foreach (var (type, skill) in skills)
             {
@@ -149,33 +199,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var playerSkill = dbPlayer.Skills[type];
 
-                _viewableSkills.Add(type);
-                skillNames.Add(skill.Name);
-                levels.Add(playerSkill.Rank);
-                titles.Add(GetTitle(playerSkill.Rank));
-                progresses.Add(CalculateProgress(type, playerSkill.Rank, playerSkill.XP));
-                rawXPAmounts.Add(CalculateRawXPAmounts(type, playerSkill.Rank, playerSkill.XP));
-                descriptions.Add(skill.Description);
-                decayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
-                decayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
-                decayLockButtonEnabled.Add(skill.ContributesToSkillCap);
-                distributeRPXPButtonEnabled.Add(dbPlayer.UnallocatedXP > 0);
-                distributeRPXPTooltips.Add($"Distribute RP XP ({dbPlayer.UnallocatedXP})");
+                rows.Add(new SkillEntry(
+                    type,
+                    skill.Name,
+                    playerSkill.Rank,
+                    GetTitle(playerSkill.Rank),
+                    CalculateProgress(type, playerSkill.Rank, playerSkill.XP),
+                    CalculateRawXPAmounts(type, playerSkill.Rank, playerSkill.XP),
+                    skill.Description,
+                    GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap),
+                    GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap),
+                    skill.ContributesToSkillCap,
+                    dbPlayer.UnallocatedXP > 0,
+                    $"Distribute RP XP ({dbPlayer.UnallocatedXP})"));
             }
+
+            // Row-index lookups (ToggleDecayLock, OnClickDistributeRPXP, the
+            // SkillXP refresh) index into this in lockstep with the bound lists.
+            _viewableSkills.Clear();
+            foreach (var row in rows)
+                _viewableSkills.Add(row.Type);
 
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
             XPDebt = $"XP Debt: {dbPlayer.XPDebt}";
-            SkillNames = skillNames;
-            Levels = levels;
-            Titles = titles;
-            Progresses = progresses;
-            RawXPAmounts = rawXPAmounts;
-            Descriptions = descriptions;
-            DecayLockTexts = decayLockTexts;
-            DecayLockColors = decayLockColors;
-            DecayLockButtonEnabled = decayLockButtonEnabled;
-            DistributeRPXPButtonEnabled = distributeRPXPButtonEnabled;
-            DistributeRPXPButtonTooltips = distributeRPXPTooltips;
+            SkillsTable.Refresh(this, rows);
         }
 
         private string GetTitle(int rank)

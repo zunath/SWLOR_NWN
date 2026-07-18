@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,6 +14,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const int MaxNoteLength = 1000;
 
         private readonly List<string> _noteIds = new();
+
+        // One row DTO per saved note, replacing the two hand-synced parallel
+        // GuiBindingList instances Initialize used to build in lockstep.
+        private sealed class NoteEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+
+            public NoteEntry(string id, string name)
+            {
+                Id = id;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<NotesViewModel, NoteEntry> NotesTable =
+            new GuiTableSource<NotesViewModel, NoteEntry>()
+                .Column((m, v) => m.NoteNames = v, r => r.Name)
+                .Column((m, v) => m.NoteToggled = v, r => false);
 
         private bool _isLoadingNote;
         public bool IsSaveEnabled
@@ -91,21 +111,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var notes = DB.Search(query)
                 .ToList();
 
-            _noteIds.Clear();
-            var noteNames = new GuiBindingList<string>();
-            var noteToggled = new GuiBindingList<bool>();
+            var rows = new List<NoteEntry>();
 
             foreach (var note in notes)
             {
-                _noteIds.Add(note.Id);
-                noteNames.Add(note.Name);
-                noteToggled.Add(false);
+                rows.Add(new NoteEntry(note.Id, note.Name));
             }
+
+            // LoadNote/SaveNote/OnSelectNote/OnClickDeleteNote index into this in
+            // lockstep with the bound lists.
+            _noteIds.Clear();
+            foreach (var row in rows)
+                _noteIds.Add(row.Id);
 
             SelectedNoteIndex = -1;
             IsNewEnabled = notes.Count < MaxNumberOfNotes;
-            NoteNames = noteNames;
-            NoteToggled = noteToggled;
+            NotesTable.Refresh(this, rows);
             ActiveNoteName = string.Empty;
             ActiveNoteText = string.Empty;
             IsNoteSelected = false;

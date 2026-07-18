@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -22,6 +23,77 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int SelectedPlayerIndex { get; set; }
 
         private readonly List<string> _playerIds = new();
+
+        // One row DTO per matched player, replacing the two hand-synced parallel
+        // GuiBindingList instances Search used to build in lockstep.
+        private sealed class PlayerRowEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+            public bool Toggle { get; }
+
+            public PlayerRowEntry(string id, string name, bool toggle)
+            {
+                Id = id;
+                Name = name;
+                Toggle = toggle;
+            }
+        }
+
+        private static readonly GuiTableSource<PropertyPermissionsViewModel, PlayerRowEntry> PlayersTable =
+            new GuiTableSource<PropertyPermissionsViewModel, PlayerRowEntry>()
+                .Column((m, v) => m.PlayerNames = v, r => r.Name)
+                .Column((m, v) => m.PlayerToggles = v, r => r.Toggle);
+
+        // One row DTO per available permission, replacing the six hand-synced
+        // parallel GuiBindingList instances LoadPlayerInfo used to build in lockstep.
+        private sealed class PermissionEntry
+        {
+            public bool State { get; }
+            public bool GrantingState { get; }
+            public string Name { get; }
+            public string Description { get; }
+            public bool Enabled { get; }
+            public bool GrantEnabled { get; }
+
+            public PermissionEntry(bool state, bool grantingState, string name, string description, bool enabled, bool grantEnabled)
+            {
+                State = state;
+                GrantingState = grantingState;
+                Name = name;
+                Description = description;
+                Enabled = enabled;
+                GrantEnabled = grantEnabled;
+            }
+        }
+
+        private static readonly GuiTableSource<PropertyPermissionsViewModel, PermissionEntry> PermissionsTable =
+            new GuiTableSource<PropertyPermissionsViewModel, PermissionEntry>()
+                .Column((m, v) => m.PermissionStates = v, r => r.State)
+                .Column((m, v) => m.PermissionGrantingStates = v, r => r.GrantingState)
+                .Column((m, v) => m.PermissionNames = v, r => r.Name)
+                .Column((m, v) => m.PermissionDescriptions = v, r => r.Description)
+                .Column((m, v) => m.PermissionEnabled = v, r => r.Enabled)
+                .Column((m, v) => m.GrantPermissionEnabled = v, r => r.GrantEnabled);
+
+        // Row DTO for OnClickReset, which only rebuilds the state/granting-state
+        // pair (not the name/description/enabled columns LoadPlayerInfo also owns).
+        private sealed class PermissionToggleEntry
+        {
+            public bool State { get; }
+            public bool GrantingState { get; }
+
+            public PermissionToggleEntry(bool state, bool grantingState)
+            {
+                State = state;
+                GrantingState = grantingState;
+            }
+        }
+
+        private static readonly GuiTableSource<PropertyPermissionsViewModel, PermissionToggleEntry> PermissionResetTable =
+            new GuiTableSource<PropertyPermissionsViewModel, PermissionToggleEntry>()
+                .Column((m, v) => m.PermissionStates = v, r => r.State)
+                .Column((m, v) => m.PermissionGrantingStates = v, r => r.GrantingState);
 
         public string Instruction
         {
@@ -175,13 +247,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
                 .FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
 
-            var permissionStates = new GuiBindingList<bool>();
-            var permissionGrantingStates = new GuiBindingList<bool>();
-            var permissionNames = new GuiBindingList<string>();
-            var permissionDescriptions = new GuiBindingList<string>();
-            var permissionEnabled = new GuiBindingList<bool>();
-            var grantPermissionEnabled = new GuiBindingList<bool>();
-
             PlayerName = PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, targetPlayerId, dbPlayer.Name);
 
             string ownerPlayerId;
@@ -197,32 +262,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ownerPlayerId = dbProperty.OwnerPlayerId;
             }
 
+            var rows = new List<PermissionEntry>();
+
             foreach (var type in AvailablePermissions)
             {
                 var permission = Property.GetPermissionByType(type);
-                permissionNames.Add(permission.Name);
-                permissionDescriptions.Add(permission.Description);
+                var enabled = CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, ownerPlayerId);
+                var grantEnabled = CanAdjustGrantPermission(grantorPermissions, type, targetPlayerId, ownerPlayerId);
 
-                permissionStates.Add(targetPermissions.Permissions[type]);
-                permissionGrantingStates.Add(targetPermissions.GrantPermissions[type]);
-
-                if(CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, ownerPlayerId))
-                    permissionEnabled.Add(true);
-                else
-                    permissionEnabled.Add(false);
-
-                if(CanAdjustGrantPermission(grantorPermissions, type, targetPlayerId, ownerPlayerId))
-                    grantPermissionEnabled.Add(true);
-                else
-                    grantPermissionEnabled.Add(false);
+                rows.Add(new PermissionEntry(
+                    targetPermissions.Permissions[type],
+                    targetPermissions.GrantPermissions[type],
+                    permission.Name,
+                    permission.Description,
+                    enabled,
+                    grantEnabled));
             }
 
-            PermissionStates = permissionStates;
-            PermissionGrantingStates = permissionGrantingStates;
-            PermissionNames = permissionNames;
-            PermissionDescriptions = permissionDescriptions;
-            PermissionEnabled = permissionEnabled;
-            GrantPermissionEnabled = grantPermissionEnabled;
+            PermissionsTable.Refresh(this, rows);
         }
 
         protected override void Initialize(PropertyPermissionPayload initialPayload)
@@ -285,9 +342,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Instruction = string.Empty;
             SelectedPlayerIndex = -1;
             IsPlayerSelected = false;
-            _playerIds.Clear();
-            var playerNames = new GuiBindingList<string>();
-            var playerToggles = new GuiBindingList<bool>();
             IEnumerable<Player> dbPlayers;
 
             // If no search is specified, load only the users who currently have permissions.
@@ -307,15 +361,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayers = SearchPlayersByPermissionName();
             }
 
+            var rows = new List<PlayerRowEntry>();
+
             foreach (var player in dbPlayers)
             {
-                _playerIds.Add(player.Id);
-                playerNames.Add(PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name));
-                playerToggles.Add(false);
+                rows.Add(new PlayerRowEntry(
+                    player.Id,
+                    PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name),
+                    false));
             }
 
-            PlayerNames = playerNames;
-            PlayerToggles = playerToggles;
+            // Row-index lookups (OnSelectPlayer, OnClickSaveChanges, OnClickReset) index
+            // into this in lockstep with the bound lists.
+            _playerIds.Clear();
+            foreach (var row in rows)
+                _playerIds.Add(row.Id);
+
+            PlayersTable.Refresh(this, rows);
 
             PermissionStates.Clear();
             PermissionNames.Clear();
@@ -488,19 +550,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
                 var permissions = DB.Search(query).FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
 
-                var permissionStates = new GuiBindingList<bool>();
-                var grantPermissionStates = new GuiBindingList<bool>();
+                var rows = new List<PermissionToggleEntry>();
 
-                for (var index = 0; index < AvailablePermissions.Count; index++)
+                foreach (var permission in AvailablePermissions)
                 {
-                    var permission = AvailablePermissions[index];
-
-                    permissionStates.Add(permissions.Permissions[permission]);
-                    grantPermissionStates.Add(permissions.GrantPermissions[permission]);
+                    rows.Add(new PermissionToggleEntry(
+                        permissions.Permissions[permission],
+                        permissions.GrantPermissions[permission]));
                 }
 
-                PermissionStates = permissionStates;
-                PermissionGrantingStates = grantPermissionStates;
+                PermissionResetTable.Refresh(this, rows);
             }
 
             var dbProperty = DB.Get<WorldProperty>(PropertyId);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -19,6 +20,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<FeatType> _equippedFeats;
         private int _selectedUnequippedIndex = -1;
         private int _selectedEquippedIndex = -1;
+
+        // Row DTO replacing the four hand-synced parallel GuiBindingList instances
+        // LoadLists used to build in lockstep for each of the unequipped/equipped lists.
+        private sealed class TechniqueEntry
+        {
+            public FeatType Feat { get; }
+            public string Name { get; }
+            public bool Selection { get; }
+            public GuiColor Color { get; }
+            public string Icon { get; }
+
+            public TechniqueEntry(FeatType feat, string name, bool selection, GuiColor color, string icon)
+            {
+                Feat = feat;
+                Name = name;
+                Selection = selection;
+                Color = color;
+                Icon = icon;
+            }
+        }
+
+        private static readonly GuiTableSource<TechniquesViewModel, TechniqueEntry> UnequippedTable =
+            new GuiTableSource<TechniquesViewModel, TechniqueEntry>()
+                .Column((m, v) => m.UnequippedNames = v, r => r.Name)
+                .Column((m, v) => m.UnequippedSelections = v, r => r.Selection)
+                .Column((m, v) => m.UnequippedColors = v, r => r.Color)
+                .Column((m, v) => m.UnequippedIcons = v, r => r.Icon);
+
+        private static readonly GuiTableSource<TechniquesViewModel, TechniqueEntry> EquippedTable =
+            new GuiTableSource<TechniquesViewModel, TechniqueEntry>()
+                .Column((m, v) => m.EquippedNames = v, r => r.Name)
+                .Column((m, v) => m.EquippedSelections = v, r => r.Selection)
+                .Column((m, v) => m.EquippedColors = v, r => r.Color)
+                .Column((m, v) => m.EquippedIcons = v, r => r.Icon);
 
         public GuiBindingList<string> UnequippedNames
         {
@@ -167,18 +202,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var learnedFeats = Mimicry.GetLearnedTechniques(dbPlayer);
             var equippedFeats = Mimicry.GetEquippedTechniques(dbPlayer);
 
-            var unequippedNames = new GuiBindingList<string>();
-            var unequippedSelections = new GuiBindingList<bool>();
-            var unequippedColors = new GuiBindingList<GuiColor>();
-            var unequippedIcons = new GuiBindingList<string>();
-            var equippedNames = new GuiBindingList<string>();
-            var equippedSelections = new GuiBindingList<bool>();
-            var equippedColors = new GuiBindingList<GuiColor>();
-            var equippedIcons = new GuiBindingList<string>();
-
-            _unequippedFeats = new List<FeatType>();
-            _equippedFeats = new List<FeatType>();
-
             var equippedFeatSet = equippedFeats.Select(x => x.Feat).ToHashSet();
 
             // Requirement state, computed once, drives the per-row color (mirrors the Perk window's
@@ -202,32 +225,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _ => learnedView.OrderBy(x => x.Detail.Name),
             };
 
+            var unequippedRows = new List<TechniqueEntry>();
             foreach (var (feat, detail) in learnedView)
             {
-                _unequippedFeats.Add(feat);
-                unequippedNames.Add(BuildRowText(detail));
-                unequippedSelections.Add(false);
-                unequippedColors.Add(GetUnequippedRowColor(detail, skillRank, usedSlots, maxSlots));
-                unequippedIcons.Add(Mimicry.GetTechniqueIcon(feat));
+                unequippedRows.Add(new TechniqueEntry(
+                    feat,
+                    BuildRowText(detail),
+                    false,
+                    GetUnequippedRowColor(detail, skillRank, usedSlots, maxSlots),
+                    Mimicry.GetTechniqueIcon(feat)));
             }
 
+            var equippedRows = new List<TechniqueEntry>();
             foreach (var (feat, detail) in equippedFeats)
             {
-                _equippedFeats.Add(feat);
-                equippedNames.Add(BuildRowText(detail));
-                equippedSelections.Add(false);
-                equippedColors.Add(EquippedColor);
-                equippedIcons.Add(Mimicry.GetTechniqueIcon(feat));
+                equippedRows.Add(new TechniqueEntry(
+                    feat,
+                    BuildRowText(detail),
+                    false,
+                    EquippedColor,
+                    Mimicry.GetTechniqueIcon(feat)));
             }
 
-            UnequippedNames = unequippedNames;
-            UnequippedSelections = unequippedSelections;
-            UnequippedColors = unequippedColors;
-            UnequippedIcons = unequippedIcons;
-            EquippedNames = equippedNames;
-            EquippedSelections = equippedSelections;
-            EquippedColors = equippedColors;
-            EquippedIcons = equippedIcons;
+            // Row-index lookups (OnSelectUnequipped/OnSelectEquipped/OnClickEquip/
+            // OnClickUnequip) index into these in lockstep with the bound lists.
+            _unequippedFeats = new List<FeatType>();
+            foreach (var row in unequippedRows)
+                _unequippedFeats.Add(row.Feat);
+
+            _equippedFeats = new List<FeatType>();
+            foreach (var row in equippedRows)
+                _equippedFeats.Add(row.Feat);
+
+            UnequippedTable.Refresh(this, unequippedRows);
+            EquippedTable.Refresh(this, equippedRows);
 
             RefreshSlots(dbPlayer);
         }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -10,6 +11,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class CustomizeCharacterViewModel: GuiViewModelBase<CustomizeCharacterViewModel, CustomizeCharacterPayload>
     {
         private uint _target;
+
+        // One row DTO per sound set, replacing the two hand-synced parallel
+        // GuiBindingList instances LoadSoundSets used to build in lockstep.
+        private sealed class SoundSetEntry
+        {
+            public int Id { get; }
+            public string Name { get; }
+            public bool IsSelected { get; }
+
+            public SoundSetEntry(int id, string name, bool isSelected)
+            {
+                Id = id;
+                Name = name;
+                IsSelected = isSelected;
+            }
+        }
+
+        private static readonly GuiTableSource<CustomizeCharacterViewModel, SoundSetEntry> SoundSetsTable =
+            new GuiTableSource<CustomizeCharacterViewModel, SoundSetEntry>()
+                .Column((m, v) => m.SoundSetNames = v, r => r.Name)
+                .Column((m, v) => m.SoundSetToggles = v, r => r.IsSelected);
 
         public const string PartialElement = "PARTIAL_VIEW";
         public const string PortraitPartial = "PORTRAIT_PARTIAL";
@@ -135,19 +157,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _selectedSoundSetIndex = -1;
             var activeSoundSetId = GetSoundset(_target);
-            var soundSetNames = new GuiBindingList<string>();
-            var soundSetToggles = new GuiBindingList<bool>();
-            _soundSetIds = new List<int>();
+
+            var rows = new List<SoundSetEntry>();
 
             foreach (var (soundSet, label) in Cache.GetSoundSets())
             {
-                soundSetNames.Add(label);
-                soundSetToggles.Add(activeSoundSetId == soundSet);
-                _soundSetIds.Add(soundSet);
+                rows.Add(new SoundSetEntry(soundSet, label, activeSoundSetId == soundSet));
             }
 
-            SoundSetNames = soundSetNames;
-            SoundSetToggles = soundSetToggles;
+            _soundSetIds = new List<int>();
+            foreach (var row in rows)
+                _soundSetIds.Add(row.Id);
+
+            SoundSetsTable.Refresh(this, rows);
         }
 
         protected override void Initialize(CustomizeCharacterPayload initialPayload)

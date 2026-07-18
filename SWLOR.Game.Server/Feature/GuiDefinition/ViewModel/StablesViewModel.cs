@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -25,6 +26,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private readonly List<string> _beastIds = new();
         private int _selectedBeastIndex = -1;
+
+        // One row DTO per stabled beast, replacing the three hand-synced
+        // parallel GuiBindingList instances LoadBeasts used to build in lockstep.
+        private sealed class BeastEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+            public bool IsSelected { get; }
+            public GuiColor NameColor { get; }
+
+            public BeastEntry(string id, string name, bool isSelected, GuiColor nameColor)
+            {
+                Id = id;
+                Name = name;
+                IsSelected = isSelected;
+                NameColor = nameColor;
+            }
+        }
+
+        private static readonly GuiTableSource<StablesViewModel, BeastEntry> BeastsTable =
+            new GuiTableSource<StablesViewModel, BeastEntry>()
+                .Column((m, v) => m.BeastNames = v, r => r.Name)
+                .Column((m, v) => m.BeastToggles = v, r => r.IsSelected)
+                .Column((m, v) => m.BeastNameColors = v, r => r.NameColor);
 
         public string Instructions
         {
@@ -359,26 +384,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .OrderBy(o => o.Name)
                 .ToList();
 
-            _beastIds.Clear();
-            var beastNames = new GuiBindingList<string>();
-            var beastToggles = new GuiBindingList<bool>();
-            var beastNameColors = new GuiBindingList<GuiColor>();
+            var rows = new List<BeastEntry>();
 
             foreach (var dbBeast in dbBeasts)
             {
-                _beastIds.Add(dbBeast.Id);
-                beastNames.Add(dbBeast.Name);
-                beastToggles.Add(false);
-
-                if(dbBeast.Id == dbPlayer.ActiveBeastId)
-                    beastNameColors.Add(GuiColor.Green);
-                else
-                    beastNameColors.Add(GuiColor.White);
+                var nameColor = dbBeast.Id == dbPlayer.ActiveBeastId ? GuiColor.Green : GuiColor.White;
+                rows.Add(new BeastEntry(dbBeast.Id, dbBeast.Name, false, nameColor));
             }
 
-            BeastNames = beastNames;
-            BeastToggles = beastToggles;
-            BeastNameColors = beastNameColors;
+            // Row-index lookups (OnClickBeast, OnClickToggleActive, OnClickReleaseBeast,
+            // OnClickSaveName, LoadSelectedBeast) index into this in lockstep with the
+            // bound lists.
+            _beastIds.Clear();
+            foreach (var row in rows)
+                _beastIds.Add(row.Id);
+
+            BeastsTable.Refresh(this, rows);
             BeastCount = $"Beasts: {dbBeasts.Count} / {perkLevel}";
             _selectedBeastIndex = -1;
             ClearSelectedBeast();

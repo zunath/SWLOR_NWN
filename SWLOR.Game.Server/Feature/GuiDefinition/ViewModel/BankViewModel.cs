@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -26,6 +27,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private readonly List<string> _itemIds = new();
+
+        // One row DTO per bank item, replacing the two hand-synced parallel
+        // GuiBindingList instances Search used to build in lockstep.
+        private sealed class ItemEntry
+        {
+            public string Id { get; }
+            public string Resref { get; }
+            public string Name { get; }
+
+            public ItemEntry(string id, string resref, string name)
+            {
+                Id = id;
+                Resref = resref;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<BankViewModel, ItemEntry> ItemsTable =
+            new GuiTableSource<BankViewModel, ItemEntry>()
+                .Column((m, v) => m.ItemResrefs = v, r => r.Resref)
+                .Column((m, v) => m.ItemNames = v, r => r.Name);
 
         public float StoragePercentage
         {
@@ -80,20 +102,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
 
-            _itemIds.Clear();
             var items = Bank.SearchItems(playerId, SearchText);
-            var itemResrefs = new GuiBindingList<string>();
-            var itemNames = new GuiBindingList<string>();
+            var rows = new List<ItemEntry>();
 
             foreach (var item in items)
             {
-                _itemIds.Add(item.Id);
-                itemResrefs.Add(item.IconResref);
-                itemNames.Add($"{item.Quantity}x {item.Name}");
+                rows.Add(new ItemEntry(item.Id, item.IconResref, $"{item.Quantity}x {item.Name}"));
             }
 
-            ItemResrefs = itemResrefs;
-            ItemNames = itemNames;
+            _itemIds.Clear();
+            foreach (var row in rows)
+                _itemIds.Add(row.Id);
+
+            ItemsTable.Refresh(this, rows);
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)

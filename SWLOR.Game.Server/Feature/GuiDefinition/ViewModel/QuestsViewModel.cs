@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -23,6 +24,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private readonly List<string> _questIds = new List<string>();
         private int SelectedQuestIndex { get; set; }
+
+        // One row DTO per matching quest, replacing the two hand-synced parallel
+        // GuiBindingList instances Search used to build in lockstep.
+        private sealed class QuestEntry
+        {
+            public string QuestId { get; }
+            public string Name { get; }
+
+            public QuestEntry(string questId, string name)
+            {
+                QuestId = questId;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<QuestsViewModel, QuestEntry> QuestsTable =
+            new GuiTableSource<QuestsViewModel, QuestEntry>()
+                .Column((m, v) => m.QuestNames = v, r => r.Name)
+                .Column((m, v) => m.QuestToggles = v, r => false);
 
         public GuiBindingList<string> QuestNames
         {
@@ -118,9 +138,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            _questIds.Clear();
-            var questNames = new GuiBindingList<string>();
-            var questToggles = new GuiBindingList<bool>();
+            var rows = new List<QuestEntry>();
 
             foreach (var (questId, quest) in dbPlayer.Quests)
             {
@@ -140,13 +158,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         continue;
                 }
 
-                _questIds.Add(questId);
-                questNames.Add(questDetail.Name);
-                questToggles.Add(false);
+                rows.Add(new QuestEntry(questId, questDetail.Name));
             }
 
-            QuestNames = questNames;
-            QuestToggles = questToggles;
+            // OnClickQuest/OnClickAbandonQuest/LoadQuest index into this in lockstep
+            // with the bound lists.
+            _questIds.Clear();
+            foreach (var row in rows)
+                _questIds.Add(row.QuestId);
+
+            QuestsTable.Refresh(this, rows);
 
             LoadQuest();
         }

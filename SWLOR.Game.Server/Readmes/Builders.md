@@ -466,6 +466,43 @@ ExampleViewModel.BodyPartial)` in `Initialize` instead.
 Full guide: `GuiWindowAuthoring.md`. Layout rules: `NuiLayoutRules.md`. Living widget
 reference: the DebugNuiGallery window (`/nuigallery`).
 
+#### Tabular data: use GuiTableSource (required)
+
+NUI binds each cell in a row template to a *separate top-level property*, so a table is
+physically N parallel `GuiBindingList<T>` instances — one per column. Building those by
+hand means appending to N lists in lockstep, and nothing keeps them the same length: a
+missed `Add` in one branch silently misaligns every column to its right.
+
+In the ViewModel, declare a row DTO plus a static `GuiTableSource`, then rebuild in one
+call. `SkillsViewModel` is the reference implementation:
+
+```csharp
+private sealed class SkillEntry { /* one get-only property per column */ }
+
+private static readonly GuiTableSource<SkillsViewModel, SkillEntry> SkillsTable =
+    new GuiTableSource<SkillsViewModel, SkillEntry>()
+        .Column((m, v) => m.SkillNames = v, r => r.Name)
+        .Column((m, v) => m.Levels = v, r => r.Level);      // any bound type, not just string
+
+// ...then, in the load method:
+SkillsTable.Refresh(this, rows);                            // all columns, one pass
+```
+
+`Column<TValue>` is generic — `int`, `float`, `bool`, and `GuiColor` columns work the same
+as `string`. If the ViewModel keeps a plain `List<T>` of row identities for
+`NuiGetEventArrayIndex()` lookups, repopulate it from the same `rows` so it cannot drift
+either.
+
+Two things this does *not* cover, deliberately: incremental single-row updates
+(`SomeList[index] = x` in a click handler) should stay as they are, and
+`GuiTableSource` changes nothing on the definition side — it emits the identical bound
+properties, so the wire format and rendering are unchanged.
+
+`GuiTableSourceAdoptionTests` enforces this: a ViewModel constructing two or more
+`GuiBindingList` instances must use `GuiTableSource`, or be listed in that test's
+`NonTabularViewModels` allow-list with a reason. The allow-list is also checked for
+staleness, so it shrinks as windows migrate.
+
 ## Best Practices
 
 1. **Always call Build()** - Most builders require calling Build() to return the final result

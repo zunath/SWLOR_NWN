@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -13,6 +14,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly List<PropertyLoadDiagnostic> _diagnostics = new();
         private int _selectedPropertyIndex;
+
+        // Row DTO replacing the three hand-synced parallel GuiBindingList instances
+        // LoadDiagnostics used to build in lockstep.
+        private sealed class PropertyRowEntry
+        {
+            public string Row { get; }
+            public string Tooltip { get; }
+
+            public PropertyRowEntry(string row, string tooltip)
+            {
+                Row = row;
+                Tooltip = tooltip;
+            }
+        }
+
+        private static readonly GuiTableSource<PropertyDiagnosticsViewModel, PropertyRowEntry> DiagnosticsTable =
+            new GuiTableSource<PropertyDiagnosticsViewModel, PropertyRowEntry>()
+                .Column((m, v) => m.PropertyRows = v, r => r.Row)
+                .Column((m, v) => m.PropertyTooltips = v, r => r.Tooltip)
+                .Column((m, v) => m.PropertySelections = v, r => false);
 
         public string StatusText
         {
@@ -71,22 +92,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _diagnostics.Clear();
             _diagnostics.AddRange(Property.GetPropertyLoadDiagnostics());
 
-            var rows = new GuiBindingList<string>();
-            var tooltips = new GuiBindingList<string>();
-            var selections = new GuiBindingList<bool>();
+            var rows = new List<PropertyRowEntry>();
 
             foreach (var diagnostic in _diagnostics)
             {
-                rows.Add(FormatRow(diagnostic));
-                tooltips.Add(FormatTooltip(diagnostic));
-                selections.Add(false);
+                rows.Add(new PropertyRowEntry(FormatRow(diagnostic), FormatTooltip(diagnostic)));
             }
 
             _selectedPropertyIndex = -1;
             IsPropertySelected = false;
-            PropertyRows = rows;
-            PropertyTooltips = tooltips;
-            PropertySelections = selections;
+            DiagnosticsTable.Refresh(this, rows);
             StatusText = statusText;
             StatusColor = GuiColor.Green;
         }

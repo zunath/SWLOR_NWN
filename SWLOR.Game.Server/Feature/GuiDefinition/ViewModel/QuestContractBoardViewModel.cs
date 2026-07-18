@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -21,6 +22,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _isBrowseTab;
         private readonly List<QuestContract> _rows = new();
         private int _selectedIndex = -1;
+
+        // Row DTO shared by LoadBrowse/LoadMyContracts, replacing the three hand-synced
+        // parallel GuiBindingList instances (labels/toggles/colors) each used to build.
+        private sealed class ContractRow
+        {
+            public QuestContract Contract { get; }
+            public string Label { get; }
+            public GuiColor Color { get; }
+
+            public ContractRow(QuestContract contract, string label, GuiColor color)
+            {
+                Contract = contract;
+                Label = label;
+                Color = color;
+            }
+        }
+
+        private static readonly GuiTableSource<QuestContractBoardViewModel, ContractRow> ContractRowsTable =
+            new GuiTableSource<QuestContractBoardViewModel, ContractRow>()
+                .Column((m, v) => m.RowLabels = v, r => r.Label)
+                .Column((m, v) => m.RowToggles = v, r => false)
+                .Column((m, v) => m.RowColors = v, r => r.Color);
+
+        // Row DTO shared by both loops in LoadDetailItems (icon + label), replacing the
+        // hand-synced parallel GuiBindingList pairs each loop used to build.
+        private sealed class ItemRow
+        {
+            public string IconResref { get; }
+            public string Label { get; }
+
+            public ItemRow(string iconResref, string label)
+            {
+                IconResref = iconResref;
+                Label = label;
+            }
+        }
+
+        private static readonly GuiTableSource<QuestContractBoardViewModel, ItemRow> ObjectiveDetailTable =
+            new GuiTableSource<QuestContractBoardViewModel, ItemRow>()
+                .Column((m, v) => m.ObjectiveIconResrefs = v, r => r.IconResref)
+                .Column((m, v) => m.ObjectiveLabels = v, r => r.Label);
+
+        private static readonly GuiTableSource<QuestContractBoardViewModel, ItemRow> RewardDetailTable =
+            new GuiTableSource<QuestContractBoardViewModel, ItemRow>()
+                .Column((m, v) => m.RewardIconResrefs = v, r => r.IconResref)
+                .Column((m, v) => m.RewardLabels = v, r => r.Label);
 
         public string SearchText
         {
@@ -227,10 +274,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? DB.Search(query.AddPaging(count, 0)).OrderByDescending(x => x.DatePublished)
                 : Enumerable.Empty<QuestContract>();
 
-            _rows.Clear();
-            var labels = new GuiBindingList<string>();
-            var toggles = new GuiBindingList<bool>();
-            var colors = new GuiBindingList<GuiColor>();
+            var rows = new List<ContractRow>();
 
             foreach (var contract in results)
             {
@@ -240,15 +284,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var authorName = PlayerName.GetPlainDisplayNameByPlayerId(Player, contract.AuthorPlayerId, contract.AuthorName);
 
-                _rows.Add(contract);
-                labels.Add($"{contract.Title} - {authorName} - {contract.RewardCredits} cr");
-                toggles.Add(false);
-                colors.Add(GuiColor.White);
+                rows.Add(new ContractRow(contract, $"{contract.Title} - {authorName} - {contract.RewardCredits} cr", GuiColor.White));
             }
 
-            RowLabels = labels;
-            RowToggles = toggles;
-            RowColors = colors;
+            // Row-index lookups (OnClickSelectRow, OnClickAccept, etc.) index into this in
+            // lockstep with the bound lists.
+            _rows.Clear();
+            foreach (var row in rows)
+                _rows.Add(row.Contract);
+
+            ContractRowsTable.Refresh(this, rows);
 
             LoadDetail();
         }
@@ -265,10 +310,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var count = (int)DB.SearchCount(query);
             var results = count > 0 ? DB.Search(query.AddPaging(count, 0)) : Enumerable.Empty<QuestContract>();
 
-            _rows.Clear();
-            var labels = new GuiBindingList<string>();
-            var toggles = new GuiBindingList<bool>();
-            var colors = new GuiBindingList<GuiColor>();
+            var rows = new List<ContractRow>();
 
             foreach (var contract in results.OrderByDescending(x => x.Status))
             {
@@ -278,15 +320,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var statusLabel = contract.Status == QuestContractStatus.Draft ? "Draft" : "Published";
 
-                _rows.Add(contract);
-                labels.Add($"[{statusLabel}] {contract.Title}");
-                toggles.Add(false);
-                colors.Add(contract.Status == QuestContractStatus.Draft ? GuiColor.White : GuiColor.Green);
+                rows.Add(new ContractRow(
+                    contract,
+                    $"[{statusLabel}] {contract.Title}",
+                    contract.Status == QuestContractStatus.Draft ? GuiColor.White : GuiColor.Green));
             }
 
-            RowLabels = labels;
-            RowToggles = toggles;
-            RowColors = colors;
+            // Row-index lookups (OnClickSelectRow, OnClickAccept, etc.) index into this in
+            // lockstep with the bound lists.
+            _rows.Clear();
+            foreach (var row in rows)
+                _rows.Add(row.Contract);
+
+            ContractRowsTable.Refresh(this, rows);
 
             var hasDraft = QuestContractBoard.GetDraft(Player) != null;
             IsNewContractEnabled = !hasDraft;
@@ -399,27 +445,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadDetailItems(QuestContract contract)
         {
-            var objectiveIcons = new GuiBindingList<string>();
-            var objectiveLabels = new GuiBindingList<string>();
-            var rewardIcons = new GuiBindingList<string>();
-            var rewardLabels = new GuiBindingList<string>();
+            var objectiveRows = new List<ItemRow>();
 
             foreach (var objective in contract.Objectives)
             {
-                objectiveIcons.Add(Cache.GetItemIconByResref(objective.ItemResref));
-                objectiveLabels.Add($"{objective.Quantity}x {objective.ItemName}");
+                objectiveRows.Add(new ItemRow(Cache.GetItemIconByResref(objective.ItemResref), $"{objective.Quantity}x {objective.ItemName}"));
             }
+
+            var rewardRows = new List<ItemRow>();
 
             foreach (var rewardItem in contract.RewardItems)
             {
-                rewardIcons.Add(QuestContractBoard.ResolveContractItemIcon(rewardItem));
-                rewardLabels.Add(rewardItem.StackSize > 1 ? $"{rewardItem.StackSize}x {rewardItem.Name}" : rewardItem.Name);
+                rewardRows.Add(new ItemRow(
+                    QuestContractBoard.ResolveContractItemIcon(rewardItem),
+                    rewardItem.StackSize > 1 ? $"{rewardItem.StackSize}x {rewardItem.Name}" : rewardItem.Name));
             }
 
-            ObjectiveIconResrefs = objectiveIcons;
-            ObjectiveLabels = objectiveLabels;
-            RewardIconResrefs = rewardIcons;
-            RewardLabels = rewardLabels;
+            ObjectiveDetailTable.Refresh(this, objectiveRows);
+            RewardDetailTable.Refresh(this, rewardRows);
         }
 
         public Action OnClickBrowseTab() => ShowBrowse;

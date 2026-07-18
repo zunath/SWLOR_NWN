@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -965,25 +966,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PartCategorySelected[SelectedPartCategoryIndex] = true;
         }
 
-        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds)
+        // Row DTO replacing the two hand-synced parallel GuiBindingList instances
+        // (and the parallel _partIdToIndex dictionary) that LoadParts used to build in lockstep.
+        private sealed class PartEntry
         {
-            var partNames = new GuiBindingList<string>();
-            var partSelected = new GuiBindingList<bool>();
-            var partIdToIndex = new Dictionary<int, int>();
-            var index = 0;
+            public int PartId { get; }
+            public string Name { get; }
+
+            public PartEntry(int partId, string name)
+            {
+                PartId = partId;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<AppearanceEditorViewModel, PartEntry> PartsTable =
+            new GuiTableSource<AppearanceEditorViewModel, PartEntry>()
+                .Column((m, v) => m.PartOptions = v, r => r.Name)
+                .Column((m, v) => m.PartSelected = v, r => false);
+
+        private void LoadParts(int[] partIds)
+        {
+            var rows = new List<PartEntry>();
 
             foreach (var partId in partIds)
             {
-                var partIndex = partId;
+                rows.Add(new PartEntry(partId, $"Part #{partId}"));
+            }
 
-                partNames.Add($"Part #{partId}");
-                partSelected.Add(false);
-                partIdToIndex[partIndex] = index;
-                index++;
+            var partIdToIndex = new Dictionary<int, int>();
+            for (var index = 0; index < rows.Count; index++)
+            {
+                partIdToIndex[rows[index].PartId] = index;
             }
 
             _partIdToIndex = partIdToIndex;
-            return (partNames, partSelected);
+            PartsTable.Refresh(this, rows);
         }
 
         private uint GetItem()
@@ -1102,10 +1120,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
 
-            var (partNames, partSelected) = GetPartLists(partIds);
+            LoadParts(partIds);
 
-            PartOptions = partNames;
-            PartSelected = partSelected;
             SelectedPartIndex = _partIdToIndex[selectedPartId];
             PartSelected[SelectedPartIndex] = true;
         }
@@ -1238,10 +1254,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (selectedPartId <= -1)
                 return;
 
-            var (partNames, partSelected) = GetPartLists(partIds);
+            LoadParts(partIds);
 
-            PartOptions = partNames;
-            PartSelected = partSelected;
             SelectedPartIndex = _partIdToIndex[selectedPartId];
             PartSelected[SelectedPartIndex] = true;
         }

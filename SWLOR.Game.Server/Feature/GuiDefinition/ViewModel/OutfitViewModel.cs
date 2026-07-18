@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,6 +14,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class OutfitViewModel: GuiViewModelBase<OutfitViewModel, GuiPayloadBase>
     {
         private List<string> _outfitIds = new();
+
+        // One row DTO per saved outfit slot, replacing the two hand-synced parallel
+        // GuiBindingList instances Initialize used to build in lockstep.
+        private sealed class OutfitEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+
+            public OutfitEntry(string id, string name)
+            {
+                Id = id;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<OutfitViewModel, OutfitEntry> OutfitTable =
+            new GuiTableSource<OutfitViewModel, OutfitEntry>()
+                .Column((m, v) => m.SlotNames = v, r => r.Name)
+                .Column((m, v) => m.SlotToggles = v, r => false);
 
         public GuiBindingList<string> SlotNames
         {
@@ -94,19 +114,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Name = string.Empty;
 
             var dbOutfits = GetOutfits();
-            var slotNames = new GuiBindingList<string>();
-            var slotToggles = new GuiBindingList<bool>();
-            _outfitIds.Clear();
+            var rows = new List<OutfitEntry>();
 
             foreach (var outfit in dbOutfits)
             {
-                _outfitIds.Add(outfit.Id);
-                slotNames.Add(outfit.Name);
-                slotToggles.Add(false);
+                rows.Add(new OutfitEntry(outfit.Id, outfit.Name));
             }
 
-            SlotNames = slotNames;
-            SlotToggles = slotToggles;
+            // OnClickSlot/OnClickSave/OnClickStoreOutfit/OnClickLoadOutfit/OnClickDelete
+            // index into this in lockstep with the bound lists.
+            _outfitIds.Clear();
+            foreach (var row in rows)
+                _outfitIds.Add(row.Id);
+
+            OutfitTable.Refresh(this, rows);
             IsSlotLoaded = false;
 
             WatchOnClient(model => model.Name);

@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -15,6 +17,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int MaxUpgradeLevel = 5;
         private string _cityId;
+
+        // One row DTO per citizen, replacing the two hand-synced parallel
+        // GuiBindingList instances RefreshCitizenList used to build in lockstep.
+        private sealed class CitizenEntry
+        {
+            public string Name { get; }
+            public string CreditsOwed { get; }
+
+            public CitizenEntry(string name, string creditsOwed)
+            {
+                Name = name;
+                CreditsOwed = creditsOwed;
+            }
+        }
+
+        private static readonly GuiTableSource<ManageCityViewModel, CitizenEntry> CitizensTable =
+            new GuiTableSource<ManageCityViewModel, CitizenEntry>()
+                .Column((m, v) => m.CitizenNames = v, r => r.Name)
+                .Column((m, v) => m.CitizenCreditsOwed = v, r => r.CreditsOwed);
 
         public string Instructions
         {
@@ -234,17 +255,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false)
                 .AddFieldSearch(nameof(Entity.Player.IsDeleted), false));
 
-            var citizenNames = new GuiBindingList<string>();
-            var citizenCreditsOwed = new GuiBindingList<string>();
+            var rows = new List<CitizenEntry>();
 
             foreach (var citizen in dbCitizens)
             {
-                citizenNames.Add(PlayerName.GetPlainDisplayNameByPlayerId(Player, citizen.Id, citizen.Name));
-                citizenCreditsOwed.Add($"Owes {citizen.PropertyOwedTaxes} cr");
+                rows.Add(new CitizenEntry(
+                    PlayerName.GetPlainDisplayNameByPlayerId(Player, citizen.Id, citizen.Name),
+                    $"Owes {citizen.PropertyOwedTaxes} cr"));
             }
 
-            CitizenNames = citizenNames;
-            CitizenCreditsOwed = citizenCreditsOwed;
+            CitizensTable.Refresh(this, rows);
         }
 
         private void RefreshPropertyDetails()

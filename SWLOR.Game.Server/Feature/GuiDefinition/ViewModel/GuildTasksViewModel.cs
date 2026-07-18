@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -22,6 +23,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _guildMaster;
         private int _selectedQuestIndex;
         private int _selectedRankFilter;
+
+        // Row DTO replacing the three hand-synced GuiBindingList instances
+        // RefreshTasks used to build in lockstep across its two source loops.
+        private sealed class TaskEntry
+        {
+            public string QuestId { get; }
+            public string Name { get; }
+            public bool Toggle { get; }
+            public GuiColor Color { get; }
+
+            public TaskEntry(string questId, string name, bool toggle, GuiColor color)
+            {
+                QuestId = questId;
+                Name = name;
+                Toggle = toggle;
+                Color = color;
+            }
+        }
+
+        private static readonly GuiTableSource<GuildTasksViewModel, TaskEntry> TaskTable =
+            new GuiTableSource<GuildTasksViewModel, TaskEntry>()
+                .Column((m, v) => m.TaskNames = v, r => r.Name)
+                .Column((m, v) => m.TaskToggles = v, r => r.Toggle)
+                .Column((m, v) => m.TaskColors = v, r => r.Color);
 
         public GuiBindingList<string> TaskNames
         {
@@ -111,10 +136,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbPlayer.Guilds[_guildType]
                 : new PlayerGuild();
 
-            _questIds.Clear();
-            var taskNames = new GuiBindingList<string>();
-            var taskToggles = new GuiBindingList<bool>();
-            var taskColors = new GuiBindingList<GuiColor>();
+            var rows = new List<TaskEntry>();
             var currentTasks = Guild.GetAllActiveGuildTasks(_guildType);
             var rankHasTasks = new Dictionary<int, bool> {{1,false}, {2,false}, {3,false}, {4,false}, {5,false}};
 
@@ -131,10 +153,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (task.GuildRank + 1 != _selectedRankFilter)
                     continue;
 
-                _questIds.Add(questId);
-                taskNames.Add($"{task.Name} [Rank {task.GuildRank + 1}] [Expired]");
-                taskToggles.Add(false);
-                taskColors.Add(GuiColor.Red);
+                rows.Add(new TaskEntry(questId, $"{task.Name} [Rank {task.GuildRank + 1}] [Expired]", false, GuiColor.Red));
                 rankHasTasks[task.GuildRank + 1] = true;
             }
 
@@ -161,15 +180,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     statusColor = new GuiColor(255, 255, 0);
                 }
 
-                _questIds.Add(task.QuestId);
-                taskNames.Add($"{task.Name} [Rank {task.GuildRank + 1}]");
-                taskToggles.Add(false);
-                taskColors.Add(statusColor);
+                rows.Add(new TaskEntry(task.QuestId, $"{task.Name} [Rank {task.GuildRank + 1}]", false, statusColor));
             }
 
-            TaskNames = taskNames;
-            TaskToggles = taskToggles;
-            TaskColors = taskColors;
+            // Row-index lookups (OnClickTask, OnClickAcceptTask, the quest
+            // refresh events) index into this in lockstep with the bound lists.
+            _questIds.Clear();
+            foreach (var row in rows)
+                _questIds.Add(row.QuestId);
+
+            TaskTable.Refresh(this, rows);
             IsRank1Enabled = rankHasTasks[1] && playerGuild.Rank >= 0;
             IsRank2Enabled = rankHasTasks[2] && playerGuild.Rank >= 1;
             IsRank3Enabled = rankHasTasks[3] && playerGuild.Rank >= 2;

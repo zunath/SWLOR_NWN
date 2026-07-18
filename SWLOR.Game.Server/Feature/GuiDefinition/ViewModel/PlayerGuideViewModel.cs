@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -13,6 +14,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private readonly List<int> _filteredTopicIndexes = new();
         private readonly List<int> _relatedTopicIndexes = new();
+
+        // One row DTO per topic button, replacing the three hand-synced parallel
+        // GuiBindingList instances LoadTopics used to build in lockstep.
+        private sealed class TopicEntry
+        {
+            public int Index { get; }
+            public string Name { get; }
+            public bool IsSelected { get; }
+            public string Tooltip { get; }
+
+            public TopicEntry(int index, string name, bool isSelected, string tooltip)
+            {
+                Index = index;
+                Name = name;
+                IsSelected = isSelected;
+                Tooltip = tooltip;
+            }
+        }
+
+        private static readonly GuiTableSource<PlayerGuideViewModel, TopicEntry> TopicsTable =
+            new GuiTableSource<PlayerGuideViewModel, TopicEntry>()
+                .Column((m, v) => m.TopicButtonTexts = v, r => r.Name)
+                .Column((m, v) => m.TopicSelections = v, r => r.IsSelected)
+                .Column((m, v) => m.TopicTooltips = v, r => r.Tooltip);
+
+        // One row DTO per related-topic link, replacing the two hand-synced
+        // parallel GuiBindingList instances LoadRelatedTopics used to build.
+        private sealed class RelatedTopicEntry
+        {
+            public int Index { get; }
+            public string Name { get; }
+            public string Tooltip { get; }
+
+            public RelatedTopicEntry(int index, string name, string tooltip)
+            {
+                Index = index;
+                Name = name;
+                Tooltip = tooltip;
+            }
+        }
+
+        private static readonly GuiTableSource<PlayerGuideViewModel, RelatedTopicEntry> RelatedTopicsTable =
+            new GuiTableSource<PlayerGuideViewModel, RelatedTopicEntry>()
+                .Column((m, v) => m.RelatedTopicTexts = v, r => r.Name)
+                .Column((m, v) => m.RelatedTopicTooltips = v, r => r.Tooltip);
 
         private int SelectedTopicIndex { get; set; }
 
@@ -94,12 +140,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTopics()
         {
-            var topicButtonTexts = new GuiBindingList<string>();
-            var topicSelections = new GuiBindingList<bool>();
-            var topicTooltips = new GuiBindingList<string>();
             var search = SearchText ?? string.Empty;
-
-            _filteredTopicIndexes.Clear();
+            var rows = new List<TopicEntry>();
 
             for (var index = 0; index < Topics.Count; index++)
             {
@@ -107,15 +149,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!MatchesSearch(topic, search))
                     continue;
 
-                _filteredTopicIndexes.Add(index);
-                topicButtonTexts.Add(topic.Name);
-                topicSelections.Add(index == SelectedTopicIndex);
-                topicTooltips.Add(topic.Summary);
+                rows.Add(new TopicEntry(index, topic.Name, index == SelectedTopicIndex, topic.Summary));
             }
 
-            TopicButtonTexts = topicButtonTexts;
-            TopicSelections = topicSelections;
-            TopicTooltips = topicTooltips;
+            // Row-index lookups (OnClickTopic, SelectTopicByTopicIndex) index into
+            // this in lockstep with the bound lists.
+            _filteredTopicIndexes.Clear();
+            foreach (var row in rows)
+                _filteredTopicIndexes.Add(row.Index);
+
+            TopicsTable.Refresh(this, rows);
         }
 
         private static bool MatchesSearch(PlayerGuideTopic topic, string search)
@@ -185,10 +228,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadRelatedTopics(PlayerGuideTopic topic)
         {
-            var relatedTopicTexts = new GuiBindingList<string>();
-            var relatedTopicTooltips = new GuiBindingList<string>();
-
-            _relatedTopicIndexes.Clear();
+            var rows = new List<RelatedTopicEntry>();
 
             foreach (var relatedTopicName in topic.RelatedTopics)
             {
@@ -197,13 +237,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     continue;
 
                 var relatedTopic = Topics[topicIndex];
-                _relatedTopicIndexes.Add(topicIndex);
-                relatedTopicTexts.Add(relatedTopic.Name);
-                relatedTopicTooltips.Add(relatedTopic.Summary);
+                rows.Add(new RelatedTopicEntry(topicIndex, relatedTopic.Name, relatedTopic.Summary));
             }
 
-            RelatedTopicTexts = relatedTopicTexts;
-            RelatedTopicTooltips = relatedTopicTooltips;
+            // Row-index lookups (OnClickRelatedTopic) index into this in
+            // lockstep with the bound lists.
+            _relatedTopicIndexes.Clear();
+            foreach (var row in rows)
+                _relatedTopicIndexes.Add(row.Index);
+
+            RelatedTopicsTable.Refresh(this, rows);
         }
 
         private static int FindTopicIndex(string topicName)

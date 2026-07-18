@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -37,6 +38,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<string> _layoutIds = new();
         private int _selectedLayoutIndex;
         private uint _highlightedPlaceable;
+
+        // Row DTO replacing the two hand-synced parallel GuiBindingList instances
+        // Search used to build in lockstep for the placeable list.
+        private sealed class PlaceableEntry
+        {
+            public uint ObjectId { get; }
+            public string DisplayName { get; }
+            public bool Toggle { get; }
+
+            public PlaceableEntry(uint objectId, string displayName, bool toggle)
+            {
+                ObjectId = objectId;
+                DisplayName = displayName;
+                Toggle = toggle;
+            }
+        }
+
+        private static readonly GuiTableSource<DMToolsViewModel, PlaceableEntry> PlaceableTable =
+            new GuiTableSource<DMToolsViewModel, PlaceableEntry>()
+                .Column((m, v) => m.PlaceableNames = v, r => r.DisplayName)
+                .Column((m, v) => m.PlaceableToggles = v, r => r.Toggle);
+
+        // Row DTO replacing the two hand-synced parallel GuiBindingList instances
+        // LoadLayouts used to build in lockstep for the layout list.
+        private sealed class LayoutEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+            public bool Toggle { get; }
+
+            public LayoutEntry(string id, string name, bool toggle)
+            {
+                Id = id;
+                Name = name;
+                Toggle = toggle;
+            }
+        }
+
+        private static readonly GuiTableSource<DMToolsViewModel, LayoutEntry> LayoutTable =
+            new GuiTableSource<DMToolsViewModel, LayoutEntry>()
+                .Column((m, v) => m.LayoutNames = v, r => r.Name)
+                .Column((m, v) => m.LayoutToggles = v, r => r.Toggle);
 
         public string Instructions
         {
@@ -156,21 +199,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .OrderBy(nameof(DMAreaPlaceableLayout.Name));
             var layouts = DB.Search(query);
 
-            var layoutNames = new GuiBindingList<string>();
-            var layoutToggles = new GuiBindingList<bool>();
-            _layoutIds.Clear();
             _selectedLayoutIndex = -1;
             IsLayoutSelected = false;
 
+            var rows = new List<LayoutEntry>();
             foreach (var layout in layouts)
             {
-                _layoutIds.Add(layout.Id);
-                layoutNames.Add(layout.Name);
-                layoutToggles.Add(false);
+                rows.Add(new LayoutEntry(layout.Id, layout.Name, false));
             }
 
-            LayoutNames = layoutNames;
-            LayoutToggles = layoutToggles;
+            // Row-index lookups (OnSelectLayout, OnDeleteLayout, OnLoadLayout) index
+            // into this in lockstep with the bound lists.
+            _layoutIds.Clear();
+            foreach (var row in rows)
+                _layoutIds.Add(row.Id);
+
+            LayoutTable.Refresh(this, rows);
         }
 
         private void UpdatePagination(int totalRecordCount)
@@ -220,12 +264,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
-            var placeableNames = new GuiBindingList<string>();
-            var placeableToggles = new GuiBindingList<bool>();
-
             ClearHighlight();
-            _placeables.Clear();
-            _placeableDisplayNames.Clear();
             SelectedPlaceableIndex = -1;
             IsPlaceableSelected = false;
 
@@ -242,16 +281,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var pageOffset = SelectedPageIndex * PlaceablesPerPage;
             var pageIndexes = indexList.Skip(pageOffset).Take(PlaceablesPerPage);
 
+            var rows = new List<PlaceableEntry>();
             foreach (var index in pageIndexes)
             {
-                _placeables.Add(_allPlaceables[index]);
-                _placeableDisplayNames.Add(_allPlaceableDisplayNames[index]);
-                placeableNames.Add(_allPlaceableDisplayNames[index]);
-                placeableToggles.Add(false);
+                rows.Add(new PlaceableEntry(_allPlaceables[index], _allPlaceableDisplayNames[index], false));
             }
 
-            PlaceableNames = placeableNames;
-            PlaceableToggles = placeableToggles;
+            // Row-index lookups (GetSelectedPlaceable, OnSelectPlaceable, OnSaveChanges,
+            // OnDeletePlaceable) index into these in lockstep with the bound lists.
+            _placeables.Clear();
+            _placeableDisplayNames.Clear();
+            foreach (var row in rows)
+            {
+                _placeables.Add(row.ObjectId);
+                _placeableDisplayNames.Add(row.DisplayName);
+            }
+
+            PlaceableTable.Refresh(this, rows);
 
             if (_allPlaceables.Count <= 0)
             {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
@@ -79,6 +80,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPageIndex);
         }
 
+        // One row DTO per achievement, replacing the three hand-synced
+        // parallel GuiBindingList instances Search used to build in lockstep.
+        private sealed class AchievementEntry
+        {
+            public AchievementType Type { get; }
+            public string Name { get; }
+            public GuiColor Color { get; }
+            public bool Toggle { get; }
+
+            public AchievementEntry(AchievementType type, string name, GuiColor color, bool toggle)
+            {
+                Type = type;
+                Name = name;
+                Color = color;
+                Toggle = toggle;
+            }
+        }
+
+        private static readonly GuiTableSource<AchievementsViewModel, AchievementEntry> AchievementsTable =
+            new GuiTableSource<AchievementsViewModel, AchievementEntry>()
+                .Column((m, v) => m.Names = v, r => r.Name)
+                .Column((m, v) => m.Colors = v, r => r.Color)
+                .Column((m, v) => m.Toggles = v, r => r.Toggle);
+
         private void Search()
         {
             var cdKey = GetPCPublicCDKey(Player);
@@ -87,25 +112,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Skip(SelectedPageIndex * EntriesPerPage)
                 .Take(EntriesPerPage);
 
-            var names = new GuiBindingList<string>();
-            var colors = new GuiBindingList<GuiColor>();
-            var toggles = new GuiBindingList<bool>();
-            _types.Clear();
+            var rows = new List<AchievementEntry>();
 
             foreach (var (type, detail) in achievements)
             {
-                _types.Add(type);
-                names.Add(detail.Name);
-                colors.Add(dbAccount.Achievements.ContainsKey(type)
-                    ? GuiColor.Green
-                    : GuiColor.Red);
-                toggles.Add(false);
+                rows.Add(new AchievementEntry(
+                    type,
+                    detail.Name,
+                    dbAccount.Achievements.ContainsKey(type)
+                        ? GuiColor.Green
+                        : GuiColor.Red,
+                    false));
             }
 
+            // Row-index lookups (OnClickAchievement, Refresh) index into this
+            // in lockstep with the bound lists.
+            _types.Clear();
+            foreach (var row in rows)
+                _types.Add(row.Type);
+
             SelectedIndex = -1;
-            Names = names;
-            Colors = colors;
-            Toggles = toggles;
+            AchievementsTable.Refresh(this, rows);
 
             LoadAchievement();
         }

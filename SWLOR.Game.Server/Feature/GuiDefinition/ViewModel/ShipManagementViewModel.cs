@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -24,6 +25,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Location _spaceLocation;
         private Location _landingLocation;
         private PlanetType _planetType;
+
+        // One row DTO per registered ship, replacing the two hand-synced parallel
+        // GuiBindingList instances LoadShips used to build in lockstep.
+        private sealed class ShipEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+
+            public ShipEntry(string id, string name)
+            {
+                Id = id;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<ShipManagementViewModel, ShipEntry> ShipsTable =
+            new GuiTableSource<ShipManagementViewModel, ShipEntry>()
+                .Column((m, v) => m.ShipNames = v, r => r.Name)
+                .Column((m, v) => m.ShipToggles = v, r => false);
 
         public string ShipCountRegistered
         {
@@ -1876,23 +1896,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadShips(List<PlayerShip> ships)
         {
-            _shipIds.Clear();
-            var shipNames = new GuiBindingList<string>();
-            var shipToggles = new GuiBindingList<bool>();
+            var rows = new List<ShipEntry>();
 
             foreach (var ship in ships)
             {
                 var property = DB.Get<WorldProperty>(ship.PropertyId);
 
-                _shipIds.Add(ship.Id);
-                shipToggles.Add(false);
-
-                shipNames.Add(property.CustomName);
+                rows.Add(new ShipEntry(ship.Id, property.CustomName));
             }
 
+            // Row-index lookups (OnClickShip, OnClickUnregisterShip, OnClickSaveShipName,
+            // etc.) index into this in lockstep with the bound lists.
+            _shipIds.Clear();
+            foreach (var row in rows)
+                _shipIds.Add(row.Id);
+
             SelectedShipIndex = -1;
-            ShipNames = shipNames;
-            ShipToggles = shipToggles;
+            ShipsTable.Refresh(this, rows);
         }
 
         public Action OnClickMyShips() => () =>

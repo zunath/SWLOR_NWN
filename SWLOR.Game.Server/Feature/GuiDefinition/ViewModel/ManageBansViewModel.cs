@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,6 +14,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new List<string>();
+
+        // One row DTO per banned user, replacing the two hand-synced parallel
+        // GuiBindingList instances Initialize used to build in lockstep.
+        private sealed class UserEntry
+        {
+            public string Id { get; }
+            public string CDKey { get; }
+            public bool IsSelected { get; }
+
+            public UserEntry(string id, string cdKey, bool isSelected)
+            {
+                Id = id;
+                CDKey = cdKey;
+                IsSelected = isSelected;
+            }
+        }
+
+        private static readonly GuiTableSource<ManageBansViewModel, UserEntry> UsersTable =
+            new GuiTableSource<ManageBansViewModel, UserEntry>()
+                .Column((m, v) => m.CDKeys = v, r => r.CDKey)
+                .Column((m, v) => m.UserToggles = v, r => r.IsSelected);
 
         public string StatusText
         {
@@ -62,22 +84,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActiveUserCDKey = string.Empty;
             ActiveBanReason = string.Empty;
 
-            _userIds.Clear();
             var query = new DBQuery<PlayerBan>();
             var users = DB.Search(query);
 
-            var cdKeys = new GuiBindingList<string>();
-            var toggles = new GuiBindingList<bool>();
+            var rows = new List<UserEntry>();
 
             foreach (var user in users)
             {
-                _userIds.Add(user.Id);
-                toggles.Add(false);
-                cdKeys.Add(user.CDKey);
+                rows.Add(new UserEntry(user.Id, user.CDKey, false));
             }
 
-            CDKeys = cdKeys;
-            UserToggles = toggles;
+            _userIds.Clear();
+            foreach (var row in rows)
+                _userIds.Add(row.Id);
+
+            UsersTable.Refresh(this, rows);
 
             WatchOnClient(model => model.ActiveUserCDKey);
             WatchOnClient(model => model.ActiveBanReason);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -15,6 +16,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const int MaxNameLength = 50;
         public const int MaxDescriptionLength = 200;
         private const int MaxLeaseDays = 30;
+
+        // One row DTO per apartment, replacing the two hand-synced parallel
+        // GuiBindingList instances Initialize used to build in lockstep.
+        private sealed class ApartmentEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+            public bool IsSelected { get; }
+
+            public ApartmentEntry(string id, string name, bool isSelected)
+            {
+                Id = id;
+                Name = name;
+                IsSelected = isSelected;
+            }
+        }
+
+        private static readonly GuiTableSource<ManageApartmentViewModel, ApartmentEntry> ApartmentsTable =
+            new GuiTableSource<ManageApartmentViewModel, ApartmentEntry>()
+                .Column((m, v) => m.ApartmentNames = v, r => r.Name)
+                .Column((m, v) => m.ApartmentToggles = v, r => r.IsSelected);
 
         public GuiBindingList<string> ApartmentNames
         {
@@ -189,18 +211,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(ManageApartmentPayload initialPayload)
         {
-            _propertyIds.Clear();
             var playerId = GetObjectUUID(Player);
-            var apartmentNames = new GuiBindingList<string>();
-            var apartmentToggles = new GuiBindingList<bool>();
+            var rows = new List<ApartmentEntry>();
             var selectedApartmentIndex = -1;
 
             if (initialPayload != null && !string.IsNullOrWhiteSpace(initialPayload.SpecificPropertyId))
             {
                 var property = DB.Get<WorldProperty>(initialPayload.SpecificPropertyId);
-                apartmentNames.Add(property.CustomName);
-                apartmentToggles.Add(true);
-                _propertyIds.Add(property.Id);
+                rows.Add(new ApartmentEntry(property.Id, property.CustomName, true));
                 selectedApartmentIndex = 0;
                 IsAtTerminal = false;
             }
@@ -227,17 +245,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     foreach (var property in properties)
                     {
-                        _propertyIds.Add(property.Id);
-                        apartmentNames.Add(property.CustomName);
-                        apartmentToggles.Add(false);
+                        rows.Add(new ApartmentEntry(property.Id, property.CustomName, false));
                     }
                 }
 
                 IsAtTerminal = true;
             }
 
-            ApartmentNames = apartmentNames;
-            ApartmentToggles = apartmentToggles;
+            _propertyIds.Clear();
+            foreach (var row in rows)
+                _propertyIds.Add(row.Id);
+
+            ApartmentsTable.Refresh(this, rows);
             SelectedApartmentIndex = selectedApartmentIndex;
 
             LoadApartment();

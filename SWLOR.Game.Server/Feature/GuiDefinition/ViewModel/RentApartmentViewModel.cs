@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -24,6 +25,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private readonly List<PropertyLayoutType> _layoutTypes = new();
+
+        // One row DTO per apartment layout, replacing the two hand-synced parallel
+        // GuiBindingList instances Initialize used to build in lockstep.
+        private sealed class LayoutEntry
+        {
+            public PropertyLayoutType LayoutType { get; }
+            public string Name { get; }
+
+            public LayoutEntry(PropertyLayoutType layoutType, string name)
+            {
+                LayoutType = layoutType;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<RentApartmentViewModel, LayoutEntry> LayoutTable =
+            new GuiTableSource<RentApartmentViewModel, LayoutEntry>()
+                .Column((m, v) => m.LayoutNames = v, r => r.Name)
+                .Column((m, v) => m.LayoutToggles = v, r => false);
 
         public GuiBindingList<string> LayoutNames
         {
@@ -85,26 +105,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SelectedLayout = -1;
             IsRentApartmentEnabled = CanRentApartment();
-            var layoutNames = new GuiBindingList<string>();
-            var layoutToggles = new GuiBindingList<bool>();
-            _layoutTypes.Clear();
+
+            var rows = new List<LayoutEntry>();
 
             foreach (var layoutType in Property.GetAllLayoutsByPropertyType(PropertyType.Apartment))
             {
                 var layout = Property.GetLayoutByType(layoutType);
 
-                layoutNames.Add(layout.Name);
-                layoutToggles.Add(false);
-                _layoutTypes.Add(layoutType);
+                rows.Add(new LayoutEntry(layoutType, layout.Name));
             }
+
+            // OnSelectLayout/OnBuyApartment/OnPreviewApartment index into this in
+            // lockstep with the bound lists.
+            _layoutTypes.Clear();
+            foreach (var row in rows)
+                _layoutTypes.Add(row.LayoutType);
 
             Name = $"Please select a layout.";
             FurnitureLimit = string.Empty;
             InitialPrice = string.Empty;
             PricePerDay = string.Empty;
 
-            LayoutNames = layoutNames;
-            LayoutToggles = layoutToggles;
+            LayoutTable.Refresh(this, rows);
         }
 
         private void LoadLayout()

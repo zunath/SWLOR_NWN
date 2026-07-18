@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -23,6 +24,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private Vector3 _currentPosition;
         private float _currentFacing;
+
+        // Row DTO replacing the two hand-synced GuiBindingList instances
+        // Search() used to build in lockstep with _structurePropertyIds.
+        private sealed class StructureEntry
+        {
+            public string PropertyId { get; }
+            public string Name { get; }
+            public bool Toggle { get; }
+
+            public StructureEntry(string propertyId, string name, bool toggle)
+            {
+                PropertyId = propertyId;
+                Name = name;
+                Toggle = toggle;
+            }
+        }
+
+        private static readonly GuiTableSource<ManageStructuresViewModel, StructureEntry> StructureTable =
+            new GuiTableSource<ManageStructuresViewModel, StructureEntry>()
+                .Column((m, v) => m.StructureNames = v, r => r.Name)
+                .Column((m, v) => m.StructureToggles = v, r => r.Toggle);
 
         public string Instructions
         {
@@ -154,8 +176,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedStructureIndex = -1;
 
-            var structureNames = new GuiBindingList<string>();
-            var structureToggles = new GuiBindingList<bool>();
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), propertyId, false)
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
@@ -164,17 +184,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             query.AddPaging(StructuresPerPage, SelectedPageIndex * StructuresPerPage);
             var structures = DB.Search(query);
-            _structurePropertyIds.Clear();
+
+            var rows = new List<StructureEntry>();
 
             foreach (var structure in structures)
             {
-                _structurePropertyIds.Add(structure.Id);
-                structureNames.Add(structure.CustomName);
-                structureToggles.Add(false);
+                rows.Add(new StructureEntry(structure.Id, structure.CustomName, false));
             }
 
-            StructureNames = structureNames;
-            StructureToggles = structureToggles;
+            // Row-index lookups (OnSelectStructure, OnRetrieveStructure, etc.)
+            // index into this in lockstep with the bound lists.
+            _structurePropertyIds.Clear();
+            foreach (var row in rows)
+                _structurePropertyIds.Add(row.PropertyId);
+
+            StructureTable.Refresh(this, rows);
 
             LoadStructure();
         }

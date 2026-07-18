@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -23,6 +24,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private SkillType _craftingFilter;
         private uint _selectedBlueprintItem;
         private RecipesUIMode _mode;
+
+        // Row DTO replacing the three hand-synced parallel GuiBindingList instances
+        // Search used to build in lockstep for the recipe list.
+        private sealed class RecipeEntry
+        {
+            public RecipeType Type { get; }
+            public string Name { get; }
+            public GuiColor Color { get; }
+            public bool Toggle { get; }
+
+            public RecipeEntry(RecipeType type, string name, GuiColor color, bool toggle)
+            {
+                Type = type;
+                Name = name;
+                Color = color;
+                Toggle = toggle;
+            }
+        }
+
+        private static readonly GuiTableSource<RecipesViewModel, RecipeEntry> RecipesTable =
+            new GuiTableSource<RecipesViewModel, RecipeEntry>()
+                .Column((m, v) => m.RecipeNames = v, r => r.Name)
+                .Column((m, v) => m.RecipeColors = v, r => r.Color)
+                .Column((m, v) => m.RecipeToggles = v, r => r.Toggle);
 
         public string Title
         {
@@ -403,10 +428,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Take(RecordsPerPage)
                 .ToDictionary(x => x.Key, y => y.Value);
 
-            var recipeNames = new GuiBindingList<string>();
-            var recipeColors = new GuiBindingList<GuiColor>();
-            var recipeToggles = new GuiBindingList<bool>();
-            _recipeTypes.Clear();
+            var rows = new List<RecipeEntry>();
 
             foreach (var (type, detail) in recipes)
             {
@@ -415,15 +437,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : Craft.CanPlayerCraftRecipe(Player, type);
                 var name = $"{Cache.GetItemNameByResref(detail.Resref)} [Lvl. {detail.Level}]";
 
-                recipeNames.Add(name);
-                recipeColors.Add(canCraft ? GuiColor.Green : GuiColor.Red);
-                recipeToggles.Add(false);
-                _recipeTypes.Add(type);
+                rows.Add(new RecipeEntry(type, name, canCraft ? GuiColor.Green : GuiColor.Red, false));
             }
 
-            RecipeNames = recipeNames;
-            RecipeColors = recipeColors;
-            RecipeToggles = recipeToggles;
+            // Row-index lookups (OnSelectRecipe, OnClickCraftOrResearch, LoadRecipeDetail)
+            // index into this in lockstep with the bound lists.
+            _recipeTypes.Clear();
+            foreach (var row in rows)
+                _recipeTypes.Add(row.Type);
+
+            RecipesTable.Refresh(this, rows);
 
             LoadRecipeDetail();
         }

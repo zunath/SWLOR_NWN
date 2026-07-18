@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,6 +14,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private readonly List<uint> _areas = new();
         private bool _isLoadingNote;
+
+        // Row DTO replacing the three hand-synced parallel GuiBindingList instances
+        // (and the parallel _areas list) that Initialize/Search used to build in lockstep.
+        private sealed class AreaEntry
+        {
+            public uint Area { get; }
+            public string Resref { get; }
+            public string Name { get; }
+
+            public AreaEntry(uint area, string resref, string name)
+            {
+                Area = area;
+                Resref = resref;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<AreaNotesViewModel, AreaEntry> AreaTable =
+            new GuiTableSource<AreaNotesViewModel, AreaEntry>()
+                .Column((m, v) => m.AreaResrefs = v, r => r.Resref)
+                .Column((m, v) => m.AreaNames = v, r => r.Name)
+                .Column((m, v) => m.AreaToggled = v, r => false);
 
         public string SearchText
         {
@@ -84,24 +107,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            var areaResrefs = new GuiBindingList<string>();
-            var areaNames = new GuiBindingList<string>();
-            var areaToggled = new GuiBindingList<bool>();
+            var rows = new List<AreaEntry>();
 
             _areas.Clear();
 
             foreach (var area in Area.GetAreas())
             {
-                _areas.Add(area.Value);
-                areaResrefs.Add(area.Key);
-                areaNames.Add(GetName(area.Value));
-                areaToggled.Add(false);
+                rows.Add(new AreaEntry(area.Value, area.Key, GetName(area.Value)));
             }
 
+            foreach (var row in rows)
+                _areas.Add(row.Area);
+
             SelectedAreaIndex = -1;
-            AreaResrefs = areaResrefs;
-            AreaNames = areaNames;
-            AreaToggled = areaToggled;
+            AreaTable.Refresh(this, rows);
             PrivateText = string.Empty;
             PublicText = string.Empty;
             IsAreaSelected = false;
@@ -226,23 +245,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
-            var areaResrefs = new GuiBindingList<string>();
-            var areaNames = new GuiBindingList<string>();
-            var areaToggled = new GuiBindingList<bool>();
-
             _areas.Clear();
             AreaToggled.Clear();
             AreaNames.Clear();
             AreaResrefs.Clear();
 
+            var rows = new List<AreaEntry>();
+
             if (string.IsNullOrWhiteSpace(SearchText))
             {
                 foreach (var area in Area.GetAreas())
                 {
-                    _areas.Add(area.Value);
-                    areaResrefs.Add(area.Key);
-                    areaNames.Add(GetName(area.Value));
-                    areaToggled.Add(false);
+                    rows.Add(new AreaEntry(area.Value, area.Key, GetName(area.Value)));
                 }
             }
             else
@@ -251,18 +265,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     if (GetStringUpperCase(GetName(area.Value)).Contains(GetStringUpperCase(SearchText)))
                     {
-                        _areas.Add(area.Value);
-                        areaResrefs.Add(area.Key);
-                        areaNames.Add(GetName(area.Value));
-                        areaToggled.Add(false);
+                        rows.Add(new AreaEntry(area.Value, area.Key, GetName(area.Value)));
                     }
                 }
             }
 
+            foreach (var row in rows)
+                _areas.Add(row.Area);
+
             SelectedAreaIndex = -1;
-            AreaResrefs = areaResrefs;
-            AreaNames = areaNames;
-            AreaToggled = areaToggled;
+            AreaTable.Refresh(this, rows);
             PrivateText = string.Empty;
             PublicText = string.Empty;
             IsAreaSelected = false;

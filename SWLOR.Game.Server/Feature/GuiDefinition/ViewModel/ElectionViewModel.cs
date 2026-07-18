@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -14,6 +15,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<string> _candidatePlayerIds = new List<string>();
         private int _selectedCandidateIndex;
         private string _electionId;
+
+        // Row DTO replacing the three hand-synced GuiBindingList instances
+        // Initialize used to build in lockstep with _candidatePlayerIds.
+        private sealed class CandidateEntry
+        {
+            public string PlayerId { get; }
+            public string Name { get; }
+            public bool Toggle { get; }
+            public bool Enabled { get; }
+
+            public CandidateEntry(string playerId, string name, bool toggle, bool enabled)
+            {
+                PlayerId = playerId;
+                Name = name;
+                Toggle = toggle;
+                Enabled = enabled;
+            }
+        }
+
+        private static readonly GuiTableSource<ElectionViewModel, CandidateEntry> CandidateTable =
+            new GuiTableSource<ElectionViewModel, CandidateEntry>()
+                .Column((m, v) => m.CandidateNames = v, r => r.Name)
+                .Column((m, v) => m.CandidateToggles = v, r => r.Toggle)
+                .Column((m, v) => m.CandidateEnables = v, r => r.Enabled);
 
         public GuiBindingList<string> CandidateNames
         {
@@ -91,44 +116,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(Entity.Player.Id), election.CandidatePlayerIds))
                     .ToList()
                 : new List<Player>();
-            var candidateNames = new GuiBindingList<string>();
-            var candidateToggles = new GuiBindingList<bool>();
-            var candidateEnables = new GuiBindingList<bool>();
             var selectedCandidateId = election.VoterSelections.ContainsKey(cdKey)
                 ? election.VoterSelections[cdKey].CandidatePlayerId
                 : new ElectionVoter().CandidatePlayerId;
 
-            _candidatePlayerIds.Clear();
-            _candidatePlayerIds.Add(string.Empty);
-            candidateNames.Add("[ABSTAIN]");
-            candidateToggles.Add(false);
-            candidateEnables.Add(election.Stage == ElectionStageType.Voting);
+            var rows = new List<CandidateEntry>
+            {
+                new CandidateEntry(string.Empty, "[ABSTAIN]", false, election.Stage == ElectionStageType.Voting)
+            };
             _selectedCandidateIndex = 0;
 
             foreach (var candidate in candidates)
             {
-                _candidatePlayerIds.Add(candidate.Id);
-                candidateNames.Add(PlayerName.GetPlainDisplayNameByPlayerId(Player, candidate.Id, candidate.Name));
-                if (selectedCandidateId == candidate.Id)
+                var isSelected = selectedCandidateId == candidate.Id;
+                if (isSelected)
                 {
-                    candidateToggles.Add(true);
-                    _selectedCandidateIndex = _candidatePlayerIds.Count - 1;
+                    _selectedCandidateIndex = rows.Count;
                 }
-                else
-                {
-                    candidateToggles.Add(false);
-                }
-                candidateEnables.Add(election.Stage == ElectionStageType.Voting);
+
+                rows.Add(new CandidateEntry(
+                    candidate.Id,
+                    PlayerName.GetPlainDisplayNameByPlayerId(Player, candidate.Id, candidate.Name),
+                    isSelected,
+                    election.Stage == ElectionStageType.Voting));
             }
 
             if (_selectedCandidateIndex <= 0)
             {
-                candidateToggles[0] = true;
+                rows[0] = new CandidateEntry(rows[0].PlayerId, rows[0].Name, true, rows[0].Enabled);
             }
 
-            CandidateNames = candidateNames;
-            CandidateToggles = candidateToggles;
-            CandidateEnables = candidateEnables;
+            // Row-index lookups (SelectCandidate, MainAction) index into this
+            // in lockstep with the bound lists.
+            _candidatePlayerIds.Clear();
+            foreach (var row in rows)
+                _candidatePlayerIds.Add(row.PlayerId);
+
+            CandidateTable.Refresh(this, rows);
             _electionId = election.Id;
         }
 

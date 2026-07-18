@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
@@ -61,6 +62,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        // One row DTO per perk, replacing the pair of hand-synced parallel
+        // GuiBindingList instances Initialize used to build in lockstep for
+        // each of the available/active perk lists.
+        private sealed class DroidPerkEntry
+        {
+            public DroidPerk Perk { get; }
+            public string Name { get; }
+            public bool Selected { get; }
+
+            public DroidPerkEntry(DroidPerk perk, string name, bool selected)
+            {
+                Perk = perk;
+                Name = name;
+                Selected = selected;
+            }
+        }
+
+        private static readonly GuiTableSource<DroidAIViewModel, DroidPerkEntry> AvailablePerksTable =
+            new GuiTableSource<DroidAIViewModel, DroidPerkEntry>()
+                .Column((m, v) => m.AvailablePerkNames = v, r => r.Name)
+                .Column((m, v) => m.AvailablePerkSelections = v, r => r.Selected);
+
+        private static readonly GuiTableSource<DroidAIViewModel, DroidPerkEntry> ActivePerksTable =
+            new GuiTableSource<DroidAIViewModel, DroidPerkEntry>()
+                .Column((m, v) => m.ActivePerkNames = v, r => r.Name)
+                .Column((m, v) => m.ActivePerkSelections = v, r => r.Selected);
+
         protected override void Initialize(DroidAIPayload initialPayload)
         {
             _controller = initialPayload.ControllerItem;
@@ -68,12 +96,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var constructedDroid = Droid.LoadConstructedDroid(_controller);
             var controllerStats = Droid.LoadDroidItemPropertyDetails(_controller);
 
-            var availablePerkNames = new GuiBindingList<string>();
-            var availablePerkSelections = new GuiBindingList<bool>();
-            var activePerkNames = new GuiBindingList<string>();
-            var activePerkSelections = new GuiBindingList<bool>();
-            _availableDroidPerks = new List<DroidPerk>();
-            _activeDroidPerks = new List<DroidPerk>();
+            var availableRows = new List<DroidPerkEntry>();
 
             foreach (var perk in constructedDroid.LearnedPerks)
             {
@@ -83,11 +106,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 if (perkTier <= controllerStats.Tier && !constructedDroid.ActivePerks.Exists(x => x.Perk == perk.Perk && x.Level == perk.Level))
                 {
-                    availablePerkNames.Add($"{detail.Name} {perk.Level} [{perkLevel.DroidAISlots}]");
-                    availablePerkSelections.Add(false);
-                    _availableDroidPerks.Add(perk);
+                    availableRows.Add(new DroidPerkEntry(perk, $"{detail.Name} {perk.Level} [{perkLevel.DroidAISlots}]", false));
                 }
             }
+
+            var activeRows = new List<DroidPerkEntry>();
 
             foreach (var perk in constructedDroid.ActivePerks)
             {
@@ -97,17 +120,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 if (perkTier <= controllerStats.Tier)
                 {
-                    activePerkNames.Add($"{detail.Name} {perk.Level} [{perkLevel.DroidAISlots}]");
-                    activePerkSelections.Add(false);
-                    _activeDroidPerks.Add(perk);
+                    activeRows.Add(new DroidPerkEntry(perk, $"{detail.Name} {perk.Level} [{perkLevel.DroidAISlots}]", false));
                 }
             }
 
+            // Row-index lookups (AddToActivePerks, RemoveFromActivePerks) index
+            // into these in lockstep with the bound lists.
+            _availableDroidPerks = new List<DroidPerk>();
+            foreach (var row in availableRows)
+                _availableDroidPerks.Add(row.Perk);
+
+            _activeDroidPerks = new List<DroidPerk>();
+            foreach (var row in activeRows)
+                _activeDroidPerks.Add(row.Perk);
+
             DroidName = constructedDroid.Name;
-            AvailablePerkNames = availablePerkNames;
-            AvailablePerkSelections = availablePerkSelections;
-            ActivePerkNames = activePerkNames;
-            ActivePerkSelections = activePerkSelections;
+            AvailablePerksTable.Refresh(this, availableRows);
+            ActivePerksTable.Refresh(this, activeRows);
 
             RefreshSlots();
 

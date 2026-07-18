@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -70,6 +71,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        // One row DTO per terminal item, replacing the three hand-synced
+        // parallel GuiBindingList instances LoadData used to build in lockstep.
+        private sealed class TerminalEntry
+        {
+            public string Resref { get; }
+            public int Price { get; }
+            public string Icon { get; }
+            public string Name { get; }
+            public string PriceText { get; }
+
+            public TerminalEntry(string resref, int price, string icon, string name, string priceText)
+            {
+                Resref = resref;
+                Price = price;
+                Icon = icon;
+                Name = name;
+                PriceText = priceText;
+            }
+        }
+
+        private static readonly GuiTableSource<TrainingStoreViewModel, TerminalEntry> TerminalTable =
+            new GuiTableSource<TrainingStoreViewModel, TerminalEntry>()
+                .Column((m, v) => m.Icons = v, r => r.Icon)
+                .Column((m, v) => m.Names = v, r => r.Name)
+                .Column((m, v) => m.PriceTexts = v, r => r.PriceText);
+
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
@@ -78,26 +105,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
 
-            var icons = new GuiBindingList<string>();
-            var names = new GuiBindingList<string>();
-            var priceTexts = new GuiBindingList<string>();
-            Resrefs = new List<string>();
-            Prices = new List<int>();
+            var rows = new List<TerminalEntry>();
 
             foreach (var item in _availableItems)
             {
-                icons.Add(item.Icon);
-                names.Add(item.Name);
-                Resrefs.Add(item.Resref);
-
                 var adjustedPrice = (int)(item.BasePrice - item.BasePrice * cantinaBonus);
-                Prices.Add(adjustedPrice);
-                priceTexts.Add($"{adjustedPrice.ToString("N0", CultureInfo.InvariantCulture)} XP");
+                rows.Add(new TerminalEntry(
+                    item.Resref,
+                    adjustedPrice,
+                    item.Icon,
+                    item.Name,
+                    $"{adjustedPrice.ToString("N0", CultureInfo.InvariantCulture)} XP"));
             }
 
-            Icons = icons;
-            Names = names;
-            PriceTexts = priceTexts;
+            // Row-index lookups (BuyItem) index into these in lockstep with
+            // the bound lists.
+            Resrefs = new List<string>();
+            Prices = new List<int>();
+            foreach (var row in rows)
+            {
+                Resrefs.Add(row.Resref);
+                Prices.Add(row.Price);
+            }
+
+            TerminalTable.Refresh(this, rows);
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)

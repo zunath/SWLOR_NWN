@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -202,6 +203,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<SkillType> _skills = new();
         private readonly List<int> _skillDistributionPoints = new();
 
+        // One row DTO per skill, replacing the two hand-synced parallel
+        // GuiBindingList instances LoadSkills used to build in lockstep.
+        private sealed class SkillEntry
+        {
+            public SkillType Type { get; }
+            public string Name { get; }
+            public string Tooltip { get; }
+            public int DistributionPoints { get; }
+
+            public SkillEntry(SkillType type, string name, string tooltip, int distributionPoints)
+            {
+                Type = type;
+                Name = name;
+                Tooltip = tooltip;
+                DistributionPoints = distributionPoints;
+            }
+        }
+
+        private static readonly GuiTableSource<CharacterFullRebuildViewModel, SkillEntry> SkillsTable =
+            new GuiTableSource<CharacterFullRebuildViewModel, SkillEntry>()
+                .Column((m, v) => m.SkillNames = v, r => r.Name)
+                .Column((m, v) => m.SkillTooltips = v, r => r.Tooltip);
+
         public GuiBindingList<string> SkillNames
         {
             get => Get<GuiBindingList<string>>();
@@ -319,21 +343,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadSkills()
         {
             var availableSkills = Skill.GetActiveContributingSkills();
-            var skills = new GuiBindingList<string>();
-            var tooltips = new GuiBindingList<string>();
+            var rows = new List<SkillEntry>();
+
+            foreach (var (type, detail) in availableSkills)
+            {
+                rows.Add(new SkillEntry(type, $"{detail.Name} [0]", detail.Description, 0));
+            }
 
             _skills.Clear();
             _skillDistributionPoints.Clear();
-            foreach (var (type, detail) in availableSkills)
+            foreach (var row in rows)
             {
-                _skills.Add(type);
-                _skillDistributionPoints.Add(0);
-                skills.Add($"{detail.Name} [0]");
-                tooltips.Add(detail.Description);
+                _skills.Add(row.Type);
+                _skillDistributionPoints.Add(row.DistributionPoints);
             }
 
-            SkillNames = skills;
-            SkillTooltips = tooltips;
+            SkillsTable.Refresh(this, rows);
         }
 
         private void RecalculateAvailableAbilityPoints()

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -42,6 +43,75 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Unaffordable,
             Locked
         }
+
+        // One row DTO per perk, replacing the seven hand-synced parallel
+        // GuiBindingList instances LoadPerks used to build in lockstep.
+        private sealed class PerkRowEntry
+        {
+            public PerkType Type { get; }
+            public GuiColor Color { get; }
+            public string Icon { get; }
+            public string Text { get; }
+            public bool DetailSelected { get; }
+            public string ReqIcon { get; }
+            public string ReqTooltip { get; }
+            public string Cost { get; }
+
+            public PerkRowEntry(
+                PerkType type,
+                GuiColor color,
+                string icon,
+                string text,
+                bool detailSelected,
+                string reqIcon,
+                string reqTooltip,
+                string cost)
+            {
+                Type = type;
+                Color = color;
+                Icon = icon;
+                Text = text;
+                DetailSelected = detailSelected;
+                ReqIcon = reqIcon;
+                ReqTooltip = reqTooltip;
+                Cost = cost;
+            }
+        }
+
+        private static readonly GuiTableSource<PerksViewModel, PerkRowEntry> PerksTable =
+            new GuiTableSource<PerksViewModel, PerkRowEntry>()
+                .Column((m, v) => m.PerkButtonColors = v, r => r.Color)
+                .Column((m, v) => m.PerkButtonIcons = v, r => r.Icon)
+                .Column((m, v) => m.PerkButtonTexts = v, r => r.Text)
+                .Column((m, v) => m.PerkDetailSelected = v, r => r.DetailSelected)
+                .Column((m, v) => m.PerkRowReqIcons = v, r => r.ReqIcon)
+                .Column((m, v) => m.PerkRowReqTooltips = v, r => r.ReqTooltip)
+                .Column((m, v) => m.PerkRowCosts = v, r => r.Cost);
+
+        // One row DTO per requirement, replacing the four hand-synced parallel
+        // GuiBindingList instances BuildRequirements used to build in lockstep.
+        private sealed class RequirementEntry
+        {
+            public string Text { get; }
+            public GuiColor Color { get; }
+            public string Icon { get; }
+            public string Tooltip { get; }
+
+            public RequirementEntry(string text, GuiColor color, string icon, string tooltip)
+            {
+                Text = text;
+                Color = color;
+                Icon = icon;
+                Tooltip = tooltip;
+            }
+        }
+
+        private static readonly GuiTableSource<PerksViewModel, RequirementEntry> RequirementsTable =
+            new GuiTableSource<PerksViewModel, RequirementEntry>()
+                .Column((m, v) => m.SelectedRequirements = v, r => r.Text)
+                .Column((m, v) => m.SelectedRequirementColors = v, r => r.Color)
+                .Column((m, v) => m.SelectedRequirementIcons = v, r => r.Icon)
+                .Column((m, v) => m.SelectedRequirementTooltips = v, r => r.Tooltip);
 
         public GuiBindingList<GuiComboEntry> PageNumbers
         {
@@ -446,13 +516,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _filteredPerks.Clear();
             SelectedPerkIndex = -1;
 
-            var perkButtonColors = new GuiBindingList<GuiColor>();
-            var perkButtonIcons = new GuiBindingList<string>();
-            var perkButtonTexts = new GuiBindingList<string>();
-            var perkDetailSelected = new GuiBindingList<bool>();
-            var perkRowReqIcons = new GuiBindingList<string>();
-            var perkRowReqTooltips = new GuiBindingList<string>();
-            var perkRowCosts = new GuiBindingList<string>();
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
 
             var group = IsInMyPerksMode
@@ -523,31 +586,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Skip((SelectedPage - 1) * ItemsPerPage)
                 .Take(ItemsPerPage);
 
+            var rows = new List<PerkRowEntry>();
+
             foreach (var (type, detail) in pagedPerks)
             {
                 var (rank, _, color, iconResref, tooltip) = GetRowState(type, detail);
 
-                _filteredPerks.Add(type);
-                perkButtonIcons.Add(detail.IconResref);
-                perkButtonTexts.Add($"{detail.Name} ({rank}/{detail.PerkLevels.Count})");
-                perkDetailSelected.Add(false);
-                perkButtonColors.Add(color);
-                perkRowReqIcons.Add(iconResref);
-                perkRowReqTooltips.Add(tooltip);
-
                 var nextLevel = detail.PerkLevels.ContainsKey(rank + 1)
                     ? detail.PerkLevels[rank + 1]
                     : null;
-                perkRowCosts.Add(nextLevel != null ? $"{nextLevel.Price} SP" : string.Empty);
+                var cost = nextLevel != null ? $"{nextLevel.Price} SP" : string.Empty;
+
+                rows.Add(new PerkRowEntry(
+                    type,
+                    color,
+                    detail.IconResref,
+                    $"{detail.Name} ({rank}/{detail.PerkLevels.Count})",
+                    false,
+                    iconResref,
+                    tooltip,
+                    cost));
             }
 
-            PerkButtonColors = perkButtonColors;
-            PerkButtonIcons = perkButtonIcons;
-            PerkButtonTexts = perkButtonTexts;
-            PerkDetailSelected = perkDetailSelected;
-            PerkRowReqIcons = perkRowReqIcons;
-            PerkRowReqTooltips = perkRowReqTooltips;
-            PerkRowCosts = perkRowCosts;
+            // Row-index lookups (SelectPerkAt, OnClickBuyUpgrade, OnClickRefund) index
+            // into this in lockstep with the bound lists.
+            foreach (var row in rows)
+                _filteredPerks.Add(row.Type);
+
+            PerksTable.Refresh(this, rows);
             PageNumbers = pageNumbers;
 
             // Select the first perk so the detail panel shows content immediately
@@ -665,61 +731,50 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return $"Recast Group: {Recast.GetRecastGroupDisplayName(recastGroup)}";
         }
 
-        private (bool meetsRequirements,
-            GuiBindingList<string> texts,
-            GuiBindingList<GuiColor> colors,
-            GuiBindingList<string> icons,
-            GuiBindingList<string> tooltips) BuildRequirements(PerkLevel nextUpgrade)
+        private (bool meetsRequirements, List<RequirementEntry> rows) BuildRequirements(PerkLevel nextUpgrade)
         {
             var meetsRequirements = true;
-            var requirements = new GuiBindingList<string>();
-            var requirementColors = new GuiBindingList<GuiColor>();
-            var requirementIcons = new GuiBindingList<string>();
-            var requirementTooltips = new GuiBindingList<string>();
+            var rows = new List<RequirementEntry>();
 
             if (nextUpgrade == null)
             {
-                requirements.Add("MAXED");
-                requirementColors.Add(GuiColor.Green);
-                requirementIcons.Add(PerkRequirementCategoryResolver.MaxedIcon);
-                requirementTooltips.Add("This perk is fully upgraded.");
+                rows.Add(new RequirementEntry("MAXED", GuiColor.Green, PerkRequirementCategoryResolver.MaxedIcon, "This perk is fully upgraded."));
             }
             else
             {
                 foreach (var req in nextUpgrade.Requirements)
                 {
-                    requirements.Add(req.RequirementText);
-
                     var categoryDetail = PerkRequirementCategoryResolver.GetDetail(req.Category);
                     var error = req.CheckRequirements(Player);
                     var met = string.IsNullOrWhiteSpace(error);
 
                     // Show the red locked icon when the requirement is not met.
-                    requirementIcons.Add(categoryDetail.GetIcon(met));
+                    var icon = categoryDetail.GetIcon(met);
+                    GuiColor color;
+                    string tooltip;
 
                     if (met)
                     {
-                        requirementColors.Add(GuiColor.Green);
-                        requirementTooltips.Add($"{categoryDetail.Name}: {req.RequirementText} - met.");
+                        color = GuiColor.Green;
+                        tooltip = $"{categoryDetail.Name}: {req.RequirementText} - met.";
                     }
                     else
                     {
-                        requirementColors.Add(GuiColor.Red);
-                        requirementTooltips.Add($"{categoryDetail.Name}: {req.RequirementText} - {error}");
+                        color = GuiColor.Red;
+                        tooltip = $"{categoryDetail.Name}: {req.RequirementText} - {error}";
                         meetsRequirements = false;
                     }
+
+                    rows.Add(new RequirementEntry(req.RequirementText, color, icon, tooltip));
                 }
 
                 if (nextUpgrade.Requirements.Count <= 0)
                 {
-                    requirements.Add("None");
-                    requirementColors.Add(GuiColor.Green);
-                    requirementIcons.Add(PerkRequirementCategoryResolver.MetIcon);
-                    requirementTooltips.Add("This upgrade has no requirements.");
+                    rows.Add(new RequirementEntry("None", GuiColor.Green, PerkRequirementCategoryResolver.MetIcon, "This upgrade has no requirements."));
                 }
             }
 
-            return (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips);
+            return (meetsRequirements, rows);
         }
 
         public Action OnSelectPerk() => () =>
@@ -780,11 +835,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var selectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade, rank);
 
-            var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
-            SelectedRequirements = requirements;
-            SelectedRequirementColors = requirementColors;
-            SelectedRequirementIcons = requirementIcons;
-            SelectedRequirementTooltips = requirementTooltips;
+            var (meetsRequirements, requirementRows) = BuildRequirements(nextUpgrade);
+            RequirementsTable.Refresh(this, requirementRows);
 
             BuyText = nextUpgrade != null
                 ? $"Buy Upgrade ({nextUpgrade.Price} SP)"
@@ -1089,17 +1141,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SelectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade, newRank);
                     PerkButtonTexts[_selectedPerkIndex] = $"{detail.Name} ({newRank}/{detail.PerkLevels.Count})";
 
-                    var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
+                    var (meetsRequirements, requirementRows) = BuildRequirements(nextUpgrade);
                     var (_, chipColor, rowIcon, rowTooltip) = GetPerkRowStatus(detail, newRank, unallocatedSP);
 
                     PerkButtonColors[_selectedPerkIndex] = chipColor;
                     PerkRowReqIcons[_selectedPerkIndex] = rowIcon;
                     PerkRowReqTooltips[_selectedPerkIndex] = rowTooltip;
                     PerkRowCosts[_selectedPerkIndex] = nextUpgrade != null ? $"{nextUpgrade.Price} SP" : string.Empty;
-                    SelectedRequirements = requirements;
-                    SelectedRequirementColors = requirementColors;
-                    SelectedRequirementIcons = requirementIcons;
-                    SelectedRequirementTooltips = requirementTooltips;
+                    RequirementsTable.Refresh(this, requirementRows);
                     IsBuyEnabled = nextUpgrade != null &&
                                    unallocatedSP >= nextUpgrade.Price &&
                                    meetsRequirements;

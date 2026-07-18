@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -182,6 +183,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ScrambleAccountName = dbPlayer.Settings.ScrambleAccountName ?? true;
         }
 
+        // One row DTO per chat color entry, replacing the three hand-synced
+        // parallel GuiBindingList instances LoadChatView used to build in
+        // lockstep. Language is null for the fixed OOC/Emotes rows.
+        private sealed class ChatColorEntry
+        {
+            public SkillType? Language { get; }
+            public string Name { get; }
+            public GuiColor Color { get; }
+            public bool Toggle { get; }
+
+            public ChatColorEntry(SkillType? language, string name, GuiColor color, bool toggle)
+            {
+                Language = language;
+                Name = name;
+                Color = color;
+                Toggle = toggle;
+            }
+        }
+
+        private static readonly GuiTableSource<SettingsViewModel, ChatColorEntry> ChatColorTable =
+            new GuiTableSource<SettingsViewModel, ChatColorEntry>()
+                .Column((m, v) => m.ChatColorNames = v, r => r.Name)
+                .Column((m, v) => m.ChatColors = v, r => r.Color)
+                .Column((m, v) => m.ChatColorToggles = v, r => r.Toggle);
+
         private void LoadChatView()
         {
             var playerId = GetObjectUUID(Player);
@@ -189,73 +215,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var colorSettings = dbPlayer.Settings.LanguageChatColors;
             var languages = Skill.GetActiveSkillsByCategory(SkillCategoryType.Languages);
 
-            _languages = new List<SkillType>();
-            var chatColorNames = new GuiBindingList<string>();
-            var chatColors = new GuiBindingList<GuiColor>();
-            var chatToggles = new GuiBindingList<bool>();
+            var rows = new List<ChatColorEntry>();
 
             // OOC color
-            chatColorNames.Add("OOC");
-            chatToggles.Add(false);
-
+            GuiColor oocColor;
             if (dbPlayer.Settings.OOCChatColor == null)
             {
-                chatColors.Add(new GuiColor(
+                oocColor = new GuiColor(
                     Communication.OOCChatColor.Item1,
                     Communication.OOCChatColor.Item2,
-                    Communication.OOCChatColor.Item3));
+                    Communication.OOCChatColor.Item3);
             }
             else
             {
-                chatColors.Add(new GuiColor(
+                oocColor = new GuiColor(
                     dbPlayer.Settings.OOCChatColor.Red,
                     dbPlayer.Settings.OOCChatColor.Green,
-                    dbPlayer.Settings.OOCChatColor.Blue));
+                    dbPlayer.Settings.OOCChatColor.Blue);
             }
-
+            rows.Add(new ChatColorEntry(null, "OOC", oocColor, false));
 
             // Emote color
-            chatColorNames.Add("Emotes");
-            chatToggles.Add(false);
-
+            GuiColor emoteColor;
             if (dbPlayer.Settings.EmoteChatColor == null)
             {
-                chatColors.Add(new GuiColor(
+                emoteColor = new GuiColor(
                     Communication.EmoteChatColor.Item1,
                     Communication.EmoteChatColor.Item2,
-                    Communication.EmoteChatColor.Item3));
+                    Communication.EmoteChatColor.Item3);
             }
             else
             {
-                chatColors.Add(new GuiColor(
+                emoteColor = new GuiColor(
                     dbPlayer.Settings.EmoteChatColor.Red,
                     dbPlayer.Settings.EmoteChatColor.Green,
-                    dbPlayer.Settings.EmoteChatColor.Blue));
+                    dbPlayer.Settings.EmoteChatColor.Blue);
             }
+            rows.Add(new ChatColorEntry(null, "Emotes", emoteColor, false));
 
             // Language colors
             foreach (var (type, skill) in languages)
             {
-                _languages.Add(type);
-                chatColorNames.Add(skill.Name);
-                chatToggles.Add(false);
-
+                GuiColor languageColor;
                 if (colorSettings != null &&
                     colorSettings.ContainsKey(type))
                 {
                     var playerSetting = colorSettings[type];
-                    chatColors.Add(new GuiColor(playerSetting.Red, playerSetting.Green, playerSetting.Blue));
+                    languageColor = new GuiColor(playerSetting.Red, playerSetting.Green, playerSetting.Blue);
                 }
                 else
                 {
                     var (red, green, blue) = Language.GetColor(type);
-                    chatColors.Add(new GuiColor(red, green, blue));
+                    languageColor = new GuiColor(red, green, blue);
                 }
+
+                rows.Add(new ChatColorEntry(type, skill.Name, languageColor, false));
             }
 
-            ChatColorNames = chatColorNames;
-            ChatColors = chatColors;
-            ChatColorToggles = chatToggles;
+            // Row-index lookups (SetColor, OnSave, OnClickResetColor) index into
+            // this in lockstep with the bound lists, offset by NumberOfSystemColors.
+            _languages = new List<SkillType>();
+            foreach (var row in rows)
+            {
+                if (row.Language.HasValue)
+                    _languages.Add(row.Language.Value);
+            }
+
+            ChatColorTable.Refresh(this, rows);
         }
 
         private void LoadColor()

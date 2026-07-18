@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -38,6 +39,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _targetDescription;
         private string _characterType;
         private string _credits;
+
+        // Row DTOs replacing the hand-synced parallel GuiBindingList instances that
+        // LoadTargetSkills/LoadTargetPerks/LoadTargetNotes used to build in lockstep.
+        private sealed class SkillEntry
+        {
+            public string Name { get; }
+            public int Level { get; }
+
+            public SkillEntry(string name, int level)
+            {
+                Name = name;
+                Level = level;
+            }
+        }
+
+        private sealed class PerkEntry
+        {
+            public string Name { get; }
+            public int Level { get; }
+
+            public PerkEntry(string name, int level)
+            {
+                Name = name;
+                Level = level;
+            }
+        }
+
+        private sealed class NoteEntry
+        {
+            public string Id { get; }
+            public string Name { get; }
+
+            public NoteEntry(string id, string name)
+            {
+                Id = id;
+                Name = name;
+            }
+        }
+
+        private static readonly GuiTableSource<DMPlayerExamineViewModel, SkillEntry> SkillsTable =
+            new GuiTableSource<DMPlayerExamineViewModel, SkillEntry>()
+                .Column((m, v) => m.SkillNames = v, r => r.Name)
+                .Column((m, v) => m.SkillLevels = v, r => r.Level);
+
+        private static readonly GuiTableSource<DMPlayerExamineViewModel, PerkEntry> PerksTable =
+            new GuiTableSource<DMPlayerExamineViewModel, PerkEntry>()
+                .Column((m, v) => m.PerkNames = v, r => r.Name)
+                .Column((m, v) => m.PerkLevels = v, r => r.Level);
+
+        private static readonly GuiTableSource<DMPlayerExamineViewModel, NoteEntry> NotesTable =
+            new GuiTableSource<DMPlayerExamineViewModel, NoteEntry>()
+                .Column((m, v) => m.NoteNames = v, r => r.Name)
+                .Column((m, v) => m.NoteToggles = v, r => false);
 
         public const string PartialView = "PARTIAL";
 
@@ -197,16 +251,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (dbPlayer == null)
                 return;
 
-            var skillNames = new GuiBindingList<string>();
-            var skillLevels = new GuiBindingList<int>();
+            var rows = new List<SkillEntry>();
             foreach (var (type, detail) in Skill.GetAllActiveSkills())
             {
-                skillNames.Add(detail.Name);
-                skillLevels.Add(dbPlayer.Skills[type].Rank);
+                rows.Add(new SkillEntry(detail.Name, dbPlayer.Skills[type].Rank));
             }
 
-            SkillNames = skillNames;
-            SkillLevels = skillLevels;
+            SkillsTable.Refresh(this, rows);
         }
 
         private void LoadTargetPerks()
@@ -216,17 +267,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (dbPlayer == null)
                 return;
 
-            var perkNames = new GuiBindingList<string>();
-            var perkLevels = new GuiBindingList<int>();
+            var rows = new List<PerkEntry>();
             foreach (var (type, level) in dbPlayer.Perks)
             {
                 var detail = Perk.GetPerkDetails(type);
-                perkNames.Add(detail.Name);
-                perkLevels.Add(level);
+                rows.Add(new PerkEntry(detail.Name, level));
             }
 
-            PerkNames = perkNames;
-            PerkLevels = perkLevels;
+            PerksTable.Refresh(this, rows);
         }
 
         private void LoadTargetNotes()
@@ -241,19 +289,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(PlayerNote.IsDMNote), true);
             var dbNotes = DB.Search(query);
 
-            _noteIds.Clear();
-            var noteNames = new GuiBindingList<string>();
-            var noteToggles = new GuiBindingList<bool>();
-
+            var rows = new List<NoteEntry>();
             foreach (var note in dbNotes)
             {
-                _noteIds.Add(note.Id);
-                noteNames.Add(note.Name);
-                noteToggles.Add(false);
+                rows.Add(new NoteEntry(note.Id, note.Name));
             }
 
-            NoteNames = noteNames;
-            NoteToggles = noteToggles;
+            // Row-index lookups (OnClickNote, OnClickDeleteNote, OnClickSaveChanges)
+            // index into this in lockstep with the bound lists.
+            _noteIds.Clear();
+            foreach (var row in rows)
+                _noteIds.Add(row.Id);
+
+            NotesTable.Refresh(this, rows);
         }
 
         public Action OnClickDetails() => () =>

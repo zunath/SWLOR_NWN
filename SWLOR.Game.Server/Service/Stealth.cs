@@ -61,6 +61,28 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
         }
 
+        /// <summary>
+        /// Landing a hit is a hostile action, so it reveals the attacker. Abilities flagged
+        /// BreaksStealth are already handled on activation; this covers auto-attacks and any
+        /// damage-dealing path that does not route through an ability.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnSWLORDamage)]
+        public static void BreakStealthOnDamageDealt()
+        {
+            var attacker = OBJECT_SELF;
+
+            if (!GetIsPC(attacker) ||
+                GetIsDM(attacker) ||
+                !GetActionMode(attacker, ActionMode.Stealth))
+                return;
+
+            AssignCommand(attacker, () =>
+            {
+                SetActionMode(attacker, ActionMode.Stealth, false);
+            });
+            SendMessageToPC(attacker, "Your attack gives away your position.");
+        }
+
         [NWNEventHandler(ScriptName.OnStealthExitAfter)]
         public static void OnStealthExited()
         {

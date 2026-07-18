@@ -59,8 +59,40 @@ public class TelegraphTests
             -1,
             "the instant-cast branch must still be recognisable; update this test's anchor if it was reworded");
 
-        source[branchStart..].IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
+        // Scope the assertion to the branch body. Searching to end-of-file would also match the
+        // ShowAreaImpactFlash method declaration further down, so deleting the call from the branch
+        // would still pass.
+        var branchBody = ExtractBlockBody(source, branchStart);
+
+        branchBody.IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1, "the instant-cast path must flash the area it just struck");
+    }
+
+    /// <summary>
+    /// Returns the brace-delimited block that opens after <paramref name="searchFrom"/>, excluding the
+    /// braces themselves.
+    /// </summary>
+    private static string ExtractBlockBody(string source, int searchFrom)
+    {
+        var open = source.IndexOf('{', searchFrom);
+        open.Should().BeGreaterThan(-1, "the branch must open a block");
+
+        var depth = 0;
+        for (var i = open; i < source.Length; i++)
+        {
+            if (source[i] == '{')
+            {
+                depth++;
+            }
+            else if (source[i] == '}')
+            {
+                depth--;
+                if (depth == 0)
+                    return source[(open + 1)..i];
+            }
+        }
+
+        throw new AssertionException("Could not find the closing brace for the instant-cast branch.");
     }
 
     [Test]

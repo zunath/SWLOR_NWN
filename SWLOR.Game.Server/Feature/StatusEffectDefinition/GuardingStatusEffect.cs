@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GuardingStatusEffect : StatusEffectBase
     {
         public override string Name => "Guarding";
-        public override EffectIconType Icon => EffectIconType.TwinGuardStanceStatusEffect;
+        public override EffectIconType Icon => EffectIconType.GuardingStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override float Frequency => 1f;
         public override bool PersistsOnLogout => false;

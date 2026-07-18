@@ -16,10 +16,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class ForcePushAbilityDefinition : IAbilityListDefinition
     {
-        private const int KnockdownDurationSeconds = 30;
-        private const int ForcePush1HobbleDurationSeconds = 30;
-        private const int ForcePush2HobbleDurationSeconds = 30;
-        private const int ForcePush3HobbleDurationSeconds = 30;
+        private const int KnockdownDurationSeconds = 6;
+        private const int ForcePush1HobbleDurationSeconds = 12;
+        private const int ForcePush2HobbleDurationSeconds = 12;
+        private const int ForcePush3HobbleDurationSeconds = 12;
         private const float ForcePush1ConeLengthMeters = 5f;
         private const float ForcePush2ConeLengthMeters = 8f;
         private const float ForcePush3ConeLengthMeters = 10f;

@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <param name="mustHavePerkType">The type of perk the player must have.</param>
         /// <param name="mustHavePerkLevel">Optionally, the level of the perk required.</param>
         /// <returns>A perk builder with the configured options.</returns>
-        public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0)
+        public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 1)
         {
             var requirement = new PerkRequirementMustHavePerk(mustHavePerkType, mustHavePerkLevel);
             _activeLevel.Requirements.Add(requirement);

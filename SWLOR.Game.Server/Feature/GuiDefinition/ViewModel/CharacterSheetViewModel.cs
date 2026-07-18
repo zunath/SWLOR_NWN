@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -480,6 +481,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsTechniquesEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public Action OnClickSkills() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Skills);
@@ -493,6 +500,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickPerks() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Perks);
+        };
+
+        public Action OnClickTechniques() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Techniques, new TechniquesPayload());
         };
 
         public Action OnClickChangePortrait() => () =>
@@ -863,7 +875,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             string tooltip;
             if (useDefaultMinimumDelay)
-                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next attack uses {baseDelaySeconds:0.##}s default minimum)";
+                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next swing at {swingDelaySeconds:0.##}s resolves extra attacks at your fastest possible speed)";
             else if (attackerDelayMilliseconds <= Combat.BaseAttackDelayMilliseconds)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({baseDelaySeconds:0.##}s default minimum)";
             else if (effectiveDelayMilliseconds < Combat.BaseAttackDelayMilliseconds)
@@ -893,6 +905,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better."),
                 new("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better."),
                 new("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Hit chance adjustment for physical weapon and Force abilities."),
+                new("Force Attack", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ForceAttackPercentAdjustment)), "Bonus or penalty applied to Attack when using Force-typed attacks and abilities."),
                 new("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality."),
                 new("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals."),
                 new("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired."),
@@ -1139,6 +1152,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
             IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
+            IsTechniquesEnabled = Perk.GetPerkLevel(_target, PerkType.CombatAnalyzer) >= 1;
 
             if (IsPlayerMode)
             {

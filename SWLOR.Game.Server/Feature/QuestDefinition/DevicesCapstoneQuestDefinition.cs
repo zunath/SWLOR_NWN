@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator Qion Test Log has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven.")
+                    "The Thermal Detonator Qion Test Log has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator Cryo-Range Regulator has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven.")
+                    "The Thermal Detonator Cryo-Range Regulator has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator Frostburned Test Crest has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven.")
+                    "The Thermal Detonator Frostburned Test Crest has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator Site Chief's Override Chip has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven.")
+                    "The Thermal Detonator Site Chief's Override Chip has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator master has been defeated. Return to Ruk Halven to complete the trial.")
+                    "The Thermal Detonator master has been defeated. Return to Ruk Halven at the Hutlar Outpost to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage Qion Test Log has been recovered from Hutlar Qion Test Site. Return it to Miri Koss.")
+                    "The Overload Barrage Qion Test Log has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage Cryo-Range Regulator has been recovered from Hutlar Qion Test Site. Return it to Miri Koss.")
+                    "The Overload Barrage Cryo-Range Regulator has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage Frostburned Test Crest has been recovered from Hutlar Qion Test Site. Return it to Miri Koss.")
+                    "The Overload Barrage Frostburned Test Crest has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage Site Chief's Override Chip has been recovered from Hutlar Qion Test Site. Return it to Miri Koss.")
+                    "The Overload Barrage Site Chief's Override Chip has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage master has been defeated. Return to Miri Koss to complete the lesson.")
+                    "The Overload Barrage master has been defeated. Return to Miri Koss at Fort Ka'ra on Hutlar to complete the lesson.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr.")
+                    "The Killzone Beacon Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr.")
+                    "The Killzone Beacon Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr.")
+                    "The Killzone Beacon Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr.")
+                    "The Killzone Beacon Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon master has been defeated. Return to Aric Jorr to complete the briefing.")
+                    "The Killzone Beacon master has been defeated. Return to Aric Jorr at the Republic Base on Viscara to complete the briefing.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss.")
+                    "The Emergency Bunker Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -454,7 +454,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss.")
+                    "The Emergency Bunker Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss.")
+                    "The Emergency Bunker Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -496,7 +496,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss.")
+                    "The Emergency Bunker Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -514,7 +514,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker master has been defeated. Return to Nella Voss to complete the certification.")
+                    "The Emergency Bunker master has been defeated. Return to Nella Voss at the Republic Base grounds on Viscara to complete the certification.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

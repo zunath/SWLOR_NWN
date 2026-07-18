@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _forceDefensePercent;
 
         public override string Name => "Saber Ward";
-        public override EffectIconType Icon => EffectIconType.ForceWardingStatusEffect;
+        public override EffectIconType Icon => EffectIconType.SaberWardStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

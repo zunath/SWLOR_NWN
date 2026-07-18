@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -56,6 +57,52 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public List<Type> StatusEffectTypesRemovedOnPerkRefund { get; set; }
         public AITargetSelector AITargetSelector { get; set; }
         public AIScoreCalculation AIScore { get; set; }
+        public FeatType MimicrySourceFeat { get; set; }
+        public int MimicryTier { get; set; }
+        public int MimicrySlotCost { get; set; }
+
+        /// <summary>
+        /// When true the activation delay is a channel: the ability's impact, costs, and recast delay
+        /// all apply when the channel starts and the granted effects run for the channel itself.
+        /// Interrupting the channel ends it early via <see cref="ChannelInterruptAction"/> without
+        /// refunding the recast delay.
+        /// </summary>
+        public bool IsChanneled { get; set; }
+
+        /// <summary>
+        /// Invoked against the activator when a channeled ability is interrupted so the effects granted
+        /// at channel start can be ended early.
+        /// </summary>
+        public Action<uint> ChannelInterruptAction { get; set; }
+
+        /// <summary>
+        /// When true this mimicked technique is a passive trait rather than an activated ability:
+        /// equipping it applies <see cref="MimicryTraitStatusEffect"/> for as long as it is slotted
+        /// (granting flat stats, a self-buff, or an on-hit proc chance) and it has no hotbar action.
+        /// </summary>
+        public bool IsMimicryTrait { get; set; }
+        public Type MimicryTraitStatusEffect { get; set; }
+
+        /// <summary>
+        /// When true this mimicked technique is a self-toggle stance (via the toggle model) rather than
+        /// a hostile cast, so the contract tests exempt it from the hostility / damage-element /
+        /// combat-scaling assertions the way passive traits are exempt.
+        /// </summary>
+        public bool IsMimicryStance { get; set; }
+
+        /// <summary>
+        /// When true this mimicked technique is an active but non-damaging utility (control, debuff,
+        /// support, or zone) — it targets and casts like any active, but declares no damage element or
+        /// scaling attribute, so the contract tests exempt it from those assertions.
+        /// </summary>
+        public bool IsMimicryUtility { get; set; }
+
+        /// <summary>
+        /// The damage type this mimicked technique deals, used for damage-type loadout set bonuses
+        /// (elemental resonance). <see cref="CombatDamageType.Invalid"/> for techniques with no
+        /// damage element (passive flat/self-buff traits), which do not contribute to a set.
+        /// </summary>
+        public CombatDamageType MimicryElement { get; set; }
 
         public AbilityDetail()
         {
@@ -86,6 +133,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
             SuppressesSourceStatusStackRiders = false;
             AdditionalActivationTargeting = new List<AbilityTargetingDetail>();
             StatusEffectTypesRemovedOnPerkRefund = new List<Type>();
+            MimicrySourceFeat = FeatType.Invalid;
+            MimicryElement = CombatDamageType.Invalid;
         }
     }
 }

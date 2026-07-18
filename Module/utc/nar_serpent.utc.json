@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 22.0
   },
   "ClassList": {
     "type": "list",
@@ -174,13 +174,6 @@
         "EquippedRes": {
           "type": "resref",
           "value": "npc_looter_m_t"
-        }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "npc_outlaw_rifle"
         }
       },
       {
@@ -353,7 +346,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 627
+    "value": 655
   },
   "NaturalAC": {
     "type": "byte",

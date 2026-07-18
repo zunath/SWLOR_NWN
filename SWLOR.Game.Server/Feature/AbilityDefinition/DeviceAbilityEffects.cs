@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -346,7 +347,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 appliesBeaconPulseBonuses));
         }
 
-        public static void CreateTemporaryFieldEngineerMarker(
+        public static uint CreateTemporaryFieldEngineerMarker(
             Location location,
             VisualEffect markerVisualEffect,
             float markerVisualEffectScale,
@@ -356,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 durationSeconds <= 0f ||
                 !GetIsObjectValid(GetAreaFromLocation(location)))
             {
-                return;
+                return OBJECT_INVALID;
             }
 
             var marker = CreateObject(
@@ -366,7 +367,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 false,
                 FieldEngineerPulseMarkerTag);
             if (!GetIsObjectValid(marker))
-                return;
+            {
+                Log.Write(LogGroup.Error,
+                    $"Failed to create field marker placeable '{FieldEngineerPulseMarkerResref}' at the requested location.");
+                return OBJECT_INVALID;
+            }
 
             SetPlotFlag(marker, true);
             ApplyEffectToObject(
@@ -377,6 +382,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     Math.Max(FieldEngineerVisualMinimumDurationSeconds, markerVisualEffectScale)),
                 marker);
             DestroyObject(marker, durationSeconds);
+
+            return marker;
         }
 
         public static bool ExtendActiveFieldEngineerPulses(uint activator, float seconds)

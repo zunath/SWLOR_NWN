@@ -701,13 +701,29 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             if (!GetIsObjectValid(obj))
                 return result;
 
-            if (GetObjectType(obj) == ObjectType.Item && ObsoleteItemMigration.IsObsoleteResRef(GetResRef(obj)))
+            if (GetObjectType(obj) == ObjectType.Item)
             {
-                DestroyObject(obj);
-                result.Changed = true;
-                result.RemovedRoot = true;
-                result.RemovedItems = 1;
-                return result;
+                var resref = GetResRef(obj);
+                if (ObsoleteItemMigration.TryGetConversionResRef(resref, out var replacementResRef))
+                {
+                    DestroyObject(obj);
+                    var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
+                    var replacement = CreateItemOnObject(replacementResRef, tempStorage);
+                    result.Changed = true;
+                    result.Data = ObjectPlugin.Serialize(replacement);
+                    result.RemovedItems = 1;
+                    DestroyObject(replacement);
+                    return result;
+                }
+
+                if (ObsoleteItemMigration.IsObsoleteResRef(resref))
+                {
+                    DestroyObject(obj);
+                    result.Changed = true;
+                    result.RemovedRoot = true;
+                    result.RemovedItems = 1;
+                    return result;
+                }
             }
 
             result.Changed = MigrateStoredObject(obj, result);

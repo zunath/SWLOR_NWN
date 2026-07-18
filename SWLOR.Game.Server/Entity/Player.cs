@@ -78,6 +78,8 @@ namespace SWLOR.Game.Server.Entity
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
+            LearnedTechniques = new Dictionary<FeatType, DateTime>();
+            EquippedTechniques = new List<FeatType>();
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
@@ -159,6 +161,12 @@ namespace SWLOR.Game.Server.Entity
         public int Attack { get; set; }
         public int ForceAttack { get; set; }
         public int Evasion { get; set; }
+        public int Stealth { get; set; }
+        public int Detection { get; set; }
+        public int TrapBonus { get; set; }
+        public int TrapDisarm { get; set; }
+        public int PoisonBonus { get; set; }
+        public int Lockpicking { get; set; }
         public bool RebuildComplete { get; set; }
         public string ActiveBeastId { get; set; }
         public string ActiveDisguiseId { get; set; }
@@ -184,6 +192,8 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
+        public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
+        public List<FeatType> EquippedTechniques { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }

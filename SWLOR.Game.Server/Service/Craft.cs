@@ -847,7 +847,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Applies an enhancement-provided item property onto a crafted item,
         /// merging with any existing property of the same type. DMG amounts are
-        /// summed together; WeaponDamageType replaces the existing damage type.
+        /// summed together; a conflicting WeaponDamageType is resolved by randomly
+        /// keeping one of the two rather than always favoring the latest one applied.
         /// </summary>
         public static void ApplyCraftedItemProperty(uint item, ItemProperty ip)
         {
@@ -857,33 +858,117 @@ namespace SWLOR.Game.Server.Service
 
             if (type == ItemPropertyType.WeaponDamageType)
             {
-                for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
-                {
-                    if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
-                    {
-                        RemoveItemProperty(item, property);
-                    }
-                }
-
-                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                ApplyWeaponDamageTypeProperty(item, ip, subType);
                 return;
             }
 
+            // Whether two properties of the same type should merge is decided by
+            // whether that type even has a subtype: itempropdef.2da's SubTypeResRef
+            // column is the source of truth. Types with no subtype table (Accuracy/
+            // AttackBonus, DMG, Attack, ForceAttack, Evasion, HP, FP, Stamina,
+            // ShieldDeflection, CombatReadiness, StructureBonus, ...) carry no
+            // meaningful subtype, but the value the engine reports for GetItemPropertySubType
+            // on them is not dependable: it is not necessarily -1 when freshly built,
+            // and it does not reliably round-trip once the property has been attached to
+            // a live item. Earlier code keyed the merge off the incoming property's
+            // subtype and treated -1 as "match any of this type"; when the engine handed
+            // back some other value instead, two identical accuracy kits failed that
+            // check. Ignore the reported subtype entirely for these types and match on
+            // type alone. A type with a real subtype table (Defense, Resistance,
+            // FoodBonus, DroidStat) does round-trip, so those still only merge same-subtype.
+            var hasSubType = !string.IsNullOrWhiteSpace(Get2DAString("itempropdef", "SubTypeResRef", (int)type));
+
+            var matchSubType = hasSubType ? subType : -1;
+
+            int CountMatches()
+            {
+                var count = 0;
+                for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(property) == type &&
+                        (!hasSubType || GetItemPropertySubType(property) == subType))
+                    {
+                        count++;
+                    }
+                }
+
+                return count;
+            }
+
+            // Sum every existing match into the incoming amount. This is a read-only
+            // pass on purpose: the total is computed exactly once, so nothing below can
+            // inflate it by revisiting a property.
             for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
             {
                 if (GetItemPropertyType(property) == type &&
-                    (type == ItemPropertyType.DMG ||
-                     GetItemPropertySubType(property) == -1 ||
-                     GetItemPropertySubType(property) == subType))
+                    (!hasSubType || GetItemPropertySubType(property) == subType))
                 {
                     amount += GetItemPropertyCostTableValue(property);
-                    RemoveItemProperty(item, property);
                 }
+            }
+
+            // Now drop the originals so only the summed property remains. Removal goes
+            // through the engine's own type/subtype matcher rather than item property
+            // handles stashed from an earlier walk: those handles do not reliably
+            // resolve back to the property once the walk that produced them has ended,
+            // so the removal silently no-opped and the pre-merge value survived next to
+            // the merged total - the "+10" and "+5" duplicate accuracy lines seen when
+            // two enhancement kits of the same stat were socketed. The helper removes
+            // while iterating and therefore skips every other match, so repeat it; bail
+            // the moment a pass stops making progress, which keeps a removal that cannot
+            // take effect from looping and from ever re-counting a value.
+            var remainingMatches = CountMatches();
+            while (remainingMatches > 0)
+            {
+                BiowareXP2.IPRemoveMatchingItemProperties(item, type, DurationType.Invalid, matchSubType);
+
+                var afterRemoval = CountMatches();
+                if (afterRemoval >= remainingMatches)
+                    break;
+
+                remainingMatches = afterRemoval;
             }
 
             var unpacked = ItemPropertyPlugin.UnpackIP(ip);
             unpacked.CostTableValue = amount;
+            // A no-subtype property can arrive with an undependable subtype; write it
+            // back canonically so the merged property is stored the same way every time
+            // instead of persisting whatever value the engine happened to report.
+            if (!hasSubType)
+                unpacked.SubType = -1;
             ip = ItemPropertyPlugin.PackIP(unpacked);
+
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+        }
+
+        /// <summary>
+        /// A weapon can only carry one damage type. If it already has a different
+        /// type than the one being applied now, keep only one - chosen at random
+        /// rather than always letting whichever enhancement was socketed last
+        /// silently win.
+        /// </summary>
+        private static void ApplyWeaponDamageTypeProperty(uint item, ItemProperty ip, int subType)
+        {
+            var damageTypeMatches = new List<ItemProperty>();
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
+                {
+                    damageTypeMatches.Add(property);
+                }
+            }
+
+            var keepExisting = damageTypeMatches.Count > 0 &&
+                                GetItemPropertySubType(damageTypeMatches[0]) != subType &&
+                                Random.D100(1) <= 50;
+
+            if (keepExisting)
+                return;
+
+            foreach (var property in damageTypeMatches)
+            {
+                RemoveItemProperty(item, property);
+            }
 
             BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
         }

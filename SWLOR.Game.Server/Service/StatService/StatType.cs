@@ -5214,7 +5214,144 @@ namespace SWLOR.Game.Server.Service.StatService
         /// FP cost consumed by each hostile auto-attack while Imbuement Stance is active.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        StanceHostileAutoAttackFPCost = 904
+        StanceHostileAutoAttackFPCost = 916,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Bleed on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtBleedChance = 910,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Freezing on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtFreezingChance = 911,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Shock on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtShockChance = 912,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Sunder on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtSunderChance = 913,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Hemorrhage on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtHemorrhageChance = 914,
+
+        /// <summary>
+        /// Percent bonus to the direct damage of mimicked techniques (combat analyzer potency).
+        /// Granted by Combat Analyzer ranks, the Overclocked Analyzer capstone's Overload, and
+        /// damage-type loadout set bonuses; read by the Mimicry technique impact as a damage-percent adjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MimicryPotencyPercent = 915,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Poison on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtPoisonChance = 917,
+
+        /// <summary>
+        /// Percent of incoming physical damage reflected back to the attacker after mitigation.
+        /// The physical counterpart to <see cref="ForceDamageReflectionPercentAdjustment"/> and
+        /// <see cref="ElementalDamageReflectionPercentAdjustment"/>.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PhysicalDamageReflectionPercentAdjustment = 918,
+
+        /// <summary>
+        /// Flat bonus to the stealth side of the opposed stealth detection check.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Stealth = 919,
+
+        /// <summary>
+        /// Flat bonus to the detection side of the opposed stealth detection check.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Detection = 920,
+
+        /// <summary>
+        /// Increases the effect strength of traps placed by the creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapBonus = 921,
+
+        /// <summary>
+        /// Improves the creature's ability to disarm hostile traps.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapDisarm = 922,
+
+        /// <summary>
+        /// Increases the potency of weapon poisons applied by the creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonBonus = 923,
+
+        /// <summary>
+        /// Improves the creature's ability to slice locks, terminals, and lockboxes.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Lockpicking = 924,
+
+        /// <summary>
+        /// Percent multiplier applied to the creature's total Stealth stat while stealthed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthEffectivenessPercent = 925,
+
+        /// <summary>
+        /// Percent by which stamina drain while stealthed is slowed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthStaminaDrainReductionPercent = 926,
+
+        /// <summary>
+        /// Percent adjustment to how long weapon poison coatings applied by the creature last.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonCoatingDurationPercent = 927,
+
+        /// <summary>
+        /// Percent adjustment applied to melee weapon damage dealt while the attacker is behind the target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackDamagePercentAdjustment = 928,
+
+        /// <summary>
+        /// Critical rate percent adjustment applied to melee weapon attacks made while the attacker is behind the target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackCriticalRatePercentAdjustment = 929,
+
+        /// <summary>
+        /// Additional traps the creature may keep active at the same time beyond the base allowance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AdditionalTrapCapacity = 930,
+
+        /// <summary>
+        /// Defense reduction percent applied as Exposed when the creature lands a back attack.
+        /// Consumed on the next landed back attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackExposedPercent = 931,
+
+        /// <summary>
+        /// Duration in seconds for the Exposed effect applied by BackAttackExposedPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackExposedDurationSeconds = 932,
     }
 
     public class StatTypeAttribute : Attribute

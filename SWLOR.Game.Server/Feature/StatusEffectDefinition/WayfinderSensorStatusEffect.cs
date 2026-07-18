@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class WayfinderSensorStatusEffect : StatusEffectBase
     {
         public override string Name => "Wayfinder Sensor";
-        public override EffectIconType Icon => EffectIconType.SnapRollStatusEffect;
+        public override EffectIconType Icon => EffectIconType.WayfinderSensorStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

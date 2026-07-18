@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.StanceHostileAutoAttackForceConversion] = 1;
             StatGroup.Stats[StatType.StanceHostileAutoAttackFPCost] = 2;
+            // While the stance is active the wearer's Force-typed swings gain +10% Force Attack.
+            StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = 10;
         }
     }
 }

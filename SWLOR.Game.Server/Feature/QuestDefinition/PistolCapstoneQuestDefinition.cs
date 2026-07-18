@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You claimed the Last Word Canyon Range Tally. Deliver it to Jek Talin.")
+                    "You claimed the Last Word Canyon Range Tally. Deliver it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Last Word Sightline Calibrator. Return it to Jek Talin.")
+                    "You recovered the Last Word Sightline Calibrator. Return it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Last Word Shattered Range Crest from the warden. Bring it to Jek Talin.")
+                    "You took the Last Word Shattered Range Crest from the warden. Bring it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Last Word Marshal's Challenge Chit. Return it to Jek Talin.")
+                    "You secured the Last Word Marshal's Challenge Chit. Return it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Word master is defeated. Report to Jek Talin.")
+                    "The Last Word master is defeated. Report to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You claimed the Dead Man's Hand Canyon Range Tally. Deliver it to Pavo Orrel.")
+                    "You claimed the Dead Man's Hand Canyon Range Tally. Deliver it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Dead Man's Hand Sightline Calibrator. Return it to Pavo Orrel.")
+                    "You recovered the Dead Man's Hand Sightline Calibrator. Return it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Dead Man's Hand Shattered Range Crest from the warden. Bring it to Pavo Orrel.")
+                    "You took the Dead Man's Hand Shattered Range Crest from the warden. Bring it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Dead Man's Hand Marshal's Challenge Chit. Return it to Pavo Orrel.")
+                    "You secured the Dead Man's Hand Marshal's Challenge Chit. Return it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Dead Man's Hand master is defeated. Report to Pavo Orrel.")
+                    "The Dead Man's Hand master is defeated. Report to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

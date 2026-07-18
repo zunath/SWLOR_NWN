@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Primal Overrun Grotto Track Slate is secured. Return to Nalka Rinn in the Dathomir Grotto Apex Den.")
+                    "The six adepts are down and the Primal Overrun Grotto Track Slate is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Primal Overrun Resonant Fang Charm is secured. Return to Nalka Rinn in the Dathomir Grotto Apex Den.")
+                    "The five specialists are defeated and the Primal Overrun Resonant Fang Charm is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun warden is defeated and the Primal Overrun Cracked Apex Totem is secured. Return to Nalka Rinn in the Dathomir Grotto Apex Den.")
+                    "The Primal Overrun warden is defeated and the Primal Overrun Cracked Apex Totem is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun inner circle is defeated and the Primal Overrun Den-Mother's Fang Token is secured. Return to Nalka Rinn in the Dathomir Grotto Apex Den.")
+                    "The Primal Overrun inner circle is defeated and the Primal Overrun Den-Mother's Fang Token is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun master is defeated. Return to Nalka Rinn in the Dathomir Grotto Apex Den to complete the trial.")
+                    "The Primal Overrun master is defeated. Return to Nalka Rinn at the Dathomir Jungle Landing to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Untouchable Instinct Grotto Track Slate is secured. Return to Voro Thane in the Dathomir Grotto Apex Den.")
+                    "The six adepts are down and the Untouchable Instinct Grotto Track Slate is secured. Return to Voro Thane at the Czerka base on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Untouchable Instinct Resonant Fang Charm is secured. Return to Voro Thane in the Dathomir Grotto Apex Den.")
+                    "The five specialists are defeated and the Untouchable Instinct Resonant Fang Charm is secured. Return to Voro Thane at the Czerka base on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct warden is defeated and the Untouchable Instinct Cracked Apex Totem is secured. Return to Voro Thane in the Dathomir Grotto Apex Den.")
+                    "The Untouchable Instinct warden is defeated and the Untouchable Instinct Cracked Apex Totem is secured. Return to Voro Thane at the Czerka base on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct inner circle is defeated and the Untouchable Instinct Den-Mother's Fang Token is secured. Return to Voro Thane in the Dathomir Grotto Apex Den.")
+                    "The Untouchable Instinct inner circle is defeated and the Untouchable Instinct Den-Mother's Fang Token is secured. Return to Voro Thane at the Czerka base on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct master is defeated. Return to Voro Thane in the Dathomir Grotto Apex Den to complete the trial.")
+                    "The Untouchable Instinct master is defeated. Return to Voro Thane at the Czerka base on Dathomir to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Force-Bonded Beast Grotto Track Slate is secured. Return to Eshka Korr in the Dathomir Grotto Apex Den.")
+                    "The six adepts are down and the Force-Bonded Beast Grotto Track Slate is secured. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -367,7 +367,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Force-Bonded Beast Resonant Fang Charm is secured. Return to Eshka Korr in the Dathomir Grotto Apex Den.")
+                    "The five specialists are defeated and the Force-Bonded Beast Resonant Fang Charm is secured. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast warden is defeated and the Force-Bonded Beast Cracked Apex Totem is secured. Return to Eshka Korr in the Dathomir Grotto Apex Den.")
+                    "The Force-Bonded Beast warden is defeated and the Force-Bonded Beast Cracked Apex Totem is secured. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast inner circle is defeated and the Force-Bonded Beast Den-Mother's Fang Token is secured. Return to Eshka Korr in the Dathomir Grotto Apex Den.")
+                    "The Force-Bonded Beast inner circle is defeated and the Force-Bonded Beast Den-Mother's Fang Token is secured. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -427,7 +427,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast master is defeated. Return to Eshka Korr in the Dathomir Grotto Apex Den to complete the trial.")
+                    "The Force-Bonded Beast master is defeated. Return to Eshka Korr at the Waterfall Ruins on Dathomir to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Apex Bite Tarn Hunt Tally is secured. Return to Talra Venn in the Dathomir Tarn Jungle Preserve.")
+                    "The six adepts are down and the Apex Bite Tarn Hunt Tally is secured. Return to Talra Venn at the Dathomir Jungle Landing.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -480,7 +480,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Apex Bite Beast-Pen Scent Vial is secured. Return to Talra Venn in the Dathomir Tarn Jungle Preserve.")
+                    "The five specialists are defeated and the Apex Bite Beast-Pen Scent Vial is secured. Return to Talra Venn at the Dathomir Jungle Landing.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -501,7 +501,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Apex Bite warden is defeated and the Apex Bite Clawed Alpha Totem is secured. Return to Talra Venn in the Dathomir Tarn Jungle Preserve.")
+                    "The Apex Bite warden is defeated and the Apex Bite Clawed Alpha Totem is secured. Return to Talra Venn at the Dathomir Jungle Landing.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -522,7 +522,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Apex Bite inner circle is defeated and the Apex Bite Preserve Keeper's Token is secured. Return to Talra Venn in the Dathomir Tarn Jungle Preserve.")
+                    "The Apex Bite inner circle is defeated and the Apex Bite Preserve Keeper's Token is secured. Return to Talra Venn at the Dathomir Jungle Landing.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -540,7 +540,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Apex Bite master is defeated. Return to Talra Venn in the Dathomir Tarn Jungle Preserve to complete the trial.")
+                    "The Apex Bite master is defeated. Return to Talra Venn at the Dathomir Jungle Landing to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -572,7 +572,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Unbreakable Beast Tarn Hunt Tally is secured. Return to Oren Krast in the Dathomir Tarn Jungle Preserve.")
+                    "The six adepts are down and the Unbreakable Beast Tarn Hunt Tally is secured. Return to Oren Krast at the Czerka base on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -593,7 +593,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Unbreakable Beast Beast-Pen Scent Vial is secured. Return to Oren Krast in the Dathomir Tarn Jungle Preserve.")
+                    "The five specialists are defeated and the Unbreakable Beast Beast-Pen Scent Vial is secured. Return to Oren Krast at the Czerka base on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -614,7 +614,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unbreakable Beast warden is defeated and the Unbreakable Beast Clawed Alpha Totem is secured. Return to Oren Krast in the Dathomir Tarn Jungle Preserve.")
+                    "The Unbreakable Beast warden is defeated and the Unbreakable Beast Clawed Alpha Totem is secured. Return to Oren Krast at the Czerka base on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -635,7 +635,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unbreakable Beast inner circle is defeated and the Unbreakable Beast Preserve Keeper's Token is secured. Return to Oren Krast in the Dathomir Tarn Jungle Preserve.")
+                    "The Unbreakable Beast inner circle is defeated and the Unbreakable Beast Preserve Keeper's Token is secured. Return to Oren Krast at the Czerka base on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -653,7 +653,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unbreakable Beast master is defeated. Return to Oren Krast in the Dathomir Tarn Jungle Preserve to complete the trial.")
+                    "The Unbreakable Beast master is defeated. Return to Oren Krast at the Czerka base on Dathomir to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -685,7 +685,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Alpha Rhythm Tarn Hunt Tally is secured. Return to Mira Syth in the Dathomir Tarn Jungle Preserve.")
+                    "The six adepts are down and the Alpha Rhythm Tarn Hunt Tally is secured. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -706,7 +706,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Alpha Rhythm Beast-Pen Scent Vial is secured. Return to Mira Syth in the Dathomir Tarn Jungle Preserve.")
+                    "The five specialists are defeated and the Alpha Rhythm Beast-Pen Scent Vial is secured. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -727,7 +727,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Alpha Rhythm warden is defeated and the Alpha Rhythm Clawed Alpha Totem is secured. Return to Mira Syth in the Dathomir Tarn Jungle Preserve.")
+                    "The Alpha Rhythm warden is defeated and the Alpha Rhythm Clawed Alpha Totem is secured. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -748,7 +748,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Alpha Rhythm inner circle is defeated and the Alpha Rhythm Preserve Keeper's Token is secured. Return to Mira Syth in the Dathomir Tarn Jungle Preserve.")
+                    "The Alpha Rhythm inner circle is defeated and the Alpha Rhythm Preserve Keeper's Token is secured. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -766,7 +766,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Alpha Rhythm master is defeated. Return to Mira Syth in the Dathomir Tarn Jungle Preserve to complete the trial.")
+                    "The Alpha Rhythm master is defeated. Return to Mira Syth at the Waterfall Ruins on Dathomir to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -311,9 +311,6 @@ namespace SWLOR.Game.Server.Core
 
         // Telegraph events
         public const string TelegraphEffect = "telegraph_effect";
-        public const string TelegraphApplied = "telegraph_applied";
-        public const string TelegraphTicked = "telegraph_ticked";
-        public const string TelegraphRemoved = "telegraph_removed";
 
         // Communication events
         public const string OnNWNXChat = "on_nwnx_chat";

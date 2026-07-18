@@ -1770,6 +1770,11 @@ def profile_property_lines(row, level, primary_status):
     if max_targets:
         add_profile_property("MaximumAreaTargets", str(max_targets))
 
+    # TelegraphDuration is deliberately not derived from CastingTime. The pre-cast telegraph is
+    # already drawn by UsePerkFeat from the activation delay; this one runs at impact, after the
+    # cast has finished, so setting it from CastingTime would delay damage twice and draw the shape
+    # twice. It stays 0 unless a definition hand-sets it for a genuinely delayed detonation.
+
     match = re.search(
         r"If you attacked this target in the last (\d+) seconds, .*?\+(\d+) DMG",
         description,
@@ -2437,17 +2442,23 @@ def add_missing_feats(rows):
             base, _ = base_and_level(row["PerkName"])
             feat = active_feat_name(row, feat_values)
             target_self = is_self_targeting_active(row, base)
+            # Queued weapon actives fire on the wearer's next landed auto-attack, and self-centered
+            # area actives originate on the caster. Neither should present a manual target cursor
+            # (TARGETSELF=1 / HostileFeat cleared); only single-target hostile casts pick a target.
+            is_queued = row.get("CastingTime", "").strip().lower() == "queued"
+            is_self_origin_area = is_area(row["Description"])
+            no_manual_target = target_self or is_queued or is_self_origin_area
             hostile = (
                 row["Type"] == "Combat" and
                 not is_friendly_target_active(row["Description"]) and
-                not target_self
+                not no_manual_target
             )
             active_metadata[feat] = {
                 "label": feat,
                 "name": row["PerkName"].strip(),
                 "description": row["Description"].strip(),
                 "hostile": "1" if hostile else "****",
-                "target_self": "1" if target_self else "****",
+                "target_self": "1" if no_manual_target else "****",
             }
             if feat not in feat_values:
                 existing_rows = feat_rows_by_label.get(feat)

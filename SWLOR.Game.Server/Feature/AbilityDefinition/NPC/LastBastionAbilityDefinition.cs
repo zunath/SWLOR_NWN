@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 38.0f,
                 9,
                 29,
-                14,
+                6,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Line,
                 8.0f,

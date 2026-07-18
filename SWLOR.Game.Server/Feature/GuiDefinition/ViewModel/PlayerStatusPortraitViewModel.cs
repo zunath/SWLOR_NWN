@@ -87,11 +87,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Content dimensions of the overlay. These are logical units that the engine scales
                 // by the player's GUI scale; the anchor offsets below are multiplied by that same
                 // scale so the bars stay pinned over the portrait at any resolution or zoom.
-                // Content dimensions of the overlay. Height must fit BOTH bar rows plus NUI's
-                // inter-row margins or the second row is clipped (see PlayerStatusPortraitDefinition
-                // for the row/bar heights this is sized against).
+                // Height must clear BOTH 23f bar rows (46f) plus whatever inter-row spacing NUI's
+                // native "col" auto-layout inserts between them (see PlayerStatusPortraitDefinition).
+                // That spacing is a small fixed-pixel gap the engine applies outside of our control,
+                // not a logical unit we scale here, so it eats a larger share of a tight budget at
+                // some GUI scales than others. Previously this was 52f (only 6f over the row sum),
+                // which was reported clipping the bottom (FP) row at some scales; bumped to 60f to
+                // give the same kind of safety margin the rows themselves carry over their bars.
                 const float WidgetWidth = 72f;
-                const float WidgetHeight = 52f;
+                const float WidgetHeight = 60f;
 
                 // Distance (at 100% scale) from the right/top screen edges to the overlay's top-left
                 // corner. Tuned so the two bars sit across the lower half of the native portrait,

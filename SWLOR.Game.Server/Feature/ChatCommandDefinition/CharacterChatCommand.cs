@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             EndCall();
             Recipes();
             Perks();
+            Techniques();
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
@@ -178,6 +180,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
+        }
+
+        private void Techniques()
+        {
+            _builder.Create("techniques", "tech")
+                .Description("Toggles the techniques menu, where mimicked techniques can be equipped and unequipped.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    if (Perk.GetPerkLevel(user, PerkType.CombatAnalyzer) < 1)
+                    {
+                        return ColorToken.Red("You need the Combat Analyzer perk to use this feature.");
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Techniques, new TechniquesPayload());
+                });
         }
 
         private void Disguises()

@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Fires a focused ion beam from a wrist projector in an 8m line, dealing 12 electrical DMG plus PER scaling to hostile targets in the line.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Fires a focused ion beam from a wrist projector in an 8m line, dealing 22 electrical DMG plus PER scaling to hostile targets in the line.")
-                .Price(4)
+                .Price(2)
                 .RequirementSkill(SkillType.Devices, 32)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(2)
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Fires a focused ion beam from a wrist projector in an 8m line, dealing 32 electrical DMG plus PER scaling to hostile targets in the line.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(3)

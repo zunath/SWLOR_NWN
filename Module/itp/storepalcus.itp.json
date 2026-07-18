@@ -192,6 +192,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Incubation Field Notes"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "fnote_store"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Korriban General Store"
               },
               "RESREF": {

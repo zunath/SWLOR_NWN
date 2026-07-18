@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Storm Enclave Trial Slate. Return to Talan Rees at the Dantooine Jedi Enclave Trial Halls.")
+                    "You secured the Saber Storm Enclave Trial Slate. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Storm Kyber Focus Shard. Return to Talan Rees at the Dantooine Jedi Enclave Trial Halls.")
+                    "You secured the Saber Storm Kyber Focus Shard. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Storm Fractured Trial Sigil from the warden. Return to Talan Rees at the Dantooine Jedi Enclave Trial Halls.")
+                    "You secured the Saber Storm Fractured Trial Sigil from the warden. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Storm Council Trial Chit. Return to Talan Rees at the Dantooine Jedi Enclave Trial Halls.")
+                    "You secured the Saber Storm Council Trial Chit. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm master is defeated. Return to Talan Rees at the Dantooine Jedi Enclave Trial Halls.")
+                    "The Saber Storm master is defeated. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Guardian Master Enclave Trial Slate. Return to Miris Aven at the Dantooine Jedi Enclave Trial Halls.")
+                    "You secured the Guardian Master Enclave Trial Slate. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Guardian Master Kyber Focus Shard. Return to Miris Aven at the Dantooine Jedi Enclave Trial Halls.")
+                    "You secured the Guardian Master Kyber Focus Shard. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Guardian Master Fractured Trial Sigil from the warden. Return to Miris Aven at the Dantooine Jedi Enclave Trial Halls.")
+                    "You secured the Guardian Master Fractured Trial Sigil from the warden. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Guardian Master Council Trial Chit. Return to Miris Aven at the Dantooine Jedi Enclave Trial Halls.")
+                    "You secured the Guardian Master Council Trial Chit. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Paragon is defeated. Return to Miris Aven at the Dantooine Jedi Enclave Trial Halls.")
+                    "The Guardian Master Paragon is defeated. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

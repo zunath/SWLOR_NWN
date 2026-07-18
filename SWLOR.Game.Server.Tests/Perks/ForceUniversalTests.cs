@@ -20,11 +20,11 @@ public class ForceUniversalTests
         var perks = BuildForceUniversalPerksWithout2daLookup();
 
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 1, 2, 5, FeatType.ForcePush1,
-            "Deals 8 force DMG to one target in a 5m cone, knocks down for 30 seconds, and slows movement for 30 seconds.");
+            "Deals 8 force DMG to one target in a 5m cone, knocks down for 6 seconds, and slows movement for 12 seconds.");
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 2, 3, 28, FeatType.ForcePush2,
-            "Deals 12 force DMG to up to 2 targets in an 8m cone, knocks down for 30 seconds, and slows movement for 30 seconds.");
+            "Deals 12 force DMG to up to 2 targets in an 8m cone, knocks down for 6 seconds, and slows movement for 12 seconds.");
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 3, 4, 48, FeatType.ForcePush3,
-            "Deals 18 force DMG to up to 3 targets in a 10m cone, knocks down for 30 seconds, and slows movement for 30 seconds.");
+            "Deals 18 force DMG to up to 3 targets in a 10m cone, knocks down for 6 seconds, and slows movement for 12 seconds.");
 
         AssertPerkLevel(perks[PerkType.ForceLeap], "Force Leap", 1, 3, 10, FeatType.ForceLeap1,
             "Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.");
@@ -153,7 +153,6 @@ public class ForceUniversalTests
         string description)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceUniversal);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);

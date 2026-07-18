@@ -12,8 +12,18 @@ namespace SWLOR.Game.Server.Feature
         {
             OverrideAttributeNames();
             OverrideMenuNames();
+            OverrideDamageTypeNames();
             OverrideFeatDescriptions();
             OverrideAttackBonus();
+        }
+
+        private static void OverrideDamageTypeNames()
+        {
+            // SWLOR routes Force damage through the engine's "Magical" damage type (damagetypes.2da row 3,
+            // damagetypegroups.2da group 1). The combat-log feedback for that group renders base dialog.tlk
+            // strref 5593 ("<CUSTOM0> Magical"); retype it to "Force" so the log reads e.g. "72 Force".
+            // The <CUSTOM0> token is the damage amount and must be preserved.
+            SetTlkOverride(5593, "<CUSTOM0> Force"); // Magical damage combat-log feedback
         }
 
         private static void OverrideAttributeNames()

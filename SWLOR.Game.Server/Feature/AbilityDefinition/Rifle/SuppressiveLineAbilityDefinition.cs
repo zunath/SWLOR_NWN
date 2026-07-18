@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                Spell.SuppressiveLine2,
                 AbilityTargetingShapeType.Rect,
                 20.0f,
                 3.0f,

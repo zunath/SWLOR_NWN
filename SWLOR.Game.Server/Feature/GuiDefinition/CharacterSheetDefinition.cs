@@ -309,6 +309,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         AddActionButton(actions, "Skills", model => model.OnClickSkills());
                         AddActionButton(actions, "Perks", model => model.OnClickPerks());
+                        AddActionButton(actions, "Techniques", model => model.OnClickTechniques(), model => model.IsTechniquesEnabled);
                         AddActionButton(actions, "Recipes", model => model.OnClickRecipes());
                         AddActionButton(actions, "Quests", model => model.OnClickQuests());
                         AddActionButton(actions, "Open Trash", model => model.OnClickOpenTrash());

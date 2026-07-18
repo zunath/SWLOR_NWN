@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 15
+                    ConditionalTargetStatusDurationSeconds = 6
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 15
+                    ConditionalTargetStatusDurationSeconds = 6
                 });
 
             return builder.Build();

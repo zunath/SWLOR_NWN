@@ -17,6 +17,10 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - Do not start background jobs, watchers, dev servers, publish tasks, or long-lived helper processes unless the user explicitly asks for them or they are strictly required for the current task. Prefer foreground commands with bounded timeouts. If a long-lived process is necessary, record what was started, track its PID when available, stop it before handing off, and report the cleanup. Do not use `Start-Process`, shell backgrounding, persistent REPL helpers, or detached commands to continue work after the turn unless the user has explicitly approved that behavior.
 
+## Chat Commands
+
+- Player-facing chat commands must use `.Permissions(AuthorizationLevel.All)`, not `AuthorizationLevel.Player` alone, unless the command is deliberately meant to exclude DMs/Admins. `AuthorizationLevel.Player`-only silently fails for DM-possessed or DM-authorization accounts with the same generic "Invalid chat command" message used for unregistered commands, which makes it look like the command was never wired up instead of a permissions gap.
+
 ## Tests
 
 - Building or testing `SWLOR.Game.Server` fires a Windows post-build deploy (`SWLOR.CLI.exe -o`) that is slow and unnecessary for verification. Always skip it by passing `-p:RunPostBuildEvent=Never` on builds, and use a build-once/test-many flow.
@@ -76,6 +80,7 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - Each distinct gameplay ability must have its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for that ability. Do not group unrelated abilities into broad definition files such as creature, combat, NPC, or package-level collections. Multiple ranks of the same ability may live in that ability's own definition file.
 - Ability-specific targeting metadata must be declared through the ability definition builder/detail pattern. Do not maintain separate explicit production lists of abilities for targeting behavior; shared targeting systems should consume the cached ability definitions.
+- An active ability presents a manual target cursor only when it is a single-target hostile *cast*. Queued weapon abilities (fire on the wearer's next landed auto-attack) and self-centered area abilities (originate on the caster) must NOT prompt for a target: in `feat.2da` they use `TARGETSELF=1` with `HostileFeat` cleared, and in C# they must not call `RequiresTarget()` (`ConfigureGeneratedWeaponAbility` already skips it for `IsQueuedWeaponAbility`). `tools/GenerateWeaponArchetypeImplementation.py` encodes this: a Combat active is `HostileFeat` only when it is neither self-targeting, queued (`CastingTime == "queued"`), nor a self-origin area. When adding or regenerating a queued or self-centered-area weapon active, verify its `feat.2da` row is `TARGETSELF=1`, then rebuild the haks and repack the module so the change deploys.
 
 ## Ability Icons
 

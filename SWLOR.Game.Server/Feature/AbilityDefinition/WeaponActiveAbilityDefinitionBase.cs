@@ -25,6 +25,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool IsQueuedWeaponAbility { get; init; }
             public CombatDamageType DamageType { get; init; } = CombatDamageType.Physical;
             public int MaximumAreaTargets { get; init; }
+
+            /// <summary>
+            /// How long the pre-cast telegraph is shown before an area impact lands, in seconds.
+            /// Leave at 0 for abilities the Bible marks "Instant" — they gate no damage and instead
+            /// get the visual-only impact flash from <see cref="Ability.ApplyTelegraphedCombatImpact"/>.
+            /// Only set this to match a Bible-granted casting time.
+            /// </summary>
+            public float TelegraphDuration { get; init; }
             public int ExtraDamageIfRecentTarget { get; init; }
             public float RecentTargetWindowSeconds { get; init; }
             public int ExtraDamageIfHighResources { get; init; }
@@ -1202,7 +1210,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             duration,
                             statusEffect,
                             ToCombatImpactAreaShape(targetingShape),
-                            0f,
+                            profile.TelegraphDuration,
                             targetingSizeX > 0f ? targetingSizeX : 5.0f,
                             targetingSizeY,
                             additionalStatusEffects,
@@ -1282,7 +1290,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
                 else
                 {
-                    ability.IsSingleTargetAbility().RequiresTarget();
+                    ability.IsSingleTargetAbility();
+
+                    // Queued weapon abilities fire on the wearer's next landed auto-attack, so they must
+                    // not force up-front target selection (the on-hit event supplies the target). Only
+                    // cast-style single-target abilities require picking a target object.
+                    if (!profile.IsQueuedWeaponAbility)
+                        ability.RequiresTarget();
+
                     if (maxRange > 0f)
                         ability.HasMaxRange(maxRange);
                 }
@@ -1547,51 +1562,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         combatImpactDamageAbility: combatImpactDamageAbility);
                 })
                 .IsWeaponAbility()
-                .IsHostileAbility()
-                .BreaksStealth();
-
-            if (stamina > 0)
-                ability.RequirementStamina(stamina);
-        }
-
-        protected static void ConfigureTelegraphedArea(
-            AbilityBuilder ability,
-            SkillType skill,
-            CombatImpactAreaShape shape,
-            int baseDamage,
-            int duration,
-            Type statusEffect,
-            float lengthOrRadius,
-            float width,
-            int stamina,
-            bool centerOnActivator = false,
-            int maxTargets = 0,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
-        {
-            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
-
-            ability.HasActivationDelay(0f)
-                .SkillType(skill)
-                .IsAreaAbility()
-                .HasImpactAction((activator, target, level, targetLocation) =>
-                {
-                    Ability.ApplyTelegraphedCombatImpact(
-                        activator,
-                        target,
-                        targetLocation,
-                        skill,
-                        baseDamage,
-                        duration,
-                        statusEffect,
-                        shape,
-                        0.4f,
-                        lengthOrRadius,
-                        width,
-                        centerOnActivator: centerOnActivator,
-                        maxTargets: maxTargets,
-                        combatImpactDamageAbility: combatImpactDamageAbility);
-                })
-                .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth();
 

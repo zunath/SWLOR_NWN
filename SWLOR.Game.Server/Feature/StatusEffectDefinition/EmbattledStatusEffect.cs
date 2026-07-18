@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public int Stacks => _stacks;
 
         public override string Name => "Embattled";
-        public override EffectIconType Icon => EffectIconType.DeflectivePresenceStatusEffect;
+        public override EffectIconType Icon => EffectIconType.EmbattledStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

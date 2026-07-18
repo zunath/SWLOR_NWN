@@ -296,7 +296,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 2197
+    "value": 2305
   },
   "NaturalAC": {
     "type": "byte",

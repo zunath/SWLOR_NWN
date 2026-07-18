@@ -1416,7 +1416,8 @@ namespace SWLOR.Game.Server.Service
             if (!_creatureEffects.TryGetValue(creature, out var creatureEffects))
                 return;
 
-            var hasSentMessage = false;
+            // RemoveStatusEffectInstance only emits the worn-off message for the final remaining
+            // instance of a given type, so removing every instance here yields exactly one message.
             var statusEffects = creatureEffects.GetAllEffects();
             foreach (var statusEffect in statusEffects)
             {
@@ -1426,9 +1427,7 @@ namespace SWLOR.Game.Server.Service
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                var shouldSendMessage = sendsWornOffMessage && !hasSentMessage;
-                RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, shouldSendMessage, removeNativeEffect);
-                hasSentMessage |= shouldSendMessage && statusEffect.SendsWornOffMessage;
+                RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect);
             }
 
             RemoveCreatureIfEmpty(creature, creatureEffects, removeNativeEffect);
@@ -1468,7 +1467,9 @@ namespace SWLOR.Game.Server.Service
             bool sendsWornOffMessage,
             bool removeNativeEffect)
         {
-            if (sendsWornOffMessage && statusEffect.SendsWornOffMessage)
+            if (sendsWornOffMessage &&
+                statusEffect.SendsWornOffMessage &&
+                IsLastInstanceOfType(creatureEffects, statusEffect))
             {
                 var effectName = statusEffect.Name;
                 Messaging.SendMessageNearbyToPlayers(creature,
@@ -1490,6 +1491,19 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
             }
+        }
+
+        /// <summary>
+        /// Returns true when the supplied status effect is the only remaining instance of its
+        /// runtime type on the creature. Stacking effects (e.g. Suppression) apply many separate
+        /// instances that each expire on their own timer; gating the "worn off" message on the
+        /// final instance collapses what would otherwise be one message per stack into a single
+        /// notification when the effect fully wears off.
+        /// </summary>
+        private static bool IsLastInstanceOfType(CreatureStatusEffect creatureEffects, IStatusEffect statusEffect)
+        {
+            var type = statusEffect.GetType();
+            return creatureEffects.GetAllEffects().Count(effect => effect.GetType() == type) <= 1;
         }
 
         /// <summary>

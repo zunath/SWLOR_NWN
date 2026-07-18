@@ -15,6 +15,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
   - Removes refunded legacy perk keys before the forced rebuild refund path can process them again.
   - Preserves legacy numeric `FlurryStyle` saves as the current `FlurryStyle` perk so that investment is not silently dropped.
   - Forces every player through a full rebuild by setting `Player.RebuildComplete = false` via `RequireFullRebuildForAllPlayers()`.
+  - Grants every player one `CurrencyType.RebuildToken` via `GrantCombatUpgradeRebuildToken` in addition to the forced rebuild, so players keep a spare respec for later use.
   - Updates stored item requirement properties to the combat-upgrade skill requirement model.
   - Splits persisted mitigation data so Physical/Force remain in `Player.Defenses` and elemental/status mitigation lives in `Player.Resistances`.
   - Moves legacy elemental defense entries into resistances, fills missing default keys, and removes Physical/Force from resistances.
@@ -31,7 +32,8 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 ## Player-Facing Migration Goals
 
 - Force all players to perform a full rebuild for the combat upgrade.
-- Do not grant or require rebuild tokens for this forced rebuild path.
+- The forced rebuild itself is free and does not require spending a rebuild token.
+- Additionally, grant every player one `CurrencyType.RebuildToken` so they have a spare respec banked after the forced rebuild. New characters likewise start with one free rebuild token (`PlayerInitialization.GiveStartingRebuildToken`).
 - Use a 400 skill cap. Armor is not exempt from the cap and grants SP through the normal active-skill path.
 - Current Bible General perks use Armor skill requirements because Armor is the closest thing SWLOR has to a general character-level proxy.
 - Refund SP for removed attack-count/mastery perks so players are not stranded with deleted perk investments.
@@ -79,7 +81,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 ## Follow-Up Checks Before Release
 
 - Character sheet combat display cleanup is complete: Physical Defense and Force Defense use dedicated bindings, and typed elemental/status mitigation is presented through the Resistance table.
-- Static coverage in `CombatUpgradeMigrationCoverageTests` confirms `_22_CombatSystemReplacement` still follows master migration `_21_SetDefaultOutfitAndMarketLimits`, forces `Player.RebuildComplete = false`, and does not use a rebuild-token grant path. If another migration is added first, renumber the combat upgrade migration series and update that test.
+- Static coverage in `CombatUpgradeMigrationCoverageTests` confirms `_22_CombatSystemReplacement` still follows master migration `_21_SetDefaultOutfitAndMarketLimits`, forces `Player.RebuildComplete = false`, and grants a rebuild token via `GrantCombatUpgradeRebuildToken`. If another migration is added first, renumber the combat upgrade migration series and update that test.
 - Keep the removed-perk refund mappings in place. The forced rebuild uses `TotalSPAcquired` for skill redistribution, but deleted perk definitions cannot be refunded by the rebuild UI after their keys are removed; migration must refund those obsolete perk investments before cleanup. Recheck the hard-coded amounts only if the legacy final prices change.
 - Static coverage in `CombatUpgradeMigrationCoverageTests` confirms removed-perk cleanup entry points for players, beasts, stale recasts, live player migration, stored item records, constructed droids, and ship/module serialized items. Still spot-check that obsolete Heavy/Light Armor and stale Armor perk-tree rows no longer appear in player-facing builders, default perk maps, instruction discs, or UI surfaces.
 - Confirm Armor skill rank-ups count toward the 400 skill cap, grant SP normally, and gate current Bible General perks as intended.
@@ -91,7 +93,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 - Dry-run the item-property migrations against representative live data for player inventories, markets, world property storage, research jobs, player outfits, DM creatures, ships, and nested serialized inventories. Static coverage now guards those storage surfaces, recursive live-object entry points, and Combat Readiness enhancement item renames, but representative serialized records are still needed to prove live data shape compatibility.
 - Confirm the weapon Delay migration updates old Throwing/Vibroknife/natural-weapon and Sling-based pistol values and preserves training-weapon and intentional short-sword delay exceptions in representative live data. Checked-in module templates and embedded `.git` area/store/NPC item instances have already been normalized to the updated delay table.
 - Logged-out active status effects are process-local runtime cache only. They are not persisted and do not survive the fresh boot migration path, so no migration cleanup is required.
-- Add release notes telling players they must perform a forced full rebuild and that removed combat perks were refunded.
+- Add release notes telling players they must perform a forced full rebuild, that removed combat perks were refunded, and that they were granted a bonus rebuild token for later use.
 
 ## Useful Patterns
 
@@ -100,3 +102,5 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 - Rebuild landing redirect: `PersistentLocation`
 - Rebuild completion UI: `CharacterFullRebuildViewModel`
 - Perk refund and removal: `ServerMigrationBase.RefundPerksByMapping(...)`
+- Bonus rebuild token grant (existing players): `_22_CombatSystemReplacement.GrantCombatUpgradeRebuildToken(dbPlayer)`
+- Starting rebuild token grant (new characters): `PlayerInitialization.GiveStartingRebuildToken(dbPlayer)`

@@ -41,7 +41,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    IsQueuedWeaponAbility = true
+                });
 
             ConfigureGeneratedWeaponAbility(
                 builder.Create(FeatType.VirulentBlade2, PerkType.VirulentBlade)
@@ -67,7 +70,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    IsQueuedWeaponAbility = true
+                });
 
             ConfigureGeneratedWeaponAbility(
                 builder.Create(FeatType.VirulentBlade3, PerkType.VirulentBlade)
@@ -93,7 +99,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    IsQueuedWeaponAbility = true
+                });
 
             return builder.Build();
         }

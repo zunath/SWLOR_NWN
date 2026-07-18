@@ -89,7 +89,11 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
   | "in a cone" | `Cone` (sizeX = length, sizeY = width) | yes | `TARGETSELF` blank, `HostileFeat=1` | real `Spell`, **per rank** |
   | "to enemies within Nm" | `Sphere` (sizeX = radius, sizeY = `0`) | no | `TARGETSELF=1`, `HostileFeat` blank | real `Spell`, **per rank** |
 
-  The hostile-area marker is **"enemies within"**, not a bare "within Nm". Many descriptions use "within Nm" for something that is not an area attack at all — an ally buff ("allies within 5m"), a passive proximity condition ("each bleeding enemy within 10m"), or a leash range ("while within 20m"). Do not widen the generator's area detection to bare "within Nm"; it would reclassify roughly 40 non-area perks as hostile spheres.
+  **State the size in the description.** The generator reads the numbers out of the Bible line — "in an 8m x 2.5m line" and "enemies within 3m" produce those exact sizes — and only falls back to an archetype default when the line names none. A description that omits its size silently inherits a default that may not be what you intended.
+
+  Two traps in that parsing, both of which shipped bugs before:
+  - The hostile-area marker is **"enemies within"**, not a bare "within Nm". Many descriptions use "within Nm" for something that is not an area attack — an ally buff ("allies within 5m"), a passive proximity condition ("each bleeding enemy within 10m"), or a leash range ("while within 20m"). Widening area detection to bare "within Nm" would reclassify roughly 40 non-area perks as hostile spheres.
+  - A `line`/`cone` is only recognised in the "in a line" form or immediately after a stated size ("8m x 2.5m line"). A bare mention of the word does not count, because "anchors a defensive line" is a radius buff. Matching the literal phrase alone used to miss the sized form entirely and infer a self-centered Sphere for an aimed line — losing the cursor.
 
   `Earthshatter I/II` is the reference implementation for an aimed line.
 - **Every rank of an area ability needs its own `spells.2da` row and its own `Spell` enum value.** Never leave `Spell.Invalid` on a rank that declares a real `AbilityTargetingShapeType`. The two failure modes differ, and only one of them is loud:

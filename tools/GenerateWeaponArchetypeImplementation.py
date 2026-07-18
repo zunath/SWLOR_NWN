@@ -2279,25 +2279,70 @@ def targeting_flags_expression(flags):
     return expression
 
 
+def describes_shape(lowered, shape_word):
+    """True when the description names an aimed `line`/`cone` area.
+
+    Matching the bare word is not safe - "anchors a defensive line" is a radius buff, not a line
+    area - so the word has to appear either in the plain "in a line" form or immediately after a
+    stated dimension, as in "in an 8m x 2.5m line from you". That second phrasing is the common
+    one in the Bible and the old literal "in a line" check missed it entirely, silently inferring
+    a self-centered Sphere for an ability that should be an aimed line.
+    """
+    if re.search(rf'\bin an?\s+{shape_word}\b', lowered):
+        return True
+
+    return re.search(
+        rf'\d+(?:\.\d+)?\s*m(?:\s*(?:x|by)\s*\d+(?:\.\d+)?\s*m)?\s+{shape_word}\b',
+        lowered) is not None
+
+
+def extract_stated_dimensions(lowered):
+    """Pull an explicit size out of a Bible description, or None when it states none.
+
+    Recognises "5m x 5m cone" (length by width) and the single-radius forms "within 5m",
+    "within 5 meters" and "in a 5m sphere". The description is the spec, so a stated size must
+    win over the archetype default - otherwise an ability whose line reads "within 3m" is
+    generated with a 5m reach, which is both wrong and invisible.
+    """
+    pair = re.search(r'(\d+(?:\.\d+)?)\s*m\s*(?:x|by)\s*(\d+(?:\.\d+)?)\s*m', lowered)
+    if pair:
+        return float(pair.group(1)), float(pair.group(2))
+
+    single = re.search(r'(?:within|in a|in an)\s+(\d+(?:\.\d+)?)\s*(?:m\b|meters?\b)', lowered)
+    if single:
+        return float(single.group(1)), None
+
+    return None
+
+
 def infer_targeting_from_description(row):
     description = row["Description"]
     lowered = description.lower()
+    stated = extract_stated_dimensions(lowered)
 
-    if "in a line" in lowered:
-        length = 20.0 if row["Tab"] in {"Pistol", "Rifle", "Throwing"} else 8.0
+    if describes_shape(lowered, "line"):
+        default_length = 20.0 if row["Tab"] in {"Pistol", "Rifle", "Throwing"} else 8.0
+        length = stated[0] if stated else default_length
+        width = stated[1] if stated and stated[1] is not None else 3.0
         return (
             "AbilityTargetingShapeType.Rect",
             f"{length:.1f}f",
-            "3.0f",
+            f"{width:.1f}f",
             "AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf")
 
-    if "in a cone" in lowered:
+    if describes_shape(lowered, "cone"):
+        length = stated[0] if stated else 5.0
+        width = stated[1] if stated and stated[1] is not None else 5.0
         return (
             "AbilityTargetingShapeType.Cone",
-            "5.0f",
-            "5.0f",
+            f"{length:.1f}f",
+            f"{width:.1f}f",
             "AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf")
 
+    # Radius areas are gated on an explicit hostile-area marker rather than a bare "within Nm".
+    # Roughly forty Bible rows use "within Nm" for an ally buff, a passive proximity condition or
+    # a leash range; matching that phrasing alone would reclassify all of them as hostile spheres.
+    # The radius itself is still read from whatever the description states.
     if (
         "nearby enemies" in lowered or
         "in an area" in lowered or
@@ -2306,9 +2351,10 @@ def infer_targeting_from_description(row):
         "sphere" in lowered or
         "all enemies" in lowered
     ):
+        radius = stated[0] if stated else 5.0
         return (
             "AbilityTargetingShapeType.Sphere",
-            "5.0f",
+            f"{radius:.1f}f",
             "0.0f",
             "AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf")
 

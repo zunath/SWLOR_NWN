@@ -917,6 +917,10 @@ namespace SWLOR.Game.Server.Service
             // while iterating and therefore skips every other match, so repeat it; bail
             // the moment a pass stops making progress, which keeps a removal that cannot
             // take effect from looping and from ever re-counting a value.
+            // TEMPORARY DIAGNOSTIC - remove once the enhancement merge is confirmed fixed.
+            var diagIncoming = GetItemPropertyCostTableValue(ip);
+            var diagBefore = CountMatches();
+
             var remainingMatches = CountMatches();
             while (remainingMatches > 0)
             {
@@ -928,6 +932,12 @@ namespace SWLOR.Game.Server.Service
 
                 remainingMatches = afterRemoval;
             }
+
+            // TEMPORARY DIAGNOSTIC - remove once the enhancement merge is confirmed fixed.
+            Log.Write(LogGroup.Crafting,
+                $"[IPMERGE] type={type}({(int)type}) subType={subType} hasSubType={hasSubType} " +
+                $"matchSubType={matchSubType} incoming={diagIncoming} summed={amount} " +
+                $"matchesBefore={diagBefore} matchesAfterRemoval={CountMatches()}");
 
             var unpacked = ItemPropertyPlugin.UnpackIP(ip);
             unpacked.CostTableValue = amount;

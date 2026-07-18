@@ -512,8 +512,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SetLocalBool(item, Item.PlayerProducedItemVariable, true);
 
+            // TEMPORARY DIAGNOSTIC - remove once the enhancement merge is confirmed fixed.
+            Log.Write(LogGroup.Crafting,
+                $"[SABERBUILD] slot0={_enhancementProperties[0].Count} slot1={_enhancementProperties[1].Count} " +
+                $"totalToApply={_enhancementProperties.SelectMany(x => x).Count()} " +
+                $"hasSubmissionToken={!string.IsNullOrWhiteSpace(_submissionSerialized)}");
+
             foreach (var property in _enhancementProperties.SelectMany(x => x))
             {
+                // TEMPORARY DIAGNOSTIC - remove once the enhancement merge is confirmed fixed.
+                Log.Write(LogGroup.Crafting,
+                    $"[SABERBUILD] applying type={GetItemPropertyType(property)} value={GetItemPropertyCostTableValue(property)}");
+
                 Craft.ApplyCraftedItemProperty(item, property);
             }
 

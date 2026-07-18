@@ -654,7 +654,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var groupB = !b.QueueIndex.HasValue ? 0 : b.QueueIndex.Value == 0 ? 1 : 2;
                 return groupA != groupB
                     ? groupA.CompareTo(groupB)
-                    : string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase);
+                    : groupA == 2
+                        ? a.QueueIndex.Value.CompareTo(b.QueueIndex.Value)
+                        : string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase);
             });
 
             var labels = new GuiBindingList<string>();
@@ -941,8 +943,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetSelectedMasteryRow(out var row) || row.QueueIndex is not > 0)
                 return;
 
+            // Re-resolve the current queue index by MasteryId+TargetTier rather than
+            // trusting the snapshot QueueIndex from the last load - the queue can change
+            // between selection and click (e.g. the active entry completing), matching
+            // the abandon handler's pattern above.
             var masteryId = row.MasteryId;
-            var ok = Mastery.ReorderTrainingQueueEntry(_playerId, row.QueueIndex.Value, direction, GetName(Player), GetPCPublicCDKey(Player), DateTime.UtcNow);
+            var targetTier = row.TargetTier;
+            var profile = Mastery.GetOrCreateProfile(_playerId);
+            var currentIndex = profile.TrainingQueue.FindIndex(
+                e => e.MasteryId == masteryId && e.TargetTier == targetTier);
+
+            if (currentIndex <= 0)
+            {
+                MasteryActionStatusText = "This queued training entry no longer exists.";
+                LoadTargetMasteries();
+                return;
+            }
+
+            var ok = Mastery.ReorderTrainingQueueEntry(_playerId, currentIndex, direction, GetName(Player), GetPCPublicCDKey(Player), DateTime.UtcNow);
 
             MasteryActionStatusText = ok ? "Queue reordered." : "Unable to reorder.";
             LoadTargetMasteries();

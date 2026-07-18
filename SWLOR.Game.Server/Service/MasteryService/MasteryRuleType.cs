@@ -28,6 +28,9 @@ namespace SWLOR.Game.Server.Service.MasteryService
         QueueFull = 6,
 
         /// <summary>Granting this request would exceed the 17-level total cap.</summary>
-        LevelCap = 7
+        LevelCap = 7,
+
+        /// <summary>Hard-blocking. The requested tier is outside the valid 1-5 range.</summary>
+        InvalidTier = 8
     }
 }

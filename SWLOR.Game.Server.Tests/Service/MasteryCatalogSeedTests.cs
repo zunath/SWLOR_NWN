@@ -109,6 +109,47 @@ public class MasteryCatalogSeedTests
     }
 
     [Test]
+    public void BuildMissingCatalogEntries_SeededRowRenamedByStaff_MatchesBySeedKeyAndIsNeverRecreated()
+    {
+        // Renaming a seeded row's Name (staff catalog management) must not make its
+        // original seed entry look "missing" - SeedKey is set once at creation and never
+        // changes, so it stays the source of truth for seed matching even after a rename.
+        var renamedSeededRow = new Mastery
+        {
+            Name = "Master Chef",
+            SeedKey = "Chef",
+            IsSeeded = true
+        };
+
+        var missing = MasteryRules.BuildMissingCatalogEntries(new List<Mastery> { renamedSeededRow });
+
+        missing.Should().NotContain(m => m.SeedKey == "Chef");
+        missing.Should().NotContain(m => m.Name == "Chef");
+    }
+
+    [Test]
+    public void BuildMissingCatalogEntries_ExistingRowWithNoSeedKey_FallsBackToMatchingByName()
+    {
+        // Rows created before SeedKey existed have no SeedKey at all - these must still be
+        // recognized as already-seeded via the Name fallback, or every pre-existing seeded
+        // row would be duplicated the first time this runs after the SeedKey field ships.
+        var legacyRow = new Mastery { Name = "Chef" };
+        legacyRow.SeedKey.Should().BeEmpty();
+
+        var missing = MasteryRules.BuildMissingCatalogEntries(new List<Mastery> { legacyRow });
+
+        missing.Should().NotContain(m => m.Name == "Chef");
+    }
+
+    [Test]
+    public void BuildMissingCatalogEntries_NewlyInsertedSeedRows_HaveSeedKeySetToTheirName()
+    {
+        var missing = MasteryRules.BuildMissingCatalogEntries(new List<Mastery>());
+
+        missing.Should().OnlyContain(m => m.SeedKey == m.Name);
+    }
+
+    [Test]
     public void BuildMissingCatalogEntries_NewRowsAreMarkedSeededAndActive()
     {
         var missing = MasteryRules.BuildMissingCatalogEntries(new List<Mastery>());

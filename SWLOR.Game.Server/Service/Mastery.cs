@@ -172,9 +172,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Approves a request: enqueues a training entry (or completes it immediately if
-        /// isInstant) and marks the request Approved. Returns false if the request could
-        /// not be found or is not in a reviewable state.
+        /// Approves a request: re-validates current state immediately before mutation,
+        /// enqueues a training entry (or completes it immediately if isInstant), and marks
+        /// the request Approved. Returns false if the request could not be found, is not
+        /// in a reviewable state (only Pending/InReview - see the Status whitelist below),
+        /// has a blocking rule violation (e.g. OffLimit or an out-of-range tier), has
+        /// unjustified warnings (a non-empty <paramref name="overrideReason"/> is required
+        /// whenever any non-blocking violation is present), or requests a Quick Slot with
+        /// none available.
         /// </summary>
         public static bool ApproveRequest(
             string requestId,
@@ -186,22 +191,73 @@ namespace SWLOR.Game.Server.Service
             bool isInstant,
             DateTime utcNow)
         {
+            // Re-fetch fresh rather than trusting anything the caller captured earlier - a
+            // stale staff window (or a player who cancelled the request in the meantime)
+            // must never be able to approve a request that is no longer Pending/InReview.
+            // This single re-check is also what makes materializing a Custom request's
+            // catalog entry below race-safe: it can only ever run once per request.
             var request = DB.Get<MasteryRequest>(requestId);
             if (request == null)
                 return false;
 
-            if (request.Status == MasteryRequestStatus.Approved || request.Status == MasteryRequestStatus.Denied)
+            if (!MasteryRules.CanReviewRequest(request.Status))
+                return false;
+
+            // A Custom (unlisted) request has no catalog row yet - build the same
+            // transient stand-in ValidateRequest/BuildEligibilityChecks use elsewhere so
+            // the rules re-check below applies identically to catalog and unlisted requests.
+            var existingMastery = string.IsNullOrWhiteSpace(request.MasteryId) ? null : GetMastery(request.MasteryId);
+            var checkMastery = existingMastery ?? new Entity.Mastery
+            {
+                Name = request.CustomName,
+                Rarity = MasteryRarityType.Standard
+            };
+
+            var dbPlayer = DB.Get<Player>(request.PlayerId);
+            var characterCreatedDate = dbPlayer?.DateCreated ?? utcNow;
+            int? skillRank = null;
+            if (checkMastery.AssociatedSkill != null && dbPlayer != null && dbPlayer.Skills.TryGetValue(checkMastery.AssociatedSkill.Value, out var skill))
+                skillRank = skill.Rank;
+
+            // Re-run every rule check against CURRENT state immediately before mutation -
+            // never trust whatever the reviewer's window last displayed, since the queue,
+            // owned catalog, or level total may have changed since. Any blocking violation
+            // (OffLimit, an out-of-range tier) rejects outright; any other violation
+            // requires a non-empty override reason.
+            var violations = ValidateRequest(request.PlayerId, checkMastery, request.TargetTier, characterCreatedDate, utcNow, skillRank);
+            if (violations.Any(v => v.IsBlocking))
+                return false;
+
+            if (violations.Count > 0 && string.IsNullOrWhiteSpace(overrideReason))
                 return false;
 
             var profile = GetOrCreateProfile(request.PlayerId);
             var actor = new MasteryActor(actorName, actorCDKey);
+
+            // Approving a Custom (unlisted) request for the first time materializes its
+            // catalog entry. This only ever runs once, because it happens after the fresh
+            // Pending/InReview re-check above - a second reviewer racing a stale window
+            // can never create a duplicate catalog row for the same request.
+            if (request.Type == MasteryRequestType.Custom && string.IsNullOrWhiteSpace(request.MasteryId))
+            {
+                var created = CreateMastery(
+                    request.CustomName,
+                    MasteryCategoryType.General,
+                    request.CustomDescription,
+                    MasteryRarityType.Standard,
+                    null,
+                    actorName,
+                    actorCDKey);
+
+                request.MasteryId = created.Id;
+            }
 
             // Retrain credits are spent automatically whenever one is available and
             // applicable - see MasteryRules.ShouldUseRetrainCredit for the exact
             // conditions (never on a Quick Slot or instant grant, never on tier 5).
             var useRetrainCredit = MasteryRules.ShouldUseRetrainCredit(profile, request.TargetTier, useQuickSlot, isInstant);
 
-            MasteryRules.EnqueueTraining(
+            var enqueued = MasteryRules.EnqueueTraining(
                 profile,
                 request.MasteryId,
                 request.TargetTier,
@@ -213,6 +269,12 @@ namespace SWLOR.Game.Server.Service
                 request.Id,
                 utcNow);
 
+            // EnqueueTraining rejects a Quick Slot request with none available before
+            // mutating anything - a stale or direct call must not be able to approve into
+            // a free discounted duration.
+            if (enqueued == null)
+                return false;
+
             request.Status = MasteryRequestStatus.Approved;
             request.ReviewerName = actorName;
             request.ReviewerCDKey = actorCDKey;
@@ -220,8 +282,14 @@ namespace SWLOR.Game.Server.Service
             request.ReviewFeedback = reviewFeedback ?? string.Empty;
             request.OverrideReason = overrideReason ?? string.Empty;
 
-            DB.Set(profile);
+            // Persist the request as Approved BEFORE the profile/training-queue mutation.
+            // Redis has no multi-key transaction here, so if the profile write below were
+            // to throw, this ordering guarantees a retry can never double-enqueue: the
+            // retry re-fetches the request (now Approved) and is rejected by the
+            // Pending/InReview check above. The worst case is a request stuck Approved with
+            // no training actually queued, which staff can recover from with a direct grant.
             DB.Set(request);
+            DB.Set(profile);
 
             Log.Write(LogGroup.Mastery, $"{actorName} [{actorCDKey}] approved mastery request {request.Id} for player {request.PlayerId}.");
 
@@ -230,7 +298,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Denies a request. Returns false if the request could not be found or is not
-        /// in a reviewable state.
+        /// in a reviewable state (only Pending/InReview may be denied - a stale staff
+        /// window can no longer deny a request the player already cancelled, or that
+        /// another reviewer already decided).
         /// </summary>
         public static bool DenyRequest(
             string requestId,
@@ -243,7 +313,7 @@ namespace SWLOR.Game.Server.Service
             if (request == null)
                 return false;
 
-            if (request.Status == MasteryRequestStatus.Approved || request.Status == MasteryRequestStatus.Denied)
+            if (!MasteryRules.CanReviewRequest(request.Status))
                 return false;
 
             request.Status = MasteryRequestStatus.Denied;
@@ -495,7 +565,7 @@ namespace SWLOR.Game.Server.Service
                 $"Queue {profile.TrainingQueue.Count} of {MasteryRules.MaxQueueSize}"));
 
             checks.Add((!violationTypes.Contains(MasteryRuleType.LevelCap),
-                $"Levels {MasteryRules.GetProjectedLevelTotal(profile)} of {MasteryRules.MaxTotalLevels}"));
+                $"Levels {MasteryRules.GetProjectedLevelTotal(profile, mastery.Id, targetTier)} of {MasteryRules.MaxTotalLevels}"));
 
             if (mastery.Rarity == MasteryRarityType.Rare)
             {
@@ -646,7 +716,11 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Updates an existing catalog entry's editable fields from the staff
-        /// catalog-management screen. Never overwrites Id/IsSeeded.
+        /// catalog-management screen. Never overwrites Id/IsSeeded/SeedKey - renaming a
+        /// seeded row here is exactly the case <see cref="Entity.Mastery.SeedKey"/> exists
+        /// to survive, so the seed-matching logic in
+        /// <see cref="MasteryRules.BuildMissingCatalogEntries"/> never mistakes the renamed
+        /// row for missing and recreates it.
         /// </summary>
         public static bool UpdateMastery(
             string masteryId,

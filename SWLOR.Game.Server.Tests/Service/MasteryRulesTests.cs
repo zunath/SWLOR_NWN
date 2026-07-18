@@ -300,6 +300,108 @@ public class MasteryRulesTests
         violations.Should().NotContain(v => v.RuleType == MasteryRuleType.LevelCap);
     }
 
+    [Test]
+    public void GetProjectedLevelTotal_QueuedEntryOverridesMultipleTiersPastCurrent_ProjectsTheTargetTierNotJustPlusOne()
+    {
+        // An overridden tier-progression jump can queue an entry more than one tier past
+        // the character's current tier for that mastery - e.g. 14 earned levels elsewhere
+        // plus a tier-4 entry queued for a brand new mastery actually completes at 18, not
+        // "14 + 1 queued entry = 15". Counting queued entries instead of their target tier
+        // would silently let this bypass the cap warning.
+        var profile = CreateProfile();
+        profile.Masteries["a"] = new PlayerMasteryLevel { Tier = 5 };
+        profile.Masteries["b"] = new PlayerMasteryLevel { Tier = 5 };
+        profile.Masteries["c"] = new PlayerMasteryLevel { Tier = 4 };
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "new-mastery", TargetTier = 4 });
+
+        MasteryRules.GetProjectedLevelTotal(profile).Should().Be(18);
+    }
+
+    [Test]
+    public void ValidateRequest_ProspectiveRequestWouldOverrideJumpPastCap_ReturnsLevelCapWarning()
+    {
+        var profile = CreateProfile();
+        profile.Masteries["a"] = new PlayerMasteryLevel { Tier = 5 };
+        profile.Masteries["b"] = new PlayerMasteryLevel { Tier = 5 };
+        profile.Masteries["c"] = new PlayerMasteryLevel { Tier = 4 };
+        // 5 + 5 + 4 = 14 earned. A prospective tier-4 request for a brand new mastery
+        // projects to 18, which must warn even though it's a single request/entry.
+        var mastery = CreateMastery(name: "New Mastery");
+        mastery.Id = "new-mastery";
+
+        var violations = MasteryRules.ValidateRequest(profile, null, mastery, 4, UtcNow.AddDays(-30), UtcNow, null);
+
+        violations.Should().Contain(v => v.RuleType == MasteryRuleType.LevelCap && !v.IsBlocking);
+    }
+
+    #endregion
+
+    #region Target tier range (blocking)
+
+    [Test]
+    public void ValidateRequest_TargetTierZero_ReturnsBlockingInvalidTierViolation()
+    {
+        var profile = CreateProfile();
+        var mastery = CreateMastery(name: "Ranged Mastery");
+
+        var violations = MasteryRules.ValidateRequest(profile, null, mastery, 0, UtcNow.AddDays(-30), UtcNow, null);
+
+        violations.Should().Contain(v => v.RuleType == MasteryRuleType.InvalidTier && v.IsBlocking);
+    }
+
+    [Test]
+    public void ValidateRequest_TargetTierSix_ReturnsBlockingInvalidTierViolation()
+    {
+        var profile = CreateProfile();
+        var mastery = CreateMastery(name: "Ranged Mastery");
+        mastery.Id = "ranged-mastery";
+        profile.Masteries["ranged-mastery"] = new PlayerMasteryLevel { Tier = 5 };
+
+        var violations = MasteryRules.ValidateRequest(profile, null, mastery, 6, UtcNow.AddDays(-30), UtcNow, null);
+
+        violations.Should().Contain(v => v.RuleType == MasteryRuleType.InvalidTier && v.IsBlocking);
+    }
+
+    [Test]
+    public void ValidateRequest_TargetTierWithinOneToFive_NeverReturnsInvalidTierViolation()
+    {
+        var profile = CreateProfile();
+        var mastery = CreateMastery(name: "Ranged Mastery");
+
+        for (var tier = 1; tier <= 5; tier++)
+        {
+            var violations = MasteryRules.ValidateRequest(profile, null, mastery, tier, UtcNow.AddDays(-30), UtcNow, null);
+            violations.Should().NotContain(v => v.RuleType == MasteryRuleType.InvalidTier);
+        }
+    }
+
+    #endregion
+
+    #region CanReviewRequest (only Pending/InReview may be approved or denied)
+
+    [Test]
+    public void CanReviewRequest_PendingOrInReview_ReturnsTrue()
+    {
+        MasteryRules.CanReviewRequest(MasteryRequestStatus.Pending).Should().BeTrue();
+        MasteryRules.CanReviewRequest(MasteryRequestStatus.InReview).Should().BeTrue();
+    }
+
+    [Test]
+    public void CanReviewRequest_Cancelled_ReturnsFalse()
+    {
+        // A stale staff window must never be able to resurrect a request the player
+        // already cancelled - approving/denying it would enqueue unwanted training or
+        // reverse the player's own decision.
+        MasteryRules.CanReviewRequest(MasteryRequestStatus.Cancelled).Should().BeFalse();
+    }
+
+    [Test]
+    public void CanReviewRequest_AlreadyApprovedOrDenied_ReturnsFalse()
+    {
+        MasteryRules.CanReviewRequest(MasteryRequestStatus.Approved).Should().BeFalse();
+        MasteryRules.CanReviewRequest(MasteryRequestStatus.Denied).Should().BeFalse();
+    }
+
     #endregion
 
     #region Queue cap
@@ -938,6 +1040,62 @@ public class MasteryRulesTests
     }
 
     [Test]
+    public void ReduceActiveTrainingTime_ZeroDays_ReturnsFalseAndDoesNotAppendAudit()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", DurationDays = 28, ReductionDays = 0 });
+
+        var result = MasteryRules.ReduceActiveTrainingTime(profile, 0, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
+
+        result.Should().BeFalse();
+        profile.TrainingQueue[0].ReductionDays.Should().Be(0);
+        profile.AuditLog.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ReduceActiveTrainingTime_NegativeDays_ReturnsFalseAndDoesNotExtendTraining()
+    {
+        // A negative reduction would otherwise extend training instead of shortening it.
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", DurationDays = 28, ReductionDays = 0 });
+
+        var result = MasteryRules.ReduceActiveTrainingTime(profile, -5, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
+
+        result.Should().BeFalse();
+        profile.TrainingQueue[0].ReductionDays.Should().Be(0);
+        profile.AuditLog.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ReduceActiveTrainingTime_ReductionExceedsRemainingDuration_ClampsSoFinishNeverPrecedesStartDate()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", StartDate = UtcNow, DurationDays = 10, ReductionDays = 5 });
+        // Only 5 days remain (10 - 5) - requesting a 20-day reduction must clamp to 5, not
+        // push ReductionDays past DurationDays and land the finish date before StartDate.
+
+        var result = MasteryRules.ReduceActiveTrainingTime(profile, 20, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
+
+        result.Should().BeTrue();
+        profile.TrainingQueue[0].ReductionDays.Should().Be(10);
+        var finish = profile.TrainingQueue[0].StartDate.AddDays(
+            profile.TrainingQueue[0].DurationDays - profile.TrainingQueue[0].ReductionDays);
+        finish.Should().Be(profile.TrainingQueue[0].StartDate);
+    }
+
+    [Test]
+    public void ReduceActiveTrainingTime_NoRemainingDuration_ReturnsFalseAndDoesNotAppendAudit()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", StartDate = UtcNow, DurationDays = 10, ReductionDays = 10 });
+
+        var result = MasteryRules.ReduceActiveTrainingTime(profile, 3, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
+
+        result.Should().BeFalse();
+        profile.AuditLog.Should().BeEmpty();
+    }
+
+    [Test]
     public void AwardQuickSlot_IncrementsAvailableSlotsAndAppendsAudit()
     {
         var profile = CreateProfile();
@@ -1020,6 +1178,40 @@ public class MasteryRulesTests
         entry.Source.Should().Be(MasteryTrainingSource.Instant);
         profile.Masteries["mastery-a"].Tier.Should().Be(1);
         profile.TrainingQueue.Should().BeEmpty();
+    }
+
+    [Test]
+    public void EnqueueTraining_QuickSlotRequestedWithZeroAvailable_ReturnsNullAndQueuesNothing()
+    {
+        // A stale or direct call must never be able to get the discounted Quick Slot
+        // duration for free just because it passed useQuickSlot:true - ResolveTraining
+        // used to grant the 7/131-day duration unconditionally, with consumption only
+        // gated separately, so this had to be rejected before any queue mutation at all.
+        var profile = CreateProfile(lifetimeLevelsTrained: 5);
+        profile.QuickSlotsAvailable = 0;
+
+        var entry = MasteryRules.EnqueueTraining(profile, "mastery-a", 1, true, false, false,
+            new MasteryActor("Staffer", "cdkey1"), "reason", "request-1", UtcNow);
+
+        entry.Should().BeNull();
+        profile.TrainingQueue.Should().BeEmpty();
+        profile.QuickSlotsAvailable.Should().Be(0);
+        profile.AuditLog.Should().BeEmpty();
+    }
+
+    [Test]
+    public void EnqueueTraining_QuickSlotRequestedWithOneAvailable_StillSucceeds()
+    {
+        var profile = CreateProfile(lifetimeLevelsTrained: 5);
+        profile.QuickSlotsAvailable = 1;
+
+        var entry = MasteryRules.EnqueueTraining(profile, "mastery-a", 1, true, false, false,
+            new MasteryActor("Staffer", "cdkey1"), "reason", "request-1", UtcNow);
+
+        entry.Should().NotBeNull();
+        entry.Source.Should().Be(MasteryTrainingSource.QuickSlot);
+        entry.DurationDays.Should().Be(7);
+        profile.QuickSlotsAvailable.Should().Be(0);
     }
 
     #endregion

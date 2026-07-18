@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MasteryService;
 using SWLOR.Game.Server.Service.SkillService;
 // Both SWLOR.Game.Server.Entity.Mastery (the catalog entity) and
@@ -705,9 +706,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _requestTargetTier,
                 Justification);
 
-            await SendMasteryDiscordNotification(request, mastery, playerId, characterName);
+            bool discordEnqueued;
+            try
+            {
+                discordEnqueued = await SendMasteryDiscordNotification(request, mastery, playerId, characterName);
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Mastery, $"Failed to enqueue Discord notification for mastery request '{request.Id}'. {ex}");
+                discordEnqueued = false;
+            }
 
-            SendMessageToPC(Player, ColorToken.Green("Mastery request submitted! Staff will review it soon."));
+            // The request itself is already persisted at this point, so a failed Discord
+            // notification must never be treated as a failed submission - staff can still
+            // review the request in-game via /masteryreview. Just surface a heads-up so
+            // the player knows staff may not have been pinged immediately.
+            if (!discordEnqueued)
+            {
+                Log.Write(LogGroup.Mastery, $"Discord notification failed to enqueue for mastery request '{request.Id}' (player '{playerId}').");
+                SendMessageToPC(Player, ColorToken.Green("Mastery request submitted! Staff will review it soon."));
+                SendMessageToPC(Player, ColorToken.Orange("(Staff Discord notification could not be sent - staff will still see this in /masteryreview.)"));
+            }
+            else
+            {
+                SendMessageToPC(Player, ColorToken.Green("Mastery request submitted! Staff will review it soon."));
+            }
 
             ShowMyRequests();
         };

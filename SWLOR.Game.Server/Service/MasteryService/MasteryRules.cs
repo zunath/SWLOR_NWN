@@ -136,6 +136,21 @@ namespace SWLOR.Game.Server.Service.MasteryService
         }
 
         /// <summary>
+        /// Whether a request in this status may still be approved, denied, or otherwise
+        /// reviewed. Only Pending and InReview are reviewable: Approved/Denied are already
+        /// decided, and Cancelled means the player withdrew it - a stale staff window (one
+        /// reviewer's window racing another's decision, or a player who cancelled after
+        /// staff opened the request) must never be able to resurrect any of those
+        /// outcomes. Shared by <see cref="Mastery.ApproveRequest"/> and
+        /// <see cref="Mastery.DenyRequest"/> so both re-check freshly fetched state against
+        /// the exact same whitelist.
+        /// </summary>
+        public static bool CanReviewRequest(MasteryRequestStatus status)
+        {
+            return status == MasteryRequestStatus.Pending || status == MasteryRequestStatus.InReview;
+        }
+
+        /// <summary>
         /// The total number of tier-levels the character currently holds across every
         /// mastery they own (sum of each PlayerMasteryLevel.Tier).
         /// </summary>
@@ -146,12 +161,49 @@ namespace SWLOR.Game.Server.Service.MasteryService
 
         /// <summary>
         /// The projected total level count once every currently queued/active training
-        /// entry completes (earned levels + one per queued entry, since each entry
-        /// advances its mastery by exactly one tier).
+        /// entry completes - the highest resulting tier per mastery (earned tier vs. the
+        /// max queued TargetTier for that mastery), summed across every mastery. Counting
+        /// entries instead of tiers would undercount whenever a tier-progression override
+        /// lets an entry jump more than one tier past the character's current tier.
         /// </summary>
         public static int GetProjectedLevelTotal(PlayerMasteryProfile profile)
         {
-            return GetEarnedLevelTotal(profile) + profile.TrainingQueue.Count;
+            return BuildProjectedTierByMastery(profile).Values.Sum();
+        }
+
+        /// <summary>
+        /// Same as <see cref="GetProjectedLevelTotal(PlayerMasteryProfile)"/>, but also
+        /// folds in a hypothetical additional request for <paramref name="masteryId"/> at
+        /// <paramref name="targetTier"/> that has not yet been queued - used by
+        /// <see cref="ValidateRequest"/> to evaluate whether approving a prospective
+        /// request would push the character over the level cap.
+        /// </summary>
+        public static int GetProjectedLevelTotal(PlayerMasteryProfile profile, string masteryId, int targetTier)
+        {
+            var projectedTierByMastery = BuildProjectedTierByMastery(profile);
+
+            projectedTierByMastery.TryGetValue(masteryId, out var currentProjected);
+            if (targetTier > currentProjected)
+                projectedTierByMastery[masteryId] = targetTier;
+
+            return projectedTierByMastery.Values.Sum();
+        }
+
+        private static Dictionary<string, int> BuildProjectedTierByMastery(PlayerMasteryProfile profile)
+        {
+            var projectedTierByMastery = new Dictionary<string, int>();
+
+            foreach (var (masteryId, level) in profile.Masteries)
+                projectedTierByMastery[masteryId] = level.Tier;
+
+            foreach (var entry in profile.TrainingQueue)
+            {
+                projectedTierByMastery.TryGetValue(entry.MasteryId, out var currentProjected);
+                if (entry.TargetTier > currentProjected)
+                    projectedTierByMastery[entry.MasteryId] = entry.TargetTier;
+            }
+
+            return projectedTierByMastery;
         }
 
         /// <summary>
@@ -225,6 +277,17 @@ namespace SWLOR.Game.Server.Service.MasteryService
                 }
             }
 
+            // Blocking: a tier outside 1-5 must never reach progression/timing logic at
+            // all (e.g. a tier-6 request would otherwise pass progression from tier 5 and
+            // receive tier-5 timing, then persist as an invalid tier 6 entry).
+            if (targetTier < 1 || targetTier > 5)
+            {
+                violations.Add(new MasteryRuleViolation(
+                    MasteryRuleType.InvalidTier,
+                    $"Requested tier {targetTier} is out of the valid range (must be 1-5).",
+                    true));
+            }
+
             var currentTier = profile.Masteries.TryGetValue(mastery.Id, out var level) ? level.Tier : 0;
             if (targetTier != currentTier + 1)
             {
@@ -259,7 +322,10 @@ namespace SWLOR.Game.Server.Service.MasteryService
                     false));
             }
 
-            if (GetProjectedLevelTotal(profile) + 1 > MaxTotalLevels)
+            // Project this specific request's resulting tier (not a blind +1) so an
+            // overridden multi-tier jump for this mastery is weighed correctly against the
+            // cap - see GetProjectedLevelTotal's 3-arg overload.
+            if (GetProjectedLevelTotal(profile, mastery.Id, targetTier) > MaxTotalLevels)
             {
                 violations.Add(new MasteryRuleViolation(
                     MasteryRuleType.LevelCap,
@@ -401,14 +467,29 @@ namespace SWLOR.Game.Server.Service.MasteryService
 
         /// <summary>
         /// Applies a staff time reduction to the active (index 0) training entry.
-        /// Appends a "Reduce" audit entry.
+        /// Rejects a non-positive <paramref name="days"/> (which would otherwise extend
+        /// training instead of shortening it) and clamps the reduction to the entry's
+        /// remaining duration so its finish date can never land before its StartDate -
+        /// otherwise every later queued entry would cascade-rebase into the past the next
+        /// time the queue is evaluated. Appends a "Reduce" audit entry only when a
+        /// non-zero reduction is actually applied.
         /// </summary>
         public static bool ReduceActiveTrainingTime(PlayerMasteryProfile profile, int days, MasteryActor actor, string reason, DateTime utcNow)
         {
+            if (days <= 0)
+                return false;
+
             if (profile.TrainingQueue.Count == 0)
                 return false;
 
-            profile.TrainingQueue[0].ReductionDays += days;
+            var active = profile.TrainingQueue[0];
+            var remainingDays = active.DurationDays - active.ReductionDays;
+            var appliedDays = Math.Min(days, Math.Max(0, remainingDays));
+
+            if (appliedDays <= 0)
+                return false;
+
+            active.ReductionDays += appliedDays;
             AppendAudit(profile, utcNow, actor, "Reduce", reason);
             return true;
         }
@@ -431,6 +512,14 @@ namespace SWLOR.Game.Server.Service.MasteryService
         /// "Approve" audit entry, and a "QuickSlotSpend" entry if a Quick Slot was
         /// consumed.
         /// </summary>
+        /// <returns>
+        /// The created (or immediately-completed) training entry, or null if
+        /// <paramref name="useQuickSlot"/> was requested with no Quick Slot actually
+        /// available - rejected outright before any queue mutation, rather than silently
+        /// granting the discounted duration for free. A stale or direct caller is the only
+        /// way to hit this; the review window already disables the Quick Slot option
+        /// whenever <see cref="PlayerMasteryProfile.QuickSlotsAvailable"/> is 0.
+        /// </returns>
         public static MasteryTrainingEntry EnqueueTraining(
             PlayerMasteryProfile profile,
             string masteryId,
@@ -443,6 +532,9 @@ namespace SWLOR.Game.Server.Service.MasteryService
             string requestId,
             DateTime utcNow)
         {
+            if (useQuickSlot && profile.QuickSlotsAvailable <= 0)
+                return null;
+
             var (source, duration) = ResolveTraining(profile, targetTier, useQuickSlot, useRetrainCredit, isInstant);
 
             // Instant grants bypass the queue entirely rather than being appended to the
@@ -612,22 +704,33 @@ namespace SWLOR.Game.Server.Service.MasteryService
 
         /// <summary>
         /// Given the full set of currently seeded/staff-created masteries, returns the
-        /// seed rows from <see cref="MasteryCatalogSeed.Entries"/> whose Name is not
-        /// already present - i.e. the entries that still need to be inserted. Never
-        /// returns anything for a Name that already exists, so re-running the seed never
-        /// duplicates or overwrites an existing (possibly staff-edited) row.
+        /// seed rows from <see cref="MasteryCatalogSeed.Entries"/> that still need to be
+        /// inserted. Matches primarily by the immutable <see cref="Entity.Mastery.SeedKey"/>
+        /// (set once at creation to the seed entry's Name) rather than the mutable Name
+        /// field, so a seeded row staff later renamed is still recognized as already
+        /// present and is never recreated as a duplicate. Rows with no SeedKey (created
+        /// before that field existed) fall back to matching by Name. Never returns
+        /// anything for an entry that already exists by either match, so re-running the
+        /// seed never duplicates or overwrites an existing (possibly staff-edited) row.
         /// </summary>
         public static List<Entity.Mastery> BuildMissingCatalogEntries(IEnumerable<Entity.Mastery> existingCatalog)
         {
-            var existingNames = new HashSet<string>(
-                (existingCatalog ?? Enumerable.Empty<Entity.Mastery>()).Select(m => m.Name),
+            var catalog = (existingCatalog ?? Enumerable.Empty<Entity.Mastery>()).ToList();
+
+            var existingSeedKeys = new HashSet<string>(
+                catalog.Where(m => !string.IsNullOrEmpty(m.SeedKey)).Select(m => m.SeedKey),
+                StringComparer.OrdinalIgnoreCase);
+
+            var existingNamesWithoutSeedKey = new HashSet<string>(
+                catalog.Where(m => string.IsNullOrEmpty(m.SeedKey)).Select(m => m.Name),
                 StringComparer.OrdinalIgnoreCase);
 
             return MasteryCatalogSeed.Entries
-                .Where(seed => !existingNames.Contains(seed.Name))
+                .Where(seed => !existingSeedKeys.Contains(seed.Name) && !existingNamesWithoutSeedKey.Contains(seed.Name))
                 .Select(seed => new Entity.Mastery
                 {
                     Name = seed.Name,
+                    SeedKey = seed.Name,
                     Category = seed.Category,
                     Description = seed.Description,
                     Rarity = seed.Rarity,

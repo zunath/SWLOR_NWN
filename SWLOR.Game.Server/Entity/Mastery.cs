@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Entity
             Description = string.Empty;
             IsActive = true;
             IsSeeded = false;
+            SeedKey = string.Empty;
         }
 
         [Indexed]
@@ -44,5 +45,17 @@ namespace SWLOR.Game.Server.Entity
         /// it was created by staff after launch. Purely informational.
         /// </summary>
         public bool IsSeeded { get; set; }
+
+        /// <summary>
+        /// Immutable key set once at creation to the seed entry's Name, used to match this
+        /// row against <see cref="MasteryService.MasteryCatalogSeed"/> on startup. Never
+        /// changes even if staff later rename <see cref="Name"/> via the catalog
+        /// management screen - see <see cref="MasteryService.MasteryRules.BuildMissingCatalogEntries"/>,
+        /// which matches on this first (falling back to Name for older rows created before
+        /// this field existed) so a renamed seeded row is never mistaken for "missing" and
+        /// re-seeded as a duplicate. Empty for staff-created rows, which are never subject
+        /// to seed matching at all.
+        /// </summary>
+        public string SeedKey { get; set; }
     }
 }

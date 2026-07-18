@@ -49,6 +49,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _catalogPage;
         private int _catalogSelectedIndex = -1;
 
+        /// <summary>
+        /// True while the catalog edit form holds an unsaved "New Mastery" draft that has
+        /// never been persisted - see OnClickNewMasteryEntry/OnClickSaveCatalogEntry. Reset
+        /// to false the moment the draft is saved, an existing row is selected instead, or
+        /// the catalog list reloads for any other reason (page/filter change, tab switch).
+        /// </summary>
+        private bool _isEditingNewDraft;
+
         private string _currentPartial = ReviewQueuePartial;
 
         // ---------------------------------------------------------------
@@ -750,34 +758,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal(prompt, () =>
             {
-                // Approving a Custom (unlisted) request for the first time materializes
-                // its catalog entry - see MASTERY_SPEC.md's player-window legend #5.
-                if (liveRequest.Type == MasteryRequestType.Custom && string.IsNullOrWhiteSpace(liveRequest.MasteryId))
-                {
-                    var created = Mastery.CreateMastery(
-                        liveRequest.CustomName,
-                        MasteryCategoryType.General,
-                        liveRequest.CustomDescription,
-                        MasteryRarityType.Standard,
-                        null,
-                        GetName(Player),
-                        GetPCPublicCDKey(Player));
-
-                    liveRequest.MasteryId = created.Id;
-                    DB.Set(liveRequest);
-                }
-
-                Mastery.ApproveRequest(
+                // Materializing a Custom (unlisted) request's catalog entry, re-validating
+                // current state, and rejecting a stale/no-longer-Pending request are all
+                // handled inside Mastery.ApproveRequest itself now - it re-fetches the
+                // request fresh rather than trusting this captured liveRequest/violations
+                // snapshot, which could be stale by the time the modal is confirmed (e.g.
+                // another reviewer decided it, or the player cancelled, in the meantime).
+                var approved = Mastery.ApproveRequest(
                     liveRequest.Id,
                     GetName(Player),
                     GetPCPublicCDKey(Player),
                     feedback,
-                    violations.Count > 0 ? overrideReason : string.Empty,
+                    overrideReason,
                     useQuickSlot,
                     isInstant,
                     DateTime.UtcNow);
 
-                StatusMessageText = "Request approved.";
+                StatusMessageText = approved ? "Request approved." : "This request could no longer be approved - it may have changed since it was opened.";
                 FeedbackText = string.Empty;
                 OverrideReasonText = string.Empty;
                 LoadQueue();
@@ -870,6 +867,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadCatalogManage()
         {
+            // Any reload (search/filter/page change, tab switch) discards an in-progress
+            // "New Mastery" draft rather than leaving it half-applied to whatever row ends
+            // up re-selected.
+            _isEditingNewDraft = false;
+
             var search = (CatalogSearchText ?? string.Empty).Trim().ToLower();
 
             _catalogFiltered = Mastery.GetAllMasteries()
@@ -947,6 +949,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSelectCatalogRow() => () =>
         {
+            // Selecting an existing row discards any in-progress "New Mastery" draft.
+            _isEditingNewDraft = false;
+
             if (_catalogSelectedIndex > -1 && _catalogSelectedIndex < CatalogManageToggles.Count)
                 CatalogManageToggles[_catalogSelectedIndex] = false;
 
@@ -961,16 +966,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSaveCatalogEntry() => () =>
         {
-            if (_catalogSelectedIndex < 0 || _catalogSelectedIndex >= _catalogPageRows.Count) return;
-
             if (string.IsNullOrWhiteSpace(CatalogEditName))
             {
                 CatalogStatusText = "Name is required.";
                 return;
             }
 
+            var skill = CatalogEditSkillId >= 0 ? (SkillType?)CatalogEditSkillId : null;
+
+            if (_isEditingNewDraft)
+            {
+                var trimmedName = CatalogEditName.Trim();
+                var isDuplicateName = Mastery.GetAllMasteries()
+                    .Any(m => string.Equals(m.Name, trimmedName, StringComparison.OrdinalIgnoreCase));
+
+                if (isDuplicateName)
+                {
+                    CatalogStatusText = "A mastery with this name already exists.";
+                    return;
+                }
+
+                var created = Mastery.CreateMastery(
+                    trimmedName,
+                    (MasteryCategoryType)CatalogEditCategoryId,
+                    CatalogEditDescription,
+                    (MasteryRarityType)CatalogEditRarityId,
+                    skill,
+                    GetName(Player),
+                    GetPCPublicCDKey(Player));
+
+                _isEditingNewDraft = false;
+                _catalogPage = 0;
+                LoadCatalogManage();
+
+                var newIndex = _catalogPageRows.FindIndex(m => m.Id == created.Id);
+                if (newIndex < 0) return;
+
+                _catalogSelectedIndex = newIndex;
+                CatalogManageToggles[newIndex] = true;
+                LoadCatalogEditFields();
+                return;
+            }
+
+            if (_catalogSelectedIndex < 0 || _catalogSelectedIndex >= _catalogPageRows.Count) return;
+
             var mastery = _catalogPageRows[_catalogSelectedIndex];
-            SkillType? skill = CatalogEditSkillId >= 0 ? (SkillType)CatalogEditSkillId : null;
 
             Mastery.UpdateMastery(
                 mastery.Id,
@@ -989,24 +1029,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickNewMasteryEntry() => () =>
         {
-            var created = Mastery.CreateMastery(
-                "New Mastery",
-                MasteryCategoryType.General,
-                string.Empty,
-                MasteryRarityType.Standard,
-                null,
-                GetName(Player),
-                GetPCPublicCDKey(Player));
+            // The "New Mastery" form is a local, never-persisted draft until Save
+            // validates and confirms it (see OnClickSaveCatalogEntry) - this used to call
+            // CreateMastery immediately, leaving an orphan active "New Mastery" catalog row
+            // behind on every click (compounding on repeated clicks) even before a name was
+            // ever entered.
+            if (_catalogSelectedIndex > -1 && _catalogSelectedIndex < CatalogManageToggles.Count)
+                CatalogManageToggles[_catalogSelectedIndex] = false;
 
-            _catalogPage = 0;
-            LoadCatalogManage();
+            _catalogSelectedIndex = -1;
+            _isEditingNewDraft = true;
 
-            var index = _catalogPageRows.FindIndex(m => m.Id == created.Id);
-            if (index < 0) return;
-
-            _catalogSelectedIndex = index;
-            CatalogManageToggles[index] = true;
-            LoadCatalogEditFields();
+            IsCatalogEntrySelected = true;
+            CatalogEditName = "New Mastery";
+            CatalogEditDescription = string.Empty;
+            CatalogEditCategoryId = (int)MasteryCategoryType.General;
+            CatalogEditRarityId = (int)MasteryRarityType.Standard;
+            CatalogEditSkillId = -1;
+            CatalogEditIsActive = true;
+            CatalogStatusText = "Unsaved - enter a name and click Save to create this mastery.";
         };
     }
 }

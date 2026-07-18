@@ -3152,6 +3152,12 @@ namespace SWLOR.Game.Server.Service.CraftService
         VenomCoating4 = 6004,
         VenomCoating5 = 6005,
 
+        TrapKit1 = 6006,
+        TrapKit2 = 6007,
+        TrapKit3 = 6008,
+        TrapKit4 = 6009,
+        TrapKit5 = 6010,
+
         #endregion
 
     }

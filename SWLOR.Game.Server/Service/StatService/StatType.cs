@@ -5352,6 +5352,18 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         BackAttackExposedDurationSeconds = 932,
+
+        /// <summary>
+        /// Percent reduction to the time a placed trap takes to arm.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapPlacementSpeedPercent = 933,
+
+        /// <summary>
+        /// Additional metres of range at which the creature notices concealed traps.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapDetectionRangeBonus = 934,
     }
 
     public class StatTypeAttribute : Attribute

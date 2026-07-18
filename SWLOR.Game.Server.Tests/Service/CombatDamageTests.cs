@@ -396,8 +396,7 @@ public class CombatDamageTests
                     source.Contains("ConfigureWeapon(") ||
                     source.Contains("ConfigureCastedTarget(") ||
                     source.Contains("ConfigureMultiHit(") ||
-                    source.Contains("ConfigureInterrupt(") ||
-                    source.Contains("ConfigureTelegraphedArea(");
+                    source.Contains("ConfigureInterrupt(");
                 if (!usesDirectCombatImpact && !usesCombatImpactHelper)
                     continue;
 

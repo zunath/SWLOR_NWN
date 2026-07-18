@@ -426,6 +426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddActionButton(actions, "Currencies", model => model.OnClickCurrencies());
                         AddActionButton(actions, "Achievements", model => model.OnClickAchievements());
                         AddActionButton(actions, "Notes", model => model.OnClickNotes());
+                        AddActionButton(actions, "Masteries", model => model.OnClickMasteries());
                         AddActionButton(actions, "Appearance", model => model.OnClickAppearance());
                         AddActionButton(actions, "Disguises", model => model.OnClickDisguises());
                         AddActionButton(actions, "Settings", model => model.OnClickSettings());

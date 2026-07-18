@@ -334,5 +334,153 @@ namespace SWLOR.Game.Server.Service
 
             return completed;
         }
+
+        /// <summary>
+        /// Retrieves every request a character has ever submitted, most recently
+        /// submitted first.
+        /// </summary>
+        public static List<MasteryRequest> GetPlayerRequests(string playerId)
+        {
+            var query = new DBQuery<MasteryRequest>()
+                .AddFieldSearch(nameof(MasteryRequest.PlayerId), playerId, false);
+            var count = (int)DB.SearchCount(query);
+
+            return count <= 0
+                ? new List<MasteryRequest>()
+                : DB.Search(query.AddPaging(count, 0)).OrderByDescending(r => r.DateCreated).ToList();
+        }
+
+        /// <summary>
+        /// Player self-service cancellation of one of their own requests. Only requests
+        /// still Pending or InReview may be cancelled, and only by the player who
+        /// submitted them.
+        /// </summary>
+        public static bool CancelRequest(string requestId, string playerId)
+        {
+            var request = DB.Get<MasteryRequest>(requestId);
+            if (request == null || request.PlayerId != playerId)
+                return false;
+
+            if (request.Status != MasteryRequestStatus.Pending && request.Status != MasteryRequestStatus.InReview)
+                return false;
+
+            request.Status = MasteryRequestStatus.Cancelled;
+            DB.Set(request);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Appends a comment to a request's negotiation thread - used by both the
+        /// requesting player's reply box and (in a later phase) staff review comments.
+        /// </summary>
+        public static bool AddComment(string requestId, string authorName, bool isStaff, string text, DateTime utcNow)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return false;
+
+            var request = DB.Get<MasteryRequest>(requestId);
+            if (request == null)
+                return false;
+
+            request.Comments.Add(new MasteryRequestComment
+            {
+                Date = utcNow,
+                AuthorName = authorName ?? string.Empty,
+                IsStaff = isStaff,
+                Text = text
+            });
+
+            DB.Set(request);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Builds pass/fail display lines for the subset of <see cref="MasteryRules.ValidateRequest"/>'s
+        /// checks that are relevant to this specific request. Reused by both the player's
+        /// live eligibility panel and the Discord submission embed, so the two surfaces
+        /// can never disagree about which checks passed. Every pass/fail decision comes
+        /// from <see cref="MasteryRules"/> - this only decides which lines are worth
+        /// showing and how to word them.
+        /// </summary>
+        public static List<(bool Passed, string Label)> BuildEligibilityChecks(
+            string playerId,
+            Entity.Mastery mastery,
+            int targetTier,
+            DateTime characterCreatedDate,
+            DateTime utcNow,
+            int? skillRank)
+        {
+            var profile = GetOrCreateProfile(playerId);
+            var ownedCatalog = GetOwnedMasteryCatalog(profile);
+            var violations = MasteryRules.ValidateRequest(profile, ownedCatalog, mastery, targetTier, characterCreatedDate, utcNow, skillRank);
+            var violationTypes = new HashSet<MasteryRuleType>(violations.Select(v => v.RuleType));
+
+            var checks = new List<(bool, string)>();
+
+            var ageDays = (int)(utcNow - characterCreatedDate).TotalDays;
+            checks.Add((!violationTypes.Contains(MasteryRuleType.CharacterAge),
+                $"Character age {ageDays}d ({MasteryRules.MinimumCharacterAgeDays} required)"));
+
+            if (mastery.AssociatedSkill != null)
+            {
+                checks.Add((!violationTypes.Contains(MasteryRuleType.SkillRank),
+                    $"{mastery.AssociatedSkill} rank {skillRank ?? 0} / {MasteryRules.RequiredSkillRank}"));
+            }
+
+            checks.Add((!violationTypes.Contains(MasteryRuleType.QueueFull),
+                $"Queue {profile.TrainingQueue.Count} of {MasteryRules.MaxQueueSize}"));
+
+            checks.Add((!violationTypes.Contains(MasteryRuleType.LevelCap),
+                $"Levels {MasteryRules.GetProjectedLevelTotal(profile)} of {MasteryRules.MaxTotalLevels}"));
+
+            if (mastery.Rarity == MasteryRarityType.Rare)
+            {
+                checks.Add((!violationTypes.Contains(MasteryRuleType.RareConflict), "Rare mastery slot available"));
+            }
+
+            if (targetTier >= 5)
+            {
+                checks.Add((!violationTypes.Contains(MasteryRuleType.Tier5Conflict), "Tier 5 slot available"));
+            }
+
+            if (violationTypes.Contains(MasteryRuleType.TierProgression))
+            {
+                var currentTier = profile.Masteries.TryGetValue(mastery.Id, out var level) ? level.Tier : 0;
+                checks.Add((false, $"Requested tier {targetTier} is not the next tier (current tier {currentTier})"));
+            }
+
+            if (mastery.Rarity == MasteryRarityType.OffLimit)
+            {
+                checks.Add((false, $"'{mastery.Name}' is off-limits and cannot be requested"));
+            }
+
+            return checks;
+        }
+
+        /// <summary>
+        /// The number of a character's requests which were reviewed since they were last
+        /// notified in-game. Used to decide whether to show the one-line login toast.
+        /// </summary>
+        public static int CountUnnotifiedReviewedRequests(string playerId)
+        {
+            var profile = GetOrCreateProfile(playerId);
+            var lastNotified = profile.DateLastNotified ?? DateTime.MinValue;
+
+            return GetPlayerRequests(playerId)
+                .Count(r => r.DateReviewed.HasValue && r.DateReviewed.Value > lastNotified);
+        }
+
+        /// <summary>
+        /// Marks a character as notified as of the given time, so already-seen reviewed
+        /// requests and completions don't toast again on a later login.
+        /// </summary>
+        public static void MarkNotified(string playerId, DateTime utcNow)
+        {
+            var profile = GetOrCreateProfile(playerId);
+            profile.DateLastNotified = utcNow;
+            DB.Set(profile);
+        }
     }
 }

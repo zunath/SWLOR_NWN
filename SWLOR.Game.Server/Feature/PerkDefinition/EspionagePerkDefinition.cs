@@ -99,27 +99,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SlicingTrait)
-                .Description("Can pick and hack tier 1 locks and terminals.")
+                .Description("Can pick tier 1 locks and hack tier 1 terminals.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 8)
 
                 .AddPerkLevel()
-                .Description("Can pick and hack tier 2 locks and terminals.")
+                .Description("Can pick tier 2 locks and hack tier 2 terminals.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 22)
 
                 .AddPerkLevel()
-                .Description("Can pick and hack tier 3 locks and terminals. Hacking actions are 20% faster.")
+                .Description("Can pick tier 3 locks and hack tier 3 terminals. Hacking actions are 20% faster.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 30)
 
                 .AddPerkLevel()
-                .Description("Can pick and hack tier 4 locks and terminals. Hacking actions are 30% faster.")
+                .Description("Can pick tier 4 locks and hack tier 4 terminals. Hacking actions are 30% faster.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 42)
 
                 .AddPerkLevel()
-                .Description("Can pick and hack tier 5 locks and terminals. Hacking actions are 40% faster.")
+                .Description("Can pick tier 5 locks and hack tier 5 terminals. Hacking actions are 40% faster.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 48);
         }

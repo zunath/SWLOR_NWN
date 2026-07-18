@@ -615,6 +615,15 @@ function Get-AbilitySemanticCategory([string]$label) {
 }
 
 function Get-StatusSemanticCategory([string]$className, [string]$name, [string]$content) {
+    # Stances take the Self frame (see IconStandards.md), and the class declares that it is one, so
+    # read the declaration instead of guessing from the name. This has to precede the keyword checks
+    # below: a stance whose name happens to contain a debuff word ("Sustain Burn") is otherwise
+    # classified Harmful, and hand-correcting the manifest only survives until the next refresh that
+    # has no prior row to preserve the value from.
+    if ($content -match "StatusEffectSourceType\.Stance") {
+        return "Self"
+    }
+
     if ($content -match "StatusEffectCategory\.[A-Za-z0-9_ ]*(Debuff|Control|Bleeding)" -or
         $className -match "Burn|Poison|Toxin|Bleed|Sunder|Weaken|Exhaust|Dazed|Stun|Blind|Vulnerable|Exposed|Hemorrhage|Hobble|Immobil|Mark|Terrified|Tranquil|Disease|Penalty|Drain|Choke|Terror|Sonic|WeaponJam|Distracting|Flash|Erosion|Fracture|Disruption|Breach|Crippling|Incapacitate|SmokeBomb|Decoy|ChallengeStatusEffect|Vulnerability|Fatigue|Taunting|CoveringClaws") {
         return "Harmful"
@@ -1622,6 +1631,23 @@ function Add-SemanticFrameValidationErrors(
 function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStrRefsByKey) {
     $errors = [System.Collections.Generic.List[string]]::new()
 
+    # -AuditOnly reads the manifest CSV rather than rediscovering definitions, so a status effect
+    # that never made it into the manifest is invisible to every per-row check below -- which is
+    # exactly the state a newly added class is in. Reconcile the definitions on disk against the
+    # manifest first, so a new effect cannot pass simply by being absent.
+    $manifestStatusKeys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($row in $rows) {
+        if ($row.Type -eq "StatusEffect") {
+            [void]$manifestStatusKeys.Add($row.Key)
+        }
+    }
+
+    foreach ($discovered in Get-StatusEffectClasses (Resolve-RepoPath $StatusEffectPath)) {
+        if (!$manifestStatusKeys.Contains($discovered.Key)) {
+            $errors.Add("StatusEffect '$($discovered.Key)' has no gameplay icon manifest row. Every applied status effect must declare a real EffectIconType; run -RefreshManifest -UpdateStatusEffectCode and generate its icon, or model it as a static stat contribution instead of a status effect.") | Out-Null
+        }
+    }
+
     # NWN's 2DA parser cannot read a file that begins with a UTF-8 byte-order
     # mark: it fails to load the entire table and crashes clients that resolve
     # its rows (e.g. effect icons applied on rest). Editors that save as
@@ -1705,6 +1731,7 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                 $effectIconRowsByResRef[$resRef.ToLowerInvariant()] = [pscustomobject]@{
                     Label = $label
                     StrRef = $strRef
+                    Row = $row
                 }
             }
         }
@@ -1829,6 +1856,17 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                 $actualLabel = $actualRow.Label
                 if ($actualLabel -ne $expectedLabel) {
                     $errors.Add("StatusEffect '$($entry.Key)' effecticons.2da label '$actualLabel' should be '$expectedLabel'.") | Out-Null
+                }
+
+                # EffectIconType values ARE effecticons.2da row numbers: the runtime hands the enum
+                # value to the engine as a row index. Checking that the name exists in the enum and
+                # the resref exists in the 2DA is not enough -- a renumbered enum paired with a stale
+                # Haks table passes both checks while every icon resolves to the wrong row.
+                if ($enumText -match "\b$([regex]::Escape($entry.Key))\s*=\s*(\d+)") {
+                    $enumValue = [int]$Matches[1]
+                    if ($enumValue -ne $actualRow.Row) {
+                        $errors.Add("StatusEffect '$($entry.Key)' has EffectIconType value $enumValue but occupies effecticons.2da row $($actualRow.Row); the enum value must equal the row number or the icon resolves to the wrong row at runtime.") | Out-Null
+                    }
                 }
 
                 if (!$statusEffectStrRefsByKey.ContainsKey($entry.Key)) {

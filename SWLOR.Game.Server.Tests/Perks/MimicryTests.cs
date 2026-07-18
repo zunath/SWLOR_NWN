@@ -185,11 +185,38 @@ public class MimicryTests
                     $"{trait.Feat} is a trait and should declare the stats granted while equipped");
             trait.Detail.MimicryTraitStats.Keys.Should().NotContain(StatType.Invalid,
                 $"{trait.Feat} should not declare an invalid stat");
+            trait.Detail.MimicryTraitResistances.Keys.Should().NotContain(ResistanceType.Invalid,
+                $"{trait.Feat} should not declare an invalid resistance");
             trait.Detail.ImpactAction.Should().BeNull(
                 $"{trait.Feat} is a passive trait and should not have an activated impact action");
             trait.Detail.CombatImpactDamageAbility.Should().Be(AbilityType.Invalid,
                 $"{trait.Feat} is a passive trait and should not declare a combat scaling attribute");
         }
+    }
+
+    // The builder is the boundary where a bad trait declaration should fail loudly. An Invalid stat
+    // or resistance would otherwise be stored and summed into the player's totals at runtime under a
+    // sentinel key that no consumer reads, silently costing the trait its bonus.
+    [Test]
+    public void MimicryTraitBuilder_RejectsInvalidStatsAndResistances()
+    {
+        static AbilityBuilder Trait() => new AbilityBuilder()
+            .Create(FeatType.ChitinGuardTechnique, PerkType.CombatAnalyzer)
+            .Name("Contract Test")
+            .MimicryTrait(FeatType.ChitinGuard, 2, 2);
+
+        Trait().Invoking(b => b.MimicryTraitStat(StatType.Invalid, 10))
+            .Should().Throw<ArgumentException>("an Invalid stat is not a real stat");
+        Trait().Invoking(b => b.MimicryTraitResistance(ResistanceType.Invalid, 10))
+            .Should().Throw<ArgumentException>("an Invalid resistance is not a real resistance");
+
+        // Both helpers require MimicryTrait first, so a plain technique cannot accrue trait stats.
+        new AbilityBuilder()
+            .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
+            .Name("Contract Test")
+            .MimicryTechnique(FeatType.ToxicSpit, 1, 1)
+            .Invoking(b => b.MimicryTraitStat(StatType.AccuracyPercentAdjustment, 4))
+            .Should().Throw<ArgumentException>("only traits declare trait stats");
     }
 
     // Active damage techniques must register their damage element so the elemental-resonance

@@ -842,6 +842,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             if (!_activeAbility.IsMimicryTrait)
                 throw new ArgumentException($"{nameof(MimicryTraitResistance)} requires {nameof(MimicryTrait)} to be called first.");
+            if (resistance == ResistanceType.Invalid)
+                throw new ArgumentException($"{nameof(resistance)} must be a real resistance.");
 
             _activeAbility.MimicryTraitResistances[resistance] = amount;
 

@@ -827,8 +827,9 @@ namespace SWLOR.Game.Server.Service
         /// Applies an equipped technique to the player. Active techniques grant the underlying feat
         /// (if missing) and add it to the hotbar, mirroring the grant + hotbar logic used by the perk
         /// system's active ability feats. Trait techniques are passive and are never granted as a
-        /// usable feat: they only apply their status effect for as long as they stay equipped, and any
-        /// stale feat/hotbar entry is stripped so a trait can never end up castable or on the quickbar.
+        /// usable feat: their stats and resistances are derived straight from the equipped loadout, so
+        /// there is no grant or revoke step for them here, and any stale feat/hotbar entry is stripped
+        /// so a trait can never end up castable or on the quickbar.
         /// </summary>
         private static void GrantTechniqueFeat(uint player, FeatType feat)
         {

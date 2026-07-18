@@ -888,6 +888,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 col.AddRow(row =>
                 {
                     row.AddSpacer();
+
+                    row.AddButton()
+                        .SetText("Increase Head")
+                        .SetHeight(32f)
+                        .SetWidth(128f)
+                        .BindOnClicked(model => model.OnIncreaseHeadScale());
+
+                    row.AddButton()
+                        .SetText("Decrease Head")
+                        .SetHeight(32f)
+                        .SetWidth(128f)
+                        .BindOnClicked(model => model.OnDecreaseHeadScale());
+
+                    row.AddSpacer();
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddSpacer();
                     row.AddButton()
                         .SetText("Save")
                         .SetHeight(32f)

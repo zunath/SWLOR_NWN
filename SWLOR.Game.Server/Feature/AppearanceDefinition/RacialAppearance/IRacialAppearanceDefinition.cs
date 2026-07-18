@@ -4,6 +4,8 @@
     {
         float MaximumScale { get; }
         float MinimumScale { get; }
+        float MaximumHeadScale { get; }
+        float MinimumHeadScale { get; }
         int[] MaleHeads { get; }
         int[] FemaleHeads { get; }
 

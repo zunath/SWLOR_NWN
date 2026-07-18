@@ -81,16 +81,20 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 - Each distinct gameplay ability must have its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for that ability. Do not group unrelated abilities into broad definition files such as creature, combat, NPC, or package-level collections. Multiple ranks of the same ability may live in that ability's own definition file.
 - Ability-specific targeting metadata must be declared through the ability definition builder/detail pattern. Do not maintain separate explicit production lists of abilities for targeting behavior; shared targeting systems should consume the cached ability definitions.
 - An active ability presents a manual target cursor only when it is a single-target hostile *cast* or an **aimed** area. Queued weapon abilities (fire on the wearer's next landed auto-attack) and **self-centered** area abilities must NOT prompt for a target: in `feat.2da` they use `TARGETSELF=1` with `HostileFeat` cleared, and in C# they must not call `RequiresTarget()` (`ConfigureGeneratedWeaponAbility` already skips it for `IsQueuedWeaponAbility`).
-- **Aimed vs self-centered is decided by the area's shape, and the shape must match the Design Bible wording.** An ability whose Bible description says "in a line" or "in a cone" is *aimed*: the player chooses the direction, so it needs a cursor. An ability whose description says "within Nm" (or otherwise names only a radius) is *self-centered*: it always originates on the caster and needs no cursor.
+- **Aimed vs self-centered is decided by the area's shape, and the shape must match the Design Bible wording.** An ability whose Bible description says "in a line" or "in a cone" is *aimed*: the player chooses the direction, so it needs a cursor. An ability that damages "enemies within Nm" (naming only a radius) is *self-centered*: it always originates on the caster and needs no cursor.
 
   | Bible wording | `AbilityTargetingShapeType` | Cursor | `feat.2da` | C# targeting spell |
   |---|---|---|---|---|
   | "in a line" | `Rect` (sizeX = length, sizeY = width) | yes | `TARGETSELF` blank, `HostileFeat=1` | real `Spell`, **per rank** |
   | "in a cone" | `Cone` (sizeX = length, sizeY = width) | yes | `TARGETSELF` blank, `HostileFeat=1` | real `Spell`, **per rank** |
-  | "within Nm" | `Sphere` (sizeX = radius, sizeY = `0`) | no | `TARGETSELF=1`, `HostileFeat` blank | real `Spell`, **per rank** |
+  | "to enemies within Nm" | `Sphere` (sizeX = radius, sizeY = `0`) | no | `TARGETSELF=1`, `HostileFeat` blank | real `Spell`, **per rank** |
+
+  The hostile-area marker is **"enemies within"**, not a bare "within Nm". Many descriptions use "within Nm" for something that is not an area attack at all — an ally buff ("allies within 5m"), a passive proximity condition ("each bleeding enemy within 10m"), or a leash range ("while within 20m"). Do not widen the generator's area detection to bare "within Nm"; it would reclassify roughly 40 non-area perks as hostile spheres.
 
   `Earthshatter I/II` is the reference implementation for an aimed line.
-- **Every rank of an area ability needs its own `spells.2da` row and its own `Spell` enum value.** `ApplyTargetingMetadata` silently drops all client targeting when the spell is `Spell.Invalid`, which costs the ability its cursor *and* its ground area marker with no error anywhere. Never leave `Spell.Invalid` on a rank that declares a real `AbilityTargetingShapeType`.
+- **Every rank of an area ability needs its own `spells.2da` row and its own `Spell` enum value.** Never leave `Spell.Invalid` on a rank that declares a real `AbilityTargetingShapeType`. The two failure modes differ, and only one of them is loud:
+  - Targeting metadata that *exists* but carries `Spell.Invalid` is rejected at load — `AbilityTargeting.ValidateTargeting` throws `InvalidOperationException`.
+  - Passing `Spell.Invalid` to `ConfigureGeneratedWeaponAbility` never reaches that check, because `ApplyTargetingMetadata` skips building targeting metadata at all. The ability ends up with no `Targeting`, so it silently loses both its cursor and its ground area marker with nothing thrown or logged. This is how several ranks shipped broken, and it is what `AreaAbilityTargetingTests` guards.
 - `tools/GenerateWeaponArchetypeImplementation.py` encodes the table above, and `SWLOR.Game.Server.Tests/Perks/AreaAbilityTargetingTests.cs` enforces it by reflecting over every `IAbilityListDefinition` and cross-checking `feat.2da`. Keep that test green rather than adding explicit per-ability lists. After changing any of this, rebuild the haks and repack the module so the change deploys.
 
 ## Ability Icons

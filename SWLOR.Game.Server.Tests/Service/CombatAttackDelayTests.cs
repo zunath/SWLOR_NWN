@@ -212,13 +212,14 @@ public class CombatAttackDelayTests
     {
         const uint attacker = 0x7F000001;
         Combat.ClearAttackSwingDebt(attacker);
-        var unbuffed = Combat.ConsumeAttacksPerSwing(attacker, unbuffedDelay, unbuffedDelay);
+        var unbuffed = Combat.ConsumeAttacksPerSwing(attacker, unbuffedDelay, unbuffedDelay, false);
 
         Combat.ClearAttackSwingDebt(attacker);
         var buffed = Combat.ConsumeAttacksPerSwing(
             attacker,
             Combat.MinimumAttackDelayMilliseconds,
-            unbuffedDelay);
+            unbuffedDelay,
+            true);
 
         Combat.ClearAttackSwingDebt(attacker);
 
@@ -234,18 +235,22 @@ public class CombatAttackDelayTests
     {
         // Regression: a heavily hasted or dual-wielding Vibroknife build sits at the floor already,
         // so overriding the delay with the same floor value used to change nothing at all.
+        // Both delays are genuinely equal here, which is what the real attack path produces for this
+        // build - so the buff state has to travel as its own flag rather than be inferred.
         const uint attacker = 0x7F000002;
         Combat.ClearAttackSwingDebt(attacker);
         var unbuffed = Combat.ConsumeAttacksPerSwing(
             attacker,
             Combat.MinimumAttackDelayMilliseconds,
-            Combat.MinimumAttackDelayMilliseconds);
+            Combat.MinimumAttackDelayMilliseconds,
+            false);
 
         Combat.ClearAttackSwingDebt(attacker);
         var buffed = Combat.ConsumeAttacksPerSwing(
             attacker,
             Combat.MinimumAttackDelayMilliseconds,
-            Combat.MinimumAttackDelayMilliseconds + 1);
+            Combat.MinimumAttackDelayMilliseconds,
+            true);
 
         Combat.ClearAttackSwingDebt(attacker);
 
@@ -256,13 +261,13 @@ public class CombatAttackDelayTests
     [Test]
     public void ConsumeAttacksPerSwing_WithoutABuff_IsUnchanged()
     {
-        // The guarantee must only engage when the buffed and unbuffed delays actually differ, so
-        // ordinary swings keep their existing attack counts and debt accounting.
+        // The guarantee must only engage when a no-delay buff is actually active, so ordinary swings
+        // keep their existing attack counts and debt accounting.
         const uint attacker = 0x7F000003;
         foreach (var delay in new[] { 3500, 1750, 875, Combat.MinimumAttackDelayMilliseconds })
         {
             Combat.ClearAttackSwingDebt(attacker);
-            var viaOverload = Combat.ConsumeAttacksPerSwing(attacker, delay, delay);
+            var viaOverload = Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false);
 
             Combat.ClearAttackSwingDebt(attacker);
             var viaOriginal = Combat.ConsumeAttacksPerSwing(attacker, delay);

@@ -8993,7 +8993,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The number of attacks to resolve in this swing.</returns>
         public static int ConsumeAttacksPerSwing(uint attacker, int effectiveDelayMilliseconds)
         {
-            return ConsumeAttacksPerSwing(attacker, effectiveDelayMilliseconds, effectiveDelayMilliseconds);
+            return ConsumeAttacksPerSwing(attacker, effectiveDelayMilliseconds, effectiveDelayMilliseconds, false);
         }
 
         /// <summary>
@@ -9003,22 +9003,28 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attacker">The attacking creature.</param>
         /// <param name="effectiveDelayMilliseconds">The effective per-attack delay in milliseconds.</param>
         /// <param name="unbuffedDelayMilliseconds">
-        /// The effective delay the attacker would have without a no-delay buff. When it differs from
-        /// <paramref name="effectiveDelayMilliseconds"/> the buff is active, and it must be worth at
-        /// least one extra attack on this swing. Without that guarantee a no-delay buff only lowers
-        /// the delay to <see cref="MinimumAttackDelayMilliseconds"/>, which does nothing at all for a
-        /// build already sitting at that floor (heavily hasted or dual-wielding).
+        /// The effective delay the attacker would have without a no-delay buff, used to size the
+        /// guarantee below.
+        /// </param>
+        /// <param name="hasNoDelayBuff">
+        /// Whether a no-delay buff was consumed for this swing. When set, the buff must be worth at
+        /// least one extra attack. Without that guarantee a no-delay buff only lowers the delay to
+        /// <see cref="MinimumAttackDelayMilliseconds"/>, which does nothing at all for a build
+        /// already sitting at that floor (heavily hasted or dual-wielding). This must be passed
+        /// explicitly rather than inferred from the two delays differing: a build already at the
+        /// floor supplies equal values, which is exactly the case the guarantee exists to fix.
         /// </param>
         /// <returns>The number of attacks to resolve in this swing.</returns>
         public static int ConsumeAttacksPerSwing(
             uint attacker,
             int effectiveDelayMilliseconds,
-            int unbuffedDelayMilliseconds)
+            int unbuffedDelayMilliseconds,
+            bool hasNoDelayBuff)
         {
             _attackSwingDebts.TryGetValue(attacker, out var attackDebt);
             var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt);
 
-            if (unbuffedDelayMilliseconds != effectiveDelayMilliseconds)
+            if (hasNoDelayBuff)
             {
                 var unbuffedAttacks = CalculateAttacksPerSwing(unbuffedDelayMilliseconds, attackDebt, out _);
                 var guaranteedAttacks = Math.Clamp(unbuffedAttacks + 1, 1, MaxAttacksPerSwing);

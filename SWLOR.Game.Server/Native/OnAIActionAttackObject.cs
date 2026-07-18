@@ -395,7 +395,9 @@ namespace SWLOR.Game.Server.Native
 
                 // The delay the attacker would have without a no-delay buff. Lowering the delay to
                 // the floor is meaningless for a build already at the floor, so this is passed to
-                // ConsumeAttacksPerSwing to guarantee the buff is worth an extra attack either way.
+                // ConsumeAttacksPerSwing alongside useDefaultMinimumDelay to guarantee the buff is
+                // worth an extra attack either way. Both values are equal for a build already at the
+                // floor, so the buff state has to travel separately from the delays.
                 var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, false);
 
                 // Check attack delay before starting or processing combat
@@ -543,7 +545,8 @@ namespace SWLOR.Game.Server.Native
                                                     nAttacks = Combat.ConsumeAttacksPerSwing(
                                                         pCreature.m_idSelf,
                                                         effectiveAttackDelay,
-                                                        unbuffedAttackDelay);
+                                                        unbuffedAttackDelay,
+                                                        useDefaultMinimumDelay);
 
                                                     if (nAttacks > 1)
                                                     {

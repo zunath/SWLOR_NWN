@@ -7,6 +7,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -29,22 +30,120 @@ public class AreaAbilityTargetingTests
         AbilityTargetingShapeType.Cone
     };
 
-    [Test]
-    public void AreaAbilities_DeclaringAShape_AlsoDeclareATargetingSpell()
+    /// <summary>
+    /// Player-facing hostile area abilities that still declare no client targeting, so they show no
+    /// cursor and no ground area marker. Every one of these already has a `spells.2da` row and a
+    /// `Spell` enum value; only the C# wiring is missing. They are not fixed here because each also
+    /// needs a shape and radius chosen against its Design Bible line, which is a balance decision
+    /// per ability rather than a mechanical edit.
+    ///
+    /// This baseline may only shrink. New offenders fail
+    /// <see cref="HostileAreaAbilities_DeclareClientTargeting"/>, and entries that get fixed fail
+    /// <see cref="KnownMissingClientTargetingBaseline_DoesNotGoStale"/>.
+    /// </summary>
+    private static readonly string[] KnownMissingClientTargeting =
     {
-        // ApplyTargetingMetadata drops all client targeting when the spell is Invalid, which costs
-        // the ability its cursor AND its ground area marker with no error anywhere. Every rank needs
-        // its own spells.2da row, not just rank one.
-        var offenders = GetTargetedAbilities()
-            .Where(x => x.Targeting.UpdatesClientTargeting)
-            .Where(x => x.Targeting.Shape != AbilityTargetingShapeType.None)
-            .Where(x => x.Targeting.Spell == Spell.Invalid)
-            .Select(x => $"{x.DefinitionName}.{x.Feat} ({x.Targeting.Shape})")
+        "ExplosiveToss1",
+        "ExplosiveToss2",
+        "ExplosiveToss3",
+        "ExplosiveToss4",
+        "Flash1",
+        "Forcebane1",
+        "InterruptingSweep1",
+        "InterruptingSweep2",
+        "KillBox1",
+        "PerfectFlurry1",
+        "RedBloom1",
+        "ScrapheapLockdown1",
+        "SerratedArc1",
+        "SerratedArc2",
+        "SerratedArc3",
+        "SoulBurst1",
+        "SunderingSweep1",
+        "SunderingSweep2",
+        "SunderingSweep3"
+    };
+
+    [Test]
+    public void HostileAreaAbilities_DeclareClientTargeting()
+    {
+        // The silent failure lives in ApplyTargetingMetadata: when the targeting spell is
+        // Spell.Invalid it skips building targeting metadata entirely, so the ability ends up with
+        // no Targeting at all - no cursor and no ground area marker, and nothing throws.
+        // AbilityTargeting.ValidateTargeting only catches the opposite case (metadata that exists
+        // but carries Spell.Invalid), so asserting on that alone would never fire. Assert the
+        // invariant that actually breaks instead: a hostile area ability must have targeting.
+        var playerFeats = GetPlayerGrantedFeats();
+
+        var offenders = GetAllAbilities()
+            .Where(x => x.IsHostile && x.IsArea)
+            .Where(x => playerFeats.Contains(x.Feat))
+            .Where(x => !IsBeastActivated(x))
+            .Where(x => x.Targeting is not { UpdatesClientTargeting: true })
+            .Select(x => x.Feat.ToString())
+            .OrderBy(x => x, StringComparer.Ordinal)
             .ToList();
 
-        offenders.Should().BeEmpty(
+        offenders.Except(KnownMissingClientTargeting).Should().BeEmpty(
             "every rank of an area ability needs its own spells.2da row and Spell enum value; " +
-            "Spell.Invalid silently disables the targeting cursor and area marker");
+            "without one, ApplyTargetingMetadata silently produces no cursor and no area marker");
+    }
+
+    [Test]
+    public void KnownMissingClientTargetingBaseline_DoesNotGoStale()
+    {
+        // The baseline must only ever shrink. If an ability is fixed, this fails until its entry is
+        // removed, so the list cannot quietly outlive the bug it records.
+        var playerFeats = GetPlayerGrantedFeats();
+
+        var stillBroken = GetAllAbilities()
+            .Where(x => x.IsHostile && x.IsArea)
+            .Where(x => playerFeats.Contains(x.Feat))
+            .Where(x => !IsBeastActivated(x))
+            .Where(x => x.Targeting is not { UpdatesClientTargeting: true })
+            .Select(x => x.Feat.ToString())
+            .ToHashSet(StringComparer.Ordinal);
+
+        KnownMissingClientTargeting.Where(x => !stillBroken.Contains(x)).Should().BeEmpty(
+            "these abilities now declare client targeting, so they should be removed from the baseline");
+    }
+
+    [Test]
+    public void AreaAbilities_TargetingSpellMatchesTheFeatSpellId()
+    {
+        // feat.2da SPELLID is what the client actually resolves targeting through, so a C# ability
+        // pointing at a different spells.2da row than its feat row silently targets using the wrong
+        // shape and size.
+        var feats = ReadFeat2da();
+        var spellLabelsByRow = ReadSpellRowLabels();
+        var playerFeats = GetPlayerGrantedFeats();
+
+        var offenders = new List<string>();
+        foreach (var ability in GetTargetedAbilities()
+                     .Where(x => x.Targeting.UpdatesClientTargeting)
+                     .Where(x => playerFeats.Contains(x.Feat)))
+        {
+            if (!feats.TryGetValue(ability.Feat.ToString(), out var row))
+            {
+                offenders.Add($"{ability.Feat} has no feat.2da row");
+                continue;
+            }
+
+            if (!spellLabelsByRow.TryGetValue(row.SpellId, out var spellLabel))
+            {
+                offenders.Add($"{ability.Feat} has SPELLID={row.SpellId}, which is not a spells.2da row");
+                continue;
+            }
+
+            if (!string.Equals(spellLabel, ability.Targeting.Spell.ToString(), StringComparison.Ordinal))
+            {
+                offenders.Add(
+                    $"{ability.Feat} targets Spell.{ability.Targeting.Spell} but its feat row " +
+                    $"points at SPELLID={row.SpellId} ({spellLabel})");
+            }
+        }
+
+        offenders.Should().BeEmpty("a feat's SPELLID must resolve to the same spell the ability targets with");
     }
 
     [Test]
@@ -60,7 +159,10 @@ public class AreaAbilityTargetingTests
                      .Where(x => AimedShapes.Contains(x.Targeting.Shape)))
         {
             if (!feats.TryGetValue(ability.Feat.ToString(), out var row))
+            {
+                offenders.Add($"{ability.Feat} has no feat.2da row");
                 continue;
+            }
 
             if (row.TargetSelf != "****" || row.HostileFeat != "1")
             {
@@ -89,12 +191,16 @@ public class AreaAbilityTargetingTests
                      .Where(x => x.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf)))
         {
             if (!feats.TryGetValue(ability.Feat.ToString(), out var row))
+            {
+                offenders.Add($"{ability.Feat} has no feat.2da row");
                 continue;
+            }
 
-            if (row.TargetSelf != "1")
+            if (row.TargetSelf != "1" || row.HostileFeat != "****")
             {
                 offenders.Add(
-                    $"{ability.Feat} (self-centered Sphere) has TARGETSELF={row.TargetSelf}, expected 1");
+                    $"{ability.Feat} (self-centered Sphere) has TARGETSELF={row.TargetSelf} " +
+                    $"HostileFeat={row.HostileFeat}, expected TARGETSELF=1 HostileFeat=****");
             }
         }
 
@@ -119,9 +225,30 @@ public class AreaAbilityTargetingTests
         FeatType Feat,
         AbilityTargetingDetail Targeting,
         bool IsArea,
-        bool IsHostile);
+        bool IsHostile,
+        SkillType SkillType);
 
+    /// <summary>
+    /// Beast abilities originate on the companion, not the player, so there is nothing for the
+    /// player to aim and they carry no client targeting by design. Keyed off the declared skill
+    /// rather than a hand-maintained ability list.
+    /// </summary>
+    private static bool IsBeastActivated(TargetedAbility ability)
+    {
+        return ability.SkillType == SkillType.BeastMastery;
+    }
+
+    /// <summary>Abilities that declare targeting metadata.</summary>
     private static IEnumerable<TargetedAbility> GetTargetedAbilities()
+    {
+        return GetAllAbilities().Where(x => x.Targeting != null);
+    }
+
+    /// <summary>
+    /// Every ability, including those with no targeting metadata at all. The absence of metadata is
+    /// itself the silent failure mode this fixture guards, so it must stay visible here.
+    /// </summary>
+    private static IEnumerable<TargetedAbility> GetAllAbilities()
     {
         var definitionTypes = typeof(IAbilityListDefinition).Assembly
             .GetTypes()
@@ -133,15 +260,13 @@ public class AreaAbilityTargetingTests
             var definition = (IAbilityListDefinition)Activator.CreateInstance(definitionType)!;
             foreach (var (feat, ability) in definition.BuildAbilities())
             {
-                if (ability.Targeting == null)
-                    continue;
-
                 yield return new TargetedAbility(
                     definitionType.Name,
                     feat,
                     ability.Targeting,
                     ability.IsAreaAbility,
-                    ability.IsHostileAbility);
+                    ability.IsHostileAbility,
+                    ability.SkillType);
             }
         }
     }
@@ -206,6 +331,22 @@ public class AreaAbilityTargetingTests
         }
 
         return rows;
+    }
+
+    private static Dictionary<string, string> ReadSpellRowLabels()
+    {
+        var path = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_2da", "spells.2da");
+        var labels = new Dictionary<string, string>();
+        foreach (var line in File.ReadAllLines(path).Skip(3))
+        {
+            var tokens = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length < 2 || tokens[1] == "****")
+                continue;
+
+            labels[tokens[0]] = tokens[1];
+        }
+
+        return labels;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

@@ -441,6 +441,20 @@ window.AddStandardLayout(layout =>
 return builder.Build();
 ```
 
+`AddStandardLayout` only creates the content *host* — it does not choose what renders in
+it. The window opens on an empty content area unless the ViewModel selects an initial tab
+during `Initialize`, which is also what assigns the watched toggle property (rule R3):
+
+```csharp
+// In ExampleViewModel.Initialize:
+SelectedTabId = FirstTabId;                             // swaps in FirstTabPartial
+TabToggleValue = Toggles.LocalIndexFor(FirstTabId);     // assign before watching
+WatchOnClient(model => model.TabToggleValue);
+```
+
+For a window with no tabs, call `ChangePartialView(ExampleViewModel.TabContentElement,
+ExampleViewModel.BodyPartial)` in `Initialize` instead.
+
 #### Key Methods
 
 - **CreateWindow(GuiWindowType)** - Initialize the window (returns `GuiWindow<T>`)

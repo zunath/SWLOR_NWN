@@ -1,4 +1,4 @@
 interface:
   display_name: SWLOR GUI Window Generation
   short_description: Build warning-free SWLOR NUI windows from wireframes.
-  default_prompt: Build a new SWLOR NUI GUI window from the provided wireframe image or spec - enum entry, definition on GuiStandardLayout, view model, debug chat command - then validate with a clean build and a boot free of NUI layout warnings, leaving data access as TODO stubs.
+  default_prompt: Build a new SWLOR NUI GUI window from the provided wireframe image or spec - enum entry, definition on GuiStandardLayout, view model, debug chat command - then validate with a clean build and a boot producing zero new [NUI layout warning] lines for the generated window (the six pre-existing GUI_WINDOW_DebugNuiGallery canary warnings are intentional and may be ignored), leaving data access as TODO stubs.

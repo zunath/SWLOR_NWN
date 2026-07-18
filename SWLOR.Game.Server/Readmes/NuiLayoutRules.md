@@ -91,9 +91,13 @@ tab rows work.
 if the property was never assigned. Always assign first:
 
 ```csharp
-SelectedTabId = MessagesTabId;                    // Set first
-WatchOnClient(model => model.TabToggleValue);     // then watch
+SelectedTabId = MessagesTabId;                            // drives the partial swap (R4)
+TabToggleValue = Toggles.LocalIndexFor(MessagesTabId);    // assign the WATCHED property first
+WatchOnClient(model => model.TabToggleValue);             // then watch it
 ```
+
+It is `TabToggleValue` — the property actually passed to `WatchOnClient` — that must be
+assigned. Assigning only `SelectedTabId` leaves the watched property unset and still throws.
 
 History: before this guard existed, watching an unset property NRE'd mid-`Initialize`
 AND left a poisoned null-valued entry that made **every subsequent reopen of the
@@ -111,7 +115,7 @@ echo push is suppressed, not the setter body).
 Only ONE root layout shape has been proven to track window geometry correctly as the
 client resizes a window (CharacterSheet's shape):
 
-```
+```text
 root column
   └── single row ("main row")
         ├── variable-width CONTENT column

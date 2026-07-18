@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Item's price has been changed since the player's search.
                 // Notify them and refresh the search.
-                if (dbItem.Price != _rows[index].Price)
+                if (dbItem.Price != price)
                 {
                     FloatingTextStringOnCreature("The price of this item has been changed by the seller. Please try again.", Player, false);
                     Search();

@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             // Every warning is a real defect; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
             foreach (var finding in GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews))
             {
-                Console.WriteLine($"[NUI layout warning] {finding}");
+                Log.Write(LogGroup.Server, $"[NUI layout warning] {finding}");
             }
 
             var partialViews = new Dictionary<string, Json>();

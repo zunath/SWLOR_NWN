@@ -59,7 +59,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
             return this;
         }
 
-        public string GetPartialName(int tabId) => _tabs[tabId].PartialId;
+        public string GetPartialName(int tabId)
+        {
+            if (!_tabs.TryGetValue(tabId, out var tab))
+                throw new KeyNotFoundException($"Tab id '{tabId}' was not registered in this GuiTabGroup.");
+
+            return tab.PartialId;
+        }
 
         /// <summary>
         /// Applies the given tab: runs its refresh action (if any) then swaps
@@ -119,8 +125,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         public void SyncTo(int tabId, Action<int> setLocalIndex)
         {
             _isSyncing = true;
-            setLocalIndex(LocalIndexFor(tabId));
-            _isSyncing = false;
+            try
+            {
+                setLocalIndex(LocalIndexFor(tabId));
+            }
+            finally
+            {
+                _isSyncing = false;
+            }
         }
     }
 }

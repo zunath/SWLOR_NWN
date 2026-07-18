@@ -33,7 +33,10 @@ Status effects use the same semantic frame location, but their color assignment 
 - Beneficial status effects must use the Beneficial green frame/accent.
 - Detrimental status effects must use the Harmful red frame/accent.
 - Neutral or system status effects may use Utility only when they are neither beneficial nor detrimental.
+- **Stances use the Self (stance) color**, not Beneficial, even though a stance is beneficial to its holder. The stance color is what tells a player at a glance that the effect is a stance they toggled on rather than a buff something granted them, and it matches the Self color already used by the corresponding stance *ability* icons.
 - A paired self buff and enemy debuff may share a motif, but they must differ by both semantic color and a visible shape/sigil.
+
+Note: most pre-existing stance status effects still carry the Beneficial green frame and predate this rule. New stances follow the rule; converting the existing ones is a separate sweep.
 
 ## Every Applied Status Effect Carries an Icon
 

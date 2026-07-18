@@ -1,4 +1,4 @@
-using System;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -6,32 +6,25 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     /// <summary>
-    /// Finishing Drive's stacking momentum: each cast adds a stack (up to <see cref="MaxStacks"/>),
-    /// granting +<see cref="PotencyPerStack"/>% technique damage (Mimicry potency) per stack.
-    /// Reapplied by the ability with the new stack count; magnitude is passed in via constructor.
+    /// The Force Dark Ravager trait's reward for finishing an enemy off: after defeating a target
+    /// damaged in the last few seconds, the wielder's Force abilities land more reliably for a short
+    /// window. Applied (with the FP restore and trigger cooldown) by Combat.ApplyCruelMomentumEffect.
     /// </summary>
     public sealed class CruelMomentumStatusEffect : StatusEffectBase
     {
-        public const int MaxStacks = 3;
-        private const int PotencyPerStack = 8;
+        private const int ForceAccuracyPercent = 5;
 
-        public int Stacks { get; }
-
-        public override string Name => $"Cruel Momentum ({Stacks})";
+        public override string Name => "Cruel Momentum";
         public override EffectIconType Icon => EffectIconType.CruelMomentumStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 
-        // Parameterless constructor is required by the reflection-driven status-effect registry.
         public CruelMomentumStatusEffect()
-            : this(1)
         {
-        }
-
-        public CruelMomentumStatusEffect(int stacks)
-        {
-            Stacks = Math.Clamp(stacks, 1, MaxStacks);
-            StatGroup.Stats[StatType.MimicryPotencyPercent] = Stacks * PotencyPerStack;
+            // The accuracy bonus is scoped to Force abilities, so it carries the skill selector
+            // alongside the magnitude; Combat reads the pair when resolving ability hit chance.
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustmentSkillType] = (int)SkillType.Force;
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = ForceAccuracyPercent;
         }
     }
 }

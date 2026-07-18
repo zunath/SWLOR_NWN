@@ -1122,7 +1122,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.FillEllipse($brush, 52, 52, 24, 24)
         $g.DrawLine($hot, 44, 84, 84, 44)
     }
-    elseif ($className -match "Haste|Speed|Movement|Hobble|Hamstring|Immobil|Slow|Dash|Tempo") {
+    elseif ($className -match "Haste|Speed|Movement|Hobble|Hamstring|Immobil|Slow|Dash|Tempo|FinishingDriveMomentum") {
         $g.DrawArc($shadowPen, 31, 39, 66, 52, 35, 250)
         $g.DrawArc($pen, 30, 37, 66, 52, 35, 250)
         $arrow = @([System.Drawing.Point]::new(91, 37), [System.Drawing.Point]::new(112, 38), [System.Drawing.Point]::new(98, 57))
@@ -1206,7 +1206,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.DrawArc($hot, 52, 31, 35, 35, 85, 230)
         $g.FillEllipse((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 5, 7, 10))), 64, 27, 34, 34)
     }
-    elseif ($className -match "Stance|Focus|Centering|Attentiveness|Precision|Collapse") {
+    elseif ($className -match "Stance|Focus|Centering|Attentiveness|Precision|Collapse|CruelMomentum") {
         $g.FillEllipse($shadowBrush, 53, 25, 24, 24)
         $g.FillEllipse($brush, 52, 24, 24, 24)
         $g.DrawLine($pen, 64, 49, 64, 86)

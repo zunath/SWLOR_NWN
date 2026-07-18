@@ -89,6 +89,25 @@ public class EspionageDisguisePerkTests
     }
 
     [Test]
+    public void DisguiseWindow_ReportsTheEffectiveDelayRatherThanTheBaseDelay()
+    {
+        var root = FindRepositoryRoot();
+        var viewModel = File.ReadAllText(Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "DisguiseViewModel.cs"));
+        var definition = File.ReadAllText(Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "DisguiseDefinition.cs"));
+
+        // Every surface that quotes the delay has to quote the player's own delay, or a player
+        // with Cover Story is told 30 minutes while actually waiting 18 or 9.
+        viewModel.Should().Contain("Disguise.GetActivationDelay(Player).TotalMinutes");
+        viewModel.Should().Contain("ActivationDelayNote = $\"Activating starts a {GetActivationDelayMinutes()}-minute cooldown");
+        definition.Should().Contain("BindText(model => model.ActivationDelayNote)");
+
+        viewModel.Should().NotContain("30-minute");
+        definition.Should().NotContain("30-minute");
+    }
+
+    [Test]
     public void DisguiseService_ReadsThePerkStatsRatherThanCheckingPerksDirectly()
     {
         var source = File.ReadAllText(Path.Combine(

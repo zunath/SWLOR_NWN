@@ -640,8 +640,8 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("Creating a new disguise will consume one of your disguise slots. Retired disguises also occupy disguise slots until they are wiped. Are you sure?");
         viewModelSource.Should().Contain("ActivateButtonText = IsSelectedDisguiseActive() ? \"Deactivate\" : \"Activate\";");
         viewModelSource.Should().Contain("Disguise.Deactivate(Player)");
-        viewModelSource.Should().Contain("Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?");
-        viewModelSource.Should().Contain("Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?");
+        viewModelSource.Should().Contain("Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the {delayMinutes}-minute delay between disguise activations. Are you sure?");
+        viewModelSource.Should().Contain("Activating this disguise starts a {delayMinutes}-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?");
         viewModelSource.Should().Contain("var selectedDisguiseId = _selectedDisguiseId;");
         viewModelSource.Should().Contain("var result = Disguise.Activate(Player, selectedDisguiseId);");
         viewModelSource.Should().Contain("private void ReloadAvailableDisguise(string selectedDisguiseId)");
@@ -721,8 +721,9 @@ public class PlayerNameRecognitionTests
         newMethod.Should().Contain("WithLayoutRestore(() =>");
         newMethod.Should().Contain("RestoreLayoutPartials");
         var activateOrDeactivateMethod = ExtractMethod(viewModelSource, "public Action OnClickActivateOrDeactivate()");
-        activateOrDeactivateMethod.Should().Contain("ShowModal(\"Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?\"");
-        activateOrDeactivateMethod.Should().Contain("ShowModal(\"Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?\"");
+        activateOrDeactivateMethod.Should().Contain("ShowModal($\"Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the {delayMinutes}-minute delay between disguise activations. Are you sure?\"");
+        activateOrDeactivateMethod.Should().Contain("ShowModal($\"Activating this disguise starts a {delayMinutes}-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?\"");
+        activateOrDeactivateMethod.Should().Contain("var delayMinutes = GetActivationDelayMinutes();");
         activateOrDeactivateMethod.Should().Contain("WithLayoutRestore(() =>");
         activateOrDeactivateMethod.Should().Contain("RestoreLayoutPartials");
         activateOrDeactivateMethod.Should().Contain("var selectedDisguiseId = _selectedDisguiseId;");

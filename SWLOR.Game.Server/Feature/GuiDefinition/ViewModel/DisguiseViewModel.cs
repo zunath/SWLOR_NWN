@@ -61,6 +61,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ActivationDelayNote
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public float SlotUsageProgress
         {
             get => Get<float>();
@@ -292,6 +298,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             EmptyStateTitle = string.Empty;
             EmptyStateText = string.Empty;
             SlotBarLabel = string.Empty;
+            ActivationDelayNote = string.Empty;
             SlotUsageProgress = 0f;
             SlotUsageColor = _slotFreeColor;
             StatusText = string.Empty;
@@ -408,16 +415,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SendMessageToPC(Player, ColorToken.Green("Disguise saved."));
         };
 
+        private int GetActivationDelayMinutes()
+        {
+            return (int)Math.Round(Disguise.GetActivationDelay(Player).TotalMinutes);
+        }
+
         public Action OnClickActivateOrDeactivate() => () =>
         {
             if (!HasSelection || IsRetiredSelected)
                 return;
 
             var selectedDisguiseId = _selectedDisguiseId;
+            var delayMinutes = GetActivationDelayMinutes();
 
             if (IsSelectedDisguiseActive())
             {
-                ShowModal("Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?",
+                ShowModal($"Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the {delayMinutes}-minute delay between disguise activations. Are you sure?",
                     WithLayoutRestore(() =>
                     {
                         if (Disguise.Deactivate(Player))
@@ -429,7 +442,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                ShowModal("Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?",
+                ShowModal($"Activating this disguise starts a {delayMinutes}-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?",
                     WithLayoutRestore(() =>
                     {
                         var result = Disguise.Activate(Player, selectedDisguiseId);
@@ -555,6 +568,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? 0f
                 : Math.Clamp((float)usedSlots / slotLimit, 0f, 1f);
             SlotUsageColor = usedSlots >= slotLimit ? _slotFullColor : _slotFreeColor;
+            ActivationDelayNote = $"Activating starts a {GetActivationDelayMinutes()}-minute cooldown before you can activate another disguise.";
 
             var disguises = Disguise.GetDisguises(playerId, IsRetiredSelected);
             var disguiseNames = new GuiBindingList<string>();

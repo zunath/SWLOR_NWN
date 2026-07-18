@@ -937,7 +937,7 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Crafting,
                 $"[IPMERGE] type={type}({(int)type}) subType={subType} hasSubType={hasSubType} " +
                 $"matchSubType={matchSubType} incoming={diagIncoming} summed={amount} " +
-                $"matchesBefore={diagBefore} matchesAfterRemoval={CountMatches()}");
+                $"matchesBefore={diagBefore} matchesAfterRemoval={CountMatches()}", true);
 
             var unpacked = ItemPropertyPlugin.UnpackIP(ip);
             unpacked.CostTableValue = amount;

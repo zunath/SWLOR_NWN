@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -40,6 +41,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         private static void ToggleStealthMode(uint activator, uint target, int level, Location targetLocation)
         {
             var enteringStealth = !GetActionMode(activator, ActionMode.Stealth);
+
+            Log.Write(LogGroup.Attack,
+                $"Player '{GetName(activator)}' ({GetObjectUUID(activator)}) {(enteringStealth ? "entered" : "exited")} Espionage stealth.");
+
             AssignCommand(activator, () =>
             {
                 SetActionMode(activator, ActionMode.Stealth, enteringStealth);

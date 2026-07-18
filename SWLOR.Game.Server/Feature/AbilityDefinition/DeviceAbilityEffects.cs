@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -366,7 +367,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 false,
                 FieldEngineerPulseMarkerTag);
             if (!GetIsObjectValid(marker))
+            {
+                Log.Write(LogGroup.Error,
+                    $"Failed to create field marker placeable '{FieldEngineerPulseMarkerResref}' at the requested location.");
                 return OBJECT_INVALID;
+            }
 
             SetPlotFlag(marker, true);
             ApplyEffectToObject(

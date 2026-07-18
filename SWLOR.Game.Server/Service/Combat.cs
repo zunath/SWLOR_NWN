@@ -1933,12 +1933,16 @@ namespace SWLOR.Game.Server.Service
                 CombatDamageType.Physical);
         }
 
-        public static bool IsAttackerBesideTarget(uint attacker, uint defender)
+        // Angle in degrees between the defender's facing and the direction to the attacker:
+        // 0 = attacker directly in front, 180 = directly behind. Returns null when the pair is
+        // not comparable (invalid, cross-area, or overlapping). Shared by every positional check
+        // so their thresholds stay the single source of difference.
+        private static double? GetFacingAngleDegrees(uint attacker, uint defender)
         {
             if (!GetIsObjectValid(attacker) ||
                 !GetIsObjectValid(defender) ||
                 GetArea(attacker) != GetArea(defender))
-                return false;
+                return null;
 
             var defenderPosition = GetPosition(defender);
             var attackerPosition = GetPosition(attacker);
@@ -1946,39 +1950,24 @@ namespace SWLOR.Game.Server.Service
             var deltaY = attackerPosition.Y - defenderPosition.Y;
             var distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
             if (distance <= 0.001)
-                return false;
+                return null;
 
             var facingRadians = GetFacing(defender) * Math.PI / 180.0;
             var forwardX = Math.Cos(facingRadians);
             var forwardY = Math.Sin(facingRadians);
             var dot = Math.Clamp((forwardX * deltaX + forwardY * deltaY) / distance, -1.0, 1.0);
-            var angleDegrees = Math.Acos(dot) * 180.0 / Math.PI;
+            return Math.Acos(dot) * 180.0 / Math.PI;
+        }
 
-            return angleDegrees >= 45.0 && angleDegrees <= 135.0;
+        public static bool IsAttackerBesideTarget(uint attacker, uint defender)
+        {
+            var angleDegrees = GetFacingAngleDegrees(attacker, defender);
+            return angleDegrees is >= 45.0 and <= 135.0;
         }
 
         public static bool IsAttackerBehindTarget(uint attacker, uint defender)
         {
-            if (!GetIsObjectValid(attacker) ||
-                !GetIsObjectValid(defender) ||
-                GetArea(attacker) != GetArea(defender))
-                return false;
-
-            var defenderPosition = GetPosition(defender);
-            var attackerPosition = GetPosition(attacker);
-            var deltaX = attackerPosition.X - defenderPosition.X;
-            var deltaY = attackerPosition.Y - defenderPosition.Y;
-            var distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-            if (distance <= 0.001)
-                return false;
-
-            var facingRadians = GetFacing(defender) * Math.PI / 180.0;
-            var forwardX = Math.Cos(facingRadians);
-            var forwardY = Math.Sin(facingRadians);
-            var dot = Math.Clamp((forwardX * deltaX + forwardY * deltaY) / distance, -1.0, 1.0);
-            var angleDegrees = Math.Acos(dot) * 180.0 / Math.PI;
-
-            return angleDegrees > 135.0;
+            return GetFacingAngleDegrees(attacker, defender) > 135.0;
         }
 
         [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
@@ -6848,26 +6837,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsTargetNotFacingAttacker(uint attacker, uint defender)
         {
-            if (!GetIsObjectValid(attacker) ||
-                !GetIsObjectValid(defender) ||
-                GetArea(attacker) != GetArea(defender))
-                return false;
-
-            var defenderPosition = GetPosition(defender);
-            var attackerPosition = GetPosition(attacker);
-            var deltaX = attackerPosition.X - defenderPosition.X;
-            var deltaY = attackerPosition.Y - defenderPosition.Y;
-            var distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-            if (distance <= 0.001)
-                return false;
-
-            var facingRadians = GetFacing(defender) * Math.PI / 180.0;
-            var forwardX = Math.Cos(facingRadians);
-            var forwardY = Math.Sin(facingRadians);
-            var dot = Math.Clamp((forwardX * deltaX + forwardY * deltaY) / distance, -1.0, 1.0);
-            var angleDegrees = Math.Acos(dot) * 180.0 / Math.PI;
-
-            return angleDegrees > 90.0;
+            return GetFacingAngleDegrees(attacker, defender) > 90.0;
         }
 
         public static bool CanConsumeNextAbilityNoDelay(AbilityDetail ability)

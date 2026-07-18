@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
@@ -20,7 +21,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Chitin Guard")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.ChitinGuard, 2, 2, typeof(ChitinGuardStatusEffect));
+                .MimicryTrait(FeatType.ChitinGuard, 2, 2)
+                .MimicryTraitStat(StatType.PhysicalDefensePercentAdjustment, 10)
+                .MimicryTraitStat(StatType.ForceDefensePercentAdjustment, 15)
+                .MimicryTraitResistance(ResistanceType.Fire, 20)
+                .MimicryTraitResistance(ResistanceType.Poison, 20);
 
             return _builder.Build();
         }

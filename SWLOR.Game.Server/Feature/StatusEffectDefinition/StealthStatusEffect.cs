@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private float _frequency = BaseFrequencySeconds;
 
         public override string Name => "Stealth";
-        public override EffectIconType Icon => EffectIconType.Concealment;
+        public override EffectIconType Icon => EffectIconType.StealthStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override float Frequency => _frequency;
         public override bool PersistsOnLogout => false;

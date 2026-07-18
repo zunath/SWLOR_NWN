@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -163,11 +164,15 @@ public class MimicryTests
         }
     }
 
-    // Trait techniques are passive: equipping them applies a status effect instead of granting a
-    // hotbar action. They must declare that status effect, have no impact action, and (being
-    // non-damaging) must not declare a combat scaling attribute.
+    // Trait techniques are passive: while equipped they contribute static stats read straight from
+    // the loadout, rather than applying a status effect to the wearer. They must declare at least one
+    // stat or resistance, have no impact action, and (being non-damaging) must not declare a combat
+    // scaling attribute. Equipping a trait deliberately applies no persistent status effect: the
+    // bonus never changes while the trait is slotted, so there is no transient state for the status
+    // icon bar to communicate. On-hit proc traits still inflict status effects on their targets;
+    // that is a combat payload, not part of the trait's own lifecycle.
     [Test]
-    public void MimicryTraits_ArePassiveAndDeclareAStatusEffect()
+    public void MimicryTraits_ArePassiveAndDeclareStaticStats()
     {
         var traits = BuildAllAbilities(MimicryTechniqueNamespace)
             .Where(t => t.Detail.IsMimicryTrait)
@@ -177,13 +182,73 @@ public class MimicryTests
 
         foreach (var trait in traits)
         {
-            trait.Detail.MimicryTraitStatusEffect.Should().NotBeNull(
-                $"{trait.Feat} is a trait and should declare the status effect applied while equipped");
+            (trait.Detail.MimicryTraitStats.Count + trait.Detail.MimicryTraitResistances.Count)
+                .Should().BeGreaterThan(0,
+                    $"{trait.Feat} is a trait and should declare the stats granted while equipped");
+            trait.Detail.MimicryTraitStats.Keys.Should().NotContain(StatType.Invalid,
+                $"{trait.Feat} should not declare an invalid stat");
+            trait.Detail.MimicryTraitResistances.Keys.Should().NotContain(ResistanceType.Invalid,
+                $"{trait.Feat} should not declare an invalid resistance");
             trait.Detail.ImpactAction.Should().BeNull(
                 $"{trait.Feat} is a passive trait and should not have an activated impact action");
             trait.Detail.CombatImpactDamageAbility.Should().Be(AbilityType.Invalid,
                 $"{trait.Feat} is a passive trait and should not declare a combat scaling attribute");
         }
+    }
+
+    // The builder is the boundary where a bad trait declaration should fail loudly. An Invalid stat
+    // or resistance would otherwise be stored and summed into the player's totals at runtime under a
+    // sentinel key that no consumer reads, silently costing the trait its bonus.
+    [Test]
+    public void MimicryTraitBuilder_RejectsInvalidStatsAndResistances()
+    {
+        static AbilityBuilder Trait() => new AbilityBuilder()
+            .Create(FeatType.ChitinGuardTechnique, PerkType.CombatAnalyzer)
+            .Name("Contract Test")
+            .MimicryTrait(FeatType.ChitinGuard, 2, 2);
+
+        Trait().Invoking(b => b.MimicryTraitStat(StatType.Invalid, 10))
+            .Should().Throw<ArgumentException>("an Invalid stat is not a real stat");
+        Trait().Invoking(b => b.MimicryTraitResistance(ResistanceType.Invalid, 10))
+            .Should().Throw<ArgumentException>("an Invalid resistance is not a real resistance");
+
+        // Both helpers require MimicryTrait first, so a plain technique cannot accrue trait stats.
+        static AbilityBuilder PlainTechnique() => new AbilityBuilder()
+            .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
+            .Name("Contract Test")
+            .MimicryTechnique(FeatType.ToxicSpit, 1, 1);
+
+        PlainTechnique().Invoking(b => b.MimicryTraitStat(StatType.AccuracyPercentAdjustment, 4))
+            .Should().Throw<ArgumentException>("only traits declare trait stats");
+        PlainTechnique().Invoking(b => b.MimicryTraitResistance(ResistanceType.Fire, 20))
+            .Should().Throw<ArgumentException>("only traits declare trait resistances");
+    }
+
+    // The declaration tests above prove traits carry data, but not that the data is ever read. The
+    // stat and resistance pipelines are where a trait actually becomes a bonus, and deleting either
+    // hook would silently zero every trait while leaving all the declaration tests green. A true
+    // runtime assertion is not possible here -- Mimicry.GetStatBonus calls GetIsPC and DB.Get, and
+    // this suite has no engine or database -- so the integration points are pinned at the source
+    // level, matching how CombatDamageTests guards its own wiring.
+    [Test]
+    public void MimicryTraitBonuses_AreWiredIntoTheStatAndResistancePipelines()
+    {
+        var root = FindRepositoryRoot();
+        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Resistance.cs"));
+        var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Mimicry.cs"));
+
+        statSource.Should().Contain("Mimicry.GetStatBonus(creature, stat)",
+            "equipped trait stats reach the player only through the stat pipeline");
+        resistanceSource.Should().Contain("Mimicry.GetResistanceBonus(creature, type)",
+            "equipped trait resistances reach the player only through the resistance pipeline");
+
+        // Traits are deliberately not status effects: nothing should grant or revoke them, and the
+        // resonance set bonus is derived on read rather than re-applied on loadout change.
+        mimicrySource.Should().NotContain("TechniqueResonanceStatusEffect",
+            "the elemental-resonance set bonus is derived from the loadout, not applied as an effect");
+        mimicrySource.Should().NotContain("MimicryTraitStatusEffect",
+            "traits contribute static stats and no longer apply a status effect");
     }
 
     // Active damage techniques must register their damage element so the elemental-resonance

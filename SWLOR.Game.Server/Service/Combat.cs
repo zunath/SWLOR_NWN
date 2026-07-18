@@ -1570,10 +1570,14 @@ namespace SWLOR.Game.Server.Service
             TemporaryStatModifier.Consume(attacker, StatType.BackAttackExposedPercent);
             TemporaryStatModifier.Consume(attacker, StatType.BackAttackExposedDurationSeconds);
 
+            // BackAttackExposedPercent is a reduction magnitude (declared BeneficialWhenPositive and
+            // guarded above as positive), but ExposedStatusEffect writes its argument straight into
+            // DefensePercentAdjustment. Passing the magnitude unchanged granted the target +20%
+            // Defense instead of taking it away, so it must be negated here.
             StatusEffect.ApplyStatusEffect(
                 attacker,
                 defender,
-                new ExposedStatusEffect(exposedPercent),
+                new ExposedStatusEffect(-exposedPercent),
                 exposedDuration,
                 CombatDamageType.Physical);
         }

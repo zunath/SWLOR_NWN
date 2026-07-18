@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -56,6 +57,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        return "Only players may open lockboxes.";
+                    }
+
                     if (Perk.GetPerkLevel(user, PerkType.Slicing) < tier)
                     {
                         return "You lack the Slicing expertise to crack this lockbox.";
@@ -71,13 +77,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var successChance = CalculateSuccessChance(user, tier);
+                    var roll = d100();
+                    var playerId = GetObjectUUID(user);
 
-                    if (d100() <= successChance)
+                    if (roll <= successChance)
                     {
-                        if (GetIsPC(user) && !GetIsDM(user))
-                        {
-                            GrantSlicingXP(user, tier);
-                        }
+                        GrantSlicingXP(user, tier);
 
                         var lootTable = Loot.GetLootTableByName($"ESPIONAGE_LOCKBOX_{tier}");
                         var loot = lootTable.GetRandomItem();
@@ -86,11 +91,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                         DestroyObject(item);
 
+                        Log.Write(LogGroup.Crafting,
+                            $"Player '{GetName(user)}' ({playerId}) opened tier {tier} lockbox (rolled {roll} vs {successChance}) and received {quantity}x '{loot.Resref}'.");
                         SendMessageToPC(user, "You crack the lockbox open and recover its contents.");
                     }
                     else
                     {
                         SetLocalInt(item, RetryAfterVariable, (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + RetryLockoutSeconds);
+
+                        Log.Write(LogGroup.Crafting,
+                            $"Player '{GetName(user)}' ({playerId}) failed to open tier {tier} lockbox (rolled {roll} vs {successChance}).");
                         SendMessageToPC(user, "You fail to crack the lockbox. The lock jams - try again in a moment.");
                     }
                 });

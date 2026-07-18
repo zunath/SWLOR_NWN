@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -83,6 +84,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     Item.ReduceItemStack(item, 1);
 
+                    Log.Write(LogGroup.Crafting,
+                        $"Player '{GetName(user)}' ({GetObjectUUID(user)}) applied Tier {_tierLabels[tier]} venom coating to '{GetName(target)}' (potency {potency}, {charges} charges).");
                     SendMessageToPC(user, $"You coat {GetName(target)} in Tier {_tierLabels[tier]} venom. ({charges} charges)");
                 });
         }

@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Service
 
             if (hostileCreatures.Count > 0)
             {
-                Deactivate(record);
+                Expire(record);
                 if (triggeredByNonPlayerCharacter && GetIsPC(record.Owner) && !GetIsDM(record.Owner))
                 {
                     Skill.GiveSkillXP(record.Owner, SkillType.Espionage, TrapTriggerXP, false, false);

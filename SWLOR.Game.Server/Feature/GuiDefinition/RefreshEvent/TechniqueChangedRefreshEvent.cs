@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent
 {
     /// <summary>
     /// Raised when a player's set of equipped techniques changes, since equipping or unequipping
-    /// one grants/revokes feats and recomputes the technique set bonus.
+    /// one can change loadout-derived stats, resistances, or elemental resonance.
     /// </summary>
     public class TechniqueChangedRefreshEvent: IGuiRefreshEvent
     {

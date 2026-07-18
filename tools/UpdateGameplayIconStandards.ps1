@@ -1799,6 +1799,26 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                 $errors.Add("StatusEffect '$($entry.Key)' is missing from EffectIconType.") | Out-Null
             }
 
+            # The manifest, enum, 2DA row and artwork can all be present and correct while the C#
+            # definition still declares EffectIconType.Invalid -- which is the only thing the runtime
+            # actually reads, and which disables icon linkage entirely. Generating icons without
+            # -UpdateStatusEffectCode produces exactly that state, so the source declaration has to be
+            # audited too rather than assumed.
+            $statusSourcePath = Resolve-RepoPath $entry.SourcePath
+            if (!(Test-Path -LiteralPath $statusSourcePath)) {
+                $errors.Add("StatusEffect '$($entry.Key)' source file '$($entry.SourcePath)' was not found.") | Out-Null
+            }
+            else {
+                $statusSourceText = Get-Content -Path $statusSourcePath -Raw
+                $expectedIcon = "EffectIconType.$($entry.Key)"
+                if ($statusSourceText -match "EffectIconType\s+Icon\s*=>\s*EffectIconType\.Invalid\b") {
+                    $errors.Add("StatusEffect '$($entry.Key)' declares EffectIconType.Invalid, so no icon is linked at runtime and the player sees nothing while it is active. Declare '$expectedIcon', or model it as a static stat contribution instead of a status effect.") | Out-Null
+                }
+                elseif ($statusSourceText -notmatch "EffectIconType\s+Icon\s*=>\s*$([regex]::Escape($expectedIcon))\s*;") {
+                    $errors.Add("StatusEffect '$($entry.Key)' should declare 'Icon => $expectedIcon;'.") | Out-Null
+                }
+            }
+
             $iconResRefKey = $entry.IconResRef.ToLowerInvariant()
             if (!$effectIconRowsByResRef.ContainsKey($iconResRefKey)) {
                 $errors.Add("StatusEffect '$($entry.Key)' is missing from effecticons.2da.") | Out-Null

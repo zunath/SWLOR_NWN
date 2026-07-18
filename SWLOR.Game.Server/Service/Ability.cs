@@ -23,6 +23,12 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
         private static readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
 
+        /// <summary>
+        /// How long the visual-only impact flash lingers on an instant area ability, in seconds.
+        /// Long enough to read the shape, short enough not to be mistaken for a pre-cast telegraph.
+        /// </summary>
+        public const float DefaultImpactFlashDuration = 0.3f;
+
         private const int MaxNumberOfAuras = 4;
         private const int HostileAbilityBaseEnmity = 100;
         private const int HostileAbilityMissEnmity = 1;
@@ -1153,12 +1159,26 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool sendsNoTargetMessage = true,
             bool resolvesHit = true,
-            bool canCritical = true)
+            bool canCritical = true,
+            float impactFlashDuration = DefaultImpactFlashDuration)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
             if (telegraphDuration <= 0f)
             {
+                // Instant-cast area abilities cannot use a pre-cast telegraph without violating the
+                // Bible's "Instant" activation time, so they flash their shape at impact instead.
+                // The flash is purely visual: damage below is still applied immediately.
+                ShowAreaImpactFlash(
+                    activator,
+                    target,
+                    targetLocation,
+                    shape,
+                    lengthOrRadius,
+                    width,
+                    centerOnActivator,
+                    impactFlashDuration);
+
                 var totalDamage = ApplyCombatImpactInShape(
                     activator,
                     target,
@@ -1285,6 +1305,67 @@ namespace SWLOR.Game.Server.Service
                 PlayCombatImpactAnimation(activator, impactAnimation);
 
             return 0;
+        }
+
+        /// <summary>
+        /// Renders a short, purely visual telegraph showing the area an instant ability just struck.
+        /// Unlike a pre-cast telegraph this carries no action and does not gate damage, so it gives
+        /// positional feedback without changing an ability's Bible-mandated "Instant" activation time.
+        /// </summary>
+        private static void ShowAreaImpactFlash(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            bool centerOnActivator,
+            float flashDuration)
+        {
+            if (flashDuration <= 0f || lengthOrRadius <= 0f)
+                return;
+
+            if (shape != CombatImpactAreaShape.Sphere &&
+                shape != CombatImpactAreaShape.Cone &&
+                shape != CombatImpactAreaShape.Line)
+                return;
+
+            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
+
+            switch (shape)
+            {
+                case CombatImpactAreaShape.Sphere:
+                    Telegraph.CreateSphereTelegraph(
+                        activator,
+                        GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator),
+                        lengthOrRadius,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+                case CombatImpactAreaShape.Cone:
+                    Telegraph.CreateConeTelegraph(
+                        activator,
+                        GetPosition(activator),
+                        rotation,
+                        lengthOrRadius,
+                        width > 0f ? width : lengthOrRadius,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+                case CombatImpactAreaShape.Line:
+                    Telegraph.CreateLineTelegraph(
+                        activator,
+                        GetPosition(activator),
+                        rotation,
+                        lengthOrRadius,
+                        width > 0f ? width : 2.0f,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+            }
         }
 
         private static int ApplyCombatImpactInShape(

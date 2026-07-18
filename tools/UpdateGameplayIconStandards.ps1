@@ -1,4 +1,4 @@
-﻿param(
+param(
     [string]$ManifestPath = "SWLOR.Game.Server\Readmes\GameplayIconManifest.csv",
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\sw_2da\spells.2da",

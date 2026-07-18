@@ -63,7 +63,6 @@ All visible tabs were exported/reviewed, not only the linked tab:
 - Fishing
 - Equipment - Weapons
 - Equipment - Armor
-- Equipment - Crafting
 - Equipment - Enhancements
 - Equipment - Droids
 - Starships
@@ -215,7 +214,7 @@ Update non-combat and support systems only where the Bible requires them:
 - Smithery, Engineering, Fabrication, Research, Agriculture, Gathering
 - Smithery Recipes, Engineering Recipes, Cooking Recipes, Fabrication Recipes
 - Fishing
-- Equipment - Weapons, Equipment - Armor, Equipment - Crafting, Equipment - Enhancements, Equipment - Droids
+- Equipment - Weapons, Equipment - Armor, Equipment - Enhancements, Equipment - Droids
 - Starships
 - Crafting Calc
 - World NPCs

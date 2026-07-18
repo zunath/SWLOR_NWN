@@ -172,6 +172,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Espionage - Saboteur", true)]
         EspionageSaboteur = 59,
+
+        [PerkCategory("Espionage - Tradecraft", true)]
+        EspionageTradecraft = 60,
     }
 
     public class PerkCategoryAttribute : Attribute

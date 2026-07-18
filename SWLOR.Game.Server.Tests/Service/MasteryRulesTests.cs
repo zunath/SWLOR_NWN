@@ -1214,6 +1214,25 @@ public class MasteryRulesTests
         profile.QuickSlotsAvailable.Should().Be(0);
     }
 
+    [Test]
+    public void EnqueueTraining_InstantWithStaleQuickSlotFlagAndZeroAvailable_StillGrantsImmediately()
+    {
+        // Instant grants require no Quick Slot at all (see ResolveTraining), so a stale
+        // useQuickSlot:true flag on an instant grant must not trip the zero-Quick-Slot
+        // rejection meant for non-instant requests.
+        var profile = CreateProfile(lifetimeLevelsTrained: 0);
+        profile.QuickSlotsAvailable = 0;
+
+        var entry = MasteryRules.EnqueueTraining(profile, "mastery-a", 1, true, false, true,
+            new MasteryActor("Staffer", "cdkey1"), "Instant grant", "request-1", UtcNow);
+
+        entry.Should().NotBeNull();
+        entry.Source.Should().Be(MasteryTrainingSource.Instant);
+        profile.Masteries["mastery-a"].Tier.Should().Be(1);
+        profile.TrainingQueue.Should().BeEmpty();
+        profile.QuickSlotsAvailable.Should().Be(0);
+    }
+
     #endregion
 
     #region AbandonTrainingEntry (Phase 3 - cancelling a not-yet-completed entry)

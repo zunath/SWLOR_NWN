@@ -516,8 +516,11 @@ namespace SWLOR.Game.Server.Service.MasteryService
         /// The created (or immediately-completed) training entry, or null if
         /// <paramref name="useQuickSlot"/> was requested with no Quick Slot actually
         /// available - rejected outright before any queue mutation, rather than silently
-        /// granting the discounted duration for free. A stale or direct caller is the only
-        /// way to hit this; the review window already disables the Quick Slot option
+        /// granting the discounted duration for free. This check is skipped entirely when
+        /// <paramref name="isInstant"/> is true, since an instant grant never spends a
+        /// Quick Slot (see <see cref="ResolveTraining"/>) regardless of a stale
+        /// <paramref name="useQuickSlot"/> flag. A stale or direct caller is the only way
+        /// to hit the rejection; the review window already disables the Quick Slot option
         /// whenever <see cref="PlayerMasteryProfile.QuickSlotsAvailable"/> is 0.
         /// </returns>
         public static MasteryTrainingEntry EnqueueTraining(
@@ -532,7 +535,7 @@ namespace SWLOR.Game.Server.Service.MasteryService
             string requestId,
             DateTime utcNow)
         {
-            if (useQuickSlot && profile.QuickSlotsAvailable <= 0)
+            if (!isInstant && useQuickSlot && profile.QuickSlotsAvailable <= 0)
                 return null;
 
             var (source, duration) = ResolveTraining(profile, targetTier, useQuickSlot, useRetrainCredit, isInstant);

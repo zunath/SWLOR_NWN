@@ -465,6 +465,92 @@ namespace SWLOR.Game.Server.Service.MasteryService
             return entry;
         }
 
+        /// <summary>
+        /// Cancels a not-yet-completed training entry (active or queued) outright, with no
+        /// tier ever granted. Distinct from <see cref="Abandon"/>, which un-earns an
+        /// already-granted tier and awards a retrain credit - a cancelled entry never
+        /// finished, so nothing was earned to un-earn and no credit is granted. Any Quick
+        /// Slot spent on the entry is refunded. Every following entry's start date is
+        /// recomputed so the queue stays strictly sequential with no time gained or lost;
+        /// if the active (index 0) entry itself is cancelled, the next entry starts now.
+        /// Appends an "AbandonTraining" audit entry.
+        /// </summary>
+        /// <param name="profile">The character's mastery profile.</param>
+        /// <param name="index">The index within TrainingQueue to cancel.</param>
+        /// <param name="actor">The staff member performing this action.</param>
+        /// <param name="reason">Why this action was taken. Required.</param>
+        /// <param name="utcNow">The current UTC time.</param>
+        /// <returns>True if the entry existed and was cancelled; false otherwise.</returns>
+        public static bool AbandonTrainingEntry(PlayerMasteryProfile profile, int index, MasteryActor actor, string reason, DateTime utcNow)
+        {
+            if (index < 0 || index >= profile.TrainingQueue.Count)
+                return false;
+
+            var entry = profile.TrainingQueue[index];
+            profile.TrainingQueue.RemoveAt(index);
+
+            if (entry.Source == MasteryTrainingSource.QuickSlot)
+                profile.QuickSlotsAvailable++;
+
+            if (profile.TrainingQueue.Count > 0)
+            {
+                // The entry that is now (or remains) active starts now if it was the one
+                // just cancelled, rather than inheriting the cancelled entry's stale
+                // timeline. Every entry after it cascades from there so the queue stays
+                // strictly sequential.
+                if (index == 0)
+                    profile.TrainingQueue[0].StartDate = utcNow;
+
+                for (var i = 1; i < profile.TrainingQueue.Count; i++)
+                {
+                    var previous = profile.TrainingQueue[i - 1];
+                    profile.TrainingQueue[i].StartDate = previous.StartDate.AddDays(previous.DurationDays - previous.ReductionDays);
+                }
+            }
+
+            AppendAudit(profile, utcNow, actor, "AbandonTraining", reason);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Swaps a queued (non-active) training entry with its immediate neighbor in the
+        /// given direction. The active entry (index 0) can never be moved, and an entry
+        /// can never be moved into index 0 (that would silently make it active without
+        /// going through <see cref="EvaluateTrainingQueue"/>). Every entry's start date is
+        /// recomputed afterward so the queue stays strictly sequential. Appends a
+        /// "Reorder" audit entry.
+        /// </summary>
+        /// <param name="profile">The character's mastery profile.</param>
+        /// <param name="index">The index within TrainingQueue to move. Must be &gt;= 1.</param>
+        /// <param name="direction">-1 to move the entry up (earlier), +1 to move it down (later).</param>
+        /// <param name="actor">The staff member performing this action.</param>
+        /// <param name="utcNow">The current UTC time.</param>
+        /// <returns>True if the move was legal and applied; false otherwise.</returns>
+        public static bool ReorderQueueEntry(PlayerMasteryProfile profile, int index, int direction, MasteryActor actor, DateTime utcNow)
+        {
+            if (index <= 0 || index >= profile.TrainingQueue.Count)
+                return false;
+
+            var newIndex = index + direction;
+            if (newIndex <= 0 || newIndex >= profile.TrainingQueue.Count)
+                return false;
+
+            var movingMasteryId = profile.TrainingQueue[index].MasteryId;
+
+            (profile.TrainingQueue[index], profile.TrainingQueue[newIndex]) = (profile.TrainingQueue[newIndex], profile.TrainingQueue[index]);
+
+            for (var i = 1; i < profile.TrainingQueue.Count; i++)
+            {
+                var previous = profile.TrainingQueue[i - 1];
+                profile.TrainingQueue[i].StartDate = previous.StartDate.AddDays(previous.DurationDays - previous.ReductionDays);
+            }
+
+            AppendAudit(profile, utcNow, actor, "Reorder", $"Reordered queued training entry for mastery {movingMasteryId}.");
+
+            return true;
+        }
+
         private static void AppendAudit(PlayerMasteryProfile profile, DateTime utcNow, MasteryActor actor, string action, string reason)
         {
             profile.AuditLog.Add(new MasteryAuditEntry

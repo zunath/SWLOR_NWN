@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MasteryService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -481,6 +482,138 @@ namespace SWLOR.Game.Server.Service
             var profile = GetOrCreateProfile(playerId);
             profile.DateLastNotified = utcNow;
             DB.Set(profile);
+        }
+
+        /// <summary>
+        /// Retrieves every request whose Status matches one of the given values. Status is
+        /// the only indexed field relevant to the review queue's filter combo - name search
+        /// is filtered in memory by the caller since CharacterName is not indexed.
+        /// </summary>
+        public static List<MasteryRequest> GetRequestsByStatus(IEnumerable<MasteryRequestStatus> statuses)
+        {
+            var query = new DBQuery<MasteryRequest>()
+                .AddFieldSearch(nameof(MasteryRequest.Status), statuses.Select(s => (int)s));
+            var count = (int)DB.SearchCount(query);
+
+            return count <= 0
+                ? new List<MasteryRequest>()
+                : DB.Search(query.AddPaging(count, 0)).ToList();
+        }
+
+        /// <summary>
+        /// Transitions a Pending request to InReview once a staff member opens it in the
+        /// review queue. A no-op for requests already InReview or decided.
+        /// </summary>
+        public static void MarkInReview(string requestId)
+        {
+            var request = DB.Get<MasteryRequest>(requestId);
+            if (request == null || request.Status != MasteryRequestStatus.Pending)
+                return;
+
+            request.Status = MasteryRequestStatus.InReview;
+            DB.Set(request);
+        }
+
+        /// <summary>
+        /// Cancels a not-yet-completed training entry (active or queued), refunding any
+        /// Quick Slot spent on it. See <see cref="MasteryRules.AbandonTrainingEntry"/> -
+        /// distinct from <see cref="RevokeMastery"/>, which un-earns an already-granted tier.
+        /// </summary>
+        public static bool AbandonTrainingEntry(string playerId, int index, string actorName, string actorCDKey, string reason, DateTime utcNow)
+        {
+            var profile = GetOrCreateProfile(playerId);
+            var result = MasteryRules.AbandonTrainingEntry(profile, index, new MasteryActor(actorName, actorCDKey), reason, utcNow);
+
+            if (result)
+            {
+                DB.Set(profile);
+                Log.Write(LogGroup.Mastery, $"{actorName} [{actorCDKey}] cancelled a queued training entry (index {index}) for player {playerId}. Reason: {reason}");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Moves a queued (non-active) training entry up or down within the queue.
+        /// See <see cref="MasteryRules.ReorderQueueEntry"/>.
+        /// </summary>
+        public static bool ReorderTrainingQueueEntry(string playerId, int index, int direction, string actorName, string actorCDKey, DateTime utcNow)
+        {
+            var profile = GetOrCreateProfile(playerId);
+            var result = MasteryRules.ReorderQueueEntry(profile, index, direction, new MasteryActor(actorName, actorCDKey), utcNow);
+
+            if (result)
+            {
+                DB.Set(profile);
+                Log.Write(LogGroup.Mastery, $"{actorName} [{actorCDKey}] reordered player {playerId}'s training queue (index {index}, direction {direction}).");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a new catalog entry from the staff catalog-management screen (or from
+        /// approving a Custom/unlisted request - see MasteryReviewViewModel). Never called
+        /// by the seed pipeline, which builds <see cref="Entity.Mastery"/> rows directly.
+        /// </summary>
+        public static Entity.Mastery CreateMastery(
+            string name,
+            MasteryCategoryType category,
+            string description,
+            MasteryRarityType rarity,
+            SkillType? associatedSkill,
+            string actorName,
+            string actorCDKey)
+        {
+            var mastery = new Entity.Mastery
+            {
+                Name = name ?? string.Empty,
+                Category = category,
+                Description = description ?? string.Empty,
+                Rarity = rarity,
+                AssociatedSkill = associatedSkill,
+                IsActive = true,
+                IsSeeded = false
+            };
+
+            DB.Set(mastery);
+
+            Log.Write(LogGroup.Mastery, $"{actorName} [{actorCDKey}] created mastery catalog entry '{mastery.Name}' ({mastery.Id}).");
+
+            return mastery;
+        }
+
+        /// <summary>
+        /// Updates an existing catalog entry's editable fields from the staff
+        /// catalog-management screen. Never overwrites Id/IsSeeded.
+        /// </summary>
+        public static bool UpdateMastery(
+            string masteryId,
+            string name,
+            MasteryCategoryType category,
+            string description,
+            MasteryRarityType rarity,
+            SkillType? associatedSkill,
+            bool isActive,
+            string actorName,
+            string actorCDKey)
+        {
+            var mastery = DB.Get<Entity.Mastery>(masteryId);
+            if (mastery == null)
+                return false;
+
+            mastery.Name = name ?? mastery.Name;
+            mastery.Category = category;
+            mastery.Description = description ?? string.Empty;
+            mastery.Rarity = rarity;
+            mastery.AssociatedSkill = associatedSkill;
+            mastery.IsActive = isActive;
+
+            DB.Set(mastery);
+
+            Log.Write(LogGroup.Mastery, $"{actorName} [{actorCDKey}] updated mastery catalog entry '{mastery.Name}' ({mastery.Id}).");
+
+            return true;
         }
     }
 }

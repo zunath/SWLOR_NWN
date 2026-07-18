@@ -787,4 +787,160 @@ public class MasteryRulesTests
     }
 
     #endregion
+
+    #region AbandonTrainingEntry (Phase 3 - cancelling a not-yet-completed entry)
+
+    [Test]
+    public void AbandonTrainingEntry_CancelsActiveEntry_NextEntryStartsNowAndNoTierGranted()
+    {
+        var profile = CreateProfile();
+        var start = UtcNow.AddDays(-3);
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", TargetTier = 1, StartDate = start, DurationDays = 14 });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "b", TargetTier = 1, StartDate = start.AddDays(14), DurationDays = 21 });
+
+        var result = MasteryRules.AbandonTrainingEntry(profile, 0, new MasteryActor("Staffer", "cdkey1"), "No longer relevant", UtcNow);
+
+        result.Should().BeTrue();
+        profile.TrainingQueue.Should().ContainSingle();
+        profile.TrainingQueue[0].MasteryId.Should().Be("b");
+        profile.TrainingQueue[0].StartDate.Should().Be(UtcNow);
+        profile.Masteries.Should().BeEmpty();
+    }
+
+    [Test]
+    public void AbandonTrainingEntry_CancelsQueuedEntry_ActiveEntryTimelineUnaffected()
+    {
+        var profile = CreateProfile();
+        var start = UtcNow.AddDays(-3);
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", TargetTier = 1, StartDate = start, DurationDays = 14 });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "b", TargetTier = 1, StartDate = start.AddDays(14), DurationDays = 21 });
+
+        var result = MasteryRules.AbandonTrainingEntry(profile, 1, new MasteryActor("Staffer", "cdkey1"), "No longer relevant", UtcNow);
+
+        result.Should().BeTrue();
+        profile.TrainingQueue.Should().ContainSingle();
+        profile.TrainingQueue[0].MasteryId.Should().Be("a");
+        profile.TrainingQueue[0].StartDate.Should().Be(start);
+    }
+
+    [Test]
+    public void AbandonTrainingEntry_QuickSlotSourcedEntry_RefundsTheQuickSlot()
+    {
+        var profile = CreateProfile();
+        profile.QuickSlotsAvailable = 0;
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", TargetTier = 1, StartDate = UtcNow, DurationDays = 7, Source = MasteryTrainingSource.QuickSlot });
+
+        MasteryRules.AbandonTrainingEntry(profile, 0, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
+
+        profile.QuickSlotsAvailable.Should().Be(1);
+    }
+
+    [Test]
+    public void AbandonTrainingEntry_AppendsAuditEntryWithActorAndReason()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", TargetTier = 1, StartDate = UtcNow, DurationDays = 14 });
+
+        MasteryRules.AbandonTrainingEntry(profile, 0, new MasteryActor("Staffer Name", "STAFF_CDKEY"), "Because reasons", UtcNow);
+
+        profile.AuditLog.Should().ContainSingle(e =>
+            e.Action == "AbandonTraining" &&
+            e.ActorName == "Staffer Name" &&
+            e.ActorCDKey == "STAFF_CDKEY" &&
+            e.Reason == "Because reasons");
+    }
+
+    [Test]
+    public void AbandonTrainingEntry_IndexOutOfRange_ReturnsFalseAndDoesNotMutateProfile()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a" });
+
+        var result = MasteryRules.AbandonTrainingEntry(profile, 5, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
+
+        result.Should().BeFalse();
+        profile.TrainingQueue.Should().ContainSingle();
+        profile.AuditLog.Should().BeEmpty();
+    }
+
+    #endregion
+
+    #region ReorderQueueEntry (Phase 3 - DM examine queue reorder)
+
+    [Test]
+    public void ReorderQueueEntry_MoveSecondQueuedEntryUp_SwapsOrderAndRecomputesStartDates()
+    {
+        var profile = CreateProfile();
+        var start = UtcNow;
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "active", StartDate = start, DurationDays = 14 });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "first-queued", DurationDays = 21 });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "second-queued", DurationDays = 28 });
+
+        var result = MasteryRules.ReorderQueueEntry(profile, 2, -1, new MasteryActor("Staffer", "cdkey1"), UtcNow);
+
+        result.Should().BeTrue();
+        profile.TrainingQueue[0].MasteryId.Should().Be("active");
+        profile.TrainingQueue[1].MasteryId.Should().Be("second-queued");
+        profile.TrainingQueue[2].MasteryId.Should().Be("first-queued");
+
+        // Start dates cascade from the (unmoved) active entry so the queue stays strictly sequential.
+        profile.TrainingQueue[1].StartDate.Should().Be(start.AddDays(14));
+        profile.TrainingQueue[2].StartDate.Should().Be(start.AddDays(14).AddDays(28));
+    }
+
+    [Test]
+    public void ReorderQueueEntry_CannotMoveTheActiveEntry()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "active" });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "queued" });
+
+        var result = MasteryRules.ReorderQueueEntry(profile, 0, 1, new MasteryActor("Staffer", "cdkey1"), UtcNow);
+
+        result.Should().BeFalse();
+        profile.TrainingQueue[0].MasteryId.Should().Be("active");
+    }
+
+    [Test]
+    public void ReorderQueueEntry_CannotMoveAnEntryIntoTheActiveSlot()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "active" });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "queued" });
+
+        var result = MasteryRules.ReorderQueueEntry(profile, 1, -1, new MasteryActor("Staffer", "cdkey1"), UtcNow);
+
+        result.Should().BeFalse();
+        profile.TrainingQueue[1].MasteryId.Should().Be("queued");
+    }
+
+    [Test]
+    public void ReorderQueueEntry_MoveBeyondQueueBounds_ReturnsFalse()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "active" });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "queued" });
+
+        var result = MasteryRules.ReorderQueueEntry(profile, 1, 1, new MasteryActor("Staffer", "cdkey1"), UtcNow);
+
+        result.Should().BeFalse();
+    }
+
+    [Test]
+    public void ReorderQueueEntry_AppendsAuditEntry()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "active" });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "first-queued" });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "second-queued" });
+
+        MasteryRules.ReorderQueueEntry(profile, 2, -1, new MasteryActor("Staffer Name", "STAFF_CDKEY"), UtcNow);
+
+        profile.AuditLog.Should().ContainSingle(e =>
+            e.Action == "Reorder" &&
+            e.ActorName == "Staffer Name" &&
+            e.ActorCDKey == "STAFF_CDKEY");
+    }
+
+    #endregion
 }

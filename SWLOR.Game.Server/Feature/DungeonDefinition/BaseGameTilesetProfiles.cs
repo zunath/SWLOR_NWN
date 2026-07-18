@@ -4263,8 +4263,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // mechanisms' own per-room caps absorb the rest) and ~0.65 per total tile on Halls,
                 // whose chambers cover only ~70/400 tiles -- per ROOM tile both land at the
                 // hand-built flagship 2.5-3.5 band (measured in the _scratch_decor round-5 harness);
+                // Round 8 recalibration: 2.6 -> 3.3 -- district-scoped pools plus per-area caps
+                // shave realized pile density ~15%, and 3.0 restores the packed20 realized band
+                // (~1.25-1.35 per total tile) without touching any mechanism share.
                 // see DungeonTilesetProfile.DecorationDensityPerTile.
-                .DecorationDensity(2.6)
+                .DecorationDensity(3.3)
                 // Urban placement grammar (round 6, "it still feels like a scattering of different
                 // objects randomly placed"): hand-built fcx01 dressing is 73% cardinal-aligned
                 // (within 7.5 degrees of 0/90/180/270 -- measured across all 24 areas' 10477
@@ -4276,10 +4279,10 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // STRUCTURAL-ITEM REMOVALS (July 2026 semantic-context pass, user report "this gate
                 // without a wall ... doesn't make a lot of sense" -- see DecorationAnchoring and
                 // _scratch_decor/mine_r7_semantics.py):
-                //  - swd_build007 is GONE (Excluded class): its model measures 10.92x10.92m -- an
-                //    entire whole-tile building fragment, not dressing. The 103 hand-built
-                //    placements are builder-composed architecture (median 86m from other building
-                //    mass because it IS the building), which per-tile scatter cannot reproduce.
+                //  - swd_build007 is GONE (Excluded class): its model is an entire whole-tile
+                //    building fragment, not dressing. The 103 hand-built placements are
+                //    builder-composed architecture (median 86m from other building mass because it
+                //    IS the building), which per-tile scatter cannot reproduce.
                 //  - swd2_fence004/swd2_fence010 are GONE (RunSegment class): hand-built fences
                 //    exist only as butt-jointed chains at model-width pitch (fence-family NN median
                 //    6.58m against the powered segment's 7.12m width; the closed-door piece
@@ -4289,48 +4292,150 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 //    tile vocabulary (see tds01's LayoutFenceCarver + FenceDoor01/02 set pieces),
                 //    not placeable scatter. DungeonDecorationPlanner.MergePalette additionally
                 //    strips any future RunSegment/Excluded curation outright.
-                // Road-margin street furniture: barriers/barricades
-                // (_mdrn_pl_barr001 215 mined placements at 99% cardinal, _mdrn_pl_barrimw the clean
-                // white variant), public trash cans (_mdrn_pl_trshcn2 100% cardinal), and a
-                // floor-mounted console -- the market-row items that set back from the lane and face
-                // it under the urban grammar.
-                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.CorridorSide)
+                //
+                // ROUND-8 DISTRICT VOCABULARY (user report "still a lot of repetition ... make it
+                // more varied and realistic to how a city might actually be laid out"): the palette
+                // below is mined per DISTRICT from the 24 hand-built fcx01 areas
+                // (_scratch_decor/mine_r8_districts.py -- industrial = shipyard/docks/industrial
+                // sector, commercial = promenades/commerce, civic = corporate/cloud-city plazas).
+                // Every entry carries: a size class measured from its decompiled model's XY extent
+                // (_scratch_decor/r8_model_sizes.json -- Small <1.2m, Medium 1.2-3m, Large 3-8m,
+                // Huge >=8m), a district affinity (Districts(...) -- evidence-derived from the
+                // per-district placement counts), and, for repeat-risk art, a per-area cap from the
+                // hand-built per-area p95 within its district (MaxPerArea(...)). Entries without
+                // Districts(...) serve every district (universal street/cargo basics). See
+                // DistrictFlavor/DecorationSize and DungeonDecorationPlanner.AssignDistrictFlavors.
+                //
+                // Road-margin street furniture (CorridorSide = the street-side bucket): barriers,
+                // trash cans, consoles, holo signage, benches, market goods, kiosk rows -- the
+                // market-row items that set back from the lane and face it under the urban grammar.
+                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.CorridorSide, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1))
                 .Decoration("_mdrn_pl_barrimw", 1, DecorationContext.CorridorSide)
-                .Decoration("_mdrn_pl_trshcn2", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Commercial, 1))
+                .Decoration("_mdrn_pl_trshcn2", 1, DecorationContext.CorridorSide, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Industrial, 1)).MaxPerArea(12)
                 .Decoration("_mdrn_pl_conso05", 1, DecorationContext.CorridorSide)
-                // CLUTTER BACKBONE -- NEAT CARGO ONLY (round-6 destruction split): the hand-built
-                // fcx01 cargo backbone is crates/containers/barrels (crate08 352 mined placements,
-                // conta39/36 459 combined, conta004/006/001 262, conta42/crate06/crgc2h 152), placed
-                // as tight piles and stacked rows. Clutter-role entries feed the clutter-pile
-                // arrangement (see DungeonDecorationPlanner.PlanClutterPile) AND their curated
-                // WallAdjacent bucket, so walls read as cargo lines and depots rather than lamp
-                // grids. Weights near-flat so no single type dominates (top-3 resref share stays
-                // under the hand-built 0.35). Rubbish/debris/dirt content is deliberately ABSENT --
-                // it lives in the "ruined" profile below.
-                // _mdrn_pl_crate09 ("Open Crate (Green), Baking Soda") is GONE (Excluded class):
-                // ZERO hand-built fcx01 placements -- no evidence it belongs to this family at all,
-                // and the blueprint itself is an anachronism. Flush-anchored cargo (conta42/crgc2h/
-                // conta001 -- median building-architecture distance 0.00) moved to the
-                // StructureAdjacent WallFlush entries below; loose piles keep the genuinely
-                // free-standing crate/container/barrel evidence.
+                    .Districts((DistrictFlavor.Commercial, 1))
+                // Commercial holo signage rows (holod01 22 promenade placements, holoco2 15) and the
+                // holotree "planters" that green the market frontage (holot03 17 commercial).
+                .Decoration("_mdrn_pl_holod01", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Commercial, 2))
+                .Decoration("_mdrn_pl_holoco2", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Commercial, 1))
+                .Decoration("swd_holot03", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(12)
+                .Decoration("swd_holot01", 1, DecorationContext.CorridorSide, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(6)
+                .Decoration("swd_holot02", 1, DecorationContext.CorridorSide, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Civic, 1)).MaxPerArea(6)
+                // Street furniture: parking meters (civic curbs), the industrial bus stop, benches
+                // fronting the promenade, the fruit market + vendor bank kiosk-row fillers.
+                .Decoration("swd_prkme01", 1, DecorationContext.CorridorSide, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1))
+                .Decoration("swd_bussto01", 1, DecorationContext.CorridorSide, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(4)
+                .Decoration("swd_bench01", 1, DecorationContext.CorridorSide, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(8)
+                .Decoration("_mdrn_pl_chair26", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1))
+                .Decoration("_mdrn_pl_marktfr", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(4)
+                .Decoration("_mdrn_pl_umbllar", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Commercial, 1)).MaxPerArea(4)
+                .Decoration("swd_vbank01", 1, DecorationContext.CorridorSide, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 1)).MaxPerArea(4)
+                // Civic colonnade columns strung along the boulevard (swlor_0137 "Column 2": 48
+                // commercial placements at 80% road adjacency, spaced rows).
+                .Decoration("swlor_0137", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(10)
+                // CLUTTER BACKBONE -- NEAT CARGO ONLY (round-6 destruction split): crates/containers/
+                // barrels placed as tight piles and stacked rows, now district-scoped: the heavy
+                // industrial movers concentrate in yard rooms, the promenade crates/market goods in
+                // commercial rooms. Clutter-role entries feed the clutter-pile arrangement AND their
+                // curated WallAdjacent bucket. Weights near-flat so no single type dominates.
+                // Rubbish/debris/dirt content is deliberately ABSENT -- it lives in the "ruined"
+                // profile below. _mdrn_pl_crate09 stays GONE (zero hand-built evidence, anachronism).
+                // _mdrn_pl_kyru08 (the 11.4m storage silo) has MOVED to the Huge yard block at the
+                // end of this palette -- an 83-silo blanket over one generated area was the round-7
+                // reported repetition.
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_crate07", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_crate06", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_conta39", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_conta36", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("_mdrn_pl_conta54", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("swd_conta004", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("swd_conta006", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                // Storage cylinder (23 hand-built placements) backfills the pool breadth the three
-                // flush-anchored movers left, keeping per-area top-3 resref share at the hand-built
-                // <=0.35 scale.
-                .Decoration("_mdrn_pl_kyru08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                .Decoration("swd_trash01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1)).MaxPerArea(35)
+                .Decoration("_mdrn_pl_crate07", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 2)).MaxPerArea(28)
+                .Decoration("_mdrn_pl_crate06", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Industrial, 1)).MaxPerArea(24)
+                .Decoration("_mdrn_pl_crate05", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12)
+                .Decoration("_mdrn_pl_conta39", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
+                    .MaxPerArea(30)
+                .Decoration("_mdrn_pl_conta36", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .MaxPerArea(30)
+                .Decoration("_mdrn_pl_conta54", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(12)
+                .Decoration("swd_conta004", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(30)
+                .Decoration("swd_conta006", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(20)
+                .Decoration("swd_conta002", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(14)
+                .Decoration("_mdrn_pl_conta17", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(14)
+                .Decoration("_mdrn_pl_conta25", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(14)
+                .Decoration("_mdrn_pl_conta53", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12)
+                .Decoration("_mdrn_pl_conta38", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 1)).MaxPerArea(10)
+                .Decoration("_mdrn_pl_conta51", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(10)
+                .Decoration("_mdrn_pl_conta32", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Civic, 1)).MaxPerArea(10)
+                .Decoration("swd2_cont008", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(16)
+                .Decoration("_mdrn_pl_crgc4b", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(10)
+                .Decoration("_mdrn_pl_ration6", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12)
+                .Decoration("_mdrn_pl_malette", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 1)).MaxPerArea(8)
+                .Decoration("swd_palet01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(16)
+                .Decoration("swd_barrel01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(14)
+                .Decoration("swd_spack01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(10)
+                .Decoration("_mdrn_pl_cagebst", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(6)
+                .Decoration("swd_trash01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                    .MaxPerArea(20)
                 .Decoration("swd_dump003", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(16)
+                .Decoration("swd_dump002", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(4)
                 // Wall infrastructure accents (pipes hug real walls at 100% cardinal in the mined
-                // reference).
+                // reference; transformers/generators/computer banks are the yard machinery that
+                // makes an industrial room read industrial).
                 .Decoration("_mdrn_pl_pip3s", 1, DecorationContext.WallAdjacent)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Commercial, 1))
                 .Decoration("_mdrn_pl_pip2s", 1, DecorationContext.WallAdjacent)
+                    .Districts((DistrictFlavor.Industrial, 2))
+                .Decoration("_mdrn_pl_transf2", 1, DecorationContext.WallAdjacent, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(6)
+                .Decoration("swd2_gene003", 1, DecorationContext.WallAdjacent, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(4)
+                .Decoration("swd_compu001", 1, DecorationContext.WallAdjacent, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(10)
+                .Decoration("swd_grate01", 1, DecorationContext.WallAdjacent)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 1))
+                // Industrial floor hatchways (GroundDecal role: layered under yard piles, 100%
+                // cardinal in the mined reference -- flrhch4 59 placements).
+                .Decoration("_mdrn_pl_flrhch4", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                    .Districts((DistrictFlavor.Industrial, 2))
+                .Decoration("_mdrn_pl_flrhch1", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1))
+                .Decoration("_mdrn_pl_flrhch2", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                    .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Industrial, 1))
                 // GROUND DECALS -- SIGNAGE/MARKINGS ONLY (round-6 destruction split): swd_floorm01
                 // (top structured floor piece, 360 mined placements at 100% cardinal), the hex/road
                 // floor plates (flormh01/florrd01, both 100% cardinal). Hand-built areas use decals
@@ -4338,20 +4443,21 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // are only ever emitted underneath a committed clutter pile or as a courtyard
                 // center that receives clutter on top. The dirt-stain decals (_mdrn_pl_dirtyg*)
                 // moved to the "ruined" profile -- dirt is destruction dressing, not clean-city
-                // signage.
+                // signage. flormh01 (metal hex) is the CIVIC floor signature (82 of its 92 mined
+                // placements sit in civic areas).
                 .Decoration("swd_floorm01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
                 .Decoration("swd_flormh01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
+                    .Districts((DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1))
                 .Decoration("swd_florrd01", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal)
                 // StructureAdjacent (building-frontage) bucket -- the items hand-built fcx01 actually
-                // anchors against stamped tower/building footprints (Chebyshev<=1 building adjacency,
-                // n>=51 each): _mdrn_pl_lamp4 52% building-adjacent AND 100% road-adjacent (a
-                // street-facing building lamp), _mdrn_pl_bldlit 41%/95% (building-mounted light),
-                // swd_conta003 51% (container stacks against frontage walls), _mdrn_pl_df_chb 100%
-                // (debris chunks at building bases). Weights follow those measured adjacency rates.
-                // Entries here place ONLY within 1 tile of a stamped OpenSetPiece footprint (see
-                // DungeonDecorationPlanner.IsStructureAdjacent) -- never free-standing.
-                .Decoration("_mdrn_pl_lamp4", 3, DecorationContext.StructureAdjacent)
-                .Decoration("_mdrn_pl_bldlit", 3, DecorationContext.StructureAdjacent)
+                // anchors against stamped tower/building footprints (Chebyshev<=1 building adjacency):
+                // _mdrn_pl_lamp4 52% building-adjacent AND 100% road-adjacent (all 89 mined
+                // placements are commercial -- a promenade building lamp), _mdrn_pl_bldlit 41%/95%
+                // (building-mounted light, every district). Entries here place ONLY within 1 tile of
+                // a stamped OpenSetPiece footprint -- never free-standing.
+                .Decoration("_mdrn_pl_lamp4", 3, DecorationContext.StructureAdjacent, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Commercial, 3), (DistrictFlavor.Civic, 1)).MaxPerArea(15)
+                .Decoration("_mdrn_pl_bldlit", 3, DecorationContext.StructureAdjacent, size: DecorationSize.Small)
                 // FLUSH-ANCHORED cargo/furniture (semantic-context pass): hand-built builders put
                 // these against building architecture essentially always -- median
                 // building-architecture distance 0.00 with flush(<=1m) fractions 0.90/0.70/0.55/
@@ -4359,41 +4465,95 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // _mdrn_pl_crgc2h n=34, swd_conta001 n=57). The WallFlush anchoring contract places
                 // them 0.4m inside a stamped structure footprint's cardinal face, bearing = the
                 // face normal, and NOWHERE else (no piles, no doorway flanks, no plain wall runs)
-                // -- see DecorationAnchoring.WallFlush.
-                .Decoration("swd_conta003", 2, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
+                // -- see DecorationAnchoring.WallFlush. District split follows the per-district
+                // counts (conta003 167 industrial/154 civic; conta42 33 of 71 commercial; df_chb
+                // benches 36 civic/20 commercial).
+                .Decoration("swd_conta003", 2, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 2))
                 .Decoration("_mdrn_pl_df_chb", 2, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
+                    .Districts((DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 2))
                 .Decoration("_mdrn_pl_conta42", 2, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Industrial, 1))
                 .Decoration("_mdrn_pl_crgc2h", 1, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
-                .Decoration("swd_conta001", 1, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
-                // Vehicles are LANDMARK one-offs (round-5 vignette-integrity fix): a crashed/parked
-                // speeder floating alone mid-plaza was a reported artifact, and the Landmark role
-                // guarantees these can never place in the RoomCenter/WallAdjacent buckets again --
-                // they now park against stamped building frontages only (StructureAdjacent is gated
-                // on a real stamped footprint within one tile).
-                .Decoration("swd2_vehi006", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
-                .Decoration("swd2_vehi003", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
-                .Decoration("swd2_vehi007", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
-                // Freestanding pillar as the plaza-interior centerpiece instead of the vehicles that
-                // used to float here -- _mdrn_pl_pillr04 is the top hand-built interior fixture (363
-                // mined placements, 241 interior).
-                .Decoration("_mdrn_pl_pillr04", 2, DecorationContext.RoomCenter)
-                .Decoration("swd2_kiosk004", 2, DecorationContext.DoorwayFlank)
+                    .Districts((DistrictFlavor.Industrial, 2))
+                .Decoration("swd_conta001", 1, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(10)
+                // Building-frontage extras: wall signage (paint02 -- Czerka sign, flush against the
+                // facade), the commercial/civic security gate, construction scaffolding, and the
+                // 4.8m industrial frontage tower.
+                .Decoration("_mdrn_pl_paint02", 1, DecorationContext.StructureAdjacent, anchoring: DecorationAnchoring.WallFlush)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(4)
+                .Decoration("_mdrn_pl_metalde", 1, DecorationContext.StructureAdjacent)
+                    .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(3)
+                .Decoration("swd2_scaf001", 1, DecorationContext.StructureAdjacent, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(4)
+                .Decoration("_mdrn_pl_indtwr2", 1, DecorationContext.StructureAdjacent, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(6)
+                // Vehicles are LANDMARK one-offs (round-5 vignette-integrity fix): they park against
+                // stamped building frontages only, now spread across six vehicle models plus the
+                // industrial forklift and parked speeder bikes so no single vehicle repeats across
+                // every frontage (per-area caps at the hand-built p95).
+                .Decoration("swd2_vehi006", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(3)
+                .Decoration("swd2_vehi003", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(3)
+                .Decoration("swd2_vehi007", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(3)
+                .Decoration("swd2_vehi002", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(3)
+                .Decoration("swd2_vehi001", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(2)
+                .Decoration("swd2_vehi005", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Civic, 1)).MaxPerArea(2)
+                .Decoration("_mdrn_pl_forklft", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(3)
+                .Decoration("_mdrn_pl_swoop03", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(2)
+                .Decoration("_mdrn_pl_speedb4", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(2)
+                // Plaza-interior centerpieces, per district: the concrete light pillar and coronet
+                // pillar for civic squares, holographic monuments (holog01-03 at 8 civic mined
+                // placements, one-off spacing), the small projection holo, and the commercial
+                // market canopy.
+                .Decoration("_mdrn_pl_pillr04", 2, DecorationContext.RoomCenter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1))
+                .Decoration("swd_pillar01", 1, DecorationContext.RoomCenter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Civic, 2)).MaxPerArea(6)
+                .Decoration("swd_holog01", 1, DecorationContext.RoomCenter)
+                    .Districts((DistrictFlavor.Civic, 2)).MaxPerArea(3)
+                .Decoration("swd_holog02", 1, DecorationContext.RoomCenter)
+                    .Districts((DistrictFlavor.Civic, 1)).MaxPerArea(2)
+                .Decoration("swd_holog03", 1, DecorationContext.RoomCenter)
+                    .Districts((DistrictFlavor.Civic, 1)).MaxPerArea(2)
+                .Decoration("swd_pholo01", 1, DecorationContext.RoomCenter, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(4)
+                .Decoration("swd_canopy01", 1, DecorationContext.RoomCenter, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(3)
+                .Decoration("swd2_kiosk004", 2, DecorationContext.DoorwayFlank, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1))
                 .Decoration("swd_streel01", 2, DecorationContext.DoorwayFlank)
+                .Decoration("_mdrn_pl_trshcn2", 1, DecorationContext.DoorwayFlank, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 1))
                 // Street furniture stays road-anchored (CorridorSide is the road-lining bucket) and
-                // is now ACCENT-scale: the round-5 wall-run budget share shrinks to ~9% once the
-                // clutter-pile share is carved out, matching the hand-built ~4% lamp share.
-                // _mdrn_pl_lights3's old WallAdjacent entry is deliberately gone -- lamps strung
-                // along arbitrary room dividers were the reported "sparse even grid of glowing
-                // pillars" backbone. _mdrn_pl_crswlk (crosswalk decal) is gone for the same reason
-                // decals moved to GroundDecal: a lone road decal reads as a bare dirt patch.
-                // The lamp FAMILY (light strips, street lights, the double street lamps -- all
-                // 94-100% cardinal in the mined reference) is flagged AllowOnRoadSurface: the one
-                // dressing class that legitimately stands ON the carved road ribbon.
+                // is ACCENT-scale. The lamp FAMILY (light strips, street lights, the double street
+                // lamps -- all 94-100% cardinal in the mined reference) is flagged
+                // AllowOnRoadSurface: the one dressing class that legitimately stands ON the carved
+                // road ribbon. Lamp models split by district: strtlm2 industrial/commercial,
+                // strtlm4 civic (71 of its 75 mined placements), lights8 the industrial large-unit
+                // strip -- so each neighborhood's streets read distinctly lit. lights3/streel01
+                // stay universal (they light every hand-built district).
                 .Decoration("_mdrn_pl_lights3", 3, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
                 .Decoration("swd_streel01", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
-                .Decoration("_mdrn_pl_strtlm2", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
-                .Decoration("_mdrn_pl_strtlm4", 1, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
-                .Decoration("swd2_kiosk004", 2, DecorationContext.CorridorSide)
+                .Decoration("_mdrn_pl_strtlm2", 2, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Commercial, 2))
+                .Decoration("_mdrn_pl_strtlm4", 1, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Civic, 2))
+                .Decoration("_mdrn_pl_lights8", 1, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
+                    .Districts((DistrictFlavor.Industrial, 1))
+                .Decoration("swd2_kiosk004", 2, DecorationContext.CorridorSide, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 3), (DistrictFlavor.Civic, 1)).MaxPerArea(8)
+                .Decoration("swd2_kiosk006", 1, DecorationContext.CorridorSide)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1))
                 // Courtyard arrangement buckets (see DungeonDecorationPlanner.PlanCourtyard), mined
                 // from hand-built fcx01 INTERIOR items (>2 tiles from walls/roads across the 19
                 // decorated fcx01 areas, July 2026 city-density pass): interior arrangements cluster
@@ -4409,21 +4569,70 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // swd_floorm01 is a flat floor marking (GroundDecal role): as a courtyard center it
                 // additionally receives 1-2 ring-motif items layered on top (see
                 // DungeonDecorationPlanner.PlanCourtyard) so the decal never reads as a lone patch.
+                // Courtyard vocabularies split by district too: civic plazas ring pillars/benches/
+                // colonnade columns around hex-floor or hologram centers, commercial squares ring
+                // benches/kiosks/holotrees around the lit floor strips, industrial yards ring
+                // containers/barriers around work-floor markings -- so a courtyard tells you which
+                // neighborhood you are standing in.
                 .Decoration("swd_floorm01", 3, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
+                .Decoration("swd_flormh01", 1, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal)
+                    .Districts((DistrictFlavor.Civic, 2))
                 .Decoration("_mdrn_pl_lghtflr", 2, DecorationContext.CourtyardCenter)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Industrial, 1))
                 .Decoration("_mdrn_pl_floor27", 2, DecorationContext.CourtyardCenter)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Commercial, 1))
+                .Decoration("swd_holog01", 1, DecorationContext.CourtyardCenter)
+                    .Districts((DistrictFlavor.Civic, 1))
                 .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.Courtyard)
-                .Decoration("_mdrn_pl_conta36", 3, DecorationContext.Courtyard)
-                .Decoration("_mdrn_pl_pillr04", 2, DecorationContext.Courtyard)
-                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.Courtyard)
+                .Decoration("_mdrn_pl_conta36", 3, DecorationContext.Courtyard, size: DecorationSize.Small)
+                    .Districts((DistrictFlavor.Industrial, 3), (DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1))
+                .Decoration("_mdrn_pl_pillr04", 2, DecorationContext.Courtyard, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Civic, 2))
+                .Decoration("_mdrn_pl_barr001", 2, DecorationContext.Courtyard, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Commercial, 1))
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.Courtyard)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 1))
+                .Decoration("swd_bench01", 2, DecorationContext.Courtyard, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 2))
+                .Decoration("_mdrn_pl_chair26", 1, DecorationContext.Courtyard)
+                    .Districts((DistrictFlavor.Civic, 1))
+                .Decoration("swd_holot03", 1, DecorationContext.Courtyard)
+                    .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1))
+                .Decoration("swlor_0136", 1, DecorationContext.Courtyard)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1))
                 // _mdrn_pl_busshel (bus shelter, 19 interior occurrences) was measured into this
                 // bucket too but is EXCLUDED: its appearance row (7038) has a blank ModelName and
                 // renders invisible (caught by AllDungeonDefinitions_DecorationsExistAndAreVisible).
-                .Decoration("swd2_kiosk004", 1, DecorationContext.Courtyard)
+                .Decoration("swd2_kiosk004", 1, DecorationContext.Courtyard, size: DecorationSize.Large)
+                    .Districts((DistrictFlavor.Commercial, 1))
                 .Vignette("PromenadeKioskLight", 3)
                 .VignetteMember("swd2_kiosk004", 0f, 0f)
                 .VignetteMember("_mdrn_pl_lights3", 0.7f, 0.5f)
+                // Market-stall moment (commercial promenades): the fruit market shaded by its red
+                // umbrella -- both mined exclusively from the commercial promenade areas (marktfr 8,
+                // umbllar 9 hand-built placements).
+                .Vignette("MarketStallUmbrella", 2)
+                .VignetteMember("_mdrn_pl_marktfr", 0f, 0f)
+                .VignetteMember("_mdrn_pl_umbllar", 0.3f, 0.5f)
+
+                // BUILDING-SCALE (Huge) INDUSTRIAL YARD ART -- the round-8 size-discipline block.
+                // These models measure 8m+ (kyru08 storage silo 11.4x11.4x15.6m, indtowr 11.8m,
+                // genl01 generator 9.2m, df_ss5 parked starfighter 11.2m -- decompiled-model
+                // measurements in _scratch_decor/r8_model_sizes.json) and place ONLY as composed
+                // cargo-yard rows/pairs in Industrial-flavor rooms (see
+                // DungeonDecorationPlanner.PlanCargoYard): consecutive wall tiles, shared bearing,
+                // hard per-area caps. The round-7 regen carried 83 silos blanketing one area at
+                // 1.4m spacing -- the reported "same massive building placeables" repetition; the
+                // hand-built evidence concentrates them in shipyard/dock yards in single-digit
+                // per-area counts (kyru08 industrial per-area p95 = 1-10, row pitch 10m).
+                .Decoration("_mdrn_pl_kyru08", 3, DecorationContext.WallAdjacent, size: DecorationSize.Huge)
+                    .Districts((DistrictFlavor.Industrial, 3)).MaxPerArea(6)
+                .Decoration("_mdrn_pl_indtowr", 1, DecorationContext.WallAdjacent, size: DecorationSize.Huge)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(2)
+                .Decoration("swd_genl01", 2, DecorationContext.WallAdjacent, size: DecorationSize.Huge)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(4)
+                .Decoration("_mdrn_pl_df_ss5", 1, DecorationContext.WallAdjacent, DecorationRole.Landmark, size: DecorationSize.Huge)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(2)
 
                 // ============================================================================
                 // "ruined" -- the DESTRUCTION decoration profile (round-6 split): every
@@ -4499,7 +4708,33 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.Courtyard)
                 .Decoration("_mdrn_pl_conta36", 2, DecorationContext.Courtyard)
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.Courtyard)
-                .Decoration("_mdrn_pl_barrim2", 1, DecorationContext.Courtyard);
+                .Decoration("_mdrn_pl_barrim2", 1, DecorationContext.Courtyard)
+                // ROUND-8 DEBRIS-VARIETY EXPANSION, mined from the slum/undercity/ruins reference
+                // areas (vrotrnsslums, pw_ar_velundr, randoncity_02 -- _scratch_decor/
+                // mine_r8_districts.py): scattered newspapers and rubbish bags (pape003-006 mined
+                // 13-21 placements each), a second full debris-pile family (swd3_dbpil02), wrecked
+                // equipment and vehicle parts (debri06/debri11), destroyed droids (droidsd/
+                // droidd4), loose drums, fallen girders, and tipped trash cans -- so ruined blocks
+                // stop cycling the same four rubble models. All Clutter-role: they feed the pile
+                // arrangement under the same organic-rotation license as the rest of this profile.
+                .Decoration("_mdrn_pl_pape005", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                .Decoration("_mdrn_pl_pape003", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                .Decoration("_mdrn_pl_pape006", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                .Decoration("swd3_dbpil02", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
+                .Decoration("_mdrn_pl_debri06", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_debri11", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_droidsd", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_droidd4", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
+                .Decoration("_mdrn_pl_dfbar2", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                .Decoration("_mdrn_pl_gird001", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
+                .Decoration("_mdrn_pl_trshcn3", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
+                // Wrecked landspeeders crash against building frontages as Landmark one-offs (the
+                // intact-vehicle anchoring contract, applied to the wrecks the slum evidence
+                // actually carries).
+                .Decoration("_mdrn_pl_lands04", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .MaxPerArea(2)
+                .Decoration("_mdrn_pl_lands11", 1, DecorationContext.StructureAdjacent, DecorationRole.Landmark, size: DecorationSize.Large)
+                    .MaxPerArea(2);
 
             // D20 Futuristic City SW (fcx01) -- Cobble2 ("d_"-prefixed) district, a PaletteVariant
             // profile recomposing the SAME fcx01 hak data the base FutCity profile above uses (identical

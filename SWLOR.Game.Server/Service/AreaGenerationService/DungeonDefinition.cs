@@ -71,7 +71,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <see cref="DecorationRole.GroundDecal"/> entry through a pile (or as a courtyard center
         /// that gets clutter layered on top).
         /// </summary>
-        GroundDecal = 8
+        GroundDecal = 8,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): one member of a composed
+        /// industrial cargo-yard row (see DungeonDecorationPlanner.PlanCargoYard) -- 2-3 copies of
+        /// one <see cref="DecorationSize.Huge"/> building-scale model standing on consecutive wall
+        /// tiles at shared bearing, in an <see cref="DistrictFlavor.Industrial"/>-flavor room. The
+        /// ONLY mechanism that may place Huge art.
+        /// </summary>
+        CargoYard = 9
     }
 
     /// <summary>
@@ -162,6 +170,59 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     }
 
     /// <summary>
+    /// District flavor of one open room in an urban-grammar area (see
+    /// DungeonDecorationPlanner.AssignDistrictFlavors): hand-built city repetition is
+    /// DISTRICT-SCOPED, not globally uniform -- big cargo concentrates in industrial yards
+    /// (swd_conta004 mined 61x in the pw_ar_nsshipyard shipyard and ZERO in the commercial
+    /// promenades), while promenades use kiosks/benches/signage and plazas use pillars/monuments.
+    /// Rooms are assigned a flavor deterministically (no RNG) from road frontage, stamped-structure
+    /// adjacency, entrance distance, and interior depth; palette entries then opt into flavors via
+    /// <see cref="DungeonDecorationEntry.DistrictWeights"/>. None = no district system (every
+    /// non-urban tileset).
+    /// </summary>
+    public enum DistrictFlavor
+    {
+        /// <summary>No district assignment (non-urban tilesets; entries use their base Weight).</summary>
+        None = 0,
+        /// <summary>Cargo yards, docks, machinery: big containers, tanks, pipes, dumpsters,
+        /// work lighting. The ONLY flavor whose zones may host <see cref="DecorationSize.Huge"/>
+        /// building-scale placements.</summary>
+        Industrial = 1,
+        /// <summary>Market/promenade frontage: kiosk rows, benches, holo signage, market goods,
+        /// street lamps. Prefers road-frontage rooms.</summary>
+        Commercial = 2,
+        /// <summary>Civic plazas: pillars/colonnades, holo monuments, clean floors, courtyards.
+        /// Prefers rooms with a real interior (courtyard anchor).</summary>
+        Civic = 3
+    }
+
+    /// <summary>
+    /// Approximate physical size class of a decoration entry's ART, measured from the blueprint
+    /// model's XY bounding box (decompiled .mdl verts -- see the round-8 size audit in
+    /// _scratch_decor/r8_model_sizes.json): Small &lt; 1.2m, Medium 1.2-3m, Large 3-8m, Huge &gt;= 8m
+    /// footprint. Drives size-aware repetition control under the urban grammar
+    /// (DungeonDecorationPlanner): Huge entries place ONLY via composed industrial-yard rows;
+    /// Large entries cap their per-row repeats so 6m containers never wall up back-to-back.
+    /// Medium is the enum default (0) so every pre-existing palette entry keeps its behavior
+    /// without a declaration.
+    /// </summary>
+    public enum DecorationSize
+    {
+        /// <summary>1.2-3m footprint (default -- ordinary fixtures/furniture).</summary>
+        Medium = 0,
+        /// <summary>Under 1.2m footprint (crates, trash cans, small lamps).</summary>
+        Small = 1,
+        /// <summary>3-8m footprint (shipping containers, vehicles, kiosks): per-row repeat caps
+        /// and same-model spacing apply under the urban grammar.</summary>
+        Large = 2,
+        /// <summary>8m+ footprint (storage silos, industrial towers, parked starfighters):
+        /// building-scale. Placed ONLY as composed industrial-yard rows/pairs with shared bearing,
+        /// never by the generic run/pile/courtyard mechanisms, and never outside industrial-flavor
+        /// zones.</summary>
+        Huge = 3
+    }
+
+    /// <summary>
     /// A single weighted decorative placeable choice for one <see cref="DecorationContext"/> bucket
     /// within a curated palette. See <see cref="DungeonDetail.Decorations"/> (theme accents) and
     /// <see cref="DungeonTilesetProfile.Decorations"/> (the tileset family's own bulk palette).
@@ -188,6 +249,31 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// Inert (never read) for tilesets without the urban grammar.
         /// </summary>
         public bool AllowOnRoadSurface { get; set; }
+
+        /// <summary>
+        /// Physical size class of the blueprint's art -- see <see cref="DecorationSize"/>. Only
+        /// read under the urban placement grammar (size-aware repetition control); the Medium
+        /// default keeps every non-declaring entry's behavior unchanged.
+        /// </summary>
+        public DecorationSize Size { get; set; } = DecorationSize.Medium;
+
+        /// <summary>
+        /// District affinity of this entry (see <see cref="DistrictFlavor"/>), evidence-derived
+        /// from which hand-built area TYPE uses the resref: an EMPTY map means the entry serves
+        /// every district at its base <see cref="Weight"/> (and is the only state non-urban
+        /// tilesets ever use); a non-empty map means the entry's effective weight in a room of
+        /// flavor F is DistrictWeights[F], and the entry is EXCLUDED from rooms whose flavor is
+        /// absent from the map. Inert for tilesets without the urban grammar.
+        /// </summary>
+        public Dictionary<DistrictFlavor, int> DistrictWeights { get; set; } = new();
+
+        /// <summary>
+        /// Hard per-area placement cap for this resref across every arrangement mechanism
+        /// (0 = uncapped), derived from the hand-built per-area p95 within the entry's district --
+        /// the size-aware repetition-control backstop that keeps one fixture from blanketing a
+        /// whole generated area. Only enforced under the urban grammar.
+        /// </summary>
+        public int MaxPerArea { get; set; }
     }
 
     /// <summary>
@@ -1049,6 +1135,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             _profiles[key] = _active;
             _activeDecorationProfile = null;
             _activeVignette = null;
+            _lastDecorationEntry = null;
             return this;
         }
 
@@ -1344,6 +1431,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 OrganicClutterRotation = organicClutterRotation
             };
             _active.DecorationProfiles[name] = _activeDecorationProfile;
+            _lastDecorationEntry = null;
             return this;
         }
 
@@ -1368,19 +1456,52 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public DungeonTilesetProfileBuilder Decoration(string resref, int weight, DecorationContext context,
             DecorationRole role = DecorationRole.Fixture, bool allowOnRoadSurface = false,
-            DecorationAnchoring anchoring = DecorationAnchoring.FreeStanding)
+            DecorationAnchoring anchoring = DecorationAnchoring.FreeStanding,
+            DecorationSize size = DecorationSize.Medium)
         {
             var target = _activeDecorationProfile?.Decorations ?? _active.Decorations;
-            target.Add(new DungeonDecorationEntry
+            _lastDecorationEntry = new DungeonDecorationEntry
             {
                 Resref = resref,
                 Weight = weight,
                 Context = context,
                 Role = role,
                 AllowOnRoadSurface = allowOnRoadSurface,
-                Anchoring = anchoring
-            });
+                Anchoring = anchoring,
+                Size = size
+            };
+            target.Add(_lastDecorationEntry);
 
+            return this;
+        }
+
+        private DungeonDecorationEntry _lastDecorationEntry;
+
+        /// <summary>
+        /// Declares the LAST <see cref="Decoration"/> entry's district affinity (see
+        /// <see cref="DungeonDecorationEntry.DistrictWeights"/>): the entry only places in rooms
+        /// of the listed flavors, at the listed per-flavor weight. Omit entirely for an entry that
+        /// serves every district at its base weight.
+        /// </summary>
+        public DungeonTilesetProfileBuilder Districts(params (DistrictFlavor Flavor, int Weight)[] weights)
+        {
+            if (_lastDecorationEntry == null)
+                throw new System.InvalidOperationException("Districts() must follow a Decoration() call.");
+            foreach (var (flavor, weight) in weights)
+                _lastDecorationEntry.DistrictWeights[flavor] = weight;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the LAST <see cref="Decoration"/> entry's hard per-area placement cap (see
+        /// <see cref="DungeonDecorationEntry.MaxPerArea"/>) -- derive it from the hand-built
+        /// per-area p95 within the entry's district.
+        /// </summary>
+        public DungeonTilesetProfileBuilder MaxPerArea(int cap)
+        {
+            if (_lastDecorationEntry == null)
+                throw new System.InvalidOperationException("MaxPerArea() must follow a Decoration() call.");
+            _lastDecorationEntry.MaxPerArea = cap;
             return this;
         }
 

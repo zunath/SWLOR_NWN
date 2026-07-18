@@ -304,6 +304,43 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// DungeonContentPlacer's tier-scaled content pass (which uses seed ^ (tier * 397)).</summary>
         private const int SeedSalt = 0x0EC0;
 
+        /// <summary>
+        /// Expected composed cargo-yard rows per area (urban grammar): building-scale
+        /// <see cref="DecorationSize.Huge"/> art places ONLY through these rows, in
+        /// industrial-flavor rooms -- the hand-built pattern where silo/tank rows concentrate in
+        /// shipyard/dock districts (kyru08's mined per-area counts cluster in the industrial and
+        /// undercity yards; the commercial promenades carry zero) instead of blanketing the map
+        /// (the round-7 regen placed 83 silos across one area -- the reported repetition).
+        /// </summary>
+        private const double YardTargetPerArea = 2.0;
+
+        /// <summary>Hard per-area total across every Huge placement -- two full rows plus a
+        /// landmark one-off. Hand-built mixed-city areas carry Huge silo/tower art in single-digit
+        /// counts (per-area p95 by district in the round-8 evidence).</summary>
+        internal const int MaxHugePerArea = 6;
+
+        /// <summary>Members per composed yard row (consecutive wall tiles, shared bearing) --
+        /// hand-built silo rows pair/triple along yard walls at tile pitch (kyru08 same-resref NN
+        /// median 10.01m = exactly the 10m tile).</summary>
+        internal const int YardRowMinItems = 2;
+        internal const int YardRowMaxItems = 3;
+
+        /// <summary>
+        /// Consecutive same-row placements allowed for a <see cref="DecorationSize.Large"/> (3-8m)
+        /// entry in an urban facade row before the row forces a gap and swaps fixtures -- 6m
+        /// shipping containers repeat as pairs, never six-deep walls (the Medium row cap stays
+        /// <see cref="MaxRunSegmentLength"/>).
+        /// </summary>
+        internal const int LargeRowSegmentCap = 2;
+
+        /// <summary>Per-room repeat cap for a Large entry in one context (the Medium cap stays
+        /// <see cref="MaxSameResrefPerRoomContext"/>).</summary>
+        internal const int LargeMaxSameResrefPerRoomContext = 3;
+
+        /// <summary>At most one Large member per composed clutter pile -- a second 3-8m model
+        /// inside a 2.8m-radius pile can only interpenetrate the first.</summary>
+        private const int LargeMaxPerPile = 1;
+
         private static readonly (int Dx, int Dy)[] CardinalDirections =
         {
             (1, 0), (-1, 0), (0, 1), (0, -1)
@@ -382,38 +419,34 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (targetCount <= 0)
                 return plan;
 
-            // Role-based pools (see DecorationRole): ground decals are NEVER placed stand-alone by
-            // the run/centerpiece/flank mechanisms -- they only exist layered under clutter piles or
-            // as courtyard centers -- so they are stripped from the context buckets entirely (except
-            // the courtyard-center bucket, whose arrangement composes clutter on top -- see
-            // PlanCourtyard). Landmark entries (vehicles, monuments) are stripped from the
-            // RoomCenter/WallAdjacent buckets so a large narrative one-off can never float alone in
-            // the middle of an open plaza -- they remain placeable road-side, structure-anchored,
-            // at doorway flanks, or as curated vignette members.
-            var decalEntries = palette.Where(d => d.Role == DecorationRole.GroundDecal).ToList();
-            var clutterEntries = palette.Where(d => d.Role == DecorationRole.Clutter).ToList();
-            var byContext = palette
-                .Where(d => d.Role != DecorationRole.GroundDecal || d.Context == DecorationContext.CourtyardCenter)
-                .Where(d => d.Role != DecorationRole.Landmark ||
-                            d.Context is not (DecorationContext.RoomCenter or DecorationContext.WallAdjacent))
-                .GroupBy(d => d.Context)
-                .ToDictionary(g => g.Key, g => g.ToList());
-
             var vignettes = namedProfile?.Vignettes ?? tileset?.Vignettes ?? new List<DungeonVignette>();
             var roadCrosser = tileset?.RoadCrosser ?? string.Empty;
 
             var excluded = BuildExclusionSet(layout);
 
-            // Courtyards only exist for palettes that curate BOTH courtyard buckets -- everything
-            // below (anchor search, budget share, per-room roll) is skipped entirely otherwise, so a
-            // palette without courtyards keeps its exact pre-courtyard budget split and RNG sequence.
-            byContext.TryGetValue(DecorationContext.CourtyardCenter, out var courtyardCenterEntries);
-            byContext.TryGetValue(DecorationContext.Courtyard, out var courtyardRingEntries);
-            var courtyardsCurated = courtyardCenterEntries is { Count: > 0 } && courtyardRingEntries is { Count: > 0 };
+            // District flavors (urban grammar only -- see DistrictFlavor and AssignDistrictFlavors):
+            // each open room gets a deterministic (no-RNG) neighborhood flavor, and every palette
+            // pool below is resolved per flavor, so big cargo concentrates in industrial yards while
+            // promenade rooms draw kiosks/benches and plazas draw pillars/monuments. Non-urban
+            // tilesets use the single None view, whose pools are built EXACTLY like the pre-district
+            // code built them (same lists, same order), keeping every non-city plan byte-identical.
+            var flavors = urban
+                ? AssignDistrictFlavors(layout, roadCrosser)
+                : new Dictionary<int, DistrictFlavor>();
+
+            var views = new Dictionary<DistrictFlavor, PaletteView>
+            {
+                [DistrictFlavor.None] = BuildPaletteView(palette, DistrictFlavor.None, urban)
+            };
+            if (urban)
+            {
+                foreach (var flavor in flavors.Values.Distinct().ToList())
+                    views[flavor] = BuildPaletteView(palette, flavor, urban);
+            }
 
             // Precompute each non-set-piece room's shape classification once — reused across every
             // pass so they can never drift out of sync with each other.
-            var rooms = new List<(LayoutRoom Room, bool IsCorridorLike, HashSet<(int X, int Y)> TileSet, (int X, int Y)? CourtyardAnchor)>();
+            var rooms = new List<RoomState>();
             foreach (var room in layout.Rooms)
             {
                 if (room.IsSetPiece || room.Tiles.Count == 0)
@@ -424,10 +457,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var spanY = maxY - minY + 1;
                 var isCorridorLike = Math.Min(spanX, spanY) <= CorridorLikeMaxSpan;
                 var roomTileSet = new HashSet<(int X, int Y)>(room.Tiles);
-                var courtyardAnchor = courtyardsCurated && !isCorridorLike
+                var flavor = urban && flavors.TryGetValue(room.Id, out var assigned) ? assigned : DistrictFlavor.None;
+                var view = views[flavor];
+                var courtyardAnchor = view.CourtyardsCurated && !isCorridorLike
                     ? FindCourtyardAnchor(room, roomTileSet, excluded, layout, roadCrosser)
                     : null;
-                rooms.Add((room, isCorridorLike, roomTileSet, courtyardAnchor));
+                rooms.Add(new RoomState
+                {
+                    Room = room,
+                    IsCorridorLike = isCorridorLike,
+                    TileSet = roomTileSet,
+                    CourtyardAnchor = courtyardAnchor,
+                    Flavor = flavor,
+                    View = view
+                });
             }
 
             var tileToRoom = new Dictionary<(int X, int Y), int>();
@@ -444,12 +487,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var centerEligibleRoomCount = 0;
             var vignetteEligibleRoomCount = 0;
             var pileAnchorWeightTotal = 0.0;
-            var pilesCurated = clutterEntries.Count > 0;
+            var pilesCuratedAnywhere = false;
+            var yardEligibleRoomCount = 0;
             var courtyardEligibleRoomCount = rooms.Count(r => r.CourtyardAnchor != null);
-            foreach (var (room, isCorridorLike, tileSet, _) in rooms)
+            foreach (var state in rooms)
             {
-                if (pilesCurated)
+                var (room, isCorridorLike, tileSet) = (state.Room, state.IsCorridorLike, state.TileSet);
+                var view = state.View;
+                if (view.ClutterEntries.Count > 0)
                 {
+                    pilesCuratedAnywhere = true;
                     foreach (var tile in room.Tiles)
                     {
                         if (excluded.Contains(tile) || tile == room.CenterTile)
@@ -466,8 +513,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     }
                 }
 
+                // Composed cargo-yard eligibility (urban industrial rooms with curated Huge art --
+                // see PlanCargoYard). Corridor-like street rooms never host a yard row.
+                if (urban && state.Flavor == DistrictFlavor.Industrial && !isCorridorLike && view.HugeEntries.Count > 0)
+                    yardEligibleRoomCount++;
+
                 if (!isCorridorLike && room.Tiles.Count >= MinCenterpieceRoomTiles &&
-                    byContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntriesProbe) &&
+                    view.ByContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntriesProbe) &&
                     centerEntriesProbe.Count > 0 &&
                     NearestOtherTile(room.CenterTile, room.Tiles, excluded) != null)
                     centerEligibleRoomCount++;
@@ -481,7 +533,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (NearestWallDirection(tile, tileSet) == null)
                         continue;
 
-                    if (TryResolveContext(tile, isCorridorLike, layout, roadCrosser, byContext, out _, out var tileEntries))
+                    if (TryResolveContext(tile, isCorridorLike, layout, roadCrosser, view.ByContext, out _, out var tileEntries))
                     {
                         // Urban road integrity: an on-road tile with no lamp-family entry in its
                         // bucket hosts nothing, so it is not part of the eligible pool either --
@@ -503,16 +555,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var centerTarget = targetCount * CenterpieceTargetShare;
             var doorwayFlankTarget = targetCount * DoorwayFlankTargetShare;
             var vignetteTarget = targetCount * VignetteTargetShare;
-            // Strictly zero unless the palette curates courtyards AND a room can host one -- see
+            // Strictly zero unless a room's palette view curates courtyards AND that room can host
+            // one (CourtyardAnchor is only ever computed under a curating view) -- see
             // CourtyardTargetShare's doc comment (palettes without courtyards keep the exact
             // pre-courtyard budget split).
-            var courtyardTarget = courtyardsCurated && courtyardEligibleRoomCount > 0
+            var courtyardTarget = courtyardEligibleRoomCount > 0
                 ? targetCount * CourtyardTargetShare
                 : 0.0;
-            // Strictly zero unless the palette curates Clutter-role entries AND an anchor tile
-            // exists -- palettes without clutter keep the exact pre-pile budget split and RNG
+            // Strictly zero unless a room's palette view curates Clutter-role entries AND an anchor
+            // tile exists -- palettes without clutter keep the exact pre-pile budget split and RNG
             // stream (same gating convention as courtyards above).
-            var pileTarget = pilesCurated && pileAnchorWeightTotal > 0
+            var pileTarget = pilesCuratedAnywhere && pileAnchorWeightTotal > 0
                 ? targetCount * ClutterPileTargetShare
                 : 0.0;
             var wallTarget = Math.Max(0.0, targetCount - centerTarget - doorwayFlankTarget - vignetteTarget - courtyardTarget - pileTarget);
@@ -546,19 +599,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var pileProbability = pileTarget > 0
                 ? Math.Min(0.6, (pileTarget / pileExpectedItems) / pileAnchorWeightTotal)
                 : 0.0;
+            // Per-eligible-room roll converging on YardTargetPerArea composed yard events (urban
+            // industrial rooms only -- 0 everywhere else, so no non-urban RNG stream changes).
+            var yardProbability = yardEligibleRoomCount > 0
+                ? Math.Min(0.9, YardTargetPerArea / yardEligibleRoomCount)
+                : 0.0;
 
             var rng = new System.Random(layout.Seed ^ SeedSalt);
             var consumedTiles = new HashSet<(int X, int Y)>();
+            // Per-area usage ledger backing DungeonDecorationEntry.MaxPerArea (and the Huge total
+            // cap) -- shared by every mechanism below. Entries without caps are never filtered, so
+            // palettes that declare no caps keep their exact pick pools.
+            var areaUsage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var hugePlacedTotal = 0;
 
             // PASS 2a: doorway flank pairs, in deterministic transition order, BEFORE the per-room pass
             // so consumedTiles is fully populated before any room decides its own wall-run placements.
-            byContext.TryGetValue(DecorationContext.DoorwayFlank, out var doorwayEntries);
-            var doorwayFallback = doorwayEntries is { Count: > 0 } ? doorwayEntries : byContext.GetValueOrDefault(DecorationContext.WallAdjacent);
-            // Flush-anchored entries never flank doorways free-standing (see
-            // DecorationAnchoring.WallFlush) -- a no-op Where for every palette without them.
-            doorwayFallback = doorwayFallback?.Where(e => e.Anchoring != DecorationAnchoring.WallFlush).ToList();
+            // Each pair draws from the flavor view of the FIRST flank tile's room (deterministic; the
+            // single None view for non-urban tilesets).
             foreach (var pair in doorwayFlankPairs)
             {
+                var pairView = rooms[tileToRoom[pair.A]].View;
+                var doorwayFallback = UnderAreaCap(pairView.DoorwayFallback, areaUsage);
                 if (rng.NextDouble() >= doorwayFlankProbability || doorwayFallback == null || doorwayFallback.Count == 0)
                     continue;
 
@@ -579,18 +641,36 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     plan.Add(urban
                         ? BuildUrbanWallPlacement(tile, wallDir.Value, resref, DecorationContext.DoorwayFlank, layout, roadCrosser)
                         : BuildWallHuggingPlacement(tile, wallDir.Value, resref, DecorationContext.DoorwayFlank));
+                    RecordUse(areaUsage, resref);
                     consumedTiles.Add(tile);
                 }
             }
 
-            // PASS 2b: per-room centerpiece, vignette, then rhythmic wall/corridor runs.
+            // PASS 2b: per-room cargo yard, courtyard, centerpiece, vignette, clutter piles, then
+            // rhythmic wall/corridor runs.
             var motifCache = new Dictionary<(int RoomId, DecorationContext Context), List<string>>();
 
-            foreach (var (room, isCorridorLike, tileSet, courtyardAnchor) in rooms)
+            foreach (var state in rooms)
             {
+                var (room, isCorridorLike, tileSet, courtyardAnchor) =
+                    (state.Room, state.IsCorridorLike, state.TileSet, state.CourtyardAnchor);
+                var view = state.View;
                 (int X, int Y)? centerpieceAnchor = null;
 
-                // Courtyard first: when one lands, it IS this room's interior arrangement -- the
+                // Composed cargo yard FIRST (urban industrial rooms only -- see PlanCargoYard):
+                // building-scale Huge art stands only here, as consecutive-tile rows at shared
+                // bearing, and its tiles are consumed before any other mechanism can double-dress
+                // them. Bounded by the hard per-area Huge total.
+                if (yardProbability > 0 && state.Flavor == DistrictFlavor.Industrial && !isCorridorLike &&
+                    view.HugeEntries.Count > 0 && hugePlacedTotal < MaxHugePerArea &&
+                    rng.NextDouble() < yardProbability)
+                {
+                    hugePlacedTotal += PlanCargoYard(
+                        plan, room, tileSet, view.HugeEntries, excluded, consumedTiles,
+                        layout, roadCrosser, rng, areaUsage, MaxHugePerArea - hugePlacedTotal);
+                }
+
+                // Courtyard next: when one lands, it IS this room's interior arrangement -- the
                 // plain single-item centerpiece roll is skipped for the room (its centerpiece slot is
                 // the courtyard's own center) so the two interior mechanisms never double-dress the
                 // same plaza.
@@ -598,14 +678,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (courtyardAnchor != null && courtyardProbability > 0 && rng.NextDouble() < courtyardProbability)
                 {
                     courtyardPlaced = PlanCourtyard(
-                        plan, room, tileSet, courtyardAnchor.Value, courtyardCenterEntries, courtyardRingEntries,
-                        excluded, consumedTiles, layout, roadCrosser, rng, urban);
+                        plan, room, tileSet, courtyardAnchor.Value, view.CourtyardCenterEntries, view.CourtyardRingEntries,
+                        excluded, consumedTiles, layout, roadCrosser, rng, urban, areaUsage);
                     if (courtyardPlaced)
                         centerpieceAnchor = courtyardAnchor;
                 }
 
                 if (!courtyardPlaced && !isCorridorLike && room.Tiles.Count >= MinCenterpieceRoomTiles &&
-                    byContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntries) &&
+                    view.ByContext.TryGetValue(DecorationContext.RoomCenter, out var centerEntries) &&
                     centerEntries.Count > 0 &&
                     rng.NextDouble() < centerProbability)
                 {
@@ -636,10 +716,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         }
                     }
 
-                    if (anchor != null)
+                    var centerPool = UnderAreaCap(centerEntries, areaUsage);
+                    if (anchor != null && centerPool.Count > 0)
                     {
                         centerpieceAnchor = anchor;
-                        var resref = PickWeighted(centerEntries, rng);
+                        var resref = PickWeighted(centerPool, rng);
                         var flat = TileCenter(anchor.Value.X, anchor.Value.Y);
                         var angle = rng.NextDouble() * Math.PI * 2.0;
                         var jitter = (float)(rng.NextDouble() * CenterOffset);
@@ -657,6 +738,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                             Facing = urban ? 90f * rng.Next(4) : (float)(rng.NextDouble() * 360.0),
                             Context = DecorationContext.RoomCenter
                         });
+                        RecordUse(areaUsage, resref);
                     }
                 }
 
@@ -669,6 +751,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         var vignette = PickWeightedVignette(vignettes, rng);
                         var wallDir = NearestWallDirection(anchor.Value, tileSet)!.Value;
                         PlaceVignette(plan, anchor.Value, wallDir, vignette);
+                        foreach (var member in vignette.Members)
+                            RecordUse(areaUsage, member.Resref);
                         consumedTiles.Add(anchor.Value);
                     }
                 }
@@ -678,7 +762,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 // a run placement. Anchors roll per eligible tile in the room's own stored
                 // (deterministic) order; the room's junk motif is drawn lazily on its first
                 // successful roll so a room with no pile consumes no motif RNG.
-                if (pileProbability > 0)
+                if (pileProbability > 0 && view.ClutterEntries.Count > 0)
                 {
                     List<DungeonDecorationEntry> junkMotif = null;
                     foreach (var tile in room.Tiles)
@@ -697,9 +781,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         if (rng.NextDouble() >= Math.Min(0.95, pileProbability * anchorWeight))
                             continue;
 
-                        junkMotif ??= PickJunkMotif(clutterEntries, rng);
-                        if (PlanClutterPile(plan, tile, tileSet, junkMotif, decalEntries, rng,
-                                urban, organicSpin, IsStructureAdjacent(tile, layout)) &&
+                        // The room's junk pool draws only from entries still under their
+                        // per-area caps (a capped-out backbone crate wastes a pool slot AND every
+                        // pick that lands on it), falling back to the unfiltered list only if
+                        // literally everything is capped. No-op without caps (non-urban).
+                        if (junkMotif == null)
+                        {
+                            var availableClutter = UnderAreaCap(view.ClutterEntries, areaUsage);
+                            junkMotif = PickJunkMotif(
+                                availableClutter.Count > 0 ? availableClutter : view.ClutterEntries, rng);
+                        }
+                        if (PlanClutterPile(plan, tile, tileSet, junkMotif, view.DecalEntries, rng,
+                                urban, organicSpin, IsStructureAdjacent(tile, layout), areaUsage) &&
                             !IsStructureAdjacent(tile, layout))
                         {
                             // A piled tile is consumed so the wall runs never double-dress it --
@@ -713,11 +806,410 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     }
                 }
 
-                PlaceWallRuns(plan, room, tileSet, isCorridorLike, layout, roadCrosser, byContext, excluded,
-                    consumedTiles, centerpieceAnchor, wallProbability, rng, motifCache, urban);
+                PlaceWallRuns(plan, room, tileSet, isCorridorLike, layout, roadCrosser, view.ByContext, excluded,
+                    consumedTiles, centerpieceAnchor, wallProbability, rng, motifCache, urban, areaUsage);
             }
 
             return plan;
+        }
+
+        /// <summary>
+        /// Per-room planning state: shape classification plus the room's district flavor and the
+        /// flavor-resolved palette view every mechanism draws from (see <see cref="PaletteView"/>).
+        /// </summary>
+        private sealed class RoomState
+        {
+            public LayoutRoom Room;
+            public bool IsCorridorLike;
+            public HashSet<(int X, int Y)> TileSet;
+            public (int X, int Y)? CourtyardAnchor;
+            public DistrictFlavor Flavor;
+            public PaletteView View;
+        }
+
+        /// <summary>
+        /// A merged palette resolved for one <see cref="DistrictFlavor"/>: role-split pools (decals/
+        /// clutter/context buckets/courtyard buckets/doorway fallback) with each entry's effective
+        /// weight under that flavor (see DungeonDecorationEntry.DistrictWeights), and -- under the
+        /// urban grammar -- the <see cref="DecorationSize.Huge"/> entries stripped out of every
+        /// generic pool into their own yard-only list. The None view reproduces the pre-district
+        /// pools exactly (same entries, same order, base weights), so non-urban plans stay
+        /// byte-identical.
+        /// </summary>
+        private sealed class PaletteView
+        {
+            public Dictionary<DecorationContext, List<DungeonDecorationEntry>> ByContext;
+            public List<DungeonDecorationEntry> ClutterEntries;
+            public List<DungeonDecorationEntry> DecalEntries;
+            public List<DungeonDecorationEntry> CourtyardCenterEntries;
+            public List<DungeonDecorationEntry> CourtyardRingEntries;
+            public bool CourtyardsCurated;
+            public List<DungeonDecorationEntry> HugeEntries;
+            public List<DungeonDecorationEntry> DoorwayFallback;
+        }
+
+        private static PaletteView BuildPaletteView(List<DungeonDecorationEntry> palette, DistrictFlavor flavor, bool urban)
+        {
+            List<DungeonDecorationEntry> effective;
+            var huge = new List<DungeonDecorationEntry>();
+            if (!urban)
+            {
+                // Non-urban: the single None view uses the merged palette verbatim -- district
+                // metadata and size classes are inert (byte-identical pre-district behavior).
+                effective = palette;
+            }
+            else
+            {
+                effective = new List<DungeonDecorationEntry>();
+                foreach (var entry in palette)
+                {
+                    var weight = entry.DistrictWeights.Count == 0
+                        ? entry.Weight
+                        : entry.DistrictWeights.GetValueOrDefault(flavor);
+                    if (weight <= 0)
+                        continue;
+
+                    var resolved = weight == entry.Weight ? entry : CloneWithWeight(entry, weight);
+                    // Building-scale art never reaches a generic pool: the composed cargo-yard
+                    // mechanism is the only Huge emitter (see PlanCargoYard).
+                    if (entry.Size == DecorationSize.Huge)
+                        huge.Add(resolved);
+                    else
+                        effective.Add(resolved);
+                }
+            }
+
+            // Role-based pools (see DecorationRole): ground decals are NEVER placed stand-alone by
+            // the run/centerpiece/flank mechanisms -- they only exist layered under clutter piles or
+            // as courtyard centers -- so they are stripped from the context buckets entirely (except
+            // the courtyard-center bucket, whose arrangement composes clutter on top -- see
+            // PlanCourtyard). Landmark entries (vehicles, monuments) are stripped from the
+            // RoomCenter/WallAdjacent buckets so a large narrative one-off can never float alone in
+            // the middle of an open plaza -- they remain placeable road-side, structure-anchored,
+            // at doorway flanks, or as curated vignette members.
+            var byContext = effective
+                .Where(d => d.Role != DecorationRole.GroundDecal || d.Context == DecorationContext.CourtyardCenter)
+                .Where(d => d.Role != DecorationRole.Landmark ||
+                            d.Context is not (DecorationContext.RoomCenter or DecorationContext.WallAdjacent))
+                .GroupBy(d => d.Context)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            byContext.TryGetValue(DecorationContext.CourtyardCenter, out var courtyardCenterEntries);
+            byContext.TryGetValue(DecorationContext.Courtyard, out var courtyardRingEntries);
+
+            // Flush-anchored entries never flank doorways free-standing (see
+            // DecorationAnchoring.WallFlush) -- a no-op Where for every palette without them.
+            byContext.TryGetValue(DecorationContext.DoorwayFlank, out var doorwayEntries);
+            var doorwayFallback = doorwayEntries is { Count: > 0 }
+                ? doorwayEntries
+                : byContext.GetValueOrDefault(DecorationContext.WallAdjacent);
+            doorwayFallback = doorwayFallback?.Where(e => e.Anchoring != DecorationAnchoring.WallFlush).ToList();
+
+            return new PaletteView
+            {
+                ByContext = byContext,
+                ClutterEntries = effective.Where(d => d.Role == DecorationRole.Clutter).ToList(),
+                DecalEntries = effective.Where(d => d.Role == DecorationRole.GroundDecal).ToList(),
+                CourtyardCenterEntries = courtyardCenterEntries,
+                CourtyardRingEntries = courtyardRingEntries,
+                CourtyardsCurated = courtyardCenterEntries is { Count: > 0 } && courtyardRingEntries is { Count: > 0 },
+                HugeEntries = huge,
+                DoorwayFallback = doorwayFallback
+            };
+        }
+
+        private static DungeonDecorationEntry CloneWithWeight(DungeonDecorationEntry entry, int weight)
+        {
+            return new DungeonDecorationEntry
+            {
+                Resref = entry.Resref,
+                Weight = weight,
+                Context = entry.Context,
+                Role = entry.Role,
+                Anchoring = entry.Anchoring,
+                AllowOnRoadSurface = entry.AllowOnRoadSurface,
+                Size = entry.Size,
+                DistrictWeights = entry.DistrictWeights,
+                MaxPerArea = entry.MaxPerArea
+            };
+        }
+
+        /// <summary>Records one placement of <paramref name="resref"/> against the per-area usage
+        /// ledger backing <see cref="DungeonDecorationEntry.MaxPerArea"/>.</summary>
+        private static void RecordUse(Dictionary<string, int> areaUsage, string resref)
+        {
+            areaUsage[resref] = areaUsage.GetValueOrDefault(resref) + 1;
+        }
+
+        /// <summary>Per-room repeat cap for one context: Large art repeats less (see
+        /// <see cref="LargeMaxSameResrefPerRoomContext"/>); everything else keeps
+        /// <see cref="MaxSameResrefPerRoomContext"/>.</summary>
+        private static int RoomContextCap(DungeonDecorationEntry entry)
+        {
+            return entry is { Size: DecorationSize.Large } ? LargeMaxSameResrefPerRoomContext : MaxSameResrefPerRoomContext;
+        }
+
+        /// <summary>True when the entry declares a per-area cap and the ledger has reached it.</summary>
+        private static bool IsAtAreaCap(DungeonDecorationEntry entry, Dictionary<string, int> areaUsage)
+        {
+            return entry != null && entry.MaxPerArea > 0 && areaUsage.GetValueOrDefault(entry.Resref) >= entry.MaxPerArea;
+        }
+
+        /// <summary>
+        /// Filters a pick pool down to entries still under their per-area cap (see
+        /// DungeonDecorationEntry.MaxPerArea). Returns the ORIGINAL list unchanged when no entry
+        /// declares a cap, so palettes without caps keep their exact pick pools (and RNG streams).
+        /// </summary>
+        private static List<DungeonDecorationEntry> UnderAreaCap(
+            List<DungeonDecorationEntry> entries, Dictionary<string, int> areaUsage)
+        {
+            if (entries == null || entries.All(e => e.MaxPerArea <= 0))
+                return entries;
+
+            return entries
+                .Where(e => e.MaxPerArea <= 0 || areaUsage.GetValueOrDefault(e.Resref) < e.MaxPerArea)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Deterministically (no RNG) assigns each open, non-set-piece room a district flavor --
+        /// the round-8 realism mechanism: hand-built city repetition is district-scoped, so a
+        /// generated city needs recognizable neighborhoods rather than one uniform mix. Scoring
+        /// mirrors how the hand-built areas ARE laid out:
+        ///  - COMMERCIAL prefers road-frontage rooms near the entrances (promenades line the
+        ///    walkways players actually travel);
+        ///  - INDUSTRIAL prefers rooms away from the entrance with stamped-structure mass and
+        ///    little road frontage (shipyards/docks sit behind the city, against the big
+        ///    buildings);
+        ///  - CIVIC prefers large rooms with a real interior (plazas that can host courtyards).
+        /// A balancing pass then guarantees each flavor is represented when enough rooms exist
+        /// (>= 3 non-corridor rooms), flipping the best-scoring candidates without ever emptying
+        /// another flavor -- so every generated city reads as distinct neighborhoods.
+        /// </summary>
+        internal static Dictionary<int, DistrictFlavor> AssignDistrictFlavors(ResolvedLayout layout, string roadCrosser)
+        {
+            var result = new Dictionary<int, DistrictFlavor>();
+            var rooms = new List<(LayoutRoom Room, bool IsCorridorLike, HashSet<(int X, int Y)> TileSet)>();
+            foreach (var room in layout.Rooms)
+            {
+                if (room.IsSetPiece || room.Tiles.Count == 0)
+                    continue;
+
+                var (minX, maxX, minY, maxY) = BoundingBox(room.Tiles);
+                var isCorridorLike = Math.Min(maxX - minX + 1, maxY - minY + 1) <= CorridorLikeMaxSpan;
+                rooms.Add((room, isCorridorLike, new HashSet<(int X, int Y)>(room.Tiles)));
+            }
+
+            if (rooms.Count == 0)
+                return result;
+
+            var maxDim = Math.Max(1, Math.Max(layout.Width, layout.Height));
+            var maxRoomTiles = Math.Max(1, rooms.Max(r => r.Room.Tiles.Count));
+
+            var scores = new Dictionary<int, (double Industrial, double Commercial, double Civic, bool IsCorridorLike)>();
+            foreach (var (room, isCorridorLike, tileSet) in rooms)
+            {
+                var roadTiles = 0;
+                var structTiles = 0;
+                var interiorTiles = 0;
+                foreach (var tile in room.Tiles)
+                {
+                    if (IsRoadAdjacent(tile, layout, roadCrosser))
+                        roadTiles++;
+                    if (IsStructureAdjacent(tile, layout))
+                        structTiles++;
+                    if (NearestWallDirection(tile, tileSet) == null)
+                        interiorTiles++;
+                }
+
+                var n = Math.Max(1, room.Tiles.Count);
+                var roadFrac = (double)roadTiles / n;
+                var structFrac = (double)structTiles / n;
+                var interiorFrac = (double)interiorTiles / n;
+                var entranceDist = layout.Transitions.Count > 0
+                    ? layout.Transitions.Min(t => Chebyshev(room.CenterTile, t.Tile)) / (double)maxDim
+                    : 0.5;
+                var sizeNorm = (double)room.Tiles.Count / maxRoomTiles;
+
+                var commercial = 2.0 * roadFrac + 0.4 * (1.0 - entranceDist);
+                var industrial = 1.2 * structFrac + 1.6 * entranceDist + 0.5 * (1.0 - roadFrac);
+                var civic = 2.5 * interiorFrac + 0.8 * sizeNorm + 0.3 * (1.0 - structFrac);
+                scores[room.Id] = (industrial, commercial, civic, isCorridorLike);
+
+                // Argmax with a deterministic tie order (Commercial first: streets are the most
+                // common generated shape, and a tie means the room fronts a road anyway).
+                var best = DistrictFlavor.Commercial;
+                var bestScore = commercial;
+                if (industrial > bestScore)
+                {
+                    best = DistrictFlavor.Industrial;
+                    bestScore = industrial;
+                }
+                if (civic > bestScore)
+                    best = DistrictFlavor.Civic;
+
+                result[room.Id] = best;
+            }
+
+            // Balancing pass: with enough real rooms, every flavor should exist somewhere -- a city
+            // of only warehouses is as monotonous as the round-7 uniform mix. Flip the best-scoring
+            // candidate into each missing flavor, never emptying another flavor below one room.
+            var nonCorridorCount = rooms.Count(r => !r.IsCorridorLike);
+            if (nonCorridorCount >= 3)
+            {
+                foreach (var missing in new[] { DistrictFlavor.Commercial, DistrictFlavor.Industrial, DistrictFlavor.Civic })
+                {
+                    if (result.Values.Contains(missing))
+                        continue;
+
+                    var candidates = rooms
+                        .Where(r => !r.IsCorridorLike)
+                        .Where(r => result.Values.Count(f => f == result[r.Room.Id]) >= 2)
+                        .ToList();
+                    if (candidates.Count == 0)
+                        continue;
+
+                    var pick = candidates
+                        .OrderByDescending(r => missing switch
+                        {
+                            DistrictFlavor.Industrial => scores[r.Room.Id].Industrial,
+                            DistrictFlavor.Commercial => scores[r.Room.Id].Commercial,
+                            _ => scores[r.Room.Id].Civic
+                        })
+                        .ThenBy(r => r.Room.Id)
+                        .First();
+                    result[pick.Room.Id] = missing;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Composes one industrial cargo-yard row: 2-3 copies of ONE Huge building-scale model
+        /// (a storage silo, industrial tower, or parked craft) standing on CONSECUTIVE wall tiles
+        /// of an industrial-flavor room, all sharing the wall's outward bearing -- the hand-built
+        /// shipyard/dock pattern (silo rows at 10m tile pitch, kyru08 same-resref NN median
+        /// 10.01m) that concentrated cargo used to blanket the whole map instead. Landmark-role
+        /// Huge entries (a parked starfighter) place as a single one-off rather than a row. Row
+        /// tiles are consumed. Returns the number of Huge placements emitted (0 when no run of
+        /// consecutive eligible wall tiles exists).
+        /// </summary>
+        private static int PlanCargoYard(
+            List<PlannedDecoration> plan, LayoutRoom room, HashSet<(int X, int Y)> tileSet,
+            List<DungeonDecorationEntry> hugeEntries, HashSet<(int X, int Y)> excluded,
+            HashSet<(int X, int Y)> consumedTiles, ResolvedLayout layout, string roadCrosser,
+            System.Random rng, Dictionary<string, int> areaUsage, int remainingBudget)
+        {
+            var pool = UnderAreaCap(hugeEntries, areaUsage);
+            if (pool == null || pool.Count == 0 || remainingBudget <= 0)
+                return 0;
+
+            var resref = PickWeighted(pool, rng);
+            var entry = pool.First(e => e.Resref == resref);
+
+            var desired = entry.Role == DecorationRole.Landmark
+                ? 1
+                : YardRowMinItems + rng.Next(YardRowMaxItems - YardRowMinItems + 1);
+            desired = Math.Min(desired, remainingBudget);
+            if (entry.MaxPerArea > 0)
+                desired = Math.Min(desired, entry.MaxPerArea - areaUsage.GetValueOrDefault(resref));
+            // A budget squeeze must never strand a lone silo: a non-landmark yard row exists as a
+            // pair minimum or not at all (the composed-row contract).
+            if (desired <= 0 || (entry.Role != DecorationRole.Landmark && desired < YardRowMinItems))
+                return 0;
+
+            // Bucket eligible wall tiles by quantized wall direction (the same straight-run notion
+            // PlaceWallRuns uses), then find the longest run of CONSECUTIVE tiles -- a yard row
+            // must read as one deliberate line, not scattered singles.
+            var byDirection = new Dictionary<int, List<(int X, int Y)>>();
+            foreach (var tile in room.Tiles)
+            {
+                if (excluded.Contains(tile) || tile == room.CenterTile || consumedTiles.Contains(tile))
+                    continue;
+                if (TileCarriesRoadEdge(tile, layout, roadCrosser))
+                    continue;
+
+                var wallDir = NearestWallDirection(tile, tileSet);
+                if (wallDir == null)
+                    continue;
+
+                var direction = QuantizeDirection(wallDir.Value.Dx, wallDir.Value.Dy);
+                if (!byDirection.TryGetValue(direction, out var list))
+                    byDirection[direction] = list = new List<(int X, int Y)>();
+                list.Add(tile);
+            }
+
+            List<(int X, int Y)> bestSegment = null;
+            var bestDirection = 0;
+            foreach (var (direction, tiles) in byDirection.OrderBy(kv => kv.Key))
+            {
+                // A wall facing +/-X runs along Y; +/-Y runs along X (PlaceWallRuns' own convention).
+                var alongY = direction is 0 or 1;
+                var ordered = alongY
+                    ? tiles.OrderBy(t => t.X).ThenBy(t => t.Y).ToList()
+                    : tiles.OrderBy(t => t.Y).ThenBy(t => t.X).ToList();
+
+                var segment = new List<(int X, int Y)>();
+                for (var i = 0; i < ordered.Count; i++)
+                {
+                    var contiguous = segment.Count > 0 &&
+                                     (alongY
+                                         ? ordered[i].X == segment[^1].X && ordered[i].Y == segment[^1].Y + 1
+                                         : ordered[i].Y == segment[^1].Y && ordered[i].X == segment[^1].X + 1);
+                    if (!contiguous)
+                    {
+                        if (bestSegment == null || segment.Count > bestSegment.Count)
+                        {
+                            bestSegment = new List<(int X, int Y)>(segment);
+                            bestDirection = direction;
+                        }
+                        segment.Clear();
+                    }
+
+                    segment.Add(ordered[i]);
+                }
+
+                if (bestSegment == null || segment.Count > bestSegment.Count)
+                {
+                    bestSegment = new List<(int X, int Y)>(segment);
+                    bestDirection = direction;
+                }
+            }
+
+            var minimum = entry.Role == DecorationRole.Landmark ? 1 : YardRowMinItems;
+            if (bestSegment == null || bestSegment.Count < minimum)
+                return 0;
+
+            var count = Math.Min(desired, bestSegment.Count);
+            var (dx, dy) = bestDirection switch
+            {
+                0 => (1f, 0f),
+                1 => (-1f, 0f),
+                2 => (0f, 1f),
+                _ => (0f, -1f)
+            };
+            var facing = CardinalFacing(-dx, -dy);
+
+            var placed = 0;
+            for (var i = 0; i < count; i++)
+            {
+                var tile = bestSegment[i];
+                var flat = TileCenter(tile.X, tile.Y);
+                plan.Add(new PlannedDecoration
+                {
+                    Resref = resref,
+                    Position = new Vector3(flat.X + dx * PileWallOffset, flat.Y + dy * PileWallOffset, 0f),
+                    // Shared bearing: the whole row faces away from its wall, into the yard.
+                    Facing = facing,
+                    Context = DecorationContext.CargoYard
+                });
+                RecordUse(areaUsage, resref);
+                consumedTiles.Add(tile);
+                placed++;
+            }
+
+            return placed;
         }
 
         /// <summary>
@@ -775,7 +1267,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         private static List<(int TransitionIndex, (int X, int Y) A, (int X, int Y) B)> FindDoorwayFlankPairs(
             ResolvedLayout layout, HashSet<(int X, int Y)> excluded, Dictionary<(int X, int Y), int> tileToRoom,
-            List<(LayoutRoom Room, bool IsCorridorLike, HashSet<(int X, int Y)> TileSet, (int X, int Y)? CourtyardAnchor)> rooms)
+            List<RoomState> rooms)
         {
             var results = new List<(int, (int X, int Y), (int X, int Y))>();
 
@@ -834,7 +1326,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             ResolvedLayout layout, string roadCrosser, Dictionary<DecorationContext, List<DungeonDecorationEntry>> byContext,
             HashSet<(int X, int Y)> excluded, HashSet<(int X, int Y)> consumedTiles,
             (int X, int Y)? centerpieceAnchor, double wallProbability, System.Random rng,
-            Dictionary<(int RoomId, DecorationContext Context), List<string>> motifCache, bool urban)
+            Dictionary<(int RoomId, DecorationContext Context), List<string>> motifCache, bool urban,
+            Dictionary<string, int> areaUsage)
         {
             if (wallProbability <= 0)
                 return;
@@ -953,6 +1446,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var i = rng.Next(spacing);
                 var segmentLength = 0;
                 string rowResref = null;
+                // Size-aware segment cap: a Large (3-8m) urban row fixture repeats at most
+                // LargeRowSegmentCap times before the row forces a gap and swaps fixtures --
+                // shipping containers pair up, they never wall six-deep (Medium/Small rows keep
+                // MaxRunSegmentLength). Always MaxRunSegmentLength on non-urban palettes, which
+                // declare no sizes.
+                var segmentCap = MaxRunSegmentLength;
 
                 while (i < ordered.Count)
                 {
@@ -970,11 +1469,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         if (urban)
                         {
                             if (rowResref == null ||
-                                resrefUsageCounts.GetValueOrDefault((context, rowResref)) >= MaxSameResrefPerRoomContext)
+                                resrefUsageCounts.GetValueOrDefault((context, rowResref)) >=
+                                RoomContextCap(entries.FirstOrDefault(e => e.Resref == rowResref)) ||
+                                IsAtAreaCap(entries.FirstOrDefault(e => e.Resref == rowResref), areaUsage))
                             {
                                 var available = entries
-                                    .Where(e => resrefUsageCounts.GetValueOrDefault((context, e.Resref)) < MaxSameResrefPerRoomContext)
+                                    .Where(e => resrefUsageCounts.GetValueOrDefault((context, e.Resref)) < RoomContextCap(e))
                                     .Where(e => e.Anchoring != DecorationAnchoring.WallFlush || flushDir != null)
+                                    .Where(e => !IsAtAreaCap(e, areaUsage))
                                     .ToList();
                                 rowResref = available.Count > 0 ? PickWeighted(available, rng) : null;
                             }
@@ -1010,19 +1512,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                             {
                                 plan.Add(placement);
                                 resrefUsageCounts[(context, resref)] = resrefUsageCounts.GetValueOrDefault((context, resref)) + 1;
+                                RecordUse(areaUsage, resref);
                                 segmentLength++;
+                                segmentCap = urban && entry is { Size: DecorationSize.Large }
+                                    ? LargeRowSegmentCap
+                                    : MaxRunSegmentLength;
                             }
                         }
                     }
 
                     var step = urban ? spacing : Math.Max(1, spacing + rng.Next(-jitterRange, jitterRange + 1));
-                    if (segmentLength >= MaxRunSegmentLength)
+                    if (segmentLength >= segmentCap)
                     {
                         // Force a real gap before starting the next segment — this is what makes a
                         // long wall read as a few distinct dressed clusters instead of one continuous
                         // run (or, worst case, a run that wraps the room's entire perimeter).
                         step += spacing * (RunSegmentGapExtraSteps + 1);
                         segmentLength = 0;
+                        segmentCap = MaxRunSegmentLength;
                         // Urban rows also swap fixtures between segments so a long facade reads as
                         // several distinct rows, never one endless line of the same object.
                         rowResref = null;
@@ -1160,9 +1667,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             List<PlannedDecoration> plan, LayoutRoom room, HashSet<(int X, int Y)> tileSet, (int X, int Y) anchor,
             List<DungeonDecorationEntry> centerEntries, List<DungeonDecorationEntry> ringEntries,
             HashSet<(int X, int Y)> excluded, HashSet<(int X, int Y)> consumedTiles,
-            ResolvedLayout layout, string roadCrosser, System.Random rng, bool urban = false)
+            ResolvedLayout layout, string roadCrosser, System.Random rng, bool urban = false,
+            Dictionary<string, int> areaUsage = null)
         {
-            var centerResref = PickWeighted(centerEntries, rng);
+            areaUsage ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var centerPool = UnderAreaCap(centerEntries, areaUsage);
+            var ringPool = UnderAreaCap(ringEntries, areaUsage);
+            if (centerPool.Count == 0 || ringPool.Count == 0)
+                return false;
+
+            var centerResref = PickWeighted(centerPool, rng);
             var center = TileCenter(anchor.X, anchor.Y);
 
             // Room-area scaling: a 5x5-tile room rings 4-5 items, a 9x9 plaza rings the full 8.
@@ -1173,8 +1687,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // without replacement), matching the hand-built mixed-composition evidence. A palette
             // with a single curated ring resref still works (the hand-built sample includes one
             // all-light-pole ring too).
-            var motifSize = Math.Min(3, ringEntries.Select(e => e.Resref).Distinct().Count());
-            var pool = new List<DungeonDecorationEntry>(ringEntries);
+            var motifSize = Math.Min(3, ringPool.Select(e => e.Resref).Distinct().Count());
+            var pool = new List<DungeonDecorationEntry>(ringPool);
             var motif = new List<string>();
             for (var i = 0; i < motifSize && pool.Count > 0; i++)
             {
@@ -1227,7 +1741,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 Facing = urban ? 90f * rng.Next(4) : (float)(rng.NextDouble() * 360.0),
                 Context = DecorationContext.CourtyardCenter
             });
+            RecordUse(areaUsage, centerResref);
             plan.AddRange(members);
+            foreach (var member in members)
+                RecordUse(areaUsage, member.Resref);
 
             // A ground-decal courtyard center must never read as a lone patch: layer 1-2 of the
             // ring's own motif items directly on top of the decal (hand-built decals exist as
@@ -1254,6 +1771,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         Facing = urban ? 90f * rng.Next(4) : (float)(rng.NextDouble() * 360.0),
                         Context = DecorationContext.ClutterPile
                     });
+                    RecordUse(areaUsage, motif[i % motif.Count]);
                 }
             }
 
@@ -1302,8 +1820,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         private static bool PlanClutterPile(
             List<PlannedDecoration> plan, (int X, int Y) anchor, HashSet<(int X, int Y)> tileSet,
             List<DungeonDecorationEntry> junkMotif, List<DungeonDecorationEntry> decalEntries, System.Random rng,
-            bool urban = false, bool organicSpin = false, bool structureAdjacent = false)
+            bool urban = false, bool organicSpin = false, bool structureAdjacent = false,
+            Dictionary<string, int> areaUsage = null)
         {
+            areaUsage ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var flat = TileCenter(anchor.X, anchor.Y);
             var wallDir = NearestWallDirection(anchor, tileSet);
 
@@ -1341,8 +1861,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (pileMotif.Count == 0)
                 pileMotif = junkMotif;
 
-            var hasDecal = decalEntries.Count > 0 && rng.NextDouble() < DecalUnderPileChance;
-            var decalResref = hasDecal ? PickWeighted(decalEntries, rng) : null;
+            var decalPool = UnderAreaCap(decalEntries, areaUsage);
+            var hasDecal = decalPool.Count > 0 && rng.NextDouble() < DecalUnderPileChance;
+            var decalResref = hasDecal ? PickWeighted(decalPool, rng) : null;
             // Urban bearing rule: even the layered ground decal squares up with the grid (it reads
             // as floor marking/signage in the clean city palette, not a random dirt splash).
             var decalFacing = hasDecal
@@ -1372,6 +1893,33 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var gridMode = urban && !organicSpin && (structureAdjacent || wallNeighborCount >= 2);
 
             var members = new List<PlannedDecoration>();
+            // Size discipline (urban): at most one Large (3-8m) model per pile -- a second one can
+            // only interpenetrate the first inside the pile's 2.8m radius -- plus the per-area cap
+            // filter. Both are no-ops for palettes without sizes/caps, so non-urban member pools
+            // (and RNG streams) are untouched. Ledger updates land at COMMIT time (a discarded
+            // pile must not consume budget), so in-pile picks are additionally tracked in a
+            // pending tally the cap filter adds on top of the committed ledger -- otherwise one
+            // pile could overshoot a cap by its whole member count. When the pile's own 2-3-type
+            // motif is fully capped out, member picks FALL BACK to the room's wider junk pool
+            // instead of shrinking the pile -- caps redistribute variety, they must not thin the
+            // hand-built pile density.
+            var largeInPile = 0;
+            var pendingUse = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            List<DungeonDecorationEntry> FilterMembers(List<DungeonDecorationEntry> source)
+            {
+                var filtered = source
+                    .Where(e => e.MaxPerArea <= 0 ||
+                                areaUsage.GetValueOrDefault(e.Resref) + pendingUse.GetValueOrDefault(e.Resref) < e.MaxPerArea)
+                    .ToList();
+                if (urban && largeInPile >= LargeMaxPerPile && filtered.Any(e => e.Size == DecorationSize.Large))
+                    filtered = filtered.Where(e => e.Size != DecorationSize.Large).ToList();
+                return filtered;
+            }
+            List<DungeonDecorationEntry> MemberPool()
+            {
+                var memberPool = FilterMembers(pileMotif);
+                return memberPool.Count > 0 ? memberPool : FilterMembers(junkMotif);
+            }
             if (gridMode)
             {
                 var normalIndex = wallDir != null ? QuantizeDirection(wallDir.Value.Dx, wallDir.Value.Dy) : 3;
@@ -1405,9 +1953,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         MathF.Abs(candidate.Y - flat.Y) > TileHalf - PileTileEdgeMargin)
                         continue;
 
+                    var memberPool = MemberPool();
+                    if (memberPool.Count == 0)
+                        continue;
+
+                    var memberResref = PickWeighted(memberPool, rng);
+                    pendingUse[memberResref] = pendingUse.GetValueOrDefault(memberResref) + 1;
+                    if (memberPool.First(e => e.Resref == memberResref).Size == DecorationSize.Large)
+                        largeInPile++;
                     members.Add(new PlannedDecoration
                     {
-                        Resref = PickWeighted(pileMotif, rng),
+                        Resref = memberResref,
                         Position = candidate,
                         // Shared bearing with occasional quarter turns -- still cardinal-aligned.
                         Facing = (baseFacing + 90f * rng.Next(2)) % 360f,
@@ -1460,9 +2016,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         ? (baseFacing + (float)((rng.NextDouble() - 0.5) * 12.0) + 360f) % 360f
                         : (float)(rng.NextDouble() * 360.0);
 
+                    var memberPool = MemberPool();
+                    if (memberPool.Count == 0)
+                        continue;
+
+                    var memberResref = PickWeighted(memberPool, rng);
+                    pendingUse[memberResref] = pendingUse.GetValueOrDefault(memberResref) + 1;
+                    if (memberPool.First(e => e.Resref == memberResref).Size == DecorationSize.Large)
+                        largeInPile++;
                     members.Add(new PlannedDecoration
                     {
-                        Resref = PickWeighted(pileMotif, rng),
+                        Resref = memberResref,
                         Position = position.Value,
                         Facing = facing,
                         Context = DecorationContext.ClutterPile
@@ -1482,9 +2046,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     Facing = decalFacing,
                     Context = DecorationContext.GroundDecal
                 });
+                RecordUse(areaUsage, decalResref);
             }
 
             plan.AddRange(members);
+            // Ledger updates only on COMMIT -- a discarded 0-1-member pile must not consume
+            // per-area budget.
+            foreach (var member in members)
+                RecordUse(areaUsage, member.Resref);
             return true;
         }
 

@@ -30,40 +30,6 @@ public class AreaAbilityTargetingTests
         AbilityTargetingShapeType.Cone
     };
 
-    /// <summary>
-    /// Player-facing hostile area abilities that still declare no client targeting, so they show no
-    /// cursor and no ground area marker. Every one of these already has a `spells.2da` row and a
-    /// `Spell` enum value; only the C# wiring is missing. They are not fixed here because each also
-    /// needs a shape and radius chosen against its Design Bible line, which is a balance decision
-    /// per ability rather than a mechanical edit.
-    ///
-    /// This baseline may only shrink. New offenders fail
-    /// <see cref="HostileAreaAbilities_DeclareClientTargeting"/>, and entries that get fixed fail
-    /// <see cref="KnownMissingClientTargetingBaseline_DoesNotGoStale"/>.
-    /// </summary>
-    private static readonly string[] KnownMissingClientTargeting =
-    {
-        "ExplosiveToss1",
-        "ExplosiveToss2",
-        "ExplosiveToss3",
-        "ExplosiveToss4",
-        "Flash1",
-        "Forcebane1",
-        "InterruptingSweep1",
-        "InterruptingSweep2",
-        "KillBox1",
-        "PerfectFlurry1",
-        "RedBloom1",
-        "ScrapheapLockdown1",
-        "SerratedArc1",
-        "SerratedArc2",
-        "SerratedArc3",
-        "SoulBurst1",
-        "SunderingSweep1",
-        "SunderingSweep2",
-        "SunderingSweep3"
-    };
-
     [Test]
     public void HostileAreaAbilities_DeclareClientTargeting()
     {
@@ -84,28 +50,9 @@ public class AreaAbilityTargetingTests
             .OrderBy(x => x, StringComparer.Ordinal)
             .ToList();
 
-        offenders.Except(KnownMissingClientTargeting).Should().BeEmpty(
+        offenders.Should().BeEmpty(
             "every rank of an area ability needs its own spells.2da row and Spell enum value; " +
             "without one, ApplyTargetingMetadata silently produces no cursor and no area marker");
-    }
-
-    [Test]
-    public void KnownMissingClientTargetingBaseline_DoesNotGoStale()
-    {
-        // The baseline must only ever shrink. If an ability is fixed, this fails until its entry is
-        // removed, so the list cannot quietly outlive the bug it records.
-        var playerFeats = GetPlayerGrantedFeats();
-
-        var stillBroken = GetAllAbilities()
-            .Where(x => x.IsHostile && x.IsArea)
-            .Where(x => playerFeats.Contains(x.Feat))
-            .Where(x => !IsBeastActivated(x))
-            .Where(x => x.Targeting is not { UpdatesClientTargeting: true })
-            .Select(x => x.Feat.ToString())
-            .ToHashSet(StringComparer.Ordinal);
-
-        KnownMissingClientTargeting.Where(x => !stillBroken.Contains(x)).Should().BeEmpty(
-            "these abilities now declare client targeting, so they should be removed from the baseline");
     }
 
     [Test]

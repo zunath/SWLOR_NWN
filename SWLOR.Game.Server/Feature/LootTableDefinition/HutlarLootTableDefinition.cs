@@ -185,7 +185,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("map_025", 2, 1, true)
                 .AddItem("map_026", 2, 1, true)
-                .AddItem("citrine", 1, 1, true);
+                .AddItem("citrine", 1, 1, true)
+                .AddItem("lockbox_t4", 2, 1, true);
         }
 
         private void QionSlugs()

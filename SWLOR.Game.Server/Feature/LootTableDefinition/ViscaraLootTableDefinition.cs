@@ -411,7 +411,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_OUTLAW_RARES")
                 .IsRare()
-                .AddItem("map_053", 20, 1, true);
+                .AddItem("map_053", 20, 1, true)
+                .AddItem("lockbox_t2", 3, 1, true);
         }
 
         private void Gimpassa()

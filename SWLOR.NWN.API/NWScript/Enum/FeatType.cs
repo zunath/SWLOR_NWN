@@ -1384,6 +1384,13 @@ namespace SWLOR.NWN.API.NWScript.Enum
         DeflectingReturnTrait = 1473,
         SurroundedNotOutmatchedTrait = 1474,
         CenterOfTheStormTrait = 1475,
+        BackAttackTrait = 1476,
+        SlicingTrait = 1477,
+        SilentStrideTrait = 1478,
+        PoisoncraftTrait = 1479,
+        TrapcraftTrait = 1480,
+        VenomExpertiseTrait = 1481,
+        TrapManagementTrait = 1482,
         // Remaining pre-2000 gaps are free.
 
         Starships1 = 1445,
@@ -1423,7 +1430,10 @@ namespace SWLOR.NWN.API.NWScript.Enum
         WeaponBlueprints3 = 1495,
         WeaponBlueprints4 = 1496,
         WeaponBlueprints5 = 1497,
-        // IDs 1498-1512 are free.
+        LastingCoatingsTrait = 1498,
+        MasterSaboteurTrait = 1499,
+        AlertnessTrait = 1500,
+        // IDs 1501-1512 are free.
         ArmorBlueprints1 = 1513,
         ArmorBlueprints2 = 1514,
         ArmorBlueprints3 = 1515,
@@ -1795,6 +1805,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SweepingFlank1 = 2213,
         SweepingGuard1 = 2214,
         SystemicShutdown1 = 2215,
+        TacticalEscape1 = 2216,
+        TacticalEscape2 = 2217,
         TauntingDeflection1 = 2218,
         TempestBloom1 = 2219,
         TempestRelease1 = 2220,
@@ -2415,5 +2427,15 @@ namespace SWLOR.NWN.API.NWScript.Enum
         WardenWallTechnique = 2886,
         WillFractureTechnique = 2887,
         Overload = 2888,
+        Stealth1 = 2889,
+        Stealth2 = 2890,
+        Stealth3 = 2891,
+        Stealth4 = 2892,
+        ShadowStep1 = 2893,
+        ShadowStep2 = 2894,
+        GhostProtocol = 2895,
+        RazorTrap1 = 2896,
+        RazorTrap2 = 2897,
+        ShockTrap = 2898,
 }
 }

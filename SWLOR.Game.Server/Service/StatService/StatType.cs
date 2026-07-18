@@ -5267,6 +5267,78 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         PhysicalDamageReflectionPercentAdjustment = 918,
+
+        /// <summary>
+        /// Flat bonus to the stealth side of the opposed stealth detection check.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Stealth = 919,
+
+        /// <summary>
+        /// Flat bonus to the detection side of the opposed stealth detection check.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Detection = 920,
+
+        /// <summary>
+        /// Increases the effect strength of traps placed by the creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapBonus = 921,
+
+        /// <summary>
+        /// Improves the creature's ability to disarm hostile traps.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapDisarm = 922,
+
+        /// <summary>
+        /// Increases the potency of weapon poisons applied by the creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonBonus = 923,
+
+        /// <summary>
+        /// Improves the creature's ability to slice locks, terminals, and lockboxes.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Lockpicking = 924,
+
+        /// <summary>
+        /// Percent multiplier applied to the creature's total Stealth stat while stealthed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthEffectivenessPercent = 925,
+
+        /// <summary>
+        /// Percent by which stamina drain while stealthed is slowed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthStaminaDrainReductionPercent = 926,
+
+        /// <summary>
+        /// Percent adjustment to how long weapon poison coatings applied by the creature last.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonCoatingDurationPercent = 927,
+
+        /// <summary>
+        /// Percent adjustment applied to melee weapon damage dealt while the attacker is behind the target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackDamagePercentAdjustment = 928,
+
+        /// <summary>
+        /// Critical rate percent adjustment applied to melee weapon attacks made while the attacker is behind the target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackCriticalRatePercentAdjustment = 929,
+
+        /// <summary>
+        /// Additional traps the creature may keep active at the same time beyond the base allowance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AdditionalTrapCapacity = 930,
     }
 
     public class StatTypeAttribute : Attribute

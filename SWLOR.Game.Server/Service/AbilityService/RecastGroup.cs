@@ -824,6 +824,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
         WardenWall = 514,
         [RecastGroup("Will Fracture", "Will Fracture", true)]
         WillFracture = 515,
+
+        [RecastGroup("Stealth", "Stealth", true)]
+        Stealth = 516,
+
+        [RecastGroup("Tactical Escape", "Escape", true)]
+        TacticalEscape = 517,
+
+        [RecastGroup("Shadow Step", "Shadow Step", true)]
+        ShadowStep = 518,
+
+        [RecastGroup("Razor Trap", "Razor Trap", true)]
+        RazorTrap = 519,
+
+        [RecastGroup("Shock Trap", "Shock Trap", true)]
+        ShockTrap = 520,
     }
 
     public class RecastGroupAttribute : Attribute

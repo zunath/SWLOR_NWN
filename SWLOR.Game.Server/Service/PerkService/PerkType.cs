@@ -731,6 +731,23 @@ namespace SWLOR.Game.Server.Service.PerkService
         AnalyzerMemory = 780,
         PatternRecognition = 783,
         OverclockedAnalyzer = 784,
-        // IDs 650 and 785+ are free.
+        Stealth = 785,
+        BackAttack = 786,
+        Slicing = 787,
+        TacticalEscape = 788,
+        ShadowStep = 789,
+        SilentStride = 790,
+        GhostProtocol = 791,
+        Poisoncraft = 792,
+        Trapcraft = 793,
+        VenomExpertise = 794,
+        RazorTrap = 795,
+        ShockTrap = 796,
+        TrapManagement = 797,
+        LastingCoatings = 798,
+        MasterSaboteur = 799,
+        Alertness = 800,
+
+        // IDs 650 and 801+ are free.
     }
 }

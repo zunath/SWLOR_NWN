@@ -1,4 +1,4 @@
-﻿using NWN.Native.API;
+using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
@@ -141,7 +141,8 @@ namespace SWLOR.Game.Server.Native
 
                 if (totalDamage > 0 && defender.m_bPlotObject == 0)
                 {
-                    PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, totalDamage, weaponSkillType, damageProfile.DamageType);
+                    var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
+                    PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
                 }
 
                 ProfilerPlugin.PopPerfScope();
@@ -541,6 +542,7 @@ namespace SWLOR.Game.Server.Native
 
             damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
 
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
 
@@ -603,11 +605,12 @@ namespace SWLOR.Game.Server.Native
             }
         }
 
-        private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType)
+        private static void PublishDamageDealtEvent(uint attacker, uint defender, uint weapon, int damage, SkillType skillType, CombatDamageType damageType)
         {
             Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType);
 
             EventsPlugin.PushEventData("DEFENDER", ObjectToString(defender));
+            EventsPlugin.PushEventData("WEAPON", ObjectToString(weapon));
             EventsPlugin.PushEventData("DAMAGE", damage.ToString());
             EventsPlugin.PushEventData("DAMAGE_TYPE", ((int)damageType).ToString());
 

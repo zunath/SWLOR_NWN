@@ -158,7 +158,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("CZ220_LOOT_DROID_RARES")
                 .IsRare()
-                .AddItem("map_22", 50, 1, true);
+                .AddItem("map_22", 50, 1, true)
+                .AddItem("lockbox_t1", 4, 1, true);
         }
 
         private void ColicoidExperiment()

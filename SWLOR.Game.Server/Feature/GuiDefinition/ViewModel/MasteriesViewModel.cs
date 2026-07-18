@@ -298,6 +298,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // (plus the login hook in MasteryNotifications) is what completes tiers.
             Mastery.EvaluateTrainingQueue(playerId, DateTime.UtcNow);
 
+            // Drain any completion notices queued since this character was last
+            // notified - including ones added by a DM evaluating this profile from the
+            // examine window while the character was already online in this session but
+            // hadn't yet reopened Masteries. EvaluateTrainingQueue is the only place a
+            // notice is ever appended, so this is the single delivery path for it here.
+            foreach (var notice in Mastery.DrainPendingCompletionNotices(playerId))
+            {
+                SendMessageToPC(Player, ColorToken.Green(notice));
+            }
+
             SearchText = string.Empty;
             SelectedCategoryId = -1;
             Justification = string.Empty;

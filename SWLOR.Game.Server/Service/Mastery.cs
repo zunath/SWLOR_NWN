@@ -63,7 +63,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves (or lazily creates) a character's mastery profile.
+        /// Retrieves (or lazily creates) a character's mastery profile. Only call this
+        /// from a path where the character is genuinely engaging the system (opening the
+        /// Masteries window, submitting/reviewing a request, or a staff mutation) - a
+        /// read-only path with no such intent (e.g. a login hook) must check
+        /// <see cref="HasProfile"/> first so uninvolved players never get a persisted row.
         /// </summary>
         public static PlayerMasteryProfile GetOrCreateProfile(string playerId)
         {
@@ -79,15 +83,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether a mastery profile already exists for this character, without creating
+        /// one. Read-only call sites that fire for every player regardless of intent
+        /// (e.g. the login hook in MasteryNotifications) must check this before touching
+        /// the profile at all, so a character who has never engaged with the Masteries
+        /// system never gets a DB row written on their behalf.
+        /// </summary>
+        public static bool HasProfile(string playerId)
+        {
+            return DB.Get<PlayerMasteryProfile>(playerId) != null;
+        }
+
+        /// <summary>
         /// Resolves the catalog entries (keyed by Mastery.Id) for every mastery the
-        /// character currently owns a tier in. Used to feed
-        /// <see cref="MasteryRules.ValidateRequest"/>'s Rare-conflict check.
+        /// character currently owns a tier in OR has a queued/active training entry for.
+        /// Used to feed <see cref="MasteryRules.ValidateRequest"/>'s Rare/Tier5-conflict
+        /// checks, so a Rare or Tier-5 slot reserved by in-flight training (not yet
+        /// earned) still counts as taken.
         /// </summary>
         public static IReadOnlyDictionary<string, Entity.Mastery> GetOwnedMasteryCatalog(PlayerMasteryProfile profile)
         {
             var result = new Dictionary<string, Entity.Mastery>();
 
-            foreach (var masteryId in profile.Masteries.Keys)
+            var masteryIds = new HashSet<string>(profile.Masteries.Keys);
+            foreach (var trainingEntry in profile.TrainingQueue)
+                masteryIds.Add(trainingEntry.MasteryId);
+
+            foreach (var masteryId in masteryIds)
             {
                 var mastery = GetMastery(masteryId);
                 if (mastery != null)
@@ -174,12 +196,17 @@ namespace SWLOR.Game.Server.Service
             var profile = GetOrCreateProfile(request.PlayerId);
             var actor = new MasteryActor(actorName, actorCDKey);
 
+            // Retrain credits are spent automatically whenever one is available and
+            // applicable - see MasteryRules.ShouldUseRetrainCredit for the exact
+            // conditions (never on a Quick Slot or instant grant, never on tier 5).
+            var useRetrainCredit = MasteryRules.ShouldUseRetrainCredit(profile, request.TargetTier, useQuickSlot, isInstant);
+
             MasteryRules.EnqueueTraining(
                 profile,
                 request.MasteryId,
                 request.TargetTier,
                 useQuickSlot,
-                false,
+                useRetrainCredit,
                 isInstant,
                 actor,
                 reviewFeedback,
@@ -321,7 +348,12 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Evaluates a character's training queue, completing any entries whose finish
         /// date has passed. Call on login, on Masteries window open, and when staff open
-        /// a player's profile in either staff window.
+        /// a player's profile in either staff window. Every completion queues a
+        /// <see cref="PlayerMasteryProfile.PendingCompletionNotices"/> entry regardless of
+        /// whether the character is online right now (e.g. a DM evaluating the queue
+        /// while the character is offline) - this is the single place completion notices
+        /// are produced, so <see cref="DrainPendingCompletionNotices"/> is the single
+        /// place they're delivered from.
         /// </summary>
         public static List<MasteryTrainingEntry> EvaluateTrainingQueue(string playerId, DateTime utcNow)
         {
@@ -330,10 +362,39 @@ namespace SWLOR.Game.Server.Service
 
             if (completed.Count > 0)
             {
+                foreach (var entry in completed)
+                {
+                    var mastery = GetMastery(entry.MasteryId);
+                    var name = string.IsNullOrWhiteSpace(mastery?.Name) ? "a mastery" : mastery.Name;
+
+                    profile.PendingCompletionNotices.Add(
+                        $"Your training in {name} is complete - you are now Tier {entry.TargetTier}! Open Masteries on your character sheet for details.");
+                }
+
                 DB.Set(profile);
             }
 
             return completed;
+        }
+
+        /// <summary>
+        /// Drains and returns every pending completion-toast notice queued for a
+        /// character, clearing and persisting the list so each notice is delivered
+        /// exactly once. Call at login and at Masteries window open - the two points
+        /// where a character can actually receive an in-game toast.
+        /// </summary>
+        public static List<string> DrainPendingCompletionNotices(string playerId)
+        {
+            var profile = GetOrCreateProfile(playerId);
+
+            if (profile.PendingCompletionNotices.Count == 0)
+                return new List<string>();
+
+            var notices = new List<string>(profile.PendingCompletionNotices);
+            profile.PendingCompletionNotices.Clear();
+            DB.Set(profile);
+
+            return notices;
         }
 
         /// <summary>

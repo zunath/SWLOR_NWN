@@ -143,6 +143,111 @@ public class MasteryRulesTests
 
     #endregion
 
+    #region ShouldUseRetrainCredit (Fix 1 - automatic retrain-credit consumption)
+
+    [Test]
+    public void ShouldUseRetrainCredit_SevenDayCreditAvailable_ReturnsTrue()
+    {
+        var profile = CreateProfile();
+        profile.RetrainCredits7 = 1;
+
+        MasteryRules.ShouldUseRetrainCredit(profile, 2, false, false).Should().BeTrue();
+    }
+
+    [Test]
+    public void ShouldUseRetrainCredit_FourteenDayCreditAvailable_ReturnsTrue()
+    {
+        var profile = CreateProfile();
+        profile.RetrainCredits14 = 1;
+
+        MasteryRules.ShouldUseRetrainCredit(profile, 2, false, false).Should().BeTrue();
+    }
+
+    [Test]
+    public void ShouldUseRetrainCredit_NoCreditsAvailable_ReturnsFalse()
+    {
+        var profile = CreateProfile();
+
+        MasteryRules.ShouldUseRetrainCredit(profile, 2, false, false).Should().BeFalse();
+    }
+
+    [Test]
+    public void ShouldUseRetrainCredit_QuickSlotRequested_ReturnsFalseEvenWithCreditsAvailable()
+    {
+        var profile = CreateProfile();
+        profile.RetrainCredits7 = 1;
+
+        MasteryRules.ShouldUseRetrainCredit(profile, 2, true, false).Should().BeFalse();
+    }
+
+    [Test]
+    public void ShouldUseRetrainCredit_InstantGrant_ReturnsFalseEvenWithCreditsAvailable()
+    {
+        var profile = CreateProfile();
+        profile.RetrainCredits7 = 1;
+
+        MasteryRules.ShouldUseRetrainCredit(profile, 2, false, true).Should().BeFalse();
+    }
+
+    [Test]
+    public void ShouldUseRetrainCredit_TierFive_ReturnsFalseEvenWithCreditsAvailable()
+    {
+        var profile = CreateProfile();
+        profile.RetrainCredits7 = 1;
+        profile.RetrainCredits14 = 1;
+
+        MasteryRules.ShouldUseRetrainCredit(profile, 5, false, false).Should().BeFalse();
+    }
+
+    [Test]
+    public void AbandonThenApprove_ComputedUseRetrainCredit_ConsumesTheCreditAndAppliesTheDiscountedDuration()
+    {
+        // Simulates the exact flow Fix 1 wires up: a character abandons a tier (earning a
+        // retrain credit), then a later approval must automatically spend that credit and
+        // get the discounted duration - nothing should ever hardcode useRetrainCredit:false.
+        var profile = CreateProfile(lifetimeLevelsTrained: 5);
+        profile.Masteries["mastery-a"] = new PlayerMasteryLevel
+        {
+            Tier = 1,
+            TierHistory = { new MasteryTierRecord { Tier = 1, Source = MasteryTrainingSource.QuickSlot } }
+        };
+
+        MasteryRules.Abandon(profile, "mastery-a", 1, new MasteryActor("Staffer", "cdkey1"), "abandoned", UtcNow);
+        profile.RetrainCredits7.Should().Be(1);
+
+        var useQuickSlot = false;
+        var isInstant = false;
+        var targetTier = 1;
+        var useRetrainCredit = MasteryRules.ShouldUseRetrainCredit(profile, targetTier, useQuickSlot, isInstant);
+        useRetrainCredit.Should().BeTrue();
+
+        var entry = MasteryRules.EnqueueTraining(profile, "mastery-a", targetTier, useQuickSlot, useRetrainCredit, isInstant,
+            new MasteryActor("Staffer", "cdkey1"), "Approved", "request-1", UtcNow);
+
+        entry.Source.Should().Be(MasteryTrainingSource.Retrain7);
+        entry.DurationDays.Should().Be(7);
+        profile.RetrainCredits7.Should().Be(0);
+    }
+
+    [Test]
+    public void AbandonThenApprove_BothSevenAndFourteenDayCreditsAvailable_PrefersTheSevenDayCredit()
+    {
+        var profile = CreateProfile(lifetimeLevelsTrained: 5);
+        profile.RetrainCredits7 = 1;
+        profile.RetrainCredits14 = 1;
+
+        var useRetrainCredit = MasteryRules.ShouldUseRetrainCredit(profile, 1, false, false);
+        var entry = MasteryRules.EnqueueTraining(profile, "mastery-a", 1, false, useRetrainCredit, false,
+            new MasteryActor("Staffer", "cdkey1"), "Approved", "request-1", UtcNow);
+
+        entry.Source.Should().Be(MasteryTrainingSource.Retrain7);
+        entry.DurationDays.Should().Be(7);
+        profile.RetrainCredits7.Should().Be(0);
+        profile.RetrainCredits14.Should().Be(1);
+    }
+
+    #endregion
+
     #region Level totals / 17-level cap
 
     [Test]
@@ -255,6 +360,36 @@ public class MasteryRulesTests
         violations.Should().NotContain(v => v.RuleType == MasteryRuleType.Tier5Conflict);
     }
 
+    [Test]
+    public void ValidateRequest_AnotherMasteryHasAQueuedTierFiveEntry_ReturnsTier5ConflictWarning()
+    {
+        // Fix 3(a): a tier-5 slot reserved by in-flight (not yet earned) training must
+        // also be treated as taken, not just an already-earned tier 5.
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "other-mastery", TargetTier = 5 });
+
+        var mastery = CreateMastery(name: "This Mastery");
+        mastery.Id = "this-mastery";
+
+        var violations = MasteryRules.ValidateRequest(profile, null, mastery, 5, UtcNow.AddDays(-30), UtcNow, null);
+
+        violations.Should().Contain(v => v.RuleType == MasteryRuleType.Tier5Conflict && !v.IsBlocking);
+    }
+
+    [Test]
+    public void ValidateRequest_OwnMasteryHasAQueuedTierFiveEntry_DoesNotCountAsConflict()
+    {
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "this-mastery", TargetTier = 5 });
+
+        var mastery = CreateMastery(name: "This Mastery");
+        mastery.Id = "this-mastery";
+
+        var violations = MasteryRules.ValidateRequest(profile, null, mastery, 5, UtcNow.AddDays(-30), UtcNow, null);
+
+        violations.Should().NotContain(v => v.RuleType == MasteryRuleType.Tier5Conflict);
+    }
+
     #endregion
 
     #region Single Rare rule
@@ -302,6 +437,30 @@ public class MasteryRulesTests
         var violations = MasteryRules.ValidateRequest(profile, ownedCatalog, owned, 2, UtcNow.AddDays(-30), UtcNow, null);
 
         violations.Should().NotContain(v => v.RuleType == MasteryRuleType.RareConflict);
+    }
+
+    [Test]
+    public void ValidateRequest_OwnedCatalogIncludesAQueuedNotYetEarnedRareMastery_ReturnsRareConflictWarning()
+    {
+        // Fix 3(b): Mastery.GetOwnedMasteryCatalog now includes catalog entries for
+        // masteries with a queued/active training entry, not just already-earned ones -
+        // this proves ValidateRequest correctly flags a conflict once such an entry is
+        // present in the owned-catalog lookup it's given, matching a Rare slot reserved
+        // by in-flight (not yet earned) training.
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "queued-rare", TargetTier = 1 });
+
+        var queuedRare = CreateMastery(rarity: MasteryRarityType.Rare, name: "Queued Rare");
+        queuedRare.Id = "queued-rare";
+
+        var newRare = CreateMastery(rarity: MasteryRarityType.Rare, name: "New Rare");
+        newRare.Id = "new-rare";
+
+        var ownedCatalog = new Dictionary<string, Mastery> { ["queued-rare"] = queuedRare };
+
+        var violations = MasteryRules.ValidateRequest(profile, ownedCatalog, newRare, 1, UtcNow.AddDays(-30), UtcNow, null);
+
+        violations.Should().Contain(v => v.RuleType == MasteryRuleType.RareConflict && !v.IsBlocking);
     }
 
     #endregion
@@ -672,6 +831,35 @@ public class MasteryRulesTests
     }
 
     [Test]
+    public void Abandon_DuplicateTierHistoryRecordsForTheSameTier_OnlyRemovesTheMostRecentOne()
+    {
+        // Fix 8: a character can legitimately re-train the same tier more than once
+        // (e.g. abandon then retrain back up to it) - RemoveAll would wipe every
+        // duplicate-tier record instead of just the one actually being abandoned now.
+        var profile = CreateProfile();
+        var firstRecord = new MasteryTierRecord { Tier = 2, DateEarned = UtcNow.AddDays(-30), Source = MasteryTrainingSource.Standard21 };
+        var secondRecord = new MasteryTierRecord { Tier = 2, DateEarned = UtcNow, Source = MasteryTrainingSource.QuickSlot };
+
+        profile.Masteries["mastery-a"] = new PlayerMasteryLevel
+        {
+            Tier = 2,
+            TierHistory = { new MasteryTierRecord { Tier = 1, Source = MasteryTrainingSource.Standard14 }, firstRecord, secondRecord }
+        };
+
+        MasteryRules.Abandon(profile, "mastery-a", 2, new MasteryActor("Staffer", "cdkey1"), "test", UtcNow);
+
+        // Tier drops back to 1, and only the most recent tier-2 record (secondRecord) is
+        // removed - the earlier tier-2 record and the tier-1 record both survive.
+        profile.Masteries["mastery-a"].TierHistory.Should().HaveCount(2);
+        profile.Masteries["mastery-a"].TierHistory.Should().Contain(firstRecord);
+        profile.Masteries["mastery-a"].TierHistory.Should().NotContain(secondRecord);
+
+        // The refund should be based on the removed (most recent, Quick-Slotted) record.
+        profile.QuickSlotsAvailable.Should().Be(1);
+        profile.RetrainCredits7.Should().Be(1);
+    }
+
+    [Test]
     public void Abandon_TierDoesNotMatchCurrentTier_ReturnsFalseAndDoesNotMutate()
     {
         var profile = CreateProfile();
@@ -786,6 +974,54 @@ public class MasteryRulesTests
         second.StartDate.Should().Be(first.StartDate.AddDays(first.DurationDays));
     }
 
+    [Test]
+    public void EnqueueTraining_InstantWithNonEmptyQueue_GrantsTierNowAndLeavesQueueUntouched()
+    {
+        // Fix 2: an instant grant must bypass the queue entirely rather than sit behind
+        // whatever is already active/queued.
+        var profile = CreateProfile(lifetimeLevelsTrained: 0);
+        profile.TrainingQueue.Add(new MasteryTrainingEntry
+        {
+            MasteryId = "mastery-active",
+            TargetTier = 1,
+            StartDate = UtcNow,
+            DurationDays = 14,
+            Source = MasteryTrainingSource.Standard14
+        });
+
+        var entry = MasteryRules.EnqueueTraining(profile, "mastery-instant", 1, false, false, true,
+            new MasteryActor("Staffer", "cdkey1"), "Instant grant", "request-1", UtcNow);
+
+        entry.Source.Should().Be(MasteryTrainingSource.Instant);
+        entry.DurationDays.Should().Be(0);
+
+        profile.Masteries.Should().ContainKey("mastery-instant");
+        profile.Masteries["mastery-instant"].Tier.Should().Be(1);
+        profile.Masteries["mastery-instant"].TierHistory.Should().ContainSingle(r => r.Source == MasteryTrainingSource.Instant);
+        profile.LifetimeLevelsTrained.Should().Be(1);
+
+        // The pre-existing queue entry must be completely unaffected.
+        profile.TrainingQueue.Should().ContainSingle();
+        profile.TrainingQueue[0].MasteryId.Should().Be("mastery-active");
+        profile.TrainingQueue[0].StartDate.Should().Be(UtcNow);
+        profile.TrainingQueue[0].DurationDays.Should().Be(14);
+
+        profile.AuditLog.Should().ContainSingle(e => e.Action == "Approve" && e.Reason == "Instant grant");
+    }
+
+    [Test]
+    public void EnqueueTraining_InstantWithEmptyQueue_GrantsTierImmediately()
+    {
+        var profile = CreateProfile(lifetimeLevelsTrained: 0);
+
+        var entry = MasteryRules.EnqueueTraining(profile, "mastery-a", 1, false, false, true,
+            new MasteryActor("Staffer", "cdkey1"), "reason", "request-1", UtcNow);
+
+        entry.Source.Should().Be(MasteryTrainingSource.Instant);
+        profile.Masteries["mastery-a"].Tier.Should().Be(1);
+        profile.TrainingQueue.Should().BeEmpty();
+    }
+
     #endregion
 
     #region AbandonTrainingEntry (Phase 3 - cancelling a not-yet-completed entry)
@@ -833,6 +1069,34 @@ public class MasteryRulesTests
         MasteryRules.AbandonTrainingEntry(profile, 0, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
 
         profile.QuickSlotsAvailable.Should().Be(1);
+    }
+
+    [Test]
+    public void AbandonTrainingEntry_Retrain7SourcedEntry_RefundsTheSevenDayCredit()
+    {
+        var profile = CreateProfile();
+        profile.RetrainCredits7 = 0;
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", TargetTier = 1, StartDate = UtcNow, DurationDays = 7, Source = MasteryTrainingSource.Retrain7 });
+
+        MasteryRules.AbandonTrainingEntry(profile, 0, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
+
+        profile.RetrainCredits7.Should().Be(1);
+        profile.RetrainCredits14.Should().Be(0);
+        profile.QuickSlotsAvailable.Should().Be(0);
+    }
+
+    [Test]
+    public void AbandonTrainingEntry_Retrain14SourcedEntry_RefundsTheFourteenDayCredit()
+    {
+        var profile = CreateProfile();
+        profile.RetrainCredits14 = 0;
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "a", TargetTier = 1, StartDate = UtcNow, DurationDays = 14, Source = MasteryTrainingSource.Retrain14 });
+
+        MasteryRules.AbandonTrainingEntry(profile, 0, new MasteryActor("Staffer", "cdkey1"), "reason", UtcNow);
+
+        profile.RetrainCredits14.Should().Be(1);
+        profile.RetrainCredits7.Should().Be(0);
+        profile.QuickSlotsAvailable.Should().Be(0);
     }
 
     [Test]

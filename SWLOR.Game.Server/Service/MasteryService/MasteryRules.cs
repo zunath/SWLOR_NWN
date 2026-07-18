@@ -121,6 +121,21 @@ namespace SWLOR.Game.Server.Service.MasteryService
         }
 
         /// <summary>
+        /// Whether a pending approval decision should automatically spend a retrain
+        /// credit: true only when the entry isn't itself Quick-Slotted or an instant
+        /// grant, isn't targeting tier 5 (retrain credits never discount tier 5 - see
+        /// <see cref="ResolveTraining"/>), and the character actually holds a credit to
+        /// spend. Shared by <see cref="Mastery"/>'s ApproveRequest and the review
+        /// window's live duration preview so the two can never disagree about whether a
+        /// credit will be consumed.
+        /// </summary>
+        public static bool ShouldUseRetrainCredit(PlayerMasteryProfile profile, int targetTier, bool useQuickSlot, bool isInstant)
+        {
+            return !useQuickSlot && !isInstant && targetTier != 5 &&
+                   (profile.RetrainCredits7 > 0 || profile.RetrainCredits14 > 0);
+        }
+
+        /// <summary>
         /// The total number of tier-levels the character currently holds across every
         /// mastery they own (sum of each PlayerMasteryLevel.Tier).
         /// </summary>
@@ -198,7 +213,10 @@ namespace SWLOR.Game.Server.Service.MasteryService
                     .Where(kvp => kvp.Key != mastery.Id)
                     .Any(kvp => kvp.Value.Tier >= 5);
 
-                if (alreadyHasOtherTier5)
+                var alreadyTrainingOtherTier5 = profile.TrainingQueue
+                    .Any(e => e.MasteryId != mastery.Id && e.TargetTier >= 5);
+
+                if (alreadyHasOtherTier5 || alreadyTrainingOtherTier5)
                 {
                     violations.Add(new MasteryRuleViolation(
                         MasteryRuleType.Tier5Conflict,
@@ -339,8 +357,13 @@ namespace SWLOR.Game.Server.Service.MasteryService
             if (!profile.Masteries.TryGetValue(masteryId, out var level) || level.Tier != tier)
                 return false;
 
+            // Only the most recent record for this tier is un-earned - a character can
+            // legitimately have re-trained the same tier more than once (e.g. abandon then
+            // retrain), and RemoveAll would wipe every one of those duplicate-tier records
+            // instead of just the one actually being abandoned now.
             var record = level.TierHistory.LastOrDefault(r => r.Tier == tier);
-            level.TierHistory.RemoveAll(r => r.Tier == tier);
+            if (record != null)
+                level.TierHistory.Remove(record);
             level.Tier = tier - 1;
 
             if (level.Tier <= 0)
@@ -400,11 +423,13 @@ namespace SWLOR.Game.Server.Service.MasteryService
         }
 
         /// <summary>
-        /// Enqueues a new training entry for an approved request. Consumes a Quick Slot
-        /// or retrain credit if the resolved source used one. The new entry's start date
-        /// is <paramref name="utcNow"/> if the queue was empty, or the current last
-        /// entry's finish date otherwise (strictly sequential). Appends an "Approve"
-        /// audit entry, and a "QuickSlotSpend" entry if a Quick Slot was consumed.
+        /// Enqueues a new training entry for an approved request - or, for an instant
+        /// grant, completes it immediately without touching the queue at all. Consumes a
+        /// Quick Slot or retrain credit if the resolved source used one. A non-instant
+        /// entry's start date is <paramref name="utcNow"/> if the queue was empty, or the
+        /// current last entry's finish date otherwise (strictly sequential). Appends an
+        /// "Approve" audit entry, and a "QuickSlotSpend" entry if a Quick Slot was
+        /// consumed.
         /// </summary>
         public static MasteryTrainingEntry EnqueueTraining(
             PlayerMasteryProfile profile,
@@ -419,6 +444,30 @@ namespace SWLOR.Game.Server.Service.MasteryService
             DateTime utcNow)
         {
             var (source, duration) = ResolveTraining(profile, targetTier, useQuickSlot, useRetrainCredit, isInstant);
+
+            // Instant grants bypass the queue entirely rather than being appended to the
+            // back of it - appending would leave the grant stuck behind whatever is
+            // already active/queued instead of completing "now" as an instant grant must.
+            // The existing queue is left completely untouched.
+            if (isInstant)
+            {
+                var instantEntry = new MasteryTrainingEntry
+                {
+                    MasteryId = masteryId,
+                    TargetTier = targetTier,
+                    StartDate = utcNow,
+                    DurationDays = duration,
+                    ReductionDays = 0,
+                    Source = source,
+                    RequestId = requestId ?? string.Empty
+                };
+
+                GrantTier(profile, masteryId, targetTier, utcNow, source);
+                profile.LifetimeLevelsTrained++;
+                AppendAudit(profile, utcNow, actor, "Approve", reason);
+
+                return instantEntry;
+            }
 
             var startDate = utcNow;
             if (profile.TrainingQueue.Count > 0)
@@ -456,12 +505,6 @@ namespace SWLOR.Game.Server.Service.MasteryService
 
             AppendAudit(profile, utcNow, actor, "Approve", reason);
 
-            // Instant grants complete immediately rather than sitting in the queue.
-            if (isInstant)
-            {
-                EvaluateTrainingQueue(profile, utcNow);
-            }
-
             return entry;
         }
 
@@ -470,7 +513,7 @@ namespace SWLOR.Game.Server.Service.MasteryService
         /// tier ever granted. Distinct from <see cref="Abandon"/>, which un-earns an
         /// already-granted tier and awards a retrain credit - a cancelled entry never
         /// finished, so nothing was earned to un-earn and no credit is granted. Any Quick
-        /// Slot spent on the entry is refunded. Every following entry's start date is
+        /// Slot or retrain credit spent on the entry is refunded. Every following entry's start date is
         /// recomputed so the queue stays strictly sequential with no time gained or lost;
         /// if the active (index 0) entry itself is cancelled, the next entry starts now.
         /// Appends an "AbandonTraining" audit entry.
@@ -491,6 +534,10 @@ namespace SWLOR.Game.Server.Service.MasteryService
 
             if (entry.Source == MasteryTrainingSource.QuickSlot)
                 profile.QuickSlotsAvailable++;
+            else if (entry.Source == MasteryTrainingSource.Retrain7)
+                profile.RetrainCredits7++;
+            else if (entry.Source == MasteryTrainingSource.Retrain14)
+                profile.RetrainCredits14++;
 
             if (profile.TrainingQueue.Count > 0)
             {

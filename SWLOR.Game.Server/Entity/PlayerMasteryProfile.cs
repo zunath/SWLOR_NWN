@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Entity
             Masteries = new Dictionary<string, PlayerMasteryLevel>();
             TrainingQueue = new List<MasteryTrainingEntry>();
             AuditLog = new List<MasteryAuditEntry>();
+            PendingCompletionNotices = new List<string>();
             QuickSlotsAvailable = 0;
             LifetimeLevelsTrained = 0;
             RetrainCredits14 = 0;
@@ -78,5 +79,16 @@ namespace SWLOR.Game.Server.Entity
         /// requests or completed training. Used to avoid re-toasting the same events.
         /// </summary>
         public DateTime? DateLastNotified { get; set; }
+
+        /// <summary>
+        /// Completion-toast messages queued for this character but not yet delivered.
+        /// Appended whenever <see cref="MasteryRules.EvaluateTrainingQueue"/> completes an
+        /// entry (via <see cref="Mastery"/>'s orchestration wrapper), regardless of
+        /// whether the character is online at the time - e.g. a DM evaluating the queue
+        /// from the examine window while the character is offline. Drained and toasted at
+        /// the next login or Masteries window open, so a completion is never silently
+        /// dropped and never toasts twice.
+        /// </summary>
+        public List<string> PendingCompletionNotices { get; set; }
     }
 }

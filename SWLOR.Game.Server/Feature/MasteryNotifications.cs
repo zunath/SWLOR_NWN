@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Feature
     /// about anything that happened while they were offline: completed training tiers,
     /// and any requests staff reviewed since their last login. See MASTERY_SPEC.md's
     /// "Processing" section - there are no schedulers/background jobs for this system,
-    /// everything is evaluated lazily on login, on Masteries window open, and (in a
-    /// later phase) when staff open a player's profile.
+    /// everything is evaluated lazily on login, on Masteries window open, and when staff
+    /// open a player's profile.
     /// </summary>
     public class MasteryNotifications
     {
@@ -20,16 +20,26 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
+
+            // A login hook fires for every player regardless of whether they've ever
+            // touched the Masteries system - never create a profile just because someone
+            // logged in. Mastery.GetOrCreateProfile is only reached below once a profile
+            // is already known to exist (from opening the window, submitting a request,
+            // or a staff mutation).
+            if (!Mastery.HasProfile(playerId)) return;
+
             var utcNow = DateTime.UtcNow;
 
-            var completed = Mastery.EvaluateTrainingQueue(playerId, utcNow);
-            foreach (var entry in completed)
-            {
-                var mastery = Mastery.GetMastery(entry.MasteryId);
-                var name = string.IsNullOrWhiteSpace(mastery?.Name) ? "a mastery" : mastery.Name;
+            // Evaluating the queue is what may append completion notices (including ones
+            // completing right now); draining is the single delivery path for those
+            // notices, whether they were queued just now or earlier (e.g. by a DM
+            // evaluating this profile via the examine window while offline).
+            Mastery.EvaluateTrainingQueue(playerId, utcNow);
+            var notices = Mastery.DrainPendingCompletionNotices(playerId);
 
-                SendMessageToPC(player, ColorToken.Green(
-                    $"Your training in {name} is complete - you are now Tier {entry.TargetTier}! Open Masteries on your character sheet for details."));
+            foreach (var notice in notices)
+            {
+                SendMessageToPC(player, ColorToken.Green(notice));
             }
 
             var reviewedCount = Mastery.CountUnnotifiedReviewedRequests(playerId);
@@ -39,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
                     "A mastery request of yours was reviewed. Open Masteries on your character sheet for details."));
             }
 
-            if (completed.Count > 0 || reviewedCount > 0)
+            if (notices.Count > 0 || reviewedCount > 0)
             {
                 Mastery.MarkNotified(playerId, utcNow);
             }

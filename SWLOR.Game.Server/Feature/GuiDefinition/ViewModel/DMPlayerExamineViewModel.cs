@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _targetDescription;
         private string _characterType;
         private string _credits;
+        private string _currentPartial;
 
         public const string PartialView = "PARTIAL";
 
@@ -342,12 +343,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (openMasteries)
             {
-                ChangePartialView(PartialView, MasteriesView);
+                _currentPartial = MasteriesView;
+                ChangePartialView(PartialView, _currentPartial);
                 LoadTargetMasteries();
             }
             else
             {
-                ChangePartialView(PartialView, DetailView);
+                _currentPartial = DetailView;
+                ChangePartialView(PartialView, _currentPartial);
                 LoadTargetDetails();
             }
 
@@ -360,6 +363,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedGrantTier);
             WatchOnClient(model => model.GrantReason);
             WatchOnClient(model => model.QuickSlotReason);
+        }
+
+        /// <summary>
+        /// A ShowModal confirmation (e.g. Abandon Training) restores the window's static
+        /// main template, which resets the tab-content placeholder back to whatever it
+        /// was at window-build time. Reapply whichever tab was actually active so the DM
+        /// doesn't get bounced back to Details - see MasteriesViewModel/MasteryReviewViewModel's
+        /// OnMainViewRestored for the same fix.
+        /// </summary>
+        protected override void OnMainViewRestored()
+        {
+            ChangePartialView(PartialView, _currentPartial);
         }
 
         private void LoadTargetDetails()
@@ -444,7 +459,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsNotesToggled = false;
             IsMasteriesToggled = false;
 
-            ChangePartialView(PartialView, DetailView);
+            _currentPartial = DetailView;
+            ChangePartialView(PartialView, _currentPartial);
             LoadTargetDetails();
         };
 
@@ -456,7 +472,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsNotesToggled = false;
             IsMasteriesToggled = false;
 
-            ChangePartialView(PartialView, SkillsView);
+            _currentPartial = SkillsView;
+            ChangePartialView(PartialView, _currentPartial);
             LoadTargetSkills();
         };
 
@@ -468,7 +485,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsNotesToggled = false;
             IsMasteriesToggled = false;
 
-            ChangePartialView(PartialView, PerksView);
+            _currentPartial = PerksView;
+            ChangePartialView(PartialView, _currentPartial);
             LoadTargetPerks();
         };
 
@@ -480,7 +498,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsNotesToggled = true;
             IsMasteriesToggled = false;
 
-            ChangePartialView(PartialView, NotesView);
+            _currentPartial = NotesView;
+            ChangePartialView(PartialView, _currentPartial);
             LoadTargetNotes();
         };
 
@@ -492,7 +511,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsNotesToggled = false;
             IsMasteriesToggled = true;
 
-            ChangePartialView(PartialView, MasteriesView);
+            _currentPartial = MasteriesView;
+            ChangePartialView(PartialView, _currentPartial);
             LoadTargetMasteries();
         };
 
@@ -881,13 +901,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var queueIndex = row.QueueIndex.Value;
+            // Capture a stable identifier (mastery id + target tier) rather than the
+            // positional queue index - the queue can change between the click and the
+            // modal confirm (e.g. an entry completing or another action reordering it),
+            // which would make a captured index point at the wrong entry. Re-resolve the
+            // current index from that identifier at confirm time instead - matching
+            // MasteryReviewViewModel's approve/deny pattern of re-fetching by a stable id
+            // rather than trusting anything captured at click time.
+            var masteryId = row.MasteryId;
+            var targetTier = row.TargetTier;
             var reason = MasteryActionReason;
             var name = row.Name;
 
             ShowModal($"Cancel training for {name}? Any Quick Slot spent on it will be refunded.", () =>
             {
-                Mastery.AbandonTrainingEntry(_playerId, queueIndex, GetName(Player), GetPCPublicCDKey(Player), reason, DateTime.UtcNow);
+                var profile = Mastery.GetOrCreateProfile(_playerId);
+                var currentIndex = profile.TrainingQueue.FindIndex(e => e.MasteryId == masteryId && e.TargetTier == targetTier);
+
+                if (currentIndex < 0)
+                {
+                    MasteryActionStatusText = "This training entry no longer exists.";
+                    LoadTargetMasteries();
+                    return;
+                }
+
+                Mastery.AbandonTrainingEntry(_playerId, currentIndex, GetName(Player), GetPCPublicCDKey(Player), reason, DateTime.UtcNow);
 
                 MasteryActionStatusText = "Training entry cancelled.";
                 LoadTargetMasteries();

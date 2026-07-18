@@ -682,11 +682,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var request = _rows[_selectedIndex];
             var profile = Mastery.GetOrCreateProfile(request.PlayerId);
-            var duration = MasteryRules.GetTrainingDuration(profile, request.TargetTier, UseQuickSlot, false, IsInstantGrant);
+            var useRetrainCredit = MasteryRules.ShouldUseRetrainCredit(profile, request.TargetTier, UseQuickSlot, IsInstantGrant);
+            var duration = MasteryRules.GetTrainingDuration(profile, request.TargetTier, UseQuickSlot, useRetrainCredit, IsInstantGrant);
+            var creditSuffix = useRetrainCredit ? " (retrain credit)" : string.Empty;
 
             DecisionDurationText = duration <= 0
                 ? "Duration if approved: instant (0 days)"
-                : $"Duration if approved: {duration} day(s) - completes {DateTime.UtcNow.AddDays(duration):yyyy-MM-dd}";
+                : $"Duration if approved: {duration} day(s){creditSuffix} - completes {DateTime.UtcNow.AddDays(duration):yyyy-MM-dd}";
         }
 
         public Action OnClickApprove() => () =>
@@ -730,11 +732,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var profile = Mastery.GetOrCreateProfile(liveRequest.PlayerId);
-            var duration = MasteryRules.GetTrainingDuration(profile, liveRequest.TargetTier, UseQuickSlot, false, IsInstantGrant);
+            var useRetrainCreditPreview = MasteryRules.ShouldUseRetrainCredit(profile, liveRequest.TargetTier, UseQuickSlot, IsInstantGrant);
+            var duration = MasteryRules.GetTrainingDuration(profile, liveRequest.TargetTier, UseQuickSlot, useRetrainCreditPreview, IsInstantGrant);
             var finishText = duration <= 0 ? "completes immediately" : $"completes {DateTime.UtcNow.AddDays(duration):yyyy-MM-dd}";
+            var creditSuffix = useRetrainCreditPreview ? " (retrain credit)" : string.Empty;
 
             var prompt = $"Approve {checkMastery.Name} - Tier {liveRequest.TargetTier} for {liveRequest.CharacterName}?\n" +
-                         $"Training: {duration} day(s) - {finishText}." +
+                         $"Training: {duration} day(s){creditSuffix} - {finishText}." +
                          (violations.Count > 0
                              ? $"\nRules override: {string.Join("; ", violations.Select(v => v.Message))} - reason will be logged."
                              : string.Empty);

@@ -10,15 +10,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// bar, "cur/max", a Locate button (glow only the viewer sees), and per-row -/+/x buttons. Structure
     /// mirrors the proven Bank/MarketListing windows (resizable; a variable-width name label fills the row;
     /// every action is a fixed-width button so nothing collapses). Never touches real combat HP. See
-    /// <see cref="ViewModel.HpTrackerViewModel"/>.
+    /// <see cref="ViewModel.HPTrackerViewModel"/>.
     /// </summary>
-    public class HpTrackerDefinition : IGuiWindowDefinition
+    public class HPTrackerDefinition : IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<HpTrackerViewModel> _builder = new();
+        private readonly GuiWindowBuilder<HPTrackerViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.HpTracker)
+            _builder.CreateWindow(GuiWindowType.HPTracker)
                 .SetTitle("HP Tracker")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddTextEdit()
                             .SetPlaceholder("10")
                             .SetWidth(60f)
-                            .BindValue(model => model.AddHpText);
+                            .BindValue(model => model.AddHPText);
 
                         row.AddButton()
                             .SetText("Add (target)")
@@ -78,15 +78,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 cell.SetIsVariable(false);
                                 cell.SetWidth(110f);
                                 cell.AddProgressBar()
-                                    .BindValue(model => model.HpProgresses)
-                                    .BindColor(model => model.HpColors);
+                                    .BindValue(model => model.HPProgresses)
+                                    .BindColor(model => model.HPColors);
                             });
                             template.AddCell(cell =>
                             {
                                 cell.SetIsVariable(false);
                                 cell.SetWidth(46f);
                                 cell.AddLabel()
-                                    .BindText(model => model.HpTexts)
+                                    .BindText(model => model.HPTexts)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Center)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle);
                             });

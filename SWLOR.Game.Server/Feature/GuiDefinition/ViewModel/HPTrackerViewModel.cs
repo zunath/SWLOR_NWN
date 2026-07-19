@@ -12,8 +12,8 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class HpTrackerViewModel : GuiViewModelBase<HpTrackerViewModel, GuiPayloadBase>,
-        IGuiRefreshable<HpTrackerRefreshEvent>
+    public class HPTrackerViewModel : GuiViewModelBase<HPTrackerViewModel, GuiPayloadBase>,
+        IGuiRefreshable<HPTrackerRefreshEvent>
     {
         // Parallel to the bound lists: row index -> tracked creature.
         private readonly List<uint> _creatures = new();
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // (green -> yellow -> red) as the creature's HP changes, without re-applying it every refresh.
         private VisualEffect _highlightAura = VisualEffect.None;
 
-        public string AddHpText
+        public string AddHPText
         {
             get => Get<string>();
             set => Set(value);
@@ -38,19 +38,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<float> HpProgresses
+        public GuiBindingList<float> HPProgresses
         {
             get => Get<GuiBindingList<float>>();
             set => Set(value);
         }
 
-        public GuiBindingList<GuiColor> HpColors
+        public GuiBindingList<GuiColor> HPColors
         {
             get => Get<GuiBindingList<GuiColor>>();
             set => Set(value);
         }
 
-        public GuiBindingList<string> HpTexts
+        public GuiBindingList<string> HPTexts
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
@@ -64,12 +64,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            AddHpText = "10";
-            WatchOnClient(model => model.AddHpText);
+            AddHPText = "10";
+            WatchOnClient(model => model.AddHPText);
             Rebuild();
         }
 
-        public void Refresh(HpTrackerRefreshEvent payload)
+        public void Refresh(HPTrackerRefreshEvent payload)
         {
             Rebuild();
         }
@@ -91,10 +91,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 _creatures.Add(creature);
                 names.Add(GetName(creature));
-                progresses.Add(HPTracker.GetProgress(current, max));
-                colors.Add(HPTracker.GetBarColor(current, max));
+                progresses.Add(GetProgress(current, max));
+                colors.Add(GetBarColor(current, max));
                 texts.Add($"{current}/{max}");
-                canManage.Add(HpTrackerWindow.CanManage(Player, creature));
+                canManage.Add(HPTrackerWindow.CanManage(Player, creature));
             }
 
             // Maintain the locate-glow: drop it if its creature left range (avoids a stuck glow); otherwise
@@ -118,15 +118,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             Names = names;
-            HpProgresses = progresses;
-            HpColors = colors;
-            HpTexts = texts;
+            HPProgresses = progresses;
+            HPColors = colors;
+            HPTexts = texts;
             CanManage = canManage;
         }
 
         public Action OnClickAdd() => () =>
         {
-            if (!int.TryParse(AddHpText, out var hp) || hp < 1)
+            if (!int.TryParse(AddHPText, out var hp) || hp < 1)
             {
                 SendMessageToPC(Player, ColorToken.Red("Enter a whole HP number of 1 or greater in the HP box first."));
                 return;
@@ -134,13 +134,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Targeting.EnterTargetingMode(Player, ObjectType.Creature, "Click a creature to track its HP.", creature =>
             {
-                if (!HpTrackerWindow.IsTrackableTarget(creature))
+                if (!HPTrackerWindow.IsTrackableTarget(creature))
                 {
                     SendMessageToPC(Player, ColorToken.Red("You can only track a non-DM creature."));
                     return;
                 }
 
-                if (!HpTrackerWindow.CanManage(Player, creature))
+                if (!HPTrackerWindow.CanManage(Player, creature))
                 {
                     SendMessageToPC(Player, ColorToken.Red("You can only track your own HP."));
                     return;
@@ -153,9 +153,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 HPTracker.Set(creature, hp, hp);
-                HpTrackerWindow.RefreshOpenWindows();
+                HPTrackerWindow.RefreshOpenWindows();
 
-                if (HpTrackerWindow.IsStaff(Player))
+                if (HPTrackerWindow.IsStaff(Player))
                     Log.Write(LogGroup.DM, $"HP tracker set (window): Actor={GetName(Player)} ({GetPCPublicCDKey(Player)}), Target={GetName(creature)}, After={hp}/{hp}");
             });
         };
@@ -188,28 +188,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickRemove() => () =>
         {
             var creature = CreatureAtEventRow();
-            if (creature == OBJECT_INVALID || !HpTrackerWindow.CanManage(Player, creature))
+            if (creature == OBJECT_INVALID || !HPTrackerWindow.CanManage(Player, creature))
                 return;
 
             var before = HPTracker.Has(creature) ? HPTracker.Get(creature) : (Current: 0, Max: 0);
             HPTracker.Remove(creature);
-            HpTrackerWindow.RefreshOpenWindows();
+            HPTrackerWindow.RefreshOpenWindows();
 
-            if (HpTrackerWindow.IsStaff(Player))
+            if (HPTrackerWindow.IsStaff(Player))
                 Log.Write(LogGroup.DM, $"HP tracker removed (window): Actor={GetName(Player)} ({GetPCPublicCDKey(Player)}), Target={GetName(creature)}, Before={before.Current}/{before.Max}");
         };
 
         private void AdjustAtRow(int delta)
         {
             var creature = CreatureAtEventRow();
-            if (creature == OBJECT_INVALID || !HpTrackerWindow.CanManage(Player, creature))
+            if (creature == OBJECT_INVALID || !HPTrackerWindow.CanManage(Player, creature))
                 return;
 
             var before = HPTracker.Has(creature) ? HPTracker.Get(creature) : (Current: 0, Max: 0);
             HPTracker.Adjust(creature, delta);
-            HpTrackerWindow.RefreshOpenWindows();
+            HPTrackerWindow.RefreshOpenWindows();
 
-            if (HpTrackerWindow.IsStaff(Player))
+            if (HPTrackerWindow.IsStaff(Player))
             {
                 var after = HPTracker.Has(creature) ? HPTracker.Get(creature) : (Current: 0, Max: 0);
                 Log.Write(LogGroup.DM, $"HP tracker adjusted (window): Actor={GetName(Player)} ({GetPCPublicCDKey(Player)}), Target={GetName(creature)}, Delta={delta}, Before={before.Current}/{before.Max}, After={after.Current}/{after.Max}");
@@ -223,6 +223,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return OBJECT_INVALID;
 
             return _creatures[index];
+        }
+
+        /// <summary>Bar fill 0..1 for the given current/max.</summary>
+        private static float GetProgress(int current, int max)
+        {
+            if (max <= 0) return 0f;
+            var ratio = (float)current / max;
+            if (ratio < 0f) return 0f;
+            if (ratio > 1f) return 1f;
+            return ratio;
+        }
+
+        /// <summary>Bar color, green (full) -> yellow (half) -> red (empty) by ratio.</summary>
+        private static GuiColor GetBarColor(int current, int max)
+        {
+            var ratio = GetProgress(current, max);
+
+            byte r, g;
+            if (ratio >= 0.5f)
+            {
+                r = (byte)(255 * (1f - ratio) * 2f); // 0 at full, 255 at half
+                g = 255;
+            }
+            else
+            {
+                r = 255;
+                g = (byte)(255 * ratio * 2f);        // 255 at half, 0 at empty
+            }
+
+            return new GuiColor(r, g, 0);
         }
 
         /// <summary>
@@ -250,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return VisualEffect.Vfx_Dur_Aura_Green;
 
             var (current, max) = HPTracker.Get(creature);
-            var ratio = HPTracker.GetProgress(current, max);
+            var ratio = GetProgress(current, max);
 
             if (ratio >= 0.66f)
                 return VisualEffect.Vfx_Dur_Aura_Green;

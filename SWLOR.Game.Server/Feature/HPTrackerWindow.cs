@@ -8,15 +8,15 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Feature
 {
     /// <summary>
-    /// Coordinates the HP Tracker NUI window: refreshes open windows when a tracker changes and
-    /// periodically (so creatures moving in/out of range are added/removed), and cleans up trackers when
-    /// a creature is destroyed or a tracked player logs out. Also owns the shared permission rules.
+    /// Coordinates the HP Tracker NUI window: refreshes open windows when a tracker changes and when a
+    /// tracked creature or a viewer moves between areas, and cleans up trackers when a creature dies or
+    /// is destroyed or a tracked player logs out. Also owns the shared permission rules.
     ///
     /// Windows are refreshed directly via <see cref="Gui.GetPlayerWindow"/> (not
     /// <see cref="Gui.PublishRefreshEvent{T}"/>) so DM clients are included — the publish path early-returns
     /// for non-PCs, and DMs are the primary users of /hptracker.
     /// </summary>
-    public static class HpTrackerWindow
+    public static class HPTrackerWindow
     {
         /// <summary>
         /// Rebuilds every currently-open HP Tracker window (for players and DMs). Cheap to call after any
@@ -26,18 +26,38 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (!Gui.IsWindowOpen(player, GuiWindowType.HpTracker))
+                if (!Gui.IsWindowOpen(player, GuiWindowType.HPTracker))
                     continue;
 
-                var viewModel = Gui.GetPlayerWindow(player, GuiWindowType.HpTracker).ViewModel;
-                (viewModel as IGuiRefreshable<HpTrackerRefreshEvent>)?.Refresh(new HpTrackerRefreshEvent());
+                var viewModel = Gui.GetPlayerWindow(player, GuiWindowType.HPTracker).ViewModel;
+                (viewModel as IGuiRefreshable<HPTrackerRefreshEvent>)?.Refresh(new HPTrackerRefreshEvent());
             }
         }
 
-        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void RefreshOnHeartbeat()
+        /// <summary>
+        /// The window lists tracked creatures in the viewer's area, so an area transition changes what open
+        /// windows should show in exactly two cases: a tracked creature moved in or out, or a viewer with an
+        /// open window changed areas. Every other refresh trigger is an explicit tracker change.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        public static void RefreshOnAreaEnter()
         {
-            RefreshOpenWindows();
+            RefreshIfListChanged(GetEnteringObject());
+        }
+
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void RefreshOnAreaExit()
+        {
+            RefreshIfListChanged(GetExitingObject());
+        }
+
+        private static void RefreshIfListChanged(uint mover)
+        {
+            // A DM possessing a creature transitions as that creature, but the window lives under the master.
+            var windowHost = GetIsDMPossessed(mover) ? GetMaster(mover) : mover;
+
+            if (HPTracker.Has(mover) || Gui.IsWindowOpen(windowHost, GuiWindowType.HPTracker))
+                RefreshOpenWindows();
         }
 
         /// <summary>
@@ -67,7 +87,7 @@ namespace SWLOR.Game.Server.Feature
                 RefreshOpenWindows();
         }
 
-        // ---- Shared permission rules (used by both the chat commands and the window view model) ----
+        // ---- Shared permission rules (used by both the chat command and the window view model) ----
 
         public static bool IsStaff(uint user)
         {

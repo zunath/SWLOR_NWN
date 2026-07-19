@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -10,8 +9,8 @@ namespace SWLOR.Game.Server.Service
     /// cleared on removal, on the tracked creature's death or destruction / a tracked player's logout, and
     /// on server restart.
     ///
-    /// This class is pure state + pure formatting helpers (so it is easy to unit test). Window refresh
-    /// and object lifecycle are coordinated by <c>HpTrackerWindow</c>.
+    /// This class is pure state (so it is easy to unit test). Window refresh and object lifecycle are
+    /// coordinated by <c>HPTrackerWindow</c>; all presentation lives in <c>HPTrackerViewModel</c>.
     /// </summary>
     public static class HPTracker
     {
@@ -69,7 +68,7 @@ namespace SWLOR.Game.Server.Service
                 return new List<uint>();
 
             // Cache each name once up front: GetName crosses the C#/C++ interop boundary, and the comparator
-            // below would otherwise call it O(N log N) times on every heartbeat while the window is open.
+            // below would otherwise call it O(N log N) times on every window rebuild.
             var inArea = new List<(uint Id, string Name)>();
 
             foreach (var creature in _trackers.Keys)
@@ -79,7 +78,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Stable, deterministic order (name, then object id). Dictionary key order is not stable, and
-            // the window rebuilds on every heartbeat — without this the rows would reorder on their own,
+            // the window rebuilds on every refresh — without this the rows would reorder on their own,
             // which flickers and, worse, makes a per-row button act on whoever slid into that row index.
             inArea.Sort((a, b) =>
             {
@@ -92,36 +91,6 @@ namespace SWLOR.Game.Server.Service
                 result.Add(item.Id);
 
             return result;
-        }
-
-        /// <summary>Bar fill 0..1 for the given current/max (pure).</summary>
-        public static float GetProgress(int current, int max)
-        {
-            if (max <= 0) return 0f;
-            var ratio = (float)current / max;
-            if (ratio < 0f) return 0f;
-            if (ratio > 1f) return 1f;
-            return ratio;
-        }
-
-        /// <summary>Bar color, green (full) -> yellow (half) -> red (empty) by ratio (pure).</summary>
-        public static GuiColor GetBarColor(int current, int max)
-        {
-            var ratio = GetProgress(current, max);
-
-            byte r, g;
-            if (ratio >= 0.5f)
-            {
-                r = (byte)(255 * (1f - ratio) * 2f); // 0 at full, 255 at half
-                g = 255;
-            }
-            else
-            {
-                r = 255;
-                g = (byte)(255 * ratio * 2f);        // 255 at half, 0 at empty
-            }
-
-            return new GuiColor(r, g, 0);
         }
     }
 }

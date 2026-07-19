@@ -184,26 +184,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdatePagination(long totalRecordCount)
         {
             _skipPaginationSearch = true;
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-            var pages = (int)(totalRecordCount / ListingsPerPage + (totalRecordCount % ListingsPerPage == 0 ? 0 : 1));
-
-            // Always add page 1. In the event no creatures are found,
-            // it still needs to be displayed.
-            pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-            for (var x = 2; x <= pages; x++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-            }
-
-            PageNumbers = pageNumbers;
-
-            // In the event no results are found, default the index to zero
-            if (pages <= 0)
-                SelectedPageIndex = 0;
-            // Otherwise, if current page is outside the new page bounds,
-            // set it to the last page in the list.
-            else if (SelectedPageIndex > pages - 1)
-                SelectedPageIndex = pages - 1;
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                ListingsPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
 
             _skipPaginationSearch = false;
         }

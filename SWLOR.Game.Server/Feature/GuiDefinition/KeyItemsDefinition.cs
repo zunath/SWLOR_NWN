@@ -14,59 +14,141 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.KeyItems)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 760f, 420f)
                 .SetTitle("Key Items")
-                .AddColumn(column =>
+                .AddColumn(shell =>
                 {
-                    column.AddRow(row =>
+                    shell.AddRow(root =>
                     {
-                        row.AddSpacer();
-                        var comboBox = row.AddComboBox()
-                            .BindSelectedIndex(model => model.SelectedCategoryId);
-
-                        comboBox.AddOption("<All Types>", 0);
-                        foreach (var (type, detail) in KeyItem.GetActiveCategories())
+                        root.AddColumn(browser =>
                         {
-                            comboBox.AddOption(detail.Name, (int)type);
-                        }
-
-                        row.AddSpacer();
-                    });
-
-                    column.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Name")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                        row.AddLabel()
-                            .SetText("Type")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                        row.SetHeight(20f);
-                    });
-
-                    column.AddRow(row =>
-                    {
-                        row.AddList(template =>
-                        {
-                            template.AddCell(cell =>
+                            browser.AddRow(row =>
                             {
-                                cell.AddLabel()
-                                    .BindText(model => model.Names)
-                                    .BindTooltip(model => model.Descriptions);
+                                row.AddSpacer();
+                                var comboBox = row.AddComboBox()
+                                    .BindSelectedIndex(model => model.SelectedCategoryId)
+                                    .SetWidth(260f);
+
+                                comboBox.AddOption("<All Types>", 0);
+                                foreach (var (type, detail) in KeyItem.GetActiveCategories())
+                                {
+                                    comboBox.AddOption(detail.Name, (int)type);
+                                }
+
+                                row.AddSpacer();
                             });
 
-                            template.AddCell(cell =>
+                            browser.AddRow(row =>
                             {
-                                cell.AddLabel()
-                                    .BindText(model => model.Types)
-                                    .BindTooltip(model => model.Descriptions);
+                                row.AddSpacer()
+                                    .SetWidth(40f);
+
+                                row.AddLabel()
+                                    .SetText("Key Item")
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                    .SetVerticalAlign(NuiVerticalAlign.Top);
+
+                                row.SetHeight(20f);
                             });
-                        })
-                            .BindRowCount(model => model.Names);
+
+                            browser.AddRow(row =>
+                            {
+                                row.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetWidth(40f);
+                                        cell.SetIsVariable(false);
+
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.Icons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Fit);
+                                        })
+                                            .SetScrollbars(NuiScrollbars.None);
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddToggleButton()
+                                            .BindText(model => model.Names)
+                                            .BindIsToggled(model => model.Selections)
+                                            .BindOnClicked(model => model.OnSelectKeyItem());
+                                    });
+                                })
+                                    .SetRowHeight(40f)
+                                    .BindRowCount(model => model.Names);
+                            });
+
+                            browser.AddPagination(
+                                model => model.PageNumbers,
+                                model => model.SelectedPageIndex,
+                                model => model.OnClickPreviousPage(),
+                                model => model.OnClickNextPage());
+                        });
+
+                        root.AddColumn(details =>
+                        {
+                            details.AddRow(row =>
+                            {
+                                row.AddLabel()
+                                    .SetText("DETAILS")
+                                    .SetHeight(18f)
+                                    .SetColor(221, 181, 93)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Top);
+                            });
+
+                            details.AddRow(header =>
+                            {
+                                header.SetHeight(72f);
+
+                                header.AddGroup(group =>
+                                {
+                                    group.AddImage()
+                                        .BindResref(model => model.SelectedIcon)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                        .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                        .SetAspect(NuiAspect.Fit);
+                                })
+                                    .SetScrollbars(NuiScrollbars.None)
+                                    .SetWidth(64f)
+                                    .SetHeight(64f);
+
+                                header.AddColumn(metadata =>
+                                {
+                                    metadata.AddRow(row =>
+                                    {
+                                        row.AddText()
+                                            .BindText(model => model.SelectedName)
+                                            .SetShowBorder(false)
+                                            .SetScrollbars(NuiScrollbars.None)
+                                            .SetHeight(42f);
+                                    });
+
+                                    metadata.AddRow(row =>
+                                    {
+                                        row.AddLabel()
+                                            .BindText(model => model.SelectedType)
+                                            .SetColor(142, 153, 148)
+                                            .SetHeight(20f)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                                    });
+                                });
+                            });
+
+                            details.AddRow(row =>
+                            {
+                                row.AddText()
+                                    .BindText(model => model.SelectedDescription)
+                                    .SetShowBorder(true)
+                                    .SetScrollbars(NuiScrollbars.Auto);
+                            });
+                        });
                     });
                 });
 

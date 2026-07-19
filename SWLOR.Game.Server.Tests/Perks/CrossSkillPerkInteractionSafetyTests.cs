@@ -199,9 +199,18 @@ public class CrossSkillPerkInteractionSafetyTests
             "stacked integer selector IDs must never be added into an invalid skill ID");
 
         var lateralFootwork = MaxLevel(perks[PerkType.LateralFootwork]);
+        var mobileFootwork = MaxLevel(perks[PerkType.MobileFootwork]);
         var highGuard = MaxLevel(perks[PerkType.HighGuard]);
         StatValue(lateralFootwork, StatType.AbilityUsedEvasionPercentAdjustmentSkillType)
             .Should().Be((int)SkillType.Spear);
+        StatValue(mobileFootwork, StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType)
+            .Should().Be((int)SkillType.Pistol);
+        mobileFootwork.StatBonuses.Should().NotContain(
+            bonus => bonus.Stat == StatType.AbilityUsedEvasionPercentAdjustmentSkillType,
+            "Pistol and Spear footwork selectors must not sum into an invalid skill ID");
+        lateralFootwork.StatBonuses.Should().NotContain(
+            bonus => bonus.Stat == StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType,
+            "each cross-skill footwork trigger needs an independent selector channel");
         StatValue(highGuard, StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType)
             .Should().Be((int)SkillType.Spear);
         highGuard.StatBonuses.Should().NotContain(
@@ -222,6 +231,14 @@ public class CrossSkillPerkInteractionSafetyTests
         var evasion = ExtractMethod(combat, "private static void ApplyAbilityUsedEvasion(");
         evasion.Should().Contain("evasionStatType);",
             "each trigger family needs an independent replacement group so valid cross-skill Evasion perks can stack");
+
+        var skillEvasion = ExtractMethod(combat, "private static void ApplyAbilityUsedSkillEvasion(");
+        skillEvasion.Should().Contain("StatType.AbilityUsedEvasionPercentAdjustmentSkillType");
+        skillEvasion.Should().Contain("StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType");
+        var skillEvasionChannel = ExtractMethod(combat, "private static void ApplyAbilityUsedSkillEvasionChannel(");
+        skillEvasionChannel.Should().Contain("new EvasiveFootworkStatusEffect(evasionPercent)",
+            "Lateral and Mobile Footwork need a visible timed status while retaining their shared stat-driven trigger");
+        skillEvasionChannel.Should().Contain("StatusEffect.ApplyStatusEffect(");
 
         var damageModifiers = ExtractMethod(combat, "public static int ApplyDamageDealtModifiers(");
         var skillStanceIndex = damageModifiers.IndexOf("ApplySkillAbilityDamageModifier", StringComparison.Ordinal);

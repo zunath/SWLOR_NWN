@@ -7951,17 +7951,48 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyAbilityUsedSkillEvasion(uint activator, AbilityDetail ability)
         {
+            ApplyAbilityUsedSkillEvasionChannel(
+                activator,
+                ability,
+                StatType.AbilityUsedEvasionPercentAdjustmentSkillType,
+                StatType.AbilityUsedEvasionPercentAdjustment,
+                StatType.AbilityUsedEvasionDurationSeconds);
+            ApplyAbilityUsedSkillEvasionChannel(
+                activator,
+                ability,
+                StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType,
+                StatType.SecondaryAbilityUsedEvasionPercentAdjustment,
+                StatType.SecondaryAbilityUsedEvasionDurationSeconds);
+        }
+
+        private static void ApplyAbilityUsedSkillEvasionChannel(
+            uint activator,
+            AbilityDetail ability,
+            StatType skillTypeStat,
+            StatType evasionStat,
+            StatType durationStat)
+        {
             var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
-                StatType.AbilityUsedEvasionPercentAdjustmentSkillType));
+                skillTypeStat));
             var abilitySkillType = GetAbilitySkillType(activator, ability);
             if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
                 return;
 
-            ApplyAbilityUsedEvasion(
+            var evasionPercent = Stat.GetStatAdjustment(
                 activator,
-                StatType.AbilityUsedEvasionPercentAdjustment,
-                StatType.AbilityUsedEvasionDurationSeconds);
+                evasionStat);
+            var duration = Stat.GetStatAdjustment(
+                activator,
+                durationStat);
+            if (evasionPercent == 0 || duration <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(
+                activator,
+                activator,
+                new EvasiveFootworkStatusEffect(evasionPercent),
+                duration);
         }
 
         private static void ApplyAbilityUsedSkillRangedEvasion(uint activator, AbilityDetail ability)

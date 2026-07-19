@@ -5491,6 +5491,25 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         HostileAbilityUsedEvasionDurationSeconds = 954,
+
+        /// <summary>
+        /// SkillType value whose activated abilities grant temporary Evasion through an independent
+        /// second footwork channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SecondaryAbilityUsedEvasionPercentAdjustmentSkillType = 955,
+
+        /// <summary>
+        /// Temporary Evasion percent granted by the independent second footwork channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SecondaryAbilityUsedEvasionPercentAdjustment = 956,
+
+        /// <summary>
+        /// Duration in seconds of SecondaryAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SecondaryAbilityUsedEvasionDurationSeconds = 957,
     }
 
     public class StatTypeAttribute : Attribute

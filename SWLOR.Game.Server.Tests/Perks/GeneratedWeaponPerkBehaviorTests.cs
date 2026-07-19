@@ -2,9 +2,11 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Spear;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -113,6 +115,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("StaffPerkDefinition.cs", StatType.AbilityUsedAttackDeflection, "8");
 
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment, "-10");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustment, "8");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionDurationSeconds, "30");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustment, "12");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionDurationSeconds, "30");
@@ -212,6 +217,56 @@ public class GeneratedWeaponPerkBehaviorTests
         var guardianReflexes = new GuardianReflexesStatusEffect(25);
         AssertStatusStat(guardianReflexes, StatType.Guard, 25);
         guardianReflexes.Icon.Should().Be(EffectIconType.GuardianReflexesStatusEffect);
+    }
+
+    [Test]
+    public void VigorThrust_BakesEvasionIntoEachRanksBaseStaminaCost()
+    {
+        var abilities = new VigorThrustAbilityDefinition().BuildAbilities();
+        var expected = new[]
+        {
+            (FeatType.VigorThrust1, Stamina: 3),
+            (FeatType.VigorThrust2, Stamina: 5),
+            (FeatType.VigorThrust3, Stamina: 8),
+            (FeatType.VigorThrust4, Stamina: 12),
+        };
+
+        foreach (var (feat, stamina) in expected)
+        {
+            var ability = abilities[feat];
+            ability.SkillType.Should().Be(SkillType.Spear);
+            ability.Requirements
+                .OfType<AbilityRequirementStamina>()
+                .Should().ContainSingle()
+                .Which.RequiredSTM.Should().Be(stamina);
+        }
+
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Spear",
+            "VigorThrustAbilityDefinition.cs"));
+        source.Should().Contain("SelfEvasionPercent = 6");
+        source.Should().Contain("SelfEvasionPercent = 8");
+        source.Should().Contain("SelfEvasionPercent = 10");
+        source.Should().Contain("SelfEvasionPercent = 12");
+        source.Should().Contain("SelfStatDurationSeconds = 30");
+    }
+
+    [Test]
+    public void EvasiveFootwork_ExposesTheTriggeredEvasionAsAVisibleStatus()
+    {
+        var status = new EvasiveFootworkStatusEffect(10);
+        AssertStatusStat(status, StatType.EvasionPercentAdjustment, 10);
+        status.Name.Should().Be("Evasive Footwork");
+        status.Icon.Should().Be(EffectIconType.EvasiveFootworkStatusEffect);
+        status.StackingType.Should().Be(StatusEffectStackType.Disabled,
+            "Mobile and Lateral Footwork should refresh the shared buff rather than stack it");
+
+        var clone = status.Clone();
+        AssertStatusStat(clone, StatType.EvasionPercentAdjustment, 10);
     }
 
     [Test]

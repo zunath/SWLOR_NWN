@@ -1217,6 +1217,7 @@
 "StatusEffect","EvasiveChallenge2SelfStatusEffect","Evasive Challenge II","Beneficial","2","ief_evaschalsel2","SWLOR.Game.Server\Feature\StatusEffectDefinition\EvasiveChallenge2SelfStatusEffect.cs",""
 "StatusEffect","EvasiveChallenge2StatusEffect","Evasive Challenge II","Harmful","2","ief_evaschal2","SWLOR.Game.Server\Feature\StatusEffectDefinition\EvasiveChallenge2StatusEffect.cs",""
 "StatusEffect","EvasiveCombatStatusEffect","Evasive Combat","Beneficial","","ief_evascmbt","SWLOR.Game.Server\Feature\StatusEffectDefinition\EvasiveCombatStatusEffect.cs",""
+"StatusEffect","EvasiveFootworkStatusEffect","Evasive Footwork","Beneficial","","ief_evasftwrk","SWLOR.Game.Server\Feature\StatusEffectDefinition\EvasiveFootworkStatusEffect.cs",""
 "StatusEffect","EvasiveManeuver1StatusEffect","Evasive Maneuver I","Beneficial","1","ief_evasmnvr1","SWLOR.Game.Server\Feature\StatusEffectDefinition\EvasiveManeuver1StatusEffect.cs",""
 "StatusEffect","EvasiveManeuver2StatusEffect","Evasive Maneuver II","Beneficial","2","ief_evasmnvr2","SWLOR.Game.Server\Feature\StatusEffectDefinition\EvasiveManeuver2StatusEffect.cs",""
 "StatusEffect","EvasiveManeuver3StatusEffect","Evasive Maneuver III","Beneficial","3","ief_evasmnvr3","SWLOR.Game.Server\Feature\StatusEffectDefinition\EvasiveManeuver3StatusEffect.cs",""

@@ -9,10 +9,13 @@ namespace SWLOR.Game.Server.Service.DiceService
     ///
     /// Grammar (whitespace ignored, case-insensitive):
     ///   expression = ['+'|'-'] term ( ('+'|'-') term )*
-    ///   term       = dice | integer
+    ///   term       = dice | integer | 'adv' | 'dis'        (adv = 2d20kh1, dis = 2d20kl1)
     ///   dice       = [count] 'd' sides [dieMod] [keepMod] [multMod]
     ///   dieMod     = '!' | 'r'&lt;n&gt;                    (at most one)
-    ///   keepMod    = ('kh'|'kl') [n]                       (at most one; default n = 1)
+    ///   keepMod    = ('kh'|'kl') [n] | 'adv' | 'dis'       (at most one; default n = 1; adv/dis
+    ///                                                       roll the die twice keeping the
+    ///                                                       better/worse, so the group must be
+    ///                                                       a single die - use khN/klN for pools)
     ///   multMod    = ('x'|'*')&lt;n&gt;                    (at most one; multiplies this term only)
     /// </summary>
     public static class DiceParser
@@ -33,14 +36,14 @@ namespace SWLOR.Game.Server.Service.DiceService
 
             if (string.IsNullOrWhiteSpace(expression))
             {
-                error = "Empty dice expression. Example: /r 1d20+3d6+2d8kh1";
+                error = "Empty dice expression. Example: /r 1d20+5 or /r adv";
                 return false;
             }
 
             var expr = new string(expression.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToLowerInvariant();
             if (expr.Length == 0)
             {
-                error = "Empty dice expression. Example: /r 1d20+3d6+2d8kh1";
+                error = "Empty dice expression. Example: /r 1d20+5 or /r adv";
                 return false;
             }
             if (expr.Length > MaxExpressionLength)
@@ -73,6 +76,32 @@ namespace SWLOR.Game.Server.Service.DiceService
                     return false;
                 }
                 first = false;
+
+                // Standalone advantage/disadvantage keyword: adv = 2d20kh1, dis = 2d20kl1.
+                if ((StartsWith(expr, i, "adv") || StartsWith(expr, i, "dis")) &&
+                    (i + 3 >= expr.Length || expr[i + 3] == '+' || expr[i + 3] == '-'))
+                {
+                    var keepHigh = expr[i] == 'a';
+                    i += 3;
+
+                    totalDice += 2;
+                    if (totalDice > MaxTotalDice)
+                    {
+                        error = "Too many dice in one roll (max " + MaxTotalDice + ").";
+                        return false;
+                    }
+
+                    terms.Add(new DiceTerm
+                    {
+                        IsFlat = false,
+                        Negative = negative,
+                        Count = 2,
+                        Sides = 20,
+                        KeepMode = keepHigh ? KeepMode.KeepHighest : KeepMode.KeepLowest,
+                        KeepCount = 1
+                    });
+                    continue;
+                }
 
                 // Leading digits: either the dice count or a flat modifier.
                 var digitStart = i;
@@ -130,9 +159,23 @@ namespace SWLOR.Game.Server.Service.DiceService
                                 return false;
                             term.DieModifier = DieModifier.Reroll; term.RerollThreshold = threshold; hasDieMod = true;
                         }
+                        else if (StartsWith(expr, i, "adv") || StartsWith(expr, i, "dis"))
+                        {
+                            if (hasKeep) { error = "A dice group can have only one keep modifier (kh, kl, adv or dis)."; return false; }
+                            if (term.Count != 1)
+                            {
+                                error = "adv/dis rolls one die twice and keeps the better/worse - write d20adv, or use khN/klN for pools (e.g. 4d6kh3).";
+                                return false;
+                            }
+                            term.KeepMode = expr[i] == 'a' ? KeepMode.KeepHighest : KeepMode.KeepLowest;
+                            term.KeepCount = 1;
+                            term.Count = 2;
+                            i += 3;
+                            hasKeep = true;
+                        }
                         else if (StartsWith(expr, i, "kh") || StartsWith(expr, i, "kl"))
                         {
-                            if (hasKeep) { error = "A dice group can have only one keep modifier (kh or kl)."; return false; }
+                            if (hasKeep) { error = "A dice group can have only one keep modifier (kh, kl, adv or dis)."; return false; }
                             var keepHighest = expr[i + 1] == 'h';
                             i += 2;
                             var kStart = i;
@@ -199,7 +242,7 @@ namespace SWLOR.Game.Server.Service.DiceService
 
             if (terms.Count == 0)
             {
-                error = "Empty dice expression. Example: /r 1d20+3d6+2d8kh1";
+                error = "Empty dice expression. Example: /r 1d20+5 or /r adv";
                 return false;
             }
 

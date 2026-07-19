@@ -35,6 +35,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(90f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Right)
                             .SetVerticalAlign(NuiVerticalAlign.Middle);
+
+                        row.AddSpacer()
+                            .SetWidth(18f);
                     });
 
                     col.AddRow(row =>
@@ -78,8 +81,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindText(model => model.CurrencyAmountText)
                                     .BindTooltip(model => model.CurrencyDescriptions)
                                     .SetColor(255, 236, 155)
+                                    .SetPadding(4f)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Right)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            });
+
+                            template.AddCell(cell =>
+                            {
+                                cell.SetWidth(18f);
+                                cell.SetIsVariable(false);
+
+                                cell.AddSpacer();
                             });
                         })
                             .BindRowCount(model => model.CurrencyNames)

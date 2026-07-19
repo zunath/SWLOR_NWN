@@ -23,7 +23,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddProgressBar()
                             .BindValue(model => model.StoragePercentage)
-                            .BindTooltip(model => model.ItemCountText);
+                            .BindColor(model => model.StorageColor)
+                            .BindTooltip(model => model.ItemCountText)
+                            .SetHeight(20f)
+                            .AddDrawList(drawList =>
+                            {
+                                drawList.AddText(text =>
+                                {
+                                    text.BindText(model => model.ItemCountText);
+                                    text.SetBounds(6, 2, 440f, 20f);
+                                    text.SetColor(255, 255, 255);
+                                });
+                            });
                     });
 
                     col.AddRow(row =>

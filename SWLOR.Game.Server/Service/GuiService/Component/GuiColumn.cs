@@ -29,14 +29,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Expression<Func<T, Action>> previousPageAction,
             Expression<Func<T, Action>> nextPageAction)
         {
-            var pagination = new GuiPagination<T>(
+            var row = new GuiRow<T>();
+            Elements.Add(row);
+
+            return new GuiPagination<T>(
+                row,
                 pageNumbers,
                 selectedPageIndex,
                 previousPageAction,
                 nextPageAction);
-            Elements.Add(pagination);
-
-            return pagination;
         }
 
         /// <summary>

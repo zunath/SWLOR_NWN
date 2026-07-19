@@ -1,47 +1,42 @@
 using System.Linq.Expressions;
-using SWLOR.Game.Server.Core.Beamdog;
-using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiPagination<T> : GuiWidget<T, GuiPagination<T>>
+    public class GuiPagination<T>
         where T : IGuiViewModel
     {
+        private readonly GuiRow<T> _row;
         private readonly GuiButton<T> _previousButton;
         private readonly GuiButton<T> _nextButton;
         private readonly GuiComboBox<T> _pageSelector;
 
-        public GuiPagination(
+        internal GuiPagination(
+            GuiRow<T> row,
             Expression<Func<T, GuiBindingList<GuiComboEntry>>> pageNumbers,
             Expression<Func<T, int>> selectedPageIndex,
             Expression<Func<T, Action>> previousPageAction,
             Expression<Func<T, Action>> nextPageAction)
         {
-            Elements.Add(new GuiSpacer<T>());
+            _row = row;
+            _row.AddSpacer();
 
-            _previousButton = new GuiButton<T>();
-            _previousButton
+            _previousButton = _row.AddButton()
                 .SetText("<")
                 .SetWidth(32f)
                 .SetHeight(35f)
                 .BindOnClicked(previousPageAction);
-            Elements.Add(_previousButton);
 
-            _pageSelector = new GuiComboBox<T>();
-            _pageSelector
+            _pageSelector = _row.AddComboBox()
                 .BindOptions(pageNumbers)
                 .BindSelectedIndex(selectedPageIndex);
-            Elements.Add(_pageSelector);
 
-            _nextButton = new GuiButton<T>();
-            _nextButton
+            _nextButton = _row.AddButton()
                 .SetText(">")
                 .SetWidth(32f)
                 .SetHeight(35f)
                 .BindOnClicked(nextPageAction);
-            Elements.Add(_nextButton);
 
-            Elements.Add(new GuiSpacer<T>());
+            _row.AddSpacer();
         }
 
         public GuiPagination<T> SetPageSelectorWidth(float width)
@@ -55,20 +50,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             _previousButton.SetHeight(height);
             _pageSelector.SetHeight(height);
             _nextButton.SetHeight(height);
-            SetHeight(height);
+            _row.SetHeight(height);
             return this;
-        }
-
-        public override Json BuildElement()
-        {
-            var row = JsonArray();
-
-            foreach (var element in Elements)
-            {
-                row = JsonArrayInsert(row, element.ToJson());
-            }
-
-            return Nui.Row(row);
         }
     }
 }

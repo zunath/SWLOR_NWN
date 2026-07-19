@@ -41,23 +41,31 @@ public class GuiPaginationTests
     }
 
     [Test]
-    public void PaginationComponent_BuildsStandardControls()
+    public void PaginationComponent_AddsAStandardRowToTheColumn()
     {
-        var pagination = new GuiPagination<TestPaginationViewModel>(
+        var column = new GuiColumn<TestPaginationViewModel>();
+
+        column.AddPagination(
             model => model.PageNumbers,
             model => model.SelectedPageIndex,
             model => model.OnPreviousPage(),
             model => model.OnNextPage());
 
-        pagination.Elements.Should().HaveCount(5);
-        pagination.Elements[0].Should().BeOfType<GuiSpacer<TestPaginationViewModel>>();
-        pagination.Elements[1].Should().BeOfType<GuiButton<TestPaginationViewModel>>();
-        pagination.Elements[2].Should().BeOfType<GuiComboBox<TestPaginationViewModel>>();
-        pagination.Elements[3].Should().BeOfType<GuiButton<TestPaginationViewModel>>();
-        pagination.Elements[4].Should().BeOfType<GuiSpacer<TestPaginationViewModel>>();
+        var row = column.Elements.Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeOfType<GuiRow<TestPaginationViewModel>>()
+            .Which;
 
-        pagination.Elements[1].Events["click"].Method.Name.Should().Be(nameof(TestPaginationViewModel.OnPreviousPage));
-        pagination.Elements[3].Events["click"].Method.Name.Should().Be(nameof(TestPaginationViewModel.OnNextPage));
+        row.Elements.Should().HaveCount(5);
+        row.Elements[0].Should().BeOfType<GuiSpacer<TestPaginationViewModel>>();
+        row.Elements[1].Should().BeOfType<GuiButton<TestPaginationViewModel>>();
+        row.Elements[2].Should().BeOfType<GuiComboBox<TestPaginationViewModel>>();
+        row.Elements[3].Should().BeOfType<GuiButton<TestPaginationViewModel>>();
+        row.Elements[4].Should().BeOfType<GuiSpacer<TestPaginationViewModel>>();
+
+        row.Elements[1].Events["click"].Method.Name.Should().Be(nameof(TestPaginationViewModel.OnPreviousPage));
+        row.Elements[3].Events["click"].Method.Name.Should().Be(nameof(TestPaginationViewModel.OnNextPage));
     }
 
     [TestCase("AchievementsDefinition.cs")]

@@ -41,9 +41,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         player = GetMaster(player);
                     }
 
-                    // A bare (unpossessed) DM avatar can't host a NUI window (this is the same guard
-                    // TogglePlayerWindow uses). Explain how to proceed instead of silently doing nothing.
-                    if (!GetIsPC(player) && uiTarget == OBJECT_INVALID)
+                    // A bare (unpossessed) DM avatar can't host a NUI window. GetIsPC() alone doesn't
+                    // exclude one — DM avatars are player-controlled, so it returns true for them (hence
+                    // the "!GetIsPC(x) || GetIsDM(x)" idiom used across the codebase). Check GetIsDM
+                    // explicitly so the DM gets guidance instead of TogglePlayerWindow silently no-oping.
+                    if (GetIsDM(player) && uiTarget == OBJECT_INVALID)
                     {
                         SendMessageToPC(user, ColorToken.Red("The HP Tracker window can't open for an unpossessed DM. Possess a creature first, or use a player character."));
                         return;

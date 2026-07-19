@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 currencyIcons.Add(detail.IconResref);
                 currencyNames.Add(detail.Name);
                 currencyDescriptions.Add(detail.Description);
-                currencyAmountText.Add(amount.ToString("N0"));
+                currencyAmountText.Add(amount.ToString("N0", CultureInfo.InvariantCulture));
             }
 
             CurrencyIcons = currencyIcons;

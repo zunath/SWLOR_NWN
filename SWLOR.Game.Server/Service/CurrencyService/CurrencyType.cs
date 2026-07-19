@@ -4,13 +4,13 @@ namespace SWLOR.Game.Server.Service.CurrencyService
     {
         [Currency("Invalid", "", "")]
         Invalid = 0,
-        [Currency("Rebuild Tokens", "iit_gem_235", "Consumed to fully respec your character's build.")]
+        [Currency("Rebuild Tokens", "cur_rebuild", "Consumed to fully respec your character's build.")]
         RebuildToken = 1,
-        [Currency("Perk Refund Tokens", "iit_book_245", "Consumed to refund a single purchased perk.")]
+        [Currency("Perk Refund Tokens", "cur_perkrfnd", "Consumed to refund a single purchased perk.")]
         PerkRefundToken = 2,
-        [Currency("Stat Refund Tokens", "iit_book_247", "Consumed to reallocate a single spent stat point.")]
+        [Currency("Stat Refund Tokens", "cur_statrfnd", "Consumed to reallocate a single spent stat point.")]
         StatRefundToken = 3,
-        [Currency("Kyber Tokens", "iit_gem_185", "Consumed at a Lightsaber Workbench to construct a new saber.")]
+        [Currency("Kyber Tokens", "cur_kyber", "Consumed at a Lightsaber Workbench to construct a new saber.")]
         KyberToken = 4,
     }
 

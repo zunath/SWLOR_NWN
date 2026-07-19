@@ -517,7 +517,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[]
                     {
-                        new QuestionAnswer("Where do abilities come from?", "Some perk ranks grant active abilities."),
+                        new QuestionAnswer("Where do abilities come from?", "Some perk ranks and equipped Mimicry techniques grant active abilities."),
                         new QuestionAnswer("What is Recast?", "The cooldown seconds shown in the ability description."),
                         new QuestionAnswer("Why can't I use it yet?", "Its cooldown or shared cooldown group still has time remaining.")
                     },

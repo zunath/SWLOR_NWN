@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -61,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                LoadKeyItems();
+                if (Player != 0 && WindowToken > 0)
+                    LoadKeyItems();
             }
         }
 
@@ -76,6 +78,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            LoadKeyItems(dbPlayer.KeyItems.Keys);
+        }
+
+        public void LoadKeyItems(IEnumerable<KeyItemType> keyItems)
+        {
             var previouslySelectedType = _selectedIndex >= 0 && _selectedIndex < _visibleKeyItems.Count
                 ? _visibleKeyItems[_selectedIndex]
                 : KeyItemType.Invalid;
@@ -85,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selections = new GuiBindingList<bool>();
             _visibleKeyItems.Clear();
 
-            foreach (var (type, _) in dbPlayer.KeyItems)
+            foreach (var type in keyItems)
             {
                 var detail = KeyItem.GetKeyItem(type);
 
@@ -96,7 +103,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 _visibleKeyItems.Add(type);
                 names.Add(detail.Name);
-                icons.Add(KeyItemIcon.GetIconResref(type));
+                try
+                {
+                    icons.Add(KeyItemIcon.GetIconResref(type));
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Log.Write(
+                        LogGroup.Error,
+                        $"Failed to resolve icon for key item '{type}'. {ex}");
+                    icons.Add(string.Empty);
+                }
                 selections.Add(false);
             }
 
@@ -113,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectKeyItem(selectedIndex);
         }
 
-        private void SelectKeyItem(int index)
+        public void SelectKeyItem(int index)
         {
             if (_selectedIndex >= 0 && _selectedIndex < Selections.Count)
                 Selections[_selectedIndex] = false;
@@ -124,7 +141,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SelectedIcon = string.Empty;
                 SelectedName = "No Key Items";
                 SelectedType = string.Empty;
-                SelectedDescription = "No Key Items match the selected category.";
+                SelectedDescription = SelectedCategoryId == 0
+                    ? "You do not have any Key Items."
+                    : "No Key Items match the selected category.";
                 return;
             }
 
@@ -134,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var detail = KeyItem.GetKeyItem(type);
             var categoryDetail = KeyItem.GetKeyItemCategory(detail.Category);
 
-            SelectedIcon = KeyItemIcon.GetIconResref(type);
+            SelectedIcon = Icons[_selectedIndex];
             SelectedName = detail.Name;
             SelectedType = categoryDetail.Name;
             SelectedDescription = detail.Description;

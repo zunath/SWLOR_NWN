@@ -56,9 +56,9 @@ public class KeyItemIconTests
         {
             var path = Path.Combine(iconDirectory, $"{entry.Resref}.tga");
             File.Exists(path).Should().BeTrue($"{entry.Type} should reference a packaged icon at {path}");
-            AssertIconTga(path, entry.Type.ToString());
+            var pixels = AssertIconTga(path, entry.Type.ToString());
 
-            var hash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+            var hash = Convert.ToHexString(SHA256.HashData(pixels));
             hashes.Should().NotContainKey(hash,
                 $"{entry.Type} should not reuse the pixels of {hashes.GetValueOrDefault(hash)}");
             hashes[hash] = entry.Type.ToString();
@@ -83,10 +83,11 @@ public class KeyItemIconTests
             .ToList();
     }
 
-    private static void AssertIconTga(string path, string label)
+    private static byte[] AssertIconTga(string path, string label)
     {
         var bytes = File.ReadAllBytes(path);
         bytes.Should().HaveCountGreaterThan(18, $"{label} should be a valid TGA file");
+        bytes[1].Should().Be(0, $"{label} should not use a color map");
         bytes[2].Should().Be(2, $"{label} should be an uncompressed true-color TGA");
 
         var width = bytes[12] + (bytes[13] << 8);
@@ -94,6 +95,14 @@ public class KeyItemIconTests
         width.Should().Be(64, $"{label} should be 64 pixels wide");
         height.Should().Be(64, $"{label} should be 64 pixels tall");
         bytes[16].Should().BeOneOf(new byte[] { 24, 32 }, $"{label} should be 24-bit or 32-bit");
+
+        var pixelOffset = 18 + bytes[0];
+        var pixelLength = checked(width * height * (bytes[16] / 8));
+        bytes.Length.Should().BeGreaterOrEqualTo(
+            pixelOffset + pixelLength,
+            $"{label} should contain its complete pixel payload");
+
+        return bytes.AsSpan(pixelOffset, pixelLength).ToArray();
     }
 
     private static DirectoryInfo FindRepositoryRoot()

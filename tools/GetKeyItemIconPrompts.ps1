@@ -10,7 +10,7 @@ $keyItemPath = Join-Path $repoRoot 'SWLOR.Game.Server\Service\KeyItemService\Key
 $source = Get-Content -Raw $keyItemPath
 
 $pattern = '(?ms)^\s*\[KeyItem\(KeyItemCategoryType\.(?<Category>\w+),\s*"(?<Name>(?:[^"\\]|\\.)*)",\s*(?<Active>true|false),\s*"(?<Description>(?:[^"\\]|\\.)*)"\)\]\s*\r?\n\s*(?<Type>\w+)\s*=\s*(?<Id>\d+),'
-$matches = [regex]::Matches($source, $pattern)
+$keyItemMatches = [regex]::Matches($source, $pattern)
 
 function Convert-CSharpString([string]$value)
 {
@@ -39,7 +39,7 @@ function Get-CategoryDirection([string]$category)
     }
 }
 
-$records = foreach ($match in $matches)
+$records = foreach ($match in $keyItemMatches)
 {
     $active = $match.Groups['Active'].Value -eq 'true'
     $category = $match.Groups['Category'].Value

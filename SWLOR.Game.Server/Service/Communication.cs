@@ -423,7 +423,12 @@ namespace SWLOR.Game.Server.Service
 
                 if (channel == ChatChannel.PlayerParty)
                 {
-                    finalMessageColored = ColorToken.Orange(finalMessageColored);
+                    // Comms carries its own speaker name because it dispatches on a nameless channel
+                    // (see SendProcessedChatMessage). Resolving it per receiver is also strictly more
+                    // reliable than the engine's name, which the rename override can only reach on
+                    // channels the client decorates with a bracketed tag.
+                    var speakerName = PlayerName.GetChatDisplayName(receiver, speaker);
+                    finalMessageColored = $"{speakerName}: {ColorToken.Orange(finalMessageColored)}";
                 }
 
                 SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);
@@ -438,13 +443,23 @@ namespace SWLOR.Game.Server.Service
         {
             // NWNX_Rename only patches the per-observer PC name override around three native chat
             // functions - Party, Shout, and Tell (see the plugin's HOOK_CHAT registrations). Talk and
-            // Whisper are not among them; they render correctly today only because the speaker's
-            // object update is already visible/patched for a nearby observer. DM_Talk is not hooked at
-            // all, so routing cross-area Comms through it (as before) always rendered the speaker's
-            // true name regardless of the override. Route Comms through the native Party channel
-            // instead - Rename patches it, and an explicit per-receiver target dispatches directly
-            // rather than broadcasting to nearby party members, so it still crosses area/planet
-            // boundaries the same way DMTalk did.
+            // Whisper are not among them; they render correctly only because the speaker's object
+            // update is already visible/patched for a nearby observer. That leaves no channel that is
+            // both rename-patched and undecorated: the client derives its "[Party]"/"[Shout]"/"[Tell]"
+            // prefix from the channel byte, so dispatching Comms on the native Party channel to reach
+            // the rename hook also stamped a "[Party]" tag in front of our own "[Comms]" tag.
+            //
+            // Comms therefore does not rely on the engine for the name at all. It dispatches on
+            // ServerMessage, which the client prints verbatim - no channel tag and no speaker name -
+            // and the masked, per-observer name is composed into the message text by the caller. This
+            // reaches any receiver at any range (as DMTalk did) while making the name leak structurally
+            // impossible rather than dependent on which functions the rename plugin happens to hook.
+            if (channel == ChatChannel.PlayerParty)
+            {
+                ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, speaker, receiver);
+                return;
+            }
+
             PlayerName.SendChatMessageWithChatNameOverride(
                 receiver,
                 speaker,

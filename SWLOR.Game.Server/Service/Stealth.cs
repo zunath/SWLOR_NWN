@@ -36,20 +36,21 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
-            if (Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0)
-            {
-                EventsPlugin.SkipEvent();
-                SendMessageToPC(creature, ColorToken.Red("You have not learned to move unseen. The Stealth perk is required."));
-                return;
-            }
+            var denial = GetStealthDenialReason(creature);
 
-            if (GetIsInCombat(creature) && GetLocalInt(creature, CombatEntryWindowVariable) == 0)
+            if (!string.IsNullOrEmpty(denial))
             {
                 EventsPlugin.SkipEvent();
-                SendMessageToPC(creature, ColorToken.Red("You cannot enter stealth while in combat."));
+                SendMessageToPC(creature, ColorToken.Red(denial));
             }
         }
 
+        /// <summary>
+        /// Skipping the before event does not reliably keep the engine out of stealth mode, so the
+        /// same gate runs again here. The denial message was already sent by the before handler;
+        /// this pass only drops the character back out of stealth and withholds the status effect
+        /// (and with it the stamina drain).
+        /// </summary>
         [NWNEventHandler(ScriptName.OnStealthEnterAfter)]
         public static void OnStealthEntered()
         {
@@ -58,7 +59,31 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
+            if (!string.IsNullOrEmpty(GetStealthDenialReason(creature)))
+            {
+                AssignCommand(creature, () =>
+                {
+                    SetActionMode(creature, ActionMode.Stealth, false);
+                });
+                return;
+            }
+
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
+        }
+
+        /// <summary>
+        /// Returns the player-facing reason this creature may not be in stealth, or an empty string
+        /// when stealth is allowed.
+        /// </summary>
+        private static string GetStealthDenialReason(uint creature)
+        {
+            if (Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0)
+                return "You have not learned to move unseen. The Stealth perk is required.";
+
+            if (GetIsInCombat(creature) && GetLocalInt(creature, CombatEntryWindowVariable) == 0)
+                return "You cannot enter stealth while in combat.";
+
+            return string.Empty;
         }
 
         /// <summary>

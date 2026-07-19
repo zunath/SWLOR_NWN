@@ -133,6 +133,14 @@ public class PlayerFacingNameBroadcastTests
         // DM_* channel. Comms must dispatch on the native PlayerParty channel, not DMTalk, or the
         // override never applies and the speaker's true name leaks once they leave the receiver's area.
         communicationSource.Should().NotContain("ChatChannel.DMTalk");
+        // ...but Party is also the channel the client stamps a "[Party]" tag on, which doubled up with
+        // our own "[Comms]" tag. Comms must instead dispatch on the untagged, nameless ServerMessage
+        // channel and compose the masked per-observer name into the text itself, so the name is correct
+        // at any range without depending on a rename hook.
+        communicationSource.Should().Contain("ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, speaker, receiver);");
+        communicationSource.Should().Contain("var speakerName = PlayerName.GetChatDisplayName(receiver, speaker);");
+        communicationSource.Should().Contain("finalMessageColored = $\"{speakerName}: {ColorToken.Orange(finalMessageColored)}\";");
+        communicationSource.Should().Contain("finalMessage.Append(\"[Comms] \");");
         communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
         communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");

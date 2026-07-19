@@ -100,6 +100,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.ThrowingAreaAbilityDamagePercentAdjustment,
         StatType.SingleTargetPhysicalAbilityDamagePercentAdjustment,
         StatType.SkillAreaAbilityDamagePercentAdjustment,
+        StatType.SkillAbilityDamagePercentAdjustment,
         StatType.DarkForceTargetLowHPDamagePercentAdjustment,
         StatType.BeaconPulseDamagePercentAdjustment,
         StatType.AssaultGadgetDamagePercentAdjustment,

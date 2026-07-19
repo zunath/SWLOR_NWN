@@ -617,7 +617,8 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("public static void ApplyLowHPGuardEffectFromProtectedTarget(uint guardRecipient, uint protectedTarget, int damage)");
         combatSource.Should().Contain("ApplyLowHPGuardEffect(protectedTarget, damage, guardRecipient);");
-        lowHPGuardTrigger.Should().Contain("TemporaryStatModifier.Replace(");
+        lowHPGuardTrigger.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        lowHPGuardTrigger.Should().Contain("new GuardianReflexesStatusEffect(guardChance)");
         lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
         lowHPGuardTrigger.Should().Contain("TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown)");
         lowHPGuardTrigger.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false);");

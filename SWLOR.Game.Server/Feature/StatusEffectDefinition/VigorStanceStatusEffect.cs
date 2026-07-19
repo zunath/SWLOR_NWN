@@ -16,9 +16,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType] = (int)SkillType.Spear;
             StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = 2;
-            StatGroup.Stats[StatType.AbilityUsedEvasionPercentAdjustmentSkillType] = (int)SkillType.Spear;
-            StatGroup.Stats[StatType.AbilityUsedEvasionPercentAdjustment] = 8;
-            StatGroup.Stats[StatType.AbilityUsedEvasionDurationSeconds] = 30;
+            StatGroup.Stats[StatType.SkillAbilityDamagePercentAdjustmentSkillType] = (int)SkillType.Spear;
+            StatGroup.Stats[StatType.SkillAbilityDamagePercentAdjustment] = 10;
+            StatGroup.Stats[StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType] = (int)SkillType.Spear;
+            StatGroup.Stats[StatType.HostileAbilityUsedEvasionPercentAdjustment] = 8;
+            StatGroup.Stats[StatType.HostileAbilityUsedEvasionDurationSeconds] = 30;
         }
     }
 }

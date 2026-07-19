@@ -5397,6 +5397,100 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedDeflectionReflectionCapOverridePercent = 939,
+
+        /// <summary>
+        /// SkillType value whose activated ability damage receives SkillAbilityDamagePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAbilityDamagePercentAdjustmentSkillType = 940,
+
+        /// <summary>
+        /// Percent adjustment to activated ability damage for the matching skill. This participates in
+        /// the shared outgoing-damage cap rather than multiplying damage after the cap is applied.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillAbilityDamagePercentAdjustment = 941,
+
+        /// <summary>
+        /// SkillType value whose sufficiently costly hostile abilities grant temporary Evasion.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityUsedEvasionPercentAdjustmentSkillType = 942,
+
+        /// <summary>
+        /// Minimum final Stamina cost required to grant CostlyAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityUsedEvasionMinimumStaminaCost = 943,
+
+        /// <summary>
+        /// Temporary Evasion percent granted after using a matching sufficiently costly hostile ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CostlyAbilityUsedEvasionPercentAdjustment = 944,
+
+        /// <summary>
+        /// Duration in seconds of CostlyAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityUsedEvasionDurationSeconds = 945,
+
+        /// <summary>
+        /// SkillType value for an independent second guarded-hit next-ability bonus channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedHitSecondaryNextSkillAbilitySkillType = 946,
+
+        /// <summary>
+        /// Critical-rate adjustment stored by the secondary guarded-hit next-ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitSecondaryNextSkillAbilityCriticalRatePercentAdjustment = 947,
+
+        /// <summary>
+        /// Flat damage stored by the secondary guarded-hit next-ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitSecondaryNextSkillAbilityDamageBonus = 948,
+
+        /// <summary>
+        /// Duration in seconds of the secondary guarded-hit next-ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedHitSecondaryNextSkillAbilityWindowSeconds = 949,
+
+        /// <summary>
+        /// Radius in meters of a skill-matched guard retaliation bonus pulse. Zero keeps the bonus
+        /// on the original attacker only.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardRetaliationDamageBonusRadiusMeters = 950,
+
+        /// <summary>
+        /// Percent of the guarded hit's incoming damage generated as Enmity toward each additional
+        /// enemy hit by the guard retaliation bonus pulse.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage = 951,
+
+        /// <summary>
+        /// SkillType value whose hostile abilities grant temporary Evasion through the independent
+        /// hostile-ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityUsedEvasionPercentAdjustmentSkillType = 952,
+
+        /// <summary>
+        /// Temporary Evasion percent granted after using a matching hostile ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityUsedEvasionPercentAdjustment = 953,
+
+        /// <summary>
+        /// Duration in seconds of HostileAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityUsedEvasionDurationSeconds = 954,
     }
 
     public class StatTypeAttribute : Attribute

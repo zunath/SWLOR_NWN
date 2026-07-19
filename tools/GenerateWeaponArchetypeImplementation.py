@@ -1110,6 +1110,10 @@ def description_stat_entries(row, base):
     if base == "Improved Attentiveness":
         add_stat(stats, "AvoidedAttackAccuracyPercentAdjustment", parse_percent(r"gain \+(\d+)% Accuracy", description))
         add_stat(stats, "AvoidedAttackAccuracyDurationSeconds", parse_duration(description) or 30)
+    if base == "Lateral Footwork":
+        add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+        add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
+        add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
     if base == "Flowing Footwork":
         add_stat(stats, "AreaAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AreaAbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
@@ -1202,10 +1206,12 @@ def description_stat_entries(row, base):
     if base == "Iron Elbows":
         add_stat(stats, "GuardRetaliationDamageBonusSkillType", skill_expr)
         add_stat(stats, "GuardRetaliationDamageBonus", parse_count(r"deal \+(\d+) DMG", description))
+        add_stat(stats, "GuardRetaliationDamageBonusRadiusMeters", parse_count(r"within (\d+)m", description) or 5)
+        add_stat(stats, "GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage", 100)
     if base == "Retaliatory Flow":
-        add_stat(stats, "GuardedHitNextSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "GuardedHitNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
-        add_stat(stats, "GuardedHitNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        add_stat(stats, "GuardedHitSecondaryNextSkillAbilitySkillType", skill_expr)
+        add_stat(stats, "GuardedHitSecondaryNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitSecondaryNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Impenetrable Grip":
         add_stat(stats, "MobilityResistance", parse_percent(r"\+(\d+)% Knockdown Resistance", description))
         add_stat(stats, "MindResistance", parse_percent(r"\+(\d+)% Daze Resistance", description))
@@ -1351,11 +1357,12 @@ def description_stat_entries(row, base):
             add_stat(stats, "CostlyAbilityHitStaminaRestoreSkillType", skill_expr)
             add_stat(stats, "CostlyAbilityHitMinimumStaminaCost", 8)
             add_stat(stats, "CostlyAbilityHitStaminaRestore", stamina_restore)
-        add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         evasion = parse_percent(r"\+(\d+)% Evasion", description)
         if evasion:
-            add_stat(stats, "AbilityUsedEvasionPercentAdjustment", evasion)
-            add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
+            add_stat(stats, "CostlyAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+            add_stat(stats, "CostlyAbilityUsedEvasionMinimumStaminaCost", 8)
+            add_stat(stats, "CostlyAbilityUsedEvasionPercentAdjustment", evasion)
+            add_stat(stats, "CostlyAbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
     if "When an enemy misses you" in description or "After an enemy misses you" in description or "After you evade an attack" in description:
         stamina_cost = parse_count(r"costs (\d+) less STM", description)
         if stamina_cost:
@@ -1525,9 +1532,11 @@ def exact_weapon_stance_stat_entries(row, base):
     if base == "Vigor Stance":
         add_stat(stats, "SkillAbilityStaminaCostFlatAdjustmentSkillType", skill_expr)
         add_stat(stats, "SkillAbilityStaminaCostFlatAdjustment", parse_count(r"cost (\d+) additional STM", description))
-        add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
-        add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"grant \+(\d+)% Evasion", description))
-        add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
+        add_stat(stats, "SkillAbilityDamagePercentAdjustmentSkillType", skill_expr)
+        add_stat(stats, "SkillAbilityDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
+        add_stat(stats, "HostileAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+        add_stat(stats, "HostileAbilityUsedEvasionPercentAdjustment", parse_percent(r"grant \+(\d+)% Evasion", description))
+        add_stat(stats, "HostileAbilityUsedEvasionDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
         return list(stats.items())
 
     if base == "Cyclone Stance":

@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -172,6 +173,62 @@ public class CrossSkillPerkInteractionSafetyTests
         abilityScope.Should().BeGreaterThanOrEqualTo(0);
         abilityScope.Should().BeLessThan(ability.IndexOf("ApplyDarkForceConversion", abilityScope, StringComparison.Ordinal));
         abilityScope.Should().BeLessThan(ability.IndexOf("Combat.ApplyDamageDealtEffects", abilityScope, StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void ReportedKatarAndSpearPerks_KeepIndependentTriggerChannelsAndBoundedDamage()
+    {
+        var perks = BuildPerksWithout2daLookup().ToDictionary(perk => perk.Type);
+
+        static PerkLevel MaxLevel(PerkDetail perk) => perk.PerkLevels
+            .OrderByDescending(level => level.Key)
+            .First()
+            .Value;
+        static int StatValue(PerkLevel level, StatType stat) => level.StatBonuses
+            .Single(bonus => bonus.Stat == stat)
+            .Calculate(0);
+
+        var redirectingCounter = MaxLevel(perks[PerkType.RedirectingCounter]);
+        var retaliatoryFlow = MaxLevel(perks[PerkType.RetaliatoryFlow]);
+        StatValue(redirectingCounter, StatType.GuardedHitNextSkillAbilitySkillType)
+            .Should().Be((int)SkillType.Katar);
+        StatValue(retaliatoryFlow, StatType.GuardedHitSecondaryNextSkillAbilitySkillType)
+            .Should().Be((int)SkillType.Katar);
+        retaliatoryFlow.StatBonuses.Should().NotContain(
+            bonus => bonus.Stat == StatType.GuardedHitNextSkillAbilitySkillType,
+            "stacked integer selector IDs must never be added into an invalid skill ID");
+
+        var lateralFootwork = MaxLevel(perks[PerkType.LateralFootwork]);
+        var highGuard = MaxLevel(perks[PerkType.HighGuard]);
+        StatValue(lateralFootwork, StatType.AbilityUsedEvasionPercentAdjustmentSkillType)
+            .Should().Be((int)SkillType.Spear);
+        StatValue(highGuard, StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType)
+            .Should().Be((int)SkillType.Spear);
+        highGuard.StatBonuses.Should().NotContain(
+            bonus => bonus.Stat == StatType.AbilityUsedEvasionPercentAdjustmentSkillType,
+            "independent Spear Evasion triggers must not collapse into one summed selector channel");
+
+        var root = FindRepositoryRoot();
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var guardedBonuses = ExtractMethod(combat, "private static void ApplyGuardedHitNextSkillAbilityEffects(");
+        guardedBonuses.Should().Contain("primary.DamageBonus + secondary.DamageBonus");
+        guardedBonuses.Should().Contain("Math.Max(primary.Window, secondary.Window)");
+
+        var retaliationPulse = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliationPulse(");
+        retaliationPulse.Should().Contain("ApplyTriggeredDamage(");
+        retaliationPulse.Should().NotContain("ApplyDamageDealtEffects(",
+            "Iron Elbows pulse damage must not recursively trigger direct-damage perks");
+
+        var evasion = ExtractMethod(combat, "private static void ApplyAbilityUsedEvasion(");
+        evasion.Should().Contain("evasionStatType);",
+            "each trigger family needs an independent replacement group so valid cross-skill Evasion perks can stack");
+
+        var damageModifiers = ExtractMethod(combat, "public static int ApplyDamageDealtModifiers(");
+        var skillStanceIndex = damageModifiers.IndexOf("ApplySkillAbilityDamageModifier", StringComparison.Ordinal);
+        var aggregateCapIndex = damageModifiers.IndexOf("MaximumDamageBonusPercent", StringComparison.Ordinal);
+        skillStanceIndex.Should().BeGreaterThanOrEqualTo(0);
+        aggregateCapIndex.Should().BeGreaterThan(skillStanceIndex,
+            "Vigor Stance damage must participate in the shared outgoing-damage cap");
     }
 
     private static IReadOnlyCollection<PerkDetail> BuildPerksWithout2daLookup()

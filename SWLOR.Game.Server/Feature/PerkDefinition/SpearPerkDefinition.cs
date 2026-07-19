@@ -261,6 +261,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LateralFootworkTrait)
                 .Description("After using a Spear ability, gain +10% Evasion for 30 seconds.")
+                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
+                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 10)
+                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 5);
         }
@@ -276,9 +279,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.CostlyAbilityDamageBonusSkillType, (int)SkillType.Spear)
                 .IncreasesStat(StatType.CostlyAbilityHitMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityDamageBonus, 6)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 3)
-                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustment, 3)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 8)
 
@@ -287,9 +291,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.CostlyAbilityDamageBonusSkillType, (int)SkillType.Spear)
                 .IncreasesStat(StatType.CostlyAbilityHitMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 5)
-                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustment, 5)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 22)
 
@@ -298,9 +303,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.CostlyAbilityDamageBonusSkillType, (int)SkillType.Spear)
                 .IncreasesStat(StatType.CostlyAbilityHitMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityDamageBonus, 14)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 7)
-                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustment, 7)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 45);
         }
@@ -384,7 +390,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.CostlyAbilityHitStaminaRestoreSkillType, (int)SkillType.Spear)
                 .IncreasesStat(StatType.CostlyAbilityHitMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityHitStaminaRestore, 3)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 25);
         }

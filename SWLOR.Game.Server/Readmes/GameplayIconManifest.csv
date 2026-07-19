@@ -1276,6 +1276,7 @@
 "StatusEffect","GuardedChannelStatusEffect","Guarded Channel","Beneficial","","ief_grdedchan","SWLOR.Game.Server\Feature\StatusEffectDefinition\GuardedChannelStatusEffect.cs",""
 "StatusEffect","GuardedStatusEffect","Guarded","Beneficial","","ief_grded","SWLOR.Game.Server\Feature\StatusEffectDefinition\GuardedStatusEffect.cs",""
 "StatusEffect","GuardianMasterStatusEffect","Guardian Master","Beneficial","","ief_guardmstr","SWLOR.Game.Server\Feature\StatusEffectDefinition\GuardianMasterStatusEffect.cs",""
+"StatusEffect","GuardianReflexesStatusEffect","Guardian Reflexes","Beneficial","","ief_guardreflx","SWLOR.Game.Server\Feature\StatusEffectDefinition\GuardianReflexesStatusEffect.cs",""
 "StatusEffect","GuardiansResolveStatusEffect","Guardian's Resolve","Beneficial","","ief_guardres","SWLOR.Game.Server\Feature\StatusEffectDefinition\GuardiansResolveStatusEffect.cs",""
 "StatusEffect","GuardingBondBeastStatusEffect","Guarding Bond","Beneficial","","ief_grdbndbst","SWLOR.Game.Server\Feature\StatusEffectDefinition\GuardingBondBeastStatusEffect.cs",""
 "StatusEffect","GuardingBondStatusEffect","Guarding Bond","Beneficial","","ief_grdbnd","SWLOR.Game.Server\Feature\StatusEffectDefinition\GuardingBondStatusEffect.cs",""

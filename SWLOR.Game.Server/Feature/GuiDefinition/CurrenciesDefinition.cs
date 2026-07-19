@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 cell.AddLabel()
                                     .BindText(model => model.CurrencyAmountText)
                                     .BindTooltip(model => model.CurrencyDescriptions)
-                                    .SetColor(255, 208, 0)
+                                    .SetColor(255, 236, 155)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Right)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle);
                             });

@@ -30,6 +30,8 @@ public class KeyItemsWindowTests
         definition.Should().Contain("browser.AddPagination(");
         definition.Should().Contain("model => model.PageNumbers");
         definition.Should().Contain("model => model.SelectedPageIndex");
+        definition.Should().NotContain(".SetPageSelectorWidth(100f)");
+        definition.Should().NotContain(".SetRowHeight(35f)");
     }
 
     [Test]

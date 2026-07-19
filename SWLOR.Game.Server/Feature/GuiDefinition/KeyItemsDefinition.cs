@@ -84,12 +84,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
 
                             browser.AddPagination(
-                                    model => model.PageNumbers,
-                                    model => model.SelectedPageIndex,
-                                    model => model.OnClickPreviousPage(),
-                                    model => model.OnClickNextPage())
-                                .SetPageSelectorWidth(100f)
-                                .SetControlHeight(35f);
+                                model => model.PageNumbers,
+                                model => model.SelectedPageIndex,
+                                model => model.OnClickPreviousPage(),
+                                model => model.OnClickNextPage());
                         });
 
                         root.AddColumn(details =>

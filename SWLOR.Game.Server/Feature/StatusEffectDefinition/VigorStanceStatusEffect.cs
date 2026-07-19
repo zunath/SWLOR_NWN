@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.AbilityUsedEvasionPercentAdjustmentSkillType] = (int)SkillType.Spear;
             StatGroup.Stats[StatType.AbilityUsedEvasionPercentAdjustment] = 8;
             StatGroup.Stats[StatType.AbilityUsedEvasionDurationSeconds] = 30;
+            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = 10;
         }
     }
 }

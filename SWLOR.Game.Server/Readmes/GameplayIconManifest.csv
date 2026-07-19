@@ -1269,6 +1269,7 @@
 "StatusEffect","LastBastionStatusEffect","Last Bastion","Harmful",,"ief_lastbast","SWLOR.Game.Server\Feature\StatusEffectDefinition\LastBastionStatusEffect.cs",""
 "StatusEffect","LastStandOfTheLight1StatusEffect","Last Stand of the Light","Beneficial","1","ief_laststandlg1","SWLOR.Game.Server\Feature\StatusEffectDefinition\LastStandOfTheLight1StatusEffect.cs",""
 "StatusEffect","LastWordStatusEffect","Last Word","Harmful",,"ief_lastwrd","SWLOR.Game.Server\Feature\StatusEffectDefinition\LastWordStatusEffect.cs",""
+"StatusEffect","LateralFootworkStatusEffect","Lateral Footwork","Beneficial",,"ief_ltrlftwrk","SWLOR.Game.Server\Feature\StatusEffectDefinition\LateralFootworkStatusEffect.cs",""
 "StatusEffect","LucidSpliceStatusEffect","Lucid Splice","Beneficial",,"ief_lcdsplc","SWLOR.Game.Server\Feature\StatusEffectDefinition\LucidSpliceStatusEffect.cs",""
 "StatusEffect","MarkedForDeathStatusEffect","Marked for Death","Harmful",,"ief_markfordth","SWLOR.Game.Server\Feature\StatusEffectDefinition\MarkedForDeathStatusEffect.cs",""
 "StatusEffect","MarkedStatusEffect","Marked","Harmful",,"ief_mark","SWLOR.Game.Server\Feature\StatusEffectDefinition\MarkedStatusEffect.cs",""

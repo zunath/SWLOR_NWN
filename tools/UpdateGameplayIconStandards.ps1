@@ -1215,6 +1215,34 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.DrawArc($hot, 52, 31, 35, 35, 85, 230)
         $g.FillEllipse((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 5, 7, 10))), 64, 27, 34, 34)
     }
+    elseif ($className -match "LateralFootwork") {
+        # Evasion gained by stepping off the line of attack: a bold footprint with speed lines
+        # trailing it. Kept to two solid masses and three straight lines, because thin outlines and
+        # internal detail turn to mud once this is resized to 32x32.
+        $sole = New-Object System.Drawing.Drawing2D.GraphicsPath
+        $sole.AddEllipse(58, 30, 40, 44)
+        $heel = New-Object System.Drawing.Drawing2D.GraphicsPath
+        $heel.AddEllipse(63, 74, 30, 28)
+
+        $g.FillEllipse($shadowBrush, 61, 34, 40, 44)
+        $g.FillEllipse($shadowBrush, 66, 78, 30, 28)
+        $g.FillPath($brush, $sole)
+        $g.FillPath($brush, $heel)
+        $g.DrawPath($thin, $sole)
+        $g.DrawPath($thin, $heel)
+
+        # Toe separation reads as a footprint rather than a pill at small sizes.
+        $g.DrawLine($hot, 70, 40, 70, 52)
+        $g.DrawLine($hot, 86, 40, 86, 52)
+
+        # Speed lines trailing the step.
+        $g.DrawLine($pen, 26, 52, 48, 52)
+        $g.DrawLine($pen, 32, 68, 50, 68)
+        $g.DrawLine($pen, 26, 84, 48, 84)
+
+        $sole.Dispose()
+        $heel.Dispose()
+    }
     elseif ($className -match "Stance|Focus|Centering|Attentiveness|Precision|Collapse|CruelMomentum") {
         $g.FillEllipse($shadowBrush, 53, 25, 24, 24)
         $g.FillEllipse($brush, 52, 24, 24, 24)

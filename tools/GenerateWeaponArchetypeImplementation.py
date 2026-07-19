@@ -7,6 +7,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv"
+
+# Perks whose stat-driven buff shows a named status effect. Shared combat systems read the
+# "...StatusEffectId" stat rather than inspecting which perk granted the buff, so the buff stays
+# stat-driven while the player still sees a named effect on the status bar. Keys are perk base
+# names; values are BuffStatusEffectType members.
+BUFF_STATUS_EFFECTS_BY_PERK = {
+    "Lateral Footwork": "LateralFootwork",
+}
 GAMEPLAY_ICON_MANIFEST = ROOT / "SWLOR.Game.Server" / "Readmes" / "GameplayIconManifest.csv"
 TLK_JSON = ROOT / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json"
 CUSTOM_TLK_OFFSET = 16777216
@@ -1383,6 +1391,16 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Evasion", description))
         add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
+    if re.search(r"After using a \w+ ability, gain \+\d+% Evasion", description) and "Ranged Evasion" not in description:
+        add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+        add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
+        add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
+        buff_status_effect = BUFF_STATUS_EFFECTS_BY_PERK.get(base)
+        if buff_status_effect:
+            add_stat(
+                stats,
+                "AbilityUsedEvasionStatusEffectId",
+                f"(int)BuffStatusEffectType.{buff_status_effect}")
 
     if "control abilities deal" in lowered:
         add_stat(stats, "AbilityStatusCategoryBonusSkillType", skill_expr)
@@ -1463,6 +1481,9 @@ def exact_weapon_stance_stat_entries(row, base):
         add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"grant \+(\d+)% Evasion", description))
         add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
+        # This branch returns early, so the generic "deal +N% damage" rule further down never runs.
+        # Parse it here or the stance silently ships without its damage bonus.
+        add_stat(stats, "DamageDealtPercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
         return list(stats.items())
 
     if base == "Cyclone Stance":

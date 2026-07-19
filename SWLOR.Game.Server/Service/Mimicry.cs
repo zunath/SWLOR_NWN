@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var feat in dbPlayer.EquippedTechniques)
             {
                 if (contributors.TryGetValue(feat, out var amount))
-                    bonus += amount;
+                    bonus = Stat.CombineStatAdjustment(stat, bonus, amount);
             }
 
             return bonus;

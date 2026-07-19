@@ -159,11 +159,16 @@ namespace SWLOR.Game.Server.Service.CombatService
         {
             PurgeExpired(creature);
 
-            return _modifiers.TryGetValue(creature, out var modifiers)
-                ? modifiers
-                    .Where(x => x.StatType == statType && MatchesGroup(x, group))
-                    .Sum(x => x.Amount)
-                : 0;
+            if (!_modifiers.TryGetValue(creature, out var modifiers))
+                return 0;
+
+            var matching = modifiers.Where(x => x.StatType == statType && MatchesGroup(x, group));
+
+            // Identity stats name a target rather than measuring one, so stacking them would produce
+            // a different identifier instead of a stronger buff. See StatTypeAttribute.IsIdentity.
+            return Stat.IsIdentityStat(statType)
+                ? matching.Select(x => x.Amount).DefaultIfEmpty(0).Max()
+                : matching.Sum(x => x.Amount);
         }
 
         public static int GetStatAdjustment(uint creature, StatType statType, StatType groupStatType)

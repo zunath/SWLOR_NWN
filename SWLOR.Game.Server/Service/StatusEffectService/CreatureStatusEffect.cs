@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
 {
@@ -10,6 +11,30 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         private readonly HashSet<IStatusEffect> _onHitEffects = new();
         private readonly Dictionary<StatusEffectSourceType, HashSet<IStatusEffect>> _effectsBySourceType = new();
         public StatGroup StatGroup { get; set; }
+
+        /// <summary>
+        /// Reads the creature's aggregate contribution to a stat.
+        ///
+        /// Identity stats cannot be kept as a running total, because Add/Remove maintain one
+        /// incrementally and removing the highest contributor would leave a stale value behind.
+        /// They are recomputed from the live effects instead.
+        /// </summary>
+        public int GetStatAdjustment(StatType stat)
+        {
+            if (!Stat.IsIdentityStat(stat))
+            {
+                return StatGroup.Stats[stat];
+            }
+
+            var identity = 0;
+            foreach (var statusEffect in _allActiveEffects)
+            {
+                if (statusEffect.StatGroup.Stats.TryGetValue(stat, out var value) && value > identity)
+                    identity = value;
+            }
+
+            return identity;
+        }
 
         public void Add(IStatusEffect statusEffect)
         {

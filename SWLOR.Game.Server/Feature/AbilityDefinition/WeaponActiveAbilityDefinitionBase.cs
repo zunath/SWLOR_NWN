@@ -99,6 +99,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SelfCriticalRatePercent { get; init; }
             public int SelfStatDurationSeconds { get; init; }
             public int SelfStatResourceAboveThresholdPercent { get; init; }
+
+            /// <summary>
+            /// Visible status effect shown while this ability's self buff is active. Every self buff
+            /// the player receives must declare one so the buff appears on the status bar.
+            /// </summary>
+            public BuffStatusEffectType SelfBuffStatusEffect { get; init; }
             public int SelfGuardPercentIfRecentGuardedAllyHit { get; init; }
             public int SelfGuardDurationSecondsIfRecentGuardedAllyHit { get; init; }
             public int SelfEnmityPercentIfRecentWardHit { get; init; }
@@ -538,6 +544,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             private void ApplySelfModifiers(uint activator)
             {
+                // The buff itself lives in TemporaryStatModifier, which shows the player nothing, so
+                // track the strongest applied bonus and its window to drive the visible status effect.
+                var statusDuration = 0;
+                var statusMagnitude = 0;
+
                 if (SelfHastePercent > 0 && SelfHasteDurationSeconds > 0)
                 {
                     var max = SelfHasteMaximumPercent > 0 ? SelfHasteMaximumPercent : SelfHastePercent;
@@ -549,27 +560,66 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         max,
                         StatType.AttackDelayReductionPercent,
                         1);
+
+                    statusDuration = SelfHasteDurationSeconds;
+                    statusMagnitude = SelfHastePercent;
                 }
 
                 var duration = SelfStatDurationSeconds;
-                if (duration <= 0)
-                    return;
+                var meetsResourceThreshold = SelfStatResourceAboveThresholdPercent <= 0 ||
+                    Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, SelfStatResourceAboveThresholdPercent);
 
-                if (SelfStatResourceAboveThresholdPercent > 0 &&
-                    !Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
+                if (duration > 0 && meetsResourceThreshold)
                 {
-                    return;
+                    ReplaceTemporary(activator, StatType.AttackPercentAdjustment, SelfAttackPercent, duration);
+                    ReplaceTemporary(activator, StatType.AccuracyPercentAdjustment, SelfAccuracyPercent, duration);
+                    ReplaceTemporary(activator, StatType.EvasionPercentAdjustment, SelfEvasionPercent, duration);
+                    ReplaceTemporary(activator, StatType.PhysicalDefensePercentAdjustment, SelfDefensePercent, duration);
+                    ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, SelfForceDefensePercent, duration);
+                    ReplaceTemporary(activator, StatType.AttackDeflection, SelfAttackDeflection, duration);
+                    if (SelfAttackDeflection != 0)
+                        Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator);
+                    ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
+
+                    statusDuration = Math.Max(statusDuration, duration);
+                    if (statusMagnitude == 0)
+                    {
+                        statusMagnitude = FirstNonZero(
+                            SelfAttackPercent,
+                            SelfAccuracyPercent,
+                            SelfEvasionPercent,
+                            SelfDefensePercent,
+                            SelfForceDefensePercent,
+                            SelfAttackDeflection,
+                            SelfCriticalRatePercent);
+                    }
                 }
 
-                ReplaceTemporary(activator, StatType.AttackPercentAdjustment, SelfAttackPercent, duration);
-                ReplaceTemporary(activator, StatType.AccuracyPercentAdjustment, SelfAccuracyPercent, duration);
-                ReplaceTemporary(activator, StatType.EvasionPercentAdjustment, SelfEvasionPercent, duration);
-                ReplaceTemporary(activator, StatType.PhysicalDefensePercentAdjustment, SelfDefensePercent, duration);
-                ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, SelfForceDefensePercent, duration);
-                ReplaceTemporary(activator, StatType.AttackDeflection, SelfAttackDeflection, duration);
-                if (SelfAttackDeflection != 0)
-                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator);
-                ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
+                ApplySelfBuffStatusEffect(activator, statusMagnitude, statusDuration);
+            }
+
+            private void ApplySelfBuffStatusEffect(uint activator, int magnitude, int durationSeconds)
+            {
+                if (SelfBuffStatusEffect == BuffStatusEffectType.Invalid || durationSeconds <= 0)
+                    return;
+
+                var factory = BuffStatusEffectResolver.GetFactory(SelfBuffStatusEffect);
+                var statusEffect = factory?.Invoke(magnitude);
+                if (statusEffect == null)
+                    return;
+
+                StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, durationSeconds);
+            }
+
+            private static int FirstNonZero(params int[] values)
+            {
+                foreach (var value in values)
+                {
+                    if (value != 0)
+                        return value;
+                }
+
+                return 0;
             }
 
             private static void ReplaceTemporary(uint activator, StatType statType, int amount, int durationSeconds)

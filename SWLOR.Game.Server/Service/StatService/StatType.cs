@@ -689,25 +689,25 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Internal temporary SkillType value that causes the next matching ability activation delay to become zero, then is consumed.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NextAttackNoDelay = 118,
 
         /// <summary>
         /// Primary RecastGroup id that can trigger an ability-used recast reduction.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedRecastReductionTriggerGroup = 127,
 
         /// <summary>
         /// Secondary RecastGroup id that can trigger an ability-used recast reduction.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedRecastReductionSecondaryTriggerGroup = 128,
 
         /// <summary>
         /// RecastGroup id whose active recast is reduced when the trigger group matches the used ability.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedRecastReductionTargetGroup = 129,
 
         /// <summary>
@@ -893,7 +893,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value for the no-Stamina-cost ability charge granted by the low-HP trigger.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         LowHPNextAbilityNoStaminaCostSkillType = 163,
 
         /// <summary>
@@ -911,13 +911,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary SkillType value that makes the next matching ability cost 0 Stamina.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NextAbilityNoStaminaCostSkillType = 166,
 
         /// <summary>
         /// PerkType value for the ability that can consume the critical-hit next-ability damage bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CriticalNextAbilityDamageBonusPerkType = 167,
 
         /// <summary>
@@ -971,19 +971,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value required before CriticalStaminaRestore can trigger. Invalid or 0 allows any skill.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CriticalStaminaRestoreSkillType = 179,
 
         /// <summary>
         /// SkillType value required before CriticalNextAbilityDamageBonus can trigger. Invalid or 0 allows any skill.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CriticalNextAbilityDamageBonusTriggerSkillType = 180,
 
         /// <summary>
         /// SkillType value required for DamageTakenRecentTargetNextAbilityNoDelayChance to grant a no-delay ability charge.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DamageTakenRecentTargetNextAbilityNoDelaySkillType = 181,
 
         /// <summary>
@@ -1187,7 +1187,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id for the next skill ability modifier granted after guarding a hit.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         GuardedHitNextSkillAbilitySkillType = 215,
 
         /// <summary>
@@ -1211,7 +1211,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Internal temporary SkillType id consumed by the next matching ability.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NextSkillAbilitySkillType = 223,
 
         /// <summary>
@@ -1337,13 +1337,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id required before a critical hit grants no activation delay to the next ability.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CriticalNextAbilityNoDelayTriggerSkillType = 244,
 
         /// <summary>
         /// SkillType id that receives no activation delay after the critical-hit trigger.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CriticalNextAbilityNoDelaySkillType = 245,
 
         /// <summary>
@@ -1457,7 +1457,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// AbilityType value plus one used to scale HealingReceivedStaminaRestoreChance.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HealingReceivedStaminaRestoreChanceScalingAbility = 264,
 
         /// <summary>
@@ -1517,7 +1517,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose abilities ignore Defense against Exposed or Sundered targets.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityDefenseIgnoreExposedOrSunderedSkillType = 274,
 
         /// <summary>
@@ -1589,7 +1589,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory value counted by NearbyStatusTargetAttackPercentPerTarget.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NearbyStatusTargetAttackStatusCategory = 289,
 
         /// <summary>
@@ -1607,7 +1607,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value required for an opening auto-attack bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         OpeningAutoAttackSkillType = 292,
 
         /// <summary>
@@ -1661,7 +1661,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value receiving AbilityHitChancePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityHitChancePercentAdjustmentSkillType = 301,
 
         /// <summary>
@@ -1685,7 +1685,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Primary PerkType value that receives AbilityRecastDelayFlatAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityRecastDelayFlatAdjustmentPerkType = 305,
 
         /// <summary>
@@ -1721,7 +1721,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value of incoming abilities affected by IncomingAbilityHitChancePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         IncomingAbilityHitChancePercentAdjustmentSkillType = 311,
 
         /// <summary>
@@ -1733,13 +1733,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value that must be used before granting a next auto-attack damage bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType = 313,
 
         /// <summary>
         /// SkillType value whose next auto-attack receives the damage bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedNextSkillAutoAttackDamageBonusSkillType = 314,
 
         /// <summary>
@@ -1757,13 +1757,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value that must be used before granting a next ability FP cost adjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedNextSkillFPCostAdjustmentTriggerSkillType = 317,
 
         /// <summary>
         /// SkillType value whose next ability receives the FP cost adjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedNextSkillFPCostAdjustmentSkillType = 318,
 
         /// <summary>
@@ -1781,7 +1781,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary SkillType value for the next auto-attack damage bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NextSkillAutoAttackDamageBonusSkillType = 321,
 
         /// <summary>
@@ -1793,7 +1793,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary SkillType value for the next ability FP cost adjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NextAbilityFPCostAdjustmentSkillType = 323,
 
         /// <summary>
@@ -1805,7 +1805,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose abilities receive a Stamina cost adjustment above the configured resource threshold.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HighResourceAbilityStaminaCostSkillType = 325,
 
         /// <summary>
@@ -1823,7 +1823,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose next ability receives an avoided-attack Stamina cost adjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AvoidedAttackNextSkillAbilitySkillType = 328,
 
         /// <summary>
@@ -1841,7 +1841,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary SkillType value for the next ability Stamina cost adjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NextSkillAbilityStaminaCostAdjustmentSkillType = 331,
 
         /// <summary>
@@ -1853,7 +1853,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value that can receive idle-time ability bonuses.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         IdleSkillAbilitySkillType = 333,
 
         /// <summary>
@@ -1877,7 +1877,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value that can receive side-attack bonuses.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SideAttackSkillType = 337,
 
         /// <summary>
@@ -1949,7 +1949,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value that can trigger auto-attack cycle damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AutoAttackCycleDamageSkillType = 349,
 
         /// <summary>
@@ -1973,7 +1973,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value receiving AbilityCriticalRatePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityCriticalRatePercentAdjustmentSkillType = 353,
 
         /// <summary>
@@ -2111,7 +2111,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose auto-attacks restore SkillAutoAttackFPRestore FP.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SkillAutoAttackFPRestoreSkillType = 376,
 
         /// <summary>
@@ -2123,7 +2123,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose Stamina ability costs restore FP by percent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityStaminaCostFPRestorePercentSkillType = 378,
 
         /// <summary>
@@ -2135,7 +2135,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose FP ability costs restore Stamina by percent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityFPCostStaminaRestorePercentSkillType = 380,
 
         /// <summary>
@@ -2147,7 +2147,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose abilities receive a flat Stamina cost adjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SkillAbilityStaminaCostFlatAdjustmentSkillType = 382,
 
         /// <summary>
@@ -2159,7 +2159,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose repeated damage against the same target receives RepeatedTargetDamagePercentPerHit.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         RepeatedTargetDamageSkillType = 384,
 
         /// <summary>
@@ -2291,7 +2291,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// AbilityType plus one used to scale MeleeDamageTakenPoisonDamage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         MeleeDamageTakenPoisonDamageScalingAbility = 406,
 
         /// <summary>
@@ -2411,19 +2411,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Internal temporary SkillType value that causes the next matching auto-attack to use the default minimum delay, then is consumed.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NextAutoAttackNoDelaySkillType = 428,
 
         /// <summary>
         /// SkillType id required before a critical hit grants minimum delay to the next auto-attack.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CriticalNextAutoAttackNoDelayTriggerSkillType = 429,
 
         /// <summary>
         /// SkillType id whose next auto-attack receives the default minimum delay after the critical-hit trigger.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CriticalNextAutoAttackNoDelaySkillType = 430,
 
         /// <summary>
@@ -2765,7 +2765,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Ability score used to scale HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility = 487,
 
         /// <summary>
@@ -3347,7 +3347,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value of abilities that trigger AbilityUsedEvasionPercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedEvasionPercentAdjustmentSkillType = 586,
 
         /// <summary>
@@ -3365,7 +3365,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value of abilities that trigger AbilityUsedRangedEvasionPercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedRangedEvasionPercentAdjustmentSkillType = 826,
 
         /// <summary>
@@ -3383,7 +3383,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value of single-target abilities that trigger SingleTargetAbilityAttackDeflection.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SingleTargetAbilityAttackDeflectionSkillType = 589,
 
         /// <summary>
@@ -3401,37 +3401,37 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Primary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPrimaryPerkType = 592,
 
         /// <summary>
         /// Primary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPrimaryPerkType = 593,
 
         /// <summary>
         /// Primary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType = 594,
 
         /// <summary>
         /// Secondary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType = 595,
 
         /// <summary>
         /// Tertiary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseGuardiansResolveTriggerTertiaryPerkType = 596,
 
         /// <summary>
         /// Quaternary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType = 597,
 
         /// <summary>
@@ -3449,61 +3449,61 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Secondary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSecondaryPerkType = 600,
 
         /// <summary>
         /// Tertiary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerTertiaryPerkType = 601,
 
         /// <summary>
         /// Quaternary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuaternaryPerkType = 602,
 
         /// <summary>
         /// Quinary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuinaryPerkType = 603,
 
         /// <summary>
         /// Senary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSenaryPerkType = 604,
 
         /// <summary>
         /// Secondary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSecondaryPerkType = 605,
 
         /// <summary>
         /// Tertiary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityCrushingBlowTriggerTertiaryPerkType = 606,
 
         /// <summary>
         /// Quaternary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuaternaryPerkType = 607,
 
         /// <summary>
         /// Quinary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuinaryPerkType = 608,
 
         /// <summary>
         /// Senary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType = 609,
 
         /// <summary>
@@ -3521,7 +3521,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value for deflection-triggered next-skill ability bonuses. Unset applies to any skill.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DeflectionNextSkillAbilitySkillType = 615,
 
         /// <summary>
@@ -3599,7 +3599,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id whose next auto-attack receives a critical chance bonus after deflecting an attack.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DeflectionNextAutoAttackCriticalRateSkillType = 630,
 
         /// <summary>
@@ -3617,7 +3617,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Internal temporary SkillType value consumed by the next matching auto-attack critical chance bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NextAutoAttackCriticalRateSkillType = 633,
 
         /// <summary>
@@ -3635,7 +3635,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id required before direct damage dealt restores Stamina. Invalid or 0 allows any skill.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DamageDealtStaminaRestoreSkillType = 636,
 
         /// <summary>
@@ -3653,7 +3653,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id required before direct damage dealt grants AttackDelayReductionPercent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DamageDealtAttackDelayReductionSkillType = 639,
 
         /// <summary>
@@ -3695,7 +3695,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id required before direct damage can inflict Hamstring. Invalid or 0 allows any skill.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DamageDealtHamstringSkillType = 646,
 
         /// <summary>
@@ -3713,7 +3713,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id required before hostile abilities trigger AbilityUsedAttackDeflection. Invalid or 0 allows any skill.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedAttackDeflectionSkillType = 649,
 
         /// <summary>
@@ -3779,7 +3779,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id required for BleedingStatusExpiredNextSkillAbilityStaminaCostAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         BleedingStatusExpiredNextSkillAbilitySkillType = 660,
 
         /// <summary>
@@ -3875,7 +3875,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType id required before AbilityDamageToBleedingTargetBonus applies.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityDamageToBleedingTargetSkillType = 676,
 
         /// <summary>
@@ -3911,7 +3911,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose next auto-attack is quickened after avoiding an attack.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AvoidedAttackNextAutoAttackNoDelaySkillType = 682,
 
         /// <summary>
@@ -4025,13 +4025,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required for status-applied stat riders.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         StatusAppliedRequiredCategory = 701,
 
         /// <summary>
         /// SkillType value whose next ability receives status-applied bonuses.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         StatusAppliedNextSkillAbilitySkillType = 702,
 
         /// <summary>
@@ -4115,7 +4115,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required on the target for ability target-status riders.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityTargetStatusRequiredCategory = 716,
 
         /// <summary>
@@ -4133,7 +4133,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose area abilities trigger AreaAbilityUsedEvasionPercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AreaAbilityUsedEvasionPercentAdjustmentSkillType = 719,
 
         /// <summary>
@@ -4157,7 +4157,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required on the target for target-status critical rate.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         TargetStatusCriticalRateStatusCategory = 723,
 
         /// <summary>
@@ -4187,7 +4187,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose area abilities can receive recent-deflection damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType = 728,
 
         /// <summary>
@@ -4217,7 +4217,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose auto attacks count toward AutoAttackCycleCriticalRatePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AutoAttackCycleCriticalRateSkillType = 733,
 
         /// <summary>
@@ -4235,7 +4235,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose non-critical abilities build next-ability Critical Rate.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         NonCriticalAbilityNextSkillAbilityCriticalRateSkillType = 736,
 
         /// <summary>
@@ -4319,7 +4319,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose area abilities count toward area target-hit sequences.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AreaAbilityTargetHitSequenceSkillType = 750,
 
         /// <summary>
@@ -4343,7 +4343,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose idle status durations can be adjusted.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         IdleStatusDurationPercentAdjustmentSkillType = 754,
 
         /// <summary>
@@ -4361,7 +4361,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required for IdleStatusDurationPercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         IdleStatusDurationRequiredCategory = 757,
 
         /// <summary>
@@ -4397,7 +4397,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required for conditional critical damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CriticalDamageTargetStatusCategory = 763,
 
         /// <summary>
@@ -4421,7 +4421,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose hostile abilities grant temporary movement speed.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedMovementSpeedPercentAdjustmentSkillType = 767,
 
         /// <summary>
@@ -4457,7 +4457,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose next ability gains damage after the creature takes damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DamageTakenNextSkillAbilitySkillType = 773,
 
         /// <summary>
@@ -4481,7 +4481,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose costly hostile ability hits can restore Stamina.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CostlyAbilityHitStaminaRestoreSkillType = 777,
 
         /// <summary>
@@ -4499,7 +4499,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose costly abilities gain flat damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CostlyAbilityDamageBonusSkillType = 780,
 
         /// <summary>
@@ -4547,7 +4547,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required for conditional low-HP status-target damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         TargetLowHPStatusDamageStatusCategory = 788,
 
         /// <summary>
@@ -4559,7 +4559,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory flags required for damage against statuses applied by the attacker.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DamageToSourceAppliedStatusTargetCategory = 790,
 
         /// <summary>
@@ -4571,13 +4571,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Optional SkillType value required before ability damage against source-applied statuses applies.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityDamageToSourceAppliedStatusTargetSkillType = 792,
 
         /// <summary>
         /// StatusEffectCategory flags required for ability damage against statuses applied by the attacker.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityDamageToSourceAppliedStatusTargetCategory = 793,
 
         /// <summary>
@@ -4625,13 +4625,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose abilities applying a matching status category receive AbilityStatusCategoryDamageBonus and AbilityStatusCategoryHitChancePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityStatusCategoryBonusSkillType = 801,
 
         /// <summary>
         /// StatusEffectCategory flags required before ability status-category bonuses apply.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityStatusCategoryBonusRequiredCategory = 802,
 
         /// <summary>
@@ -4703,7 +4703,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose costly hostile abilities can apply a status rider.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         CostlyAbilityStatusSkillType = 814,
 
         /// <summary>
@@ -4733,7 +4733,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose area abilities receive SkillAreaAbilityDamagePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SkillAreaAbilityDamagePercentAdjustmentSkillType = 819,
 
         /// <summary>
@@ -4799,19 +4799,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// PerkCategoryType value whose abilities trigger BeastBalancedAbilityStaminaRestore.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         BeastBalancedAbilityStaminaRestoreCategoryId = 834,
 
         /// <summary>
         /// PerkCategoryType value whose abilities trigger target enmity-to-source status.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId = 835,
 
         /// <summary>
         /// PerkCategoryType value whose abilities trigger nearby ally Attack Deflection.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId = 836,
 
         /// <summary>
@@ -4823,7 +4823,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// PerkCategoryType value whose abilities trigger self defensive stat riders.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityUsedPerkCategorySelfDefenseCategoryId = 838,
 
         /// <summary>
@@ -4835,13 +4835,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose next ability can receive guarded-hit status riders.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         GuardedHitNextSkillAbilityStatusSkillType = 841,
 
         /// <summary>
         /// SkillType value whose guard retaliation receives GuardRetaliationDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         GuardRetaliationDamageBonusSkillType = 842,
 
         /// <summary>
@@ -4877,7 +4877,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose direct damage builds same-target pressure.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SameTargetPressureBuildSkillType = 848,
 
         /// <summary>
@@ -4907,7 +4907,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// RecastGroup value whose active cooldown is reduced when a deflection succeeds.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DeflectionRecastReductionGroupId = 853,
 
         /// <summary>
@@ -4931,7 +4931,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose auto-attacks apply Hamstring.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AutoAttackHamstringSkillType = 857,
 
         /// <summary>
@@ -4991,7 +4991,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory value required on a source-applied target status for ability flat damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         AbilityDamageToSourceAppliedStatusTargetBonusCategory = 866,
 
         /// <summary>
@@ -5003,13 +5003,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory value required before source status stacks are applied.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SourceStatusStackRequiredCategory = 868,
 
         /// <summary>
         /// StatusEffectCategory value identifying the source-owned stack effect to apply.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SourceStatusStackAppliedCategory = 869,
 
         /// <summary>
@@ -5027,7 +5027,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose successful hostile ability hits grant no-delay auto-attacks.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         HostileAbilityHitNextAutoAttackNoDelaySkillType = 872,
 
         /// <summary>
@@ -5039,13 +5039,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory value required on source-applied target statuses for auto-attack cycle damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SourceStatusAutoAttackCycleRequiredCategory = 874,
 
         /// <summary>
         /// SkillType value whose auto-attacks count toward source-status cycle damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SourceStatusAutoAttackCycleSkillType = 875,
 
         /// <summary>
@@ -5063,13 +5063,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// CombatDamageType value used by source-status auto-attack cycle damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SourceStatusAutoAttackCycleDamageType = 878,
 
         /// <summary>
         /// StatusEffectCategory value whose application drains target Stamina.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         StatusAppliedTargetStaminaDrainRequiredCategory = 879,
 
         /// <summary>
@@ -5087,7 +5087,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory value that receives source-owned healing received adjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         SourceStatusHealingReceivedRequiredCategory = 882,
 
         /// <summary>
@@ -5105,7 +5105,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// StatusEffectCategory value for DirectDamageToStatusCategoryOrStealthBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
         DirectDamageToStatusCategoryOrStealthBonusCategory = 885,
 
         /// <summary>
@@ -5364,15 +5364,39 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TrapDetectionRangeBonus = 934,
+
+        /// <summary>
+        /// BuffStatusEffectType value shown while AbilityUsedEvasionPercentAdjustment is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
+        AbilityUsedEvasionStatusEffectId = 935,
+
+        /// <summary>
+        /// BuffStatusEffectType value shown while AbilityUsedRangedEvasionPercentAdjustment is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, isIdentity: true)]
+        AbilityUsedRangedEvasionStatusEffectId = 936,
     }
 
     public class StatTypeAttribute : Attribute
     {
         public StatTypeCategory Category { get; }
 
-        public StatTypeAttribute(StatTypeCategory category)
+        /// <summary>
+        /// True when the stat's value is an identifier (a cast enum such as a SkillType,
+        /// StatusEffectCategory, or BuffStatusEffectType) rather than a magnitude.
+        ///
+        /// Identity stats must never be summed across sources. Two perks that both declare
+        /// "(int)SkillType.Spear" would otherwise add to 80, which is not a defined SkillType, and
+        /// the dependent behavior silently switches off or - worse, when the sum lands on a valid
+        /// enum member - retargets onto something else entirely.
+        /// </summary>
+        public bool IsIdentity { get; }
+
+        public StatTypeAttribute(StatTypeCategory category, bool isIdentity = false)
         {
             Category = category;
+            IsIdentity = isIdentity;
         }
     }
 }

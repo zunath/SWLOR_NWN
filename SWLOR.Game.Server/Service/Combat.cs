@@ -7627,7 +7627,8 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedEvasion(
                 activator,
                 StatType.AbilityUsedEvasionPercentAdjustment,
-                StatType.AbilityUsedEvasionDurationSeconds);
+                StatType.AbilityUsedEvasionDurationSeconds,
+                StatType.AbilityUsedEvasionStatusEffectId);
         }
 
         private static void ApplyAbilityUsedSkillRangedEvasion(uint activator, AbilityDetail ability)
@@ -7646,6 +7647,7 @@ namespace SWLOR.Game.Server.Service
                 activator,
                 StatType.AbilityUsedRangedEvasionPercentAdjustment,
                 StatType.AbilityUsedRangedEvasionDurationSeconds,
+                StatType.AbilityUsedRangedEvasionStatusEffectId,
                 StatType.RangedEvasionPercentAdjustment);
         }
 
@@ -7907,6 +7909,7 @@ namespace SWLOR.Game.Server.Service
             uint activator,
             StatType evasionStatType,
             StatType durationStatType,
+            StatType statusEffectIdStatType,
             StatType targetStatType = StatType.EvasionPercentAdjustment)
         {
             var evasionPercent = Stat.GetStatAdjustment(activator, evasionStatType);
@@ -7914,12 +7917,13 @@ namespace SWLOR.Game.Server.Service
             if (evasionPercent == 0 || duration <= 0)
                 return;
 
-            TemporaryStatModifier.Replace(
+            TemporaryStatBuff.Replace(
                 activator,
                 targetStatType,
                 evasionPercent,
                 duration,
-                targetStatType);
+                targetStatType,
+                BuffStatusEffectResolver.GetFactory(Stat.GetStatAdjustment(activator, statusEffectIdStatType)));
         }
 
         private static void ApplyAbilityUsedAttackDeflection(

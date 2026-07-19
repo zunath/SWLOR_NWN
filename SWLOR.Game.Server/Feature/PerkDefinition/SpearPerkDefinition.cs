@@ -230,25 +230,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust1)
-                .Description("Deals weapon DMG + 8. Costs 2 additional STM to grant +6% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 8 and grants +6% Evasion for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust2)
-                .Description("Deals weapon DMG + 18. Costs 2 additional STM to grant +8% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 18 and grants +8% Evasion for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust3)
-                .Description("Deals weapon DMG + 28. Costs 2 additional STM to grant +10% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 28 and grants +10% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust4)
-                .Description("Deals weapon DMG + 38. Costs 2 additional STM to grant +12% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 38 and grants +12% Evasion for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Spear, 40);
         }
@@ -260,10 +260,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LateralFootworkTrait)
-                .Description("After spending 8 or more STM on an ability, gain +10% Evasion for 30 seconds.")
+                .Description("After using a Spear ability, gain +10% Evasion for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 10)
                 .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedEvasionStatusEffectId, (int)BuffStatusEffectType.LateralFootwork)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 5);
         }

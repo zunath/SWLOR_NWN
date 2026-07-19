@@ -72,6 +72,31 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
+        /// <summary>
+        /// True when the stat carries an identifier rather than a magnitude. See
+        /// <see cref="StatTypeAttribute.IsIdentity"/>.
+        /// </summary>
+        public static bool IsIdentityStat(StatType statType)
+        {
+            EnsureStatTypeAttributesCached();
+
+            return _statTypeAttributes.TryGetValue(statType, out var attribute) && attribute.IsIdentity;
+        }
+
+        /// <summary>
+        /// Combines two contributions to the same stat. Magnitudes add; identifiers do not, because
+        /// adding two enum values produces a different identifier (or an undefined one) rather than
+        /// a stronger effect. Identity stats resolve to the highest contributing value so the result
+        /// is deterministic regardless of the order sources are read in.
+        /// </summary>
+        public static int CombineStatAdjustment(StatType statType, int first, int second)
+        {
+            if (!IsIdentityStat(statType))
+                return first + second;
+
+            return Math.Max(first, second);
+        }
+
         private static void CacheStatTypeAttributes()
         {
             _statTypeAttributes.Clear();
@@ -1895,16 +1920,19 @@ namespace SWLOR.Game.Server.Service
             var persistentAdjustment = GetStatAdjustmentExcludingTemporaryModifiers(creature, stat);
             var temporaryAdjustment = TemporaryStatModifier.GetStatAdjustment(creature, stat);
 
-            return persistentAdjustment + temporaryAdjustment;
+            return CombineStatAdjustment(stat, persistentAdjustment, temporaryAdjustment);
         }
 
         public static int GetStatAdjustmentExcludingTemporaryModifiers(uint creature, StatType stat)
         {
-            var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat];
+            var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).GetStatAdjustment(stat);
             var perkAdjustment = Perk.GetStatBonus(creature, stat);
             var mimicryTraitAdjustment = Mimicry.GetStatBonus(creature, stat);
 
-            return statusAdjustment + perkAdjustment + mimicryTraitAdjustment;
+            return CombineStatAdjustment(
+                stat,
+                CombineStatAdjustment(stat, statusAdjustment, perkAdjustment),
+                mimicryTraitAdjustment);
         }
 
         public static int ApplyHealingReceivedAdjustment(uint creature, int amount)

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
 
@@ -11,8 +13,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel, GuiPayloadBase>,
         IGuiRefreshable<KeyItemReceivedRefreshEvent>
     {
+        private const int EntriesPerPage = 25;
         private readonly List<KeyItemType> _visibleKeyItems = new();
         private int _selectedIndex = -1;
+        private bool _suppressReload;
 
         public GuiBindingList<string> Icons
         {
@@ -62,16 +66,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (Player != 0 && WindowToken > 0)
-                    LoadKeyItems();
+                if (_suppressReload)
+                    return;
+
+                _suppressReload = true;
+                SelectedPageIndex = 0;
+                _suppressReload = false;
+                ReloadIfBound();
             }
+        }
+
+        public int SelectedPageIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_suppressReload)
+                    ReloadIfBound();
+            }
+        }
+
+        public GuiBindingList<GuiComboEntry> PageNumbers
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            _suppressReload = true;
             SelectedCategoryId = 0;
+            SelectedPageIndex = 0;
+            _suppressReload = false;
             LoadKeyItems();
             WatchOnClient(model => model.SelectedCategoryId);
+            WatchOnClient(model => model.SelectedPageIndex);
+        }
+
+        private void ReloadIfBound()
+        {
+            if (Player != 0 && WindowToken > 0)
+                LoadKeyItems();
         }
 
         private void LoadKeyItems()
@@ -87,19 +123,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? _visibleKeyItems[_selectedIndex]
                 : KeyItemType.Invalid;
 
+            var filteredKeyItems = keyItems
+                .Where(type =>
+                {
+                    var detail = KeyItem.GetKeyItem(type);
+                    return SelectedCategoryId == 0 || SelectedCategoryId == (int) detail.Category;
+                })
+                .ToList();
+
+            UpdatePagination(filteredKeyItems.Count);
+            var pageKeyItems = filteredKeyItems
+                .Skip(SelectedPageIndex * EntriesPerPage)
+                .Take(EntriesPerPage);
+
             var names = new GuiBindingList<string>();
             var icons = new GuiBindingList<string>();
             var selections = new GuiBindingList<bool>();
             _visibleKeyItems.Clear();
 
-            foreach (var type in keyItems)
+            foreach (var type in pageKeyItems)
             {
                 var detail = KeyItem.GetKeyItem(type);
-
-                // If a key item filter is applied and this key item isn't part of this category,
-                // skip it and move to the next.
-                if (SelectedCategoryId != 0 && SelectedCategoryId != (int) detail.Category)
-                    continue;
 
                 _visibleKeyItems.Add(type);
                 names.Add(detail.Name);
@@ -128,6 +172,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 selectedIndex = 0;
 
             SelectKeyItem(selectedIndex);
+        }
+
+        private void UpdatePagination(int totalRecordCount)
+        {
+            var wasSuppressingReload = _suppressReload;
+            _suppressReload = true;
+
+            var pageCount = Math.Max(1, (int) Math.Ceiling(totalRecordCount / (double) EntriesPerPage));
+            var pageNumbers = new GuiBindingList<GuiComboEntry>();
+            for (var page = 0; page < pageCount; page++)
+            {
+                pageNumbers.Add(new GuiComboEntry($"Page {page + 1}", page));
+            }
+
+            PageNumbers = pageNumbers;
+            SelectedPageIndex = Math.Clamp(SelectedPageIndex, 0, pageCount - 1);
+            _suppressReload = wasSuppressingReload;
         }
 
         public void SelectKeyItem(int index)
@@ -166,6 +227,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             SelectKeyItem(index);
+        };
+
+        public Action OnClickPreviousPage() => () =>
+        {
+            SelectedPageIndex = Math.Max(0, SelectedPageIndex - 1);
+        };
+
+        public Action OnClickNextPage() => () =>
+        {
+            SelectedPageIndex = Math.Min(PageNumbers.Count - 1, SelectedPageIndex + 1);
         };
 
         public void Refresh(KeyItemReceivedRefreshEvent payload)

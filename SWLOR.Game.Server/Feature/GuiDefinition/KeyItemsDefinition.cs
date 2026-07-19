@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row.AddSpacer();
                                 var comboBox = row.AddComboBox()
-                                    .BindSelectedIndex(model => model.SelectedCategoryId);
+                                    .BindSelectedIndex(model => model.SelectedCategoryId)
+                                    .SetWidth(260f);
 
                                 comboBox.AddOption("<All Types>", 0);
                                 foreach (var (type, detail) in KeyItem.GetActiveCategories())
@@ -80,6 +81,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 })
                                     .SetRowHeight(40f)
                                     .BindRowCount(model => model.Names);
+                            });
+
+                            browser.AddRow(row =>
+                            {
+                                row.AddSpacer();
+
+                                row.AddButton()
+                                    .SetText("<")
+                                    .SetWidth(32f)
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickPreviousPage());
+
+                                row.AddComboBox()
+                                    .BindOptions(model => model.PageNumbers)
+                                    .BindSelectedIndex(model => model.SelectedPageIndex)
+                                    .SetWidth(100f);
+
+                                row.AddButton()
+                                    .SetText(">")
+                                    .SetWidth(32f)
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickNextPage());
+
+                                row.AddSpacer();
+                                row.SetHeight(35f);
                             });
                         });
 

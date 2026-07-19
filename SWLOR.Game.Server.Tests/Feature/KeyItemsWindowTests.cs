@@ -26,6 +26,9 @@ public class KeyItemsWindowTests
         definition.Should().Contain(".BindText(model => model.SelectedType)");
         definition.Should().Contain(".BindText(model => model.SelectedDescription)");
         definition.Should().NotContain(".BindTooltip(model => model.Descriptions)");
+        definition.Should().Contain(".SetWidth(260f)");
+        definition.Should().Contain(".BindOptions(model => model.PageNumbers)");
+        definition.Should().Contain(".BindSelectedIndex(model => model.SelectedPageIndex)");
     }
 
     [Test]
@@ -71,6 +74,40 @@ public class KeyItemsWindowTests
         viewModel.LoadKeyItems(Array.Empty<KeyItemType>());
 
         viewModel.SelectedDescription.Should().Be("No Key Items match the selected category.");
+    }
+
+    [Test]
+    public void KeyItems_ArePaginatedAtTwentyFiveEntries()
+    {
+        KeyItem.LoadData();
+        var entries = GetUniqueIconEntries().Take(30).ToArray();
+        var viewModel = new KeyItemsViewModel();
+
+        viewModel.LoadKeyItems(entries.Select(x => x.Type));
+
+        viewModel.Names.Should().HaveCount(25);
+        viewModel.PageNumbers.Select(x => x.Label).Should().Equal("Page 1", "Page 2");
+        AssertSelectedEntry(viewModel, entries[0]);
+
+        viewModel.SelectedPageIndex = 1;
+        viewModel.LoadKeyItems(entries.Select(x => x.Type));
+
+        viewModel.Names.Should().HaveCount(5);
+        viewModel.Selections.Should().Equal(true, false, false, false, false);
+        AssertSelectedEntry(viewModel, entries[25]);
+    }
+
+    [Test]
+    public void ChangingCategory_ResetsPagination()
+    {
+        var viewModel = new KeyItemsViewModel
+        {
+            SelectedPageIndex = 3,
+        };
+
+        viewModel.SelectedCategoryId = (int) KeyItemCategoryType.FieldNotes;
+
+        viewModel.SelectedPageIndex.Should().Be(0);
     }
 
     private static IEnumerable<KeyItemEntry> GetUniqueIconEntries()

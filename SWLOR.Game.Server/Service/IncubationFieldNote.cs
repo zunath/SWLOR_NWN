@@ -157,23 +157,40 @@ namespace SWLOR.Game.Server.Service
             foreach (var method in methods.OrderBy(m => BeastMastery.GetBeastDetail(m.Source).Name))
             {
                 var sourceName = BeastMastery.GetBeastDetail(method.Source).Name;
-                sb.AppendLine($"- From {sourceName}: {DescribeRequirements(method.Requirements)}");
+                sb.AppendLine($"From {sourceName}:");
+                foreach (var requirement in DescribeRequirements(method.Requirements))
+                {
+                    sb.AppendLine($"- {requirement}");
+                }
+
+                sb.AppendLine();
             }
 
             return sb.ToString().TrimEnd();
         }
 
-        private static string DescribeRequirements(List<IMutationRequirement> requirements)
+        private static List<string> DescribeRequirements(List<IMutationRequirement> requirements)
         {
             if (requirements == null || requirements.Count == 0)
-                return "no special requirements";
+                return new List<string> { "No special requirements" };
 
-            var parts = requirements
-                .Select(r => r.GetRequirementDescription())
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .ToList();
+            var parts = new List<string>();
+            foreach (var requirement in requirements)
+            {
+                if (requirement is MutationRequirementEnzyme enzymeRequirement)
+                {
+                    parts.AddRange(enzymeRequirement.GetEnzymeDescriptions());
+                    continue;
+                }
 
-            return parts.Count == 0 ? "no special requirements" : string.Join("; ", parts);
+                var description = requirement.GetRequirementDescription();
+                if (!string.IsNullOrWhiteSpace(description))
+                    parts.Add(description);
+            }
+
+            return parts.Count == 0
+                ? new List<string> { "No special requirements" }
+                : parts;
         }
 
         // Hand-declared registry: one note per mutation target beast. Acquisition is assigned by

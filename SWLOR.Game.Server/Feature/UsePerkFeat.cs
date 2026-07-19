@@ -264,17 +264,24 @@ namespace SWLOR.Game.Server.Feature
             AbilityDetail ability,
             Location targetLocation)
         {
-            PlayAbilitySound(activator, ability.ImpactSound);
-            Ability.BeginAbilityImpact(activator, ability);
-            ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
-            var summary = Ability.EndAbilityImpact(activator);
-
-            Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
-            Combat.ApplyAbilityImpactEffects(activator, summary);
-
-            if (!GetIsPC(activator))
+            try
             {
-                Mimicry.OnCreatureAbilityUsed(activator, feat);
+                PlayAbilitySound(activator, ability.ImpactSound);
+                Ability.BeginAbilityImpact(activator, ability);
+                ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
+                var summary = Ability.EndAbilityImpact(activator);
+
+                Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
+                Combat.ApplyAbilityImpactEffects(activator, summary);
+
+                if (!GetIsPC(activator))
+                {
+                    Mimicry.OnCreatureAbilityUsed(activator, feat);
+                }
+            }
+            finally
+            {
+                Combat.CompleteAbilityStaminaCostContext(activator, ability);
             }
         }
 
@@ -593,13 +600,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var abilityDetail = Ability.GetAbilityDetail(featType);
-
-            RestoreQueuedAbilityFeedback(target);
-
-            // Remove the local variables.
-            DeleteLocalString(target, ActiveAbilityIdName);
-            DeleteLocalInt(target, ActiveAbilityFeatIdName);
-            DeleteLocalInt(target, ActiveAbilityEffectivePerkLevelName);
+            ClearQueuedAbility(target);
 
             // Notify the activator and nearby players
             SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
@@ -831,21 +832,27 @@ namespace SWLOR.Game.Server.Feature
 
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
             HandleStealthBreaking(activator, abilityDetail);
-            Ability.BeginAbilityImpact(activator, abilityDetail);
-            abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
-            var summary = Ability.EndAbilityImpact(activator);
-            Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
-            Combat.ApplyAbilityImpactEffects(activator, summary);
-
-            if (!GetIsPC(activator))
+            try
             {
-                Mimicry.OnCreatureAbilityUsed(activator, activeWeaponAbility);
-            }
+                Ability.BeginAbilityImpact(activator, abilityDetail);
+                abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
+                var summary = Ability.EndAbilityImpact(activator);
+                Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
+                Combat.ApplyAbilityImpactEffects(activator, summary);
 
-            DeleteLocalString(activator, ActiveAbilityIdName);
-            DeleteLocalInt(activator, ActiveAbilityFeatIdName);
-            DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
-            DelayCommand(0.2f, () => RestoreQueuedAbilityFeedbackIfNoQueuedAbility(activator));
+                if (!GetIsPC(activator))
+                {
+                    Mimicry.OnCreatureAbilityUsed(activator, activeWeaponAbility);
+                }
+            }
+            finally
+            {
+                Combat.CompleteAbilityStaminaCostContext(activator, abilityDetail);
+                DeleteLocalString(activator, ActiveAbilityIdName);
+                DeleteLocalInt(activator, ActiveAbilityFeatIdName);
+                DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
+                DelayCommand(0.2f, () => RestoreQueuedAbilityFeedbackIfNoQueuedAbility(activator));
+            }
         }
 
         /// <summary>
@@ -884,6 +891,12 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to clear</param>
         private static void ClearQueuedAbility(uint player)
         {
+            var featType = (FeatType)GetLocalInt(player, ActiveAbilityFeatIdName);
+            if (Ability.IsFeatRegistered(featType))
+            {
+                Combat.CompleteAbilityStaminaCostContext(player, Ability.GetAbilityDetail(featType));
+            }
+
             RestoreQueuedAbilityFeedback(player);
             DeleteLocalString(player, ActiveAbilityIdName);
             DeleteLocalInt(player, ActiveAbilityFeatIdName);

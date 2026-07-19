@@ -5517,6 +5517,27 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
         HostileAbilityStaminaCostFlatAdjustment = 958,
+
+        /// <summary>
+        /// Minimum final Stamina cost required for CostlyAbilityDamageBonus.
+        /// Kept separate from other costly-ability riders so thresholds do not add together.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityDamageMinimumStaminaCost = 959,
+
+        /// <summary>
+        /// Minimum final Stamina cost required for CostlyAbilityHitStaminaRestore.
+        /// Kept separate from other costly-ability riders so thresholds do not add together.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityHitStaminaRestoreMinimumStaminaCost = 960,
+
+        /// <summary>
+        /// Minimum final Stamina cost required for CostlyAbilityExposedDurationSeconds.
+        /// Kept separate from other costly-ability riders so thresholds do not add together.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityStatusMinimumStaminaCost = 961,
     }
 
     public class StatTypeAttribute : Attribute

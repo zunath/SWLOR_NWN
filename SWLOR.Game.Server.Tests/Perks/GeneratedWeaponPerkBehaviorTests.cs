@@ -125,16 +125,22 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("PistolPerkDefinition.cs", StatType.CriticalDamageHighHPTargetPercentAdjustment, "15");
 
         AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityDamageBonus, "14");
+        AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityDamageMinimumStaminaCost, "8");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.ForceDamageTakenForceDefense, "5");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.ForceDamageTakenForceDefenseDurationSeconds, "30");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityHitStaminaRestore, "3");
+        AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost, "8");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetCategory, "(int)StatusEffectCategory.Control");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetPercentAdjustment, "10");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityUsedEvasionPercentAdjustmentSkillType, "(int)SkillType.Spear");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityUsedEvasionPercentAdjustment, "10");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityUsedEvasionDurationSeconds, "30");
-        AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType, "(int)SkillType.Spear");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityUsedEvasionMinimumStaminaCost, "8");
+        var spearSource = ReadPerkDefinition("SpearPerkDefinition.cs");
+        spearSource.Should().NotContain("StatType.CostlyAbilityDamageBonusSkillType");
+        spearSource.Should().NotContain("StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType");
+        spearSource.Should().NotContain("StatType.CostlyAbilityHitStaminaRestoreSkillType");
+        spearSource.Should().NotContain("StatType.CostlyAbilityHitMinimumStaminaCost");
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.ShieldEquippedPhysicalDefensePercentAdjustment, "12");
     }
 
@@ -458,6 +464,12 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.CostlyAbilityUsedEvasionPercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CostlyAbilityDamageMinimumStaminaCost)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.CostlyAbilityStatusMinimumStaminaCost)
+            .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextSkillAbilitySkillType)
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus)
@@ -608,6 +620,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusIncludesSelf = true");
         AssertAbilitySourceContains(root, "Staff", "UnmovingCenterAbilityDefinition.cs", "SelfKnockdownDazedImmunityDurationSeconds = 45");
         AssertAbilitySourceContains(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityExposedDurationSeconds = 30");
+        AssertAbilitySourceContains(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityStatusMinimumStaminaCost = 8");
+        AssertAbilitySourceDoesNotContain(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityStatusSkillType");
         AssertAbilitySourceContains(root, "Staff", "WorldbreakerAbilityDefinition.cs", "RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control");
         AssertAbilitySourceContains(root, "Vibroknife", "PathogenStrikeAbilityDefinition.cs", "SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStatusEffect = typeof(VenomStatusEffect)");
@@ -718,15 +732,20 @@ public class GeneratedWeaponPerkBehaviorTests
         pistolSource.Should().Contain("TargetUsingAbilityStatusDurationSeconds = 30");
     }
 
-    private static void AssertSourceStat(string fileName, StatType statType, string valueExpression)
+    private static string ReadPerkDefinition(string fileName)
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
+        return File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Feature",
             "PerkDefinition",
             fileName));
+    }
+
+    private static void AssertSourceStat(string fileName, StatType statType, string valueExpression)
+    {
+        var source = ReadPerkDefinition(fileName);
 
         source.Should().Contain($".IncreasesStat(StatType.{statType}, {valueExpression})");
     }

@@ -5474,14 +5474,15 @@ namespace SWLOR.Game.Server.Service.StatService
         GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage = 951,
 
         /// <summary>
-        /// SkillType value whose hostile abilities grant temporary Evasion through the independent
-        /// hostile-ability channel.
+        /// Optional SkillType restriction for the independent hostile-ability Evasion channel.
+        /// Invalid applies the channel to every hostile combat ability.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         HostileAbilityUsedEvasionPercentAdjustmentSkillType = 952,
 
         /// <summary>
-        /// Temporary Evasion percent granted after using a matching hostile ability.
+        /// Temporary Evasion percent granted after using a hostile ability that passes the optional
+        /// skill restriction.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         HostileAbilityUsedEvasionPercentAdjustment = 953,
@@ -5510,6 +5511,12 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         SecondaryAbilityUsedEvasionDurationSeconds = 957,
+
+        /// <summary>
+        /// Flat Stamina cost adjustment applied to every hostile combat ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        HostileAbilityStaminaCostFlatAdjustment = 958,
     }
 
     public class StatTypeAttribute : Attribute

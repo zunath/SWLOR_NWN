@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PlayerStatusRefreshEvent>,
         IGuiRefreshable<StatusEffectReceivedRefreshEvent>,
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
+        IGuiRefreshable<StatAdjustmentRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>,
@@ -1322,6 +1323,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public void Refresh(StatusEffectRemovedRefreshEvent payload)
+        {
+            RefreshStats();
+            RefreshEquipmentStats();
+        }
+
+        public void Refresh(StatAdjustmentRefreshEvent payload)
         {
             RefreshStats();
             RefreshEquipmentStats();

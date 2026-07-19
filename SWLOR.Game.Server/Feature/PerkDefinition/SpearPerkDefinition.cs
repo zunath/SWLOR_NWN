@@ -374,7 +374,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorStance1)
-                .Description("While active, hostile combat abilities cost 2 additional STM, deal +10% damage, and grant +8% Evasion for 30 seconds.")
+                .Description("While active, all outgoing damage is increased by 10%. Using any hostile combat ability costs 2 additional STM and grants +8% Evasion for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 20);
         }

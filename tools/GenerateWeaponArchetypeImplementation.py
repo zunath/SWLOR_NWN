@@ -1451,7 +1451,11 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityUsedRangedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityUsedRangedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Ranged Evasion", description))
         add_stat(stats, "AbilityUsedRangedEvasionDurationSeconds", parse_duration(description) or 30)
-    if "After using a hostile ranged ability, gain" in description and "Evasion" in description and "Ranged Evasion" not in description:
+    if base == "Mobile Footwork":
+        add_stat(stats, "SecondaryAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+        add_stat(stats, "SecondaryAbilityUsedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Evasion", description))
+        add_stat(stats, "SecondaryAbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
+    elif "After using a hostile ranged ability, gain" in description and "Evasion" in description and "Ranged Evasion" not in description:
         add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Evasion", description))
         add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
@@ -1530,12 +1534,9 @@ def exact_weapon_stance_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Vigor Stance":
-        add_stat(stats, "SkillAbilityStaminaCostFlatAdjustmentSkillType", skill_expr)
-        add_stat(stats, "SkillAbilityStaminaCostFlatAdjustment", parse_count(r"cost (\d+) additional STM", description))
-        add_stat(stats, "SkillAbilityDamagePercentAdjustmentSkillType", skill_expr)
-        add_stat(stats, "SkillAbilityDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
-        add_stat(stats, "HostileAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
-        add_stat(stats, "HostileAbilityUsedEvasionPercentAdjustment", parse_percent(r"grant \+(\d+)% Evasion", description))
+        add_stat(stats, "HostileAbilityStaminaCostFlatAdjustment", parse_count(r"costs? (\d+) additional STM", description))
+        add_stat(stats, "DamageDealtPercentAdjustment", parse_percent(r"damage is increased by (\d+)%", description))
+        add_stat(stats, "HostileAbilityUsedEvasionPercentAdjustment", parse_percent(r"grants? \+(\d+)% Evasion", description))
         add_stat(stats, "HostileAbilityUsedEvasionDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
         return list(stats.items())
 

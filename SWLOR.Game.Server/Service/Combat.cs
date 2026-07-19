@@ -4454,7 +4454,7 @@ namespace SWLOR.Game.Server.Service
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
+            if (requiredSkillType != SkillType.Invalid && !SkillTypeMatches(skillType, requiredSkillType))
                 return;
 
             ApplyAbilityUsedEvasion(
@@ -7649,6 +7649,11 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var adjustment = GetAbilityStaminaCostFlatAdjustment(creature, ability.EffectiveLevelPerkType);
+            if (ability.IsHostileAbility)
+            {
+                adjustment += Stat.GetStatAdjustment(creature, StatType.HostileAbilityStaminaCostFlatAdjustment);
+            }
+
             var skillType = GetAbilitySkillType(creature, ability);
             var flatSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 creature,

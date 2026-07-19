@@ -194,13 +194,13 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(suppression, StatType.RangedCriticalDamagePercentAdjustment, -10);
 
         var vigor = new VigorStanceStatusEffect();
-        AssertStatusStat(vigor, StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType, (int)SkillType.Spear);
-        AssertStatusStat(vigor, StatType.SkillAbilityStaminaCostFlatAdjustment, 2);
-        AssertStatusStat(vigor, StatType.SkillAbilityDamagePercentAdjustmentSkillType, (int)SkillType.Spear);
-        AssertStatusStat(vigor, StatType.SkillAbilityDamagePercentAdjustment, 10);
-        AssertStatusStat(vigor, StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear);
+        AssertStatusStat(vigor, StatType.HostileAbilityStaminaCostFlatAdjustment, 2);
+        AssertStatusStat(vigor, StatType.DamageDealtPercentAdjustment, 10);
         AssertStatusStat(vigor, StatType.HostileAbilityUsedEvasionPercentAdjustment, 8);
         AssertStatusStat(vigor, StatType.HostileAbilityUsedEvasionDurationSeconds, 30);
+        AssertStatusStat(vigor, StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType, 0);
+        AssertStatusStat(vigor, StatType.SkillAbilityDamagePercentAdjustmentSkillType, 0);
+        AssertStatusStat(vigor, StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType, 0);
 
         var scrapper = new ScrapperStanceStatusEffect();
         AssertStatusStat(scrapper, StatType.OutgoingControlDurationPercentAdjustment, 20);
@@ -538,7 +538,8 @@ public class GeneratedWeaponPerkBehaviorTests
         generatorSource.Should().Contain("Unable to parse Suppressing Shot suppression stack Evasion");
         generatorSource.Should().Contain("\"GuardedHitSecondaryNextSkillAbilitySkillType\"");
         generatorSource.Should().Contain("\"CostlyAbilityUsedEvasionPercentAdjustmentSkillType\"");
-        generatorSource.Should().Contain("\"HostileAbilityUsedEvasionPercentAdjustmentSkillType\"");
+        generatorSource.Should().Contain("\"HostileAbilityStaminaCostFlatAdjustment\"");
+        generatorSource.Should().Contain("\"HostileAbilityUsedEvasionPercentAdjustment\"");
         combatSource.Should().Contain("ApplyAvoidedAttackNextAutoAttackNoDelay(creature)");
         combatSource.Should().Contain("ApplyBleedingStatusExpiredEffects(uint source)");
         combatSource.Should().Contain("ApplyCostlyAbilityHitEffects(activator, target, ability, skillType)");

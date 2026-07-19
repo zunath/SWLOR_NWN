@@ -14,11 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public VigorStanceStatusEffect()
         {
-            StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType] = (int)SkillType.Spear;
-            StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = 2;
-            StatGroup.Stats[StatType.SkillAbilityDamagePercentAdjustmentSkillType] = (int)SkillType.Spear;
-            StatGroup.Stats[StatType.SkillAbilityDamagePercentAdjustment] = 10;
-            StatGroup.Stats[StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType] = (int)SkillType.Spear;
+            StatGroup.Stats[StatType.HostileAbilityStaminaCostFlatAdjustment] = 2;
+            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = 10;
             StatGroup.Stats[StatType.HostileAbilityUsedEvasionPercentAdjustment] = 8;
             StatGroup.Stats[StatType.HostileAbilityUsedEvasionDurationSeconds] = 30;
         }

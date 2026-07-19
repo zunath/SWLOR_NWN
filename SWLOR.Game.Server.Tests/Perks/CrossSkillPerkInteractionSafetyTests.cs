@@ -241,11 +241,19 @@ public class CrossSkillPerkInteractionSafetyTests
         skillEvasionChannel.Should().Contain("StatusEffect.ApplyStatusEffect(");
 
         var damageModifiers = ExtractMethod(combat, "public static int ApplyDamageDealtModifiers(");
-        var skillStanceIndex = damageModifiers.IndexOf("ApplySkillAbilityDamageModifier", StringComparison.Ordinal);
+        var outgoingDamageIndex = damageModifiers.IndexOf("ApplyOutgoingDamageModifier", StringComparison.Ordinal);
         var aggregateCapIndex = damageModifiers.IndexOf("MaximumDamageBonusPercent", StringComparison.Ordinal);
-        skillStanceIndex.Should().BeGreaterThanOrEqualTo(0);
-        aggregateCapIndex.Should().BeGreaterThan(skillStanceIndex,
-            "Vigor Stance damage must participate in the shared outgoing-damage cap");
+        outgoingDamageIndex.Should().BeGreaterThanOrEqualTo(0);
+        aggregateCapIndex.Should().BeGreaterThan(outgoingDamageIndex,
+            "Vigor Stance's global damage must participate in the shared outgoing-damage cap");
+
+        var staminaCost = ExtractMethod(combat, "public static int GetAbilityStaminaCostFlatAdjustment(uint creature, AbilityDetail ability)");
+        staminaCost.Should().Contain("if (ability.IsHostileAbility)");
+        staminaCost.Should().Contain("StatType.HostileAbilityStaminaCostFlatAdjustment");
+
+        var hostileEvasion = ExtractMethod(combat, "private static void ApplyHostileAbilityUsedEvasion(");
+        hostileEvasion.Should().Contain("requiredSkillType != SkillType.Invalid",
+            "an omitted selector makes Vigor Stance trigger from every hostile combat skill");
     }
 
     private static IReadOnlyCollection<PerkDetail> BuildPerksWithout2daLookup()

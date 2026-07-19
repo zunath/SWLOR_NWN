@@ -20,6 +20,13 @@ else {
 $perkChanges = @(
     @{
         Sheet = "Spear"
+        PerkName = "Vigor Stance"
+        Values = @{
+            Description = "While active, all outgoing damage is increased by 10%. Using any hostile combat ability costs 2 additional STM and grants +8% Evasion for 30 seconds."
+        }
+    },
+    @{
+        Sheet = "Spear"
         PerkName = "Disruption Field I"
         Values = @{
             Description = "Deals weapon DMG + 16 to enemies within 5m of you and inflicts Force Disruption for 30 seconds."
@@ -821,6 +828,7 @@ $characterStatChanges = @(
 )
 
 $auditSheetChanges = @(
+    @{ Sheet = "Status Effects"; Cell = "B208"; Value = "While active, all outgoing damage is increased by 10%. Using any hostile combat ability costs 2 additional STM and grants +8% Evasion for 30 seconds." },
     @{ Sheet = "Combat Balance Findings"; Cell = "F4"; Value = "All percent-of-damage healing produced by one hit is now pooled and capped at 50% of that hit's damage after Combat Readiness and healing-received modifiers." },
     @{ Sheet = "Combat Balance Findings"; Cell = "G4"; Value = "The multiplicative sustain ceiling is bounded; optimized Heavy Vibroblade and support combinations still need encounter retesting." },
     @{ Sheet = "Combat Balance Findings"; Cell = "H4"; Value = "Retest damage-plus-sustain archetypes with the shared per-hit healing cap; do not tune mobs around the former uncapped ceiling." },

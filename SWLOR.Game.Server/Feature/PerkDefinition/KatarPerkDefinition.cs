@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
-                .Description("Deals weapon DMG + 25 in a 5m sphere. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
+                .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)
                 .RequirementQuest(KatarCapstoneQuestDefinition.ScrapheapLockdownMasteryQuestId);

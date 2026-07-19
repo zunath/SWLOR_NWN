@@ -35,8 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Fear_S,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
                 maxRange: 5f,
-                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(4),
-                damagePercentAdjustment: InnateAbility.ComboBonus(40, typeof(TerrifiedStatusEffect)))
+                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(4))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

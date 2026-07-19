@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Globalization;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -101,7 +102,23 @@ public class NPCAbilityDefinitionTests
             row.StatusEffect.Should().NotBeNullOrWhiteSpace();
             row.Duration.Should().NotBeNullOrWhiteSpace();
             row.Notes.Should().NotBeNullOrWhiteSpace();
+
+            var detail = expectedAbility.Ability;
+            row.Hostile.Should().Be(detail.IsHostileAbility ? "Yes" : "No");
+            row.Area.Should().Be(detail.IsAreaAbility ? "Yes" : "No");
+            row.RequiresTarget.Should().Be(detail.RequiresTarget ? "Yes" : "No");
+            row.ActivationDelay.Should().Be($"{FormatNumber(detail.ActivationDelay?.Invoke(0, 0, detail.AbilityLevel) ?? 0f)}s");
+            row.RecastGroup.Should().Be(detail.RecastGroup.ToString());
+            row.Recast.Should().Be($"{FormatNumber(detail.RecastDelay?.Invoke(0) ?? 0f)}s");
+
+            var stamina = detail.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
+            row.Stamina.Should().Be($"{stamina} STM");
         }
+    }
+
+    private static string FormatNumber(float value)
+    {
+        return value.ToString("0.##", CultureInfo.InvariantCulture);
     }
 
     [Test]

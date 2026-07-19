@@ -26,13 +26,19 @@ namespace SWLOR.Game.Server.Service
     public static class Combat
     {
         private const float DamageStatDeltaMultiplier = 0.35f;
-        private const int BaseGuardDamageReductionPercent = 20;
-        private const int MaximumGuardDamageReductionPercent = 40;
-        private const int MaximumNormalDamageReductionPercent = 95;
-        private const int MaximumDamageBonusPercent = 100;
-        private const int MaximumCombinedDamageReductionPercent = 85;
-        private const int BaseCriticalRate = 5;
-        private const int MaxCriticalRate = 50;
+        public const int BaseGuardDamageReductionPercent = 20;
+        public const int MaximumGuardDamageReductionPercent = 40;
+        public const int MaximumNormalDamageReductionPercent = 95;
+        public const int MaximumDamageBonusPercent = 100;
+        public const int MaximumCombinedDamageReductionPercent = 85;
+        public const int MaximumAttackDelayAdjustmentPercent = 50;
+        public const int BaseHitRate = 75;
+        public const int MinimumHitRate = 20;
+        public const int MaximumHitRate = 95;
+        public const int MinimumCriticalRate = 5;
+        public const int MaximumCriticalRate = 50;
+        public const int MaximumDamageDerivedHealingPercentPerHit = 50;
+        public const int MaximumCriticalDamagePercentAdjustment = 200;
 
         public const int StandardCriticalRating = 2;
         public const int BaseAttackDelayMilliseconds = 1750;
@@ -51,6 +57,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
         private static readonly List<CombatDamageType> _allDefenseDamageTypes = new();
         private static readonly Dictionary<(uint, StatType), DateTime> _statTriggerCooldowns = new();
+        private static readonly Dictionary<uint, DamageDerivedHealingState> _damageDerivedHealingStates = new();
         private static readonly Dictionary<(uint, uint), DateTime> _recentDamageTargets = new();
         private static readonly Dictionary<uint, DateTime> _recentDamageTaken = new();
         private static readonly Dictionary<uint, DateTime> _recentGuardedHits = new();
@@ -311,14 +318,12 @@ namespace SWLOR.Game.Server.Service
             int defenderEvasion,
             int percentageModifier)
         {
-            const int BaseHitRate = 75;
-
             var hitRate = BaseHitRate + (int)Math.Floor((attackerAccuracy - defenderEvasion) / 2.0f) + percentageModifier;
 
-            if (hitRate < 20)
-                hitRate = 20;
-            else if (hitRate > 95)
-                hitRate = 95;
+            if (hitRate < MinimumHitRate)
+                hitRate = MinimumHitRate;
+            else if (hitRate > MaximumHitRate)
+                hitRate = MaximumHitRate;
 
             return hitRate;
         }
@@ -336,11 +341,11 @@ namespace SWLOR.Game.Server.Service
             var skillBonus = Math.Max(0, skillRank / 10);
             var statBonus = Math.Clamp((int)Math.Floor((attackerPER - defenderVIT) / 5.0f), 0, 3);
 
-            var criticalRate = BaseCriticalRate + skillBonus + statBonus + criticalModifier;
-            if (criticalRate < BaseCriticalRate)
-                criticalRate = BaseCriticalRate;
-            else if (criticalRate > MaxCriticalRate)
-                criticalRate = MaxCriticalRate;
+            var criticalRate = MinimumCriticalRate + skillBonus + statBonus + criticalModifier;
+            if (criticalRate < MinimumCriticalRate)
+                criticalRate = MinimumCriticalRate;
+            else if (criticalRate > MaximumCriticalRate)
+                criticalRate = MaximumCriticalRate;
 
 
             return criticalRate;
@@ -447,10 +452,16 @@ namespace SWLOR.Game.Server.Service
             adjustment += GetHighHPTargetCriticalDamageAdjustment(attacker, defender);
             adjustment += GetTargetStatusCriticalDamageAdjustment(attacker, defender);
             adjustment += criticalDamagePercentAdjustment;
+            adjustment = ClampCriticalDamagePercentAdjustment(adjustment);
             if (adjustment == 0)
                 return damage;
 
             return damage + damage * adjustment / 100;
+        }
+
+        public static int ClampCriticalDamagePercentAdjustment(int adjustment)
+        {
+            return Math.Min(adjustment, MaximumCriticalDamagePercentAdjustment);
         }
 
         private static int GetHighHPTargetCriticalDamageAdjustment(uint attacker, uint defender)
@@ -1231,7 +1242,7 @@ namespace SWLOR.Game.Server.Service
             var hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.DamageDealtHPPercentRestore);
             if (hpRestorePercent > 0)
             {
-                HealFromDamage(attacker, damage, hpRestorePercent);
+                ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
             }
 
             if (damageType.IsPhysicalDamageType())
@@ -1239,7 +1250,7 @@ namespace SWLOR.Game.Server.Service
                 hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.PhysicalDamageDealtHPPercentRestore);
                 if (hpRestorePercent > 0)
                 {
-                    HealFromDamage(attacker, damage, hpRestorePercent);
+                    ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
                 }
             }
 
@@ -1255,7 +1266,7 @@ namespace SWLOR.Game.Server.Service
             if (hpRestorePercent <= 0)
                 return;
 
-            HealFromDamage(attacker, damage, hpRestorePercent);
+            ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
         }
 
         private static void ApplyPredatorsMarkEffects(uint attacker, uint defender, SkillType skillType)
@@ -1340,7 +1351,7 @@ namespace SWLOR.Game.Server.Service
             if (maxHP <= 0 || GetCurrentHitPoints(attacker) >= maxHP * (threshold / 100f))
                 return;
 
-            HealFromDamage(attacker, damage, hpRestorePercent);
+            ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
         }
 
         private static void ApplyBleedingTargetStaminaRestore(uint attacker, uint defender)
@@ -1417,14 +1428,14 @@ namespace SWLOR.Game.Server.Service
         /// for a fixed duration. Mirrors <see cref="ApplyDamageDealtHamstringEffect"/> but is not
         /// weapon-skill gated, since the analyzer replicates the trait regardless of armament.
         /// </summary>
-        private static readonly (StatType Chance, Type Effect, CombatDamageType Damage, float Duration)[] MimicryTraitProcs =
+        private static readonly (StatType Chance, Type Effect, CombatDamageType Damage, float Duration, StatType DurationOverride)[] MimicryTraitProcs =
         {
-            (StatType.DamageDealtBleedChance, typeof(BleedStatusEffect), CombatDamageType.Physical, 12f),
-            (StatType.DamageDealtFreezingChance, typeof(FreezingStatusEffect), CombatDamageType.Ice, 6f),
-            (StatType.DamageDealtShockChance, typeof(ShockStatusEffect), CombatDamageType.Electrical, 10f),
-            (StatType.DamageDealtSunderChance, typeof(SunderStatusEffect), CombatDamageType.Physical, 14f),
-            (StatType.DamageDealtHemorrhageChance, typeof(HemorrhageStatusEffect), CombatDamageType.Physical, 12f),
-            (StatType.DamageDealtPoisonChance, typeof(PoisonStatusEffect), CombatDamageType.Poison, 12f),
+            (StatType.DamageDealtBleedChance, typeof(BleedStatusEffect), CombatDamageType.Physical, 12f, StatType.Invalid),
+            (StatType.DamageDealtFreezingChance, typeof(FreezingStatusEffect), CombatDamageType.Ice, 6f, StatType.Invalid),
+            (StatType.DamageDealtShockChance, typeof(ShockStatusEffect), CombatDamageType.Electrical, 10f, StatType.Invalid),
+            (StatType.DamageDealtSunderChance, typeof(SunderStatusEffect), CombatDamageType.Physical, 14f, StatType.Invalid),
+            (StatType.DamageDealtHemorrhageChance, typeof(HemorrhageStatusEffect), CombatDamageType.Physical, 12f, StatType.Invalid),
+            (StatType.DamageDealtPoisonChance, typeof(PoisonStatusEffect), CombatDamageType.Poison, 12f, StatType.DamageDealtPoisonDurationSeconds),
         };
 
         private static void ApplyDamageDealtMimicryTraitProcs(uint attacker, uint defender)
@@ -1438,11 +1449,16 @@ namespace SWLOR.Game.Server.Service
                 if (chance <= 0 || Random.D100(1) > chance)
                     continue;
 
+                var durationOverride = proc.DurationOverride == StatType.Invalid
+                    ? 0
+                    : Stat.GetStatAdjustment(attacker, proc.DurationOverride);
+                var duration = durationOverride > 0 ? durationOverride : proc.Duration;
+
                 StatusEffect.ApplyStatusEffect(
                     attacker,
                     defender,
                     proc.Effect,
-                    proc.Duration,
+                    duration,
                     proc.Damage);
             }
         }
@@ -1690,7 +1706,7 @@ namespace SWLOR.Game.Server.Service
             if (hpRestorePercent > 0 &&
                 TryUseStatTrigger(attacker, StatType.CriticalHPPercentOfDamageRestore, hpRestoreCooldown))
             {
-                HealFromDamage(attacker, damage, hpRestorePercent);
+                ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
             }
 
             var accuracyPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalAccuracyPercentAdjustment);
@@ -2352,14 +2368,103 @@ namespace SWLOR.Game.Server.Service
             return nearest;
         }
 
-        private static void HealFromDamage(uint creature, int damage, int percent)
+        public static IDisposable BeginDamageDerivedHealing(uint creature)
+        {
+            if (!_damageDerivedHealingStates.TryGetValue(creature, out var state))
+            {
+                state = new DamageDerivedHealingState();
+                _damageDerivedHealingStates[creature] = state;
+            }
+
+            state.Depth++;
+            return new DamageDerivedHealingScope(creature);
+        }
+
+        public static int CalculateCappedDamageDerivedHealingAmount(
+            int damage,
+            int healingAlreadyApplied,
+            int requestedHealing)
+        {
+            if (damage <= 0 || requestedHealing <= 0)
+                return 0;
+
+            var cap = GameMath.PercentOf(damage, MaximumDamageDerivedHealingPercentPerHit);
+            var remaining = Math.Max(0, cap - Math.Max(0, healingAlreadyApplied));
+            return Math.Min(requestedHealing, remaining);
+        }
+
+        public static int ApplyDamageDerivedHealing(
+            uint creature,
+            int damage,
+            int percent,
+            bool applyCombatReadiness = false)
         {
             if (damage <= 0 || percent <= 0)
-                return;
+                return 0;
 
             var amount = GameMath.PercentOf(damage, percent);
+            if (applyCombatReadiness)
+                amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
+
+            if (_damageDerivedHealingStates.TryGetValue(creature, out var state))
+            {
+                if (state.Damage <= 0)
+                    state.Damage = damage;
+
+                amount = CalculateCappedDamageDerivedHealingAmount(
+                    state.Damage,
+                    state.HealingApplied,
+                    amount);
+                state.HealingApplied += amount;
+            }
+            else
+            {
+                amount = CalculateCappedDamageDerivedHealingAmount(damage, 0, amount);
+            }
+
+            if (amount <= 0)
+                return 0;
+
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
+            return amount;
+        }
+
+        private static void EndDamageDerivedHealing(uint creature)
+        {
+            if (!_damageDerivedHealingStates.TryGetValue(creature, out var state))
+                return;
+
+            state.Depth--;
+            if (state.Depth <= 0)
+                _damageDerivedHealingStates.Remove(creature);
+        }
+
+        private sealed class DamageDerivedHealingState
+        {
+            public int Depth { get; set; }
+            public int Damage { get; set; }
+            public int HealingApplied { get; set; }
+        }
+
+        private sealed class DamageDerivedHealingScope : IDisposable
+        {
+            private readonly uint _creature;
+            private bool _disposed;
+
+            public DamageDerivedHealingScope(uint creature)
+            {
+                _creature = creature;
+            }
+
+            public void Dispose()
+            {
+                if (_disposed)
+                    return;
+
+                _disposed = true;
+                EndDamageDerivedHealing(_creature);
+            }
         }
 
         private static void ApplyLowHPPhysicalDefenseEffect(uint defender, int damage)
@@ -6092,23 +6197,53 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(0, reflected);
         }
 
+        public static (int ReflectPercent, int CapPercent) GetRangedDeflectionReflectionRates(
+            int baseReflectPercent,
+            int baseCapPercent,
+            int embattledStacks,
+            int embattledHighStackThreshold,
+            int embattledHighStackBonusPercent,
+            int overrideReflectPercent,
+            int overrideCapPercent)
+        {
+            if (overrideReflectPercent > 0)
+            {
+                return (
+                    overrideReflectPercent,
+                    overrideCapPercent > 0 ? overrideCapPercent : baseCapPercent);
+            }
+
+            var reflectPercent = baseReflectPercent;
+            if (embattledHighStackThreshold > 0 && embattledStacks >= embattledHighStackThreshold)
+                reflectPercent += Math.Max(0, embattledHighStackBonusPercent);
+
+            return (Math.Max(0, reflectPercent), Math.Max(0, baseCapPercent));
+        }
+
         /// <summary>
         /// Deflecting Return: when the defender deflects a directly targeted ranged attack, reflect a capped
         /// share of weapon damage back to the attacker as Force damage. Fires at most once every
         /// <see cref="DeflectingReturnCooldownSeconds"/> seconds. Reflection amount is driven by the
         /// <see cref="StatType.RangedDeflectionReflectionPercent"/> / <see cref="StatType.RangedDeflectionReflectionCapPercent"/>
-        /// stats the Deflecting Return / Perfect Aegis perks grant, so it is fully stat-driven.
+        /// stats the Deflecting Return perk grants. Embattled high-stack bonuses and finite capstone
+        /// overrides are also stat-driven.
         /// </summary>
         public static void ApplyRangedDeflectionReflection(uint defender, uint attacker, SkillType attackerWeaponSkill)
         {
             if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
                 return;
 
-            var reflectPercent = Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionPercent);
+            var (reflectPercent, capPercent) = GetRangedDeflectionReflectionRates(
+                Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionPercent),
+                Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionCapPercent),
+                EmbattledStatusEffect.GetStackCount(defender),
+                Stat.GetStatAdjustment(defender, StatType.EmbattledHighStackThreshold),
+                Stat.GetStatAdjustment(defender, StatType.EmbattledHighStackDeflectionReflectionBonusPercent),
+                Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionOverridePercent),
+                Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionCapOverridePercent));
             if (reflectPercent <= 0)
                 return;
 
-            var capPercent = Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionCapPercent);
             var reflected = GetRangedDeflectionReflectionAmount(
                 GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill),
                 reflectPercent,
@@ -6649,10 +6784,10 @@ namespace SWLOR.Game.Server.Service
             criticalRate += GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
             criticalRate += GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
 
-            if (criticalRate < BaseCriticalRate)
-                criticalRate = BaseCriticalRate;
-            else if (criticalRate > MaxCriticalRate)
-                criticalRate = MaxCriticalRate;
+            if (criticalRate < MinimumCriticalRate)
+                criticalRate = MinimumCriticalRate;
+            else if (criticalRate > MaximumCriticalRate)
+                criticalRate = MaximumCriticalRate;
 
             return criticalRate > 0 && Random.D100(1) <= criticalRate
                 ? StandardCriticalRating
@@ -8942,8 +9077,10 @@ namespace SWLOR.Game.Server.Service
             int attackDelayReductionPercent,
             int offhandAttackDelayReductionPercent)
         {
-            attackDelayReductionPercent = Math.Min(attackDelayReductionPercent, 50);
-            offhandAttackDelayReductionPercent = Math.Min(Math.Max(offhandAttackDelayReductionPercent, 0), 50);
+            attackDelayReductionPercent = Math.Min(attackDelayReductionPercent, MaximumAttackDelayAdjustmentPercent);
+            offhandAttackDelayReductionPercent = Math.Min(
+                Math.Max(offhandAttackDelayReductionPercent, 0),
+                MaximumAttackDelayAdjustmentPercent);
             leftHandDelayUnits = ApplyPercentReduction(leftHandDelayUnits, offhandAttackDelayReductionPercent);
 
             var delayUnits = CalculateEquippedWeaponDelayUnits(rightHandDelayUnits, leftHandDelayUnits);
@@ -9181,7 +9318,10 @@ namespace SWLOR.Game.Server.Service
 
             var totalReduction = Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent);
 
-            return Math.Clamp(totalReduction, -50, 50);
+            return Math.Clamp(
+                totalReduction,
+                -MaximumAttackDelayAdjustmentPercent,
+                MaximumAttackDelayAdjustmentPercent);
         }
 
         public static int CalculateOffhandAttackDelayReduction(uint attacker)
@@ -9191,7 +9331,9 @@ namespace SWLOR.Game.Server.Service
 
             var totalReduction = Stat.GetStatAdjustment(attacker, StatType.OffhandAttackDelayReductionPercent);
 
-            return Math.Min(Math.Max(totalReduction, 0), 50);
+            return Math.Min(
+                Math.Max(totalReduction, 0),
+                MaximumAttackDelayAdjustmentPercent);
         }
 
         private static int GetWeaponDelay(uint item)

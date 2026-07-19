@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 AbilityTargetingShapeType.Sphere,
                 5.0f,
                 0.0f,
-                AbilityTargetingFlags.HarmsEnemies,
+                AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf,
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,

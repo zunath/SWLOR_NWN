@@ -132,6 +132,58 @@ public class MimicryTests
         }
     }
 
+    [Test]
+    public void MimicryStatusDurationsAndDetonationOrderMatchTheReviewedBiblePayloads()
+    {
+        var root = FindRepositoryRoot();
+        var seismic = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Mimicry",
+            "SeismicSlamTechniqueAbilityDefinition.cs"));
+        var rupturing = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Mimicry",
+            "RupturingQuakeTechniqueAbilityDefinition.cs"));
+        var disorienting = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Mimicry",
+            "DisorientingScreechTechniqueAbilityDefinition.cs"));
+        var lockstep = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Mimicry",
+            "LockstepCrushTechniqueAbilityDefinition.cs"));
+        var merciless = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Mimicry",
+            "MercilessAngleTechniqueAbilityDefinition.cs"));
+
+        seismic.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*28,\s*6,\s*typeof\(KnockdownStatusEffect\)");
+        rupturing.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*40,\s*6,\s*typeof\(KnockdownStatusEffect\)");
+        rupturing.Should().Contain("StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, hitTarget, 30f");
+        rupturing.Should().NotContain("additionalStatusEffects: new[] { typeof(SunderStatusEffect) }");
+        disorienting.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*0,\s*30,\s*typeof\(DisorientedStatusEffect\)");
+        lockstep.Should().Contain("StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f");
+        lockstep.Should().NotContain("additionalStatusEffects: new[] { typeof(SunderStatusEffect) }");
+        merciless.Should().Contain("if (StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect), typeof(HemorrhageStatusEffect)))");
+        merciless.Should().Contain("StatusEffect.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f");
+        merciless.Should().NotContain("typeof(HemorrhageStatusEffect),\r\n                CombatImpactAreaShape.Cone");
+    }
+
     // Every damaging (active) technique must declare a scaling attribute so its damage tracks player
     // stats like native abilities (a technique with no CombatImpactDamageAbility gets zero stat
     // scaling). Assignment is spread across all six attributes rather than defaulting to one stat.
@@ -194,6 +246,84 @@ public class MimicryTests
             trait.Detail.CombatImpactDamageAbility.Should().Be(AbilityType.Invalid,
                 $"{trait.Feat} is a passive trait and should not declare a combat scaling attribute");
         }
+    }
+
+    [Test]
+    public void MimicryTraitLoadouts_StayWithinTheReviewedTenSlotCeilings()
+    {
+        var traits = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(t => t.Detail.IsMimicryTrait)
+            .Select(t => t.Detail)
+            .ToArray();
+        var maximumByStat = new Dictionary<StatType, int>();
+        var maximumByResistance = new Dictionary<ResistanceType, int>();
+        var maximumCombinedDefense = 0;
+        var maximumCombinedResistance = 0;
+
+        void Enumerate(
+            int index,
+            int usedSlots,
+            Dictionary<StatType, int> stats,
+            Dictionary<ResistanceType, int> resistances)
+        {
+            if (index == traits.Length)
+            {
+                foreach (var (stat, value) in stats)
+                    maximumByStat[stat] = Math.Max(maximumByStat.GetValueOrDefault(stat), value);
+                foreach (var (resistance, value) in resistances)
+                    maximumByResistance[resistance] = Math.Max(maximumByResistance.GetValueOrDefault(resistance), value);
+
+                maximumCombinedDefense = Math.Max(
+                    maximumCombinedDefense,
+                    stats.GetValueOrDefault(StatType.PhysicalDefensePercentAdjustment) +
+                    stats.GetValueOrDefault(StatType.ForceDefensePercentAdjustment));
+                maximumCombinedResistance = Math.Max(maximumCombinedResistance, resistances.Values.Sum());
+                return;
+            }
+
+            Enumerate(index + 1, usedSlots, stats, resistances);
+
+            var trait = traits[index];
+            if (usedSlots + trait.MimicrySlotCost > 10)
+                return;
+
+            var withStats = new Dictionary<StatType, int>(stats);
+            foreach (var (stat, value) in trait.MimicryTraitStats)
+                withStats[stat] = withStats.GetValueOrDefault(stat) + value;
+            var withResistances = new Dictionary<ResistanceType, int>(resistances);
+            foreach (var (resistance, value) in trait.MimicryTraitResistances)
+                withResistances[resistance] = withResistances.GetValueOrDefault(resistance) + value;
+
+            Enumerate(index + 1, usedSlots + trait.MimicrySlotCost, withStats, withResistances);
+        }
+
+        Enumerate(0, 0, new Dictionary<StatType, int>(), new Dictionary<ResistanceType, int>());
+
+        maximumByStat.Should().BeEquivalentTo(new Dictionary<StatType, int>
+        {
+            [StatType.AccuracyPercentAdjustment] = 18,
+            [StatType.AttackPercentAdjustment] = 6,
+            [StatType.CriticalRatePercentAdjustment] = 6,
+            [StatType.DamageDealtBleedChance] = 37,
+            [StatType.DamageDealtFreezingChance] = 33,
+            [StatType.DamageDealtHemorrhageChance] = 15,
+            [StatType.DamageDealtPoisonChance] = 18,
+            [StatType.DamageDealtShockChance] = 18,
+            [StatType.DamageDealtSunderChance] = 21,
+            [StatType.ForceAttackPercentAdjustment] = 14,
+            [StatType.ForceDefensePercentAdjustment] = 25,
+            [StatType.PhysicalDefensePercentAdjustment] = 25
+        });
+        maximumByResistance.Should().BeEquivalentTo(new Dictionary<ResistanceType, int>
+        {
+            [ResistanceType.Fire] = 35,
+            [ResistanceType.Poison] = 35,
+            [ResistanceType.Trauma] = 25
+        });
+        maximumCombinedDefense.Should().Be(50,
+            "stacking both defensive traits costs four of the ten slots and must stay within the reviewed defense budget");
+        maximumCombinedResistance.Should().Be(95,
+            "the two defensive traits may complement one another without approaching immunity to any single damage type");
     }
 
     // The builder is the boundary where a bad trait declaration should fail loudly. An Invalid stat
@@ -424,6 +554,18 @@ public class MimicryTests
             var featRow = featRows[featId];
             featRow["LABEL"].Should().Be(feat.ToString(), $"{feat}'s feat.2da LABEL should match its enum name");
             featRow["ICON"].Should().NotBeNullOrWhiteSpace($"{feat} should have a feat.2da ICON");
+            var iconResRef = featRow["ICON"];
+            File.Exists(Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{iconResRef}.tga"))
+                .Should()
+                .BeTrue($"{feat}'s feat icon '{iconResRef}' should exist");
+
+            var matchingTechniqueSpellRows = spellRows.Values
+                .Where(row => row.GetValueOrDefault("Label") == feat.ToString())
+                .ToList();
+            matchingTechniqueSpellRows.Should().ContainSingle($"{feat} should have exactly one matching spells.2da row");
+            matchingTechniqueSpellRows[0]["IconResRef"].Should().Be(
+                iconResRef,
+                $"{feat}'s feat and spell rows should use the same curated technique icon");
 
             featRow.TryGetValue("SPELLID", out var spellIdText).Should().BeTrue($"{feat}'s feat.2da row should have a SPELLID column");
 

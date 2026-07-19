@@ -143,7 +143,7 @@ public class DevicesGrenadierTests
             4,
             30,
             FeatType.ClusterGrenade1,
-            "Throws three adjacent grenades around the target point, each dealing 18 fire DMG plus PER scaling in a 2m blast. Overlapping blasts can hit the same enemy. Consumes explosives.");
+            "Throws three adjacent grenades within 3m of the target point. Each grenade deals 18 fire DMG plus PER scaling in a 2m blast, and overlapping blasts can hit the same enemy. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.DisruptionPulse],
             "Disruption Pulse",

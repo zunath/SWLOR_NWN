@@ -456,7 +456,8 @@ public class GeneratedWeaponPerkBehaviorTests
         var suppressionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
         bleedSource.Should().Contain("WasNaturallyExpired");
         venomSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
-        venomSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, DamagePerTick, CombatDamageType.Poison)");
+        venomSource.Should().Contain("var baseDamage = CalculateBaseDamagePerTick(_damageBonusPercent)");
+        venomSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, baseDamage, CombatDamageType.Poison)");
         infectionSource.Should().Contain("public int Stacks");
         infectionSource.Should().Contain("DamagePerStack * Math.Max(1, Stacks)");
         infectionSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
@@ -492,6 +493,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "TemporarySuppressionStackEvasionPenaltyPercentAdjustment = 3");
         AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationDamage = 8");
         AssertAbilitySourceContains(root, "Throwing", "RainOfSteelAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationPulseSeconds = 6");
+        AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "typeof(BurnStatusEffect)");
+        AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "Spell.ExplosiveToss4");
         AssertAbilitySourceContains(root, "Saberstaff", "SaberCycloneAbilityDefinition.cs", "TemporaryAreaAbilityAttackDeflection = 8");
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusEffect = typeof(ShelterCircleStatusEffect)");
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusIncludesSelf = true");

@@ -5376,6 +5376,27 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DisguiseSwapCooldownReductionPercent = 936,
+
+        /// <summary>
+        /// Overrides the duration in seconds of Poison inflicted by the shared damage-dealt Poison proc.
+        /// A value of zero uses the proc's normal duration.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtPoisonDurationSeconds = 937,
+
+        /// <summary>
+        /// Final override for Deflecting Return's reflected-damage percent. A positive value replaces
+        /// the normal perk value and Embattled bonus instead of stacking with them.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedDeflectionReflectionOverridePercent = 938,
+
+        /// <summary>
+        /// Final override for Deflecting Return's weapon-damage cap percent. A positive value replaces
+        /// the normal perk cap instead of stacking with it.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedDeflectionReflectionCapOverridePercent = 939,
     }
 
     public class StatTypeAttribute : Attribute

@@ -207,6 +207,7 @@ STATUS_KEYWORDS = [
     ("Infection", "InfectionStatusEffect"),
     ("Bleed", "BleedStatusEffect"),
     ("Toxin", "ToxinStatusEffect"),
+    ("Burn", "BurnStatusEffect"),
     ("Burning", "BurnStatusEffect"),
     ("Marked", "MarkedStatusEffect"),
     ("Smoke", "SmokeBombStatusEffect"),
@@ -499,7 +500,7 @@ def read_spell_targeting():
     for row in rows.values():
         label = row.get("Label", "****")
         shape = row.get("TargetShape", "****")
-        if label == "****" or shape == "****":
+        if label == "****":
             continue
 
         targeting[label] = {
@@ -568,6 +569,63 @@ def update_spell_descriptions(spell_updates, tlk, tlk_by_id, tlk_by_text):
         spells_path.write_text("\n".join(lines) + "\n")
 
 
+def update_spell_targeting(spell_updates):
+    """Keep generated ability targeting metadata aligned with the Bible description.
+
+    The feat row controls whether the client opens a manual cursor, while the spell row controls
+    the marker's shape and size. Updating only the feat row leaves a valid-looking ability with a
+    stale (or entirely blank) marker, so both halves are generated from the same wording.
+    """
+    if not spell_updates:
+        return
+
+    spells_path = ROOT / "SWLOR_Haks" / "sw_2da" / "spells.2da"
+    lines = spells_path.read_text().splitlines()
+    _, headers = get_2da_header(lines)
+    row_line = {}
+    for line_index, line in enumerate(lines):
+        tokens = line.split()
+        if tokens and tokens[0].isdigit():
+            row_line[int(tokens[0])] = line_index
+
+    changed = False
+    for spell_id, row in spell_updates.items():
+        if not spell_id.isdigit() or int(spell_id) not in row_line:
+            continue
+
+        inferred = infer_targeting_from_description(row)
+        if not inferred:
+            continue
+
+        shape_expression, size_x_literal, size_y_literal, _ = inferred
+        shape = {
+            "AbilityTargetingShapeType.Sphere": "sphere",
+            "AbilityTargetingShapeType.Rect": "rectangle",
+            "AbilityTargetingShapeType.Cone": "cone",
+        }[shape_expression]
+        size_x = f"{float(size_x_literal[:-1]):g}"
+        size_y_value = float(size_y_literal[:-1])
+        size_y = f"{size_y_value:g}" if size_y_value > 0 else "****"
+        flags = "1" if shape == "sphere" and is_aimed_area(row) else "17"
+
+        line_index = row_line[int(spell_id)]
+        new_line = lines[line_index]
+        for header, value in (
+            ("TargetShape", shape),
+            ("TargetSizeX", size_x),
+            ("TargetSizeY", size_y),
+            ("TargetFlags", flags),
+        ):
+            new_line = replace_2da_token(new_line, tokens_by_header(new_line.split(), headers, header), value)
+
+        if lines[line_index] != new_line:
+            lines[line_index] = new_line
+            changed = True
+
+    if changed:
+        spells_path.write_text("\n".join(lines) + "\n")
+
+
 def active_feat_name(row, feat_values):
     base, level = base_and_level(row["PerkName"])
     base_id = perk_base_id(row["Tab"], base)
@@ -591,7 +649,13 @@ def perk_base_id(tab, base):
 
 def parse_int(value):
     value = value.strip()
-    return int(value) if value and value != "-" else 0
+    if not value or value == "-":
+        return 0
+
+    parsed = float(value)
+    if not parsed.is_integer():
+        raise ValueError(f"Expected a whole number, got {value!r}")
+    return int(parsed)
 
 
 def parse_seconds(value):
@@ -618,6 +682,7 @@ def parse_damage(description, level):
     patterns = [
         r"weapon DMG \+ (\d+)",
         r"weapon damage \+ (\d+)",
+        r"(?:deal|deals|dealing) (\d+) (?:Force )?DMG",
         r"\+(\d+) DMG",
     ]
     for pattern in patterns:
@@ -1685,6 +1750,9 @@ def profile_property_lines(row, level, primary_status):
     if row.get("CastingTime", "").strip().lower() == "queued":
         add_profile_property("IsQueuedWeaponAbility", "true")
 
+    if "force dmg" in lowered:
+        add_profile_property("DamageType", "CombatDamageType.Force")
+
     if base == "Pathogen Strike":
         add_profile_property(
             "SourceStatusEffectsToExtend",
@@ -1819,10 +1887,11 @@ def profile_property_lines(row, level, primary_status):
         if debuffed_percent:
             properties.append(("DamagePercentIfTargetDebuffed", str(debuffed_percent)))
 
-    if "sundered target" in lowered:
+    if "sundered target" in lowered or "already inflicted with sunder" in lowered:
         sundered_damage = (
             first_int(r"Sundered targets take \+(\d+) DMG", description) or
-            first_int(r"If the target is Sundered, deals \+(\d+) DMG", description)
+            first_int(r"If the target is Sundered, deals \+(\d+) DMG", description) or
+            first_int(r"Targets already inflicted with Sunder take an additional (\d+)(?: Force)? DMG", description)
         )
         if sundered_damage:
             add_profile_property("ExtraDamageTargetStatusEffect", "typeof(SunderStatusEffect)")
@@ -2249,10 +2318,23 @@ def is_aimed_area(row):
     if not inferred:
         return False
 
-    return inferred[0] in (
+    if inferred[0] in (
         "AbilityTargetingShapeType.Rect",
         "AbilityTargetingShapeType.Cone",
-    )
+    ):
+        return True
+
+    # A sphere can also be aimed when it is placed at a selected point. Keep this explicit so
+    # radius-only wording such as "enemies within 5m of you" remains self-centered.
+    lowered = row["Description"].lower()
+    return any(marker in lowered for marker in (
+        "at a target location",
+        "at the target location",
+        "at a target point",
+        "at the target point",
+        "at a selected location",
+        "at the selected location",
+    ))
 
 
 def format_float_literal(value):
@@ -2408,6 +2490,18 @@ def targeting_arguments_for_row(row, feat, spell_targeting):
             "AbilityTargetingFlags.HarmsEnemies",
         )
 
+    if targeting["shape"] == "****":
+        if inferred:
+            return (f"Spell.{feat}", *inferred)
+
+        return (
+            "Spell.Invalid",
+            "AbilityTargetingShapeType.None",
+            "0.0f",
+            "0.0f",
+            "AbilityTargetingFlags.HarmsEnemies",
+        )
+
     return (
         f"Spell.{feat}",
         targeting_shape_enum(targeting["shape"]),
@@ -2550,6 +2644,7 @@ def add_missing_feats(rows):
                 "description": row["Description"].strip(),
                 "hostile": "1" if hostile else "****",
                 "target_self": "1" if no_manual_target else "****",
+                "row": row,
             }
             if feat not in feat_values:
                 existing_rows = feat_rows_by_label.get(feat)
@@ -2732,6 +2827,7 @@ def add_missing_feats(rows):
                 feat_file_changed = True
 
     spell_updates = {}
+    spell_targeting_updates = {}
     for feat, metadata in active_metadata.items():
         row_number = feat_values.get(feat)
         if row_number is None or row_number not in row_line:
@@ -2744,8 +2840,10 @@ def add_missing_feats(rows):
         spell_id = tokens[tokens_by_header(tokens, headers, "SPELLID")]
         if spell_id.isdigit():
             spell_updates[spell_id] = metadata["description"]
+            spell_targeting_updates[spell_id] = metadata["row"]
 
     update_spell_descriptions(spell_updates, tlk, tlk_by_id, tlk_by_text)
+    update_spell_targeting(spell_targeting_updates)
 
     if enum_insertions:
         passive_entries = [f"        {name} = {row}," for name, row, kind in enum_insertions if kind == "passive"]

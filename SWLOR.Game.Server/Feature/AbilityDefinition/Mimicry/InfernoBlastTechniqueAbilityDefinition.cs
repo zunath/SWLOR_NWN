@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
                         40,
-                        24,
+                        30,
                         typeof(BurnStatusEffect),
                         CombatImpactAreaShape.Cone,
                         0.5f,

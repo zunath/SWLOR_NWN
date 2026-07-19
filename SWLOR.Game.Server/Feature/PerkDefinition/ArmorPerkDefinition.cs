@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Provoke1)
 
                 .AddPerkLevel()
-                .Description("Goads the selected target and all other enemies within range into attacking you. Enmity generated increases by 1% per VIT.")
+                .Description("Goads the selected target and all other enemies within 8m of it into attacking you. Enmity generated increases by 1% per VIT.")
                 .Price(3)
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.Armor, 15)

@@ -1,22 +1,25 @@
 # Combat Upgrade Release Validation Matrix
 
-Last reviewed: 2026-07-01
+Last reviewed: 2026-07-19
 
 ## Purpose
 
 This matrix is the release-facing validation surface for the combat upgrade feedback pass. It translates the player feedback into repeatable checks, curated test builds, real enemy targets, and manual playtest prompts.
 
-The code-side audit now covers weapons, Force, Devices, Leadership, First Aid, Beast Mastery, Armor, and companion contribution. The live engine still needs manual confirmation for attack queue feel, facing, and real enemy behavior.
+The code-side audit now covers weapons, Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, Espionage, Armor, and companion contribution. The live engine still needs manual confirmation for attack queue feel, facing, and real enemy behavior.
 
 ## Automated Release Gates
 
-`CombatReleaseBalanceAuditTests` adds three guardrails:
+The automated balance suite adds these guardrails:
 
 - Curated archetypes must be legal under the 400 SP cap and stay below hard release gates.
 - Full package enumeration scans every selectable combat package through a capped frontier and hard-fails permanent Attack Deflection cap access.
+- A hard active-context frontier combines each weapon package with every retained legal Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage support frontier under 400 SP. These combinations must retain a meaningful offense/defense/sustain/control tradeoff.
 - Enumeration compound outliers are reported for manual review instead of automatically failing, because many package-level totals include weapon-specific effects that cannot all be cashed out by one equipped weapon at the same time.
+- `CrossSkillPerkInteractionSafetyTests` guards the shared trigger graph: triggered and periodic damage cannot re-enter direct-hit procs or reflection; transferred damage cannot reshare; one-shot redirects are consumed before dispatch; damage-derived healing shares the per-hit cap; cross-resource restores remain below paid cost; and cooldown reductions cannot reset capstones or run past ready.
+- `CombatUpgradeBibleWorkbookFormattingTests.CharacterStats_DocumentsRuntimeCombatLimits` keeps the Bible `Character Stats` limits synchronized with the runtime caps that bound combined builds.
 
-The hard automated blocker remains permanent Attack Deflection reaching the default 50 percent cap. Compound offense/defense/sustain/control findings should be promoted to blockers only after a curated archetype or real enemy test proves the profile has no meaningful tradeoff.
+Hard automated blockers include permanent Attack Deflection reaching the default 50 percent cap, a curated or active-context frontier profile crossing the compound release threshold, and any recursive or unbounded interaction edge. Coarse all-package compound totals remain diagnostic because they deliberately overcount mutually exclusive weapon, companion, poison, trap, Mimicry, and positional payloads.
 
 ## Second Targeted Pass Outcome
 
@@ -71,28 +74,37 @@ These are the release gate builds. They represent different playstyles, not bett
 | Two weapon-line hybrid | Vibroblade Frenzy, Heavy Vibroblade Berserker | Cross-tree value without mandatory stacking. |
 | Three weapon-line combat maximizer | Heavy Vibroblade Berserker, Spear Vigor, Staff Crusher | High-MGT damage pressure after Crusher and sustain reductions. |
 | Weapon plus Leadership | Vibroblade Frenzy, Leadership Vanguard Command | Party damage amplification without runaway solo damage. |
-| Weapon plus Force support | Lightsaber Severance, Force Universal, Force Light | Force utility and weapon pressure without deflection cap access. |
+| Weapon plus Force support | Lightsaber Ward, Force Control, Force Sense | Force utility and weapon pressure without deflection cap access. |
 | Weapon plus Devices support | Rifle Marksman, Devices Field Support | Device mitigation/support with ranged cadence. |
-| Weapon plus First Aid sustain | Heavy Vibroblade Immortal, First Aid Trauma Medic | Sustain budget after Heavy healing reductions. |
+| Weapon plus First Aid sustain | Heavy Vibroblade Berserker, First Aid Trauma Medic | Sustain budget after Heavy healing reductions. |
 | Weapon plus Beast pressure | Spear Vigor, Beast Damage | Companion pressure without hiding weak weapon baselines. |
+| Weapon plus Mimicry | Vibroblade Frenzy, Mimicry | Analyzer payload remains additive without erasing the weapon baseline. |
+| Weapon plus Espionage Infiltrator | Vibroknife Shadow, Espionage Infiltrator | Back-attack burst and stealth utility retain positional and setup tradeoffs. |
+| Weapon plus Espionage Saboteur | Vibroknife Saboteur, Espionage Saboteur | Poison and trap bonuses remain distinct, bounded payloads. |
+| Poison/trap/Mimicry payload stack | Vibroknife Saboteur, Espionage Saboteur, Mimicry, General | Multiple non-weapon damage systems do not become a single runaway proc chain. |
+| Stealth burst cross-skill stack | Vibroknife Shadow, Espionage Infiltrator, Mimicry, Leadership Vanguard Command | Burst setup keeps meaningful uptime and package tradeoffs. |
+| Cross-resource sustain engine | Saberstaff Conduit, Force Control, Force Sense, First Aid Trauma Medic | FP/STM conversion cannot create free casts or unlimited sustain. |
+| Damage-healing sustain engine | Heavy Vibroblade Berserker, Heavy Vibroblade Immortal, Saberstaff Conduit, First Aid Trauma Medic, Leadership Field Steward | All damage-derived healing riders share the 50% per-hit cap. |
+| Deflection/reflection support stack | Lightsaber Ward, Staff Sentinel, Devices Field Support, Leadership Field Steward | Reflection, Attack Deflection, and Shield Deflection remain separate and bounded. |
+| Cross-skill control stack | Spear Disabler, Rifle Suppression, Devices Grenadier, Espionage Saboteur, Mimicry | Layered status pressure retains an offense/defense tradeoff and cannot recursively proc. |
 | High-MGT damage stack | Heavy Vibroblade Berserker, Spear Vigor, Staff Crusher, Leadership Vanguard Command | Recreate the scary high-MGT test without pre-fix Crusher payload. |
 | High-PER crit stack | Pistol Gambler, Rifle Marksman, Throwing Flurry, Leadership Vanguard Command | Crit ceiling and Leadership crit amplification. |
-| Attack Deflection stack | Staff Sentinel, Lightsaber Severance, Saberstaff Tempest, Heavy Vibroblade Immortal | Permanent Attack Deflection stays below cap; temporary windows feel earned. |
+| Attack Deflection stack | Staff Sentinel, Lightsaber Ward, Saberstaff Tempest, Twin Blade Lacerator, Heavy Vibroblade Immortal | Permanent Attack Deflection stays below cap; temporary windows feel earned. |
 | Shield Deflection stack | Vibroblade Bulwark, Devices Field Support, Leadership Field Steward | Shield identity remains separate from Attack Deflection. |
-| Guard tank stack | Katar Scrapper, Lightsaber Ward, Leadership Field Steward | Guard mitigation and enmity without becoming deflection. |
+| Guard tank stack | Katar Iron Guard, Heavy Vibroblade Immortal, Leadership Field Steward | Guard mitigation and enmity without becoming deflection. |
 | Sustain tank | Heavy Vibroblade Immortal, Heavy Vibroblade Berserker, First Aid Trauma Medic, Leadership Field Steward | Damage plus sustain stays survivable but not unkillable. |
 | High-control/debuff stack | Spear Disabler, Vibroknife Saboteur, Rifle Suppression, Devices Grenadier | Control pressure does not crowd out damage tradeoffs. |
 | Positional low-uptime build | Spear Vigor, Vibroknife Shadow | Baseline works when facing is unreliable. |
-| Positional high-uptime build | Spear Vigor, Vibroknife Shadow, Katar Opportunist | Positional upside is rewarding without becoming the only viable mode. |
+| Positional high-uptime build | Spear Vigor, Vibroknife Shadow, Katar Scrapper | Positional upside is rewarding without becoming the only viable mode. |
 
 ## Enumeration Outliers
 
-The current package frontier reports high-offense legal profiles clustered around:
+The current coarse package frontier reports high-offense legal profiles clustered around:
 
-- General, Pistol Gambler, Spear Vigor, Staff Crusher, Throwing Flurry, Twin Blade Lacerator, Vibroblade Frenzy.
-- Variants adding Katar Scrapper, Lightsaber Ward, Saberstaff Conduit, Rifle Marksman, Rifle Suppression, or Vibroblade Bulwark.
+- Espionage Saboteur, General, Katar Iron Guard, Rifle Marksman, Saberstaff Conduit/Tempest, Staff Crusher, Throwing Flurry/Ordnance, and Vibroblade Frenzy.
+- Sustain variants centered on Heavy Vibroblade Berserker/Immortal plus Saberstaff Conduit, Spear Vigor, and Vibroblade Frenzy.
 
-These are diagnostic outliers, not automatic blockers. The important review question is whether one equipped weapon can actually benefit from the stacked payload in live play. If a real build can cash out high damage while also keeping high sustain, deflection, guard, or control, tune the source values before considering weapon locks.
+These remain diagnostic outliers because the coarse scan intentionally adds unrelated payload channels. The hard active-context frontier separately validates one equipped weapon plus every legal support frontier. If live play proves that a multi-weapon build can cash out the coarse total while also keeping high sustain, deflection, guard, or control, tune shared values or triggers before considering weapon locks.
 
 The current sustain outliers should be rechecked around Heavy Vibroblade Immortal plus Heavy Vibroblade Berserker, often with Pistol Gambler, Rifle Marksman, Vibroblade Frenzy, and Beast Tank or Vibroblade Bulwark. These are the highest-priority sustain tests because they map most closely to the player feedback about healing after large hits.
 
@@ -197,7 +209,7 @@ Pre-release stance: preserve build freedom and use weapon locks only as a last r
 
 ## Support-System Audit
 
-Force, Devices, Leadership, First Aid, and Beast Mastery are included in the audit but are not broad redesign targets in this leg.
+Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage are included in the audit but are not broad redesign targets in this leg.
 
 Review these interactions first:
 
@@ -207,6 +219,8 @@ Review these interactions first:
 - First Aid Trauma Medic healing amplification and recovery windows.
 - First Aid Combat Pharmacology stim duration and combat sustain.
 - Beast Damage pressure and Beast Tank mitigation alongside player sustain.
+- Mimicry potency and passive-trait loadouts alongside weapon packages.
+- Espionage Infiltrator back-attack pressure and Saboteur poison/trap amplification alongside weapon packages.
 
 ## Peak Damage Target
 

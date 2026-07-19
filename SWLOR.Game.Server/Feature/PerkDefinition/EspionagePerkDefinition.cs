@@ -7,7 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class EspionagePerkDefinition: IPerkListDefinition
+    public class EspionagePerkDefinition : IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
 
@@ -43,14 +43,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Stealth1)
-                .Description("Enter stealth, increasing stealth effectiveness by 15% while active. Drains STM over time and breaks on hostile action. Usable only while out of combat.")
+                .Description("Enter stealth, increasing stealth effectiveness by 15% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.StealthEffectivenessPercent, 15)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Stealth2)
-                .Description("Enter stealth, increasing stealth effectiveness by 25% while active. Drains STM over time and breaks on hostile action. Usable only while out of combat.")
+                .Description("Enter stealth, increasing stealth effectiveness by 25% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Stealth3)
-                .Description("Enter stealth, increasing stealth effectiveness by 35% while active. Drains STM over time and breaks on hostile action. Usable only while out of combat.")
+                .Description("Enter stealth, increasing stealth effectiveness by 35% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 28)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Stealth4)
-                .Description("Enter stealth, increasing stealth effectiveness by 45% while active. Drains STM over time and breaks on hostile action. Usable only while out of combat.")
+                .Description("Enter stealth, increasing stealth effectiveness by 45% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -80,14 +80,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BackAttackTrait)
-                .Description("Weapon attacks from behind a target deal +3% damage.")
+                .Description("Melee weapon attacks from behind a target deal +3% damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 3)
 
                 .AddPerkLevel()
-                .Description("Weapon attacks from behind a target deal +5% damage and gain +3% critical chance.")
+                .Description("Melee weapon attacks from behind a target deal +5% damage and gain +3% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 18)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.BackAttackCriticalRatePercentAdjustment, 3)
 
                 .AddPerkLevel()
-                .Description("Weapon attacks from behind a target deal +8% damage and gain +5% critical chance.")
+                .Description("Melee weapon attacks from behind a target deal +8% damage and gain +5% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 38)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -110,31 +110,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SlicingTrait)
-                .Description("Can pick tier 1 locks and hack tier 1 terminals.")
+                .Description("Can open tier 1 lockboxes.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 8)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can pick tier 2 locks and hack tier 2 terminals.")
+                .Description("Can open tier 2 lockboxes.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 22)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can pick tier 3 locks and hack tier 3 terminals. Hacking actions are 20% faster.")
+                .Description("Can open tier 3 lockboxes. Lockbox opening is 20% faster.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 30)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can pick tier 4 locks and hack tier 4 terminals. Hacking actions are 30% faster.")
+                .Description("Can open tier 4 lockboxes. Lockbox opening is 30% faster.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 42)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can pick tier 5 locks and hack tier 5 terminals. Hacking actions are 40% faster.")
+                .Description("Can open tier 5 lockboxes. Lockbox opening is 40% faster.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 48);
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TacticalEscape2)
-                .Description("Reduces your enmity by 60%, removes movement slow, and increases Evasion by 12% for 30 seconds.")
+                .Description("Reduces your enmity by 60%, removes negative movement-speed effects, and increases Evasion by 12% for 30 seconds.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 35);
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShadowStep2)
-                .Description("Dash behind one hostile target within 5m, cleanse movement impairing effects, and increase Evasion by 15% for 30 seconds.")
+                .Description("Dash behind one hostile target within 5m, remove negative movement-speed effects, and increase Evasion by 15% for 30 seconds.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 45);
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SilentStrideTrait)
-                .Description("Movement speed while stealthed is no longer reduced, and stealth drains STM 20% slower.")
+                .Description("Removes the movement-speed penalty from stealth and reduces its STM drain rate by 20%, from 2 STM every 6 seconds to 2 STM every 7.5 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 32)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GhostProtocol)
-                .Description("Drop most enmity, enter stealth for 30 seconds, and cause your next back attack within 30 seconds to critically hit and inflict Exposed.")
+                .Description("Reduces your enmity by 80%, enters stealth for up to 30 seconds, and causes your next back attack within 30 seconds to critically hit and inflict Exposed, reducing Defense by 20% for 30 seconds.")
                 .Price(6)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 50);
@@ -262,14 +262,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can craft, place, detect, and disarm tier 3 traps. Trap placement is 20% faster.")
+                .Description("Can craft, place, detect, and disarm tier 3 traps. Traps arm 20% faster, reducing their arming time from 3 seconds to 2.4 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.TrapPlacementSpeedPercent, 20)
 
                 .AddPerkLevel()
-                .Description("Can craft, place, detect, and disarm tier 4 traps. Trap placement is 30% faster.")
+                .Description("Can craft, place, detect, and disarm tier 4 traps. Traps arm 30% faster, reducing their arming time from 3 seconds to 2.1 seconds.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.TrapPlacementSpeedPercent, 30)
@@ -283,14 +283,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VenomExpertiseTrait)
-                .Description("Weapon poisons applied by you deal 10% more damage or last 10% longer, based on poison type.")
+                .Description("Venom from weapon poisons you apply deals 10% more damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 8)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.PoisonBonus, 10)
 
                 .AddPerkLevel()
-                .Description("Weapon poisons applied by you deal 20% more damage or last 20% longer, based on poison type.")
+                .Description("Venom from weapon poisons you apply deals 20% more damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -304,14 +304,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RazorTrap1)
-                .Description("Places a visible trap that arms after 3 seconds. Triggered enemies take 14 physical DMG plus PER scaling and Bleed for 30 seconds.")
+                .Description("Places a visible trap that arms after 3 seconds. When triggered, enemies within its 3m blast take 14 physical DMG plus PER scaling and Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 12)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RazorTrap2)
-                .Description("Places a visible trap that arms after 3 seconds. Triggered enemies take 30 physical DMG plus PER scaling and Bleed for 30 seconds.")
+                .Description("Places a visible trap that arms after 3 seconds. When triggered, enemies within its 3m blast take 30 physical DMG plus PER scaling and Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 38);
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShockTrap)
-                .Description("Places a visible trap that arms after 3 seconds. Triggered enemies take 22 electrical DMG plus PER scaling and suffer Shock for 30 seconds.")
+                .Description("Places a visible trap that arms after 3 seconds. When triggered, enemies within its 3m blast take 22 electrical DMG plus PER scaling and suffer Shock for 30 seconds.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 25);
@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AdditionalTrapCapacity, 1)
 
                 .AddPerkLevel()
-                .Description("Increases maximum concurrent traps to 3 and improves trap detection range.")
+                .Description("Increases maximum concurrent traps to 3 and trap detection range by 5m, from 6m to 11m.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 42)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastingCoatingsTrait)
-                .Description("Weapon poisons you apply last 50% longer before wearing off.")
+                .Description("Weapon poison coatings you apply gain 50% more charges, increasing from 20 to 30 charges.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 32)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -373,7 +373,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MasterSaboteurTrait)
-                .Description("Can craft, place, detect, and disarm tier 5 traps. Your trap effect strength increases by 10% and your poisons gain +10% potency.")
+                .Description("Can craft, place, detect, and disarm tier 5 traps. Your trap damage and weapon-poison Venom damage increase by 10%.")
                 .Price(6)
                 .RequirementSkill(SkillType.Espionage, 50)
                 .RequirementCharacterType(CharacterType.Standard)

@@ -26,7 +26,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .IsCastedAbility()
                 .HasMaxRange(6f)
                 .IsAreaAbility()
-                .RequiresTarget()
                 .IsHostileAbility()
                 .RequirementStamina(8)
                 .HasImpactAction((activator, target, level, location) =>
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
                         28,
-                        3,
+                        6,
                         typeof(KnockdownStatusEffect),
                         CombatImpactAreaShape.Sphere,
                         0.25f,

@@ -156,6 +156,24 @@ public class AreaAbilityTargetingTests
     }
 
     [Test]
+    public void SelfCenteredAreaAbilities_DoNotRequireATargetInCode()
+    {
+        var playerFeats = GetPlayerGrantedFeats();
+
+        var offenders = GetTargetedAbilities()
+            .Where(x => x.IsHostile && x.IsArea && x.RequiresTarget)
+            .Where(x => playerFeats.Contains(x.Feat))
+            .Where(x => x.Targeting.Shape == AbilityTargetingShapeType.Sphere)
+            .Where(x => x.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            .Select(x => $"{x.DefinitionName}.{x.Feat}")
+            .OrderBy(x => x, StringComparer.Ordinal)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "self-centered radius areas execute on the caster and must not call RequiresTarget()");
+    }
+
+    [Test]
     public void SphereAreaAbilities_DeclareARadiusAndNoWidth()
     {
         var offenders = GetTargetedAbilities()
@@ -173,6 +191,7 @@ public class AreaAbilityTargetingTests
         AbilityTargetingDetail Targeting,
         bool IsArea,
         bool IsHostile,
+        bool RequiresTarget,
         SkillType SkillType);
 
     /// <summary>
@@ -213,6 +232,7 @@ public class AreaAbilityTargetingTests
                     ability.Targeting,
                     ability.IsAreaAbility,
                     ability.IsHostileAbility,
+                    ability.RequiresTarget,
                     ability.SkillType);
             }
         }

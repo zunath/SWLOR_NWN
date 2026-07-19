@@ -36,7 +36,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
                 maxRange: 6f,
                 centerOnActivator: true,
-                enmityBonus: 8,
                 afterSuccessfulHit: InnateAbility.InterruptOnHit())
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

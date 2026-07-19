@@ -134,6 +134,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to enemies within 5m and generate Enmity equal to the guarded hit's incoming damage.")
                 .IncreasesStat(StatType.GuardRetaliationDamageBonusSkillType, (int)SkillType.Katar)
                 .IncreasesStat(StatType.GuardRetaliationDamageBonus, 15)
+                .IncreasesStat(StatType.GuardRetaliationDamageBonusRadiusMeters, 5)
+                .IncreasesStat(StatType.GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage, 100)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 18);
         }
@@ -200,9 +202,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RetaliatoryFlowTrait)
                 .Description("After you guard a hit, your next Katar attack within 30 seconds deals +8 DMG.")
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilitySkillType, (int)SkillType.Katar)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityDamageBonus, 8)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityWindowSeconds, 30)
+                .IncreasesStat(StatType.GuardedHitSecondaryNextSkillAbilitySkillType, (int)SkillType.Katar)
+                .IncreasesStat(StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus, 8)
+                .IncreasesStat(StatType.GuardedHitSecondaryNextSkillAbilityWindowSeconds, 30)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 32);
         }
@@ -444,7 +446,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
-                .Description("Deals weapon DMG + 25 in a 5m sphere. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
+                .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)
                 .RequirementQuest(KatarCapstoneQuestDefinition.ScrapheapLockdownMasteryQuestId);

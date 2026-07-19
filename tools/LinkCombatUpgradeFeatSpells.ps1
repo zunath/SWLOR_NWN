@@ -6,7 +6,7 @@ param(
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2791
+    [int]$GeneratedFeatEnd = 2898
 )
 
 Set-StrictMode -Version Latest
@@ -121,6 +121,7 @@ if ([System.IO.Directory]::Exists($npcAbilityDefinitionPath)) {
 }
 
 $playerAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+$mimicryTraitLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
     Get-ChildItem $abilityDefinitionPath -Filter "*.cs" -File -Recurse |
         Where-Object { $_.FullName -notlike "*\Feature\AbilityDefinition\NPC\*" } |
@@ -132,6 +133,12 @@ if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
 
             foreach ($match in [regex]::Matches($content, "\bFeatType\.(\w+)")) {
                 $playerAbilityLabels.Add($match.Groups[1].Value) | Out-Null
+            }
+
+            if ($content -match "\.MimicryTrait\s*\(") {
+                foreach ($match in [regex]::Matches($content, "\.Create\s*\(\s*FeatType\.(\w+)")) {
+                    $mimicryTraitLabels.Add($match.Groups[1].Value) | Out-Null
+                }
             }
         }
 }
@@ -273,6 +280,29 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     if (!$playerAbilityLabels.Contains($label)) {
         Set-TokenByHeader $tokens $featHeaders "SPELLID" "****"
         $featLines[$i] = Format-2DARow $tokens.ToArray() $featColumnWidths
+        continue
+    }
+
+    # Mimicry technique spell rows already own curated, meaningful icon resources. Keep the
+    # feat/action-menu icon on that same artwork instead of allowing generated opaque resrefs to
+    # overwrite the spell icon and point at nonexistent files.
+    if ($label.EndsWith("Technique", [System.StringComparison]::Ordinal) -and
+        $spellRowsByLabel.ContainsKey($label)) {
+        $techniqueSpellId = $spellRowsByLabel[$label]
+        $techniqueSpellLineIndex = $spellLineByRow[$techniqueSpellId]
+        $techniqueSpellTokens = Convert-ToStringList $spellsLines[$techniqueSpellLineIndex]
+        $techniqueIcon = Get-TokenByHeader $techniqueSpellTokens $spellsHeaders "IconResRef"
+        if (![string]::IsNullOrWhiteSpace($techniqueIcon) -and $techniqueIcon -ne "****") {
+            Set-TokenByHeader $tokens $featHeaders "ICON" $techniqueIcon
+        }
+    }
+
+    # Learned passive traits appear in the Techniques menu but are never cast. They need their
+    # feat and class-feat rows, while SPELLID must remain the blank sentinel.
+    if ($mimicryTraitLabels.Contains($label)) {
+        Set-TokenByHeader $tokens $featHeaders "SPELLID" "****"
+        $featLines[$i] = Format-2DARow $tokens.ToArray() $featColumnWidths
+        $linkedPlayerFeats[$label] = $rowNumber
         continue
     }
 

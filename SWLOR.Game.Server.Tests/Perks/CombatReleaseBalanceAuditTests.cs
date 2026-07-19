@@ -64,7 +64,15 @@ public class CombatReleaseBalanceAuditTests
         PerkCategoryType.BeastBalanced,
         PerkCategoryType.BeastBruiser,
         PerkCategoryType.BeastEvasion,
-        PerkCategoryType.BeastForce
+        PerkCategoryType.BeastForce,
+        PerkCategoryType.Mimicry,
+        PerkCategoryType.EspionageInfiltrator,
+        PerkCategoryType.EspionageSaboteur
+    };
+
+    private static readonly PerkCategoryType[] UtilityPackages =
+    {
+        PerkCategoryType.EspionageTradecraft
     };
 
     private static readonly StatType[] DirectDamagePercentStats =
@@ -92,6 +100,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.ThrowingAreaAbilityDamagePercentAdjustment,
         StatType.SingleTargetPhysicalAbilityDamagePercentAdjustment,
         StatType.SkillAreaAbilityDamagePercentAdjustment,
+        StatType.SkillAbilityDamagePercentAdjustment,
         StatType.DarkForceTargetLowHPDamagePercentAdjustment,
         StatType.BeaconPulseDamagePercentAdjustment,
         StatType.AssaultGadgetDamagePercentAdjustment,
@@ -102,7 +111,11 @@ public class CombatReleaseBalanceAuditTests
         StatType.LowHPAttackPercentAdjustment,
         StatType.StatusAppliedSelfForceAttackPercentAdjustment,
         StatType.HostileAbilityForceAttackPercentPerStack,
-        StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment
+        StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment,
+        StatType.BackAttackDamagePercentAdjustment,
+        StatType.PoisonBonus,
+        StatType.TrapBonus,
+        StatType.MimicryPotencyPercent
     };
 
     private static readonly StatType[] FlatDamageStats =
@@ -171,7 +184,8 @@ public class CombatReleaseBalanceAuditTests
         StatType.StatusAppliedNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.TargetStatusCriticalRatePercentAdjustment,
         StatType.AutoAttackCycleCriticalRatePercentAdjustment,
-        StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment
+        StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment,
+        StatType.BackAttackCriticalRatePercentAdjustment
     };
 
     private static readonly StatType[] CriticalDamageStats =
@@ -371,7 +385,9 @@ public class CombatReleaseBalanceAuditTests
     {
         var packages = BuildPackages()
             .Values
-            .Where(x => WeaponPackages.Contains(x.Category) || SupportPackages.Contains(x.Category))
+            .Where(x => WeaponPackages.Contains(x.Category) ||
+                        SupportPackages.Contains(x.Category) ||
+                        UtilityPackages.Contains(x.Category))
             .Where(x => x.Cost > 0)
             .OrderBy(x => x.Cost)
             .ThenBy(x => x.Name)
@@ -417,15 +433,70 @@ public class CombatReleaseBalanceAuditTests
     }
 
     [Test]
+    public void CrossSkillSupportFrontier_HasNoCompoundGodProfiles()
+    {
+        var packages = BuildPackages();
+        var supportPackages = SupportPackages
+            .Concat(UtilityPackages)
+            .Select(category => packages[category])
+            .Where(package => package.Cost > 0)
+            .OrderBy(package => package.Cost)
+            .ThenBy(package => package.Name)
+            .ToArray();
+        var failures = new List<string>();
+
+        foreach (var weaponCategory in WeaponPackages)
+        {
+            var weapon = packages[weaponCategory];
+            var weaponOnly = Combine(new[] { weapon });
+            if (IsCompoundReleaseBlocker(weaponOnly))
+                failures.Add(Describe(weaponOnly));
+
+            foreach (var supportProfile in EnumerateLegalFrontierProfiles(
+                         supportPackages,
+                         SkillPointCap - weapon.Cost))
+            {
+                var combined = AddPackage(supportProfile, weapon);
+                if (combined.Cost <= SkillPointCap && IsCompoundReleaseBlocker(combined))
+                    failures.Add(Describe(combined));
+            }
+        }
+
+        failures
+            .Distinct(StringComparer.Ordinal)
+            .Should()
+            .BeEmpty(
+                "every active weapon package combined with the full legal cross-skill support frontier must retain a meaningful offense/defense/sustain/control tradeoff");
+    }
+
+    [Test]
     public void ReleaseAuditScope_IncludesEveryWeaponAndSupportPackage()
     {
         var packages = BuildPackages();
         var missing = WeaponPackages
             .Concat(SupportPackages)
+            .Concat(UtilityPackages)
             .Where(category => !packages.ContainsKey(category))
             .ToArray();
 
-        missing.Should().BeEmpty("the release audit must cover weapons, Force, Devices, Leadership, First Aid, Beast Mastery, and Armor");
+        missing.Should().BeEmpty("the release audit must cover weapons, Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, Espionage, and Armor");
+    }
+
+    [Test]
+    public void ReleaseAuditScoring_IncludesMimicryAndEspionageCombatPayloads()
+    {
+        var packages = BuildPackages();
+
+        packages[PerkCategoryType.Mimicry].OffenseScore.Should().Be(15,
+            "max-rank Combat Analyzer grants 15% Mimicry potency");
+        packages[PerkCategoryType.EspionageInfiltrator].OffenseScore.Should().Be(13,
+            "max-rank Back Attack grants 8% damage and 5% critical rate");
+        packages[PerkCategoryType.EspionageSaboteur].OffenseScore.Should().Be(40,
+            "Saboteur contributes 30% Venom damage and 10% trap damage across distinct payloads");
+        packages[PerkCategoryType.EspionageTradecraft].OffenseScore.Should().Be(0,
+            "Tradecraft is explicitly audited non-combat utility");
+        packages[PerkCategoryType.EspionageTradecraft].SupportPackageCount.Should().Be(0,
+            "non-combat disguise utility must not inflate compound combat-support scores");
     }
 
     private static bool IsCompoundReleaseBlocker(ReleaseProfile profile)
@@ -530,9 +601,18 @@ public class CombatReleaseBalanceAuditTests
             Archetype(packages, "Weapon plus Devices support", PerkCategoryType.RifleMarksman, PerkCategoryType.DevicesFieldSupport),
             Archetype(packages, "Weapon plus First Aid sustain", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.FirstAidTraumaMedic),
             Archetype(packages, "Weapon plus Beast pressure", PerkCategoryType.SpearDamage, PerkCategoryType.BeastDamage),
+            Archetype(packages, "Weapon plus Mimicry", PerkCategoryType.VibrobladeOffense, PerkCategoryType.Mimicry),
+            Archetype(packages, "Weapon plus Espionage Infiltrator", PerkCategoryType.VibroknifeShadow, PerkCategoryType.EspionageInfiltrator),
+            Archetype(packages, "Weapon plus Espionage Saboteur", PerkCategoryType.VibroknifeSaboteur, PerkCategoryType.EspionageSaboteur),
+            Archetype(packages, "Poison trap and Mimicry payload stack", PerkCategoryType.VibroknifeSaboteur, PerkCategoryType.EspionageSaboteur, PerkCategoryType.Mimicry, PerkCategoryType.General),
+            Archetype(packages, "Stealth burst cross-skill stack", PerkCategoryType.VibroknifeShadow, PerkCategoryType.EspionageInfiltrator, PerkCategoryType.Mimicry, PerkCategoryType.LeadershipVanguardCommand),
+            Archetype(packages, "Cross-resource sustain engine", PerkCategoryType.SaberstaffConduit, PerkCategoryType.ForceControl, PerkCategoryType.ForceSense, PerkCategoryType.FirstAidTraumaMedic),
+            Archetype(packages, "Damage-healing sustain engine", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.SaberstaffConduit, PerkCategoryType.FirstAidTraumaMedic, PerkCategoryType.LeadershipFieldSteward),
+            Archetype(packages, "Deflection reflection support stack", PerkCategoryType.LightsaberOffense, PerkCategoryType.StaffSentinel, PerkCategoryType.DevicesFieldSupport, PerkCategoryType.LeadershipFieldSteward),
+            Archetype(packages, "Cross-skill control stack", PerkCategoryType.SpearDisabler, PerkCategoryType.RiflePacification, PerkCategoryType.DevicesGrenadier, PerkCategoryType.EspionageSaboteur, PerkCategoryType.Mimicry),
             Archetype(packages, "High-MGT damage stack", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.SpearDamage, PerkCategoryType.StaffCrusher, PerkCategoryType.LeadershipVanguardCommand),
             Archetype(packages, "High-PER crit stack", PerkCategoryType.PistolGunslinger, PerkCategoryType.RifleMarksman, PerkCategoryType.ThrowingDeadeye, PerkCategoryType.LeadershipVanguardCommand),
-            Archetype(packages, "Attack Deflection stack", PerkCategoryType.StaffSentinel, PerkCategoryType.LightsaberDefense, PerkCategoryType.SaberstaffTempest, PerkCategoryType.TwinBladeDuelist, PerkCategoryType.HeavyVibrobladeDefense),
+            Archetype(packages, "Attack Deflection stack", PerkCategoryType.StaffSentinel, PerkCategoryType.LightsaberOffense, PerkCategoryType.SaberstaffTempest, PerkCategoryType.TwinBladeDuelist, PerkCategoryType.HeavyVibrobladeDefense),
             Archetype(packages, "Shield Deflection stack", PerkCategoryType.VibrobladeDefense, PerkCategoryType.DevicesFieldSupport, PerkCategoryType.LeadershipFieldSteward),
             Archetype(packages, "Guard tank stack", PerkCategoryType.KatarIronGuard, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.LeadershipFieldSteward),
             Archetype(packages, "Sustain tank", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.FirstAidTraumaMedic, PerkCategoryType.LeadershipFieldSteward),

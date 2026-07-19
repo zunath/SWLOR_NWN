@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Enmity
     {
+        public const int MinimumEnmityPercentAdjustment = -50;
+        public const int MaximumEnmityPercentAdjustment = 50;
         // Enemy -> Creature -> EnmityAmount mapping
         private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
@@ -228,8 +230,17 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The enmity adjustment percentage.</returns>
         private static int CalculateEnmityAdjustment(uint creature, uint enemy)
         {
-            return Stat.GetStatAdjustment(creature, StatType.EnmityPercentAdjustment) +
-                   GetStatusSourceEnmityAdjustment(enemy, creature);
+            var adjustment = Stat.GetStatAdjustment(creature, StatType.EnmityPercentAdjustment) +
+                             GetStatusSourceEnmityAdjustment(enemy, creature);
+            return ClampEnmityPercentAdjustment(adjustment);
+        }
+
+        public static int ClampEnmityPercentAdjustment(int adjustment)
+        {
+            return Math.Clamp(
+                adjustment,
+                MinimumEnmityPercentAdjustment,
+                MaximumEnmityPercentAdjustment);
         }
 
         /// <summary>

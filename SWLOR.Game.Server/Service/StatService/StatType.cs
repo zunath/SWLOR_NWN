@@ -5376,6 +5376,147 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DisguiseSwapCooldownReductionPercent = 936,
+
+        /// <summary>
+        /// Overrides the duration in seconds of Poison inflicted by the shared damage-dealt Poison proc.
+        /// A value of zero uses the proc's normal duration.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtPoisonDurationSeconds = 937,
+
+        /// <summary>
+        /// Final override for Deflecting Return's reflected-damage percent. A positive value replaces
+        /// the normal perk value and Embattled bonus instead of stacking with them.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedDeflectionReflectionOverridePercent = 938,
+
+        /// <summary>
+        /// Final override for Deflecting Return's weapon-damage cap percent. A positive value replaces
+        /// the normal perk cap instead of stacking with it.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedDeflectionReflectionCapOverridePercent = 939,
+
+        /// <summary>
+        /// SkillType value whose activated ability damage receives SkillAbilityDamagePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAbilityDamagePercentAdjustmentSkillType = 940,
+
+        /// <summary>
+        /// Percent adjustment to activated ability damage for the matching skill. This participates in
+        /// the shared outgoing-damage cap rather than multiplying damage after the cap is applied.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillAbilityDamagePercentAdjustment = 941,
+
+        /// <summary>
+        /// SkillType value whose sufficiently costly hostile abilities grant temporary Evasion.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityUsedEvasionPercentAdjustmentSkillType = 942,
+
+        /// <summary>
+        /// Minimum final Stamina cost required to grant CostlyAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityUsedEvasionMinimumStaminaCost = 943,
+
+        /// <summary>
+        /// Temporary Evasion percent granted after using a matching sufficiently costly hostile ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CostlyAbilityUsedEvasionPercentAdjustment = 944,
+
+        /// <summary>
+        /// Duration in seconds of CostlyAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityUsedEvasionDurationSeconds = 945,
+
+        /// <summary>
+        /// SkillType value for an independent second guarded-hit next-ability bonus channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedHitSecondaryNextSkillAbilitySkillType = 946,
+
+        /// <summary>
+        /// Critical-rate adjustment stored by the secondary guarded-hit next-ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitSecondaryNextSkillAbilityCriticalRatePercentAdjustment = 947,
+
+        /// <summary>
+        /// Flat damage stored by the secondary guarded-hit next-ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitSecondaryNextSkillAbilityDamageBonus = 948,
+
+        /// <summary>
+        /// Duration in seconds of the secondary guarded-hit next-ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedHitSecondaryNextSkillAbilityWindowSeconds = 949,
+
+        /// <summary>
+        /// Radius in meters of a skill-matched guard retaliation bonus pulse. Zero keeps the bonus
+        /// on the original attacker only.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardRetaliationDamageBonusRadiusMeters = 950,
+
+        /// <summary>
+        /// Percent of the guarded hit's incoming damage generated as Enmity toward each additional
+        /// enemy hit by the guard retaliation bonus pulse.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage = 951,
+
+        /// <summary>
+        /// Optional SkillType restriction for the independent hostile-ability Evasion channel.
+        /// Invalid applies the channel to every hostile combat ability.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityUsedEvasionPercentAdjustmentSkillType = 952,
+
+        /// <summary>
+        /// Temporary Evasion percent granted after using a hostile ability that passes the optional
+        /// skill restriction.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityUsedEvasionPercentAdjustment = 953,
+
+        /// <summary>
+        /// Duration in seconds of HostileAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityUsedEvasionDurationSeconds = 954,
+
+        /// <summary>
+        /// SkillType value whose activated abilities grant temporary Evasion through an independent
+        /// second footwork channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SecondaryAbilityUsedEvasionPercentAdjustmentSkillType = 955,
+
+        /// <summary>
+        /// Temporary Evasion percent granted by the independent second footwork channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SecondaryAbilityUsedEvasionPercentAdjustment = 956,
+
+        /// <summary>
+        /// Duration in seconds of SecondaryAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SecondaryAbilityUsedEvasionDurationSeconds = 957,
+
+        /// <summary>
+        /// Flat Stamina cost adjustment applied to every hostile combat ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        HostileAbilityStaminaCostFlatAdjustment = 958,
     }
 
     public class StatTypeAttribute : Attribute

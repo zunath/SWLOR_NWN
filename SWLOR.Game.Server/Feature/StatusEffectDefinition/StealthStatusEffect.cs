@@ -41,10 +41,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             // Drain-slowing stats stretch the tick interval rather than shrinking the
             // per-tick amount so small reductions are not lost to integer rounding.
             var drainReduction = Stat.GetStatAdjustment(creature, StatType.StealthStaminaDrainReductionPercent);
-            if (drainReduction > 0)
-            {
-                _frequency = BaseFrequencySeconds * (100 + drainReduction) / 100f;
-            }
+            _frequency = CalculateDrainFrequencySeconds(drainReduction);
+        }
+
+        public static float CalculateDrainFrequencySeconds(int drainReductionPercent)
+        {
+            var boundedReduction = Math.Clamp(drainReductionPercent, 0, 90);
+            return BaseFrequencySeconds * 100f / (100f - boundedReduction);
         }
 
         protected override void Tick(uint creature)

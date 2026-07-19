@@ -50,6 +50,23 @@ public class CharacterSheetStatCoverageTests
     }
 
     [Test]
+    public void CharacterSheet_RefreshesWhenTemporaryStatAdjustmentsChange()
+    {
+        var viewModel = ReadViewModel();
+        var temporaryModifiers = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "CombatService",
+            "TemporaryStatModifier.cs"));
+
+        viewModel.Should().Contain("IGuiRefreshable<StatAdjustmentRefreshEvent>");
+        viewModel.Should().Contain("public void Refresh(StatAdjustmentRefreshEvent payload)");
+        temporaryModifiers.Should().Contain("Gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())");
+        temporaryModifiers.Should().Contain("if (PurgeExpired(creature))");
+    }
+
+    [Test]
     public void CharacterSheet_ReportsGuardReductionInsteadOfHardcodingIt()
     {
         var viewModel = ReadViewModel();

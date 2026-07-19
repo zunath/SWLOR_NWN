@@ -2376,7 +2376,8 @@ namespace SWLOR.Game.Server.Service
                     calculatedDamage,
                     criticalRating,
                     IsTrackedAbilitySingleTarget(activator),
-                    skillType);
+                    skillType,
+                    sendsCriticalFeedback: true);
             }
             else
             {
@@ -2595,7 +2596,8 @@ namespace SWLOR.Game.Server.Service
                     calculatedDamage,
                     criticalRating,
                     IsTrackedAbilitySingleTarget(activator),
-                    skillType);
+                    skillType,
+                    sendsCriticalFeedback: true);
             }
             else
             {

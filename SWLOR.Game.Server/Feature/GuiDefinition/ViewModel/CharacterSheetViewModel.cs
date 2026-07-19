@@ -910,7 +910,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
             AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "Bonus or penalty applied to Attack when using physical attacks and abilities.");
             AddStat("Force Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ForceAttackPercentAdjustment)), "Bonus or penalty applied to Attack when using Force-typed attacks and abilities.");
-            AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
+            AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Chance for an auto attack to score a critical hit. Actual chance varies by target Vitality.");
+            AddStat("Ability Crit Rate", FormatPercent(GetAbilityCriticalRate(combatProfile.Skill)), "Chance for an activated ability to score a critical hit. Calculated separately from auto attack Critical Rate. Target-dependent bonuses such as side and back attacks are not included.");
+            AddStat("Gadget Crit Rate", FormatPercent(GetAssaultGadgetCriticalRate(combatProfile.Skill)), "Chance for an Assault Gadget ability to score a critical hit. Includes Assault Gadget specific bonuses that do not apply to your other abilities.");
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
             AddStat("Damage Dealt", FormatPercent(Stat.GetStatAdjustment(_target, StatType.DamageDealtPercentAdjustment)), "Adjusts all outgoing damage.");
             AddStat("Weapon/Force Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.WeaponAndForceDamageDealtPercentAdjustment)), "Adjusts outgoing weapon and Force damage. Stacks with Damage Dealt.");
@@ -1000,6 +1002,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 GetAbilityScore(_target, AbilityType.Vitality),
                 GetSkillRank(skillType),
                 Stat.GetStatAdjustment(_target, StatType.CriticalRatePercentAdjustment));
+        }
+
+        private int GetAbilityCriticalRate(SkillType skillType)
+        {
+            return Combat.ClampCriticalRate(Combat.GetBaseAbilityCriticalRatePercent(_target, skillType));
+        }
+
+        private int GetAssaultGadgetCriticalRate(SkillType skillType)
+        {
+            var criticalRate = Combat.GetBaseAbilityCriticalRatePercent(_target, skillType) +
+                               Stat.GetStatAdjustment(_target, StatType.AssaultGadgetCriticalRatePercentAdjustment);
+
+            return Combat.ClampCriticalRate(criticalRate);
         }
 
         private int GetSkillRank(SkillType skillType)

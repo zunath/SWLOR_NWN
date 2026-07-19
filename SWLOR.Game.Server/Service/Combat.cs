@@ -1630,10 +1630,19 @@ namespace SWLOR.Game.Server.Service
             int damage,
             int criticalRating,
             bool isSingleTargetImpact = false,
-            SkillType skillType = SkillType.Invalid)
+            SkillType skillType = SkillType.Invalid,
+            bool sendsCriticalFeedback = false)
         {
             if (criticalRating <= 0 || damage <= 0)
                 return;
+
+            // Auto attacks already report criticals through the engine's own combat log, but ability
+            // damage is applied via EffectDamage and produces no such message. Without this the only
+            // sign an ability critted is a larger number.
+            if (sendsCriticalFeedback)
+            {
+                FloatingTextStringOnCreature(ColorToken.Combat("Critical Hit!"), attacker, false);
+            }
 
             if (GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender) > 0)
             {
@@ -6615,16 +6624,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var criticalRate = criticalRateAdjustment;
-            criticalRate += GetSkillCriticalRatePercentAdjustment(attacker, skillType);
-            criticalRate += GetAbilityHitOrCriticalAdjustment(
-                attacker,
-                skillType,
-                PerkType.Invalid,
-                StatType.AbilityCriticalRatePercentAdjustmentSkillType,
-                StatType.AbilityCriticalRatePercentAdjustmentPerkType,
-                StatType.AbilityCriticalRatePercentAdjustmentSecondaryPerkType,
-                StatType.AbilityCriticalRatePercentAdjustment,
-                false);
+            criticalRate += GetBaseAbilityCriticalRatePercent(attacker, skillType);
 
             if (isAreaAbility && skillType == SkillType.TwinBlade)
             {
@@ -6649,14 +6649,42 @@ namespace SWLOR.Game.Server.Service
             criticalRate += GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
             criticalRate += GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
 
-            if (criticalRate < BaseCriticalRate)
-                criticalRate = BaseCriticalRate;
-            else if (criticalRate > MaxCriticalRate)
-                criticalRate = MaxCriticalRate;
+            criticalRate = ClampCriticalRate(criticalRate);
 
             return criticalRate > 0 && Random.D100(1) <= criticalRate
                 ? StandardCriticalRating
                 : 0;
+        }
+
+        /// <summary>
+        /// The portion of an ability's critical rate that depends only on the attacker - their skill
+        /// and their stat adjustments - excluding per-ability and target-dependent modifiers.
+        /// Shared with the character sheet so the displayed value cannot drift from what combat rolls.
+        /// Unlike auto attacks, ability criticals have no Perception/Vitality/skill-rank base scaling:
+        /// they start at BaseCriticalRate and only move with adjustments.
+        /// </summary>
+        public static int GetBaseAbilityCriticalRatePercent(uint attacker, SkillType skillType)
+        {
+            if (!GetIsObjectValid(attacker))
+                return 0;
+
+            var criticalRate = GetSkillCriticalRatePercentAdjustment(attacker, skillType);
+            criticalRate += GetAbilityHitOrCriticalAdjustment(
+                attacker,
+                skillType,
+                PerkType.Invalid,
+                StatType.AbilityCriticalRatePercentAdjustmentSkillType,
+                StatType.AbilityCriticalRatePercentAdjustmentPerkType,
+                StatType.AbilityCriticalRatePercentAdjustmentSecondaryPerkType,
+                StatType.AbilityCriticalRatePercentAdjustment,
+                false);
+
+            return criticalRate;
+        }
+
+        public static int ClampCriticalRate(int criticalRate)
+        {
+            return Math.Clamp(criticalRate, BaseCriticalRate, MaxCriticalRate);
         }
 
         public static bool TryResolveAbilityHit(

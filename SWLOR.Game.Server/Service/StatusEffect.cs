@@ -16,6 +16,10 @@ namespace SWLOR.Game.Server.Service
         private const string StatusEffectTag = "STATUS_EFFECT";
         private const float Interval = 1f;
 
+        // Headroom on the native effect duration so accumulated heartbeat jitter cannot expire the
+        // effect before its final tick lands. See GetStatusEffectDurationSeconds.
+        private const float NativeDurationGraceSeconds = Interval * 2f;
+
         private static readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
         private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private static readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
@@ -899,7 +903,11 @@ namespace SWLOR.Game.Server.Service
 
         private static float GetStatusEffectDurationSeconds(IStatusEffect statusEffect, int durationTicks)
         {
-            return durationTicks * Math.Max(1f, statusEffect.Frequency);
+            // The native effect is only a backstop: an effect normally removes itself from
+            // TickStatusEffect immediately after its final tick. Without the grace period the native
+            // effect expires at exactly the same instant the last heartbeat is due, so the engine
+            // almost always wins that race and the final tick is silently dropped.
+            return durationTicks * Math.Max(1f, statusEffect.Frequency) + NativeDurationGraceSeconds;
         }
 
         private static Effect LinkEffect(Effect linkedEffect, Effect effect)

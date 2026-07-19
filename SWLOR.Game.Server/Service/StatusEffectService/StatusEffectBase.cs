@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             if (durationTicks < 0)
                 _isPermanent = true;
 
-            _lastRun = DateTime.UtcNow;
+            _lastRun = UtcNow;
             _durationTicks = durationTicks;
             Source = source;
             Apply(creature, durationTicks);
@@ -115,16 +115,28 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             }
         }
 
+        // Seam so tick scheduling can be exercised without wall-clock waits.
+        protected virtual DateTime UtcNow => DateTime.UtcNow;
+
         protected virtual void Tick(uint creature) { }
         public void TickEffect(uint creature)
         {
-            var currentTime = DateTime.UtcNow;
-            if ((currentTime - _lastRun).TotalSeconds < Frequency)
+            var currentTime = UtcNow;
+            var frequency = Math.Max(1f, Frequency);
+            if ((currentTime - _lastRun).TotalSeconds < frequency)
             {
                 return;
             }
 
-            _lastRun = currentTime;
+            // Advance the tick clock by whole intervals rather than to the wall clock, so heartbeat
+            // jitter does not accumulate and push the final tick past the effect's expiry. Matches
+            // the scheduling used by ReconcileElapsedTime. If the server stalled long enough that we
+            // are still a full interval behind, resynchronize instead of firing catch-up ticks.
+            _lastRun = _lastRun.AddSeconds(frequency);
+            if ((currentTime - _lastRun).TotalSeconds >= frequency)
+            {
+                _lastRun = currentTime;
+            }
 
             // Reduce duration ticks and flag for removal if expired
             if (!_isPermanent && --_durationTicks <= 0)

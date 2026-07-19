@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetLocation,
                 SkillType.Devices,
                 baseDamage,
-                12,
+                30,
                 statusEffect,
                 CombatImpactAreaShape.Sphere,
                 0f,

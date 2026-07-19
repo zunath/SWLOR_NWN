@@ -1,0 +1,164 @@
+using System.Collections;
+using System.Globalization;
+using System.Reflection;
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
+
+namespace SWLOR.Game.Server.Tests.Feature;
+
+public class PlayerGuideContentTests
+{
+    private static readonly string[] RequiredTopics =
+    {
+        "Common Questions",
+        "Communication",
+        "Skills",
+        "Skill Decay",
+        "Perks",
+        "Perk Refunds",
+        "XP Debt",
+        "Abilities",
+        "Mimicry & Techniques",
+        "Attributes",
+        "Rebuilds",
+        "Death & Recovery",
+        "Combat Basics",
+        "Espionage",
+        "Disguises",
+        "Crafting",
+        "Gathering & Fishing",
+        "Training Store",
+        "Beasts & Stables",
+        "Droids",
+        "Quests & Key Items",
+        "Quest Contracts",
+        "Guilds & Citizenship",
+        "Housing & Markets",
+        "Travel & Navigation",
+        "Ships & Space",
+        "Useful Windows"
+    };
+
+    [Test]
+    public void Topics_AreCompleteAndEveryRelatedTopicResolves()
+    {
+        var topics = GetTopics();
+        var topicNames = topics.Select(topic => GetString(topic, "Name")).ToList();
+        var topicNameSet = topicNames.ToHashSet(StringComparer.Ordinal);
+
+        topicNames.Should().OnlyHaveUniqueItems();
+        RequiredTopics.Except(topicNameSet).Should().BeEmpty("all major player systems should have a guide topic");
+
+        foreach (var topic in topics)
+        {
+            var topicName = GetString(topic, "Name");
+            topicName.Should().NotBeNullOrWhiteSpace();
+            GetString(topic, "Category").Should().NotBeNullOrWhiteSpace($"{topicName} needs a category");
+            GetString(topic, "Summary").Should().NotBeNullOrWhiteSpace($"{topicName} needs a summary");
+            GetString(topic, "RailSummary").Should().NotBeNullOrWhiteSpace($"{topicName} needs a rail summary");
+
+            var blocks = GetItems(topic, "Blocks");
+            blocks.Should().NotBeEmpty($"{topicName} needs article content");
+            foreach (var block in blocks)
+            {
+                GetString(block, "Title").Should().NotBeNullOrWhiteSpace($"{topicName} has an untitled article block");
+                GetString(block, "Body").Should().NotBeNullOrWhiteSpace($"{topicName} has an empty article block");
+            }
+
+            var questions = GetItems(topic, "Questions");
+            questions.Should().NotBeEmpty($"{topicName} needs quick answers");
+            foreach (var question in questions)
+            {
+                GetString(question, "Question").Should().NotBeNullOrWhiteSpace($"{topicName} has an empty question");
+                GetString(question, "Answer").Should().NotBeNullOrWhiteSpace($"{topicName} has an empty answer");
+            }
+
+            var relatedTopics = GetItems(topic, "RelatedTopics")
+                .Cast<string>()
+                .ToList();
+            relatedTopics.Should().OnlyHaveUniqueItems($"{topicName} should not repeat related links");
+            relatedTopics.Should().NotContain(topicName, $"{topicName} should not link to itself");
+            relatedTopics.Where(related => !topicNameSet.Contains(related))
+                .Should().BeEmpty($"every related link from {topicName} should resolve");
+        }
+    }
+
+    [Test]
+    public void CriticalPublishedLimits_MatchCurrentGameplayConstants()
+    {
+        var guideText = string.Join("\n", GetTopics().SelectMany(GetAllText));
+
+        guideText.Should().Contain($"up to {Skill.SkillCap} total ranks");
+        guideText.Should().Contain($"{Skill.StartingSkillPoints} starting SP");
+        guideText.Should().Contain($"up to {Skill.APCap} AP");
+
+        guideText.Should().Contain($"costs {HoloNetViewModel.BroadcastPrice} credits");
+        guideText.Should().Contain($"limited to {HoloNetViewModel.MaxHoloNetTextLength} characters");
+        guideText.Should().Contain($"up to {NotesViewModel.MaxNumberOfNotes} notes");
+        guideText.Should().Contain($"up to {NotesViewModel.MaxNoteLength} characters");
+        guideText.Should().Contain($"normal listing limit is {Player.DefaultMarketListingLimit} items");
+
+        guideText.Should().Contain($"up to {QuestContractBoard.MaxActiveContractsPerCDKey} published");
+        guideText.Should().Contain($"between 1 and {QuestContractBoard.MaxObjectives} item objectives");
+        guideText.Should().Contain($"up to {QuestContractBoard.MaxRewardItems} reward items");
+        guideText.Should().Contain($"{QuestContractBoard.ContractDurationDays} days");
+        guideText.Should().Contain($"{QuestContractBoard.PostingFeePercent} percent");
+        guideText.Should().Contain($"minimum fee of {QuestContractBoard.MinimumPostingFee} credits");
+
+        guideText.Should().Contain($"begin with {Player.DefaultDisguiseSlotLimit} identity slot");
+        guideText.Should().Contain($"base wait between disguise activations is {Disguise.ActivationDelayMinutes} minutes");
+        guideText.Should().Contain($"minimum wait of {Disguise.MinimumActivationDelayMinutes} minutes");
+        guideText.Should().Contain($"{Disguise.WipeCreditCost.ToString("N0", CultureInfo.InvariantCulture)} credits");
+        guideText.Should().Contain($"{Disguise.WipeRoleplayXPCost.ToString("N0", CultureInfo.InvariantCulture)} Available RP XP");
+
+        guideText.Should().Contain($"{Property.ElectionRegistrationDays}-day candidate-registration period");
+        guideText.Should().Contain($"{Property.ElectionVotingDays} days of voting");
+    }
+
+    private static List<object> GetTopics()
+    {
+        var field = typeof(PlayerGuideViewModel).GetField("Topics", BindingFlags.NonPublic | BindingFlags.Static);
+        field.Should().NotBeNull();
+
+        return ((IEnumerable)field!.GetValue(null)!).Cast<object>().ToList();
+    }
+
+    private static List<object> GetItems(object source, string propertyName)
+    {
+        var property = source.GetType().GetProperty(propertyName);
+        property.Should().NotBeNull();
+
+        return ((IEnumerable)property!.GetValue(source)!).Cast<object>().ToList();
+    }
+
+    private static string GetString(object source, string propertyName)
+    {
+        var property = source.GetType().GetProperty(propertyName);
+        property.Should().NotBeNull();
+
+        return property!.GetValue(source) as string ?? string.Empty;
+    }
+
+    private static IEnumerable<string> GetAllText(object topic)
+    {
+        yield return GetString(topic, "Name");
+        yield return GetString(topic, "Category");
+        yield return GetString(topic, "Summary");
+        yield return GetString(topic, "RailSummary");
+
+        foreach (var block in GetItems(topic, "Blocks"))
+        {
+            yield return GetString(block, "Title");
+            yield return GetString(block, "Body");
+        }
+
+        foreach (var question in GetItems(topic, "Questions"))
+        {
+            yield return GetString(question, "Question");
+            yield return GetString(question, "Answer");
+        }
+    }
+}

@@ -1420,7 +1420,9 @@ namespace SWLOR.NWN.API.NWScript.Enum
         LastingCoatingsTrait = 1498,
         MasterSaboteurTrait = 1499,
         AlertnessTrait = 1500,
-        // IDs 1501-1512 are free.
+        FalseIdentitiesTrait = 1501,
+        CoverStoryTrait = 1502,
+        // IDs 1503-1512 are free.
         ArmorBlueprints1 = 1513,
         ArmorBlueprints2 = 1514,
         ArmorBlueprints3 = 1515,

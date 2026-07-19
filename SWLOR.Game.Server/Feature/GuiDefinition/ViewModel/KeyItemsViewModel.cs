@@ -2,12 +2,19 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.KeyItemService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel, GuiPayloadBase>,
         IGuiRefreshable<KeyItemReceivedRefreshEvent>
     {
+        public GuiBindingList<string> Icons
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> Names
         {
             get => Get<GuiBindingList<string>>();
@@ -51,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var names = new GuiBindingList<string>();
             var types = new GuiBindingList<string>();
             var descriptions = new GuiBindingList<string>();
+            var icons = new GuiBindingList<string>();
 
             foreach (var (type, _) in dbPlayer.KeyItems)
             {
@@ -65,8 +73,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 names.Add(detail.Name);
                 types.Add(categoryDetail.Name);
                 descriptions.Add(detail.Description);
+                icons.Add(KeyItemIcon.GetIconResref(type));
             }
 
+            Icons = icons;
             Names = names;
             Types = types;
             Descriptions = descriptions;

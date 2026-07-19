@@ -110,6 +110,12 @@ namespace SWLOR.Game.Server.Service
             return _notesByTarget.TryGetValue(target, out detail);
         }
 
+        public static bool TryGetNoteForKeyItem(KeyItemType keyItem, out FieldNoteDetail detail)
+        {
+            EnsureRegistered();
+            return _notesByKeyItem.TryGetValue(keyItem, out detail);
+        }
+
         private static Dictionary<BeastType, List<ProductionMethod>> BuildProductionIndex()
         {
             var index = new Dictionary<BeastType, List<ProductionMethod>>();

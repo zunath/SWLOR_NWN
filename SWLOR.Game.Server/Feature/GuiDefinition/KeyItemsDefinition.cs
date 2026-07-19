@@ -35,6 +35,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     column.AddRow(row =>
                     {
+                        row.AddSpacer()
+                            .SetWidth(40f);
+
                         row.AddLabel()
                             .SetText("Name")
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
@@ -54,6 +57,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             template.AddCell(cell =>
                             {
+                                cell.SetWidth(40f);
+                                cell.SetIsVariable(false);
+
+                                cell.AddGroup(group =>
+                                {
+                                    group.AddImage()
+                                        .BindResref(model => model.Icons)
+                                        .BindTooltip(model => model.Descriptions)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                        .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                        .SetAspect(NuiAspect.Fit);
+                                })
+                                    .SetScrollbars(NuiScrollbars.None);
+                            });
+
+                            template.AddCell(cell =>
+                            {
                                 cell.AddLabel()
                                     .BindText(model => model.Names)
                                     .BindTooltip(model => model.Descriptions);
@@ -66,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindTooltip(model => model.Descriptions);
                             });
                         })
+                            .SetRowHeight(40f)
                             .BindRowCount(model => model.Names);
                     });
                 });

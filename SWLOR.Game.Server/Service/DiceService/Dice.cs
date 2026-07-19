@@ -17,13 +17,15 @@ namespace SWLOR.Game.Server.Service.DiceService
 
         /// <summary>
         /// Parses and rolls an expression, returning a formatted, colorized message for chat.
+        /// An optional label prefix (e.g. a skill name) is shown before the expression:
+        /// "Dice Roll [One-Handed: 2d20+6]: ...".
         /// </summary>
-        public static bool TryRoll(string expression, out string message, out string error)
+        public static bool TryRoll(string expression, out string message, out string error, string labelPrefix = null)
         {
             message = null;
             if (!TryEvaluate(expression, out var result, out error))
                 return false;
-            message = Format(result);
+            message = Format(result, labelPrefix);
             return true;
         }
 
@@ -131,9 +133,10 @@ namespace SWLOR.Game.Server.Service.DiceService
             return Random.Next(1, sides + 1); // Service.Random.Next => 1..sides (max exclusive)
         }
 
-        private static string Format(DiceRollResult res)
+        private static string Format(DiceRollResult res, string labelPrefix = null)
         {
-            var label = ColorToken.SkillCheck("Dice Roll [" + res.Expression + "]: ");
+            var prefix = string.IsNullOrEmpty(labelPrefix) ? "" : labelPrefix + ": ";
+            var label = ColorToken.SkillCheck("Dice Roll [" + prefix + res.Expression + "]: ");
 
             var message = label + BuildBreakdown(res, false);
             if (ShouldAppendTotal(res, false))

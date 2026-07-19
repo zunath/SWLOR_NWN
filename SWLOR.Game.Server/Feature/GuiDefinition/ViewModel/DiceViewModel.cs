@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DiceService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.SkillService;
@@ -52,13 +53,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string CustomExpression
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             IsSkillSelectionVisible = !GetIsDM(Player) && !GetIsDMPossessed(Player);
             LoadSkills();
             DiceCount = MinDiceCount;
             SelectedSkillId = (int)SkillType.Invalid;
+            CustomExpression = string.Empty;
             WatchOnClient(model => model.SelectedSkillId);
+            WatchOnClient(model => model.CustomExpression);
         }
 
         private void LoadSkills()
@@ -97,20 +106,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (number > MaxDiceCount)
                 number = MaxDiceCount;
 
-            var value = sides switch
-            {
-                2 => SWLOR.Game.Server.Service.Random.D2(number),
-                4 => SWLOR.Game.Server.Service.Random.D4(number),
-                6 => SWLOR.Game.Server.Service.Random.D6(number),
-                8 => SWLOR.Game.Server.Service.Random.D8(number),
-                10 => SWLOR.Game.Server.Service.Random.D10(number),
-                20 => SWLOR.Game.Server.Service.Random.D20(number),
-                100 => SWLOR.Game.Server.Service.Random.D100(number),
-                _ => 0
-            };
-
-            var dieRoll = number + "d" + sides;
-            var message = ColorToken.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
+            var expression = number + "d" + sides;
+            string labelPrefix = null;
 
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
@@ -119,21 +116,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var playerId = GetObjectUUID(Player);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    if (!dbPlayer.Skills.ContainsKey(skillType))
+                    if (dbPlayer.Skills.ContainsKey(skillType))
                     {
-                        AssignCommand(Player, () => SpeakString(message));
-                        return;
-                    }
-                    var skillDetail = Skill.GetSkillDetails(skillType);
-                    var totalSkill = dbPlayer.Skills[skillType].Rank;
-                    var modifier = totalSkill / 2;
+                        var modifier = dbPlayer.Skills[skillType].Rank / 2;
+                        if (modifier > 0)
+                            expression += "+" + modifier;
 
-                    message = ColorToken.SkillCheck($"Dice Roll [{skillDetail.Name}]: ") +
-                              dieRoll + "+" + modifier + ": " + (value + modifier);
+                        labelPrefix = Skill.GetSkillDetails(skillType).Name;
+                    }
                 }
             }
 
-            AssignCommand(Player, () => SpeakString(message));
+            RollAndSpeak(expression, labelPrefix);
+        }
+
+        public Action OnClickRollCustom() => () => RollAndSpeak(CustomExpression, null);
+
+        private void RollAndSpeak(string expression, string labelPrefix)
+        {
+            if (Dice.TryRoll(expression, out var message, out var error, labelPrefix))
+            {
+                AssignCommand(Player, () => SpeakString(message));
+            }
+            else
+            {
+                SendMessageToPC(Player, ColorToken.Red(error));
+            }
         }
     }
 }

@@ -83,30 +83,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindRowCount(model => model.Names);
                             });
 
-                            browser.AddRow(row =>
-                            {
-                                row.AddSpacer();
-
-                                row.AddButton()
-                                    .SetText("<")
-                                    .SetWidth(32f)
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickPreviousPage());
-
-                                row.AddComboBox()
-                                    .BindOptions(model => model.PageNumbers)
-                                    .BindSelectedIndex(model => model.SelectedPageIndex)
-                                    .SetWidth(100f);
-
-                                row.AddButton()
-                                    .SetText(">")
-                                    .SetWidth(32f)
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickNextPage());
-
-                                row.AddSpacer();
-                                row.SetHeight(35f);
-                            });
+                            browser.AddPagination(
+                                    model => model.PageNumbers,
+                                    model => model.SelectedPageIndex,
+                                    model => model.OnClickPreviousPage(),
+                                    model => model.OnClickNextPage())
+                                .SetPageSelectorWidth(100f)
+                                .SetControlHeight(35f);
                         });
 
                         root.AddColumn(details =>

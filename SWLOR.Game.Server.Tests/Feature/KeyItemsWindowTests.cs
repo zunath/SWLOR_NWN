@@ -27,8 +27,9 @@ public class KeyItemsWindowTests
         definition.Should().Contain(".BindText(model => model.SelectedDescription)");
         definition.Should().NotContain(".BindTooltip(model => model.Descriptions)");
         definition.Should().Contain(".SetWidth(260f)");
-        definition.Should().Contain(".BindOptions(model => model.PageNumbers)");
-        definition.Should().Contain(".BindSelectedIndex(model => model.SelectedPageIndex)");
+        definition.Should().Contain("browser.AddPagination(");
+        definition.Should().Contain("model => model.PageNumbers");
+        definition.Should().Contain("model => model.SelectedPageIndex");
     }
 
     [Test]

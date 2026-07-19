@@ -44,27 +44,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindRowCount(model => model.StructureNames);
                     });
 
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddButton()
-                            .SetText("<")
-                            .SetWidth(32f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnPreviousPage());
-
-                        row.AddComboBox()
-                            .BindOptions(model => model.PageNumbers)
-                            .BindSelectedIndex(model => model.SelectedPageIndex);
-
-                        row.AddButton()
-                            .SetText(">")
-                            .SetWidth(32f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnNextPage());
-
-                        row.AddSpacer();
-                    });
+                    col.AddPagination(
+                        model => model.PageNumbers,
+                        model => model.SelectedPageIndex,
+                        model => model.OnPreviousPage(),
+                        model => model.OnNextPage());
 
                     col.AddRow(row =>
                     {

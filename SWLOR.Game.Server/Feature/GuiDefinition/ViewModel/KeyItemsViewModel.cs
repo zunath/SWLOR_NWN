@@ -179,15 +179,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var wasSuppressingReload = _suppressReload;
             _suppressReload = true;
 
-            var pageCount = Math.Max(1, (int) Math.Ceiling(totalRecordCount / (double) EntriesPerPage));
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-            for (var page = 0; page < pageCount; page++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {page + 1}", page));
-            }
-
-            PageNumbers = pageNumbers;
-            SelectedPageIndex = Math.Clamp(SelectedPageIndex, 0, pageCount - 1);
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                EntriesPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
             _suppressReload = wasSuppressingReload;
         }
 

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
 
@@ -17,6 +18,25 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             row(newRow);
 
             return this;
+        }
+
+        /// <summary>
+        /// Adds a centered previous/page/next pagination row to this column.
+        /// </summary>
+        public GuiPagination<T> AddPagination(
+            Expression<Func<T, GuiBindingList<GuiComboEntry>>> pageNumbers,
+            Expression<Func<T, int>> selectedPageIndex,
+            Expression<Func<T, Action>> previousPageAction,
+            Expression<Func<T, Action>> nextPageAction)
+        {
+            var pagination = new GuiPagination<T>(
+                pageNumbers,
+                selectedPageIndex,
+                previousPageAction,
+                nextPageAction);
+            Elements.Add(pagination);
+
+            return pagination;
         }
 
         /// <summary>

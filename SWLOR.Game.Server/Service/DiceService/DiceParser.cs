@@ -13,9 +13,8 @@ namespace SWLOR.Game.Server.Service.DiceService
     ///   dice       = [count] 'd' sides [dieMod] [keepMod] [multMod]
     ///   dieMod     = '!' | 'r'&lt;n&gt;                    (at most one)
     ///   keepMod    = ('kh'|'kl') [n] | 'adv' | 'dis'       (at most one; default n = 1; adv/dis
-    ///                                                       roll the die twice keeping the
-    ///                                                       better/worse, so the group must be
-    ///                                                       a single die - use khN/klN for pools)
+    ///                                                       roll the group twice and keep the
+    ///                                                       better/worse half: NdXadv = 2NdXkhN)
     ///   multMod    = ('x'|'*')&lt;n&gt;                    (at most one; multiplies this term only)
     /// </summary>
     public static class DiceParser
@@ -162,14 +161,14 @@ namespace SWLOR.Game.Server.Service.DiceService
                         else if (StartsWith(expr, i, "adv") || StartsWith(expr, i, "dis"))
                         {
                             if (hasKeep) { error = "A dice group can have only one keep modifier (kh, kl, adv or dis)."; return false; }
-                            if (term.Count != 1)
+                            if (term.Count * 2 > MaxCount)
                             {
-                                error = "adv/dis rolls one die twice and keeps the better/worse - write d20adv, or use khN/klN for pools (e.g. 4d6kh3).";
+                                error = "adv/dis rolls twice as many dice - max " + MaxCount / 2 + " dice in an adv/dis group.";
                                 return false;
                             }
                             term.KeepMode = expr[i] == 'a' ? KeepMode.KeepHighest : KeepMode.KeepLowest;
-                            term.KeepCount = 1;
-                            term.Count = 2;
+                            term.KeepCount = term.Count;
+                            term.Count *= 2;
                             i += 3;
                             hasKeep = true;
                         }

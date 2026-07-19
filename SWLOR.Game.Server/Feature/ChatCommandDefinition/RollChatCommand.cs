@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             var builder = new ChatCommandBuilder();
 
             builder.Create("r", "roll")
-                .Description("Rolls dice from a text expression, e.g. /r 1d20+5 or /r adv. Supports advantage/disadvantage (adv/dis), keep-highest/lowest (kh/kl), exploding (!), reroll (rN) and multiplier (xN).")
+                .Description("Rolls dice from a text expression, e.g. /r 1d20+5 or /r adv. Supports advantage/disadvantage (adv/dis, on any dice e.g. 4d6adv), keep-highest/lowest (kh/kl), exploding (!), reroll (rN) and multiplier (xN).")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {

@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Apply(uint creature, int durationTicks)
         {
             StatGroup.Stats[StatType.DamageDealtPoisonChance] = 100;
+            StatGroup.Stats[StatType.DamageDealtPoisonDurationSeconds] = 30;
         }
     }
 }

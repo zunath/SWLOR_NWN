@@ -323,9 +323,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .UsesAnimation(animation)
                 .IsCastedAbility()
                 .IsAreaAbility()
-                .RequiresTarget()
                 .IsHostileAbility()
                 .RequirementStamina(stamina);
+
+            if (!centerOnActivator)
+            {
+                ability.RequiresTarget();
+            }
 
             if (maxRange > 0f)
             {

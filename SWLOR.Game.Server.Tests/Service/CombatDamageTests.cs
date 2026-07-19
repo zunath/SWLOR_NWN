@@ -64,6 +64,39 @@ public class CombatDamageTests
         maxDamage.Should().Be(0);
     }
 
+    [TestCase(100, 0, 80, 50)]
+    [TestCase(100, 30, 25, 20)]
+    [TestCase(100, 50, 25, 0)]
+    [TestCase(0, 0, 25, 0)]
+    public void DamageDerivedHealing_IsCappedAcrossOneHit(
+        int damage,
+        int healingAlreadyApplied,
+        int requestedHealing,
+        int expectedHealing)
+    {
+        Combat.CalculateCappedDamageDerivedHealingAmount(damage, healingAlreadyApplied, requestedHealing)
+            .Should()
+            .Be(expectedHealing);
+    }
+
+    [Test]
+    public void CombatSystemLimits_ClampToDocumentedBounds()
+    {
+        Combat.CalculateHitRate(0, 1000, 0).Should().Be(Combat.MinimumHitRate);
+        Combat.CalculateHitRate(1000, 0, 0).Should().Be(Combat.MaximumHitRate);
+        Combat.CalculateCriticalRate(0, 1000, 0, -100).Should().Be(Combat.MinimumCriticalRate);
+        Combat.CalculateCriticalRate(1000, 0, 1000, 1000).Should().Be(Combat.MaximumCriticalRate);
+        Combat.ClampCriticalDamagePercentAdjustment(500)
+            .Should()
+            .Be(Combat.MaximumCriticalDamagePercentAdjustment);
+        Enmity.ClampEnmityPercentAdjustment(-500)
+            .Should()
+            .Be(Enmity.MinimumEnmityPercentAdjustment);
+        Enmity.ClampEnmityPercentAdjustment(500)
+            .Should()
+            .Be(Enmity.MaximumEnmityPercentAdjustment);
+    }
+
     [Test]
     public void ForceDamage_UsesForceCombatMetadataWithoutStatusResistanceAndMagicEnginePayload()
     {
@@ -445,7 +478,6 @@ public class CombatDamageTests
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "FirstAidTreatmentAdjustments.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "MedKitAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "HeavyVibroblade", "HeavyVibrobladeActiveAbilityDefinitionBase.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "InnervateAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "RewardAbilityDefinition.cs"),
         };
@@ -454,6 +486,19 @@ public class CombatDamageTests
         {
             File.ReadAllText(sourcePath).Should().Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude");
         }
+
+        var heavyVibrobladeSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "HeavyVibroblade",
+            "HeavyVibrobladeActiveAbilityDefinitionBase.cs"));
+        heavyVibrobladeSource.Should().Contain("Combat.ApplyDamageDerivedHealing(");
+        heavyVibrobladeSource.Should().Contain("applyCombatReadiness: true");
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
+            .Should()
+            .Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, amount)");
 
         var directScaledHealingSources = new[]
         {
@@ -572,7 +617,8 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("public static void ApplyLowHPGuardEffectFromProtectedTarget(uint guardRecipient, uint protectedTarget, int damage)");
         combatSource.Should().Contain("ApplyLowHPGuardEffect(protectedTarget, damage, guardRecipient);");
-        lowHPGuardTrigger.Should().Contain("TemporaryStatModifier.Replace(");
+        lowHPGuardTrigger.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        lowHPGuardTrigger.Should().Contain("new GuardianReflexesStatusEffect(guardChance)");
         lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
         lowHPGuardTrigger.Should().Contain("TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown)");
         lowHPGuardTrigger.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false);");

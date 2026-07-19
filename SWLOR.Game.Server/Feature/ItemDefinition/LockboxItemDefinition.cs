@@ -19,10 +19,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
     /// LockboxLootTableDefinition). A failed roll keeps the box and applies a short per-item retry
     /// lockout so the player can't spam attempts.
     /// </summary>
-    public class LockboxItemDefinition: IItemListDefinition
+    public class LockboxItemDefinition : IItemListDefinition
     {
         private const string RetryAfterVariable = "LOCKBOX_RETRY_AFTER";
         private const int RetryLockoutSeconds = 30;
+        private const float BaseUseDelaySeconds = 2f;
 
         // Success formula: d100() <= BaseSuccessChance + (Lockpicking stat + PER modifier) * StatScalingMultiplier - tier * TierPenaltyPerTier,
         // clamped to [MinSuccessChance, MaxSuccessChance].
@@ -53,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void Lockbox(string resref, int tier)
         {
             _builder.Create(resref)
-                .Delay(2f)
+                .Delay((user, item, target, location, itemPropertyIndex) =>
+                    CalculateUseDelaySeconds(Perk.GetPerkLevel(user, PerkType.Slicing)))
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
@@ -104,6 +106,19 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SendMessageToPC(user, "You fail to crack the lockbox. The lock jams - try again in a moment.");
                     }
                 });
+        }
+
+        public static float CalculateUseDelaySeconds(int slicingRank)
+        {
+            var reductionPercent = slicingRank switch
+            {
+                >= 5 => 40,
+                4 => 30,
+                3 => 20,
+                _ => 0
+            };
+
+            return BaseUseDelaySeconds * (100 - reductionPercent) / 100f;
         }
 
         /// <summary>

@@ -467,6 +467,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         WeaponJam1StatusEffect = 461,
         WhirlingGuardStatusEffect = 462,
         WorldbreakerStatusEffect = 463,
+        GuardianReflexesStatusEffect = 464,
+        EvasiveFootworkStatusEffect = 465,
         // End custom status effect icons
     }
 }

@@ -35,14 +35,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flamethrower")
 
                 .AddPerkLevel()
-                .Description("Deals 16 fire DMG plus PER scaling to hostile targets in a cone.")
+                .Description("Deals 16 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.Flamethrower1)
 
                 .AddPerkLevel()
-                .Description("Deals 28 fire DMG plus PER scaling to hostile targets in a cone and attempts to inflict Burn.")
+                .Description("Deals 28 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone and attempts to inflict Burn for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Flamethrower2)
 
                 .AddPerkLevel()
-                .Description("Deals 42 fire DMG plus PER scaling to hostile targets in a cone and attempts to inflict Burn.")
+                .Description("Deals 42 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone and attempts to inflict Burn for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ion Lance")
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m line, dealing 12 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 12 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonLance1)
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m line, dealing 22 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 22 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 32)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonLance2)
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m line, dealing 32 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 32 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rail Dart")
 
                 .AddPerkLevel()
-                .Description("Fires a dart that deals 18 physical DMG plus PER scaling and attempts to inflict Bleed.")
+                .Description("Fires a dart that deals 18 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RailDart1)
 
                 .AddPerkLevel()
-                .Description("Fires a dart that deals 34 physical DMG plus PER scaling and attempts to inflict Bleed.")
+                .Description("Fires a dart that deals 34 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RailDart2)
 
                 .AddPerkLevel()
-                .Description("Fires a dart that deals 48 physical DMG plus PER scaling and attempts to inflict Bleed.")
+                .Description("Fires a dart that deals 48 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 44)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cryo Sprayer")
 
                 .AddPerkLevel()
-                .Description("Deals 25 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 30 seconds.")
+                .Description("Deals 25 ice DMG plus PER scaling to hostile targets in a 6m x 5m cone and slows their movement for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)

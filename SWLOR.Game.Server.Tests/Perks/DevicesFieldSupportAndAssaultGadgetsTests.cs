@@ -103,6 +103,58 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     }
 
     [Test]
+    public void ReportedAssaultGadgetEffects_AreStaticallyWiredForRetest()
+    {
+        var root = FindRepositoryRoot();
+        var perks = BuildDevicesAssaultGadgetsPerksWithout2daLookup();
+        var gadgetHarness = perks[PerkType.GadgetHarness].PerkLevels[1];
+
+        AssertStatBonus(gadgetHarness, StatType.AssaultGadgetAccuracyPercentAdjustment, 8);
+        AssertStatBonus(gadgetHarness, StatType.AssaultGadgetCriticalRatePercentAdjustment, 8);
+
+        var assaultAbilityFiles = new[]
+        {
+            "ArcProjectorAbilityDefinition.cs",
+            "CryoSprayerAbilityDefinition.cs",
+            "FlamethrowerAbilityDefinition.cs",
+            "IonLanceAbilityDefinition.cs",
+            "OverloadBarrageAbilityDefinition.cs",
+            "RailDartAbilityDefinition.cs",
+            "SonicBurstAbilityDefinition.cs",
+            "WristRocketAbilityDefinition.cs"
+        };
+        foreach (var fileName in assaultAbilityFiles)
+        {
+            var source = File.ReadAllText(
+                (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / fileName).FullName);
+            source.Should().Contain(
+                "DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator)",
+                $"{fileName} must consume Gadget Harness and Tactical Uplink critical chance");
+        }
+
+        var sonicBurst = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SonicBurstAbilityDefinition.cs").FullName);
+        sonicBurst.Should().Contain("InterruptActivation(hitTarget);");
+        sonicBurst.Should().Contain("AssignCommand(target, () => ClearAllActions());");
+
+        var flamethrower = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FlamethrowerAbilityDefinition.cs").FullName);
+        flamethrower.Should().Contain("typeof(BurnStatusEffect)");
+        flamethrower.Split("typeof(BurnStatusEffect)").Should().HaveCount(3,
+            "Flamethrower II and III each apply the documented 12-second Burn");
+
+        var railDart = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "RailDartAbilityDefinition.cs").FullName);
+        railDart.Split("typeof(BleedStatusEffect)").Should().HaveCount(4,
+            "all three Rail Dart ranks apply the documented 12-second Bleed");
+
+        perks[PerkType.Flamethrower].PerkLevels[2].Description.Should().Contain("Burn for 12 seconds");
+        perks[PerkType.Flamethrower].PerkLevels[3].Description.Should().Contain("Burn for 12 seconds");
+        perks[PerkType.RailDart].PerkLevels.Values.Should().OnlyContain(
+            level => level.Description.Contains("Bleed for 12 seconds", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void IonLance_ResolvesLineDamageImmediatelyAfterCastCompletion()
     {
         var root = FindRepositoryRoot();

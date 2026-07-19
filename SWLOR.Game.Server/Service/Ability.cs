@@ -1877,6 +1877,7 @@ namespace SWLOR.Game.Server.Service
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null)
         {
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var trackedImpact = GetTrackedAbilityImpact(activator);
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
@@ -1978,6 +1979,7 @@ namespace SWLOR.Game.Server.Service
             bool resolvesHit = true,
             bool canCritical = true)
         {
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var usesNPCStatScaling = ShouldUseNPCStatScaling(activator, useNPCStatScaling);
@@ -2194,7 +2196,7 @@ namespace SWLOR.Game.Server.Service
             var hpRestorePercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageHPPercentRestore);
             if (hpRestorePercent > 0)
             {
-                RestoreHPFromDamage(activator, damage, hpRestorePercent);
+                Combat.ApplyDamageDerivedHealing(activator, damage, hpRestorePercent);
             }
         }
 
@@ -2238,16 +2240,6 @@ namespace SWLOR.Game.Server.Service
             hpCost = Math.Min(hpCost, Math.Max(0, GetCurrentHitPoints(activator) - 1));
             if (hpCost > 0)
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
-        }
-
-        private static void RestoreHPFromDamage(uint creature, int damage, int percent)
-        {
-            if (damage <= 0 || percent <= 0)
-                return;
-
-            var amount = Math.Max(1, damage * percent / 100);
-            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
         }
 
         private static int CalculateCombatImpactDamage(

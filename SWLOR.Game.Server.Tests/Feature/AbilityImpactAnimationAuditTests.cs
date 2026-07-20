@@ -47,6 +47,30 @@ public class AbilityImpactAnimationAuditTests
     }
 
     [Test]
+    public void QueuedWeaponAbilityImpact_UsesEngineAttackAnimationOnly()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var impactAnimationBody = source.Substring(
+            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal),
+            source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
+            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
+
+        var queuedWeaponGuardIndex = impactAnimationBody.IndexOf(
+            "trackedAbility?.ActivationType == AbilityActivationType.Weapon",
+            StringComparison.Ordinal);
+        var playAnimationIndex = impactAnimationBody.IndexOf("ActionPlayAnimation(", StringComparison.Ordinal);
+
+        queuedWeaponGuardIndex.Should().BeGreaterThanOrEqualTo(0);
+        playAnimationIndex.Should().BeGreaterThan(queuedWeaponGuardIndex,
+            "queued weapon abilities must rely on the native attack animation instead of enqueueing a second swing");
+    }
+
+    [Test]
     public void ActivationAnimationOverwrite_ReplacesCarrierBeforePlayingAnimation()
     {
         var root = FindRepositoryRoot();

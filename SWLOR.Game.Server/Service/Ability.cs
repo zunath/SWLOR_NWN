@@ -1823,6 +1823,13 @@ namespace SWLOR.Game.Server.Service
         private static void PlayCombatImpactAnimation(uint activator, Animation impactAnimation)
         {
             var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
+
+            // Queued weapon abilities resolve inside the engine's landed auto-attack. Playing a
+            // scripted impact animation here would enqueue a second swing after the real hit,
+            // which becomes especially visible after a lethal attack has already killed its target.
+            if (trackedAbility?.ActivationType == AbilityActivationType.Weapon)
+                return;
+
             var animation = impactAnimation == Animation.Invalid
                 ? trackedAbility?.ImpactAnimationType ?? Animation.Invalid
                 : impactAnimation;

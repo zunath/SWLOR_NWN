@@ -9,9 +9,10 @@ namespace SWLOR.Toolset.Shell
 {
     /// <summary>
     /// Builds the fixed WP2.6 dock layout: Search across the top, Module Explorer / Properties
-    /// split left-right in the middle, Output across the bottom. All four tool view models are
-    /// DI-resolved singletons handed in rather than constructed here, so the same instances the
-    /// rest of the app (startup orchestration, the file watcher log) talk to are the ones docked.
+    /// split left-right in the middle, Output and Validation tabbed together across the bottom.
+    /// All tool view models are DI-resolved singletons handed in rather than constructed here, so
+    /// the same instances the rest of the app (startup orchestration, the file watcher log) talk
+    /// to are the ones docked.
     /// </summary>
     public sealed class ToolsetDockFactory : Factory
     {
@@ -19,6 +20,7 @@ namespace SWLOR.Toolset.Shell
         private readonly PropertiesViewModel _properties;
         private readonly SearchViewModel _search;
         private readonly OutputViewModel _output;
+        private readonly ValidationViewModel _validation;
         private IRootDock? _rootDock;
         private DocumentDock? _documentDock;
 
@@ -26,12 +28,14 @@ namespace SWLOR.Toolset.Shell
             ModuleExplorerViewModel explorer,
             PropertiesViewModel properties,
             SearchViewModel search,
-            OutputViewModel output)
+            OutputViewModel output,
+            ValidationViewModel validation)
         {
             _explorer = explorer;
             _properties = properties;
             _search = search;
             _output = output;
+            _validation = validation;
         }
 
         public override IRootDock CreateLayout()
@@ -89,7 +93,7 @@ namespace SWLOR.Toolset.Shell
             {
                 Id = "OutputDock",
                 ActiveDockable = _output,
-                VisibleDockables = CreateList<IDockable>(_output),
+                VisibleDockables = CreateList<IDockable>(_output, _validation),
                 Alignment = Alignment.Bottom,
                 Proportion = 0.20
             };
@@ -144,7 +148,8 @@ namespace SWLOR.Toolset.Shell
                 [_explorer.Id] = () => _explorer,
                 [_properties.Id] = () => _properties,
                 [_search.Id] = () => _search,
-                [_output.Id] = () => _output
+                [_output.Id] = () => _output,
+                [_validation.Id] = () => _validation
             };
 
             DockableLocator = new Dictionary<string, Func<IDockable?>>

@@ -189,9 +189,28 @@ done | blocked`.
   it with SaveService (EOL audit, dirty-only multi-doc). VarTable Type consts made public.
   In-UI end-to-end diff verification rides with the WP3.6 human gate; the equivalent
   Domain-level guarantee is covered by EditorSchemaTests.
-## WP3.2 — pending — Remaining blueprint schemas
+## WP3.2 — done — 2026-07-20 — Remaining blueprint schemas
+- Tier: Low (Sonnet subagent); controller-verified (198/199 green).
+- Files: `Domain\Editors\Schemas\{Uti,Utp,Utd,Utw,Uts,Utt,Utm,Are}Schema.cs`,
+  EditorService.GetSchema extended, `Tests\EditorSchemaStampTests.cs`.
+- **Corpus findings:** door `Appearance` is ALWAYS 0 in corpus — real doortypes.2da id is
+  `GenericType_New` (dropdown binds there). Trigger scripts are `ScriptOnEnter`/`ScriptOnExit`
+  style. UTM and ARE use `ResRef` not `TemplateResRef`. No VarTable anywhere in uts/utm/are
+  corpus files (HasVarTable=false for those). Item PropertiesList, store item lists, and
+  sound Sounds list deliberately excluded from schemas (future packages).
 ## WP3.3 — pending — Instance editing
-## WP3.4 — pending — Validation rules
+## WP3.4 — done — 2026-07-20 — Validation rules
+- Tier: Low (Sonnet subagent); controller-verified.
+- Files: `Domain\Validation\*` (ValidationIssue/Context, IValidationRule, PaletteTraversal,
+  6 rules, ModuleValidator), `Tests\ValidationRuleTests.cs` (31 tests + [Explicit] full-corpus
+  run), app ValidationViewModel/View tabbed with Output.
+- **Corpus findings:** `CREATURE_SPAWN_TABLE_ID` (string) + `CREATURE_SPAWN_COUNT` (int) live
+  on the .git file's ROOT VarTable (GitDocument.VarTable), not AreaProperties/.are. Spawn
+  waypoint convention confirmed: utw Tag == spawn table ID + RESREF leaf in waypointpalcus.
+- Full-corpus run: 15,248 issues — 15,243 from DanglingInstanceTemplateRule, almost all
+  base-game/hak templates (1078 distinct resrefs) invisible to a Module-only check.
+  **Controller follow-up applied post-commit:** ValidationContext gained optional
+  ResourceIndex; templates resolvable through hak/base layers are no longer flagged.
 ## WP3.5 — pending — Save + pack services
 ## WP3.6 — pending — End-to-end daily-driver gate (human verify)
 ## WP4.1 — pending — GL spike

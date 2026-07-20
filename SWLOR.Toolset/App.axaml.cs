@@ -79,6 +79,10 @@ namespace SWLOR.Toolset
             services.AddSingleton<ModuleExplorerViewModel>();
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
+            services.AddSingleton(sp => new ValidationViewModel(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetRequiredService<OutputLogService>(),
+                sp.GetService<IGameCodeIndex>()));
             services.AddSingleton<ToolsetDockFactory>();
             services.AddSingleton<ShellViewModel>();
         }

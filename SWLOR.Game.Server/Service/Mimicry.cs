@@ -52,7 +52,6 @@ namespace SWLOR.Game.Server.Service
         private const int BaseSlotsWithAnalyzer = 2;
         private const int SlotsPerAnalyzerMemoryLevel = 2;
         private const int OverclockedAnalyzerSlotBonus = 2;
-        private const int SkillRanksPerTier = 15;
         private const int ResonancePotencyPerTechnique = 5;
         private const int ResonancePotencyCap = 20;
         private const int AnalysisCombatPointsPerWitness = 1;
@@ -91,7 +90,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (feat, detail) in Ability.GetAllAbilityDetails())
             {
-                if (detail.MimicryTier <= 0)
+                if (!detail.IsMimicryTechnique)
                     continue;
 
                 _techniques[feat] = detail;
@@ -294,16 +293,16 @@ namespace SWLOR.Game.Server.Service
             if (!witnessedTechniques.Add(techniqueFeat))
                 return;
 
-            // Witnessing an above-tier technique is still recorded (the learn roll re-checks the
+            // Witnessing a technique above the player's current skill is still recorded (the learn roll re-checks the
             // gate at the creature's death, in case the player's rank crosses the floor first),
             // but the feedback makes clear it cannot be learned yet and what rank it needs.
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
-            var tierMinRank = GetTierMinRank(techniqueDetail.MimicryTier);
+            var requiredSkillRank = techniqueDetail.MimicrySkillRequirement;
 
-            if (skillRank < tierMinRank)
+            if (skillRank < requiredSkillRank)
             {
                 SendMessageToPC(player, ColorToken.Gray(
-                    $"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {tierMinRank})"));
+                    $"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})"));
                 return;
             }
 
@@ -393,11 +392,11 @@ namespace SWLOR.Game.Server.Service
                 if (!_techniques.TryGetValue(feat, out var detail))
                     continue;
 
-                var tierMinRank = GetTierMinRank(detail.MimicryTier);
-                if (skillRank < tierMinRank)
+                var requiredSkillRank = detail.MimicrySkillRequirement;
+                if (skillRank < requiredSkillRank)
                     continue;
 
-                var chance = CalculateLearnChance(skillRank, tierMinRank, patternRecognitionLevel, perception);
+                var chance = CalculateLearnChance(skillRank, requiredSkillRank, patternRecognitionLevel, perception);
 
                 if (Random.D100(1) > chance)
                 {
@@ -435,32 +434,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns the minimum Mimicry skill rank required to learn a technique of the given tier.
-        /// Tier 0 (not a technique) returns 0.
-        /// </summary>
-        public static int GetTierMinRank(int tier)
-        {
-            switch (tier)
-            {
-                case 1: return 0;
-                case 2: return 15;
-                case 3: return 30;
-                case 4: return 45;
-                default: return 0;
-            }
-        }
-
-        /// <summary>
         /// Computes the percent chance to learn a witnessed technique when the source creature dies.
-        /// Scales off Mimicry skill rank above the technique's tier floor, the Pattern Recognition
+        /// Scales off Mimicry skill rank above the technique's individual requirement, the Pattern Recognition
         /// perk, and the player's Perception attribute (each point above <see cref="PerceptionLearnChanceBaseline"/>
         /// adds <see cref="LearnChancePerPerceptionPoint"/> percent, rewarding perceptive characters).
         /// The result is clamped to <see cref="MaxLearnChancePercent"/>.
         /// </summary>
-        public static int CalculateLearnChance(int skillRank, int tierMinRank, int patternRecognitionLevel, int perception)
+        public static int CalculateLearnChance(int skillRank, int requiredSkillRank, int patternRecognitionLevel, int perception)
         {
             var chance = BaseLearnChancePercent +
-                         LearnChancePerRankDelta * (skillRank - tierMinRank) +
+                         LearnChancePerRankDelta * (skillRank - requiredSkillRank) +
                          LearnChancePerPatternRecognitionLevel * patternRecognitionLevel +
                          LearnChancePerPerceptionPoint * Math.Max(0, perception - PerceptionLearnChanceBaseline);
 
@@ -531,17 +514,6 @@ namespace SWLOR.Game.Server.Service
                 : 0;
 
             return BaseSlotsWithAnalyzer + memoryLevel * SlotsPerAnalyzerMemoryLevel + capstoneBonus;
-        }
-
-        /// <summary>
-        /// Mimicry skill rank required to equip (and therefore use) a technique of the given tier.
-        /// Tier usability is gated by Mimicry skill rank rather than Combat Analyzer perk rank, so a
-        /// technique stays usable as long as the player retains the skill (e.g. after a perk refund).
-        /// Tiers unlock at Mimicry 0/15/30/45, matching the Combat Analyzer rank skill milestones.
-        /// </summary>
-        public static int GetTierSkillRequirement(int tier)
-        {
-            return tier <= 1 ? 0 : (tier - 1) * SkillRanksPerTier;
         }
 
         /// <summary>
@@ -636,10 +608,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
-            var requiredSkillRank = GetTierSkillRequirement(detail.MimicryTier);
+            var requiredSkillRank = detail.MimicrySkillRequirement;
             if (skillRank < requiredSkillRank)
             {
-                error = $"You need Mimicry skill rank {requiredSkillRank} to equip a tier {detail.MimicryTier} technique.";
+                error = $"You need Mimicry skill rank {requiredSkillRank} to equip that technique.";
                 return false;
             }
 
@@ -715,8 +687,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Unequips techniques, newest-equipped first, until the player's equipped list fits within
-        /// their current slot budget. Used after perk refunds/level changes shrink the budget.
+        /// Unequips techniques that exceed the player's current Mimicry rank, then removes the
+        /// newest-equipped techniques until the remaining loadout fits the current slot budget.
+        /// Used after progression changes and on login to keep persisted loadouts valid.
         /// </summary>
         public static void EnforceSlotBudget(uint player)
         {
@@ -728,8 +701,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Enforces the slot budget against an already-fetched player database record,
-        /// avoiding a duplicate round trip when the caller has one in hand.
+        /// Enforces Mimicry rank requirements and the slot budget against an already-fetched player
+        /// database record, avoiding a duplicate round trip when the caller has one in hand.
         /// </summary>
         public static void EnforceSlotBudget(uint player, Player dbPlayer)
         {
@@ -738,11 +711,29 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var maxSlots = GetMaxSlots(dbPlayer);
-
-            if (GetUsedSlots(dbPlayer) <= maxSlots)
-                return;
-
+            var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill)
+                ? mimicrySkill.Rank
+                : 0;
             var changed = false;
+
+            for (var i = dbPlayer.EquippedTechniques.Count - 1; i >= 0; i--)
+            {
+                var feat = dbPlayer.EquippedTechniques[i];
+                if (!_techniques.TryGetValue(feat, out var detail) ||
+                    skillRank >= detail.MimicrySkillRequirement)
+                    continue;
+
+                dbPlayer.EquippedTechniques.RemoveAt(i);
+                changed = true;
+
+                RevokeTechniqueFeat(player, feat);
+
+                Log.WriteStructured(
+                    LogGroup.Mimicry,
+                    "Technique unequipped by skill requirement enforcement: PlayerId={PlayerId} Technique={Technique} SkillRank={SkillRank} RequiredRank={RequiredRank}",
+                    playerId, feat, skillRank, detail.MimicrySkillRequirement);
+            }
+
             for (var i = dbPlayer.EquippedTechniques.Count - 1; i >= 0; i--)
             {
                 if (GetUsedSlots(dbPlayer) <= maxSlots)
@@ -799,7 +790,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// On login, re-grants every equipped technique's feat (in case it was lost, e.g. a fresh
-        /// character load) and enforces the slot budget in case perk levels changed since last logout.
+        /// character load) and enforces rank and slot limits in case progression changed since logout.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnPlayerLogin()

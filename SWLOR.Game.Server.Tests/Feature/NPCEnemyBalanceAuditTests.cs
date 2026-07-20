@@ -679,6 +679,119 @@ public class NPCEnemyBalanceAuditTests
     }
 
     [Test]
+    public void MimicryTechniqueRequirements_FollowWorldNpcProgressionAndReviewedEncounterFloors()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
+        var mimicry = ReadWorksheetByName(archive, "Mimicry");
+        var sharedStrings = ReadSharedStrings(archive);
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
+        var sourcesByTechnique = new Dictionary<string, List<(int Level, string Difficulty, string Area, string Enemy)>>(
+            StringComparer.OrdinalIgnoreCase);
+        var worldLastRow = worldNpcs
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Max();
+
+        for (var row = 2; row <= worldLastRow; row++)
+        {
+            var area = GetWorkbookCellText(worldNpcs, sharedStrings, $"A{row}");
+            if (string.IsNullOrWhiteSpace(area) ||
+                area.Equals("Additional", StringComparison.OrdinalIgnoreCase) ||
+                area.Equals("Training", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var levelText = GetWorkbookCellText(worldNpcs, sharedStrings, $"D{row}");
+            if (!decimal.TryParse(levelText, NumberStyles.Number, CultureInfo.InvariantCulture, out var levelValue))
+                continue;
+
+            var level = decimal.ToInt32(levelValue);
+            var difficulty = GetWorkbookCellText(worldNpcs, sharedStrings, $"E{row}");
+            var enemy = GetWorkbookCellText(worldNpcs, sharedStrings, $"B{row}");
+            var actualAbilities = GetWorkbookCellText(worldNpcs, sharedStrings, $"AQ{row}");
+            foreach (var technique in actualAbilities.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                if (!sourcesByTechnique.TryGetValue(technique, out var sources))
+                {
+                    sources = new List<(int Level, string Difficulty, string Area, string Enemy)>();
+                    sourcesByTechnique[technique] = sources;
+                }
+
+                sources.Add((level, difficulty, area, enemy));
+            }
+        }
+
+        var failures = new List<string>();
+        var techniqueCount = 0;
+        var mimicryLastRow = mimicry
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Max();
+
+        for (var row = 8; row <= mimicryLastRow; row++)
+        {
+            if (!GetWorkbookCellText(mimicry, sharedStrings, $"A{row}")
+                    .Equals("Technique", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            techniqueCount++;
+            var technique = GetWorkbookCellText(mimicry, sharedStrings, $"C{row}");
+            if (!sourcesByTechnique.TryGetValue(technique, out var sources) || sources.Count == 0)
+            {
+                failures.Add($"{technique}: no player-accessible source is listed in World NPCs Existing Abilities (AQ).");
+                continue;
+            }
+
+            var earliestLevel = sources.Min(source => source.Level);
+            var earliestSources = sources.Where(source => source.Level == earliestLevel).ToArray();
+            var bossOnlyAtLevel50 = earliestLevel >= 50 && earliestSources.All(source =>
+                source.Difficulty.Equals("Boss", StringComparison.OrdinalIgnoreCase));
+            var reviewedEncounterFloor = earliestSources.Any(source =>
+                source.Area.Equals("CZ220", StringComparison.OrdinalIgnoreCase) &&
+                source.Enemy.Equals("Probe Droid", StringComparison.OrdinalIgnoreCase))
+                ? 1
+                : 0;
+            var expectedRequirement = bossOnlyAtLevel50
+                ? 50
+                : Math.Clamp(Math.Max(earliestLevel - 1, reviewedEncounterFloor), 0, 50);
+
+            var requirementText = GetWorkbookCellText(mimicry, sharedStrings, $"D{row}");
+            var actualRequirement = requirementText == "-"
+                ? 0
+                : int.TryParse(
+                    requirementText.StartsWith("Mimicry ", StringComparison.OrdinalIgnoreCase)
+                        ? requirementText["Mimicry ".Length..]
+                        : string.Empty,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out var parsedRequirement)
+                    ? parsedRequirement
+                    : -1;
+
+            if (actualRequirement != expectedRequirement)
+            {
+                var sourceSummary = string.Join(", ", earliestSources.Select(source =>
+                    $"{source.Area}/{source.Enemy} ({source.Difficulty} {source.Level})"));
+                failures.Add($"{technique}: expected Mimicry {expectedRequirement} from {sourceSummary}, found '{requirementText}'.");
+            }
+        }
+
+        techniqueCount.Should().Be(88, "the complete Mimicry technique pool must be audited against World NPCs");
+        failures.Should().BeEmpty(
+            "Mimicry requirements come from player-accessible World NPC progression plus reviewed encounter floors, excluding Additional and Training rows");
+    }
+
+    [Test]
     public void WorldNpcsBible_CalculatesResistanceAdjustmentsWithHandEntryColumns()
     {
         var root = FindRepositoryRoot();

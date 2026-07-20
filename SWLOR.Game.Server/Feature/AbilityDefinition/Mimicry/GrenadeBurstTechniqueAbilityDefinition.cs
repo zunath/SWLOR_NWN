@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.GrenadeBurst, 3, 3)
+                .MimicryTechnique(FeatType.GrenadeBurst, 5, 3)
                 .HasTargetingSphere(
                     Spell.GrenadeBurstTechnique,
                     4.5f,

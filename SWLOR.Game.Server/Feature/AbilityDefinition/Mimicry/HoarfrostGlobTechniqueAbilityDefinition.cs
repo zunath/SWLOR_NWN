@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Hoarfrost Glob")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.HoarfrostGlob, 2, 2)
+                .MimicryTrait(FeatType.HoarfrostGlob, 30, 2)
                 .MimicryTraitStat(StatType.DamageDealtFreezingChance, 18);
 
             return _builder.Build();

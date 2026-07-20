@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Opening Cut")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.OpeningCut, 3, 2)
+                .MimicryTrait(FeatType.OpeningCut, 49, 2)
                 .MimicryTraitStat(StatType.DamageDealtBleedChance, 12);
 
             return _builder.Build();

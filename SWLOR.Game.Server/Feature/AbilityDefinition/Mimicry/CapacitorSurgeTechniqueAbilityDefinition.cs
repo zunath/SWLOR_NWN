@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.CapacitorSurge, 2, 2)
+                .MimicryTechnique(FeatType.CapacitorSurge, 0, 2)
                 .HasTargetingSphere(
                     Spell.CapacitorSurgeTechnique,
                     4f,

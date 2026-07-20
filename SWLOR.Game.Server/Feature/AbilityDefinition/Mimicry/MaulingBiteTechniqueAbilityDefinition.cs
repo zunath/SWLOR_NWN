@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Mauling Bite")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.MaulingBite, 2, 2)
+                .MimicryTrait(FeatType.MaulingBite, 3, 2)
                 .MimicryTraitStat(StatType.DamageDealtBleedChance, 9);
 
             return _builder.Build();

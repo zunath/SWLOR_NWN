@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Rime Pounce")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.RimePounce, 2, 2)
+                .MimicryTrait(FeatType.RimePounce, 31, 2)
                 .MimicryTraitStat(StatType.DamageDealtFreezingChance, 15);
 
             return _builder.Build();

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.ToxicCloud, 3, 3)
+                .MimicryTechnique(FeatType.ToxicCloud, 30, 3)
                 .HasTargetingSphere(
                     Spell.ToxicCloudTechnique,
                     4.5f,

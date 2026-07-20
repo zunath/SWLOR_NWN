@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.RallyBreaker, 3, 2)
+                .MimicryTechnique(FeatType.RallyBreaker, 49, 2)
                 .MimicryElement(CombatDamageType.Sonic);
 
             return _builder.Build();

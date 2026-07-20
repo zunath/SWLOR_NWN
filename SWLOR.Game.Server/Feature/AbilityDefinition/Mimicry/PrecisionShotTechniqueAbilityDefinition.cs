@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Precision Shot")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.PrecisionShot, 2, 2)
+                .MimicryTrait(FeatType.PrecisionShot, 1, 2)
                 .MimicryTraitStat(StatType.CriticalRatePercentAdjustment, 6);
 
             return _builder.Build();

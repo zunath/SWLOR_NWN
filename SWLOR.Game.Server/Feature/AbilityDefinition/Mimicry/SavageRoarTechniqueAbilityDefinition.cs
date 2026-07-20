@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.SavageRoar, 2, 2)
+                .MimicryTechnique(FeatType.SavageRoar, 19, 2)
                 .HasTargetingSphere(
                     Spell.SavageRoarTechnique,
                     6f,

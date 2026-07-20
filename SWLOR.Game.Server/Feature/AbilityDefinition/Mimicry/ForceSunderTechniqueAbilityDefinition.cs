@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Force Sunder")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.ForceSunder, 3, 2)
+                .MimicryTrait(FeatType.ForceSunder, 49, 2)
                 .MimicryTraitStat(StatType.DamageDealtSunderChance, 12);
 
             return _builder.Build();

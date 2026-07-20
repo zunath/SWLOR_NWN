@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Target Lock")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.TargetLock, 1, 1)
+                .MimicryTrait(FeatType.TargetLock, 13, 1)
                 .MimicryTraitStat(StatType.AccuracyPercentAdjustment, 4);
 
             return _builder.Build();

@@ -28,7 +28,7 @@ Six player-facing equipment stats are documented on the Bible `Character Stats` 
 | Poison Bonus | Venom damage potency, snapshotted from the applier |
 | Lockpicking | Lockbox success checks |
 
-Perk-only adjustments such as stealth effectiveness, stealth drain reduction, Back Attack damage/critical rate, trap capacity, trap arming speed, trap detection range, coating charges, and disguise capacity/cooldown are also represented by `StatType` values. Shared stealth, damage, poison, trap, and disguise systems consume those stats; they do not special-case perk ownership.
+Perk-only adjustments such as flat Stealth rating, stealthed movement speed, stealth drain reduction, Back Attack damage/critical rate, trap capacity, trap arming speed, trap detection range, coating charges, and disguise capacity/cooldown are also represented by `StatType` values. Shared stealth, movement, damage, poison, trap, and disguise systems consume those stats; they do not special-case perk ownership.
 
 ## Stealth and detection
 
@@ -36,10 +36,12 @@ Perk-only adjustments such as stealth effectiveness, stealth drain reduction, Ba
 - Spot detection replaces the vanilla roll with one opposed check: `d20 + Detection` versus `d20 + Stealth`. The verdict is cached per observer/target pair for 30 seconds. Ties favor the stealthed target.
 - Listen detection is suppressed so there is one detection model rather than separate Spot and Listen rolls.
 - Cache entries for a stealthed target are cleared on stealth exit; expired entries are pruned as the cache grows.
-- Stealth drains 2 STM every 6 seconds. Silent Stride reduces the drain rate by 20%, producing 2 STM every 7.5 seconds, and removes the stealth movement penalty.
+- Stealth drains 2 STM every 6 seconds. Silent Stride reduces the drain rate by 20%, producing 2 STM every 7.5 seconds, and grants +30% Movement Speed while stealthed without removing stealth's running restriction.
 - Reaching zero STM exits stealth. Activating a hostile ability or landing a damaging hit also exits stealth.
-- Stealth I-IV grant +15/+25/+35/+45% effectiveness while active.
-- Alertness I-III remains on the General tab as the universal Detection counter.
+- Stealth is calculated as `(AGI x 2) + equipment + perk/status bonuses`; Stealth I-IV grant +5/+10/+15/+20 Stealth while active.
+- Detection is calculated as `PER + WIL + equipment + perk/status bonuses`; Detect mode adds +5.
+- Alertness I-III remains on the General tab as the universal Detection counter and grants +10/+15/+20 Detection.
+- Stealth and Detection equipment already exists and contributes directly to the opposed ratings.
 
 ## Infiltrator behavior
 

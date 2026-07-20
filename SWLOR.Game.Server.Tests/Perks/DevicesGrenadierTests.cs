@@ -331,6 +331,7 @@ public class DevicesGrenadierTests
         ability.ActivationType.Should().Be(AbilityActivationType.Casted);
         ability.IsHostileAbility.Should().BeTrue();
         ability.RequiresTarget.Should().BeFalse();
+        ability.RequiresLocationTarget.Should().BeTrue();
         ability.IsSingleTargetAbility.Should().BeFalse();
         ability.IsAreaAbility.Should().BeTrue();
         ability.BreaksStealth.Should().BeTrue();

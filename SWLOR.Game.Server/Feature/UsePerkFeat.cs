@@ -347,8 +347,10 @@ namespace SWLOR.Game.Server.Feature
                     AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
                 }
 
-                // Force out of stealth
-                if (GetActionMode(activator, ActionMode.Stealth))
+                // Force out of stealth unless the activation must inspect or toggle the current
+                // stealth mode when its impact runs.
+                if (!ability.PreservesStealthDuringActivation &&
+                    GetActionMode(activator, ActionMode.Stealth))
                     SetActionMode(activator, ActionMode.Stealth, false);
 
                 AssignCommand(activator, () =>

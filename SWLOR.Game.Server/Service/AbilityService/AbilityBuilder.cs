@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder IsWeaponAbility()
         {
             _activeAbility.ActivationType = AbilityActivationType.Weapon;
+            _activeAbility.RequiresTarget = false;
 
             return this;
         }
@@ -477,6 +478,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder HasMaxRange(float maxRange)
         {
             _activeAbility.MaxRange = maxRange;
+            _activeAbility.HasExplicitMaxRange = true;
             return this;
         }
 
@@ -539,6 +541,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder BreaksStealth()
         {
             _activeAbility.BreaksStealth = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Prevents the activation wind-up from clearing stealth before the ability's impact runs.
+        /// Intended for abilities whose impact must inspect or toggle the current stealth state.
+        /// </summary>
+        public AbilityBuilder PreservesStealthDuringActivation()
+        {
+            _activeAbility.PreservesStealthDuringActivation = true;
 
             return this;
         }

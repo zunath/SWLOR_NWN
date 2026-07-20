@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Spear;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -88,18 +89,17 @@ public class GeneratedWeaponPerkBehaviorTests
 
         AssertSourceStat("KatarPerkDefinition.cs", StatType.Guard, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardDamageReductionPercentAdjustment, "10");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityDamageBonus, "10");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextAttackDMGBonus, "10");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityStatusSkillType, "(int)SkillType.Katar");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityExposedDamageBonus, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId, "(int)PerkCategoryType.KatarIronGuard");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.AbilityUsedPerkCategoryTargetEnmityToSourcePercentAdjustment, "25");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDamageBonusSkillType, "(int)SkillType.Katar");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDamageBonus, "15");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDamageBonusRadiusMeters, "5");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage, "100");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilitySkillType, "(int)SkillType.Katar");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus, "8");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilityWindowSeconds, "30");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitPulseDMG, "15");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitPulseRadiusMeters, "5");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitPulseEnmityPercentOfIncomingDamage, "100");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextAttackDMGBonus, "8");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextAttackEnmityBonus, "40");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextAttackWindowSeconds, "30");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.LowHPGuard, "25");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedRequiredCategory, "(int)StatusEffectCategory.Control");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedSelfEnmityPercentAdjustment, "15");
@@ -289,7 +289,7 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
-    public void ReportedVibroknifeAndPistolAbilityTargeting_MatchesActivationBehavior()
+    public void ReportedQueuedWeaponAndPistolAbilityTargeting_MatchesActivationBehavior()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root, "SWLOR_Haks", "sw_2da", "feat.2da");
@@ -310,6 +310,61 @@ public class GeneratedWeaponPerkBehaviorTests
             virulentBlade[feat].RequiresTarget.Should().BeFalse();
             AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "M", "0x03", "0");
         }
+
+        var guardCounter = new GuardCounterAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.GuardCounter1, FeatType.GuardCounter2, FeatType.GuardCounter3 })
+        {
+            guardCounter[feat].ActivationType.Should().Be(AbilityActivationType.Weapon);
+            guardCounter[feat].IsHostileAbility.Should().BeTrue();
+            guardCounter[feat].RequiresTarget.Should().BeFalse();
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "P", "0x01", "0");
+        }
+
+        var guardCounterSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Katar",
+            "GuardCounterAbilityDefinition.cs"));
+        (guardCounterSource.Split("IsQueuedWeaponAbility = true").Length - 1).Should().Be(3);
+        guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 8");
+        guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 12");
+        guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 17");
+        guardCounterSource.Should().Contain("RequireRecentGuardedHitForConditionalStatus = true");
+        guardCounterSource.Should().Contain("ConditionalTargetStatusEffect = typeof(DazedStatusEffect)");
+
+        var explosiveToss = new ExplosiveTossAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[]
+                 {
+                     FeatType.ExplosiveToss1,
+                     FeatType.ExplosiveToss2,
+                     FeatType.ExplosiveToss3,
+                     FeatType.ExplosiveToss4
+                 })
+        {
+            explosiveToss[feat].ActivationType.Should().Be(AbilityActivationType.Casted);
+            explosiveToss[feat].IsHostileAbility.Should().BeTrue();
+            explosiveToss[feat].RequiresTarget.Should().BeFalse(
+                "the Bible places Explosive Toss at a location, not on a required target object");
+            explosiveToss[feat].RequiresLocationTarget.Should().BeTrue();
+
+            var featRow = featRows[(int)feat];
+            featRow["TARGETSELF"].Should().Be("****");
+            featRow["HostileFeat"].Should().Be("1");
+
+            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            spellRow["TargetShape"].Should().Be("sphere");
+            spellRow["TargetSizeX"].Should().Be("5");
+            spellRow["TargetFlags"].Should().Be("1");
+        }
+
+        var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
+        generatorSource.Should().Contain("(?:this|it) deals weapon DMG");
+        generatorSource.Should().Contain("def has_explicit_area_target_point(lowered):");
+        generatorSource.Should().Contain("is_explicitly_aimed = has_explicit_area_target_point(lowered)");
+        generatorSource.Should().Contain("\"AbilityTargetingFlags.HarmsEnemies\" if is_explicitly_aimed else",
+            "explicitly placed spheres must not be regenerated as caster-centered areas");
 
         var cripplingSlice = new CripplingSliceAbilityDefinition().BuildAbilities();
         foreach (var feat in new[] { FeatType.CripplingSlice1, FeatType.CripplingSlice2, FeatType.CripplingSlice3 })
@@ -474,9 +529,15 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.GuardRetaliationDamageBonusRadiusMeters)
+        Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextAttackDMGBonus)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage)
+        Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextAttackEnmityBonus)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextAttackWindowSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.GuardedHitPulseRadiusMeters)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.GuardedHitPulseEnmityPercentOfIncomingDamage)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType)
             .Should().Be(StatTypeCategory.NonBeneficial);
@@ -530,7 +591,8 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("StatType.WardTargetPhysicalDefensePercentAdjustment");
         combatSource.Should().Contain("ApplyForceDamageTakenEffects(defender)");
         combatSource.Should().Contain("new ForceWardingStatusEffect(forceDefense)");
-        combatSource.Should().Contain("StatType.GuardRetaliationDamageBonus");
+        combatSource.Should().Contain("StatType.GuardedHitPulseDMG");
+        combatSource.Should().NotContain("GuardRetaliationDMGBonusSkillType");
         combatSource.Should().Contain("AbilityMatchesPerkCategoryStat(");
         combatSource.Should().Contain("StatType.AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId");
         combatSource.Should().Contain("StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId");
@@ -548,7 +610,7 @@ public class GeneratedWeaponPerkBehaviorTests
         generatorSource.Should().Contain("\"SameTargetPressureReadyDurationSeconds\"");
         generatorSource.Should().Contain("gain Spotter's Rhythm for (\\d+) seconds");
         generatorSource.Should().Contain("Unable to parse Suppressing Shot suppression stack Evasion");
-        generatorSource.Should().Contain("\"GuardedHitSecondaryNextSkillAbilitySkillType\"");
+        generatorSource.Should().Contain("\"GuardedHitSecondaryNextAttackEnmityBonus\"");
         generatorSource.Should().Contain("\"CostlyAbilityUsedEvasionPercentAdjustmentSkillType\"");
         generatorSource.Should().Contain("\"HostileAbilityStaminaCostFlatAdjustment\"");
         generatorSource.Should().Contain("\"HostileAbilityUsedEvasionPercentAdjustment\"");

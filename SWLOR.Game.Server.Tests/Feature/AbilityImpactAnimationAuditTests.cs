@@ -47,6 +47,39 @@ public class AbilityImpactAnimationAuditTests
     }
 
     [Test]
+    public void QueuedWeaponAbilityImpact_UsesEngineAttackAnimationOnly()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var impactAnimationBody = source.Substring(
+            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal),
+            source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
+            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
+
+        var queuedWeaponEarlyReturn = System.Text.RegularExpressions.Regex.Match(
+            impactAnimationBody,
+            @"if\s*\(\s*trackedAbility\?\.ActivationType\s*==\s*AbilityActivationType\.Weapon\s*\)\s*return\s*;",
+            System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+        var playAnimationCalls = System.Text.RegularExpressions.Regex.Matches(
+                impactAnimationBody,
+                @"ActionPlayAnimation\s*\(",
+                System.Text.RegularExpressions.RegexOptions.CultureInvariant)
+            .Cast<System.Text.RegularExpressions.Match>()
+            .ToArray();
+
+        queuedWeaponEarlyReturn.Success.Should().BeTrue(
+            "queued weapon impacts must immediately return before scripted animation handling");
+        playAnimationCalls.Should().NotBeEmpty();
+        playAnimationCalls.Should().OnlyContain(
+            call => call.Index >= queuedWeaponEarlyReturn.Index + queuedWeaponEarlyReturn.Length,
+            "the unconditional queued-weapon return must dominate every scripted animation call");
+    }
+
+    [Test]
     public void ActivationAnimationOverwrite_ReplacesCarrierBeforePlayingAnimation()
     {
         var root = FindRepositoryRoot();

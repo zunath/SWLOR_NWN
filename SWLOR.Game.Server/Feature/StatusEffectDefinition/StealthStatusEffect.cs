@@ -42,6 +42,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             // per-tick amount so small reductions are not lost to integer rounding.
             var drainReduction = Stat.GetStatAdjustment(creature, StatType.StealthStaminaDrainReductionPercent);
             _frequency = CalculateDrainFrequencySeconds(drainReduction);
+
+            var movementSpeedBonus = Stat.GetStatAdjustment(
+                creature,
+                StatType.StealthMovementSpeedPercentAdjustment);
+            if (movementSpeedBonus != 0)
+            {
+                StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = movementSpeedBonus;
+            }
         }
 
         public static float CalculateDrainFrequencySeconds(int drainReductionPercent)
@@ -54,6 +62,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
+
+            // Self-heal any engine/status desynchronization so a stale icon can never keep draining
+            // stamina after stealth mode has ended.
+            if (!GetActionMode(creature, ActionMode.Stealth))
+            {
+                StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
+                return;
+            }
 
             GrantTimeInStealthXP(creature);
 

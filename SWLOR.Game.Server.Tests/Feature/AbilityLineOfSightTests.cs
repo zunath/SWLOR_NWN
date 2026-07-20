@@ -30,6 +30,31 @@ public class AbilityLineOfSightTests
     }
 
     [Test]
+    public void AimedAreaValidation_UsesLocationWithoutObjectTargetFallback()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var validationBody = source.Substring(
+            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal),
+            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal) -
+            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal));
+
+        validationBody.Should().Contain("if (ability.RequiresLocationTarget)");
+        validationBody.Should().Contain("GetAreaFromLocation(targetLocation)");
+        validationBody.Should().Contain("targetArea != GetArea(activator)");
+        validationBody.Should().Contain("ability.HasExplicitMaxRange");
+        validationBody.Should().Contain(
+            "GetDistanceBetweenLocations(GetLocation(activator), targetLocation) > ability.MaxRange");
+        validationBody.Should().NotContain(
+            "ability.RequiresLocationTarget && !GetIsObjectValid(target)",
+            "aimed areas must remain usable on empty ground");
+    }
+
+    [Test]
     public void CastedAbilityCompletion_RevalidatesLineOfSightBeforeCostsImpactAndRecast()
     {
         var root = FindRepositoryRoot();

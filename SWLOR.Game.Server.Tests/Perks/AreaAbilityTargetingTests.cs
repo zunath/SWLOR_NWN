@@ -17,8 +17,9 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// ability definition and cross-checking feat.2da. Deliberately has no hand-maintained ability list:
 /// a new area ability is covered the moment it is defined.
 ///
-/// Aimed areas ("in a line" / "in a cone") let the player choose a direction, so they present a
-/// targeting cursor: feat.2da TARGETSELF blank + HostileFeat=1, exactly like Earthshatter.
+/// Aimed areas (a line, cone, or placed sphere) let the player choose a direction or ground point,
+/// so they present a targeting cursor: feat.2da TARGETSELF blank. Earthshatter and Adhesive Grenade
+/// are hostile reference cases.
 /// Self-centered areas ("within Nm") always originate on the caster and must not prompt:
 /// TARGETSELF=1 + HostileFeat cleared.
 /// </summary>
@@ -101,9 +102,9 @@ public class AreaAbilityTargetingTests
 
         var offenders = new List<string>();
         foreach (var ability in GetTargetedAbilities()
-                     .Where(x => x.IsHostile && x.IsArea)
+                     .Where(x => x.IsArea)
                      .Where(x => playerFeats.Contains(x.Feat))
-                     .Where(x => AimedShapes.Contains(x.Targeting.Shape)))
+                     .Where(IsAimedArea))
         {
             if (!feats.TryGetValue(ability.Feat.ToString(), out var row))
             {
@@ -111,16 +112,16 @@ public class AreaAbilityTargetingTests
                 continue;
             }
 
-            if (row.TargetSelf != "****" || row.HostileFeat != "1")
+            if (row.TargetSelf != "****")
             {
                 offenders.Add(
                     $"{ability.Feat} ({ability.Targeting.Shape}) has TARGETSELF={row.TargetSelf} " +
-                    $"HostileFeat={row.HostileFeat}, expected TARGETSELF=**** HostileFeat=1");
+                    $"HostileFeat={row.HostileFeat}, expected TARGETSELF=****");
             }
         }
 
         offenders.Should().BeEmpty(
-            "aimed line/cone areas let the player choose a direction, so they must present a " +
+            "aimed areas let the player choose a direction or ground point, so they must present a " +
             "targeting cursor like Earthshatter");
     }
 
@@ -132,7 +133,7 @@ public class AreaAbilityTargetingTests
 
         var offenders = new List<string>();
         foreach (var ability in GetTargetedAbilities()
-                     .Where(x => x.IsHostile && x.IsArea)
+                     .Where(x => x.IsArea)
                      .Where(x => playerFeats.Contains(x.Feat))
                      .Where(x => x.Targeting.Shape == AbilityTargetingShapeType.Sphere)
                      .Where(x => x.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf)))
@@ -174,6 +175,42 @@ public class AreaAbilityTargetingTests
     }
 
     [Test]
+    public void AimedAreaAbilities_UseExplicitObjectOrLocationTargeting()
+    {
+        var playerFeats = GetPlayerGrantedFeats();
+
+        var offenders = GetTargetedAbilities()
+            .Where(x => x.IsArea)
+            .Where(x => playerFeats.Contains(x.Feat))
+            .Where(IsAimedArea)
+            .Where(x => x.RequiresTarget == x.RequiresLocationTarget)
+            .Select(x => $"{x.DefinitionName}.{x.Feat}")
+            .OrderBy(x => x, StringComparer.Ordinal)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "aimed areas must deliberately require either a selected object or a location/direction, but never both; offenders: {0}",
+            string.Join(", ", offenders));
+    }
+
+    [Test]
+    public void AimedAreaAbilities_RequiringObjectsDeclareTheirRangeExplicitly()
+    {
+        var playerFeats = GetPlayerGrantedFeats();
+
+        var offenders = GetTargetedAbilities()
+            .Where(x => x.IsArea && x.RequiresTarget && !x.HasExplicitMaxRange)
+            .Where(x => playerFeats.Contains(x.Feat))
+            .Select(x => $"{x.DefinitionName}.{x.Feat}")
+            .OrderBy(x => x, StringComparer.Ordinal)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "object-targeted areas must deliberately declare their range instead of inheriting the 5m default; offenders: {0}",
+            string.Join(", ", offenders));
+    }
+
+    [Test]
     public void SphereAreaAbilities_DeclareARadiusAndNoWidth()
     {
         var offenders = GetTargetedAbilities()
@@ -192,6 +229,8 @@ public class AreaAbilityTargetingTests
         bool IsArea,
         bool IsHostile,
         bool RequiresTarget,
+        bool RequiresLocationTarget,
+        bool HasExplicitMaxRange,
         SkillType SkillType);
 
     /// <summary>
@@ -202,6 +241,13 @@ public class AreaAbilityTargetingTests
     private static bool IsBeastActivated(TargetedAbility ability)
     {
         return ability.SkillType == SkillType.BeastMastery;
+    }
+
+    private static bool IsAimedArea(TargetedAbility ability)
+    {
+        return AimedShapes.Contains(ability.Targeting.Shape) ||
+               ability.Targeting.Shape == AbilityTargetingShapeType.Sphere &&
+               !ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
     }
 
     /// <summary>Abilities that declare targeting metadata.</summary>
@@ -233,6 +279,8 @@ public class AreaAbilityTargetingTests
                     ability.IsAreaAbility,
                     ability.IsHostileAbility,
                     ability.RequiresTarget,
+                    ability.RequiresLocationTarget,
+                    ability.HasExplicitMaxRange,
                     ability.SkillType);
             }
         }

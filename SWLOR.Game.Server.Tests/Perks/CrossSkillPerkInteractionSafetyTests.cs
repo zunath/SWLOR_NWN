@@ -190,13 +190,28 @@ public class CrossSkillPerkInteractionSafetyTests
 
         var redirectingCounter = MaxLevel(perks[PerkType.RedirectingCounter]);
         var retaliatoryFlow = MaxLevel(perks[PerkType.RetaliatoryFlow]);
-        StatValue(redirectingCounter, StatType.GuardedHitNextSkillAbilitySkillType)
-            .Should().Be((int)SkillType.Katar);
-        StatValue(retaliatoryFlow, StatType.GuardedHitSecondaryNextSkillAbilitySkillType)
-            .Should().Be((int)SkillType.Katar);
-        retaliatoryFlow.StatBonuses.Should().NotContain(
+        redirectingCounter.Description.Should().Be(
+            "When you guard an attack, your next attack within 30 seconds gains +10% critical chance and deals +10 DMG.");
+        StatValue(redirectingCounter, StatType.GuardedHitNextAttackDMGBonus)
+            .Should().Be(10);
+        StatValue(redirectingCounter, StatType.GuardedHitNextAttackCriticalRatePercentAdjustment)
+            .Should().Be(10);
+        StatValue(redirectingCounter, StatType.GuardedHitNextAttackWindowSeconds)
+            .Should().Be(30);
+        redirectingCounter.StatBonuses.Should().NotContain(
             bonus => bonus.Stat == StatType.GuardedHitNextSkillAbilitySkillType,
-            "stacked integer selector IDs must never be added into an invalid skill ID");
+            "Redirecting Counter must work with hostile abilities and auto attacks from every skill line");
+        retaliatoryFlow.Description.Should().Be(
+            "After you guard a hit, your next attack within 30 seconds deals +8 DMG and generates +40 Enmity.");
+        StatValue(retaliatoryFlow, StatType.GuardedHitSecondaryNextAttackDMGBonus)
+            .Should().Be(8);
+        StatValue(retaliatoryFlow, StatType.GuardedHitSecondaryNextAttackEnmityBonus)
+            .Should().Be(40);
+        StatValue(retaliatoryFlow, StatType.GuardedHitSecondaryNextAttackWindowSeconds)
+            .Should().Be(30);
+        retaliatoryFlow.StatBonuses.Should().NotContain(
+            bonus => bonus.Stat == StatType.GuardedHitSecondaryNextSkillAbilitySkillType,
+            "Retaliatory Flow must not be locked to Katar or any other weapon skill");
 
         var lateralFootwork = MaxLevel(perks[PerkType.LateralFootwork]);
         var mobileFootwork = MaxLevel(perks[PerkType.MobileFootwork]);
@@ -231,10 +246,66 @@ public class CrossSkillPerkInteractionSafetyTests
         guardedBonuses.Should().Contain("primary.DamageBonus + secondary.DamageBonus");
         guardedBonuses.Should().Contain("Math.Max(primary.Window, secondary.Window)");
 
+        var crossSkillCounter = ExtractMethod(combat, "private static void ApplyGuardedHitNextAttackEffects(");
+        crossSkillCounter.Should().Contain("StatType.GuardedHitNextAttackDMGBonus");
+        crossSkillCounter.Should().Contain("StatType.GuardedHitSecondaryNextAttackDMGBonus");
+        crossSkillCounter.Should().Contain("StatType.GuardedHitSecondaryNextAttackEnmityBonus");
+        crossSkillCounter.Should().Contain("primaryDMGBonus + secondaryDMGBonus");
+        crossSkillCounter.Should().Contain("Math.Max(primaryWindow, secondaryWindow)",
+            "independent 30-second providers must not add into a 60-second window");
+        crossSkillCounter.Should().Contain("StatType.NextAttackGuardedHitDMGBonus");
+        crossSkillCounter.Should().Contain("StatType.NextAttackGuardedHitEnmityBonus");
+
+        var abilitySource = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+        var beginAbilityImpact = ExtractMethod(abilitySource, "public static void BeginAbilityImpact(");
+        beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
+        beginAbilityImpact.Should().Contain("ConsumeNextAttackGuardedHitBonuses");
+        beginAbilityImpact.Should().Contain("guardedHitBonuses.DMGBonus");
+        beginAbilityImpact.Should().Contain("guardedHitBonuses.CriticalRatePercentAdjustment");
+        beginAbilityImpact.Should().Contain("guardedHitBonuses.EnmityBonus");
+        abilitySource.Should().Contain("trackedImpact?.NextAttackEnmityBonus");
+        var telegraphedImpact = ExtractMethod(abilitySource, "public static int ApplyTelegraphedCombatImpact(");
+        telegraphedImpact.Should().Contain("trackedImpact?.NextAttackEnmityBonus ?? 0",
+            "a telegraphed hostile ability must carry Retaliatory Flow's consumed Enmity into its delayed impact");
+        var delayedImpact = ExtractMethod(
+            abilitySource,
+            "private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(");
+        delayedImpact.Should().Contain("int nextAttackEnmityBonus");
+        delayedImpact.Should().Contain("nextAttackEnmityBonus);",
+            "the reconstructed tracked impact must retain the guarded-hit Enmity bonus");
+
+        var nativeAttackSource = Read(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
+        nativeAttackSource.Should().Contain("ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf)",
+            "the next landed non-queued auto attack must receive Redirecting Counter's critical chance");
+        var autoAttackDamage = ExtractMethod(combat, "public static int ApplyAutoAttackDamageModifiers(");
+        autoAttackDamage.Should().NotContain("NextAttackGuardedHitDMGBonus",
+            "DMG must enter the attack-versus-defense formula rather than being added to resolved damage");
+        var nativeDamageRollSource = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var guardedDMGIndex = nativeDamageRollSource.IndexOf("guardedHitBonuses.DMGBonus", StringComparison.Ordinal);
+        var calculateDamageIndex = nativeDamageRollSource.IndexOf("CalculateDamageWithCriticalMitigation", StringComparison.Ordinal);
+        guardedDMGIndex.Should().BeGreaterThanOrEqualTo(0);
+        guardedDMGIndex.Should().BeLessThan(calculateDamageIndex,
+            "guarded-hit DMG must be part of the combat-formula input");
+        nativeDamageRollSource.Should().Contain("ApplyNextAttackGuardedHitEnmityBonus(");
+        var guardedHitEnmity = ExtractMethod(combat, "public static void ApplyNextAttackGuardedHitEnmityBonus(");
+        guardedHitEnmity.Should().NotContain("appliedDamage",
+            "a landed auto attack must grant Retaliatory Flow's Enmity even when mitigation reduces final damage to zero");
+
         var retaliationPulse = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliationPulse(");
         retaliationPulse.Should().Contain("ApplyTriggeredDamage(");
         retaliationPulse.Should().NotContain("ApplyDamageDealtEffects(",
             "Iron Elbows pulse damage must not recursively trigger direct-damage perks");
+        retaliationPulse.Should().Contain("ResolveGuardRetaliationDamage(defender, originalAttacker",
+            "the triggering attacker must be affected even outside the nearby-enemy radius");
+        retaliationPulse.Should().Contain("target != originalAttacker",
+            "the triggering attacker must not be struck twice when inside the pulse radius");
+
+        var guardedHitRetaliation = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliation(");
+        guardedHitRetaliation.Should().Contain("StatType.GuardedHitPulseDMG");
+        guardedHitRetaliation.Should().NotContain("SkillTypeMatches(",
+            "Iron Elbows is cross-skill and must work with any equipped weapon or unarmed");
+        guardedHitRetaliation.Should().NotContain("PerkType.",
+            "Iron Elbows behavior must be stat-driven rather than tied to a sibling perk");
 
         var evasion = ExtractMethod(combat, "private static void ApplyAbilityUsedEvasion(");
         evasion.Should().Contain("evasionStatType);",

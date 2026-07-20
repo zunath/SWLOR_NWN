@@ -57,7 +57,7 @@ namespace SWLOR.Toolset
             services.AddSingleton<ModuleFileWatcher>();
 
             var repoRoot = AutoDetectRepoRoot();
-            RegisterGameDataServices(services, repoRoot);
+            RegisterGameDataServices(services, repoRoot, settings);
 
             services.AddSingleton(sp => new Editors.LookupOptionProvider(
                 sp.GetRequiredService<WorkspaceContext>(),
@@ -82,12 +82,14 @@ namespace SWLOR.Toolset
             services.AddSingleton(sp => new ValidationViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),
-                sp.GetService<IGameCodeIndex>()));
+                sp.GetService<IGameCodeIndex>(),
+                sp.GetService<ResourceIndex>()));
             services.AddSingleton<ToolsetDockFactory>();
             services.AddSingleton<ShellViewModel>();
         }
 
-        private static void RegisterGameDataServices(IServiceCollection services, string? repoRoot)
+        private static void RegisterGameDataServices(
+            IServiceCollection services, string? repoRoot, ToolsetSettings settings)
         {
             var gameServerSourceRoot = repoRoot == null ? null : Path.Combine(repoRoot, "SWLOR.Game.Server");
             services.AddSingleton<IGameCodeIndex>(_ => new GameCodeIndex(gameServerSourceRoot));
@@ -110,7 +112,23 @@ namespace SWLOR.Toolset
                 services.AddSingleton(TlkService.Load(swTlkJsonPath));
 
             if (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot))
-                services.AddSingleton(ResourceIndex.FromHakBuilderConfig(hakBuilderConfigPath, swlorHaksRoot));
+            {
+                // Attach the base-game KEY/BIF layer when an NWN:EE install is present so base
+                // resources (models, base blueprints) resolve; hak-only otherwise.
+                KeyBifCatalog? baseLayer = null;
+                try
+                {
+                    var installPath = NwnInstallLocator.Locate(settings.NwnInstallOverride);
+                    if (installPath != null)
+                        baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+                }
+                catch (Exception)
+                {
+                    // A broken install must not stop the toolset; hak layers still work.
+                }
+
+                services.AddSingleton(ResourceIndex.FromHakBuilderConfig(hakBuilderConfigPath, swlorHaksRoot, baseLayer));
+            }
 
             // AppearanceService/PortraitService are only registered when their 2DA/TLK
             // dependencies actually resolved above - PropertiesViewModel takes both as optional

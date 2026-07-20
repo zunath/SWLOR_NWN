@@ -210,7 +210,12 @@ done | blocked`.
 - Full-corpus run: 15,248 issues — 15,243 from DanglingInstanceTemplateRule, almost all
   base-game/hak templates (1078 distinct resrefs) invisible to a Module-only check.
   **Controller follow-up applied post-commit:** ValidationContext gained optional
-  ResourceIndex; templates resolvable through hak/base layers are no longer flagged.
+  ResourceIndex (and the app now attaches the base-game KEY/BIF layer to its ResourceIndex
+  when an install is found — benefits the viewport later too). Suppression measured:
+  15,243 → 5,528 dangling issues. The remainder is legacy provenance noise (git instances
+  are self-contained; templates deleted years ago cause no runtime failure), so the rule was
+  downgraded to Warning severity with rationale in code. Full-corpus totals now:
+  5 Errors (4 ResRefLength + 1 PaletteOrphan) + 5,528 Warnings.
 ## WP3.5 — pending — Save + pack services
 ## WP3.6 — pending — End-to-end daily-driver gate (human verify)
 ## WP4.1 — pending — GL spike

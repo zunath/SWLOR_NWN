@@ -74,7 +74,7 @@ namespace SWLOR.Toolset.Tests
             var issues = new DanglingInstanceTemplateRule().Validate(new ValidationContext(module.Workspace)).ToList();
 
             issues.Should().ContainSingle(i =>
-                i.Severity == ValidationSeverity.Error &&
+                i.Severity == ValidationSeverity.Warning &&
                 i.ResRef == "missing_utp_bp" &&
                 i.Message.Contains("Utp"));
         }
@@ -93,7 +93,7 @@ namespace SWLOR.Toolset.Tests
 
             var issues = new DanglingInstanceTemplateRule().Validate(new ValidationContext(module.Workspace)).ToList();
 
-            issues.Should().ContainSingle(i => i.Severity == ValidationSeverity.Error && i.ResRef == "no_such_wp");
+            issues.Should().ContainSingle(i => i.Severity == ValidationSeverity.Warning && i.ResRef == "no_such_wp");
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace SWLOR.Toolset.Tests
 
             var issues = new DanglingInstanceTemplateRule().Validate(new ValidationContext(module.Workspace)).ToList();
 
-            issues.Should().ContainSingle(i => i.Severity == ValidationSeverity.Error && i.ResRef == "missing_utm_bp");
+            issues.Should().ContainSingle(i => i.Severity == ValidationSeverity.Warning && i.ResRef == "missing_utm_bp");
         }
 
         [Test]
@@ -578,7 +578,19 @@ namespace SWLOR.Toolset.Tests
         {
             var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
             var gameCodeIndex = new GameCodeIndex(GameServerSourceRoot);
-            var context = new ValidationContext(workspace, gameCodeIndex);
+
+            // Real hak layers + the base-game KEY/BIF layer (when an NWN install is present) so
+            // hak/base-game-provided templates aren't reported as dangling.
+            var repoRoot = Directory.GetParent(CorpusLocator.ModuleDirectory)!.FullName;
+            var installPath = SWLOR.Toolset.Domain.GameData.Resources.NwnInstallLocator.Locate();
+            var baseLayer = installPath == null
+                ? null
+                : SWLOR.Toolset.Domain.GameData.Resources.KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+            var resourceIndex = SWLOR.Toolset.Domain.GameData.Resources.ResourceIndex.FromHakBuilderConfig(
+                Path.Combine(repoRoot, "Build", "hakbuilder.json"),
+                Path.Combine(repoRoot, "SWLOR_Haks"),
+                baseLayer);
+            var context = new ValidationContext(workspace, gameCodeIndex, resourceIndex);
 
             var result = new ModuleValidator().Run(context);
 

@@ -76,9 +76,19 @@ namespace SWLOR.Toolset.Domain.Validation
                         if (context.ResourceExists(mapping.Type, templateResRef))
                             continue;
 
+                        // Base-game and hak-provided templates legitimately have no module
+                        // file; only flag templates that resolve nowhere.
+                        if (context.ResolvableOutsideModule(mapping.Type, templateResRef))
+                            continue;
+
                         var tag = instance.GetStringOrNull("Tag");
+
+                        // Warning, not Error: git instances are self-contained in NWN — the
+                        // template resref is provenance, and legacy areas accumulate references
+                        // to long-deleted blueprints that cause no runtime failure. The signal
+                        // matters mainly for freshly placed content (typo detection).
                         issues.Add(new ValidationIssue(
-                            ValidationSeverity.Error,
+                            ValidationSeverity.Warning,
                             RuleId,
                             $"Area '{areaResRef}' {mapping.ListName} instance (Tag='{tag}') references missing {mapping.Type} blueprint '{templateResRef}'.",
                             context.GetGitPath(areaResRef),

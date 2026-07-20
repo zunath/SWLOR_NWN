@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.Shell.Panels
     {
         private readonly WorkspaceContext _workspaceContext;
         private readonly IGameCodeIndex? _gameCodeIndex;
+        private readonly Domain.GameData.Resources.ResourceIndex? _resourceIndex;
         private readonly OutputLogService _log;
         private readonly ModuleValidator _validator = new();
 
@@ -31,8 +32,13 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private bool _isRunning;
 
-        public ValidationViewModel(WorkspaceContext workspaceContext, OutputLogService log, IGameCodeIndex? gameCodeIndex = null)
+        public ValidationViewModel(
+            WorkspaceContext workspaceContext,
+            OutputLogService log,
+            IGameCodeIndex? gameCodeIndex = null,
+            Domain.GameData.Resources.ResourceIndex? resourceIndex = null)
         {
+            _resourceIndex = resourceIndex;
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _gameCodeIndex = gameCodeIndex;
@@ -56,7 +62,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             try
             {
-                var context = new ValidationContext(workspace, _gameCodeIndex);
+                var context = new ValidationContext(workspace, _gameCodeIndex, _resourceIndex);
                 var result = await _validator.RunAsync(context).ConfigureAwait(true);
 
                 foreach (var issue in result.Issues)

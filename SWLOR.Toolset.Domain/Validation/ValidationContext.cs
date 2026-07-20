@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Validation
@@ -17,6 +18,10 @@ namespace SWLOR.Toolset.Domain.Validation
 
         public IGameCodeIndex? GameCodeIndex { get; }
 
+        /// <summary>Optional hak/base-game resource index; lets rules distinguish "missing
+        /// everywhere" from "provided by a hak or the base game rather than the module".</summary>
+        public ResourceIndex? ResourceIndex { get; }
+
         private readonly Dictionary<ResourceType, IReadOnlyList<string>> _resRefsByType = new();
         private readonly Dictionary<ResourceType, HashSet<string>> _resRefSetsByType = new();
         private readonly Dictionary<string, (GitDocument? Document, Exception? Error)> _gitCache =
@@ -25,10 +30,35 @@ namespace SWLOR.Toolset.Domain.Validation
         private readonly Dictionary<string, (ItpDocument? Document, Exception? Error)> _paletteCache =
             new(StringComparer.OrdinalIgnoreCase);
 
-        public ValidationContext(ModuleWorkspace workspace, IGameCodeIndex? gameCodeIndex = null)
+        public ValidationContext(
+            ModuleWorkspace workspace,
+            IGameCodeIndex? gameCodeIndex = null,
+            ResourceIndex? resourceIndex = null)
         {
             Workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
             GameCodeIndex = gameCodeIndex;
+            ResourceIndex = resourceIndex;
+        }
+
+        /// <summary>
+        /// True when a resource of the given type/resref is provided by a hak or the base game
+        /// (via the optional <see cref="ResourceIndex"/>) even though it has no module file.
+        /// Always false when no index was supplied.
+        /// </summary>
+        public bool ResolvableOutsideModule(ResourceType type, string? resRef)
+        {
+            if (ResourceIndex == null || string.IsNullOrEmpty(resRef))
+                return false;
+
+            try
+            {
+                var identity = ResourceIdentity.FromFileName($"{resRef}.{type.Extension()}");
+                return ResourceIndex.TryLookup(identity, out _);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>Every area resref in the workspace (cached after the first call).</summary>

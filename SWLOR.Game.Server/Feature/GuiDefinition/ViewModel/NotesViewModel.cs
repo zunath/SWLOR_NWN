@@ -13,8 +13,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string TabContentPartialElement = "NOTES_TAB_CONTENT";
         public const string NotesTabPartial = "NOTES_TAB_VIEW";
         public const string CategoriesTabPartial = "NOTES_CATEGORIES_TAB_VIEW";
-        public const string FilterComboElement = "NOTES_FILTER_COMBO";
-        public const string NoteCategoryComboElement = "NOTES_CATEGORY_COMBO";
 
         private const string UntitledNoteName = "Untitled Note";
 
@@ -24,7 +22,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _isLoadingNote;
         private bool _suppressReload;
         private int _totalNoteCount;
-        private float _appliedComboWidth = -1f;
 
         public bool IsSaveEnabled
         {
@@ -617,9 +614,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     TabContentPartialElement,
                     IsCategoriesTabToggled ? CategoriesTabPartial : NotesTabPartial);
 
-                // The tab layout carries empty combo placeholders, so their generated contents have
-                // to be swapped back in every time the tab itself is (re)applied.
-                RefreshComboLayouts(true);
+                // Re-rendering the tab rebuilds its combo boxes, which come back with no selection.
+                RefreshComboSelections();
             }
 
             // Use the same root redraw path as modal close/open before replacing the nested panel.
@@ -630,44 +626,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DelayCommand(0.0f, ApplySelectedTabPartial);
         }
 
-        /// <summary>
-        /// Regenerates the combo boxes at the current window width and swaps them into their
-        /// placeholders. NUI layout widths cannot be bound and a combo does not stretch to fill its
-        /// row, so this is what keeps them spanning their pane as the window is resized.
-        /// </summary>
-        /// <param name="force">Applies the layout even if the width has not meaningfully changed.</param>
-        private void RefreshComboLayouts(bool force)
-        {
-            // Only the notes tab hosts combo boxes.
-            if (IsCategoriesTabToggled)
-                return;
-
-            var comboWidth = NotesDefinition.CalculateComboWidth(Geometry.Width);
-
-            // Dragging a window edge fires a stream of geometry updates - only rebuild when the
-            // width meaningfully changed.
-            if (!force && _appliedComboWidth > 0f && Math.Abs(comboWidth - _appliedComboWidth) < 8f)
-                return;
-
-            _appliedComboWidth = comboWidth;
-
-            SetGroupLayout(FilterComboElement, NotesDefinition.BuildFilterComboLayout(comboWidth));
-            SetGroupLayout(NoteCategoryComboElement, NotesDefinition.BuildNoteCategoryComboLayout(comboWidth));
-
-            // A freshly generated combo starts with no selection, so the bound indices have to be
-            // re-asserted or the box renders blank until the player touches it.
-            RefreshComboSelections();
-        }
-
-        protected override void OnClientPropertyUpdated(string propertyName)
-        {
-            if (propertyName == nameof(Geometry))
-                RefreshComboLayouts(false);
-        }
-
         protected override void OnMainViewRestored()
         {
-            _appliedComboWidth = -1f;
             RestoreSelectedTabPartial();
         }
 

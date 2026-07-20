@@ -1,6 +1,6 @@
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 
@@ -94,41 +94,39 @@ public class NotesWindowTests
     }
 
     [Test]
-    public void ComboWidth_TracksTheWindowWidthAndHasAFloor()
+    public void PinnedRows_HoldControlsDirectlyAndNeverNestAGroup()
     {
-        // NUI cannot bind a width, so the combos are regenerated per window width. Each sits in one
-        // of two evenly flexing panes, so it should grow by roughly half of what the window gains.
-        var atDefault = NotesDefinition.CalculateComboWidth(NotesDefinition.DefaultWindowWidth);
-        var wider = NotesDefinition.CalculateComboWidth(NotesDefinition.DefaultWindowWidth + 400f);
+        // Regression guard. Swapping a combo box for an AddPartialView placeholder inside these
+        // pinned rows nested a group two levels deep and broke the window's layout. Only the tab
+        // content row - which has no fixed height - may host a partial view.
+        var definition = ReadDefinition();
 
-        atDefault.Should().BeGreaterThan(0f);
-        (wider - atDefault).Should().BeApproximately(200f, 0.01f);
+        var tabContentPlaceholders = Regex.Matches(definition, @"row\.AddPartialView\(").Count;
+        tabContentPlaceholders.Should().Be(
+            1,
+            "the tab content row is the only placeholder; anything else means a group was nested into a pinned row");
 
-        // A narrow window must not collapse the combo to nothing.
-        NotesDefinition.CalculateComboWidth(0f).Should().BeGreaterThan(0f);
-        NotesDefinition.CalculateComboWidth(120f)
-            .Should()
-            .Be(NotesDefinition.CalculateComboWidth(0f), "both are below the floor");
+        definition.Should().Contain($"row.AddPartialView(NotesViewModel.{nameof(NotesViewModel.TabContentPartialElement)})");
+
+        // The combos are declared inline in their rows, sized by a plain width.
+        definition.Should().Contain("row.AddComboBox()");
+        definition.Should().Contain(".SetWidth(ComboWidth)");
     }
 
     [Test]
-    public void ComboBoxes_AreRegeneratedIntoPlaceholdersRatherThanPinnedInTheLayout()
+    public void ComboSelections_AreReassertedWheneverTheOptionsOrLayoutChange()
     {
-        var definition = ReadDefinition();
+        // Assigning a combo's option list clears the client's selection. Without re-asserting the
+        // bound index the filter renders blank - most visibly with no categories created.
         var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
 
-        // The combos live in placeholders the view model fills at the current width.
-        definition.Should().Contain($"row.AddPartialView(NotesViewModel.{nameof(NotesViewModel.FilterComboElement)})");
-        definition.Should().Contain($"row.AddPartialView(NotesViewModel.{nameof(NotesViewModel.NoteCategoryComboElement)})");
+        viewModel.Should().Contain("private void RefreshComboSelections()");
+        viewModel.Should().Contain("private int ClampCategoryOptionIndex(int optionIndex)");
 
-        // Resizing has to drive the regeneration, or the window stops being responsive.
-        viewModel.Should().Contain("protected override void OnClientPropertyUpdated(string propertyName)");
-        viewModel.Should().Contain("nameof(Geometry)");
-        viewModel.Should().Contain($"SetGroupLayout({nameof(NotesViewModel.FilterComboElement)}");
-        viewModel.Should().Contain($"SetGroupLayout({nameof(NotesViewModel.NoteCategoryComboElement)}");
-
-        // A regenerated combo has no selection until the bound index is re-asserted.
-        viewModel.Should().Contain("RefreshComboSelections();");
+        // Once after rebuilding the option lists, once after the tab view is (re)applied.
+        Regex.Matches(viewModel, @"RefreshComboSelections\(\);").Count
+            .Should()
+            .BeGreaterThanOrEqualTo(2);
     }
 
     [Test]

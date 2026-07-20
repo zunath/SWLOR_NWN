@@ -135,8 +135,30 @@ done | blocked`.
   (type 2072, per SWLOR.NWN.API ResType) — patched locally in ResourceIdentity. Hak
   precedence: hakbuilder.json order, later-wins, base game lowest (per-module order would be
   module.ifo Mod_HakList — noted in code).
-## WP2.4 — pending — Lookup services
-## WP2.5 — pending — Game-code index
+## WP2.4 — done — 2026-07-20 — Lookup services
+- Tier: Low (Sonnet subagent); controller-verified (118/119 green incl. corpus gate).
+- Files: `Domain\GameData\Lookups\{DisplayNameResolver,AppearanceService,PortraitService,
+  PlaceableAppearanceService,DoorTypeService,SoundService,TilesetCatalog}.cs`,
+  test `LookupServiceTests.cs`.
+- **2DA findings:** appearance.2da RACE is dual-purpose (model resref when MODELTYPE=S,
+  phenotype letter when =P); every appearance STRING_REF in corpus is ****; portraits.2da has
+  no strref column; placeables.2da Label is already display text; ambientsound.2da
+  Description is the strref column, Resource the sound resref. 70 tilesets discovered, no
+  name collisions. ResourceIndex lacks enumeration API — TilesetCatalog scans hak layer dirs
+  for discovery, resolves bytes via TryLookup (noted in XML docs; consider adding enumeration
+  to ResourceIndex if a third consumer needs it).
+
+## WP2.5 — done — 2026-07-20 — Game-code index
+- Tier: Mid (Sonnet subagent); controller-verified.
+- Files: `Domain\GameData\GameCode\{IGameCodeIndex,GameCodeIndex,ReflectionEnumReader,
+  SourceIdScanner}.cs`, test `GameCodeIndexTests.cs`.
+- **Decisions recorded:** enums (NPCGroupType 267 entries, KeyItemType 200) read via direct
+  reflection over the referenced SWLOR.Game.Server assembly — verified no static-ctor/native
+  hazards, no ModuleInitializers. Quest IDs (271) and spawn table IDs (191) via two-pass
+  regex source scan (literal + same-file const resolution); Roslyn dependency deliberately
+  NOT added. **Known gap:** IDs passed through helper-method parameters (guild item tasks,
+  ~19 fishing points) aren't resolved — acceptable for validation; revisit only if WP3.4
+  false-positives it. Missing source root → empty collections + IsSourceScanAvailable=false.
 ## WP2.6 — pending — Shell + read-only browser
 ## WP3.1 — pending — Editor schema infrastructure + UTC editor
 ## WP3.2 — pending — Remaining blueprint schemas

@@ -1,0 +1,205 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             x:Class="SWLOR.Toolset.Editors.AreaEditorView"
+             x:DataType="editors:AreaEditorViewModel">
+
+  <UserControl.DataTemplates>
+    <DataTemplate DataType="editors:LocStringFieldViewModel">
+      <Grid ColumnDefinitions="180,*,Auto" Margin="0,2">
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
+        <TextBlock Grid.Column="2" Text="{Binding StrRefDisplay}" Opacity="0.6"
+                   VerticalAlignment="Center" Margin="6,0,0,0" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:CheckFieldViewModel">
+      <Grid ColumnDefinitions="180,*" Margin="0,2">
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <CheckBox Grid.Column="1" IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:IntegerFieldViewModel">
+      <Grid ColumnDefinitions="180,*" Margin="0,2">
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Column="1" Value="{Binding Value, Mode=TwoWay}"
+                       FormatString="0" Increment="1" IsEnabled="{Binding !IsReadOnly}" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:FloatFieldViewModel">
+      <Grid ColumnDefinitions="180,*" Margin="0,2">
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <NumericUpDown Grid.Column="1" Value="{Binding Value, Mode=TwoWay}"
+                       Increment="0.5" IsEnabled="{Binding !IsReadOnly}" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:DropdownFieldViewModel">
+      <Grid ColumnDefinitions="180,*" Margin="0,2">
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <ComboBox Grid.Column="1" IsVisible="{Binding HasOptions}"
+                  ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                  MaxDropDownHeight="400" />
+        <NumericUpDown Grid.Column="1" IsVisible="{Binding !HasOptions}"
+                       Value="{Binding RawValue, Mode=TwoWay}" FormatString="0" Increment="1" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:ScriptFieldViewModel">
+      <Grid ColumnDefinitions="180,*" Margin="0,2">
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" FontFamily="Consolas,monospace" />
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:TextFieldViewModel">
+      <Grid ColumnDefinitions="180,*" Margin="0,2">
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
+      </Grid>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="8,6">
+      <Button Content="Save" Command="{Binding SaveCommand}" />
+      <Button Content="Undo" Command="{Binding UndoInstancesCommand}" ToolTip.Tip="Undo instance edit" />
+      <Button Content="Redo" Command="{Binding RedoInstancesCommand}" ToolTip.Tip="Redo instance edit" />
+      <Separator Width="12" />
+      <Button Content="Undo Props" Command="{Binding UndoAreCommand}" ToolTip.Tip="Undo area-property edit" />
+      <Button Content="Redo Props" Command="{Binding RedoAreCommand}" ToolTip.Tip="Redo area-property edit" />
+    </StackPanel>
+
+    <ScrollViewer>
+      <StackPanel Margin="8" Spacing="6">
+        <Expander Header="Area Properties" IsExpanded="False" HorizontalAlignment="Stretch">
+          <ItemsControl ItemsSource="{Binding AreaPropertyGroups}" Margin="8,4">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="editors:EditorGroup">
+                <Expander Header="{Binding Title}" IsExpanded="True" Margin="0,0,0,6"
+                          HorizontalAlignment="Stretch">
+                  <ItemsControl ItemsSource="{Binding Fields}" Margin="8,4" />
+                </Expander>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Expander>
+
+        <ItemsControl ItemsSource="{Binding Sections}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="editors:InstanceListSectionViewModel">
+              <Expander HorizontalAlignment="Stretch" Margin="0,0,0,6" IsExpanded="False">
+                <Expander.Header>
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="{Binding Title}" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Rows.Count}" Opacity="0.6" />
+                  </StackPanel>
+                </Expander.Header>
+                <StackPanel Margin="8,4" Spacing="6">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button Content="Add..." Command="{Binding AddCommand}" />
+                    <Button Content="Duplicate" Command="{Binding DuplicateCommand}" IsEnabled="{Binding HasSelection}" />
+                    <Button Content="Delete" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelection}" />
+                  </StackPanel>
+
+                  <Border IsVisible="{Binding ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}}"
+                          BorderBrush="{DynamicResource DockThemeBorderMidBrush}" BorderThickness="1"
+                          Padding="8" CornerRadius="4">
+                    <StackPanel Spacing="6" DataContext="{Binding ActivePaletteBrowser}"
+                                x:DataType="editors:PaletteBrowserViewModel">
+                      <TextBlock Text="{Binding Title, StringFormat='Choose {0} blueprint'}" FontWeight="Bold" />
+                      <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                                MaxHeight="320">
+                        <TreeView.ItemTemplate>
+                          <TreeDataTemplate DataType="editors:PaletteNodeViewModel" ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                              <TextBlock Text="{Binding DisplayName}" />
+                              <TextBlock Text="{Binding ResRef}" Opacity="0.6" />
+                            </StackPanel>
+                          </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                      </TreeView>
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Button Content="Place" Command="{Binding ChooseCommand}" />
+                        <Button Content="Cancel" Command="{Binding CancelCommand}" />
+                        <Separator Width="12" />
+                        <TextBox Text="{Binding RenameText, Mode=TwoWay}" Watermark="Category name" MinWidth="140" />
+                        <Button Content="Rename" Command="{Binding RenameCategoryCommand}" />
+                        <Button Content="Delete Empty" Command="{Binding DeleteCategoryCommand}" />
+                        <Button Content="Save Palette" Command="{Binding SavePaletteCommand}" />
+                      </StackPanel>
+                      <TextBlock Text="{Binding StatusMessage}" Foreground="Orange"
+                                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
+                  </Border>
+
+                  <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                            AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="260"
+                            GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                      <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="2*" />
+                      <DataGridTextColumn Header="Template" Binding="{Binding TemplateResRef}" Width="2*" />
+                      <DataGridTextColumn Header="X" Binding="{Binding X}" Width="*" />
+                      <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="*" />
+                      <DataGridTextColumn Header="Z" Binding="{Binding Z}" Width="*" />
+                    </DataGrid.Columns>
+                  </DataGrid>
+
+                  <StackPanel IsVisible="{Binding HasSelection}" Spacing="4">
+                    <Grid ColumnDefinitions="60,*,60,*,60,*" ColumnSpacing="6" RowDefinitions="Auto,Auto" RowSpacing="4">
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Tag" VerticalAlignment="Center" />
+                      <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="5" Text="{Binding DetailTag, Mode=TwoWay}" />
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="X" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DetailX, Mode=TwoWay}" Increment="0.5" />
+                      <TextBlock Grid.Row="1" Grid.Column="2" Text="Y" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Row="1" Grid.Column="3" Value="{Binding DetailY, Mode=TwoWay}" Increment="0.5" />
+                      <TextBlock Grid.Row="1" Grid.Column="4" Text="Z" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Row="1" Grid.Column="5" Value="{Binding DetailZ, Mode=TwoWay}" Increment="0.5" />
+                    </Grid>
+                    <Grid ColumnDefinitions="60,*,60,*" ColumnSpacing="6">
+                      <TextBlock Grid.Column="0" Text="Facing X" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="1" Value="{Binding DetailXOrientation, Mode=TwoWay}" Increment="0.1" />
+                      <TextBlock Grid.Column="2" Text="Facing Y" VerticalAlignment="Center" />
+                      <NumericUpDown Grid.Column="3" Value="{Binding DetailYOrientation, Mode=TwoWay}" Increment="0.1" />
+                    </Grid>
+                    <Expander Header="Local Variables"
+                              IsVisible="{Binding VarTableSection, Converter={x:Static ObjectConverters.IsNotNull}}"
+                              HorizontalAlignment="Stretch" IsExpanded="False">
+                      <StackPanel Margin="8,4" Spacing="6" DataContext="{Binding VarTableSection}"
+                                  x:DataType="editors:VarTableSectionViewModel">
+                        <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                                  AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="200"
+                                  GridLinesVisibility="Horizontal">
+                          <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+                            <DataGridTextColumn Header="Type" Binding="{Binding TypeLabel}" Width="*" />
+                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
+                          </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid ColumnDefinitions="2*,Auto,*,2*,Auto,Auto" ColumnSpacing="6">
+                          <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
+                                           ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
+                          <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
+                          <ComboBox Grid.Column="2" ItemsSource="{Binding TypeChoices}"
+                                    SelectedItem="{Binding NewType, Mode=TwoWay}" />
+                          <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
+                          <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />
+                          <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveSelectedCommand}" />
+                        </Grid>
+                        <TextBlock Text="{Binding ValidationHint}" Foreground="Orange"
+                                   IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                      </StackPanel>
+                    </Expander>
+                  </StackPanel>
+                </StackPanel>
+              </Expander>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

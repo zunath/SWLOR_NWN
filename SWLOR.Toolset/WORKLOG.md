@@ -198,7 +198,21 @@ done | blocked`.
   style. UTM and ARE use `ResRef` not `TemplateResRef`. No VarTable anywhere in uts/utm/are
   corpus files (HasVarTable=false for those). Item PropertiesList, store item lists, and
   sound Sounds list deliberately excluded from schemas (future packages).
-## WP3.3 — pending — Instance editing
+## WP3.3 — done — 2026-07-20 — Instance editing
+- Tier: Mid. Split execution: Sonnet subagent (killed twice mid-run by server error + spend
+  limit) produced InstanceFieldMap + tests + the three editor VMs; controller finished the
+  package inline (EditorService Area routing, AreaEditorView.axaml, missing using, verification).
+- Files: `Domain\Documents\InstanceFieldMap.cs`, `Tests\InstanceEditingTests.cs`, app
+  `Editors\{AreaEditorViewModel,InstanceListSectionViewModel,PaletteBrowserViewModel}.cs`,
+  `Editors\Views\AreaEditorView.axaml(.cs)`, EditorService Area branch.
+- Design: composite area editor owns TWO DocumentSessions (.are + .git) with split undo
+  (toolbar Undo/Redo = instances/.git; separate pair for area properties); palette browser is
+  an inline flyout per section with light category rename/delete on its own itp session;
+  add-from-palette creates instances via InstanceFieldMap at 0,0,0 for numeric editing.
+- Verified: 203/204 tests green (incl. instance create → sorted serialize → undo →
+  byte-identical), app builds clean, 12s launch smoke OK.
+- Note: field DataTemplates duplicated between BlueprintEditorView and AreaEditorView —
+  candidate for a shared resource dictionary in a later cleanup pass.
 ## WP3.4 — done — 2026-07-20 — Validation rules
 - Tier: Low (Sonnet subagent); controller-verified.
 - Files: `Domain\Validation\*` (ValidationIssue/Context, IValidationRule, PaletteTraversal,

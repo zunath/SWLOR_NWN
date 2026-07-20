@@ -1,0 +1,304 @@
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Workspace;
+
+namespace SWLOR.Toolset.Editors
+{
+    /// <summary>One row of an instance-list grid: enough to display and re-locate the backing
+    /// struct (by list index) for the detail form below the grid.</summary>
+    public sealed record InstanceRow(int Index, string Tag, string TemplateResRef, float X, float Y, float Z);
+
+    /// <summary>
+    /// One expandable section of the composite area editor: the placed-instance list for a
+    /// single blueprint type (e.g. "Creature List"). Lists the placed instances in a grid,
+    /// edits the selected instance's Tag/position/heading and local-variable table through a
+    /// small detail form, and supports Add (via a palette browser + InstanceFieldMap),
+    /// Duplicate, and Delete - all through DocumentTransactions on the shared .git
+    /// DocumentSession supplied by the owning AreaEditorViewModel.
+    /// </summary>
+    public partial class InstanceListSectionViewModel : ObservableObject
+    {
+        private readonly DocumentSession _gitSession;
+        private readonly ModuleWorkspace _workspace;
+        private readonly ResourceType _blueprintType;
+        private readonly string _listFieldName;
+        private readonly Func<string, Action, bool> _runEdit;
+        private readonly IGameCodeIndex? _gameCodeIndex;
+        private readonly OutputLogService _log;
+        private bool _isLoadingDetail;
+
+        public string Title { get; }
+        public ObservableCollection<InstanceRow> Rows { get; } = new();
+
+        [ObservableProperty]
+        private InstanceRow? _selectedRow;
+
+        [ObservableProperty]
+        private bool _hasSelection;
+
+        [ObservableProperty]
+        private string _detailTag = string.Empty;
+
+        [ObservableProperty]
+        private double _detailX;
+
+        [ObservableProperty]
+        private double _detailY;
+
+        [ObservableProperty]
+        private double _detailZ;
+
+        [ObservableProperty]
+        private double _detailXOrientation;
+
+        [ObservableProperty]
+        private double _detailYOrientation;
+
+        [ObservableProperty]
+        private VarTableSectionViewModel? _varTableSection;
+
+        [ObservableProperty]
+        private PaletteBrowserViewModel? _activePaletteBrowser;
+
+        public InstanceListSectionViewModel(
+            string title,
+            string listFieldName,
+            ResourceType blueprintType,
+            DocumentSession gitSession,
+            ModuleWorkspace workspace,
+            Func<string, Action, bool> runEdit,
+            IGameCodeIndex? gameCodeIndex,
+            OutputLogService log)
+        {
+            Title = title;
+            _listFieldName = listFieldName;
+            _blueprintType = blueprintType;
+            _gitSession = gitSession;
+            _workspace = workspace;
+            _runEdit = runEdit;
+            _gameCodeIndex = gameCodeIndex;
+            _log = log;
+
+            RefreshFromDocument();
+        }
+
+        /// <summary>Rebuilds the grid rows from the current document state (initial load and
+        /// after every edit, including undo/redo).</summary>
+        public void RefreshFromDocument()
+        {
+            var selectedIndex = SelectedRow?.Index;
+            Rows.Clear();
+
+            var listField = _gitSession.Document.Root.GetOrNull(_listFieldName);
+            if (listField?.Elements != null)
+            {
+                for (var i = 0; i < listField.Elements.Count; i++)
+                {
+                    var element = listField.Elements[i];
+                    var (x, y, z) = InstanceFieldMap.GetPosition(_blueprintType, element);
+                    Rows.Add(new InstanceRow(
+                        i,
+                        InstanceFieldMap.GetTag(element) ?? string.Empty,
+                        InstanceFieldMap.GetTemplateResRef(_blueprintType, element) ?? string.Empty,
+                        x, y, z));
+                }
+            }
+
+            SelectedRow = selectedIndex.HasValue && selectedIndex.Value < Rows.Count
+                ? Rows[selectedIndex.Value]
+                : null;
+        }
+
+        partial void OnSelectedRowChanged(InstanceRow? value)
+        {
+            HasSelection = value != null;
+            var element = value != null ? GetElement(value.Index) : null;
+            if (element == null)
+            {
+                VarTableSection = null;
+                return;
+            }
+
+            _isLoadingDetail = true;
+            DetailTag = InstanceFieldMap.GetTag(element) ?? string.Empty;
+            var (x, y, z) = InstanceFieldMap.GetPosition(_blueprintType, element);
+            DetailX = x;
+            DetailY = y;
+            DetailZ = z;
+            var (xOrientation, yOrientation) = InstanceFieldMap.GetOrientation(_blueprintType, element);
+            DetailXOrientation = xOrientation;
+            DetailYOrientation = yOrientation;
+            _isLoadingDetail = false;
+
+            VarTableSection = new VarTableSectionViewModel(
+                new EditorFieldContext(_gitSession.Document, (description, mutation) => _runEdit(description, mutation)),
+                new VarTable(element),
+                _gameCodeIndex);
+        }
+
+        partial void OnDetailTagChanged(string value)
+        {
+            if (_isLoadingDetail || SelectedRow is not { } row)
+                return;
+
+            var element = GetElement(row.Index);
+            if (element == null)
+                return;
+
+            _runEdit($"Change {Title} tag", () => InstanceFieldMap.SetTag(element, value));
+            RefreshFromDocument();
+        }
+
+        partial void OnDetailXChanged(double value) => ApplyPositionEdit();
+        partial void OnDetailYChanged(double value) => ApplyPositionEdit();
+        partial void OnDetailZChanged(double value) => ApplyPositionEdit();
+        partial void OnDetailXOrientationChanged(double value) => ApplyOrientationEdit();
+        partial void OnDetailYOrientationChanged(double value) => ApplyOrientationEdit();
+
+        private void ApplyPositionEdit()
+        {
+            if (_isLoadingDetail || SelectedRow is not { } row)
+                return;
+
+            var element = GetElement(row.Index);
+            if (element == null)
+                return;
+
+            var x = (float)DetailX;
+            var y = (float)DetailY;
+            var z = (float)DetailZ;
+            _runEdit($"Move {Title} instance", () => InstanceFieldMap.SetPosition(_blueprintType, element, x, y, z));
+            RefreshFromDocument();
+        }
+
+        private void ApplyOrientationEdit()
+        {
+            if (_isLoadingDetail || SelectedRow is not { } row)
+                return;
+
+            var element = GetElement(row.Index);
+            if (element == null)
+                return;
+
+            var xOrientation = (float)DetailXOrientation;
+            var yOrientation = (float)DetailYOrientation;
+            _runEdit($"Rotate {Title} instance",
+                () => InstanceFieldMap.SetOrientation(_blueprintType, element, xOrientation, yOrientation));
+            RefreshFromDocument();
+        }
+
+        [RelayCommand]
+        private void Add()
+        {
+            var itpPath = Path.Combine(_workspace.ModuleRoot, "itp", PaletteFileName(_blueprintType));
+            if (!File.Exists(itpPath))
+            {
+                _log.AppendLine($"No palette file found for {Title} ('{itpPath}').");
+                return;
+            }
+
+            ActivePaletteBrowser = new PaletteBrowserViewModel(
+                Title,
+                itpPath,
+                resRef =>
+                {
+                    ActivePaletteBrowser = null;
+                    AddFromPalette(resRef);
+                },
+                () => ActivePaletteBrowser = null,
+                _log);
+        }
+
+        private void AddFromPalette(string resRef)
+        {
+            try
+            {
+                var blueprint = _workspace.LoadBlueprint(_blueprintType, resRef);
+                _runEdit($"Add {Title} instance", () =>
+                {
+                    var listField = _gitSession.Document.Root.GetOrNull(_listFieldName);
+                    if (listField == null)
+                    {
+                        listField = JsonGffField.CreateList();
+                        _gitSession.Document.Root.Add(_listFieldName, listField);
+                    }
+
+                    var instance = InstanceFieldMap.CreateInstance(_blueprintType, blueprint.Document, 0, 0, 0);
+                    listField.InsertElement(listField.Elements!.Count, instance);
+                });
+
+                RefreshFromDocument();
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to add {Title} instance '{resRef}': {ex.Message}");
+            }
+        }
+
+        [RelayCommand]
+        private void Duplicate()
+        {
+            if (SelectedRow is not { } row)
+                return;
+
+            var element = GetElement(row.Index);
+            if (element == null)
+                return;
+
+            _runEdit($"Duplicate {Title} instance", () =>
+            {
+                var listField = _gitSession.Document.Root.Get(_listFieldName);
+                var clone = InstanceFieldMap.Duplicate(element);
+                listField.InsertElement(row.Index + 1, clone);
+            });
+
+            RefreshFromDocument();
+        }
+
+        [RelayCommand]
+        private void Delete()
+        {
+            if (SelectedRow is not { } row)
+                return;
+
+            _runEdit($"Delete {Title} instance", () =>
+            {
+                var listField = _gitSession.Document.Root.Get(_listFieldName);
+                listField.RemoveElementAt(row.Index);
+            });
+
+            SelectedRow = null;
+            RefreshFromDocument();
+        }
+
+        private JsonGffStruct? GetElement(int index)
+        {
+            var listField = _gitSession.Document.Root.GetOrNull(_listFieldName);
+            if (listField?.Elements == null || index < 0 || index >= listField.Elements.Count)
+                return null;
+
+            return listField.Elements[index];
+        }
+
+        private static string PaletteFileName(ResourceType type)
+        {
+            return type switch
+            {
+                ResourceType.Utc => "creaturepalcus.itp.json",
+                ResourceType.Utp => "placeablepalcus.itp.json",
+                ResourceType.Utd => "doorpalcus.itp.json",
+                ResourceType.Utw => "waypointpalcus.itp.json",
+                ResourceType.Utm => "storepalcus.itp.json",
+                ResourceType.Uts => "soundpalcus.itp.json",
+                ResourceType.Utt => "triggerpalcus.itp.json",
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, "No palette file mapping for this type.")
+            };
+        }
+    }
+}

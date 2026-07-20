@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
 
         public EditorService(
             WorkspaceContext workspaceContext,
@@ -40,6 +41,12 @@ namespace SWLOR.Toolset.Editors
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return;
+
+            if (type == ResourceType.Area)
+            {
+                OpenAreaEditor(workspace, resRef);
+                return;
+            }
 
             var schema = GetSchema(type);
             if (schema == null)
@@ -74,6 +81,35 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
+        /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>
+        private void OpenAreaEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)
+        {
+            if (_openAreaEditors.TryGetValue(resRef, out var existing))
+            {
+                _factory.ActivateDocument(existing);
+                return;
+            }
+
+            var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
+            var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
+            if (!File.Exists(arePath) || !File.Exists(gitPath))
+            {
+                _log.AppendLine($"Area files not found for '{resRef}' (.are/.git pair required).");
+                return;
+            }
+
+            try
+            {
+                var editor = new AreaEditorViewModel(resRef, workspace, _lookups, _gameCodeIndex, _log);
+                _openAreaEditors[resRef] = editor;
+                _factory.OpenDocument(editor);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to open area editor for {resRef}: {ex.Message}");
+            }
+        }
+
         private static EditorSchema? GetSchema(ResourceType type)
         {
             return type switch
@@ -86,7 +122,6 @@ namespace SWLOR.Toolset.Editors
                 ResourceType.Uts => UtsSchema.Build(),
                 ResourceType.Utt => UttSchema.Build(),
                 ResourceType.Utm => UtmSchema.Build(),
-                ResourceType.Area => AreSchema.Build(),
                 _ => null
             };
         }

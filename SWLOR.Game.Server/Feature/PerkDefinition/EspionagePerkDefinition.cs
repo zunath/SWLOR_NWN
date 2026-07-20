@@ -43,34 +43,34 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Stealth1)
-                .Description("Enter stealth, increasing stealth effectiveness by 15% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
+                .Description("Enter stealth, increasing Stealth by 5 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.StealthEffectivenessPercent, 15)
+                .IncreasesStat(StatType.Stealth, 5)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Stealth2)
-                .Description("Enter stealth, increasing stealth effectiveness by 25% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
+                .Description("Enter stealth, increasing Stealth by 10 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 15)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.StealthEffectivenessPercent, 25)
+                .IncreasesStat(StatType.Stealth, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Stealth3)
-                .Description("Enter stealth, increasing stealth effectiveness by 35% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
+                .Description("Enter stealth, increasing Stealth by 15 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 28)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.StealthEffectivenessPercent, 35)
+                .IncreasesStat(StatType.Stealth, 15)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Stealth4)
-                .Description("Enter stealth, increasing stealth effectiveness by 45% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
+                .Description("Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.StealthEffectivenessPercent, 45);
+                .IncreasesStat(StatType.Stealth, 20);
         }
 
         private void BackAttack()
@@ -187,10 +187,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SilentStrideTrait)
-                .Description("Removes the movement-speed penalty from stealth and reduces its STM drain rate by 20%, from 2 STM every 6 seconds to 2 STM every 7.5 seconds.")
+                .Description("While stealthed, increases Movement Speed by 30% and reduces STM drain by 20%, from 2 STM every 6 seconds to 2 STM every 7.5 seconds. Stealth still prevents running at full speed.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 32)
                 .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.StealthMovementSpeedPercentAdjustment, 30)
                 .IncreasesStat(StatType.StealthStaminaDrainReductionPercent, 20);
         }
 

@@ -18,15 +18,21 @@ public class PlayerFacingNameBroadcastTests
         var normalizedSource = source.Replace("\r\n", "\n");
 
         source.Should().Contain("private const int PartyChatChannelNameStrRef = 66755;");
+        source.Should().Contain("private const int PartyChatMessagePrefixStrRef = 10303;");
         source.Should().Contain("private const string CommsChannelName = \"Comms\";");
+        source.Should().Contain("private const string CommsMessagePrefix = \"[Comms] \";");
         var moduleEnterHandlerIndex = normalizedSource.IndexOf("[NWNEventHandler(ScriptName.OnModuleEnter)]", StringComparison.Ordinal);
         var applyChannelNameIndex = normalizedSource.IndexOf("public static void ApplyCommsChannelName()", StringComparison.Ordinal);
-        var applyTlkOverrideIndex = normalizedSource.IndexOf(
+        var applyChannelNameOverrideIndex = normalizedSource.IndexOf(
             "PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);",
+            StringComparison.Ordinal);
+        var applyMessagePrefixOverrideIndex = normalizedSource.IndexOf(
+            "PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);",
             StringComparison.Ordinal);
         moduleEnterHandlerIndex.Should().BeGreaterThanOrEqualTo(0);
         applyChannelNameIndex.Should().BeGreaterThan(moduleEnterHandlerIndex);
-        applyTlkOverrideIndex.Should().BeGreaterThan(applyChannelNameIndex);
+        applyChannelNameOverrideIndex.Should().BeGreaterThan(applyChannelNameIndex);
+        applyMessagePrefixOverrideIndex.Should().BeGreaterThan(applyChannelNameOverrideIndex);
         normalizedSource.Should().Contain("var player = GetEnteringObject();");
         normalizedSource.Should().Contain("if (!GetIsPC(player))");
 
@@ -281,6 +287,7 @@ public class PlayerFacingNameBroadcastTests
             "SWLOR.Game.Server",
             "Feature",
             "TlkOverrides.cs"));
+        tlkOverrideSource.Should().Contain("SetTlkOverride(10303, \"[Comms] \");");
         tlkOverrideSource.Should().Contain("SetTlkOverride(66751, \"Disabled\");");
         tlkOverrideSource.Should().Contain("SetTlkOverride(66755, \"Comms\");");
 

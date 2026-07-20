@@ -373,18 +373,34 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void GuardRetaliationDamage_IsScaledAndAppliedAsPhysicalTriggeredDamage()
+    public void GuardRetaliationDMG_UsesCombatDamageRangeAndTriggeredDelivery()
     {
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
             .Replace("\r\n", "\n");
+        var whirlingGuardSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "WhirlingGuardStatusEffect.cs"));
 
         var retaliation = ExtractMethod(combatSource, "private static void ApplyGuardedHitRetaliation");
-        retaliation.Should().Contain("StatType.GuardRetaliationDamage");
-        retaliation.Should().Contain("AbilityEffectScaling.ScaleDirectEffect");
-        retaliation.Should().Contain("GetAbilityScore(defender, scalingAbility)");
+        retaliation.Should().Contain("StatType.GuardRetaliationDMG");
+        retaliation.Should().Contain("ResolveGuardRetaliationDamage(");
+        retaliation.Should().NotContain("AbilityEffectScaling.ScaleDirectEffect");
         retaliation.Should().Contain("ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);");
         retaliation.Should().NotContain("EffectDamage(retaliationDamage");
+        whirlingGuardSource.Should().Contain("StatGroup.Stats[StatType.GuardRetaliationDMG] = 8;");
+
+        var resolver = ExtractMethod(combatSource, "private static int ResolveGuardRetaliationDamage");
+        resolver.Should().Contain("Stat.GetAttack(source, damageAbility, skillType)");
+        resolver.Should().Contain("ApplyTargetStatusAttackModifiers(source, target, attack, skillType)");
+        resolver.Should().Contain("Stat.GetDefense(target, damageType, defenseAbility)");
+        resolver.Should().Contain("ApplyStatusSourceDefenseModifiers(source, target, defense)");
+        resolver.Should().Contain("return CalculateDamage(");
+        resolver.Should().NotContain("ApplyCombatImpact");
+        resolver.Should().NotContain("CalculateAbilityCriticalRating");
 
         var scalingAbility = ExtractMethod(combatSource, "private static AbilityType GetGuardRetaliationDamageAbility");
         scalingAbility.Should().Contain("GetRelevantSkillWeapon(defender, skillType)");
@@ -529,7 +545,14 @@ public class CombatDamageTests
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
         combatSource.Should().Contain("ApplyGuardedHitModifiers(uint defender, uint attacker, int damage, CombatDamageType damageType)");
-        combatSource.Should().Contain("!damageType.IsPhysicalDamageType()");
+        var guard = ExtractMethod(combatSource, "public static int ApplyGuardedHitModifiers(");
+        guard.Should().Contain("!GetIsObjectValid(attacker)");
+        guard.Should().Contain("defender == attacker");
+        guard.Should().Contain("damage <= 0");
+        guard.Should().Contain("!damageType.IsPhysicalDamageType()");
+        guard.IndexOf("damage <= 0", StringComparison.Ordinal).Should().BeLessThan(
+            guard.IndexOf("var guardChance", StringComparison.Ordinal),
+            "idle, self, and zero-damage events must never enter the Guard roll");
         damageRollSource.Should().Contain("Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);");
         damageRollSource.Should().NotContain("Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage);");
     }

@@ -2901,6 +2901,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             _recentGuardedHits[creature] = DateTime.UtcNow;
+            ApplyGuardedHitNextAttackEffects(creature);
             ApplyGuardedHitNextSkillAbilityEffects(creature);
             ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
         }
@@ -3153,54 +3154,64 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyGuardedHitRetaliation(uint attacker, uint defender, int incomingDamage)
         {
             var skillType = GetEquippedWeaponSkillType(defender);
-            var retaliationDamage = Stat.GetStatAdjustment(defender, StatType.GuardRetaliationDamage);
-            var bonusSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                defender,
-                StatType.GuardRetaliationDamageBonusSkillType));
-            var bonusDamage = SkillTypeMatches(skillType, bonusSkillType)
-                ? Stat.GetStatAdjustment(defender, StatType.GuardRetaliationDamageBonus)
-                : 0;
+            var retaliationDMG = Stat.GetStatAdjustment(defender, StatType.GuardRetaliationDMG);
+            var pulseDMG = Stat.GetStatAdjustment(defender, StatType.GuardedHitPulseDMG);
 
-            // The base retaliation is a fixed amount (for example Whirling Guard's stated 8 DMG).
-            // Skill-specific bonus damage uses that weapon's combat formula, matching its Bible metadata.
-            if (retaliationDamage > 0)
+            // DMG is an input to the attack-versus-defense damage range, not already-resolved HP damage.
+            // Resolve each retaliation before using the non-recursive triggered-damage delivery path.
+            if (retaliationDMG > 0)
+            {
+                var retaliationDamage = ResolveGuardRetaliationDamage(
+                    defender,
+                    attacker,
+                    retaliationDMG,
+                    skillType);
                 ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);
+            }
 
-            if (bonusDamage <= 0)
+            if (pulseDMG <= 0)
                 return;
 
-            var scalingAbility = GetGuardRetaliationDamageAbility(defender, skillType);
-            bonusDamage = AbilityEffectScaling.ScaleDirectEffect(
-                bonusDamage,
-                GetAbilityScore(defender, scalingAbility),
-                source: defender);
-
-            var radius = Stat.GetStatAdjustment(defender, StatType.GuardRetaliationDamageBonusRadiusMeters);
+            var radius = Stat.GetStatAdjustment(defender, StatType.GuardedHitPulseRadiusMeters);
             if (radius <= 0)
             {
-                ApplyTriggeredDamage(defender, attacker, bonusDamage, CombatDamageType.Physical, skillType);
+                var pulseDamage = ResolveGuardRetaliationDamage(defender, attacker, pulseDMG, skillType);
+                ApplyTriggeredDamage(defender, attacker, pulseDamage, CombatDamageType.Physical, skillType);
                 return;
             }
 
-            ApplyGuardedHitRetaliationPulse(defender, attacker, incomingDamage, bonusDamage, radius, skillType);
+            ApplyGuardedHitRetaliationPulse(defender, attacker, incomingDamage, pulseDMG, radius, skillType);
         }
 
         private static void ApplyGuardedHitRetaliationPulse(
             uint defender,
             uint originalAttacker,
             int incomingDamage,
-            int damage,
+            int dmg,
             float radius,
             SkillType skillType)
         {
             var enmityPercent = Stat.GetStatAdjustment(
                 defender,
-                StatType.GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage);
+                StatType.GuardedHitPulseEnmityPercentOfIncomingDamage);
             var additionalTargetEnmity = enmityPercent > 0
                 ? Math.Max(1, GameMath.PercentOf(incomingDamage, enmityPercent))
                 : 0;
             var location = GetLocation(defender);
             var applied = false;
+
+            // The creature whose hit was guarded is always affected, even when attacking from
+            // beyond the nearby-enemy radius. Normal Guard handling supplies this target's Enmity.
+            if (GetIsObjectValid(originalAttacker) &&
+                !GetIsDead(originalAttacker) &&
+                GetCurrentHitPoints(originalAttacker) > 0 &&
+                GetIsReactionTypeHostile(originalAttacker, defender))
+            {
+                var damage = ResolveGuardRetaliationDamage(defender, originalAttacker, dmg, skillType);
+                ApplyTriggeredDamage(defender, originalAttacker, damage, CombatDamageType.Physical, skillType);
+                applied = true;
+            }
+
             var target = GetFirstObjectInShape(
                 Shape.Sphere,
                 radius,
@@ -3209,12 +3220,14 @@ namespace SWLOR.Game.Server.Service
                 SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
-                if (!GetIsDead(target) &&
+                if (target != originalAttacker &&
+                    !GetIsDead(target) &&
                     GetCurrentHitPoints(target) > 0 &&
                     GetIsReactionTypeHostile(target, defender))
                 {
+                    var damage = ResolveGuardRetaliationDamage(defender, target, dmg, skillType);
                     ApplyTriggeredDamage(defender, target, damage, CombatDamageType.Physical, skillType);
-                    if (target != originalAttacker && additionalTargetEnmity > 0)
+                    if (additionalTargetEnmity > 0)
                         Enmity.ModifyEnmity(defender, target, additionalTargetEnmity);
 
                     applied = true;
@@ -3229,7 +3242,43 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (applied && GetIsPC(defender))
-                FloatingTextStringOnCreature(ColorToken.Combat("Iron Elbows"), defender, false);
+                FloatingTextStringOnCreature(ColorToken.Combat("Retaliation Pulse"), defender, false);
+        }
+
+        private static int ResolveGuardRetaliationDamage(
+            uint source,
+            uint target,
+            int dmg,
+            SkillType skillType)
+        {
+            if (!GetIsObjectValid(source) || !GetIsObjectValid(target) || dmg <= 0)
+                return 0;
+
+            const CombatDamageType damageType = CombatDamageType.Physical;
+            var damageAbility = GetGuardRetaliationDamageAbility(source, skillType);
+            var attack = Stat.GetAttack(source, damageAbility, skillType);
+            attack = ApplyTargetStatusAttackModifiers(source, target, attack, skillType);
+            var attackStat = GetAbilityScore(source, damageAbility);
+            var defenseAbility = damageType.GetDefenseAbilityType();
+            var defense = Stat.GetDefense(target, damageType, defenseAbility);
+            defense = ApplyStatusSourceDefenseModifiers(source, target, defense);
+            defense = ApplyIncomingPhysicalToForceDefenseConversion(
+                target,
+                damageType,
+                defense,
+                () => ApplyStatusSourceDefenseModifiers(
+                    source,
+                    target,
+                    Stat.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
+            var defenderStat = GetAbilityScore(target, defenseAbility);
+
+            return CalculateDamage(
+                attack,
+                dmg,
+                attackStat,
+                defense,
+                defenderStat,
+                0);
         }
 
         private static AbilityType GetGuardRetaliationDamageAbility(uint defender, SkillType skillType)
@@ -6945,12 +6994,90 @@ namespace SWLOR.Game.Server.Service
             int criticalRateAdjustment = 0,
             uint defender = OBJECT_INVALID)
         {
+            var criticalRate = GetAbilityCriticalRate(
+                attacker,
+                skillType,
+                isAreaAbility,
+                criticalRateAdjustment,
+                defender);
+
+            return criticalRate > 0 && Random.D100(1) <= criticalRate
+                ? StandardCriticalRating
+                : 0;
+        }
+
+        private static void ApplyGuardedHitNextAttackEffects(uint creature)
+        {
+            var primaryDMGBonus = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitNextAttackDMGBonus);
+            var criticalRate = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitNextAttackCriticalRatePercentAdjustment);
+            var primaryWindow = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitNextAttackWindowSeconds);
+            var secondaryDMGBonus = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitSecondaryNextAttackDMGBonus);
+            var enmityBonus = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitSecondaryNextAttackEnmityBonus);
+            var secondaryWindow = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitSecondaryNextAttackWindowSeconds);
+            var dmgBonus = primaryDMGBonus + secondaryDMGBonus;
+            var window = Math.Max(primaryWindow, secondaryWindow);
+            if (window <= 0 || dmgBonus == 0 && criticalRate == 0 && enmityBonus == 0)
+                return;
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAttackGuardedHitDMGBonus,
+                dmgBonus,
+                window,
+                StatType.NextAttackGuardedHitDMGBonus);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
+                criticalRate,
+                window,
+                StatType.NextAttackGuardedHitDMGBonus);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAttackGuardedHitEnmityBonus,
+                enmityBonus,
+                window,
+                StatType.NextAttackGuardedHitDMGBonus);
+
+            if (GetIsPC(creature))
+            {
+                var criticalText = criticalRate != 0
+                    ? $", +{criticalRate}% Crit"
+                    : string.Empty;
+                var enmityText = enmityBonus != 0
+                    ? $", +{enmityBonus} Enmity"
+                    : string.Empty;
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}"),
+                    creature,
+                    false);
+            }
+        }
+
+        public static int GetAbilityCriticalRate(
+            uint attacker,
+            SkillType skillType,
+            bool isAreaAbility,
+            int criticalRateAdjustment = 0,
+            uint defender = OBJECT_INVALID)
+        {
             if (!GetIsObjectValid(attacker))
                 return 0;
 
-            var criticalRate = criticalRateAdjustment;
-            criticalRate += GetSkillCriticalRatePercentAdjustment(attacker, skillType);
-            criticalRate += GetAbilityHitOrCriticalAdjustment(
+            var totalAdjustment = criticalRateAdjustment;
+            totalAdjustment += GetSkillCriticalRatePercentAdjustment(attacker, skillType);
+            totalAdjustment += GetAbilityHitOrCriticalAdjustment(
                 attacker,
                 skillType,
                 PerkType.Invalid,
@@ -6962,7 +7089,7 @@ namespace SWLOR.Game.Server.Service
 
             if (isAreaAbility && skillType == SkillType.TwinBlade)
             {
-                criticalRate += Stat.GetStatAdjustment(attacker, StatType.TwinBladeAreaAbilityCriticalRatePercentAdjustment);
+                totalAdjustment += Stat.GetStatAdjustment(attacker, StatType.TwinBladeAreaAbilityCriticalRatePercentAdjustment);
             }
 
             if (skillType == SkillType.Throwing &&
@@ -6970,27 +7097,28 @@ namespace SWLOR.Game.Server.Service
                 (StatusEffect.HasStatusEffect(defender, typeof(DisorientedStatusEffect)) ||
                  StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding)))
             {
-                criticalRate += Stat.GetStatAdjustment(attacker, StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment);
+                totalAdjustment += Stat.GetStatAdjustment(attacker, StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment);
             }
 
             if (GetIsObjectValid(defender) && IsTargetNotFacingAttacker(attacker, defender))
             {
-                criticalRate += Stat.GetStatAdjustment(attacker, StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment);
+                totalAdjustment += Stat.GetStatAdjustment(attacker, StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment);
             }
 
-            criticalRate += GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender);
-            criticalRate += GetTargetStatusCriticalRateAdjustment(attacker, defender);
-            criticalRate += GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
-            criticalRate += GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
+            totalAdjustment += GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender);
+            totalAdjustment += GetTargetStatusCriticalRateAdjustment(attacker, defender);
+            totalAdjustment += GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
+            totalAdjustment += GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
 
-            if (criticalRate < MinimumCriticalRate)
-                criticalRate = MinimumCriticalRate;
-            else if (criticalRate > MaximumCriticalRate)
-                criticalRate = MaximumCriticalRate;
+            return CalculateAbilityCriticalChance(totalAdjustment);
+        }
 
-            return criticalRate > 0 && Random.D100(1) <= criticalRate
-                ? StandardCriticalRating
-                : 0;
+        public static int CalculateAbilityCriticalChance(int totalPercentAdjustment)
+        {
+            return Math.Clamp(
+                MinimumCriticalRate + totalPercentAdjustment,
+                MinimumCriticalRate,
+                MaximumCriticalRate);
         }
 
         public static bool TryResolveAbilityHit(
@@ -7516,6 +7644,52 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextSkillAbilitySkillType);
 
             return (damageBonus, criticalRate, defenseIgnore);
+        }
+
+        public static (int DMGBonus, int CriticalRatePercentAdjustment, int EnmityBonus) ConsumeNextAttackGuardedHitBonuses(
+            uint creature)
+        {
+            var attackBonuses = ConsumeNextAttackGuardedHitAutoAttackBonuses(creature);
+            var criticalRate = ConsumeNextAttackGuardedHitCriticalRateBonus(creature);
+
+            return (attackBonuses.DMGBonus, criticalRate, attackBonuses.EnmityBonus);
+        }
+
+        public static (int DMGBonus, int EnmityBonus) ConsumeNextAttackGuardedHitAutoAttackBonuses(uint creature)
+        {
+            var dmgBonus = TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackGuardedHitDMGBonus,
+                StatType.NextAttackGuardedHitDMGBonus);
+            var enmityBonus = TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackGuardedHitEnmityBonus,
+                StatType.NextAttackGuardedHitDMGBonus);
+
+            return (dmgBonus, enmityBonus);
+        }
+
+        public static int ConsumeNextAttackGuardedHitCriticalRateBonus(uint creature)
+        {
+            return TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
+                StatType.NextAttackGuardedHitDMGBonus);
+        }
+
+        public static void ApplyNextAttackGuardedHitEnmityBonus(
+            uint attacker,
+            uint defender,
+            int enmityBonus)
+        {
+            if (!GetIsObjectValid(attacker) ||
+                !GetIsObjectValid(defender) ||
+                enmityBonus <= 0)
+            {
+                return;
+            }
+
+            Enmity.ModifyEnmity(attacker, defender, enmityBonus);
         }
 
         public static void GrantNextAbilityDamageBonus(uint creature, int perkTypeValue, int bonus, int durationSeconds)
@@ -9172,6 +9346,35 @@ namespace SWLOR.Game.Server.Service
             var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
 
             return ColorToken.Combat($"{attackerName} uses {abilityName}, but it hits no targets.");
+        }
+
+        public static void SendAbilityCriticalHitFeedback(uint attacker, uint defender, string abilityName)
+        {
+            if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
+                return;
+
+            Messaging.SendMessageNearbyToPlayers(
+                defender,
+                observer => BuildAbilityCriticalHitCombatLogMessage(
+                    observer,
+                    attacker,
+                    defender,
+                    abilityName),
+                60f);
+        }
+
+        public static string BuildAbilityCriticalHitCombatLogMessage(
+            uint observer,
+            uint attacker,
+            uint defender,
+            string abilityName)
+        {
+            if (string.IsNullOrWhiteSpace(abilityName))
+                abilityName = "Ability";
+
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
+            return ColorToken.Combat($"{attackerName}'s {abilityName} critically hits {defenderName}.");
         }
 
         public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)

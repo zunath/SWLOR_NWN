@@ -899,7 +899,15 @@ namespace SWLOR.Game.Server.Service
 
         private static float GetStatusEffectDurationSeconds(IStatusEffect statusEffect, int durationTicks)
         {
-            return durationTicks * Math.Max(1f, statusEffect.Frequency);
+            var logicalDurationSeconds = durationTicks * Math.Max(1f, statusEffect.Frequency);
+
+            // NWN may remove an effect before delivering an interval callback scheduled for the
+            // exact same timestamp. Ticking effects therefore need one scheduler interval of
+            // native lifetime grace so their final logical tick can run and remove the effect.
+            // Passive effects have no interval callback and retain their exact duration.
+            return statusEffect.ActivationType == StatusEffectActivationType.Tick
+                ? logicalDurationSeconds + Interval
+                : logicalDurationSeconds;
         }
 
         private static Effect LinkEffect(Effect linkedEffect, Effect effect)

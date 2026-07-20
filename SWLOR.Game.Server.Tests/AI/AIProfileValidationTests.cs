@@ -188,7 +188,7 @@ public class AIProfileValidationTests
     }
 
     [Test]
-    public void NPCLocationSelectableHostileAreaAbilities_DoNotRequireTargets()
+    public void PlayerLocationSelectableHostileAreaAbilities_RequireLocationsNotObjects()
     {
         Ability.CacheData();
         var ability = Ability.GetAbilityDetail(FeatType.Provoke2);
@@ -196,6 +196,7 @@ public class AIProfileValidationTests
         ability.IsHostileAbility.Should().BeTrue();
         ability.IsAreaAbility.Should().BeTrue();
         ability.RequiresTarget.Should().BeFalse();
+        ability.RequiresLocationTarget.Should().BeTrue();
     }
 
     [Test]

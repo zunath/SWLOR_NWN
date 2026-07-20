@@ -58,6 +58,30 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
+            // NWNX always fires the AFTER event even when the BEFORE event rejected the engine
+            // transition. Do not create a status icon or start stamina drain unless stealth really
+            // became active and the player owns the perk.
+            var ownsStealth = Perk.GetPerkLevel(creature, PerkType.Stealth) > 0;
+            var enteredDuringCombatWithoutWindow =
+                GetIsInCombat(creature) &&
+                GetLocalInt(creature, CombatEntryWindowVariable) == 0;
+            if (!GetActionMode(creature, ActionMode.Stealth) ||
+                !ownsStealth ||
+                enteredDuringCombatWithoutWindow)
+            {
+                if (GetActionMode(creature, ActionMode.Stealth))
+                {
+                    AssignCommand(creature, () =>
+                    {
+                        SetActionMode(creature, ActionMode.Stealth, false);
+                    });
+                }
+
+                StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
+                return;
+            }
+
+            ClearVerdictsForTarget(creature);
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
         }
 

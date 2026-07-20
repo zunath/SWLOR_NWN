@@ -2362,6 +2362,10 @@ namespace SWLOR.Game.Server.Service
             if (criticalRating > 0)
             {
                 trackedImpact?.RecordCriticalHit();
+                Combat.SendAbilityCriticalHitFeedback(
+                    activator,
+                    target,
+                    trackedImpact?.Ability?.Name);
                 Combat.ApplyCriticalHitEffects(
                     activator,
                     target,
@@ -2581,6 +2585,10 @@ namespace SWLOR.Game.Server.Service
             if (criticalRating > 0)
             {
                 trackedImpact?.RecordCriticalHit();
+                Combat.SendAbilityCriticalHitFeedback(
+                    activator,
+                    target,
+                    trackedImpact?.Ability?.Name);
                 Combat.ApplyCriticalHitEffects(
                     activator,
                     target,

@@ -12,6 +12,7 @@ import io
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 
 
@@ -73,18 +74,70 @@ def csharp_escape(value: str) -> str:
 
 
 def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
+    replacement_map = {
+        csharp_escape(old): csharp_escape(new)
+        for _, old, new in changes
+    }
+    description_pattern = re.compile(
+        r'\.Description\("(?P<text>(?:\\.|[^"\\])*)"\)'
+    )
+
     files_changed = 0
     replacements = 0
     for path in (ROOT / "SWLOR.Game.Server").rglob("*.cs"):
         original = path.read_text(encoding="utf-8-sig")
-        updated = original
-        for _, old, new in changes:
-            old_literal = csharp_escape(old)
-            new_literal = csharp_escape(new)
-            count = updated.count(old_literal)
-            if count:
-                updated = updated.replace(old_literal, new_literal)
-                replacements += count
+        current_matches = list(description_pattern.finditer(original))
+        if not current_matches:
+            continue
+
+        relative_path = path.relative_to(ROOT).as_posix()
+        head_result = subprocess.run(
+            [
+                "git",
+                "-c",
+                "core.hooksPath=NUL",
+                "-c",
+                "core.fsmonitor=false",
+                "show",
+                f"HEAD:{relative_path}",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8-sig",
+        )
+        if head_result.returncode != 0:
+            continue
+
+        head_matches = list(description_pattern.finditer(head_result.stdout))
+        if len(head_matches) != len(current_matches):
+            raise RuntimeError(
+                f"Cannot safely synchronize descriptions in {relative_path}: "
+                f"HEAD has {len(head_matches)} description calls but the working file has "
+                f"{len(current_matches)}."
+            )
+
+        pieces: list[str] = []
+        cursor = 0
+        replacement_count = 0
+        for head_match, current_match in zip(head_matches, current_matches):
+            desired = replacement_map.get(head_match.group("text"))
+            if desired is None or desired == current_match.group("text"):
+                continue
+
+            pieces.append(original[cursor:current_match.start("text")])
+            pieces.append(desired)
+            cursor = current_match.end("text")
+            replacement_count += 1
+
+        if replacement_count:
+            pieces.append(original[cursor:])
+            updated = "".join(pieces)
+            replacements += replacement_count
+        else:
+            updated = original
+
         if updated != original:
             path.write_text(updated, encoding="utf-8", newline="")
             files_changed += 1
@@ -93,27 +146,64 @@ def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
 
 def update_tlk(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
     raw = TLK_JSON.read_text(encoding="utf-8-sig")
-    document = json.loads(raw)
-    replacements: dict[str, str] = {}
     new_by_old = {old: new for _, old, new in changes}
 
-    for entry in document["entries"]:
-        current = entry.get("text", "")
-        normalized = collapse_whitespace(current)
-        if normalized in new_by_old:
-            replacements[current] = new_by_old[normalized]
+    tree_result = subprocess.run(
+        ["git", "ls-tree", "HEAD", "SWLOR_Haks"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    submodule_sha = tree_result.stdout.split()[2]
+    head_tlk_result = subprocess.run(
+        [
+            "git",
+            "-c",
+            f"safe.directory={ROOT / 'SWLOR_Haks'}",
+            "-C",
+            str(ROOT / "SWLOR_Haks"),
+            "show",
+            f"{submodule_sha}:sw_tlk/sw_tlk.tlk.json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8-sig",
+    )
+    head_document = json.loads(head_tlk_result.stdout)
+    desired_by_id = {
+        int(entry["id"]): new_by_old[collapse_whitespace(entry.get("text", ""))]
+        for entry in head_document["entries"]
+        if collapse_whitespace(entry.get("text", "")) in new_by_old
+    }
+
+    entry_pattern = re.compile(
+        r'(?P<prefix>\{\s*"id":\s*(?P<id>\d+),\s*"text":\s*)'
+        r'(?P<text>"(?:\\.|[^"\\])*")',
+        re.MULTILINE,
+    )
 
     replacement_count = 0
-    for old, new in replacements.items():
-        old_token = f'"text": {json.dumps(old, ensure_ascii=False)}'
-        new_token = f'"text": {json.dumps(new, ensure_ascii=False)}'
-        count = raw.count(old_token)
-        if count:
-            raw = raw.replace(old_token, new_token)
-            replacement_count += count
+
+    def replace_entry(match: re.Match[str]) -> str:
+        nonlocal replacement_count
+        entry_id = int(match.group("id"))
+        desired = desired_by_id.get(entry_id)
+        if desired is None:
+            return match.group(0)
+
+        if json.loads(match.group("text")) == desired:
+            return match.group(0)
+
+        replacement_count += 1
+        return match.group("prefix") + json.dumps(desired, ensure_ascii=False)
+
+    raw = entry_pattern.sub(replace_entry, raw)
 
     TLK_JSON.write_text(raw, encoding="utf-8", newline="")
-    return len(replacements), replacement_count
+    return len(desired_by_id), replacement_count
 
 
 def main() -> None:

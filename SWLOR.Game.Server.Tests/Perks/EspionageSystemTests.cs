@@ -1,13 +1,118 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
 using SWLOR.Game.Server.Feature.ItemDefinition;
+using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class EspionageSystemTests
 {
+    [Test]
+    public void StealthAndDetectionRatings_UseTheCommittedAttributeFormulas()
+    {
+        Stat.CalculateDetectionRating(12, 9, 4, 10, false).Should().Be(35);
+        Stat.CalculateDetectionRating(12, 9, 4, 10, true).Should().Be(40);
+        Stat.CalculateStealthRating(12, 6, 10).Should().Be(40);
+
+        Stat.CalculateDetectionRating(-20, 0, 0, 0, false).Should().Be(0);
+        Stat.CalculateStealthRating(-20, 0, 0).Should().Be(0);
+    }
+
+    [Test]
+    public void StealthScaling_ProtectsACommittedSneakWhileAllowingACommittedSpotterToCounter()
+    {
+        var baselineNpcDetection = Stat.CalculateDetectionRating(10, 10, 0, 0, false);
+        var rankFourStealth = Stat.CalculateStealthRating(10, 0, 20);
+        CalculateDetectionChance(baselineNpcDetection, rankFourStealth).Should().Be(0m);
+
+        var committedSpotter = Stat.CalculateDetectionRating(27, 27, 0, 20, true);
+        var committedSneak = Stat.CalculateStealthRating(27, 0, 20);
+        CalculateDetectionChance(committedSpotter, committedSneak).Should().Be(0.7m);
+    }
+
+    [Test]
+    public void StealthPerks_GrantFlatRankBonusesAndSilentStrideOnlyBoostsMovementWhileHidden()
+    {
+        var stealth = BuildPerkWithout2daLookup(
+            new EspionagePerkDefinition(),
+            "Stealth",
+            PerkType.Stealth);
+
+        stealth.PerkLevels[1].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(5);
+        stealth.PerkLevels[2].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(10);
+        stealth.PerkLevels[3].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(15);
+        stealth.PerkLevels[4].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(20);
+
+        var silentStride = BuildPerkWithout2daLookup(
+            new EspionagePerkDefinition(),
+            "SilentStride",
+            PerkType.SilentStride).PerkLevels[1];
+        silentStride.StatBonuses
+            .Single(x => x.Stat == StatType.StealthMovementSpeedPercentAdjustment)
+            .Calculate(0)
+            .Should().Be(30);
+        silentStride.StatBonuses
+            .Single(x => x.Stat == StatType.StealthStaminaDrainReductionPercent)
+            .Calculate(0)
+            .Should().Be(20);
+
+        var statusSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "StealthStatusEffect.cs"));
+        statusSource.Should().Contain("StatType.StealthMovementSpeedPercentAdjustment");
+        statusSource.Should().Contain("StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = movementSpeedBonus;");
+    }
+
+    [Test]
+    public void AlertnessRanks_ProvideTheDocumentedDetectionCounter()
+    {
+        var alertness = BuildPerkWithout2daLookup(
+            new ArmorPerkDefinition(),
+            "Alertness",
+            PerkType.Alertness);
+
+        alertness.PerkLevels[1].StatBonuses.Single(x => x.Stat == StatType.Detection).Calculate(0).Should().Be(10);
+        alertness.PerkLevels[2].StatBonuses.Single(x => x.Stat == StatType.Detection).Calculate(0).Should().Be(15);
+        alertness.PerkLevels[3].StatBonuses.Single(x => x.Stat == StatType.Detection).Calculate(0).Should().Be(20);
+    }
+
+    [Test]
+    public void StealthToggle_PreservesModeThroughActivationAndRejectsPhantomStatusApplications()
+    {
+        var abilities = new StealthAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.Stealth1, FeatType.Stealth2, FeatType.Stealth3, FeatType.Stealth4 })
+        {
+            abilities[feat].PreservesStealthDuringActivation.Should().BeTrue();
+            abilities[feat].CustomValidation.Should().NotBeNull();
+        }
+
+        var stealthSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "Stealth.cs"));
+        stealthSource.Should().Contain("!GetActionMode(creature, ActionMode.Stealth)");
+        stealthSource.Should().Contain("Perk.GetPerkLevel(creature, PerkType.Stealth) > 0");
+        stealthSource.Should().Contain("enteredDuringCombatWithoutWindow");
+        stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);");
+
+        var featUseSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs"));
+        featUseSource.Should().Contain("!ability.PreservesStealthDuringActivation");
+    }
+
     [Test]
     public void SlicingRanksReduceLockboxUseDelayAtTheDocumentedBands()
     {
@@ -118,5 +223,41 @@ public class EspionageSystemTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static decimal CalculateDetectionChance(int detection, int stealth)
+    {
+        var detectedOutcomes = 0;
+        for (var detectionRoll = 1; detectionRoll <= 20; detectionRoll++)
+        {
+            for (var stealthRoll = 1; stealthRoll <= 20; stealthRoll++)
+            {
+                if (detectionRoll + detection > stealthRoll + stealth)
+                    detectedOutcomes++;
+            }
+        }
+
+        return detectedOutcomes / 400m;
+    }
+
+    private static PerkDetail BuildPerkWithout2daLookup(
+        object definition,
+        string methodName,
+        PerkType perkType)
+    {
+        var definitionType = definition.GetType();
+        definitionType
+            .GetMethod(methodName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .Invoke(definition, null);
+
+        var builder = definitionType
+            .GetField("_builder", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .GetValue(definition);
+
+        var perks = (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
+            .GetField("_perks", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .GetValue(builder)!;
+
+        return perks[perkType];
     }
 }

@@ -5305,7 +5305,8 @@ namespace SWLOR.Game.Server.Service.StatService
         Lockpicking = 924,
 
         /// <summary>
-        /// Percent multiplier applied to the creature's total Stealth stat while stealthed.
+        /// Legacy stealth-effectiveness multiplier slot retained for stable enum serialization.
+        /// New stealth ranks contribute flat <see cref="Stealth"/> instead.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         StealthEffectivenessPercent = 925,
@@ -5517,6 +5518,12 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
         HostileAbilityStaminaCostFlatAdjustment = 958,
+
+        /// <summary>
+        /// Movement speed percent adjustment applied only while the creature is stealthed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthMovementSpeedPercentAdjustment = 959,
     }
 
     public class StatTypeAttribute : Attribute

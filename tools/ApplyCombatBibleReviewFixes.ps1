@@ -632,10 +632,10 @@ foreach ($entry in $mimicryDamageScaling.GetEnumerator()) {
 }
 
 $espionageDescriptions = @{
-    "Stealth I" = "Enter stealth, increasing stealth effectiveness by 15% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth II" = "Enter stealth, increasing stealth effectiveness by 25% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth III" = "Enter stealth, increasing stealth effectiveness by 35% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth IV" = "Enter stealth, increasing stealth effectiveness by 45% while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth I" = "Enter stealth, increasing Stealth by 5 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth II" = "Enter stealth, increasing Stealth by 10 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth III" = "Enter stealth, increasing Stealth by 15 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth IV" = "Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
     "Back Attack I" = "Melee weapon attacks from behind a target deal +3% damage."
     "Back Attack II" = "Melee weapon attacks from behind a target deal +5% damage and gain +3% Critical Rate."
     "Back Attack III" = "Melee weapon attacks from behind a target deal +8% damage and gain +5% Critical Rate."
@@ -646,7 +646,7 @@ $espionageDescriptions = @{
     "Slicing V" = "Can open tier 5 lockboxes. Lockbox opening is 40% faster."
     "Tactical Escape II" = "Reduces your enmity by 60%, removes negative movement-speed effects, and increases Evasion by 12% for 30 seconds."
     "Shadow Step II" = "Dash behind one hostile target within 5m, remove negative movement-speed effects, and increase Evasion by 15% for 30 seconds."
-    "Silent Stride" = "Removes the movement-speed penalty from stealth and reduces its STM drain rate by 20%, from 2 STM every 6 seconds to 2 STM every 7.5 seconds."
+    "Silent Stride" = "While stealthed, increases Movement Speed by 30% and reduces STM drain by 20%, from 2 STM every 6 seconds to 2 STM every 7.5 seconds. Stealth still prevents running at full speed."
     "Ghost Protocol" = "Reduces your enmity by 80%, enters stealth for up to 30 seconds, and causes your next back attack within 30 seconds to critically hit and inflict Exposed, reducing Defense by 20% for 30 seconds."
     "Trapcraft III" = "Can craft, place, detect, and disarm tier 3 traps. Traps arm 20% faster, reducing their arming time from 3 seconds to 2.4 seconds."
     "Trapcraft IV" = "Can craft, place, detect, and disarm tier 4 traps. Traps arm 30% faster, reducing their arming time from 3 seconds to 2.1 seconds."
@@ -658,6 +658,19 @@ $espionageDescriptions = @{
     "Trap Management II" = "Increases maximum concurrent traps to 3 and trap detection range by 5m, from 6m to 11m."
     "Lasting Coatings" = "Weapon poison coatings you apply gain 50% more charges, increasing from 20 to 30 charges."
     "Master Saboteur" = "Can craft, place, detect, and disarm tier 5 traps. Your trap damage and weapon-poison Venom damage increase by 10%."
+}
+
+$alertnessDescriptions = @{
+    "Alertness I" = "Increases Detection by 10, improving your chance to notice stealthed creatures."
+    "Alertness II" = "Increases Detection by 15, improving your chance to notice stealthed creatures."
+    "Alertness III" = "Increases Detection by 20, improving your chance to notice stealthed creatures."
+}
+foreach ($entry in $alertnessDescriptions.GetEnumerator()) {
+    $perkChanges += @{
+        Sheet = "Armor"
+        PerkName = $entry.Key
+        Values = @{ Description = $entry.Value }
+    }
 }
 foreach ($entry in $espionageDescriptions.GetEnumerator()) {
     $perkChanges += @{
@@ -828,6 +841,9 @@ $characterStatChanges = @(
 )
 
 $auditSheetChanges = @(
+    @{ Sheet = "Character Stats"; Cell = "K51"; Value = "All attacks and damaging abilities have a 5% base critical chance. Additive modifiers apply to that baseline, and the final chance is clamped between 5% and 50%." },
+    @{ Sheet = "Character Stats"; Cell = "K60"; Value = "Opposed check: d20 + Stealth vs each observer's d20 + Detection, rolled once per 30 seconds per observer. Stealth = (AGI x 2) + equipment, perk, and status-effect bonuses." },
+    @{ Sheet = "Character Stats"; Cell = "K61"; Value = "Counterpart to Stealth. Detection = PER + WIL + equipment and perk bonuses; Detect mode grants an additional +5 while active." },
     @{ Sheet = "Status Effects"; Cell = "B208"; Value = "While active, all outgoing damage is increased by 10%. Using any hostile combat ability costs 2 additional STM and grants +8% Evasion for 30 seconds." },
     @{ Sheet = "Combat Balance Findings"; Cell = "F4"; Value = "All percent-of-damage healing produced by one hit is now pooled and capped at 50% of that hit's damage after Combat Readiness and healing-received modifiers." },
     @{ Sheet = "Combat Balance Findings"; Cell = "G4"; Value = "The multiplicative sustain ceiling is bounded; optimized Heavy Vibroblade and support combinations still need encounter retesting." },

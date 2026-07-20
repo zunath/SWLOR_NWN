@@ -6945,12 +6945,31 @@ namespace SWLOR.Game.Server.Service
             int criticalRateAdjustment = 0,
             uint defender = OBJECT_INVALID)
         {
+            var criticalRate = GetAbilityCriticalRate(
+                attacker,
+                skillType,
+                isAreaAbility,
+                criticalRateAdjustment,
+                defender);
+
+            return criticalRate > 0 && Random.D100(1) <= criticalRate
+                ? StandardCriticalRating
+                : 0;
+        }
+
+        public static int GetAbilityCriticalRate(
+            uint attacker,
+            SkillType skillType,
+            bool isAreaAbility,
+            int criticalRateAdjustment = 0,
+            uint defender = OBJECT_INVALID)
+        {
             if (!GetIsObjectValid(attacker))
                 return 0;
 
-            var criticalRate = criticalRateAdjustment;
-            criticalRate += GetSkillCriticalRatePercentAdjustment(attacker, skillType);
-            criticalRate += GetAbilityHitOrCriticalAdjustment(
+            var totalAdjustment = criticalRateAdjustment;
+            totalAdjustment += GetSkillCriticalRatePercentAdjustment(attacker, skillType);
+            totalAdjustment += GetAbilityHitOrCriticalAdjustment(
                 attacker,
                 skillType,
                 PerkType.Invalid,
@@ -6962,7 +6981,7 @@ namespace SWLOR.Game.Server.Service
 
             if (isAreaAbility && skillType == SkillType.TwinBlade)
             {
-                criticalRate += Stat.GetStatAdjustment(attacker, StatType.TwinBladeAreaAbilityCriticalRatePercentAdjustment);
+                totalAdjustment += Stat.GetStatAdjustment(attacker, StatType.TwinBladeAreaAbilityCriticalRatePercentAdjustment);
             }
 
             if (skillType == SkillType.Throwing &&
@@ -6970,27 +6989,28 @@ namespace SWLOR.Game.Server.Service
                 (StatusEffect.HasStatusEffect(defender, typeof(DisorientedStatusEffect)) ||
                  StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding)))
             {
-                criticalRate += Stat.GetStatAdjustment(attacker, StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment);
+                totalAdjustment += Stat.GetStatAdjustment(attacker, StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment);
             }
 
             if (GetIsObjectValid(defender) && IsTargetNotFacingAttacker(attacker, defender))
             {
-                criticalRate += Stat.GetStatAdjustment(attacker, StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment);
+                totalAdjustment += Stat.GetStatAdjustment(attacker, StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment);
             }
 
-            criticalRate += GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender);
-            criticalRate += GetTargetStatusCriticalRateAdjustment(attacker, defender);
-            criticalRate += GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
-            criticalRate += GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
+            totalAdjustment += GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender);
+            totalAdjustment += GetTargetStatusCriticalRateAdjustment(attacker, defender);
+            totalAdjustment += GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
+            totalAdjustment += GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
 
-            if (criticalRate < MinimumCriticalRate)
-                criticalRate = MinimumCriticalRate;
-            else if (criticalRate > MaximumCriticalRate)
-                criticalRate = MaximumCriticalRate;
+            return CalculateAbilityCriticalChance(totalAdjustment);
+        }
 
-            return criticalRate > 0 && Random.D100(1) <= criticalRate
-                ? StandardCriticalRating
-                : 0;
+        public static int CalculateAbilityCriticalChance(int totalPercentAdjustment)
+        {
+            return Math.Clamp(
+                MinimumCriticalRate + totalPercentAdjustment,
+                MinimumCriticalRate,
+                MaximumCriticalRate);
         }
 
         public static bool TryResolveAbilityHit(
@@ -9100,6 +9120,35 @@ namespace SWLOR.Game.Server.Service
             var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
 
             return ColorToken.Combat($"{attackerName} uses {abilityName}, but it hits no targets.");
+        }
+
+        public static void SendAbilityCriticalHitFeedback(uint attacker, uint defender, string abilityName)
+        {
+            if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
+                return;
+
+            Messaging.SendMessageNearbyToPlayers(
+                defender,
+                observer => BuildAbilityCriticalHitCombatLogMessage(
+                    observer,
+                    attacker,
+                    defender,
+                    abilityName),
+                60f);
+        }
+
+        public static string BuildAbilityCriticalHitCombatLogMessage(
+            uint observer,
+            uint attacker,
+            uint defender,
+            string abilityName)
+        {
+            if (string.IsNullOrWhiteSpace(abilityName))
+                abilityName = "Ability";
+
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
+            return ColorToken.Combat($"{attackerName}'s {abilityName} critically hits {defenderName}.");
         }
 
         public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)

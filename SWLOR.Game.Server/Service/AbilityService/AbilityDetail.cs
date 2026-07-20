@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsHostileAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
         public bool BreaksStealth { get; set; }
+        public bool PreservesStealthDuringActivation { get; set; }
         public bool RequiresTarget { get; set; }
         public bool UsesActiveAttackTarget { get; set; }
         public int AbilityLevel { get; set; }
@@ -134,6 +135,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             IsHostileAbility = false;
             DisplaysActivationMessage = true;
             BreaksStealth = false;
+            PreservesStealthDuringActivation = false;
             RequiresTarget = false;
             UsesActiveAttackTarget = false;
             AbilityLevel = 1;

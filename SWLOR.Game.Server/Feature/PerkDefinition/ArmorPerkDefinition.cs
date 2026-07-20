@@ -71,24 +71,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AlertnessTrait)
-                .Description("Increases Detection by 5, improving your chance to notice stealthed creatures.")
+                .Description("Increases Detection by 10, improving your chance to notice stealthed creatures.")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 5)
-                .IncreasesStat(StatType.Detection, 5)
-
-                .AddPerkLevel()
-                .Description("Increases Detection by 10, improving your chance to notice stealthed creatures.")
-                .Price(3)
-                .RequirementSkill(SkillType.Armor, 25)
                 .IncreasesStat(StatType.Detection, 10)
 
                 .AddPerkLevel()
                 .Description("Increases Detection by 15, improving your chance to notice stealthed creatures.")
+                .Price(3)
+                .RequirementSkill(SkillType.Armor, 25)
+                .IncreasesStat(StatType.Detection, 15)
+
+                .AddPerkLevel()
+                .Description("Increases Detection by 20, improving your chance to notice stealthed creatures.")
                 .Price(4)
                 .RequirementSkill(SkillType.Armor, 40)
-                .IncreasesStat(StatType.Detection, 15);
+                .IncreasesStat(StatType.Detection, 20);
         }
 
     }
 }
-

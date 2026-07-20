@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -152,6 +153,32 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         perks[PerkType.Flamethrower].PerkLevels[3].Description.Should().Contain("Burn for 12 seconds");
         perks[PerkType.RailDart].PerkLevels.Values.Should().OnlyContain(
             level => level.Description.Contains("Bleed for 12 seconds", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void AssaultGadgetCriticalChance_IsAdditiveAndObservable()
+    {
+        Combat.CalculateAbilityCriticalChance(0).Should().Be(5);
+        Combat.CalculateAbilityCriticalChance(8).Should().Be(13,
+            "Gadget Harness adds eight points to the five-percent ability baseline");
+        Combat.CalculateAbilityCriticalChance(13).Should().Be(18,
+            "Gadget Harness and Tactical Uplink stack additively");
+        Combat.CalculateAbilityCriticalChance(100).Should().Be(50);
+        Combat.CalculateAbilityCriticalChance(-100).Should().Be(5);
+
+        var root = FindRepositoryRoot();
+        var characterSheet = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "CharacterSheetViewModel.cs").FullName);
+        var ability = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var combat = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+
+        characterSheet.Should().Contain("Assault Gadget Crit");
+        ability.Split("Combat.SendAbilityCriticalHitFeedback(").Should().HaveCount(3,
+            "player and NPC-scaled ability criticals both need visible combat feedback");
+        combat.Should().Contain("PlayerName.GetColoredDisplayName(observer, attacker)");
+        combat.Should().Contain("critically hits");
     }
 
     [Test]

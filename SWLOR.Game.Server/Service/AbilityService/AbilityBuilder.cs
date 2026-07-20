@@ -544,6 +544,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Prevents the activation wind-up from clearing stealth before the ability's impact runs.
+        /// Intended for abilities whose impact must inspect or toggle the current stealth state.
+        /// </summary>
+        public AbilityBuilder PreservesStealthDuringActivation()
+        {
+            _activeAbility.PreservesStealthDuringActivation = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Saves the ability level of the ability to be pulled when used later.
         /// </summary>
         /// <param name="level">The level of the ability</param>

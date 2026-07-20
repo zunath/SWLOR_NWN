@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.TailSweep, 2, 2)
+                .MimicryTechnique(FeatType.TailSweep, 10, 2)
                 .HasTargetingSphere(
                     Spell.TailSweepTechnique,
                     4.5f,

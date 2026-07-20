@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.MercilessAngle, 4, 3)
+                .MimicryTechnique(FeatType.MercilessAngle, 44, 3)
                 .HasTargetingCone(
                     Spell.MercilessAngleTechnique,
                     5f,

@@ -58,8 +58,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public List<Type> StatusEffectTypesRemovedOnPerkRefund { get; set; }
         public AITargetSelector AITargetSelector { get; set; }
         public AIScoreCalculation AIScore { get; set; }
+        public bool IsMimicryTechnique { get; set; }
         public FeatType MimicrySourceFeat { get; set; }
-        public int MimicryTier { get; set; }
+        public int MimicrySkillRequirement { get; set; }
         public int MimicrySlotCost { get; set; }
 
         /// <summary>

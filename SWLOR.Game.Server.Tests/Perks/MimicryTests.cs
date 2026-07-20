@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
@@ -22,22 +23,22 @@ public class MimicryTests
     private const string NpcAbilityNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.NPC";
     private const int CustomTlkStrrefOffset = 16777216;
 
-    // Feat, display name, tier, slot cost, source NPC feat this technique is copied from.
+    // Feat, display name, required Mimicry rank, slot cost, source NPC feat this technique is copied from.
     // Mirrors the ORIGINAL "Technique pool" table (the first 10 techniques shipped). These rows
     // pin exact tuning for the original pool and must not be touched when the pool expands;
     // full-pool coverage is asserted separately by the reflection-driven tests below.
-    private static readonly (FeatType Technique, string Name, int Tier, int SlotCost, FeatType SourceFeat)[] TechniqueTable =
+    private static readonly (FeatType Technique, string Name, int RequiredRank, int SlotCost, FeatType SourceFeat)[] TechniqueTable =
     {
-        (FeatType.ToxicSpitTechnique, "Toxic Spit", 1, 1, FeatType.ToxicSpit),
-        (FeatType.FrostSpitTechnique, "Frost Spit", 1, 1, FeatType.FrostSpit),
-        (FeatType.RakingClawsTechnique, "Raking Claws", 1, 1, FeatType.RakingClaws),
-        (FeatType.SonicShriekTechnique, "Sonic Shriek", 2, 2, FeatType.SonicShriek),
-        (FeatType.TailSweepTechnique, "Tail Sweep", 2, 2, FeatType.TailSweep),
-        (FeatType.StaticWebTechnique, "Static Web", 2, 2, FeatType.StaticWeb),
-        (FeatType.GoringChargeTechnique, "Goring Charge", 3, 2, FeatType.GoringCharge),
-        (FeatType.ToxicCloudTechnique, "Toxic Cloud", 3, 3, FeatType.ToxicCloud),
-        (FeatType.ScorchingBreathTechnique, "Scorching Breath", 4, 3, FeatType.ScorchingBreath),
-        (FeatType.TerrifyingBellowTechnique, "Terrifying Bellow", 4, 3, FeatType.TerrifyingBellow),
+        (FeatType.ToxicSpitTechnique, "Toxic Spit", 28, 1, FeatType.ToxicSpit),
+        (FeatType.FrostSpitTechnique, "Frost Spit", 3, 1, FeatType.FrostSpit),
+        (FeatType.RakingClawsTechnique, "Raking Claws", 6, 1, FeatType.RakingClaws),
+        (FeatType.SonicShriekTechnique, "Sonic Shriek", 0, 2, FeatType.SonicShriek),
+        (FeatType.TailSweepTechnique, "Tail Sweep", 10, 2, FeatType.TailSweep),
+        (FeatType.StaticWebTechnique, "Static Web", 1, 2, FeatType.StaticWeb),
+        (FeatType.GoringChargeTechnique, "Goring Charge", 14, 2, FeatType.GoringCharge),
+        (FeatType.ToxicCloudTechnique, "Toxic Cloud", 33, 3, FeatType.ToxicCloud),
+        (FeatType.ScorchingBreathTechnique, "Scorching Breath", 50, 3, FeatType.ScorchingBreath),
+        (FeatType.TerrifyingBellowTechnique, "Terrifying Bellow", 11, 3, FeatType.TerrifyingBellow),
     };
 
     [Test]
@@ -52,7 +53,8 @@ public class MimicryTests
 
             ((int)entry.Technique).Should().BeInRange(2796, 2805);
             ability.Name.Should().NotBeNullOrWhiteSpace();
-            ability.MimicryTier.Should().BeInRange(1, 4);
+            ability.IsMimicryTechnique.Should().BeTrue();
+            ability.MimicrySkillRequirement.Should().BeInRange(0, 50);
             ability.MimicrySlotCost.Should().BeInRange(1, 3);
             ability.MimicrySourceFeat.Should().NotBe(FeatType.Invalid);
             ability.EffectiveLevelPerkType.Should().Be(PerkType.CombatAnalyzer);
@@ -62,14 +64,15 @@ public class MimicryTests
     }
 
     [Test]
-    public void MimicryTechniques_TierAndSlotCostMatchPoolTable()
+    public void MimicryTechniques_RankRequirementAndSlotCostMatchPoolTable()
     {
         foreach (var entry in TechniqueTable)
         {
             var ability = BuildTechnique(entry.Technique)[entry.Technique];
 
             ability.Name.Should().Be(entry.Name);
-            ability.MimicryTier.Should().Be(entry.Tier, $"{entry.Technique} tier should match the pool table");
+            ability.MimicrySkillRequirement.Should().Be(entry.RequiredRank,
+                $"{entry.Technique} rank requirement should match the reviewed encounter progression");
             ability.MimicrySlotCost.Should().Be(entry.SlotCost, $"{entry.Technique} slot cost should match the pool table");
             ability.MimicrySourceFeat.Should().Be(entry.SourceFeat);
         }
@@ -107,7 +110,9 @@ public class MimicryTests
 
             ability.Name.Should().NotBeNullOrWhiteSpace($"{feat} should have a display name");
             ability.Name.Should().NotContain("Technique", $"{feat}'s player-facing name should not carry the 'Technique' label");
-            ability.MimicryTier.Should().BeInRange(1, 4, $"{feat}'s MimicryTier should be between 1 and 4");
+            ability.IsMimicryTechnique.Should().BeTrue($"{feat} should be marked as a Mimicry technique");
+            ability.MimicrySkillRequirement.Should().BeInRange(0, 50,
+                $"{feat}'s MimicrySkillRequirement should be a valid skill rank");
             ability.MimicrySlotCost.Should().BeInRange(1, 3, $"{feat}'s MimicrySlotCost should be between 1 and 3");
             ability.EffectiveLevelPerkType.Should().Be(PerkType.CombatAnalyzer, $"{feat} should scale with Combat Analyzer level");
             ability.SkillType.Should().Be(SkillType.Mimicry, $"{feat} should use the Mimicry skill");
@@ -335,7 +340,7 @@ public class MimicryTests
         static AbilityBuilder Trait() => new AbilityBuilder()
             .Create(FeatType.ChitinGuardTechnique, PerkType.CombatAnalyzer)
             .Name("Contract Test")
-            .MimicryTrait(FeatType.ChitinGuard, 2, 2);
+            .MimicryTrait(FeatType.ChitinGuard, 19, 2);
 
         Trait().Invoking(b => b.MimicryTraitStat(StatType.Invalid, 10))
             .Should().Throw<ArgumentException>("an Invalid stat is not a real stat");
@@ -346,12 +351,24 @@ public class MimicryTests
         static AbilityBuilder PlainTechnique() => new AbilityBuilder()
             .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
             .Name("Contract Test")
-            .MimicryTechnique(FeatType.ToxicSpit, 1, 1);
+            .MimicryTechnique(FeatType.ToxicSpit, 24, 1);
 
         PlainTechnique().Invoking(b => b.MimicryTraitStat(StatType.AccuracyPercentAdjustment, 4))
             .Should().Throw<ArgumentException>("only traits declare trait stats");
         PlainTechnique().Invoking(b => b.MimicryTraitResistance(ResistanceType.Fire, 20))
             .Should().Throw<ArgumentException>("only traits declare trait resistances");
+    }
+
+    [TestCase(-1)]
+    [TestCase(51)]
+    public void MimicryTechniqueBuilder_RejectsInvalidSkillRequirements(int skillRequirement)
+    {
+        var builder = new AbilityBuilder()
+            .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
+            .Name("Contract Test");
+
+        builder.Invoking(b => b.MimicryTechnique(FeatType.ToxicSpit, skillRequirement, 1))
+            .Should().Throw<ArgumentException>("technique requirements must fit within the Mimicry skill's 0-50 range");
     }
 
     // The declaration tests above prove traits carry data, but not that the data is ever read. The
@@ -451,8 +468,8 @@ public class MimicryTests
         perks.Should().HaveCount(4);
         perks.Values.Should().OnlyContain(perk => perk.Category == PerkCategoryType.Mimicry);
 
-        // Combat Analyzer is the unlock AND the technique-potency / tier-gate progression:
-        // level 1 unlocks tier 1, each subsequent level improves potency and unlocks the next tier.
+        // Combat Analyzer I unlocks the system; subsequent levels improve technique potency.
+        // Individual technique availability is governed directly by Mimicry skill requirements.
         var combatAnalyzer = perks[PerkType.CombatAnalyzer];
         combatAnalyzer.Name.Should().Be("Combat Analyzer");
         combatAnalyzer.PerkLevels.Should().HaveCount(4);
@@ -682,20 +699,53 @@ public class MimicryTests
     }
 
     [Test]
-    public void Mimicry_TierSkillRequirementUnlocksTiersAtSkillMilestones()
+    public void Mimicry_RequirementsCoverEveryRankAndRespectReviewedEncounterOrder()
     {
-        // Tier usability is gated by Mimicry skill rank (0/15/30/45), not Combat Analyzer perk rank,
-        // so techniques stay usable as long as the skill is retained.
-        Mimicry.GetTierSkillRequirement(1).Should().Be(0, "tier 1 techniques are usable from Mimicry 0");
-        Mimicry.GetTierSkillRequirement(2).Should().Be(15);
-        Mimicry.GetTierSkillRequirement(3).Should().Be(30);
-        Mimicry.GetTierSkillRequirement(4).Should().Be(45, "tier 4 techniques require Mimicry rank 45");
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .ToDictionary(x => x.Feat, x => x.Detail);
+
+        techniques.Values
+            .Select(detail => detail.MimicrySkillRequirement)
+            .Distinct()
+            .OrderBy(requirement => requirement)
+            .Should()
+            .Equal(Enumerable.Range(0, 51), "every Mimicry rank must unlock at least one technique");
+
+        techniques[FeatType.SonicShriekTechnique]
+            .MimicrySkillRequirement.Should().Be(0, "CZ-220 Mynocks are a level-1 source");
+        techniques[FeatType.DisorientingScreechTechnique]
+            .MimicrySkillRequirement.Should().Be(0, "CZ-220 Mynocks are a level-1 source");
+        techniques[FeatType.PrecisionShotTechnique]
+            .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
+        techniques[FeatType.StaticWebTechnique]
+            .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
+        techniques[FeatType.SuppressingShotTechnique]
+            .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
+        techniques[FeatType.WardenWallTechnique]
+            .MimicrySkillRequirement.Should().Be(47, "level-50 boss techniques begin the final progression band");
+        techniques[FeatType.ApexCollapseTechnique]
+            .MimicrySkillRequirement.Should().Be(50, "apex boss techniques remain rank-50 rewards");
+    }
+
+    [Test]
+    public void Mimicry_SkillDecayHandlerRevalidatesEquippedTechniques()
+    {
+        var handler = typeof(Mimicry).GetMethod(
+            nameof(Mimicry.OnMimicrySkillDecay),
+            BindingFlags.Public | BindingFlags.Static);
+
+        handler.Should().NotBeNull();
+        handler!.GetCustomAttributes<NWNEventHandler>()
+            .Select(attribute => attribute.Script)
+            .Should()
+            .Contain(ScriptName.OnSwlorLoseSkill,
+                "every Mimicry rank loss must immediately enforce equipped technique requirements");
     }
 
     [Test]
     public void Mimicry_LearnChanceScalesWithSkillRankPatternRecognitionAndPerception()
     {
-        // Baseline: Mimicry rank at the tier floor, no Pattern Recognition, Perception at the
+        // Baseline: Mimicry rank at the technique requirement, no Pattern Recognition, Perception at the
         // baseline (10) contributes nothing beyond the flat 20% base chance.
         Mimicry.CalculateLearnChance(0, 0, 0, 10).Should().Be(20, "base chance with no bonuses");
 
@@ -705,7 +755,7 @@ public class MimicryTests
         // Perception below the baseline never reduces the chance below the other contributions.
         Mimicry.CalculateLearnChance(0, 0, 0, 5).Should().Be(20, "Perception below baseline is floored at 0 contribution");
 
-        // Skill rank above the tier floor adds 2% per rank; Pattern Recognition adds 10% per level.
+        // Skill rank above the technique requirement adds 2% per rank; Pattern Recognition adds 10% per level.
         Mimicry.CalculateLearnChance(20, 15, 2, 10).Should().Be(20 + 2 * 5 + 20, "rank delta and pattern recognition stack");
 
         // Everything is capped at the maximum learn chance.

@@ -40,8 +40,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(180f)
                             .AddOption("Name (A-Z)", 0)
                             .AddOption("Name (Z-A)", 1)
-                            .AddOption("Tier (Low-High)", 2)
-                            .AddOption("Tier (High-Low)", 3);
+                            .AddOption("Rank (Low-High)", 2)
+                            .AddOption("Rank (High-Low)", 3);
                         row.AddSpacer();
                     });
 

@@ -526,12 +526,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Mimicry & Techniques",
                     "Combat",
-                    "Learning creature techniques, analysis requirements, learning chance, analyzer tiers, and technique slots.",
+                    "Learning creature techniques, individual rank requirements, learning chance, analyzer upgrades, and technique slots.",
                     "Learn enemy techniques",
                     new[]
                     {
                         new ArticleBlock("Combat Analyzer",
-                            "Combat Analyzer I unlocks technique learning and the Techniques window. The base analyzer provides 2 technique slots and can learn techniques in the Mimicry 1-14 range. Higher Combat Analyzer ranks unlock the 15-29, 30-44, and 45-50 ranges and improve equipped technique potency."),
+                            "Combat Analyzer I unlocks technique learning and the Techniques window and provides 2 technique slots. Every technique has its own Mimicry rank requirement based on when its source enemy appears. Higher Combat Analyzer ranks improve equipped technique potency."),
                         new ArticleBlock("Analyzing Creatures",
                             "To analyze a technique, you must be alive, have Combat Analyzer I, be within 15 meters when an eligible creature uses it, and remain in the same area and within 40 meters when that creature dies. Analysis progress is shown in combat messages."),
                         new ArticleBlock("Learning Chance",
@@ -544,7 +544,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new QuestionAnswer("How do I start learning techniques?", "Buy Combat Analyzer I, witness an eligible creature technique nearby, and stay near that creature until it dies."),
-                        new QuestionAnswer("Why didn't I learn it?", "Learning is a chance roll based on Mimicry, Pattern Recognition, and Perception, and your analyzer must support the technique's Mimicry range."),
+                        new QuestionAnswer("Why didn't I learn it?", "You must meet the technique's Mimicry rank requirement. Learning is then a chance roll based on Mimicry, Pattern Recognition, and Perception."),
                         new QuestionAnswer("Where do I equip techniques?", "Open Techniques from the Character Sheet while out of combat."),
                         new QuestionAnswer("Do learned techniques disappear?", "No. A successfully recorded technique remains learned, but it only functions while equipped.")
                     },

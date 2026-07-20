@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.DreadWave, 3, 3)
+                .MimicryTechnique(FeatType.DreadWave, 38, 3)
                 .HasTargetingSphere(
                     Spell.DreadWaveTechnique,
                     6f,

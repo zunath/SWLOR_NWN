@@ -519,9 +519,11 @@ namespace SWLOR.Game.Server.Native
                     target.m_idSelf,
                     Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
+            var guardedHitBonuses = Combat.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf);
             var attackDamage = damageProfile.Damage +
                                Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
-                               Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType);
+                               Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType) +
+                               guardedHitBonuses.DMGBonus;
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
@@ -590,12 +592,18 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
 
-            return Combat.ApplyDamageTakenModifiers(
+            damage = Combat.ApplyDamageTakenModifiers(
                 target.m_idSelf,
                 damage,
                 attacker.m_idSelf,
                 damageType,
                 preTargetStatusStageDamage: damageBeforeTargetStatusStage);
+            Combat.ApplyNextAttackGuardedHitEnmityBonus(
+                attacker.m_idSelf,
+                target.m_idSelf,
+                guardedHitBonuses.EnmityBonus,
+                damage);
+            return damage;
         }
 
         private readonly struct WeaponDamageProfile

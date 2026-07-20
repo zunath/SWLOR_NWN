@@ -106,13 +106,14 @@ namespace SWLOR.Game.Server.Service
             var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
             var guardedHitBonuses = ability.IsHostileAbility
                 ? Combat.ConsumeNextAttackGuardedHitBonuses(activator)
-                : (DamageBonus: 0, CriticalRatePercentAdjustment: 0);
+                : (DMGBonus: 0, CriticalRatePercentAdjustment: 0, EnmityBonus: 0);
             BeginAbilityImpact(
                 activator,
                 ability,
-                nextAbilityDamageBonus + nextSkillAbilityBonuses.DamageBonus + guardedHitBonuses.DamageBonus,
+                nextAbilityDamageBonus + nextSkillAbilityBonuses.DamageBonus + guardedHitBonuses.DMGBonus,
                 nextSkillAbilityBonuses.CriticalRatePercentAdjustment + guardedHitBonuses.CriticalRatePercentAdjustment,
-                nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment);
+                nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
+                guardedHitBonuses.EnmityBonus);
         }
 
         private static void BeginAbilityImpact(
@@ -120,7 +121,8 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             int nextAbilityDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
-            int nextAbilityDefenseIgnorePercentAdjustment = 0)
+            int nextAbilityDefenseIgnorePercentAdjustment = 0,
+            int nextAttackEnmityBonus = 0)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -129,7 +131,8 @@ namespace SWLOR.Game.Server.Service
                 ability,
                 nextAbilityDamageBonus,
                 nextAbilityCriticalRatePercentAdjustment,
-                nextAbilityDefenseIgnorePercentAdjustment);
+                nextAbilityDefenseIgnorePercentAdjustment,
+                nextAttackEnmityBonus);
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -1923,7 +1926,10 @@ namespace SWLOR.Game.Server.Service
                 Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
             }
 
-            ApplyHostileAbilityEnmity(activator, target, damage + Math.Max(0, enmityBonus));
+            ApplyHostileAbilityEnmity(
+                activator,
+                target,
+                damage + Math.Max(0, enmityBonus) + Math.Max(0, trackedImpact?.NextAttackEnmityBonus ?? 0));
 
             var statusApplied = ApplyCombatImpactStatusEffect(
                 activator,
@@ -2855,18 +2861,21 @@ namespace SWLOR.Game.Server.Service
             public int NextAbilityDamageBonus { get; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
             public int NextAbilityDefenseIgnorePercentAdjustment { get; }
+            public int NextAttackEnmityBonus { get; }
             public bool DarkForceConversionApplied { get; set; }
 
             public TrackedAbilityImpact(
                 AbilityDetail ability,
                 int nextAbilityDamageBonus,
                 int nextAbilityCriticalRatePercentAdjustment,
-                int nextAbilityDefenseIgnorePercentAdjustment)
+                int nextAbilityDefenseIgnorePercentAdjustment,
+                int nextAttackEnmityBonus)
             {
                 Ability = ability;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
                 NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;
                 NextAbilityDefenseIgnorePercentAdjustment = nextAbilityDefenseIgnorePercentAdjustment;
+                NextAttackEnmityBonus = nextAttackEnmityBonus;
                 Summary = new AbilityImpactSummary
                 {
                     SkillType = ability.SkillType,

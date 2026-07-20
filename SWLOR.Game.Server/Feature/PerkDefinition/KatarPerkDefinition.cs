@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RedirectingCounterTrait)
                 .Description("When you guard an attack, your next attack within 30 seconds gains +10% critical chance and deals +10 DMG.")
                 .IncreasesStat(StatType.GuardedHitNextAttackCriticalRatePercentAdjustment, 10)
-                .IncreasesStat(StatType.GuardedHitNextAttackDamageBonus, 10)
+                .IncreasesStat(StatType.GuardedHitNextAttackDMGBonus, 10)
                 .IncreasesStat(StatType.GuardedHitNextAttackWindowSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 8);
@@ -200,10 +200,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RetaliatoryFlowTrait)
-                .Description("After you guard a hit, your next Katar attack within 30 seconds deals +8 DMG.")
-                .IncreasesStat(StatType.GuardedHitSecondaryNextSkillAbilitySkillType, (int)SkillType.Katar)
-                .IncreasesStat(StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus, 8)
-                .IncreasesStat(StatType.GuardedHitSecondaryNextSkillAbilityWindowSeconds, 30)
+                .Description("After you guard a hit, your next attack within 30 seconds deals +8 DMG and generates +40 Enmity.")
+                .IncreasesStat(StatType.GuardedHitSecondaryNextAttackDMGBonus, 8)
+                .IncreasesStat(StatType.GuardedHitSecondaryNextAttackEnmityBonus, 40)
+                .IncreasesStat(StatType.GuardedHitSecondaryNextAttackWindowSeconds, 30)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 32);
         }

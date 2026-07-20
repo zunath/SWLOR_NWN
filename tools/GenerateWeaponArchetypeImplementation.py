@@ -1195,7 +1195,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "StatusAppliedSelfDurationSeconds", parse_duration(description) or 30)
     if base == "Redirecting Counter":
         add_stat(stats, "GuardedHitNextAttackCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% critical chance", description))
-        add_stat(stats, "GuardedHitNextAttackDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitNextAttackDMGBonus", parse_count(r"deals \+(\d+) DMG", description))
         add_stat(stats, "GuardedHitNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     elif base == "Redirecting Guard":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
@@ -1227,9 +1227,9 @@ def description_stat_entries(row, base):
         add_stat(stats, "GuardRetaliationDMGBonusRadiusMeters", parse_count(r"within (\d+)m", description) or 5)
         add_stat(stats, "GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage", 100)
     if base == "Retaliatory Flow":
-        add_stat(stats, "GuardedHitSecondaryNextSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "GuardedHitSecondaryNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
-        add_stat(stats, "GuardedHitSecondaryNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        add_stat(stats, "GuardedHitSecondaryNextAttackDMGBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitSecondaryNextAttackEnmityBonus", parse_count(r"\+(\d+) Enmity", description))
+        add_stat(stats, "GuardedHitSecondaryNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Impenetrable Grip":
         add_stat(stats, "MobilityResistance", parse_percent(r"\+(\d+)% Knockdown Resistance", description))
         add_stat(stats, "MindResistance", parse_percent(r"\+(\d+)% Daze Resistance", description))

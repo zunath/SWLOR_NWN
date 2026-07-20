@@ -930,7 +930,6 @@ namespace SWLOR.Game.Server.Service
                 damage += bonus;
 
             damage += ConsumeNextSkillAutoAttackDamageBonus(attacker, skillType);
-            damage += ConsumeNextAttackGuardedHitDamageBonus(attacker);
 
             var nextAutoAttackBonus = TemporaryStatModifier.Consume(
                 attacker,
@@ -7000,38 +6999,58 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyGuardedHitNextAttackEffects(uint creature)
         {
-            var damageBonus = Stat.GetStatAdjustment(
+            var primaryDMGBonus = Stat.GetStatAdjustment(
                 creature,
-                StatType.GuardedHitNextAttackDamageBonus);
+                StatType.GuardedHitNextAttackDMGBonus);
             var criticalRate = Stat.GetStatAdjustment(
                 creature,
                 StatType.GuardedHitNextAttackCriticalRatePercentAdjustment);
-            var window = Stat.GetStatAdjustment(
+            var primaryWindow = Stat.GetStatAdjustment(
                 creature,
                 StatType.GuardedHitNextAttackWindowSeconds);
-            if (window <= 0 || damageBonus == 0 && criticalRate == 0)
+            var secondaryDMGBonus = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitSecondaryNextAttackDMGBonus);
+            var enmityBonus = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitSecondaryNextAttackEnmityBonus);
+            var secondaryWindow = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitSecondaryNextAttackWindowSeconds);
+            var dmgBonus = primaryDMGBonus + secondaryDMGBonus;
+            var window = Math.Max(primaryWindow, secondaryWindow);
+            if (window <= 0 || dmgBonus == 0 && criticalRate == 0 && enmityBonus == 0)
                 return;
 
             TemporaryStatModifier.Replace(
                 creature,
-                StatType.NextAttackGuardedHitDamageBonus,
-                damageBonus,
+                StatType.NextAttackGuardedHitDMGBonus,
+                dmgBonus,
                 window,
-                StatType.NextAttackGuardedHitDamageBonus);
+                StatType.NextAttackGuardedHitDMGBonus);
             TemporaryStatModifier.Replace(
                 creature,
                 StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
                 criticalRate,
                 window,
-                StatType.NextAttackGuardedHitDamageBonus);
+                StatType.NextAttackGuardedHitDMGBonus);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAttackGuardedHitEnmityBonus,
+                enmityBonus,
+                window,
+                StatType.NextAttackGuardedHitDMGBonus);
 
             if (GetIsPC(creature))
             {
                 var criticalText = criticalRate != 0
                     ? $", +{criticalRate}% Crit"
                     : string.Empty;
+                var enmityText = enmityBonus != 0
+                    ? $", +{enmityBonus} Enmity"
+                    : string.Empty;
                 FloatingTextStringOnCreature(
-                    ColorToken.Combat($"Counter Ready: +{damageBonus} DMG{criticalText}"),
+                    ColorToken.Combat($"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}"),
                     creature,
                     false);
             }
@@ -7618,19 +7637,27 @@ namespace SWLOR.Game.Server.Service
             return (damageBonus, criticalRate, defenseIgnore);
         }
 
-        public static (int DamageBonus, int CriticalRatePercentAdjustment) ConsumeNextAttackGuardedHitBonuses(
+        public static (int DMGBonus, int CriticalRatePercentAdjustment, int EnmityBonus) ConsumeNextAttackGuardedHitBonuses(
             uint creature)
         {
-            var damageBonus = TemporaryStatModifier.Consume(
-                creature,
-                StatType.NextAttackGuardedHitDamageBonus,
-                StatType.NextAttackGuardedHitDamageBonus);
-            var criticalRate = TemporaryStatModifier.Consume(
-                creature,
-                StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
-                StatType.NextAttackGuardedHitDamageBonus);
+            var attackBonuses = ConsumeNextAttackGuardedHitAutoAttackBonuses(creature);
+            var criticalRate = ConsumeNextAttackGuardedHitCriticalRateBonus(creature);
 
-            return (damageBonus, criticalRate);
+            return (attackBonuses.DMGBonus, criticalRate, attackBonuses.EnmityBonus);
+        }
+
+        public static (int DMGBonus, int EnmityBonus) ConsumeNextAttackGuardedHitAutoAttackBonuses(uint creature)
+        {
+            var dmgBonus = TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackGuardedHitDMGBonus,
+                StatType.NextAttackGuardedHitDMGBonus);
+            var enmityBonus = TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackGuardedHitEnmityBonus,
+                StatType.NextAttackGuardedHitDMGBonus);
+
+            return (dmgBonus, enmityBonus);
         }
 
         public static int ConsumeNextAttackGuardedHitCriticalRateBonus(uint creature)
@@ -7638,15 +7665,24 @@ namespace SWLOR.Game.Server.Service
             return TemporaryStatModifier.Consume(
                 creature,
                 StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
-                StatType.NextAttackGuardedHitDamageBonus);
+                StatType.NextAttackGuardedHitDMGBonus);
         }
 
-        private static int ConsumeNextAttackGuardedHitDamageBonus(uint creature)
+        public static void ApplyNextAttackGuardedHitEnmityBonus(
+            uint attacker,
+            uint defender,
+            int enmityBonus,
+            int appliedDamage)
         {
-            return TemporaryStatModifier.Consume(
-                creature,
-                StatType.NextAttackGuardedHitDamageBonus,
-                StatType.NextAttackGuardedHitDamageBonus);
+            if (!GetIsObjectValid(attacker) ||
+                !GetIsObjectValid(defender) ||
+                enmityBonus <= 0 ||
+                appliedDamage <= 0)
+            {
+                return;
+            }
+
+            Enmity.ModifyEnmity(attacker, defender, enmityBonus);
         }
 
         public static void GrantNextAbilityDamageBonus(uint creature, int perkTypeValue, int bonus, int durationSeconds)

@@ -89,7 +89,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         AssertSourceStat("KatarPerkDefinition.cs", StatType.Guard, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardDamageReductionPercentAdjustment, "10");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextAttackDamageBonus, "10");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextAttackDMGBonus, "10");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityStatusSkillType, "(int)SkillType.Katar");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityExposedDamageBonus, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId, "(int)PerkCategoryType.KatarIronGuard");
@@ -98,9 +98,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDMGBonus, "15");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDMGBonusRadiusMeters, "5");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage, "100");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilitySkillType, "(int)SkillType.Katar");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus, "8");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilityWindowSeconds, "30");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextAttackDMGBonus, "8");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextAttackEnmityBonus, "40");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextAttackWindowSeconds, "30");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.LowHPGuard, "25");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedRequiredCategory, "(int)StatusEffectCategory.Control");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedSelfEnmityPercentAdjustment, "15");
@@ -517,6 +517,12 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextAttackDMGBonus)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextAttackEnmityBonus)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextAttackWindowSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.GuardRetaliationDMGBonusRadiusMeters)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage)
@@ -591,7 +597,7 @@ public class GeneratedWeaponPerkBehaviorTests
         generatorSource.Should().Contain("\"SameTargetPressureReadyDurationSeconds\"");
         generatorSource.Should().Contain("gain Spotter's Rhythm for (\\d+) seconds");
         generatorSource.Should().Contain("Unable to parse Suppressing Shot suppression stack Evasion");
-        generatorSource.Should().Contain("\"GuardedHitSecondaryNextSkillAbilitySkillType\"");
+        generatorSource.Should().Contain("\"GuardedHitSecondaryNextAttackEnmityBonus\"");
         generatorSource.Should().Contain("\"CostlyAbilityUsedEvasionPercentAdjustmentSkillType\"");
         generatorSource.Should().Contain("\"HostileAbilityStaminaCostFlatAdjustment\"");
         generatorSource.Should().Contain("\"HostileAbilityUsedEvasionPercentAdjustment\"");

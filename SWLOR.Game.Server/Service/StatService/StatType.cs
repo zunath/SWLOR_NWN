@@ -5526,10 +5526,10 @@ namespace SWLOR.Game.Server.Service.StatService
         StealthMovementSpeedPercentAdjustment = 959,
 
         /// <summary>
-        /// Flat damage granted to the next attack after guarding a hit, regardless of skill line.
+        /// DMG granted to the next attack after guarding a hit, regardless of skill line.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitNextAttackDamageBonus = 960,
+        GuardedHitNextAttackDMGBonus = 960,
 
         /// <summary>
         /// Critical-rate adjustment granted to the next attack after guarding a hit, regardless of skill line.
@@ -5544,10 +5544,10 @@ namespace SWLOR.Game.Server.Service.StatService
         GuardedHitNextAttackWindowSeconds = 962,
 
         /// <summary>
-        /// Internal temporary flat damage consumed by the next hostile ability or landed auto attack.
+        /// Internal temporary DMG consumed by the next hostile ability or landed auto attack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        NextAttackGuardedHitDamageBonus = 963,
+        NextAttackGuardedHitDMGBonus = 963,
 
         /// <summary>
         /// Internal temporary critical-rate adjustment consumed by the next hostile ability or
@@ -5555,6 +5555,30 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         NextAttackGuardedHitCriticalRatePercentAdjustment = 964,
+
+        /// <summary>
+        /// DMG granted by an independent second cross-skill guarded-hit next-attack channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitSecondaryNextAttackDMGBonus = 965,
+
+        /// <summary>
+        /// Flat Enmity granted by the independent second cross-skill guarded-hit next-attack channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitSecondaryNextAttackEnmityBonus = 966,
+
+        /// <summary>
+        /// Duration in seconds of the independent second cross-skill guarded-hit next-attack channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedHitSecondaryNextAttackWindowSeconds = 967,
+
+        /// <summary>
+        /// Internal temporary flat Enmity consumed by the next hostile ability or landed auto attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        NextAttackGuardedHitEnmityBonus = 968,
     }
 
     public class StatTypeAttribute : Attribute

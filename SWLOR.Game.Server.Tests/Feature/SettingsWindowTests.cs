@@ -6,22 +6,44 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class SettingsWindowTests
 {
     [Test]
-    public void Tabs_UseVisibilityBindingsWithoutRedrawingTheWindow()
+    public void Tabs_UseSeparatePartialViewsAndPreserveWindowGeometry()
     {
         var (definitionSource, viewModelSource) = LoadSettingsSources();
 
-        definitionSource.Should().Contain(".DefinePartialView(SettingsViewModel.ContentPartial");
-        definitionSource.Should().Contain(".BindIsVisible(model => model.IsGeneralSelected)");
-        definitionSource.Should().Contain(".BindIsVisible(model => model.IsIdentitySelected)");
-        definitionSource.Should().Contain(".BindIsVisible(model => model.IsChatSelected)");
+        definitionSource.Should().Contain(".DefinePartialView(SettingsViewModel.GeneralPartial");
+        definitionSource.Should().Contain(".DefinePartialView(SettingsViewModel.IdentityPartial");
+        definitionSource.Should().Contain(".DefinePartialView(SettingsViewModel.ChatPartial");
+        definitionSource.Should().NotContain(".BindIsVisible(model => model.IsGeneralSelected)");
+        definitionSource.Should().NotContain(".BindIsVisible(model => model.IsIdentitySelected)");
+        definitionSource.Should().NotContain(".BindIsVisible(model => model.IsChatSelected)");
 
-        viewModelSource.Should().Contain("ChangePartialView(SettingsView, ContentPartial);");
-        viewModelSource
-            .Split("ChangePartialView(SettingsView, ContentPartial);", StringSplitOptions.None)
-            .Should().HaveCount(2, "the content layout should only be mounted when the window initializes");
-        viewModelSource.Should().NotContain("ChangePartialView(SettingsView, GeneralPartial)");
-        viewModelSource.Should().NotContain("ChangePartialView(SettingsView, IdentityPartial)");
-        viewModelSource.Should().NotContain("ChangePartialView(SettingsView, ChatPartial)");
+        var changeSettingsView = ExtractMethod(
+            viewModelSource,
+            "private void ChangeSettingsView",
+            "private string GetSelectedPartial");
+        var geometryCapture = changeSettingsView.IndexOf("UpdatePropertyFromClient(nameof(Geometry));", StringComparison.Ordinal);
+        var partialSwap = changeSettingsView.IndexOf("ChangePartialView(SettingsView, partialName);", StringComparison.Ordinal);
+
+        geometryCapture.Should().BeGreaterThanOrEqualTo(0);
+        partialSwap.Should().BeGreaterThan(geometryCapture);
+        viewModelSource.Should().Contain("ChangeSettingsView(GeneralPartial);");
+        viewModelSource.Should().Contain("ChangeSettingsView(IdentityPartial);");
+        viewModelSource.Should().Contain("ChangeSettingsView(ChatPartial);");
+    }
+
+    [Test]
+    public void TabChanges_DoNotReloadUnsavedSettings()
+    {
+        var (_, viewModelSource) = LoadSettingsSources();
+        var initializeMethod = ExtractMethod(viewModelSource, "protected override void Initialize", "private void LoadGeneralView");
+        var tabMethods = ExtractMethod(viewModelSource, "public Action OnClickGeneral", "public Action OnClickSelectChat");
+
+        initializeMethod.Should().Contain("LoadGeneralView();");
+        initializeMethod.Should().Contain("LoadIdentityView();");
+        initializeMethod.Should().Contain("LoadChatView();");
+        tabMethods.Should().NotContain("LoadGeneralView();");
+        tabMethods.Should().NotContain("LoadIdentityView();");
+        tabMethods.Should().NotContain("LoadChatView();");
     }
 
     [Test]
@@ -36,8 +58,19 @@ public class SettingsWindowTests
 
         var saveMethod = viewModelSource[saveStart..cancelStart];
         saveMethod.Should().Contain("DB.Set(dbPlayer);");
+        saveMethod.Should().Contain("Log.Write(LogGroup.Server, $\"Settings saved for player {playerId}.\");");
         saveMethod.Should().NotContain("Gui.TogglePlayerWindow");
         definitionSource.Should().Contain(".SetIsClosable(true)");
+    }
+
+    private static string ExtractMethod(string source, string startMarker, string endMarker)
+    {
+        var start = source.IndexOf(startMarker, StringComparison.Ordinal);
+        var end = source.IndexOf(endMarker, start, StringComparison.Ordinal);
+
+        start.Should().BeGreaterThanOrEqualTo(0);
+        end.Should().BeGreaterThan(start);
+        return source[start..end];
     }
 
     private static (string DefinitionSource, string ViewModelSource) LoadSettingsSources()

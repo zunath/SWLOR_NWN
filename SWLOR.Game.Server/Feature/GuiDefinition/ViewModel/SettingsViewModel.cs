@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -11,7 +12,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
         public const string SettingsView = "SETTINGS_VIEW";
-        public const string ContentPartial = "CONTENT_VIEW";
+
+        public const string GeneralPartial = "GENERAL_VIEW";
+        public const string IdentityPartial = "IDENTITY_VIEW";
+        public const string ChatPartial = "CHAT_VIEW";
 
         private const int NumberOfSystemColors = 2; // OOC, Emotes
 
@@ -143,8 +147,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             LoadGeneralView();
             LoadIdentityView();
+            LoadChatView();
 
-            ChangePartialView(SettingsView, ContentPartial);
+            ChangePartialView(SettingsView, GeneralPartial);
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.SubdualMode);
@@ -255,6 +260,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChatColorToggles = chatToggles;
         }
 
+        private void ChangeSettingsView(string partialName)
+        {
+            // Capture the client's current position before the partial-view redraw workaround
+            // temporarily changes the window geometry.
+            UpdatePropertyFromClient(nameof(Geometry));
+            ChangePartialView(SettingsView, partialName);
+        }
+
+        private string GetSelectedPartial()
+        {
+            if (IsIdentitySelected)
+                return IdentityPartial;
+
+            if (IsChatSelected)
+                return ChatPartial;
+
+            return GeneralPartial;
+        }
+
+        protected override void OnMainViewRestored()
+        {
+            ChangePartialView(SettingsView, GetSelectedPartial());
+        }
+
         private void LoadColor()
         {
             if (SelectedIndex < 0)
@@ -312,6 +341,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DB.Set(dbPlayer);
+            Log.Write(LogGroup.Server, $"Settings saved for player {playerId}.");
 
             // Apply the vitals display preference immediately (portrait overlay vs. docked window).
             PlayerStatusWindow.ApplyStatusDisplay(Player);
@@ -337,7 +367,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = true;
             IsIdentitySelected = false;
             IsChatSelected = false;
-            LoadGeneralView();
+            ChangeSettingsView(GeneralPartial);
         };
 
         public Action OnClickIdentity() => () =>
@@ -345,7 +375,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = false;
             IsIdentitySelected = true;
             IsChatSelected = false;
-            LoadIdentityView();
+            ChangeSettingsView(IdentityPartial);
         };
 
         public Action OnClickChat() => () =>
@@ -353,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = false;
             IsIdentitySelected = false;
             IsChatSelected = true;
-            LoadChatView();
+            ChangeSettingsView(ChatPartial);
         };
 
         public Action OnClickSelectChat() => () =>
@@ -371,6 +401,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickResetColor() => () =>
         {
             var index = NuiGetEventArrayIndex();
+            UpdatePropertyFromClient(nameof(Geometry));
 
             ShowModal("Are you sure you want to reset this color to the default?", () =>
             {

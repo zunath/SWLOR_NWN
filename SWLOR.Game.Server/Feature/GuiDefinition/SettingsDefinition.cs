@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
+                .SetIsClosable(true)
                 .SetInitialGeometry(0, 0, 375f, 340f)
                 .SetTitle("Settings")
 
@@ -92,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     view.AddColumn(col =>
                     {
+
                         col.AddRow(row =>
                         {
                             row.AddSpacer()
@@ -137,6 +139,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     view.AddColumn(col =>
                     {
+
                         col.AddRow(row =>
                         {
                             row.AddList(template =>

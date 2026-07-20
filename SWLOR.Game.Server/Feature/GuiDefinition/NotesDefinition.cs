@@ -1,7 +1,9 @@
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -13,12 +15,79 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ProgressBarHeight = 20f;
         private const float ProgressBarTextWidth = 440f;
 
+        /// <summary>
+        /// Space taken by the window frame, element margins, and the gap between the two panes,
+        /// subtracted from the window width before the panes split what is left. Deliberately
+        /// generous: a combo slightly narrower than its pane leaves a small gap, while one that
+        /// overshoots gets clipped.
+        /// </summary>
+        private const float WindowChromeWidth = 140f;
+
+        private const float MinimumComboWidth = 140f;
+
+        public const float DefaultWindowWidth = 720f;
+        public const float DefaultWindowHeight = 460f;
+
         private readonly GuiWindowBuilder<NotesViewModel> _builder = new();
+
+        /// <summary>
+        /// Converts a window width into the width a combo box should occupy so it spans its pane.
+        /// The notes tab is two evenly flexing columns, so each pane gets half the content width.
+        /// </summary>
+        /// <param name="windowWidth">The current width of the window.</param>
+        public static float CalculateComboWidth(float windowWidth)
+        {
+            var paneWidth = (windowWidth - WindowChromeWidth) / 2f;
+
+            return paneWidth < MinimumComboWidth ? MinimumComboWidth : paneWidth;
+        }
+
+        /// <summary>
+        /// Builds the category filter combo sized for a specific width, ready to be swapped into
+        /// its placeholder via NuiSetGroupLayout.
+        /// </summary>
+        public static Json BuildFilterComboLayout(float comboWidth)
+        {
+            return BuildComboLayout(combo => combo
+                .BindOptions(model => model.CategoryFilterOptions)
+                .BindSelectedIndex(model => model.SelectedCategoryFilterIndex)
+                .SetWidth(comboWidth));
+        }
+
+        /// <summary>
+        /// Builds the note editor's category combo sized for a specific width, ready to be swapped
+        /// into its placeholder via NuiSetGroupLayout.
+        /// </summary>
+        public static Json BuildNoteCategoryComboLayout(float comboWidth)
+        {
+            return BuildComboLayout(combo => combo
+                .BindOptions(model => model.NoteCategoryOptions)
+                .BindSelectedIndex(model => model.ActiveNoteCategoryIndex)
+                .BindIsEnabled(model => model.IsNoteSelected)
+                .SetWidth(comboWidth));
+        }
+
+        private static Json BuildComboLayout(Action<GuiComboBox<NotesViewModel>> configure)
+        {
+            var host = new GuiGroup<NotesViewModel>();
+            host.SetShowBorder(false);
+            host.SetScrollbars(NuiScrollbars.None);
+
+            host.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    configure(row.AddComboBox());
+                });
+            });
+
+            return host.ToJson();
+        }
 
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Notes)
-                .SetInitialGeometry(0, 0, 720f, 460f)
+                .SetInitialGeometry(0, 0, DefaultWindowWidth, DefaultWindowHeight)
                 .SetTitle("Notes")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -95,13 +164,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 });
                         });
 
+                        // NUI cannot bind an element's width, and a combo box does not stretch to
+                        // fill its row the way a text edit does. The combo therefore lives in its
+                        // own placeholder whose layout the view model regenerates at the current
+                        // column width whenever the window is resized.
                         browser.AddRow(row =>
                         {
                             row.SetHeight(RowHeight);
 
-                            row.AddComboBox()
-                                .BindOptions(model => model.CategoryFilterOptions)
-                                .BindSelectedIndex(model => model.SelectedCategoryFilterIndex);
+                            row.AddPartialView(NotesViewModel.FilterComboElement);
                         });
 
                         browser.AddRow(row =>
@@ -179,10 +250,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             row.SetHeight(RowHeight);
 
-                            row.AddComboBox()
-                                .BindOptions(model => model.NoteCategoryOptions)
-                                .BindSelectedIndex(model => model.ActiveNoteCategoryIndex)
-                                .BindIsEnabled(model => model.IsNoteSelected);
+                            row.AddPartialView(NotesViewModel.NoteCategoryComboElement);
                         });
 
                         editor.AddRow(row =>

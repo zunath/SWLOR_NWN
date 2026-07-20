@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 
@@ -90,6 +91,44 @@ public class NotesWindowTests
         // A hidden row still reserves its flex space, so tab panes must never be visibility-toggled.
         definition.Should().NotContain("IsNotesTabVisible");
         definition.Should().NotContain("IsCategoriesTabVisible");
+    }
+
+    [Test]
+    public void ComboWidth_TracksTheWindowWidthAndHasAFloor()
+    {
+        // NUI cannot bind a width, so the combos are regenerated per window width. Each sits in one
+        // of two evenly flexing panes, so it should grow by roughly half of what the window gains.
+        var atDefault = NotesDefinition.CalculateComboWidth(NotesDefinition.DefaultWindowWidth);
+        var wider = NotesDefinition.CalculateComboWidth(NotesDefinition.DefaultWindowWidth + 400f);
+
+        atDefault.Should().BeGreaterThan(0f);
+        (wider - atDefault).Should().BeApproximately(200f, 0.01f);
+
+        // A narrow window must not collapse the combo to nothing.
+        NotesDefinition.CalculateComboWidth(0f).Should().BeGreaterThan(0f);
+        NotesDefinition.CalculateComboWidth(120f)
+            .Should()
+            .Be(NotesDefinition.CalculateComboWidth(0f), "both are below the floor");
+    }
+
+    [Test]
+    public void ComboBoxes_AreRegeneratedIntoPlaceholdersRatherThanPinnedInTheLayout()
+    {
+        var definition = ReadDefinition();
+        var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
+
+        // The combos live in placeholders the view model fills at the current width.
+        definition.Should().Contain($"row.AddPartialView(NotesViewModel.{nameof(NotesViewModel.FilterComboElement)})");
+        definition.Should().Contain($"row.AddPartialView(NotesViewModel.{nameof(NotesViewModel.NoteCategoryComboElement)})");
+
+        // Resizing has to drive the regeneration, or the window stops being responsive.
+        viewModel.Should().Contain("protected override void OnClientPropertyUpdated(string propertyName)");
+        viewModel.Should().Contain("nameof(Geometry)");
+        viewModel.Should().Contain($"SetGroupLayout({nameof(NotesViewModel.FilterComboElement)}");
+        viewModel.Should().Contain($"SetGroupLayout({nameof(NotesViewModel.NoteCategoryComboElement)}");
+
+        // A regenerated combo has no selection until the bound index is re-asserted.
+        viewModel.Should().Contain("RefreshComboSelections();");
     }
 
     [Test]

@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string TabContentPartialElement = "NOTES_TAB_CONTENT";
         public const string NotesTabPartial = "NOTES_TAB_VIEW";
         public const string CategoriesTabPartial = "NOTES_CATEGORIES_TAB_VIEW";
+        public const string FilterComboElement = "NOTES_FILTER_COMBO";
+        public const string NoteCategoryComboElement = "NOTES_CATEGORY_COMBO";
 
         private const string UntitledNoteName = "Untitled Note";
 
@@ -22,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _isLoadingNote;
         private bool _suppressReload;
         private int _totalNoteCount;
+        private float _appliedComboWidth = -1f;
 
         public bool IsSaveEnabled
         {
@@ -336,6 +339,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CategoryUsageProgress = Notes.GetCategoryUsagePercentage(_categories.Count);
             CategoryUsageText = Notes.GetCategoryUsageText(_categories.Count);
             CategoryUsageColor = Notes.GetCategoryUsageColor(_categories.Count);
+
+            // Replacing the option lists clears the client's selection on both combos.
+            RefreshComboSelections();
         }
 
         private void LoadNotesList()
@@ -445,6 +451,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return categoryIndex >= 0 && categoryIndex < _categories.Count
                 ? _categories[categoryIndex].Id
                 : string.Empty;
+        }
+
+        /// <summary>
+        /// Re-asserts both category combo selections. Assigning the option list clears the client's
+        /// selection, so without this the boxes render blank - most visibly with no categories at
+        /// all, where the filter would show nothing instead of its "all categories" entry.
+        /// </summary>
+        private void RefreshComboSelections()
+        {
+            var wasSuppressingReload = _suppressReload;
+            var wasLoadingNote = _isLoadingNote;
+
+            // Re-asserting must not look like a player edit or trigger another list reload.
+            _suppressReload = true;
+            _isLoadingNote = true;
+
+            SelectedCategoryFilterIndex = ClampCategoryOptionIndex(SelectedCategoryFilterIndex);
+            ActiveNoteCategoryIndex = ClampCategoryOptionIndex(ActiveNoteCategoryIndex);
+
+            _isLoadingNote = wasLoadingNote;
+            _suppressReload = wasSuppressingReload;
+        }
+
+        /// <summary>
+        /// Snaps an out of range option index back onto the synthetic first entry, which is always
+        /// present. Deleting a category or a stale client value can otherwise leave the combo
+        /// pointing at an option that no longer exists.
+        /// </summary>
+        private int ClampCategoryOptionIndex(int optionIndex)
+        {
+            return optionIndex >= 0 && optionIndex <= _categories.Count
+                ? optionIndex
+                : 0;
         }
 
         private int GetOptionIndexByCategoryId(string categoryId)
@@ -577,6 +616,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ChangePartialView(
                     TabContentPartialElement,
                     IsCategoriesTabToggled ? CategoriesTabPartial : NotesTabPartial);
+
+                // The tab layout carries empty combo placeholders, so their generated contents have
+                // to be swapped back in every time the tab itself is (re)applied.
+                RefreshComboLayouts(true);
             }
 
             // Use the same root redraw path as modal close/open before replacing the nested panel.
@@ -587,8 +630,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DelayCommand(0.0f, ApplySelectedTabPartial);
         }
 
+        /// <summary>
+        /// Regenerates the combo boxes at the current window width and swaps them into their
+        /// placeholders. NUI layout widths cannot be bound and a combo does not stretch to fill its
+        /// row, so this is what keeps them spanning their pane as the window is resized.
+        /// </summary>
+        /// <param name="force">Applies the layout even if the width has not meaningfully changed.</param>
+        private void RefreshComboLayouts(bool force)
+        {
+            // Only the notes tab hosts combo boxes.
+            if (IsCategoriesTabToggled)
+                return;
+
+            var comboWidth = NotesDefinition.CalculateComboWidth(Geometry.Width);
+
+            // Dragging a window edge fires a stream of geometry updates - only rebuild when the
+            // width meaningfully changed.
+            if (!force && _appliedComboWidth > 0f && Math.Abs(comboWidth - _appliedComboWidth) < 8f)
+                return;
+
+            _appliedComboWidth = comboWidth;
+
+            SetGroupLayout(FilterComboElement, NotesDefinition.BuildFilterComboLayout(comboWidth));
+            SetGroupLayout(NoteCategoryComboElement, NotesDefinition.BuildNoteCategoryComboLayout(comboWidth));
+
+            // A freshly generated combo starts with no selection, so the bound indices have to be
+            // re-asserted or the box renders blank until the player touches it.
+            RefreshComboSelections();
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(Geometry))
+                RefreshComboLayouts(false);
+        }
+
         protected override void OnMainViewRestored()
         {
+            _appliedComboWidth = -1f;
             RestoreSelectedTabPartial();
         }
 

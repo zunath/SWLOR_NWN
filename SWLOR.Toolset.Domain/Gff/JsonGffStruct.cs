@@ -1,3 +1,5 @@
+using SWLOR.Toolset.Domain.Editing;
+
 namespace SWLOR.Toolset.Domain.Gff
 {
     /// <summary>
@@ -64,6 +66,8 @@ namespace SWLOR.Toolset.Domain.Gff
             if (_indexByName.ContainsKey(name))
                 throw new ArgumentException($"Field '{name}' already exists in struct.", nameof(name));
 
+            EditScope.EnsureMutationAllowed();
+
             var insertAt = _entries.Count;
             for (var i = 0; i < _entries.Count; i++)
             {
@@ -76,6 +80,8 @@ namespace SWLOR.Toolset.Domain.Gff
 
             _entries.Insert(insertAt, new KeyValuePair<string, JsonGffField>(name, field));
             ReindexFrom(insertAt);
+
+            EditScope.Capture(new AddFieldEdit(this, name, field));
         }
 
         public bool Remove(string name)
@@ -83,9 +89,14 @@ namespace SWLOR.Toolset.Domain.Gff
             if (!_indexByName.TryGetValue(name, out var index))
                 return false;
 
+            EditScope.EnsureMutationAllowed();
+
+            var field = _entries[index].Value;
             _entries.RemoveAt(index);
             _indexByName.Remove(name);
             ReindexFrom(index);
+
+            EditScope.Capture(new RemoveFieldEdit(this, name, field));
             return true;
         }
 

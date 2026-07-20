@@ -59,13 +59,13 @@ namespace SWLOR.Toolset.Domain.Documents
 
         private LocStringEntry GetOrAddEntry(string languageKey)
         {
-            var entries = _field.LocStringEntries ??= new List<LocStringEntry>();
+            _field.LocStringEntries ??= new List<LocStringEntry>();
             var existing = FindEntry(languageKey);
             if (existing != null)
                 return existing;
 
             var entry = new LocStringEntry(languageKey, Array.Empty<byte>());
-            entries.Add(entry);
+            _field.AddLocStringEntry(entry);
             return entry;
         }
     }

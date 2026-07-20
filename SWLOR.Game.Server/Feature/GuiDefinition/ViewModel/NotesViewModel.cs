@@ -547,7 +547,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbNote.Name = string.IsNullOrWhiteSpace(ActiveNoteName)
                 ? UntitledNoteName
                 : ActiveNoteName.Trim();
-            dbNote.Text = ActiveNoteText ?? string.Empty;
+
+            // The text edit caps length client-side, but enforce it here too so a crafted client
+            // cannot persist an oversized note. This is the single funnel for every note write.
+            var text = ActiveNoteText ?? string.Empty;
+            dbNote.Text = text.Length > Notes.MaxNoteLength
+                ? text[..Notes.MaxNoteLength]
+                : text;
+
             dbNote.CategoryId = GetCategoryIdByOptionIndex(ActiveNoteCategoryIndex);
 
             DB.Set(dbNote);
@@ -555,6 +562,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ReloadAndSelectNote(string noteId)
         {
+            // Flush before computing the target's position. A pending rename can move the selected
+            // note across a page boundary, and the page must be derived from the post-save order or
+            // the note lands on a different page than the one we jump to and is never reselected.
+            SaveDirtyNote();
+
             var filtered = ApplyFilters(GetAllNotes());
             var index = filtered.FindIndex(x => x.Id == noteId);
 

@@ -185,6 +185,22 @@ public class NotesWindowTests
 
         // Deleting a note must not resurrect it via the flush on the reload that follows.
         viewModel.Should().MatchRegex(@"IsSaveEnabled = false;\s*SelectedNoteIndex = -1;\s*DB\.Delete<PlayerNote>");
+
+        // ReloadAndSelectNote must flush before it computes the target's page, or a pending rename
+        // that crosses a page boundary leaves the note on a different page than the one it jumps to.
+        viewModel.Should().MatchRegex(
+            @"private void ReloadAndSelectNote\(string noteId\)\s*\{\s*(//[^\n]*\n\s*)*SaveDirtyNote\(\);");
+    }
+
+    [Test]
+    public void NoteWrites_EnforceTheLengthCapServerSide()
+    {
+        // The text edit caps length on the client; ApplyEditsToNote must cap again so a crafted
+        // client cannot persist an oversized note. It is the single funnel for every note write.
+        var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
+
+        viewModel.Should().MatchRegex(
+            @"private void ApplyEditsToNote\(string noteId\)[\s\S]*?Notes\.MaxNoteLength[\s\S]*?DB\.Set\(dbNote\);");
     }
 
     [Test]

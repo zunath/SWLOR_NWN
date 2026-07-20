@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -56,6 +57,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         /// <summary>
+        /// A Bank-style usage bar with its "used / limit" text drawn over it. Shared by both tabs,
+        /// which differ only in the bound properties.
+        /// </summary>
+        private static void AddUsageProgressBar(
+            GuiRow<NotesViewModel> row,
+            Expression<Func<NotesViewModel, float>> progress,
+            Expression<Func<NotesViewModel, GuiColor>> color,
+            Expression<Func<NotesViewModel, string>> text)
+        {
+            row.AddProgressBar()
+                .BindValue(progress)
+                .BindColor(color)
+                .BindTooltip(text)
+                .SetHeight(ProgressBarHeight)
+                .AddDrawList(drawList =>
+                {
+                    drawList.AddText(drawText =>
+                    {
+                        drawText.BindText(text);
+                        drawText.SetBounds(6, 2, ProgressBarTextWidth, ProgressBarHeight);
+                        drawText.SetColor(255, 255, 255);
+                    });
+                });
+        }
+
+        /// <summary>
         /// The tab selector, repeated at the top of both tab layouts so it survives a swap.
         /// </summary>
         private static void AddTabRow(GuiColumn<NotesViewModel> col)
@@ -98,20 +125,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             row.SetHeight(ProgressBarRowHeight);
 
-                            row.AddProgressBar()
-                                .BindValue(model => model.NoteUsageProgress)
-                                .BindColor(model => model.NoteUsageColor)
-                                .BindTooltip(model => model.NoteUsageText)
-                                .SetHeight(ProgressBarHeight)
-                                .AddDrawList(drawList =>
-                                {
-                                    drawList.AddText(text =>
-                                    {
-                                        text.BindText(model => model.NoteUsageText);
-                                        text.SetBounds(6, 2, ProgressBarTextWidth, ProgressBarHeight);
-                                        text.SetColor(255, 255, 255);
-                                    });
-                                });
+                            AddUsageProgressBar(
+                                row,
+                                model => model.NoteUsageProgress,
+                                model => model.NoteUsageColor,
+                                model => model.NoteUsageText);
                         });
 
                         // Combo rows follow Perks and Key Items: spacers either side and an explicit
@@ -259,20 +277,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.SetHeight(ProgressBarRowHeight);
 
-                    row.AddProgressBar()
-                        .BindValue(model => model.CategoryUsageProgress)
-                        .BindColor(model => model.CategoryUsageColor)
-                        .BindTooltip(model => model.CategoryUsageText)
-                        .SetHeight(ProgressBarHeight)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddText(text =>
-                            {
-                                text.BindText(model => model.CategoryUsageText);
-                                text.SetBounds(6, 2, ProgressBarTextWidth, ProgressBarHeight);
-                                text.SetColor(255, 255, 255);
-                            });
-                        });
+                    AddUsageProgressBar(
+                        row,
+                        model => model.CategoryUsageProgress,
+                        model => model.CategoryUsageColor,
+                        model => model.CategoryUsageText);
                 });
 
                 col.AddRow(row =>

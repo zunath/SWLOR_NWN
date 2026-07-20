@@ -531,6 +531,154 @@ $perkChanges = @(
     }
 )
 
+# Technique requirements follow player-facing encounter progression from the World NPCs tab.
+# Same-level sources are ordered by their practical encounter difficulty: CZ220 Mynocks begin at
+# rank 0, Probe Droids at rank 1, and later sources progress continuously through rank 40.
+# Level-50 Tough, Elite, and Boss sources fill ranks 41-50. Additional/training rows are excluded,
+# and every Mimicry rank from 0 through 50 has at least one technique.
+$mimicryRequirements = @{
+    "Crippling Talons" = 4
+    "Frost Spit" = 3
+    "Raking Claws" = 6
+    "Rending Bite" = 7
+    "Target Lock" = 18
+    "Toxic Spit" = 28
+    "Barbed Volley" = 47
+    "Bonecrusher Bite" = 19
+    "Brutal Bash" = 29
+    "Capacitor Surge" = 2
+    "Chitin Guard" = 20
+    "Concussive Challenge" = 47
+    "Force Rend" = 23
+    "Glacial Slime" = 24
+    "Hoarfrost Glob" = 32
+    "Ion Burst" = 36
+    "Iron Carapace" = 21
+    "Mauling Bite" = 9
+    "Mind Spike" = 25
+    "Overload Shot" = 17
+    "Piercing Quills" = 13
+    "Pouncing Strike" = 8
+    "Precision Shot" = 1
+    "Rending Carve" = 43
+    "Rime Pounce" = 34
+    "Savage Roar" = 22
+    "Serrated Slash" = 30
+    "Sonic Shriek" = 0
+    "Static Web" = 1
+    "Suppressing Shot" = 1
+    "Tactical Mark" = 5
+    "Tail Sweep" = 10
+    "Venom Spray" = 31
+    "Arc Pulse" = 35
+    "Blood Frenzy Flurry" = 43
+    "Brace Breaker" = 41
+    "Dark Shock" = 37
+    "Disorienting Screech" = 0
+    "Dread Wave" = 38
+    "Essence Scar" = 42
+    "Force Sunder" = 47
+    "Goring Charge" = 14
+    "Grenade Burst" = 12
+    "Null Shock" = 48
+    "Opening Cut" = 41
+    "Pack Harrier" = 42
+    "Permafrost Rupture" = 39
+    "Rally Breaker" = 42
+    "Rangefinder Shot" = 41
+    "Seismic Slam" = 27
+    "Shrapnel Burst" = 16
+    "Signal Snare" = 41
+    "Static Burst" = 43
+    "Stim Canister" = 43
+    "Toxic Cloud" = 33
+    "Apex Collapse" = 50
+    "Crossfire Drill" = 45
+    "Cryo Bile" = 40
+    "Final Eclipse" = 50
+    "Final Line" = 49
+    "Final Mandate" = 49
+    "Final Suppression" = 48
+    "Finishing Drive" = 48
+    "Holdfast Slam" = 44
+    "Inferno Blast" = 15
+    "Inner Circle Bind" = 44
+    "Inner Circle Pounce" = 46
+    "Inner Circle Surge" = 45
+    "Inner Circle Volley" = 45
+    "Inner Ring Flurry" = 44
+    "Inner Void" = 46
+    "Last Bastion" = 47
+    "Lockstep Crush" = 43
+    "Merciless Angle" = 44
+    "Pressure Lock" = 44
+    "Rupturing Quake" = 26
+    "Scorching Breath" = 50
+    "Snap Rush" = 46
+    "Sustain Burn" = 45
+    "Terrifying Bellow" = 11
+    "Warden Clamp" = 48
+    "Warden Mark" = 49
+    "Warden Maul" = 50
+    "Warden Order" = 49
+    "Warden Rend" = 49
+    "Warden Sweep" = 48
+    "Warden Wall" = 47
+    "Will Fracture" = 46
+}
+
+$mimicryTraitNames = @(
+    "Bonecrusher Bite", "Chitin Guard", "Crippling Talons", "Essence Scar", "Force Rend",
+    "Force Sunder", "Glacial Slime", "Hoarfrost Glob", "Iron Carapace", "Mauling Bite",
+    "Mind Spike", "Opening Cut", "Overload Shot", "Precision Shot", "Rangefinder Shot",
+    "Rending Bite", "Rending Carve", "Rime Pounce", "Serrated Slash", "Tactical Mark",
+    "Target Lock"
+)
+
+foreach ($entry in $mimicryRequirements.GetEnumerator()) {
+    $notes = if ($mimicryTraitNames -contains $entry.Key) {
+        "Requires Mimicry rank $($entry.Value). Passive trait applied while equipped; learned from creatures via the combat analyzer."
+    }
+    else {
+        "Requires Mimicry rank $($entry.Value). Learned from creatures via the combat analyzer."
+    }
+
+    $perkChanges += @{
+        Sheet = "Mimicry"
+        PerkName = $entry.Key
+        Values = @{
+            "Skill Reqs." = if ($entry.Value -eq 0) { "-" } else { "Mimicry $($entry.Value)" }
+            Notes = $notes
+        }
+    }
+}
+
+$mimicryAnalyzerChanges = @{
+    "Combat Analyzer I" = @{
+        Description = "Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots."
+        Notes = "Unlocks the Techniques window (/techniques) and technique learning. Individual techniques require the Mimicry ranks listed on their rows."
+    }
+    "Combat Analyzer II" = @{
+        Description = "Upgrades the combat analyzer, increasing equipped technique potency by 5%."
+        Notes = "Cumulative equipped technique potency bonus: +5%. Requires Combat Analyzer I."
+    }
+    "Combat Analyzer III" = @{
+        Description = "Further upgrades the combat analyzer, increasing equipped technique potency by 10% in total."
+        Notes = "Cumulative equipped technique potency bonus: +10%. Requires Combat Analyzer II."
+    }
+    "Combat Analyzer IV" = @{
+        Description = "Maximizes the combat analyzer, increasing equipped technique potency by 15% in total."
+        Notes = "Cumulative equipped technique potency bonus: +15%. Requires Combat Analyzer III."
+    }
+}
+foreach ($entry in $mimicryAnalyzerChanges.GetEnumerator()) {
+    $perkChanges += @{
+        Sheet = "Mimicry"
+        PerkName = $entry.Key
+        Values = $entry.Value
+    }
+}
+
 $mimicryDescriptions = @{
     "Apex Collapse" = "While active, grants +25% Attack and +15% Critical Rate at the cost of -20% Physical Defense and -20% Force Defense."
     "Barbed Volley" = "Deals 18 physical DMG plus PER scaling in an 8m x 5m cone. Inflicts Bleed for 30 seconds."

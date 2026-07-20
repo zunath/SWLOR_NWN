@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.DisorientingScreech, 3, 3)
+                .MimicryTechnique(FeatType.DisorientingScreech, 0, 3)
                 .MimicryElement(CombatDamageType.Sonic)
                 .HasTargetingSphere(
                     Spell.DisorientingScreechTechnique,

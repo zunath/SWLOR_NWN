@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.CryoBile, 4, 3)
+                .MimicryTechnique(FeatType.CryoBile, 40, 3)
                 .HasTargetingCone(
                     Spell.CryoBileTechnique,
                     8f,

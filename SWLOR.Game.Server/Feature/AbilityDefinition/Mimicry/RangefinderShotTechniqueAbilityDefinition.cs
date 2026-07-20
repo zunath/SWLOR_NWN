@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Rangefinder Shot")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.RangefinderShot, 3, 2)
+                .MimicryTrait(FeatType.RangefinderShot, 41, 2)
                 .MimicryTraitStat(StatType.AccuracyPercentAdjustment, 8);
 
             return _builder.Build();

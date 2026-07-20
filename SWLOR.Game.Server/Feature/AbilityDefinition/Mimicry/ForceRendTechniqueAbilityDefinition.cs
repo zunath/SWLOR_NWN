@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Force Rend")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.ForceRend, 2, 2)
+                .MimicryTrait(FeatType.ForceRend, 23, 2)
                 .MimicryTraitStat(StatType.ForceAttackPercentAdjustment, 6);
 
             return _builder.Build();

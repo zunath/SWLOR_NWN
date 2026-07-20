@@ -201,6 +201,7 @@ public class CrossSkillPerkInteractionSafetyTests
         var lateralFootwork = MaxLevel(perks[PerkType.LateralFootwork]);
         var mobileFootwork = MaxLevel(perks[PerkType.MobileFootwork]);
         var highGuard = MaxLevel(perks[PerkType.HighGuard]);
+        var restorationStrike = MaxLevel(perks[PerkType.RestorationStrike]);
         StatValue(lateralFootwork, StatType.AbilityUsedEvasionPercentAdjustmentSkillType)
             .Should().Be((int)SkillType.Spear);
         StatValue(mobileFootwork, StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType)
@@ -211,11 +212,18 @@ public class CrossSkillPerkInteractionSafetyTests
         lateralFootwork.StatBonuses.Should().NotContain(
             bonus => bonus.Stat == StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType,
             "each cross-skill footwork trigger needs an independent selector channel");
-        StatValue(highGuard, StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType)
-            .Should().Be((int)SkillType.Spear);
         highGuard.StatBonuses.Should().NotContain(
-            bonus => bonus.Stat == StatType.AbilityUsedEvasionPercentAdjustmentSkillType,
-            "independent Spear Evasion triggers must not collapse into one summed selector channel");
+            bonus => bonus.Stat == StatType.CostlyAbilityDamageBonusSkillType ||
+                bonus.Stat == StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType,
+            "High Guard says hostile combat abilities and must work across skill lines");
+        restorationStrike.StatBonuses.Should().NotContain(
+            bonus => bonus.Stat == StatType.CostlyAbilityHitStaminaRestoreSkillType,
+            "Restoration Strike uses the same global costly-ability contract as High Guard");
+        StatValue(highGuard, StatType.CostlyAbilityDamageMinimumStaminaCost).Should().Be(8);
+        StatValue(highGuard, StatType.CostlyAbilityUsedEvasionMinimumStaminaCost).Should().Be(8);
+        StatValue(restorationStrike, StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost).Should().Be(8);
+        Enum.IsDefined(typeof(StatType), 778).Should().BeFalse(
+            "the superseded shared costly-ability threshold must not remain as usable stat API");
 
         var root = FindRepositoryRoot();
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
@@ -252,8 +260,45 @@ public class CrossSkillPerkInteractionSafetyTests
         staminaCost.Should().Contain("StatType.HostileAbilityStaminaCostFlatAdjustment");
 
         var hostileEvasion = ExtractMethod(combat, "private static void ApplyHostileAbilityUsedEvasion(");
-        hostileEvasion.Should().Contain("requiredSkillType != SkillType.Invalid",
+        hostileEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)",
             "an omitted selector makes Vigor Stance trigger from every hostile combat skill");
+        var costlyEvasion = ExtractMethod(combat, "private static void ApplyCostlyAbilityUsedEvasion(");
+        costlyEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
+        var costlyDamage = ExtractMethod(combat, "public static int GetCostlyAbilityDamageBonus(");
+        costlyDamage.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
+        var globalSkillMatch = ExtractMethod(combat, "private static bool SkillTypeMatchesOrGlobal(");
+        globalSkillMatch.Should().Contain(
+            "requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType)");
+
+        combat.Should().Contain("Dictionary<(uint Creature, AbilityDetail Ability), AbilityStaminaCostState>",
+            "cost-gated riders must bind the paid STM to the exact ability instead of a later ability");
+        var costlyHitEffects = ExtractMethod(combat, "private static void ApplyCostlyAbilityHitEffects(");
+        costlyHitEffects.Should().Contain("StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost");
+        costlyHitEffects.Should().Contain("StatType.CostlyAbilityStatusMinimumStaminaCost");
+        costlyHitEffects.Should().Contain("!costState.StaminaRestoreApplied",
+            "Restoration Strike may restore STM only once without consuming High Guard's Evasion context");
+        costlyHitEffects.Should().Contain("SkillTypeMatchesOrGlobal(skillType, staminaRestoreSkillType)");
+        costlyHitEffects.Should().Contain("SkillTypeMatchesOrGlobal(skillType, statusSkillType)");
+        costlyHitEffects.Should().NotContain("_abilityStaminaCosts.Remove",
+            "hit riders must not erase the context before post-use High Guard Evasion runs");
+        var deferCostContext = ExtractMethod(combat, "public static void DeferAbilityStaminaCostContext(");
+        deferCostContext.Should().Contain("state.DeferredImpactCount++");
+        var completeCostContext = ExtractMethod(combat, "public static void CompleteAbilityStaminaCostContext(");
+        completeCostContext.Should().Contain("state.DeferredImpactCount > 0");
+        completeCostContext.Should().Contain("_abilityStaminaCosts.Remove((creature, ability))");
+        var completeDeferredCostContext = ExtractMethod(
+            combat,
+            "public static void CompleteDeferredAbilityStaminaCostContext(");
+        completeDeferredCostContext.Should().Contain("state.DeferredImpactCount - 1");
+        completeDeferredCostContext.Should().Contain("_abilityStaminaCosts.Remove((creature, ability))");
+
+        var usePerkFeat = Read(root, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
+        usePerkFeat.Should().Contain("Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);");
+        usePerkFeat.Should().Contain("Combat.CompleteAbilityStaminaCostContext(activator, ability);");
+        usePerkFeat.IndexOf("ApplyAbilityActivatedEffects(activator, target, feat, ability, summary)", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                usePerkFeat.IndexOf("CompleteAbilityStaminaCostContext(activator, ability)", StringComparison.Ordinal),
+                "High Guard must read the paid cost before the ability context is cleared");
     }
 
     private static IReadOnlyCollection<PerkDetail> BuildPerksWithout2daLookup()

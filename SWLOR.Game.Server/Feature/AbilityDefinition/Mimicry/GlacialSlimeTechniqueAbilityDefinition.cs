@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Glacial Slime")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.GlacialSlime, 2, 2)
+                .MimicryTrait(FeatType.GlacialSlime, 24, 2)
                 .MimicryTraitStat(StatType.DamageDealtPoisonChance, 18);
 
             return _builder.Build();

@@ -1350,16 +1350,19 @@ def description_stat_entries(row, base):
         damage = parse_count(r"deal \+(\d+) DMG", description)
         stamina_restore = parse_count(r"restore[s]? (\d+) STM", description)
         if damage:
-            add_stat(stats, "CostlyAbilityDamageBonusSkillType", skill_expr)
-            add_stat(stats, "CostlyAbilityHitMinimumStaminaCost", 8)
+            if base != "High Guard":
+                add_stat(stats, "CostlyAbilityDamageBonusSkillType", skill_expr)
+            add_stat(stats, "CostlyAbilityDamageMinimumStaminaCost", 8)
             add_stat(stats, "CostlyAbilityDamageBonus", damage)
         if stamina_restore:
-            add_stat(stats, "CostlyAbilityHitStaminaRestoreSkillType", skill_expr)
-            add_stat(stats, "CostlyAbilityHitMinimumStaminaCost", 8)
+            if base != "Restoration Strike":
+                add_stat(stats, "CostlyAbilityHitStaminaRestoreSkillType", skill_expr)
+            add_stat(stats, "CostlyAbilityHitStaminaRestoreMinimumStaminaCost", 8)
             add_stat(stats, "CostlyAbilityHitStaminaRestore", stamina_restore)
         evasion = parse_percent(r"\+(\d+)% Evasion", description)
         if evasion:
-            add_stat(stats, "CostlyAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+            if base != "High Guard":
+                add_stat(stats, "CostlyAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
             add_stat(stats, "CostlyAbilityUsedEvasionMinimumStaminaCost", 8)
             add_stat(stats, "CostlyAbilityUsedEvasionPercentAdjustment", evasion)
             add_stat(stats, "CostlyAbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
@@ -1753,6 +1756,17 @@ def profile_property_lines(row, level, primary_status):
     def add_profile_property(name, value):
         if not any(existing_name == name for existing_name, _ in properties):
             properties.append((name, value))
+
+    def add_high_stm_exposed_properties():
+        if base != "Crippling Defense":
+            add_profile_property("TemporaryCostlyAbilityStatusSkillType", skill_type_expression(row))
+        add_profile_property("TemporaryCostlyAbilityStatusMinimumStaminaCost", "8")
+        add_profile_property(
+            "TemporaryCostlyAbilityExposedDurationSeconds",
+            str(parse_count(r"Exposed for (\d+) seconds", description) or 30))
+        add_profile_property(
+            "TemporaryDefeatedEnemyEffectDurationSeconds",
+            str(first_sentence_duration(description) or parse_duration(description) or 45))
 
     if row["Type"] in {"Stance", "Toggle", "Aura"}:
         return properties
@@ -2234,11 +2248,8 @@ def profile_property_lines(row, level, primary_status):
             "TemporarySuppressionStackEvasionPenaltyPercentAdjustment",
             parse_count(r"additional (\d+)%", description) or 0)
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
-    if "high-STM abilities also inflict Exposed" in description:
-        add_profile_property("TemporaryCostlyAbilityStatusSkillType", skill_type_expression(row))
-        add_profile_property("TemporaryCostlyAbilityHitMinimumStaminaCost", "8")
-        add_profile_property("TemporaryCostlyAbilityExposedDurationSeconds", str(parse_count(r"Exposed for (\d+) seconds", description) or 30))
-        add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
+    if "high-stm abilities also inflict exposed" in lowered:
+        add_high_stm_exposed_properties()
     if "area attacks pulse" in lowered or "fragmentation zones" in lowered:
         fragmentation_damage = (
             parse_count(r"pulse for (\d+) physical", description) or
@@ -2261,12 +2272,6 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("TemporaryStatusAppliedSelfDurationSeconds", parse_count(r"Attack Deflection for (\d+) seconds", description) or 30)
         add_profile_property("TemporaryStatusAppliedSelfStaminaRestore", parse_count(r"restore (\d+) STM", description))
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
-    if "high-stm abilities also inflict exposed" in lowered:
-        add_profile_property("TemporaryCostlyAbilityStatusSkillType", skill_type_expression(row))
-        add_profile_property("TemporaryCostlyAbilityHitMinimumStaminaCost", "8")
-        add_profile_property("TemporaryCostlyAbilityExposedDurationSeconds", parse_count(r"Exposed for (\d+) seconds", description) or 30)
-        add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
-
     factory = primary_status_factory(description, primary_status)
     if factory:
         properties.append(("StatusEffectFactory", factory))

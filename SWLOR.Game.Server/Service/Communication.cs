@@ -290,10 +290,13 @@ namespace SWLOR.Game.Server.Service
 
                     var distance = GetDistanceBetween(sender, target);
 
+                    // Preserve the Master behavior for overhearing: anyone in the same area and
+                    // within the channel's local range can hear the message, regardless of party
+                    // membership or long-range Comms scope. Comms scope applies only to the party
+                    // member delivery pass above.
                     if (GetArea(target) == GetArea(sender) &&
                         distance <= distanceCheck &&
-                        !recipients.Contains(target) &&
-                        (channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)))
+                        !recipients.Contains(target))
                     {
                         recipients.Add(target);
                     }

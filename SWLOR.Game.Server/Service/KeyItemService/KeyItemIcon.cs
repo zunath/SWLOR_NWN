@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.Service.KeyItemService
 {
     public static class KeyItemIcon
     {
+        public const string Default = "iki_default";
+
         public const string PublishedFieldGuide = "iki_fn_guide";
         public const string LicensedResearchDatapad = "iki_fn_datapad";
         public const string HandwrittenDiscoveryJournal = "iki_fn_journal";

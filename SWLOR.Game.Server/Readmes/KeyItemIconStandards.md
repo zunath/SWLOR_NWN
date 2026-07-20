@@ -13,6 +13,8 @@ Key Item icons use the `iki_` prefix, are stored in `SWLOR_Haks/sw_item`, and ar
 
 Category accents are amber-gold for Maps, violet-magenta for Quest Items, ivory-gold for Documents, red-orange for Keys, and emerald-green for Field Notes.
 
+The empty Key Items view uses the neutral archive placeholder `iki_default` instead of an empty resref, which NWN renders as its error icon.
+
 `tools/GetKeyItemIconPrompts.ps1` produces the complete prompt for every Key, Quest Item, and Document icon from its canonical `KeyItemType` name and description.
 
 ## Reuse Rules

@@ -60,7 +60,7 @@ public class KeyItemsWindowTests
         viewModel.LoadKeyItems(Array.Empty<KeyItemType>());
 
         viewModel.Selections.Should().BeEmpty();
-        viewModel.SelectedIcon.Should().BeEmpty();
+        viewModel.SelectedIcon.Should().Be(KeyItemIcon.Default);
         viewModel.SelectedName.Should().Be("No Key Items");
         viewModel.SelectedType.Should().BeEmpty();
         viewModel.SelectedDescription.Should().Be("You do not have any Key Items.");
@@ -76,6 +76,7 @@ public class KeyItemsWindowTests
 
         viewModel.LoadKeyItems(Array.Empty<KeyItemType>());
 
+        viewModel.SelectedIcon.Should().Be(KeyItemIcon.Default);
         viewModel.SelectedDescription.Should().Be("No Key Items match the selected category.");
     }
 

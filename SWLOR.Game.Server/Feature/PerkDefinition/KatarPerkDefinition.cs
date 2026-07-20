@@ -130,11 +130,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronElbowsTrait)
-                .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to enemies within 5m and generate Enmity equal to the guarded hit's incoming damage.")
-                .IncreasesStat(StatType.GuardRetaliationDMGBonusSkillType, (int)SkillType.Katar)
-                .IncreasesStat(StatType.GuardRetaliationDMGBonus, 15)
-                .IncreasesStat(StatType.GuardRetaliationDMGBonusRadiusMeters, 5)
-                .IncreasesStat(StatType.GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage, 100)
+                .Description("Whenever you Guard a hostile hit, release a pulse that deals 15 physical DMG to the attacker and all other enemies within 5 meters, using the standard combat damage formula. Each affected enemy generates Enmity toward you equal to the guarded hit's incoming damage.")
+                .IncreasesStat(StatType.GuardedHitPulseDMG, 15)
+                .IncreasesStat(StatType.GuardedHitPulseRadiusMeters, 5)
+                .IncreasesStat(StatType.GuardedHitPulseEnmityPercentOfIncomingDamage, 100)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 18);
         }

@@ -1222,10 +1222,9 @@ def description_stat_entries(row, base):
             add_stat(stats, "GuardedAllyHitNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
             add_stat(stats, "GuardedAllyHitNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Iron Elbows":
-        add_stat(stats, "GuardRetaliationDMGBonusSkillType", skill_expr)
-        add_stat(stats, "GuardRetaliationDMGBonus", parse_count(r"deal \+(\d+) DMG", description))
-        add_stat(stats, "GuardRetaliationDMGBonusRadiusMeters", parse_count(r"within (\d+)m", description) or 5)
-        add_stat(stats, "GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage", 100)
+        add_stat(stats, "GuardedHitPulseDMG", parse_count(r"deals (\d+) physical DMG", description))
+        add_stat(stats, "GuardedHitPulseRadiusMeters", parse_count(r"within (\d+) meters", description) or 5)
+        add_stat(stats, "GuardedHitPulseEnmityPercentOfIncomingDamage", 100)
     if base == "Retaliatory Flow":
         add_stat(stats, "GuardedHitSecondaryNextAttackDMGBonus", parse_count(r"deals \+(\d+) DMG", description))
         add_stat(stats, "GuardedHitSecondaryNextAttackEnmityBonus", parse_count(r"\+(\d+) Enmity", description))

@@ -10,9 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, GuiPayloadBase>
     {
-        public const string TabContentPartialElement = "NOTES_TAB_CONTENT";
-        public const string NotesTabPartial = "NOTES_TAB_VIEW";
         public const string CategoriesTabPartial = "NOTES_CATEGORIES_TAB_VIEW";
+        private const string MainWindowElement = "_window_";
+        private const string MainWindowPartial = "%%WINDOW_MAIN%%";
 
         private const string UntitledNoteName = "Untitled Note";
 
@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _isLoadingNote;
         private bool _suppressReload;
         private int _totalNoteCount;
-        private float _appliedContentWidth = -1f;
 
         public bool IsSaveEnabled
         {
@@ -603,45 +602,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Regenerates the active tab's layout at the current window width and swaps it in. Nothing
-        /// in NUI reflows on resize and layout widths cannot be bound, so rebuilding the layout with
-        /// the new width baked in is the only way the window content tracks the window.
+        /// Swaps the whole window layout for the active tab. The tabs cannot be stacked rows toggled
+        /// with BindIsVisible - a hidden row still reserves its flex space - and hosting them in a
+        /// nested placeholder group stops the content filling the window, because a group sizes
+        /// itself to its content. Replacing the window root avoids both.
         /// </summary>
-        /// <param name="force">Applies the layout even if the width has not meaningfully changed.</param>
-        private void RefreshTabLayout(bool force)
-        {
-            var contentWidth = NotesDefinition.CalculateContentWidth(Geometry.Width);
-
-            // Dragging a window edge fires a stream of geometry updates - only rebuild when the
-            // width meaningfully changed.
-            if (!force && _appliedContentWidth > 0f && Math.Abs(contentWidth - _appliedContentWidth) < 8f)
-                return;
-
-            _appliedContentWidth = contentWidth;
-
-            SetGroupLayout(
-                TabContentPartialElement,
-                IsCategoriesTabToggled
-                    ? NotesDefinition.BuildCategoriesTabLayout(contentWidth)
-                    : NotesDefinition.BuildNotesTabLayout(contentWidth));
-
-            // A regenerated list or combo comes back empty until its bound values are pushed again.
-            RefreshActiveTabData();
-        }
-
         private void RestoreSelectedTabPartial()
         {
-            _appliedContentWidth = -1f;
-            RefreshTabLayout(true);
-            // NUI can drop a nested layout while its parent is still being redrawn, so reapply on
-            // the next tick.
-            DelayCommand(0.0f, () => RefreshTabLayout(true));
-        }
+            ChangePartialView(
+                MainWindowElement,
+                IsCategoriesTabToggled ? CategoriesTabPartial : MainWindowPartial);
 
-        protected override void OnClientPropertyUpdated(string propertyName)
-        {
-            if (propertyName == nameof(Geometry))
-                RefreshTabLayout(false);
+            // Re-rendering rebuilds that tab's lists and combos, which come back empty until their
+            // bound values are pushed again.
+            RefreshActiveTabData();
+            // NUI can drop a layout while its parent is still being redrawn, so push once more on
+            // the next tick.
+            DelayCommand(0.0f, RefreshActiveTabData);
         }
 
         /// <summary>
@@ -652,21 +629,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsCategoriesTabToggled)
             {
                 LoadCategories();
-                return;
             }
-
-            // Resizing regenerates the layout, so this runs mid-drag. Reselect whatever was open
-            // rather than clearing the editor out from under the player.
-            var selectedNoteId = SelectedNoteIndex > -1 && SelectedNoteIndex < _pageNoteIds.Count
-                ? _pageNoteIds[SelectedNoteIndex]
-                : string.Empty;
-
-            if (string.IsNullOrEmpty(selectedNoteId))
-                LoadNotesList();
             else
-                ReloadAndSelectNote(selectedNoteId);
-
-            RefreshComboSelections();
+            {
+                LoadNotesList();
+                RefreshComboSelections();
+            }
         }
 
         protected override void OnMainViewRestored()

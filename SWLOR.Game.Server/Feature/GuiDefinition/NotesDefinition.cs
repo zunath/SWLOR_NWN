@@ -1,133 +1,91 @@
-using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class NotesDefinition : IGuiWindowDefinition
     {
-        // NUI cannot bind a layout width, so the tab content is regenerated for the current window
-        // width and swapped in. Element ids default to a fresh Guid, which would leave every
-        // regenerated button unwired, so each event bearing element gets a stable id here. These
-        // must match between the copies registered at boot and every runtime generated copy.
-        private const string NotesTabButtonId = "notes_tab_notes";
-        private const string CategoriesTabButtonId = "notes_tab_categories";
-        private const string NoteRowButtonId = "notes_note_row";
-        private const string ClearSearchButtonId = "notes_clear_search";
-        private const string SearchButtonId = "notes_search";
-        private const string PreviousPageButtonId = "notes_previous_page";
-        private const string NextPageButtonId = "notes_next_page";
-        private const string NewNoteButtonId = "notes_new_note";
-        private const string DeleteNoteButtonId = "notes_delete_note";
-        private const string SaveButtonId = "notes_save";
-        private const string DiscardButtonId = "notes_discard";
-        private const string AddCategoryButtonId = "notes_add_category";
-        private const string CategoryRowButtonId = "notes_category_row";
-        private const string DeleteCategoryButtonId = "notes_delete_category";
-
         private const float RowHeight = 40f;
         private const float ControlHeight = 32f;
         private const float ProgressBarRowHeight = 28f;
         private const float ProgressBarHeight = 20f;
         private const float ProgressBarTextWidth = 440f;
-        private const float TabButtonWidth = 180f;
 
-        /// <summary>Window frame and margins, subtracted before the panes split the remainder.</summary>
-        private const float WindowChromeWidth = 44f;
-
-        /// <summary>Gap between the two panes, plus their own margins.</summary>
-        private const float PaneGutterWidth = 14f;
-
-        private const float MinimumContentWidth = 560f;
-
-        public const float DefaultWindowWidth = 720f;
-        public const float DefaultWindowHeight = 460f;
+        /// <summary>
+        /// Width of the two category combo boxes. A combo does not stretch to fill its row the way
+        /// a text edit does, so it needs an explicit width - the same approach Perks and Key Items
+        /// take. It must sit in a row with no pinned height or the window's lists render empty.
+        /// </summary>
+        private const float ComboWidth = 300f;
 
         private readonly GuiWindowBuilder<NotesViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
         {
-            var defaultWidth = CalculateContentWidth(DefaultWindowWidth);
-
             _builder.CreateWindow(GuiWindowType.Notes)
-                .SetInitialGeometry(0, 0, DefaultWindowWidth, DefaultWindowHeight)
+                .SetInitialGeometry(0, 0, 720f, 460f)
                 .SetTitle("Notes")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnCloseWindow())
 
-                // Registered so both tabs' element events are hooked at boot. The layouts actually
-                // shown are generated per current window width by the view model.
-                .DefinePartialView(NotesViewModel.NotesTabPartial, group => BuildNotesTab(group, defaultWidth))
-                .DefinePartialView(NotesViewModel.CategoriesTabPartial, group => BuildCategoriesTab(group, defaultWidth))
+                // The categories tab replaces the whole window layout rather than being swapped into
+                // a nested placeholder group. A group sizes itself to its content, so hosting the
+                // tabs inside one pinned the panes to a fixed width and the window stopped filling
+                // horizontally. The window root has no such limit. Both layouts are registered here
+                // at boot, so their buttons keep working after a swap.
+                .DefinePartialView(NotesViewModel.CategoriesTabPartial, BuildCategoriesTab)
 
                 .AddColumn(col =>
                 {
-                    col.AddRow(row =>
-                    {
-                        row.AddPartialView(NotesViewModel.TabContentPartialElement);
-                    });
+                    AddTabRow(col);
+                    AddNotesContent(col);
                 });
 
             return _builder.Build();
         }
 
         /// <summary>
-        /// Converts a window width into the width available to the tab content. The generated layout
-        /// pins this width, which is what lets the content grow with the window - nothing reflows on
-        /// its own.
+        /// The tab selector, repeated at the top of both tab layouts so it survives a swap.
         /// </summary>
-        public static float CalculateContentWidth(float windowWidth)
+        private static void AddTabRow(GuiColumn<NotesViewModel> col)
         {
-            var contentWidth = windowWidth - WindowChromeWidth;
-
-            return contentWidth < MinimumContentWidth ? MinimumContentWidth : contentWidth;
-        }
-
-        /// <summary>Width of one of the two side by side panes on the notes tab.</summary>
-        public static float CalculatePaneWidth(float contentWidth)
-        {
-            return (contentWidth - PaneGutterWidth) / 2f;
-        }
-
-        public static Json BuildNotesTabLayout(float contentWidth)
-        {
-            var host = new GuiGroup<NotesViewModel>();
-            BuildNotesTab(host, contentWidth);
-
-            return host.ToJson();
-        }
-
-        public static Json BuildCategoriesTabLayout(float contentWidth)
-        {
-            var host = new GuiGroup<NotesViewModel>();
-            BuildCategoriesTab(host, contentWidth);
-
-            return host.ToJson();
-        }
-
-        private static void BuildNotesTab(GuiGroup<NotesViewModel> host, float contentWidth)
-        {
-            host.SetShowBorder(false);
-            host.SetScrollbars(NuiScrollbars.None);
-
-            var paneWidth = CalculatePaneWidth(contentWidth);
-
-            host.AddColumn(outer =>
+            col.AddRow(row =>
             {
-                outer.SetWidth(contentWidth);
+                row.SetHeight(RowHeight);
 
-                AddTabRow(outer);
+                row.AddSpacer();
 
-                outer.AddRow(root =>
+                row.AddToggleButton()
+                    .SetText("Notes")
+                    .SetHeight(ControlHeight)
+                    .SetWidth(180f)
+                    .BindIsToggled(model => model.IsNotesTabToggled)
+                    .BindOnClicked(model => model.OnClickNotesTab());
+
+                row.AddToggleButton()
+                    .SetText("Manage Categories")
+                    .SetHeight(ControlHeight)
+                    .SetWidth(180f)
+                    .BindIsToggled(model => model.IsCategoriesTabToggled)
+                    .BindOnClicked(model => model.OnClickCategoriesTab());
+
+                row.AddSpacer();
+            });
+        }
+
+        private static void AddNotesContent(GuiColumn<NotesViewModel> shell)
+        {
+            {
+                shell.AddRow(root =>
                 {
+                    // Neither column is given a width, so they flex and share the window as it is
+                    // resized. Every row below is pinned except the note list and the note body,
+                    // which absorb the remaining vertical space.
                     root.AddColumn(browser =>
                     {
-                        browser.SetWidth(paneWidth);
-
                         browser.AddRow(row =>
                         {
                             row.SetHeight(ProgressBarRowHeight);
@@ -148,9 +106,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 });
                         });
 
-                        // Combo rows follow the Key Items window: no pinned row height, spacers
-                        // either side. A width pinned combo inside a fixed height row makes the
-                        // whole tab render its lists empty.
+                        // Combo rows follow Perks and Key Items: spacers either side and an explicit
+                        // width, in a row with no pinned height. A width-pinned combo inside a
+                        // fixed-height row makes every list in the window render empty.
                         browser.AddRow(row =>
                         {
                             row.AddSpacer();
@@ -158,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddComboBox()
                                 .BindOptions(model => model.CategoryFilterOptions)
                                 .BindSelectedIndex(model => model.SelectedCategoryFilterIndex)
-                                .SetWidth(paneWidth);
+                                .SetWidth(ComboWidth);
 
                             row.AddSpacer();
                         });
@@ -172,14 +130,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindValue(model => model.SearchText);
 
                             row.AddButton()
-                                .SetId(ClearSearchButtonId)
                                 .SetText("X")
                                 .SetHeight(ControlHeight)
                                 .SetWidth(35f)
                                 .BindOnClicked(model => model.OnClickClearSearch());
 
                             row.AddButton()
-                                .SetId(SearchButtonId)
                                 .SetText("Search")
                                 .SetHeight(ControlHeight)
                                 .BindOnClicked(model => model.OnClickSearch());
@@ -192,7 +148,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 template.AddCell(cell =>
                                 {
                                     cell.AddToggleButton()
-                                        .SetId(NoteRowButtonId)
                                         .BindText(model => model.NoteNames)
                                         .BindIsToggled(model => model.NoteToggled)
                                         .BindOnClicked(model => model.OnSelectNote());
@@ -201,46 +156,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindRowCount(model => model.NoteNames);
                         });
 
-                        // Inlined rather than AddPagination: the shared control generates its own
-                        // Guid ids, which do not survive a layout regeneration.
-                        browser.AddRow(row =>
-                        {
-                            row.AddSpacer();
-
-                            row.AddButton()
-                                .SetId(PreviousPageButtonId)
-                                .SetText("<")
-                                .SetWidth(32f)
-                                .SetHeight(ControlHeight)
-                                .BindOnClicked(model => model.OnClickPreviousPage());
-
-                            row.AddComboBox()
-                                .BindOptions(model => model.PageNumbers)
-                                .BindSelectedIndex(model => model.SelectedPageIndex);
-
-                            row.AddButton()
-                                .SetId(NextPageButtonId)
-                                .SetText(">")
-                                .SetWidth(32f)
-                                .SetHeight(ControlHeight)
-                                .BindOnClicked(model => model.OnClickNextPage());
-
-                            row.AddSpacer();
-                        });
+                        browser.AddPagination(
+                            model => model.PageNumbers,
+                            model => model.SelectedPageIndex,
+                            model => model.OnClickPreviousPage(),
+                            model => model.OnClickNextPage());
 
                         browser.AddRow(row =>
                         {
                             row.SetHeight(RowHeight);
 
                             row.AddButton()
-                                .SetId(NewNoteButtonId)
                                 .SetText("New Note")
                                 .BindOnClicked(model => model.OnClickNewNote())
                                 .BindIsEnabled(model => model.IsNewEnabled)
                                 .SetHeight(ControlHeight);
 
                             row.AddButton()
-                                .SetId(DeleteNoteButtonId)
                                 .SetText("Delete Note")
                                 .BindOnClicked(model => model.OnClickDeleteNote())
                                 .BindIsEnabled(model => model.IsDeleteEnabled)
@@ -250,8 +182,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     root.AddColumn(editor =>
                     {
-                        editor.SetWidth(paneWidth);
-
                         editor.AddRow(row =>
                         {
                             row.SetHeight(RowHeight);
@@ -270,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindOptions(model => model.NoteCategoryOptions)
                                 .BindSelectedIndex(model => model.ActiveNoteCategoryIndex)
                                 .BindIsEnabled(model => model.IsNoteSelected)
-                                .SetWidth(paneWidth);
+                                .SetWidth(ComboWidth);
 
                             row.AddSpacer();
                         });
@@ -289,14 +219,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.SetHeight(RowHeight);
 
                             row.AddButton()
-                                .SetId(SaveButtonId)
                                 .BindOnClicked(model => model.OnClickSave())
                                 .SetText("Save")
                                 .SetHeight(ControlHeight)
                                 .BindIsEnabled(model => model.IsSaveEnabled);
 
                             row.AddButton()
-                                .SetId(DiscardButtonId)
                                 .BindOnClicked(model => model.OnClickDiscardChanges())
                                 .SetText("Discard Changes")
                                 .SetHeight(ControlHeight)
@@ -304,21 +232,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     });
                 });
+            }
+        }
+
+        private static void BuildCategoriesTab(GuiGroup<NotesViewModel> group)
+        {
+            group.AddColumn(col =>
+            {
+                AddTabRow(col);
+                AddCategoriesContent(col);
             });
         }
 
-        private static void BuildCategoriesTab(GuiGroup<NotesViewModel> host, float contentWidth)
+        private static void AddCategoriesContent(GuiColumn<NotesViewModel> col)
         {
-            host.SetShowBorder(false);
-            host.SetScrollbars(NuiScrollbars.None);
-
-            host.AddColumn(outer =>
             {
-                outer.SetWidth(contentWidth);
-
-                AddTabRow(outer);
-
-                outer.AddRow(row =>
+                col.AddRow(row =>
                 {
                     row.SetHeight(ProgressBarRowHeight);
 
@@ -338,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                 });
 
-                outer.AddRow(row =>
+                col.AddRow(row =>
                 {
                     row.SetHeight(RowHeight);
 
@@ -348,21 +277,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindValue(model => model.NewCategoryName);
 
                     row.AddButton()
-                        .SetId(AddCategoryButtonId)
                         .SetText("Add Category")
                         .SetHeight(ControlHeight)
                         .BindOnClicked(model => model.OnClickAddCategory())
                         .BindIsEnabled(model => model.IsAddCategoryEnabled);
                 });
 
-                outer.AddRow(row =>
+                col.AddRow(row =>
                 {
                     row.AddList(template =>
                     {
                         template.AddCell(cell =>
                         {
                             cell.AddToggleButton()
-                                .SetId(CategoryRowButtonId)
                                 .BindText(model => model.CategoryNames)
                                 .BindIsToggled(model => model.CategoryToggled)
                                 .BindOnClicked(model => model.OnSelectCategory());
@@ -371,14 +298,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindRowCount(model => model.CategoryNames);
                 });
 
-                outer.AddRow(row =>
+                col.AddRow(row =>
                 {
                     row.SetHeight(RowHeight);
 
                     row.AddSpacer();
 
                     row.AddButton()
-                        .SetId(DeleteCategoryButtonId)
                         .SetText("Delete Category")
                         .SetHeight(ControlHeight)
                         .BindOnClicked(model => model.OnClickDeleteCategory())
@@ -386,38 +312,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     row.AddSpacer();
                 });
-            });
-        }
-
-        /// <summary>
-        /// The tab selector, repeated at the top of both tab layouts so it survives a swap.
-        /// </summary>
-        private static void AddTabRow(GuiColumn<NotesViewModel> col)
-        {
-            col.AddRow(row =>
-            {
-                row.SetHeight(RowHeight);
-
-                row.AddSpacer();
-
-                row.AddToggleButton()
-                    .SetId(NotesTabButtonId)
-                    .SetText("Notes")
-                    .SetHeight(ControlHeight)
-                    .SetWidth(TabButtonWidth)
-                    .BindIsToggled(model => model.IsNotesTabToggled)
-                    .BindOnClicked(model => model.OnClickNotesTab());
-
-                row.AddToggleButton()
-                    .SetId(CategoriesTabButtonId)
-                    .SetText("Manage Categories")
-                    .SetHeight(ControlHeight)
-                    .SetWidth(TabButtonWidth)
-                    .BindIsToggled(model => model.IsCategoriesTabToggled)
-                    .BindOnClicked(model => model.OnClickCategoriesTab());
-
-                row.AddSpacer();
-            });
+            }
         }
     }
 }

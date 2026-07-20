@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronElbowsTrait)
-                .Description("Whenever you Guard a hostile hit, release a pulse that deals 15 physical DMG to the attacker and all other enemies within 5 meters, using the standard combat damage formula. Each affected enemy generates Enmity toward you equal to the guarded hit's incoming damage.")
+                .Description("Whenever you Guard a hostile hit, release a pulse that deals 15 physical DMG to the attacker and all other enemies within 5 meters. Each affected enemy generates Enmity toward you equal to the guarded hit's incoming damage.")
                 .IncreasesStat(StatType.GuardedHitPulseDMG, 15)
                 .IncreasesStat(StatType.GuardedHitPulseRadiusMeters, 5)
                 .IncreasesStat(StatType.GuardedHitPulseEnmityPercentOfIncomingDamage, 100)
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.WhirlingGuard1)
-                .Description("For 30 seconds, you gain +20 Guard. Whenever you guard a hit, deal 8 physical DMG to that attacker using the standard combat damage formula. Your current Guarded target automatically receives the same effect if they are within 5 meters when activated.")
+                .Description("For 30 seconds, you gain +20 Guard. Whenever you guard a hit, deal 8 physical DMG to that attacker. Your current Guarded target automatically receives the same effect if they are within 5 meters when activated.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 20);
         }

@@ -28,7 +28,11 @@ done | blocked`.
     Avalonia 11.3.17, CommunityToolkit.Mvvm 8.4.2.
   - Radoub uses Nerdbank.GitVersioning — works because the submodule is its own git repo.
 
-## WP0.2 — pending — CLI `--no-prompt` flag
+## WP0.2 — done — 2026-07-20 — CLI `--no-prompt` flag
+- Tier: Low (controller-executed inline; cheaper than dispatch).
+- Files: `SWLOR.CLI\Program.cs` (new `--no-prompt` option), `SWLOR.CLI\ModulePacker.cs`
+  (`PackModule`/`UnpackModule` take `bool noPrompt = false`; ReadKey prompt skipped when set).
+- Default behavior unchanged (prompt still shown without the flag). CLI builds clean.
 ## WP1.1 — pending — Generic JSON-GFF model + reader/writer
 ## WP1.2 — pending — Corpus conformance utilities
 ## WP1.3 — pending — Round-trip gate

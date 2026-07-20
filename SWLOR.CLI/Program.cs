@@ -112,6 +112,11 @@ namespace SWLOR.CLI
                 "Module root containing git, uti, and utm folders. Defaults to ./Module.",
                 CommandOptionType.SingleValue);
 
+            var noPromptOption = app.Option(
+                "--no-prompt",
+                "Skips the 'Press any key to end' prompt after packing or unpacking a module.",
+                CommandOptionType.NoValue);
+
             app.HelpOption("-? | -h | --help");
 
             app.OnExecute(() =>
@@ -143,12 +148,12 @@ namespace SWLOR.CLI
 
                 if (modulePackerOption.HasValue())
                 {
-                    _modulePacker.PackModule(modulePackerOption.Value());
+                    _modulePacker.PackModule(modulePackerOption.Value(), noPromptOption.HasValue());
                 }
 
                 if (moduleUnpackOption.HasValue())
                 {
-                    _modulePacker.UnpackModule(moduleUnpackOption.Value());
+                    _modulePacker.UnpackModule(moduleUnpackOption.Value(), noPromptOption.HasValue());
                 }
 
                 if (recipeOption.HasValue())

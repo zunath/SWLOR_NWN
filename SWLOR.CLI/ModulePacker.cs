@@ -18,7 +18,7 @@ namespace SWLOR.CLI
         private const string PackingDirectory = "./packing";
         private const string WorkerCountEnvironmentVariable = "SWLOR_RESOURCE_CONVERSION_WORKERS";
 
-        public void PackModule(string filePath)
+        public void PackModule(string filePath, bool noPrompt = false)
         {
             var sw = new Stopwatch();
             Exception packException = null;
@@ -107,11 +107,15 @@ namespace SWLOR.CLI
 
             sw.Stop();
             Console.WriteLine($"Packing module completed in {sw.ElapsedMilliseconds}ms");
-            Console.WriteLine("Program finished. Press any key to end.");
-            Console.ReadKey();
+
+            if (!noPrompt)
+            {
+                Console.WriteLine("Program finished. Press any key to end.");
+                Console.ReadKey();
+            }
         }
 
-        public void UnpackModule(string filePath)
+        public void UnpackModule(string filePath, bool noPrompt = false)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -195,9 +199,13 @@ namespace SWLOR.CLI
             });
 
             sw.Stop();
-            Console.WriteLine($"Unpacking module completed in {sw.ElapsedMilliseconds}ms"); 
-            Console.WriteLine("Program finished. Press any key to end.");
-            Console.ReadKey();
+            Console.WriteLine($"Unpacking module completed in {sw.ElapsedMilliseconds}ms");
+
+            if (!noPrompt)
+            {
+                Console.WriteLine("Program finished. Press any key to end.");
+                Console.ReadKey();
+            }
         }
 
 

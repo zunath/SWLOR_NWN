@@ -9,9 +9,13 @@
         Title="SWLOR Toolset"
         Width="1280" Height="800"
         WindowStartupLocation="CenterScreen">
-  <Grid RowDefinitions="*,Auto">
-    <DockControl Grid.Row="0" Layout="{Binding Layout}" Margin="4" />
-    <Border Grid.Row="1"
+  <Grid RowDefinitions="Auto,*,Auto">
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" Margin="8,6">
+      <Button Content="Save All" Command="{Binding SaveAllCommand}" />
+      <Button Content="Pack Module" Command="{Binding PackModuleCommand}" />
+    </StackPanel>
+    <DockControl Grid.Row="1" Layout="{Binding Layout}" Margin="4" />
+    <Border Grid.Row="2"
             Padding="8,4"
             Background="{DynamicResource DockThemeBackgroundLowBrush}"
             BorderBrush="{DynamicResource DockThemeBorderMidBrush}"

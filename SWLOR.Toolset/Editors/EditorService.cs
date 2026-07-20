@@ -72,6 +72,7 @@ namespace SWLOR.Toolset.Editors
             {
                 var editor = new BlueprintEditorViewModel(
                     filePath, resRef, schema, _lookups, _gameCodeIndex, _log);
+                editor.Closed += _ => _openEditors.Remove(filePath);
                 _openEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
             }
@@ -79,6 +80,16 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        /// <summary>Saves every open editor (blueprint and area) that has unsaved changes.</summary>
+        public void SaveAll()
+        {
+            foreach (var editor in _openEditors.Values.ToList())
+                editor.SaveCommand.Execute(null);
+
+            foreach (var editor in _openAreaEditors.Values.ToList())
+                editor.SaveCommand.Execute(null);
         }
 
         /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>
@@ -101,6 +112,7 @@ namespace SWLOR.Toolset.Editors
             try
             {
                 var editor = new AreaEditorViewModel(resRef, workspace, _lookups, _gameCodeIndex, _log);
+                editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);
             }

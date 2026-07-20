@@ -135,11 +135,7 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var bytes = session.Document.ToBytes();
-                var temporaryPath = session.FilePath + ".tmp";
-                File.WriteAllBytes(temporaryPath, bytes);
-                File.Move(temporaryPath, session.FilePath, overwrite: true);
-
+                Services.SaveService.WriteAtomic(session.FilePath, session.Document.ToBytes());
                 session.UndoStack.MarkSaved();
                 _log.AppendLine($"Saved {session.FilePath}.");
             }
@@ -192,10 +188,14 @@ namespace SWLOR.Toolset.Editors
 
         public bool CanRedoInstances => _gitSession.UndoStack.CanRedo;
 
+        /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
+        public event Action<AreaEditorViewModel>? Closed;
+
         public override bool OnClose()
         {
             _areSession.Dispose();
             _gitSession.Dispose();
+            Closed?.Invoke(this);
             return base.OnClose();
         }
 

@@ -230,7 +230,20 @@ done | blocked`.
   are self-contained; templates deleted years ago cause no runtime failure), so the rule was
   downgraded to Warning severity with rationale in code. Full-corpus totals now:
   5 Errors (4 ResRefLength + 1 PaletteOrphan) + 5,528 Warnings.
-## WP3.5 — pending — Save + pack services
+## WP3.5 — done — 2026-07-20 — Save + pack services
+- Tier: Low (controller-executed inline due to subagent spend-limit failures).
+- Files: `SWLOR.Toolset\Services\{SaveService,PackService}.cs`; editors refactored to
+  SaveService.WriteAtomic; EditorService.SaveAll; ShellViewModel SaveAll/PackModule commands;
+  MainWindow toolbar (Save All, Pack Module); DI.
+- **Bug fixed in passing:** closed editor tabs were never removed from EditorService's
+  registries (reopening would activate a disposed document) — Closed events added.
+- **PackService CLI resolution:** prefers solution-built `SWLOR.CLI\bin\{Debug,Release}\net8.0`
+  (understands --no-prompt); falls back to committed `tools\SWLOR.CLI\SWLOR.CLI.exe` WITHOUT
+  the flag + redirected stdin (that binary predates WP0.2). **Open item:** refresh the
+  committed tools binary next time CLI changes ship, then simplify. Module filename read from
+  `Module\config.json` ModuleFileName (fallback to the known default).
+- Verified: 203/204 green, app builds clean, launch smoke OK. Real pack + in-game load is the
+  WP3.6 human gate.
 ## WP3.6 — pending — End-to-end daily-driver gate (human verify)
 ## WP4.1 — pending — GL spike
 ## WP4.2 — pending — Mesh/texture pipeline

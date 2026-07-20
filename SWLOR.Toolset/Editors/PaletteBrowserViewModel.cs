@@ -208,11 +208,7 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var bytes = _session.Document.ToBytes();
-                var temporaryPath = _session.FilePath + ".tmp";
-                File.WriteAllBytes(temporaryPath, bytes);
-                File.Move(temporaryPath, _session.FilePath, overwrite: true);
-
+                Services.SaveService.WriteAtomic(_session.FilePath, _session.Document.ToBytes());
                 _session.UndoStack.MarkSaved();
                 StatusMessage = $"Saved {_session.FilePath}.";
                 NotifyHistoryChanged();

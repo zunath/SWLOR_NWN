@@ -75,6 +75,8 @@ namespace SWLOR.Toolset
             services.AddSingleton<Func<Editors.EditorService>>(sp =>
                 () => sp.GetRequiredService<Editors.EditorService>());
 
+            services.AddSingleton<Services.SaveService>();
+            services.AddSingleton<Services.PackService>();
             services.AddSingleton<PropertiesViewModel>();
             services.AddSingleton<ModuleExplorerViewModel>();
             services.AddSingleton<SearchViewModel>();

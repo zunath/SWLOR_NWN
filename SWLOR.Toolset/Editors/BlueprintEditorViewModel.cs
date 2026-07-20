@@ -98,11 +98,7 @@ namespace SWLOR.Toolset.Editors
         {
             try
             {
-                var bytes = _session.Document.ToBytes();
-                var temporaryPath = _session.FilePath + ".tmp";
-                File.WriteAllBytes(temporaryPath, bytes);
-                File.Move(temporaryPath, _session.FilePath, overwrite: true);
-
+                Services.SaveService.WriteAtomic(_session.FilePath, _session.Document.ToBytes());
                 _session.UndoStack.MarkSaved();
                 AfterHistoryChange();
                 _log.AppendLine($"Saved {_session.FilePath}.");
@@ -133,9 +129,13 @@ namespace SWLOR.Toolset.Editors
 
         public bool CanRedo => _session.UndoStack.CanRedo;
 
+        /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
+        public event Action<BlueprintEditorViewModel>? Closed;
+
         public override bool OnClose()
         {
             _session.Dispose();
+            Closed?.Invoke(this);
             return base.OnClose();
         }
 

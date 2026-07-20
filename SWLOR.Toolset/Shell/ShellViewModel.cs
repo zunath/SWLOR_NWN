@@ -1,6 +1,8 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;
@@ -28,25 +30,54 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private string _statusText = "Starting...";
 
+        private readonly Editors.EditorService _editorService;
+        private readonly PackService _packService;
+
         public ShellViewModel(
             ToolsetSettings settings,
             WorkspaceContext workspaceContext,
             OutputLogService log,
             ModuleFileWatcher fileWatcher,
             ModuleExplorerViewModel explorer,
-            ToolsetDockFactory factory)
+            ToolsetDockFactory factory,
+            Editors.EditorService editorService,
+            PackService packService)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _fileWatcher = fileWatcher ?? throw new ArgumentNullException(nameof(fileWatcher));
             _explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
+            _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
+            _packService = packService ?? throw new ArgumentNullException(nameof(packService));
 
             if (factory == null) throw new ArgumentNullException(nameof(factory));
 
             Layout = factory.CreateLayout();
             if (Layout != null)
                 factory.InitLayout(Layout);
+        }
+
+        [RelayCommand]
+        private void SaveAll()
+        {
+            _editorService.SaveAll();
+        }
+
+        [RelayCommand]
+        private async Task PackModuleAsync()
+        {
+            var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
+            if (moduleRoot == null)
+            {
+                _log.AppendLine("No module open to pack.");
+                return;
+            }
+
+            _editorService.SaveAll();
+            StatusText = "Packing module...";
+            var exitCode = await _packService.PackAsync(moduleRoot).ConfigureAwait(true);
+            StatusText = exitCode == 0 ? "Pack completed." : $"Pack failed (exit code {exitCode}) — see Output.";
         }
 
         /// <summary>

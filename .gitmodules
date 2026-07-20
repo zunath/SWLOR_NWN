@@ -2,3 +2,6 @@
 	path = SWLOR_Haks
 	url = https://github.com/zunath/SWLOR_Haks
     branch = master
+[submodule "External/Radoub"]
+	path = External/Radoub
+	url = https://github.com/LordOfMyatar/Radoub.git

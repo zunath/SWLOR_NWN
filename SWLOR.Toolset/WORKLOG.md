@@ -33,9 +33,40 @@ done | blocked`.
 - Files: `SWLOR.CLI\Program.cs` (new `--no-prompt` option), `SWLOR.CLI\ModulePacker.cs`
   (`PackModule`/`UnpackModule` take `bool noPrompt = false`; ReadKey prompt skipped when set).
 - Default behavior unchanged (prompt still shown without the flag). CLI builds clean.
-## WP1.1 — pending — Generic JSON-GFF model + reader/writer
-## WP1.2 — pending — Corpus conformance utilities
-## WP1.3 — pending — Round-trip gate
+## WP1.1 — done — 2026-07-20 — Generic JSON-GFF model + reader/writer
+- Tier: Lead (controller-executed).
+- Files: `SWLOR.Toolset.Domain\Gff\{GffFieldType,JsonStringCodec,NimFloatFormatter,
+  JsonGffField,JsonGffStruct,JsonGffDocument,GffJsonReader,GffJsonWriter}.cs`.
+- **Format spec corrections discovered against the corpus (supersede the plan's spec):**
+  - cexolocstring strref `"id"` lives at the FIELD level (`{"id": N, "type": "cexolocstring",
+    "value": {...}}`), not inside `value`.
+  - Key ordering is CASE-INSENSITIVE ASCII (Nim `cmpIgnoreCase`): `fortbonus` < `LawfulChaotic`.
+    Implemented in `JsonGffStruct.CompareIgnoreCase` for new-field insertion; parsed order is
+    preserved verbatim for round-trip.
+  - `void` values are NOT base64 — they embed raw binary bytes (including invalid UTF-8)
+    inside JSON string tokens. Parser is therefore a byte-level tokenizer (no Utf8JsonReader,
+    no .NET-string round-trips); all scalar tokens preserved as raw bytes.
+  - Struct-typed fields carry `__struct_id` at field level AND inside the value object.
+  - Float literals: nwn_gff prints C `%.16g` (MSVCRT semantics) then appends `.0` when no
+    '.'/'e'. MSVCRT double-rounds: exact expansion → 17 significant digits → 16, both half
+    away from zero; scientific exponents are 3-digit zero-padded (`e-039`). Implemented via
+    exact BigInteger decimal expansion in `NimFloatFormatter`; verified partly by P/Invoking
+    msvcrt.dll's own sprintf during investigation.
+  - **Float conformance must run through the float32 funnel** (text → double → float32 →
+    double → format) because GFF floats are 32-bit; comparing against the parse-double alone
+    is wrong for literals the printer didn't emit round-trip-faithfully.
+
+## WP1.2 — done — 2026-07-20 — Corpus conformance utilities
+- Files: `SWLOR.Toolset.Tests\{CorpusLocator,NimFloatFormatterTests}.cs`.
+- Float conformance covers EVERY float/double literal in the corpus (>100k literals) with
+  distinct-failure reporting; float-typed literals funneled through float32.
+
+## WP1.3 — done — 2026-07-20 — Round-trip gate
+- Files: `SWLOR.Toolset.Tests\{RoundTripCorpusTests,RoundTripSampleTests,EditLocalityTests}.cs`.
+- **Gate green: all ~17,900 Module JSON files round-trip byte-identically.** Edit-locality
+  exact (one field change → exactly one changed line). Suite ≈37s. One benign skip:
+  `module.jrl.json` has no mutable integer at any depth (explicit Assert.Ignore).
+- This suite is permanent and must stay green in every later package.
 ## WP1.4 — pending — Typed documents
 ## WP1.5 — pending — Transactions/undo/dirty
 ## WP1.6 — pending — Radoub bridge

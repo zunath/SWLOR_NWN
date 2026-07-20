@@ -138,9 +138,18 @@ def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
         cursor = 0
         replacement_count = 0
         for head_match, current_match in zip(head_matches, current_matches):
-            desired = replacement_map.get(head_match.group("text"))
-            if desired is None or desired == current_match.group("text"):
+            head_text = head_match.group("text")
+            current_text = current_match.group("text")
+            desired = replacement_map.get(head_text)
+            if desired is None or desired == current_text:
                 continue
+            if current_text != head_text:
+                line_number = original.count("\n", 0, current_match.start()) + 1
+                raise RuntimeError(
+                    f"Cannot safely synchronize description in {relative_path}:{line_number}: "
+                    "the working description matches neither the paired HEAD text nor its "
+                    "reviewed replacement."
+                )
 
             pieces.append(original[cursor:current_match.start("text")])
             pieces.append(desired)
@@ -161,7 +170,9 @@ def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
 
 
 def update_tlk(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
-    raw = TLK_JSON.read_text(encoding="utf-8-sig")
+    raw_bytes = TLK_JSON.read_bytes()
+    had_utf8_bom = raw_bytes.startswith(b"\xef\xbb\xbf")
+    raw = raw_bytes.decode("utf-8-sig")
     new_by_old = build_replacement_map(changes)
 
     tree_result = subprocess.run(
@@ -216,9 +227,11 @@ def update_tlk(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
         replacement_count += 1
         return match.group("prefix") + json.dumps(desired, ensure_ascii=False)
 
-    raw = entry_pattern.sub(replace_entry, raw)
+    updated = entry_pattern.sub(replace_entry, raw)
 
-    TLK_JSON.write_text(raw, encoding="utf-8", newline="")
+    if replacement_count:
+        encoding = "utf-8-sig" if had_utf8_bom else "utf-8"
+        TLK_JSON.write_bytes(updated.encode(encoding))
     return len(desired_by_id), replacement_count
 
 

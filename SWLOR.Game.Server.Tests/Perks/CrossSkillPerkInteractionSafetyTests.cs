@@ -270,6 +270,9 @@ public class CrossSkillPerkInteractionSafetyTests
         guardedDMGIndex.Should().BeLessThan(calculateDamageIndex,
             "guarded-hit DMG must be part of the combat-formula input");
         nativeDamageRollSource.Should().Contain("ApplyNextAttackGuardedHitEnmityBonus(");
+        var guardedHitEnmity = ExtractMethod(combat, "public static void ApplyNextAttackGuardedHitEnmityBonus(");
+        guardedHitEnmity.Should().NotContain("appliedDamage",
+            "a landed auto attack must grant Retaliatory Flow's Enmity even when mitigation reduces final damage to zero");
 
         var retaliationPulse = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliationPulse(");
         retaliationPulse.Should().Contain("ApplyTriggeredDamage(");

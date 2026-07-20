@@ -601,8 +601,7 @@ namespace SWLOR.Game.Server.Native
             Combat.ApplyNextAttackGuardedHitEnmityBonus(
                 attacker.m_idSelf,
                 target.m_idSelf,
-                guardedHitBonuses.EnmityBonus,
-                damage);
+                guardedHitBonuses.EnmityBonus);
             return damage;
         }
 

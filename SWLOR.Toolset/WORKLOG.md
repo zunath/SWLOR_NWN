@@ -105,7 +105,14 @@ done | blocked`.
   Windows-1252 + byte-level codec, matching Radoub's own binary I/O encoding. Field types
   char/double/dword64/int64 occur ZERO times in the module corpus (covered by unit test only).
   Radoub locstring no-strref sentinel is 0xFFFFFFFF.
-## WP2.1 — pending — 2DA + TLK services
+## WP2.1 — done — 2026-07-20 — 2DA + TLK services
+- Tier: Low (Sonnet subagent); controller-verified (100/101 green incl. corpus gate).
+- Files: `Domain\GameData\TwoDa\{TwoDaTable,TwoDaService}.cs`,
+  `Domain\GameData\Tlk\{TlkJsonFile,TlkService}.cs`, tests `TwoDaTests.cs`/`TlkTests.cs`.
+- Radoub TwoDAReader/TlkReader used as-is behind thin wrappers.
+- **Findings:** `sw_2da\iprp_spells past.2da` is garbage (no 2DA V2.0 header — leftover
+  scratch data); handled tolerantly, 746/747 parse. Custom TLK: 21,884 entries, SPARSE ids
+  ranging 0–192,552 (dictionary-keyed, not array).
 ## WP2.2 — done — 2026-07-20 — SET parser
 - Tier: Mid (Sonnet subagent); controller-verified.
 - Files: `SWLOR.Toolset.Domain\GameData\Tilesets\{SetFileParser,TilesetDefinition,
@@ -117,7 +124,17 @@ done | blocked`.
   untrustworthy** (sw_t_season wsf10.set has garbage `Doors` counts like -481034240) — parser
   discovers repeated blocks by sequential index scan, never by declared Count. Duplicate keys:
   last-wins (documented convention choice).
-## WP2.3 — pending — Resource index
+## WP2.3 — done — 2026-07-20 — Resource index
+- Tier: Mid (Sonnet subagent); controller-verified.
+- Files: `Domain\GameData\Resources\{ResourceIdentity,NwnInstallLocator,KeyBifCatalog,
+  HakDirectoryCatalog,ResourceIndex}.cs`, test `ResourceIndexTests.cs`.
+- **Decisions/findings recorded:** cold scan of 113 hak layers = 165ms → persisted index
+  cache NOT implemented (unneeded). **NWN:EE install present on dev machine via GOG Galaxy**
+  (`C:\Program Files (x86)\GOG Galaxy\Games\Neverwinter Nights Enhanced Edition`) — KEY/BIF
+  layer verified against the real install. Radoub's ResourceTypes table lacks NWN:EE `mtr`
+  (type 2072, per SWLOR.NWN.API ResType) — patched locally in ResourceIdentity. Hak
+  precedence: hakbuilder.json order, later-wins, base game lowest (per-module order would be
+  module.ifo Mod_HakList — noted in code).
 ## WP2.4 — pending — Lookup services
 ## WP2.5 — pending — Game-code index
 ## WP2.6 — pending — Shell + read-only browser

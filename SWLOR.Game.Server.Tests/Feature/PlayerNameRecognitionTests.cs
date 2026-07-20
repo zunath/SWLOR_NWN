@@ -333,6 +333,7 @@ public class PlayerNameRecognitionTests
 
         var resolveChatDisplayMethod = ExtractMethod(source, "private static string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveChatDisplayMethod.Should().Contain("GetIsDM(observer)");
+        resolveChatDisplayMethod.Should().Contain("return BuildStaffDisplayName(target);");
         resolveChatDisplayMethod.Should().Contain("TryGetKnownName(observer, target, out var knownName)");
         resolveChatDisplayMethod.Should().Contain("return knownName;");
         resolveChatDisplayMethod.Should().Contain("return Disguise.GetDisplayDescriptor(target);");

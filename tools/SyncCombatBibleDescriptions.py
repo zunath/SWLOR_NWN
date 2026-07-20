@@ -101,7 +101,9 @@ def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
     files_changed = 0
     replacements = 0
     for path in (ROOT / "SWLOR.Game.Server").rglob("*.cs"):
-        original = path.read_text(encoding="utf-8-sig")
+        original_bytes = path.read_bytes()
+        had_utf8_bom = original_bytes.startswith(b"\xef\xbb\xbf")
+        original = original_bytes.decode("utf-8-sig")
         current_matches = list(description_pattern.finditer(original))
         if not current_matches:
             continue
@@ -164,7 +166,8 @@ def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
             updated = original
 
         if updated != original:
-            path.write_text(updated, encoding="utf-8", newline="")
+            encoding = "utf-8-sig" if had_utf8_bom else "utf-8"
+            path.write_bytes(updated.encode(encoding))
             files_changed += 1
     return files_changed, replacements
 

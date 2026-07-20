@@ -60,14 +60,23 @@ public class AbilityImpactAnimationAuditTests
             source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
             source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
 
-        var queuedWeaponGuardIndex = impactAnimationBody.IndexOf(
-            "trackedAbility?.ActivationType == AbilityActivationType.Weapon",
-            StringComparison.Ordinal);
-        var playAnimationIndex = impactAnimationBody.IndexOf("ActionPlayAnimation(", StringComparison.Ordinal);
+        var queuedWeaponEarlyReturn = System.Text.RegularExpressions.Regex.Match(
+            impactAnimationBody,
+            @"if\s*\(\s*trackedAbility\?\.ActivationType\s*==\s*AbilityActivationType\.Weapon\s*\)\s*return\s*;",
+            System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+        var playAnimationCalls = System.Text.RegularExpressions.Regex.Matches(
+                impactAnimationBody,
+                @"ActionPlayAnimation\s*\(",
+                System.Text.RegularExpressions.RegexOptions.CultureInvariant)
+            .Cast<System.Text.RegularExpressions.Match>()
+            .ToArray();
 
-        queuedWeaponGuardIndex.Should().BeGreaterThanOrEqualTo(0);
-        playAnimationIndex.Should().BeGreaterThan(queuedWeaponGuardIndex,
-            "queued weapon abilities must rely on the native attack animation instead of enqueueing a second swing");
+        queuedWeaponEarlyReturn.Success.Should().BeTrue(
+            "queued weapon impacts must immediately return before scripted animation handling");
+        playAnimationCalls.Should().NotBeEmpty();
+        playAnimationCalls.Should().OnlyContain(
+            call => call.Index >= queuedWeaponEarlyReturn.Index + queuedWeaponEarlyReturn.Length,
+            "the unconditional queued-weapon return must dominate every scripted animation call");
     }
 
     [Test]

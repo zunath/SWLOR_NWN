@@ -131,10 +131,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronElbowsTrait)
                 .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to enemies within 5m and generate Enmity equal to the guarded hit's incoming damage.")
-                .IncreasesStat(StatType.GuardRetaliationDamageBonusSkillType, (int)SkillType.Katar)
-                .IncreasesStat(StatType.GuardRetaliationDamageBonus, 15)
-                .IncreasesStat(StatType.GuardRetaliationDamageBonusRadiusMeters, 5)
-                .IncreasesStat(StatType.GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage, 100)
+                .IncreasesStat(StatType.GuardRetaliationDMGBonusSkillType, (int)SkillType.Katar)
+                .IncreasesStat(StatType.GuardRetaliationDMGBonus, 15)
+                .IncreasesStat(StatType.GuardRetaliationDMGBonusRadiusMeters, 5)
+                .IncreasesStat(StatType.GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage, 100)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 18);
         }
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.WhirlingGuard1)
-                .Description("For 30 seconds, you gain +20 Guard. Whenever you guard a hit, you deal a fixed 8 physical DMG to that attacker; this damage does not scale. Your current Guarded target automatically receives the same effect if they are within 5 meters when activated.")
+                .Description("For 30 seconds, you gain +20 Guard. Whenever you guard a hit, deal 8 physical DMG to that attacker using the standard combat damage formula. Your current Guarded target automatically receives the same effect if they are within 5 meters when activated.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 20);
         }

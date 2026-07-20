@@ -136,7 +136,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.SavageCleaveSecondaryDamageBonus,
         StatType.EarthshatterDamageBonus,
         StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus,
-        StatType.GuardRetaliationDamageBonus,
+        StatType.GuardRetaliationDMGBonus,
         StatType.KatarVenomCurrentSecondStrikeDamageBonus,
         StatType.LightsaberOffenseAreaDamageBonus,
         StatType.LightsaberOffenseDebuffedTargetDamageBonus,

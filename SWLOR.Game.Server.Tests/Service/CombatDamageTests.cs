@@ -373,7 +373,7 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void GuardRetaliationDamage_KeepsBaseDamageFixedAndScalesOnlySkillBonus()
+    public void GuardRetaliationDMG_UsesCombatDamageRangeAndTriggeredDelivery()
     {
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
@@ -386,13 +386,21 @@ public class CombatDamageTests
             "WhirlingGuardStatusEffect.cs"));
 
         var retaliation = ExtractMethod(combatSource, "private static void ApplyGuardedHitRetaliation");
-        retaliation.Should().Contain("StatType.GuardRetaliationDamage");
-        retaliation.Should().Contain("if (retaliationDamage > 0)\n                ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);");
-        retaliation.Should().NotContain("retaliationDamage = AbilityEffectScaling.ScaleDirectEffect");
-        retaliation.Should().Contain("bonusDamage = AbilityEffectScaling.ScaleDirectEffect");
-        retaliation.Should().Contain("GetAbilityScore(defender, scalingAbility)");
+        retaliation.Should().Contain("StatType.GuardRetaliationDMG");
+        retaliation.Should().Contain("ResolveGuardRetaliationDamage(");
+        retaliation.Should().NotContain("AbilityEffectScaling.ScaleDirectEffect");
+        retaliation.Should().Contain("ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);");
         retaliation.Should().NotContain("EffectDamage(retaliationDamage");
-        whirlingGuardSource.Should().Contain("StatGroup.Stats[StatType.GuardRetaliationDamage] = 8;");
+        whirlingGuardSource.Should().Contain("StatGroup.Stats[StatType.GuardRetaliationDMG] = 8;");
+
+        var resolver = ExtractMethod(combatSource, "private static int ResolveGuardRetaliationDamage");
+        resolver.Should().Contain("Stat.GetAttack(source, damageAbility, skillType)");
+        resolver.Should().Contain("ApplyTargetStatusAttackModifiers(source, target, attack, skillType)");
+        resolver.Should().Contain("Stat.GetDefense(target, damageType, defenseAbility)");
+        resolver.Should().Contain("ApplyStatusSourceDefenseModifiers(source, target, defense)");
+        resolver.Should().Contain("return CalculateDamage(");
+        resolver.Should().NotContain("ApplyCombatImpact");
+        resolver.Should().NotContain("CalculateAbilityCriticalRating");
 
         var scalingAbility = ExtractMethod(combatSource, "private static AbilityType GetGuardRetaliationDamageAbility");
         scalingAbility.Should().Contain("GetRelevantSkillWeapon(defender, skillType)");

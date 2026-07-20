@@ -94,10 +94,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityExposedDamageBonus, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId, "(int)PerkCategoryType.KatarIronGuard");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.AbilityUsedPerkCategoryTargetEnmityToSourcePercentAdjustment, "25");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDamageBonusSkillType, "(int)SkillType.Katar");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDamageBonus, "15");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDamageBonusRadiusMeters, "5");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage, "100");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDMGBonusSkillType, "(int)SkillType.Katar");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDMGBonus, "15");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDMGBonusRadiusMeters, "5");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage, "100");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilitySkillType, "(int)SkillType.Katar");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus, "8");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitSecondaryNextSkillAbilityWindowSeconds, "30");
@@ -517,9 +517,9 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.GuardRetaliationDamageBonusRadiusMeters)
+        Stat.GetStatTypeCategory(StatType.GuardRetaliationDMGBonusRadiusMeters)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.GuardRetaliationDamageBonusEnmityPercentOfIncomingDamage)
+        Stat.GetStatTypeCategory(StatType.GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType)
             .Should().Be(StatTypeCategory.NonBeneficial);
@@ -573,7 +573,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("StatType.WardTargetPhysicalDefensePercentAdjustment");
         combatSource.Should().Contain("ApplyForceDamageTakenEffects(defender)");
         combatSource.Should().Contain("new ForceWardingStatusEffect(forceDefense)");
-        combatSource.Should().Contain("StatType.GuardRetaliationDamageBonus");
+        combatSource.Should().Contain("StatType.GuardRetaliationDMGBonus");
         combatSource.Should().Contain("AbilityMatchesPerkCategoryStat(");
         combatSource.Should().Contain("StatType.AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId");
         combatSource.Should().Contain("StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId");

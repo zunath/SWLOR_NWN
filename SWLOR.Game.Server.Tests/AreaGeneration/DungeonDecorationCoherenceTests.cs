@@ -374,6 +374,10 @@ public class DungeonDecorationCoherenceTests
 
         var futCityResrefs = futCityTileset.Decorations.Select(d => d.Resref)
             .Concat(futCityTileset.Vignettes.SelectMany(v => v.Members).Select(m => m.Resref))
+            // Round-11 structural channel: frontage buildings and facade mounts are the fcx01
+            // family's own declared content (see BuildingFrontagePlanner).
+            .Concat(futCityTileset.FrontageBuildings.Select(e => e.Resref))
+            .Concat(futCityTileset.FacadeMounts.Select(e => e.Resref))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         var alienRuinOwnResrefs = alienRuinDetail.Decorations.Select(d => d.Resref)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);

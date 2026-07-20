@@ -102,7 +102,29 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// (crate-family nearest-neighbor median under 1m, 93% within 2.2m, colinear runs of 4-12,
         /// cluster bearing dominant-share 0.81 -- _scratch_decor/mine_r9_interiors.py).
         /// </summary>
-        DepotRow = 12
+        DepotRow = 12,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): one structural building
+        /// placeable of a composed street-frontage line (see BuildingFrontagePlanner) -- a
+        /// skyscraper/tower model standing on the non-walkable margin flush against an open cell's
+        /// boundary, bearing = the face's outward normal, at ~10m pitch along the run. The
+        /// hand-built promenade-family canyon mechanism: pw_ar_narpromena (12x12) walls its plaza
+        /// with 30 swd_build* placeables on flat cobble (zero building tiles), build007 rows at
+        /// 9.8-10.1m center pitch, 100% cardinal bearings -- _scratch_decor/r11_mine_buildings.py.
+        /// Deliberately a separate channel from decoration clutter: DecorationAnchoring.Excluded
+        /// still strips whole-building art from every scatter palette.
+        /// </summary>
+        BuildingFrontage = 13,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): a wall-mounted sign/holo
+        /// panel placed on a building FACE (a stamped structure tile's face or a
+        /// <see cref="BuildingFrontage"/> placeable's face) at an evidence-derived height band,
+        /// slightly proud of the face, bearing = the face's outward normal -- see
+        /// BuildingFrontagePlanner.PlanFacadeMounts. Hand-built dense city areas carry 0.13-0.23
+        /// of their decoratives above Z 0.5m, dominated by holo signage attached to building
+        /// faces (sign-family median face distance ~0, Z medians 2.4-6.6m).
+        /// </summary>
+        FacadeMount = 14
     }
 
     /// <summary>
@@ -324,6 +346,49 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// whole generated area. Only enforced under the urban grammar.
         /// </summary>
         public int MaxPerArea { get; set; }
+    }
+
+    /// <summary>
+    /// One weighted structural building placeable the frontage system (BuildingFrontagePlanner) may
+    /// erect along open-area perimeter edges and street margins to form canyon walls -- the
+    /// hand-built promenade-family mechanism (skyscraper placeables standing on the margin, flush
+    /// lines at ~10m pitch). DELIBERATELY separate from <see cref="DungeonDecorationEntry"/>:
+    /// whole-building art is structure, not dressing (DecorationAnchoring.Excluded strips it from
+    /// every scatter palette), and placement is geometric (footprint fit against the walkable grid)
+    /// rather than palette-bucket driven. Footprints are measured model XY extents
+    /// (_scratch_decor/r11_model_sizes.json): FaceWidth spans along the fronted face, Depth extends
+    /// into the non-walkable margin.
+    /// </summary>
+    public class BuildingFrontageEntry
+    {
+        public string Resref { get; set; } = string.Empty;
+        public int Weight { get; set; } = 1;
+        /// <summary>Model footprint extent (meters) along the fronted face.</summary>
+        public float FaceWidth { get; set; } = 10f;
+        /// <summary>Model footprint extent (meters) into the margin, perpendicular to the face.</summary>
+        public float Depth { get; set; } = 10f;
+        /// <summary>Hard per-area placement cap (0 = uncapped). Derived from the hand-built
+        /// per-area counts: the dominant wall models stay uncapped, accents cap near their
+        /// hand-built maxima so no single accent tower can blanket an area.</summary>
+        public int MaxPerArea { get; set; }
+    }
+
+    /// <summary>
+    /// One weighted wall-mounted sign/holo/banner placeable the facade-mount pass
+    /// (BuildingFrontagePlanner.PlanFacadeMounts) may hang on a building face -- stamped structure
+    /// tile faces and <see cref="BuildingFrontageEntry"/> placeable faces -- at an evidence-derived
+    /// height band. Mined from the dense hand-built fcx01 city areas' elevated (Z &gt; 0.5m)
+    /// decoratives: sign-family items sit ON building faces (median face distance ~0) at per-resref
+    /// Z bands between 1.1 and 7.0m -- _scratch_decor/r11_mine_buildings.py.
+    /// </summary>
+    public class FacadeMountEntry
+    {
+        public string Resref { get; set; } = string.Empty;
+        public int Weight { get; set; } = 1;
+        /// <summary>Bottom of the mined mounting-height band (meters above ground).</summary>
+        public float MinHeight { get; set; } = 2f;
+        /// <summary>Top of the mined mounting-height band (meters above ground).</summary>
+        public float MaxHeight { get; set; } = 6f;
     }
 
     /// <summary>
@@ -774,6 +839,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// ribbon and junk piles mid-plaza -- "a scattering of different objects randomly placed".
         /// </summary>
         public bool UrbanDressing { get; set; }
+
+        /// <summary>
+        /// Structural building placeables this tileset family erects along open-area perimeter
+        /// edges and street margins to form canyon walls (see <see cref="BuildingFrontageEntry"/>
+        /// and BuildingFrontagePlanner). Empty = no placeable-frontage system for this family
+        /// (every non-city tileset; their plans and layouts stay byte-identical). Only meaningful
+        /// alongside <see cref="UrbanDressing"/>. At promenade scale (12x12-20x20) this is the
+        /// PRIMARY canyon mechanism -- the hand-built flagship's walls are placeables, not tiles;
+        /// at 24-32 it complements the tile-block mechanism
+        /// (<see cref="BuildingBlockContiguity"/>), fronting tile-block faces and walling the
+        /// remaining margins. Inherited by palette variants like <see cref="Decorations"/>.
+        /// </summary>
+        public List<BuildingFrontageEntry> FrontageBuildings { get; set; } = new();
+
+        /// <summary>
+        /// Wall-mounted sign/holo placeables this tileset family hangs on building faces (see
+        /// <see cref="FacadeMountEntry"/> and BuildingFrontagePlanner.PlanFacadeMounts). Empty =
+        /// no facade-mount pass. Only meaningful alongside <see cref="UrbanDressing"/>.
+        /// Inherited by palette variants like <see cref="Decorations"/>.
+        /// </summary>
+        public List<FacadeMountEntry> FacadeMounts { get; set; } = new();
     }
 
     /// <summary>
@@ -1630,6 +1716,44 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             return this;
         }
 
+        /// <summary>
+        /// Adds a weighted structural building placeable to this tileset family's frontage system
+        /// (see <see cref="DungeonTilesetProfile.FrontageBuildings"/>). Footprint dimensions are
+        /// the measured model XY extents: faceWidth along the fronted face, depth into the margin.
+        /// Only declare on urban families whose hand-built references wall their open space with
+        /// building placeables.
+        /// </summary>
+        public DungeonTilesetProfileBuilder FrontageBuilding(string resref, int weight, float faceWidth, float depth,
+            int maxPerArea = 0)
+        {
+            _active.FrontageBuildings.Add(new BuildingFrontageEntry
+            {
+                Resref = resref,
+                Weight = weight,
+                FaceWidth = faceWidth,
+                Depth = depth,
+                MaxPerArea = maxPerArea
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a weighted wall-mounted sign/holo placeable to this tileset family's facade-mount
+        /// pass (see <see cref="DungeonTilesetProfile.FacadeMounts"/>). The height band is the
+        /// mined per-resref Z band of the hand-built elevated placements.
+        /// </summary>
+        public DungeonTilesetProfileBuilder FacadeMount(string resref, int weight, float minHeight, float maxHeight)
+        {
+            _active.FacadeMounts.Add(new FacadeMountEntry
+            {
+                Resref = resref,
+                Weight = weight,
+                MinHeight = minHeight,
+                MaxHeight = maxHeight
+            });
+            return this;
+        }
+
         private DungeonVignette _activeVignette;
 
         /// <summary>
@@ -1705,6 +1829,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         if (profile.DecorationProfiles.Count == 0)
                             profile.DecorationProfiles = basis.DecorationProfiles;
                     }
+                }
+
+                // Structural frontage and facade mounts are family properties like the palette
+                // above: a variant that declared none of its own walls/dresses like its family
+                // basis (fcx01's Cobble2 district shares the Cobble district's swd_build canyon
+                // vocabulary -- the hand-built evidence spans both districts' areas).
+                if (profile.FrontageBuildings.Count == 0)
+                {
+                    var frontageBasis = profiles.Values.FirstOrDefault(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                        p.FrontageBuildings.Count > 0);
+                    if (frontageBasis != null)
+                        profile.FrontageBuildings = frontageBasis.FrontageBuildings;
+                }
+
+                if (profile.FacadeMounts.Count == 0)
+                {
+                    var mountBasis = profiles.Values.FirstOrDefault(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                        p.FacadeMounts.Count > 0);
+                    if (mountBasis != null)
+                        profile.FacadeMounts = mountBasis.FacadeMounts;
                 }
 
                 // The urban placement grammar is a family property like density below: a variant of

@@ -99,15 +99,33 @@ public class InteriorEnsembleCompositionTests
                 continue;
 
             // Same methodology as the hand-built miner: a placement is INTERIOR when no
-            // building/structure tile and no road-carrying tile sits within Chebyshev 1 of its
-            // own cell (_scratch_decor/mine_r9_interiors.py).
-            var interior = plan.Count(p =>
+            // building/structure TILE and no road-carrying tile sits within Chebyshev 1 of its
+            // own cell (_scratch_decor/mine_r9_interiors.py). Structure means STAMPED tile
+            // footprints only, matching the miner's tile-based classification: the round-11
+            // placeable frontage walls every room from the margin outside it (the hand-built
+            // flagship promenade is likewise fully ringed by placeable skyscrapers, and its
+            // courtyard items still count as interior), so placeable cells must not reclassify a
+            // whole room's dressing as edge content. The structural channel itself
+            // (BuildingFrontage/FacadeMount) is not ground dressing and stays out of the metric.
+            var dressing = plan.Where(p => p.Context is not
+                (DecorationContext.BuildingFrontage or DecorationContext.FacadeMount)).ToList();
+            if (dressing.Count == 0)
+                continue;
+            var stamped = layout.StampedStructureTiles;
+            var interior = dressing.Count(p =>
             {
                 var tile = TileOf(p);
-                return !DungeonDecorationPlanner.IsRoadAdjacent(tile, layout, "Routes") &&
-                       !DungeonDecorationPlanner.IsStructureAdjacent(tile, layout);
+                var nearStamped = false;
+                for (var dx = -1; dx <= 1 && !nearStamped; dx++)
+                for (var dy = -1; dy <= 1 && !nearStamped; dy++)
+                {
+                    if (stamped.Contains((tile.X + dx, tile.Y + dy)))
+                        nearStamped = true;
+                }
+
+                return !DungeonDecorationPlanner.IsRoadAdjacent(tile, layout, "Routes") && !nearStamped;
             });
-            shares.Add(interior / (double)plan.Count);
+            shares.Add(interior / (double)dressing.Count);
         }
 
         var average = shares.Average();

@@ -81,6 +81,13 @@ public class ClutterPileDecorationTests
         double Top3Share, int DistinctResrefs)
         Measure(ResolvedLayout layout, List<PlannedDecoration> plan, int size)
     {
+        // These distribution gates were mined from and calibrated against GROUND DRESSING
+        // (clutter, street furniture, decals). The round-11 structural channel -- building
+        // frontage placeables standing on the non-walkable margin and wall-mounted facade
+        // signage hanging above head height -- is measured by its own suite
+        // (BuildingFrontageCompositionTests) and stays out of these ground-dressing statistics.
+        plan = plan.Where(p => p.Context is not
+            (DecorationContext.BuildingFrontage or DecorationContext.FacadeMount)).ToList();
         var roomTiles = layout.Rooms.Where(r => !r.IsSetPiece).SelectMany(r => r.Tiles).Distinct().Count();
 
         var nn = new List<double>();

@@ -4296,6 +4296,44 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // set (bearing alignment, road integrity, facade rows, cargo grids, pile zone
                 // discipline) this declaration enables for the fcx01 family only.
                 .UrbanDressing()
+                // BUILDING-PLACEABLE CANYON FRONTAGE (round-11 vertical-dressing pass -- see
+                // BuildingFrontagePlanner and _scratch_decor/r11_mine_buildings.py): the flagship
+                // promenade's canyon walls are SKYSCRAPER PLACEABLES standing on flat cobble --
+                // pw_ar_narpromena (12x12) carries 30 swd_build* placeables and ZERO building
+                // tiles, build007 rows at 9.8-10.1m pitch with 100% cardinal bearings;
+                // pw_ar_narscorpd (16x22) 77 swd_build*, pw_ar_nsshipyard (24x24) 60+. Weights
+                // follow the mined mix (build007 dominant at ~46-61% of placements; the rest
+                // accents), footprints are the measured model XY extents
+                // (_scratch_decor/r11_model_sizes.json; FaceWidth x Depth). This is the separate
+                // STRUCTURAL channel the round-7 removal note anticipated: swd_build007 stays
+                // Excluded from every scatter palette, and returns here as deliberate composed
+                // structure only.
+                // Per-area caps follow the hand-built per-model maxima (narpromena/narscorpd/
+                // nsshipyard counts): the build007/build003 wall workhorses stay uncapped, every
+                // accent tower caps near its hand-built ceiling so no accent blankets an area.
+                .FrontageBuilding("swd_build007", 6, 13.8f, 15.1f)
+                .FrontageBuilding("swd_build003", 3, 19.3f, 9.3f)
+                .FrontageBuilding("swd2_elev002", 2, 5.4f, 5.5f, maxPerArea: 9)
+                .FrontageBuilding("swd_build006", 1, 33.5f, 17.8f, maxPerArea: 6)
+                .FrontageBuilding("swd_build001", 1, 22.5f, 22.5f, maxPerArea: 8)
+                .FrontageBuilding("swd_build004", 1, 61.5f, 20.3f, maxPerArea: 6)
+                .FrontageBuilding("swd_build005", 1, 36.5f, 36.5f, maxPerArea: 4)
+                .FrontageBuilding("swd_build002", 1, 37.5f, 37.5f, maxPerArea: 4)
+                .FrontageBuilding("_mdrn_pl_kyru12", 1, 11.7f, 13.3f, maxPerArea: 5)
+                .FrontageBuilding("_mdrn_pl_indtowr", 1, 11.8f, 11.8f, maxPerArea: 4)
+                // WALL-MOUNTED FACADE DRESSING (round-11 -- see BuildingFrontagePlanner.
+                // PlanFacadeMounts): the dense hand-built city areas hang holo signage on building
+                // faces at Z bands mined per resref (velundr/narscorpd/nsshipyard/ns_comrcial_ka/
+                // narshadaar_promi measure 0.13-0.23 of decoratives above Z 0.5m, sign-family
+                // median face distance ~0). Height bands below are the mined per-resref
+                // z_min/z_max envelopes.
+                .FacadeMount("swd_pholo06", 2, 2.4f, 6.6f)
+                .FacadeMount("swd_holog05", 2, 1.3f, 7.0f)
+                .FacadeMount("swd_holog07", 2, 3.0f, 4.5f)
+                .FacadeMount("swd_holog10", 2, 1.1f, 5.8f)
+                .FacadeMount("swd_pholo03", 1, 2.3f, 4.8f)
+                .FacadeMount("swd_holog06", 1, 1.5f, 6.5f)
+                .FacadeMount("swd_holog08", 1, 4.7f, 5.4f)
                 // STRUCTURAL-ITEM REMOVALS (July 2026 semantic-context pass, user report "this gate
                 // without a wall ... doesn't make a lot of sense" -- see DecorationAnchoring and
                 // _scratch_decor/mine_r7_semantics.py):

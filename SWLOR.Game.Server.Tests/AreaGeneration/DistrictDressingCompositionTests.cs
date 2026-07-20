@@ -140,7 +140,11 @@ public class DistrictDressingCompositionTests
             var (layout, plan) = PlanFor(c, SeedBase + i);
             var tileFlavors = TileFlavors(layout, "Routes");
 
-            foreach (var placement in plan.Where(p => huge.Contains(p.Resref)))
+            // Structural frontage may legitimately erect the same tower models as canyon walls
+            // (round 11 -- BuildingFrontagePlanner, its own gates); this gate is about Huge
+            // DRESSING, which still places only through composed cargo-yard rows.
+            foreach (var placement in plan.Where(p =>
+                         huge.Contains(p.Resref) && p.Context != DecorationContext.BuildingFrontage))
             {
                 total++;
                 placement.Context.Should().Be(DecorationContext.CargoYard,
@@ -172,7 +176,11 @@ public class DistrictDressingCompositionTests
         for (var i = 0; i < SeedCount; i++)
         {
             var (_, plan) = PlanFor(c, SeedBase + i);
-            var hugePlacements = plan.Where(p => huge.Contains(p.Resref)).ToList();
+            // Structural frontage towers (BuildingFrontage context) are canyon walls, not yard
+            // cargo -- the Huge budget and row-composition rules apply to dressing only.
+            var hugePlacements = plan
+                .Where(p => huge.Contains(p.Resref) && p.Context != DecorationContext.BuildingFrontage)
+                .ToList();
             hugePlacements.Count.Should().BeLessOrEqualTo(DungeonDecorationPlanner.MaxHugePerArea,
                 $"seed {SeedBase + i}: the hard per-area Huge budget");
 
@@ -292,7 +300,12 @@ public class DistrictDressingCompositionTests
         for (var i = 0; i < SeedCount; i++)
         {
             var (_, plan) = PlanFor(c, SeedBase + i, profile);
-            foreach (var group in plan.GroupBy(p => p.Resref, StringComparer.OrdinalIgnoreCase))
+            // Palette MaxPerArea caps govern the dressing mechanisms; the structural channel
+            // (frontage buildings, facade mounts) carries its own per-area caps on
+            // BuildingFrontageEntry and is asserted by BuildingFrontageCompositionTests.
+            var dressing = plan.Where(p => p.Context is not
+                (DecorationContext.BuildingFrontage or DecorationContext.FacadeMount));
+            foreach (var group in dressing.GroupBy(p => p.Resref, StringComparer.OrdinalIgnoreCase))
             {
                 if (!caps.TryGetValue(group.Key, out var cap))
                     continue;

@@ -807,6 +807,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public HashSet<(int X, int Y)> StampedStructureTiles { get; set; } = new();
 
         /// <summary>
+        /// Every margin cell hosting a structural building PLACEABLE erected by
+        /// BuildingFrontagePlanner (the promenade-family canyon mechanism: skyscraper placeables
+        /// standing on the non-walkable margin, flush against open-cell boundaries). Rebuilt from
+        /// scratch (assignment, never accumulation) on every DungeonDecorationPlanner.Plan call, so
+        /// repeated planning stays deterministic and idempotent. Consumed alongside
+        /// <see cref="StampedStructureTiles"/> by DungeonDecorationPlanner.IsStructureAdjacent /
+        /// FlushStructureDirection, so WallFlush cargo and structure-frontage dressing anchor
+        /// against placeable buildings exactly as against stamped tile buildings -- the hand-built
+        /// evidence (pw_ar_narscorpd) stacks its flush cargo against swd_build* placeable bases.
+        /// Deliberately NOT read by AssignDistrictFlavors: district identity derives from tile
+        /// structures and road frontage only, so walling a commercial promenade with skyscrapers
+        /// cannot skew it industrial. Empty for every non-frontage tileset.
+        /// </summary>
+        public HashSet<(int X, int Y)> PlaceableStructureCells { get; set; } = new();
+
+        /// <summary>
         /// Every cell TileResolver's feature sprinkling actually replaced with a 1x1 feature group
         /// tile, mapped to the configured feature group's NAME (see
         /// DungeonTilesetProfile.FeatureTiles) -- the same carry-through convention as

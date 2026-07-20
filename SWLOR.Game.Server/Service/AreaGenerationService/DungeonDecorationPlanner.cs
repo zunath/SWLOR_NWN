@@ -508,6 +508,26 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             var excluded = BuildExclusionSet(layout);
 
+            // PASS 0: structural building-placeable frontage (see BuildingFrontagePlanner) -- the
+            // promenade-family canyon mechanism. Runs FIRST on its own RNG stream (independent of
+            // this planner's main stream, so every existing mechanism keeps its exact sequence)
+            // and publishes its occupied margin cells as PlaceableStructureCells, so the flush/
+            // structure-frontage dressing below anchors against placeable buildings exactly as
+            // against stamped tile structures. Strictly empty (no allocation visible anywhere)
+            // for tilesets that declare no frontage buildings.
+            BuildingFrontagePlanner.FrontageResult frontage = null;
+            // Reset any stale frontage cells from an earlier Plan over the same layout (e.g. a
+            // different tileset/profile re-plan in tests) so repeated planning stays idempotent.
+            if (layout.PlaceableStructureCells is { Count: > 0 })
+                layout.PlaceableStructureCells = new HashSet<(int X, int Y)>();
+            if (urban && tileset?.FrontageBuildings is { Count: > 0 })
+            {
+                frontage = BuildingFrontagePlanner.PlanFrontage(layout, tileset, excluded, roadCrosser);
+                layout.PlaceableStructureCells = frontage.OccupiedCells;
+                foreach (var placement in frontage.Placements)
+                    plan.Add(placement.Decoration);
+            }
+
             // District flavors (urban grammar only -- see DistrictFlavor and AssignDistrictFlavors):
             // each open room gets a deterministic (no-RNG) neighborhood flavor, and every palette
             // pool below is resolved per flavor, so big cargo concentrates in industrial yards while
@@ -1016,6 +1036,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     consumedTiles, centerpieceAnchor, wallProbability, rng, motifCache, urban, areaUsage);
             }
 
+            // FINAL PASS: wall-mounted facade dressing (see BuildingFrontagePlanner.
+            // PlanFacadeMounts) -- signs/holo panels hung on building faces (frontage placeables
+            // and stamped tile structures) at mined height bands. Own RNG stream, after every
+            // ground mechanism, so nothing upstream shifts; a no-op for every tileset without
+            // declared FacadeMounts.
+            if (urban && tileset?.FacadeMounts is { Count: > 0 })
+                plan.AddRange(BuildingFrontagePlanner.PlanFacadeMounts(layout, tileset, frontage, plan.Count));
+
             return plan;
         }
 
@@ -1225,7 +1253,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 {
                     if (IsRoadAdjacent(tile, layout, roadCrosser))
                         roadTiles++;
-                    if (IsStructureAdjacent(tile, layout))
+                    // Deliberately STAMPED-only (not IsStructureAdjacent): district identity
+                    // derives from tile structures and road frontage. Placeable frontage
+                    // buildings (BuildingFrontagePlanner) wall commercial promenades and civic
+                    // plazas alike -- counting them here would skew every walled room industrial.
+                    if (IsWithin1(tile, layout?.StampedStructureTiles))
                         structTiles++;
                     if (NearestWallDirection(tile, tileSet) == null)
                         interiorTiles++;
@@ -2955,12 +2987,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         internal static (int Dx, int Dy)? FlushStructureDirection((int X, int Y) tile, ResolvedLayout layout)
         {
             var stamped = layout?.StampedStructureTiles;
-            if (stamped == null || stamped.Count == 0)
+            var placeable = layout?.PlaceableStructureCells;
+            var hasStamped = stamped is { Count: > 0 };
+            var hasPlaceable = placeable is { Count: > 0 };
+            if (!hasStamped && !hasPlaceable)
                 return null;
 
             foreach (var (dx, dy) in CardinalDirections)
             {
-                if (stamped.Contains((tile.X + dx, tile.Y + dy)))
+                var neighbor = (tile.X + dx, tile.Y + dy);
+                if ((hasStamped && stamped.Contains(neighbor)) ||
+                    (hasPlaceable && placeable.Contains(neighbor)))
                     return (dx, dy);
             }
 
@@ -3342,14 +3379,23 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         internal static bool IsStructureAdjacent((int X, int Y) tile, ResolvedLayout layout)
         {
-            var stamped = layout?.StampedStructureTiles;
-            if (stamped == null || stamped.Count == 0)
+            // Placeable frontage buildings (see BuildingFrontagePlanner /
+            // ResolvedLayout.PlaceableStructureCells) count as structure anchors alongside stamped
+            // tile footprints: the hand-built evidence stacks flush cargo and frontage dressing
+            // against swd_build* placeable bases exactly as against tile towers.
+            return IsWithin1(tile, layout?.StampedStructureTiles) ||
+                   IsWithin1(tile, layout?.PlaceableStructureCells);
+        }
+
+        private static bool IsWithin1((int X, int Y) tile, HashSet<(int X, int Y)> cells)
+        {
+            if (cells == null || cells.Count == 0)
                 return false;
 
             for (var dx = -1; dx <= 1; dx++)
             for (var dy = -1; dy <= 1; dy++)
             {
-                if (stamped.Contains((tile.X + dx, tile.Y + dy)))
+                if (cells.Contains((tile.X + dx, tile.Y + dy)))
                     return true;
             }
 

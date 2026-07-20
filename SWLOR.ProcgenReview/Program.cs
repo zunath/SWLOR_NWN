@@ -1048,6 +1048,11 @@ static Dictionary<string, int> LoadDecorationAppearances(
         .Concat(tilesetProfiles.SelectMany(t => t.DecorationProfiles.Values)
             .SelectMany(p => p.Decorations.Select(d => d.Resref)
                 .Concat(p.Vignettes.SelectMany(v => v.Members).Select(m => m.Resref))))
+        // Structural frontage buildings and wall-mounted facade dressing (see
+        // BuildingFrontagePlanner) are planned outside the palette lists but land in the same
+        // placeable plan, so their Appearance rows load here too.
+        .Concat(tilesetProfiles.SelectMany(t => t.FrontageBuildings).Select(e => e.Resref))
+        .Concat(tilesetProfiles.SelectMany(t => t.FacadeMounts).Select(e => e.Resref))
         .Distinct(StringComparer.OrdinalIgnoreCase);
 
     foreach (var resref in resrefs)
@@ -1082,9 +1087,10 @@ static Dictionary<string, int> LoadDecorationAppearances(
 /// which model the toolset renders — only Appearance does (verified against the same hand-built
 /// exemplar, whose Static/Faction/PortraitId already match these hardcoded defaults) — so Appearance
 /// is the one field sourced per-resref from LoadDecorationAppearances rather than hardcoded.
-/// PlannedDecoration.Position is flat (Z=0) — real ground height needs the live engine's
-/// GetGroundHeight, unavailable offline — matching BuildWaypointEntries' identical convention for
-/// this same reason. Facing is degrees; Bearing is radians (matches BuildDoorEntries' conversion).
+/// PlannedDecoration.Position.Z is a HEIGHT OFFSET above ground (0 for ground placements; the
+/// mined mounting height for wall-mounted facade dressing) — real ground height needs the live
+/// engine's GetGroundHeight, unavailable offline — matching BuildWaypointEntries' identical
+/// convention. Facing is degrees; Bearing is radians (matches BuildDoorEntries' conversion).
 /// </summary>
 static string BuildPlaceableEntries(List<PlannedDecoration> plan, Dictionary<string, int> decorationAppearances)
 {

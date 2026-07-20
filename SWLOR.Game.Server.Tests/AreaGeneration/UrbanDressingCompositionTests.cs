@@ -191,6 +191,15 @@ public class UrbanDressingCompositionTests
                 if (!roadTiles.Contains(TileOf(placement)))
                     continue;
 
+                // Wall-mounted facade signage hangs 1-7m above the street edge, slightly proud of
+                // the building face (round 11 -- BuildingFrontagePlanner.PlanFacadeMounts); the
+                // hand-built promenades hang their holo billboards over the lanes the same way.
+                // Ground-level road integrity still applies to everything else, INCLUDING the
+                // structural frontage buildings themselves (their anchor cells must never carry a
+                // road edge).
+                if (placement.Context == DecorationContext.FacadeMount)
+                    continue;
+
                 placementsOnRoad++;
                 if (!roadAllowed.Contains(placement.Resref))
                     violations.Add($"seed {SeedBase + i}: '{placement.Resref}' ({placement.Context}) stands on road tile {TileOf(placement)}");
@@ -512,8 +521,13 @@ public class UrbanDressingCompositionTests
         for (var i = 0; i < SeedCount; i++)
         {
             var (_, plan) = PlanFor(c, SeedBase + i, profile);
-            plan.Where(p => banned.Contains(p.Resref)).Should().BeEmpty(
-                $"seed {SeedBase + i}: structural offenders and foreign theme accents must never reach an fcx01 plan");
+            // The round-11 structural frontage channel deliberately erects whole-building
+            // placeables (swd_build007 et al.) as composed canyon walls -- the exact separate
+            // channel the round-7 removal note anticipated. The DRESSING ban stands: no banned
+            // resref may reach the plan through any dressing context.
+            plan.Where(p => p.Context != DecorationContext.BuildingFrontage && banned.Contains(p.Resref))
+                .Should().BeEmpty(
+                    $"seed {SeedBase + i}: structural offenders and foreign theme accents must never reach an fcx01 plan through a dressing context");
         }
     }
 
@@ -526,6 +540,10 @@ public class UrbanDressingCompositionTests
         var c = Composition(themeKey, BaseGameTilesetProfiles.FutCity, layoutKey);
         var curated = c.Tileset.Decorations.Select(d => d.Resref)
             .Concat(c.Tileset.Vignettes.SelectMany(v => v.Members).Select(m => m.Resref))
+            // The structural channel's own declarations (round 11): frontage buildings and
+            // facade mounts are family-curated content too, just outside the dressing palette.
+            .Concat(c.Tileset.FrontageBuildings.Select(e => e.Resref))
+            .Concat(c.Tileset.FacadeMounts.Select(e => e.Resref))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         for (var i = 0; i < SeedCount; i++)
@@ -600,7 +618,12 @@ public class UrbanDressingCompositionTests
         for (var i = 0; i < SeedCount; i++)
         {
             var (layout, plan) = PlanFor(c, SeedBase + i);
-            var stamped = layout.StampedStructureTiles;
+            // Flush faces are stamped tile footprints AND round-11 placeable frontage cells
+            // (ResolvedLayout.PlaceableStructureCells): hand-built narscorpd stacks its flush
+            // cargo against swd_build* placeable bases exactly as against tile towers.
+            var stamped = layout.StampedStructureTiles
+                .Concat(layout.PlaceableStructureCells)
+                .ToHashSet();
 
             foreach (var placement in plan.Where(p => flushResrefs.Contains(p.Resref)))
             {

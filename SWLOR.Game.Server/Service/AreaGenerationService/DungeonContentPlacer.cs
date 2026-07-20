@@ -350,6 +350,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             {
                 var planned = plan[i];
                 var position = GroundedPosition(area, planned.Position.X, planned.Position.Y);
+                // The planned Z is a HEIGHT OFFSET above ground (0 for every ground placement;
+                // the mined mounting height for wall-mounted facade dressing -- see
+                // BuildingFrontagePlanner.PlanFacadeMounts), layered on top of the live ground
+                // height so mounts hang on building faces at their evidence-derived band.
+                position.Z += planned.Position.Z;
                 var location = Location(area, position, planned.Facing);
 
                 var placeable = CreateObject(ObjectType.Placeable, planned.Resref, location);

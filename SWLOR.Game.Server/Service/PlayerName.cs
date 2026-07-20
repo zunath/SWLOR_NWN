@@ -638,12 +638,13 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsObjectValid(observer) ||
                 observer == target ||
-                GetIsDM(observer) ||
-                GetIsDMPossessed(observer) ||
                 !GetIsPC(observer))
             {
                 return GetName(target);
             }
+
+            if (GetIsDM(observer) || GetIsDMPossessed(observer))
+                return BuildStaffDisplayName(target);
 
             if (TryGetKnownName(observer, target, out var knownName))
                 return knownName;

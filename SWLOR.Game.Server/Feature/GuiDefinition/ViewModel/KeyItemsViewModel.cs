@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedIndex = index;
             if (_selectedIndex < 0 || _selectedIndex >= _visibleKeyItems.Count)
             {
-                SelectedIcon = string.Empty;
+                SelectedIcon = KeyItemIcon.Default;
                 SelectedName = "No Key Items";
                 SelectedType = string.Empty;
                 SelectedDescription = SelectedCategoryId == 0

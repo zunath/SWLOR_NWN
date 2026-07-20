@@ -9,6 +9,20 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class KeyItemIconTests
 {
     [Test]
+    public void DefaultIcon_HasValidResrefAndExpectedTgaFormat()
+    {
+        KeyItemIcon.Default.Should().NotBeNullOrWhiteSpace();
+        KeyItemIcon.Default.Length.Should().BeLessThanOrEqualTo(16,
+            "NWN resource names are limited to 16 characters");
+
+        var root = FindRepositoryRoot();
+        var path = Path.Combine(root.FullName, "SWLOR_Haks", "sw_item", $"{KeyItemIcon.Default}.tga");
+
+        File.Exists(path).Should().BeTrue($"the Key Items empty state should reference a packaged icon at {path}");
+        AssertIconTga(path, "Default Key Item icon");
+    }
+
+    [Test]
     public void ActiveKeyItems_HaveValidIconResrefs()
     {
         var entries = GetActiveEntries();

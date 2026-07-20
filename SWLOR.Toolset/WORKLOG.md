@@ -67,9 +67,32 @@ done | blocked`.
   exact (one field change → exactly one changed line). Suite ≈37s. One benign skip:
   `module.jrl.json` has no mutable integer at any depth (explicit Assert.Ignore).
 - This suite is permanent and must stay green in every later package.
-## WP1.4 — pending — Typed documents
+## WP1.4 — done — 2026-07-20 — Typed documents
+- Tier: Low (Sonnet subagent); controller-verified (full suite green, 57/58 + benign skip).
+- Files: `SWLOR.Toolset.Domain\Documents\*` (18 files: GffDocumentBase, GffStructExtensions,
+  LocString, VarTable, Are/Git/Gic/Utc/Uti/Utp/Utd/Utw/Uts/Utt/Utm/Itp/Ifo/Fac documents),
+  `SWLOR.Toolset.Tests\DocumentTests.*.cs` (8 files).
+- **Corpus findings recorded:** GIT list keys verified: "Creature List", "Door List",
+  "Encounter List", "List" (= LOOSE ITEM instances, not sounds), "Placeable List",
+  "SoundList", "StoreList", "TriggerList", "WaypointList" — spacing inconsistent by key.
+  UTM uses "ResRef" (not "TemplateResRef"). VarTable entry:
+  `{Name: cexostring, Type: dword (1=int,2=float,3=string), Value: typed}` with __struct_id 0;
+  setters mutate Value in place for minimal diffs. Palette CC/DELETE_ME absent from this
+  corpus (exposed as nullable for toolset-authored files).
+
 ## WP1.5 — pending — Transactions/undo/dirty
-## WP1.6 — pending — Radoub bridge
+
+## WP1.6 — done — 2026-07-20 — Radoub bridge
+- Tier: Low (Sonnet subagent); controller-verified.
+- Files: `SWLOR.Toolset.Domain\Gff\GffJsonBridge.cs`, `SWLOR.Toolset.Tests\GffBridgeTests.cs`,
+  additive byte-level `DecodeToBytes`/`EncodeBytes` in `JsonStringCodec.cs`.
+- Bridge round-trip (JSON → Radoub GffFile → JSON) byte-identical over 30 files × 16 folders.
+- **Findings recorded:** locstring language-id order is NOT always ascending (e.g. MapNote
+  keys 0,2,256,258,260,4,8) — insertion order must be preserved. CExoString/locstring text can
+  embed raw non-UTF-8 bytes (NWN inline color codes) — string bridging goes through
+  Windows-1252 + byte-level codec, matching Radoub's own binary I/O encoding. Field types
+  char/double/dword64/int64 occur ZERO times in the module corpus (covered by unit test only).
+  Radoub locstring no-strref sentinel is 0xFFFFFFFF.
 ## WP2.1 — pending — 2DA + TLK services
 ## WP2.2 — pending — SET parser
 ## WP2.3 — pending — Resource index

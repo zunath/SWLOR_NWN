@@ -111,6 +111,108 @@ namespace SWLOR.Toolset.Domain.Gff
             return builder.ToArray();
         }
 
+        /// <summary>
+        /// Decodes a raw string token (including surrounding quotes) to its literal content
+        /// bytes, unescaping JSON escape sequences without ever validating or re-encoding as
+        /// UTF-8. Unlike <see cref="Decode"/>, this is lossless for void payloads that embed
+        /// raw binary — including invalid UTF-8 — directly in the token.
+        /// </summary>
+        public static byte[] DecodeToBytes(ReadOnlySpan<byte> rawToken)
+        {
+            if (rawToken.Length < 2 || rawToken[0] != (byte)'"' || rawToken[^1] != (byte)'"')
+                throw new FormatException("String token must be enclosed in double quotes.");
+
+            var inner = rawToken[1..^1];
+            if (inner.IndexOf((byte)'\\') < 0)
+                return inner.ToArray();
+
+            var bytes = new List<byte>(inner.Length);
+            for (var i = 0; i < inner.Length; i++)
+            {
+                var b = inner[i];
+                if (b != (byte)'\\')
+                {
+                    bytes.Add(b);
+                    continue;
+                }
+
+                i++;
+                if (i >= inner.Length)
+                    throw new FormatException("Dangling escape at end of string token.");
+
+                switch ((char)inner[i])
+                {
+                    case '"': bytes.Add((byte)'"'); break;
+                    case '\\': bytes.Add((byte)'\\'); break;
+                    case '/': bytes.Add((byte)'/'); break;
+                    case 'b': bytes.Add(8); break;
+                    case 'f': bytes.Add(12); break;
+                    case 'n': bytes.Add((byte)'\n'); break;
+                    case 'r': bytes.Add((byte)'\r'); break;
+                    case 't': bytes.Add((byte)'\t'); break;
+                    case 'u':
+                        if (i + 4 >= inner.Length)
+                            throw new FormatException("Truncated \\u escape in string token.");
+                        var code = ParseHex4(inner.Slice(i + 1, 4));
+                        i += 4;
+                        AppendUtf8(bytes, code);
+                        break;
+                    default:
+                        throw new FormatException($"Unknown escape '\\{(char)inner[i]}' in string token.");
+                }
+            }
+
+            return bytes.ToArray();
+        }
+
+        /// <summary>
+        /// Encodes raw content bytes as a JSON string token (including quotes), the inverse of
+        /// <see cref="DecodeToBytes"/>. Bytes are emitted independently — no UTF-8 grouping or
+        /// validation — so arbitrary binary (e.g. void payloads) round-trips byte-identically.
+        /// </summary>
+        public static byte[] EncodeBytes(ReadOnlySpan<byte> rawBytes)
+        {
+            var builder = new List<byte>(rawBytes.Length + 2) { (byte)'"' };
+            foreach (var b in rawBytes)
+            {
+                switch (b)
+                {
+                    case (byte)'"':
+                        builder.Add((byte)'\\');
+                        builder.Add((byte)'"');
+                        break;
+                    case (byte)'\\':
+                        builder.Add((byte)'\\');
+                        builder.Add((byte)'\\');
+                        break;
+                    case 8:
+                        AddAscii(builder, "\\b");
+                        break;
+                    case 12:
+                        AddAscii(builder, "\\f");
+                        break;
+                    case (byte)'\n':
+                        AddAscii(builder, "\\n");
+                        break;
+                    case (byte)'\r':
+                        AddAscii(builder, "\\r");
+                        break;
+                    case (byte)'\t':
+                        AddAscii(builder, "\\t");
+                        break;
+                    default:
+                        if (b < 0x20)
+                            AddAscii(builder, $"\\u{b:x4}");
+                        else
+                            builder.Add(b);
+                        break;
+                }
+            }
+
+            builder.Add((byte)'"');
+            return builder.ToArray();
+        }
+
         private static void AddAscii(List<byte> builder, string text)
         {
             foreach (var c in text)

@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var instanceId = $"genarea_{++_instanceCounter}";
-                var area = AreaSynthesizer.Realize(resolved, request.PlaceholderResref, instanceId, request.Tag, request.DisplayName, request.Lighting);
+                var area = AreaSynthesizer.Realize(resolved, request.PlaceholderResref, instanceId, request.Tag, request.DisplayName, request.Lighting, request.Atmosphere);
 
                 if (!GetIsObjectValid(area))
                 {

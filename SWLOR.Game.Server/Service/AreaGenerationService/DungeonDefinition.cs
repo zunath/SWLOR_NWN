@@ -475,6 +475,57 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
     }
 
     /// <summary>
+    /// AREA-level lighting/sky/fog/weather properties a generated area carries, mined from the
+    /// hand-built exemplar areas of one tileset family (module .are evidence, >= 3 areas agreeing
+    /// on the full core tuple -- see the per-family evidence citations on each declaring profile).
+    /// Distinct from <see cref="DungeonTileLighting"/>, which is PER-TILE light color indices;
+    /// this is the area's own .are-level atmosphere: skybox, day/night behavior, sun/moon
+    /// ambient/diffuse colors, fog, shadows, wind, and weather chances.
+    ///
+    /// Consumed on both output paths: SWLOR.ProcgenReview patches these fields into every emitted
+    /// .are (see AreaAtmosphereAreWriter), and AreaSynthesizer.Realize applies the runtime-settable
+    /// subset to live instances after CreateArea. Three fields are .are-only -- the engine exposes
+    /// no runtime setter for SunShadows/MoonShadows, LightingScheme, or LoadScreenId -- so live
+    /// instances keep the placeholder area's values for those; everything else applies on both paths.
+    /// </summary>
+    public class DungeonAreaAtmosphere
+    {
+        /// <summary>Row index into skyboxes.2da (.are SkyBox byte; 0 = no skybox).</summary>
+        public int SkyBox { get; set; }
+        /// <summary>True = the area cycles day/night; false = it is locked to one phase (see <see cref="IsNight"/>).</summary>
+        public bool DayNightCycle { get; set; }
+        /// <summary>Locked phase when <see cref="DayNightCycle"/> is false: true = always night, false = always day.</summary>
+        public bool IsNight { get; set; }
+        public int SunAmbientColor { get; set; }
+        public int SunDiffuseColor { get; set; }
+        public int MoonAmbientColor { get; set; }
+        public int MoonDiffuseColor { get; set; }
+        public int SunFogAmount { get; set; }
+        public int SunFogColor { get; set; }
+        public int MoonFogAmount { get; set; }
+        public int MoonFogColor { get; set; }
+        /// <summary>.are-only: no runtime setter exists; live instances keep the placeholder's value.</summary>
+        public bool SunShadows { get; set; }
+        /// <summary>.are-only: no runtime setter exists; live instances keep the placeholder's value.</summary>
+        public bool MoonShadows { get; set; }
+        public int ShadowOpacity { get; set; } = 50;
+        /// <summary>0 (none), 1 (light), or 2 (strong).</summary>
+        public int WindPower { get; set; }
+        public int ChanceRain { get; set; }
+        public int ChanceSnow { get; set; }
+        public int ChanceLightning { get; set; }
+        /// <summary>.are-only: no runtime setter exists; live instances keep the placeholder's value.</summary>
+        public int LightingScheme { get; set; }
+        public float FogClipDist { get; set; } = 45f;
+        /// <summary>
+        /// .are-only loadscreens.2da row, and deliberately nullable: only set when the family
+        /// evidence agrees on a meaningful non-zero loadscreen (e.g. ttd01's Tatooine screen);
+        /// null keeps the placeholder .are's value untouched.
+        /// </summary>
+        public int? LoadScreenId { get; set; }
+    }
+
+    /// <summary>
     /// Everything that is genuinely bound to a tileset: the tileset itself, the placeholder
     /// area cloned for instances, tile lighting, and what the tileset calls its accent terrain
     /// (water pools, pit channels). Layout shapes and content packages compose with any profile.
@@ -860,6 +911,44 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// Inherited by palette variants like <see cref="Decorations"/>.
         /// </summary>
         public List<FacadeMountEntry> FacadeMounts { get; set; } = new();
+
+        /// <summary>
+        /// This tileset FAMILY's standard AREA atmosphere (see <see cref="DungeonAreaAtmosphere"/>),
+        /// mined from its own hand-built exemplar areas' .are properties. Null (the default) = no
+        /// unambiguous family evidence exists (fewer than 3 hand-built areas agreeing on the core
+        /// atmosphere tuple, or a dead tie between candidate tuples): both output paths then keep
+        /// their current defaults (the placeholder .are's values offline, the cloned instance's
+        /// values at runtime) rather than guessing. Inherited by palette variants the same way as
+        /// <see cref="Decorations"/> (see DungeonTilesetPaletteInheritance).
+        /// </summary>
+        public DungeonAreaAtmosphere Atmosphere { get; set; }
+
+        /// <summary>
+        /// NAMED alternate atmospheres (key = profile name, case-insensitive) selectable per
+        /// theme/request, mirroring <see cref="DecorationProfiles"/> exactly: the standard
+        /// atmosphere stays in <see cref="Atmosphere"/>, entries here fully replace it when
+        /// selected, and an unknown name falls back to the standard one. Inherited by palette
+        /// variants alongside the standard atmosphere.
+        /// </summary>
+        public Dictionary<string, DungeonAreaAtmosphere> AtmosphereProfiles { get; set; } =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Resolves the effective atmosphere for one composition, mirroring
+        /// DungeonDecorationPlanner.Plan's decoration-profile resolution exactly: a per-request
+        /// override name wins over the theme's own <see cref="DungeonDetail.AtmosphereProfile"/>
+        /// declaration; a resolved name the tileset declared selects that named atmosphere; an
+        /// unknown or empty name falls back to the standard <see cref="Atmosphere"/> (which is
+        /// null when this family has no mined evidence -- callers then change nothing).
+        /// </summary>
+        public DungeonAreaAtmosphere ResolveAtmosphere(string themeProfileName, string requestProfileName = null)
+        {
+            var profileName = !string.IsNullOrWhiteSpace(requestProfileName) ? requestProfileName : themeProfileName;
+            if (!string.IsNullOrWhiteSpace(profileName) &&
+                AtmosphereProfiles.TryGetValue(profileName, out var named))
+                return named;
+            return Atmosphere;
+        }
     }
 
     /// <summary>
@@ -928,6 +1017,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// falls back to the standard palette.
         /// </summary>
         public string DecorationProfile { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Name of the composed tileset's NAMED atmosphere this theme requests (see
+        /// <see cref="DungeonTilesetProfile.AtmosphereProfiles"/>), mirroring
+        /// <see cref="DecorationProfile"/> exactly: empty (the default) = the tileset's standard
+        /// <see cref="DungeonTilesetProfile.Atmosphere"/>; a per-request override wins over this
+        /// declaration; an undeclared name falls back to the standard atmosphere.
+        /// </summary>
+        public string AtmosphereProfile { get; set; } = string.Empty;
 
         /// <summary>
         /// Target decorative placeables PER TOTAL AREA TILE (layout.Width * layout.Height) at 100%
@@ -1221,6 +1319,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonDefinitionBuilder DecorationProfile(string profileName)
         {
             _activeDungeon.DecorationProfile = profileName ?? string.Empty;
+            return this;
+        }
+
+        /// <summary>
+        /// Requests a NAMED atmosphere of whatever tileset this theme composes with -- see
+        /// <see cref="DungeonDetail.AtmosphereProfile"/>. Falls back to the tileset's standard
+        /// atmosphere when the composed tileset never declared the name.
+        /// </summary>
+        public DungeonDefinitionBuilder AtmosphereProfile(string profileName)
+        {
+            _activeDungeon.AtmosphereProfile = profileName ?? string.Empty;
             return this;
         }
 
@@ -1614,6 +1723,37 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             return this;
         }
 
+        /// <summary>
+        /// Declares this tileset FAMILY's standard AREA atmosphere (see
+        /// <see cref="DungeonAreaAtmosphere"/>), mirroring the layout builder's Configure shape.
+        /// Only declare it when the family's hand-built module evidence is unambiguous (>= 3
+        /// exemplar areas agreeing on the full core atmosphere tuple); cite the agreeing areas in a
+        /// comment at the call site. Families without such evidence stay undeclared and keep their
+        /// current defaults on both output paths.
+        /// </summary>
+        public DungeonTilesetProfileBuilder Atmosphere(Action<DungeonAreaAtmosphere> configure)
+        {
+            var atmosphere = new DungeonAreaAtmosphere();
+            configure(atmosphere);
+            _active.Atmosphere = atmosphere;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares a NAMED alternate atmosphere on this tileset profile (see
+        /// <see cref="DungeonTilesetProfile.AtmosphereProfiles"/>), selectable per theme
+        /// (DungeonDetail.AtmosphereProfile) or per request, mirroring
+        /// <see cref="DecorationProfile"/>'s selection rules exactly. Declare the standard
+        /// <see cref="Atmosphere"/> first.
+        /// </summary>
+        public DungeonTilesetProfileBuilder AtmosphereProfile(string name, Action<DungeonAreaAtmosphere> configure)
+        {
+            var atmosphere = new DungeonAreaAtmosphere();
+            configure(atmosphere);
+            _active.AtmosphereProfiles[name] = atmosphere;
+            return this;
+        }
+
         private DungeonDecorationProfile _activeDecorationProfile;
 
         /// <summary>
@@ -1861,6 +2001,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 {
                     profile.UrbanDressing = profiles.Values.Any(p =>
                         !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref && p.UrbanDressing);
+                }
+
+                // The family AREA atmosphere inherits like the palette above: a variant that
+                // declared no atmosphere of its own carries its family basis's mined values
+                // (fcx01's Cobble2/Plaza district shares the Cobble district's night-city .are
+                // evidence -- the hand-built exemplars span both districts' areas). Shared
+                // reference is fine -- atmospheres are never mutated after build, only read.
+                if (profile.Atmosphere == null)
+                {
+                    var atmosphereBasis = profiles.Values.FirstOrDefault(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                        p.Atmosphere != null);
+                    if (atmosphereBasis != null)
+                    {
+                        profile.Atmosphere = atmosphereBasis.Atmosphere;
+                        if (profile.AtmosphereProfiles.Count == 0)
+                            profile.AtmosphereProfiles = atmosphereBasis.AtmosphereProfiles;
+                    }
                 }
 
                 // Family density (see DungeonTilesetProfile.DecorationDensityPerTile) inherits

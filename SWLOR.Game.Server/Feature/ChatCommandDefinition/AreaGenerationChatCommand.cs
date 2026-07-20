@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         PlaceholderResref = composition.Tileset.PlaceholderResref,
                         OpenTerrainOverride = composition.Tileset.PrimaryOpenTerrain,
                         Lighting = composition.Tileset.Lighting,
+                        Atmosphere = composition.Tileset.ResolveAtmosphere(composition.Content.AtmosphereProfile),
                         Layout = composition.BuildLayoutParameters(),
                         Width = width,
                         Height = height,

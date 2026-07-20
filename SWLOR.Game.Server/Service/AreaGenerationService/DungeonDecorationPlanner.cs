@@ -1648,6 +1648,49 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     entries = entries.Where(e => e.AllowOnRoadSurface).ToList();
                     if (entries.Count == 0)
                         continue;
+
+                    // STREETLAMP LINE: hand-built city streets repeat ONE street-light model
+                    // area-wide at tile pitch -- pw_ar_narpromena carries 54x _mdrn_pl_lights3 and
+                    // ns_comrcial_ka 87x _mdrn_pl_lamp4, with same-resref nearest-neighbor medians
+                    // of 9.65-10.0m across the whole promenade family's lamp rows. The general
+                    // urban row walk below (density-derived spacing, per-segment fixture swaps,
+                    // per-room repeat caps) measured 20-26m same-resref NN medians on generated
+                    // 24/32 city areas -- scattered varied lamps instead of a continuous municipal
+                    // line. Road lamp lines therefore bypass the row walk entirely: one weighted
+                    // pick per AREA (cached under sentinel room id -1, shared by every room's road
+                    // buckets regardless of resolved context), repeated at every eligible road tile
+                    // (10m pitch), with no jitter, no segment gaps, no fixture swaps, and no
+                    // per-room repeat cap (that cap exists to stop accidental same-fixture walls,
+                    // not deliberate street furniture); an explicitly declared MaxPerArea still
+                    // wins.
+                    var lampKey = (-1, DecorationContext.CorridorSide);
+                    if (!motifCache.TryGetValue(lampKey, out var lampMotif))
+                    {
+                        lampMotif = new List<string> { PickWeighted(entries, rng) };
+                        motifCache[lampKey] = lampMotif;
+                    }
+
+                    var lampResref = lampMotif[0];
+                    var lampEntry = entries.FirstOrDefault(e => e.Resref == lampResref);
+                    foreach (var lampTile in ordered)
+                    {
+                        if (IsAtAreaCap(lampEntry, areaUsage))
+                            break;
+
+                        var lampWallDir = NearestWallDirection(lampTile, tileSet);
+                        if (lampWallDir == null)
+                            continue;
+
+                        var lampPlacement = BuildUrbanWallPlacement(lampTile, lampWallDir.Value, lampResref,
+                            context, layout, roadCrosser);
+                        if (lampPlacement == null)
+                            continue;
+
+                        plan.Add(lampPlacement);
+                        RecordUse(areaUsage, lampResref);
+                    }
+
+                    continue;
                 }
 
                 var motifKey = (room.Id, context);

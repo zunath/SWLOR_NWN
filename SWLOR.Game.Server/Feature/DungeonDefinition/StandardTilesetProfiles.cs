@@ -161,6 +161,31 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Tileset("zsf01")
                 .Placeholder("gen_placeholder2")
                 .TileLighting(4, 0, 2, 2)
+                // Family AREA atmosphere -- the SWLOR standard windowless-interior .are tuple, mined
+                // from the hand-built zsf01 exemplars: cz220shipbreaker, cz220shipbreakin,
+                // czs220_maintlvl (3 of 9 module areas agree exactly on the full core tuple; the
+                // runner-up tuple has 2). Locked night with dim blue-grey moon ambient, no skybox,
+                // no fog, no wind. FogClipDist 45 is the modal value among the agreeing areas (2/3).
+                .Atmosphere(a =>
+                {
+                    a.SkyBox = 0;
+                    a.DayNightCycle = false;
+                    a.IsNight = true;
+                    a.SunAmbientColor = 0;
+                    a.SunDiffuseColor = 0;
+                    a.MoonAmbientColor = 2960685;
+                    a.MoonDiffuseColor = 6457991;
+                    a.SunFogAmount = 0;
+                    a.SunFogColor = 0;
+                    a.MoonFogAmount = 5;
+                    a.MoonFogColor = 0;
+                    a.SunShadows = false;
+                    a.MoonShadows = false;
+                    a.ShadowOpacity = 60;
+                    a.WindPower = 0;
+                    a.LightingScheme = 13;
+                    a.FogClipDist = 45f;
+                })
                 .MinimumOpeningWidth(2)
                 // zsf01's declared floor ("Floor2") has a single fully-open tile; 'floor' is the
                 // terrain czs220_maintlvl builds its rooms from (3 diagonal variants + doorway tiles).

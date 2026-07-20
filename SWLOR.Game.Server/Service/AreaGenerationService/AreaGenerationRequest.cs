@@ -58,6 +58,15 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTileLighting Lighting { get; set; } = new();
 
         /// <summary>
+        /// Resolved AREA atmosphere for this instance (see DungeonAreaAtmosphere), applied by
+        /// AreaSynthesizer.Realize right after CreateArea. Callers composing through a tileset
+        /// profile stamp composition.Tileset.ResolveAtmosphere(content.AtmosphereProfile) here,
+        /// mirroring how Lighting travels. Null (the default) = keep the cloned placeholder's own
+        /// area properties, exactly the pre-atmosphere behavior.
+        /// </summary>
+        public DungeonAreaAtmosphere Atmosphere { get; set; }
+
+        /// <summary>
         /// Layout style/knobs, usually a theme's LayoutTemplate. Null falls back to
         /// RoomsAndCorridors with this request's MinRooms/MaxRooms. The facade clones it and
         /// stamps Width/Height/terrain labels, so the template itself is never mutated.

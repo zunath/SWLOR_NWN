@@ -156,6 +156,7 @@ namespace SWLOR.Game.Server.Feature
                 PlaceholderResref = composition.Tileset.PlaceholderResref,
                 OpenTerrainOverride = composition.Tileset.PrimaryOpenTerrain,
                 Lighting = composition.Tileset.Lighting,
+                Atmosphere = composition.Tileset.ResolveAtmosphere(composition.Content.AtmosphereProfile),
                 Layout = composition.BuildLayoutParameters(),
                 Width = 16,
                 Height = 16,
@@ -201,6 +202,8 @@ namespace SWLOR.Game.Server.Feature
 
             Report($"{themeKey}: all {layout.Tiles.Length} tiles read back correctly.");
 
+            VerifyAtmosphere(area, themeKey, composition);
+
             if (!RuntimeAreaRegistry.TryGetByArea(area, out var instance) || instance.WalkablePoints.Count == 0)
                 throw new InvalidOperationException($"{themeKey}: no walkable points registered.");
 
@@ -208,6 +211,76 @@ namespace SWLOR.Game.Server.Feature
             Report($"{themeKey}: {instance.WalkablePoints.Count} walkable points; sample ground height z={sample.Z:F2}.");
 
             return (result, instance);
+        }
+
+        /// <summary>
+        /// Live assertion that the runtime-settable atmosphere subset actually landed on the
+        /// generated instance: reads every field AreaSynthesizer.ApplyAtmosphere writes back
+        /// through the corresponding engine/NWNX getter and compares against the composed
+        /// atmosphere. Themes composing onto a family without a declared atmosphere skip with a
+        /// note (there is nothing to verify -- the clone deliberately keeps placeholder values).
+        /// SunShadows/MoonShadows, LightingScheme, and LoadScreenID have no runtime setter OR
+        /// getter and are .are-emission-only; they are deliberately absent here.
+        /// </summary>
+        private static void VerifyAtmosphere(uint area, string themeKey, DungeonComposition composition)
+        {
+            var atmosphere = composition.Tileset.ResolveAtmosphere(composition.Content.AtmosphereProfile);
+            if (atmosphere == null)
+            {
+                Report($"{themeKey}: no family atmosphere declared for '{composition.Tileset.Key}' -- placeholder area properties retained (expected).");
+                return;
+            }
+
+            var failures = new List<string>();
+            void Check(string field, int expected, int actual)
+            {
+                if (expected != actual)
+                    failures.Add($"{field} expected {expected} got {actual}");
+            }
+
+            Check("SkyBox", atmosphere.SkyBox, (int)GetSkyBox(area));
+            var expectedCycle = atmosphere.DayNightCycle
+                ? SWLOR.NWN.API.NWScript.Enum.Area.DayNightCycle.CycleDayNight
+                : atmosphere.IsNight
+                    ? SWLOR.NWN.API.NWScript.Enum.Area.DayNightCycle.AlwaysDark
+                    : SWLOR.NWN.API.NWScript.Enum.Area.DayNightCycle.AlwaysBright;
+            Check("DayNightCycle", (int)expectedCycle, (int)SWLOR.NWN.API.NWNX.AreaPlugin.GetDayNightCycle(area));
+            // Color readback asymmetry (see AreaSynthesizer.ApplyAtmosphere's conversion note):
+            // NWNX GetSunMoonColors returns the raw NATIVE (BGR) dword, which is exactly the .are
+            // encoding the atmosphere carries -- compare directly. Base GetFogColor mirrors its own
+            // RGB-encoded Set, so the fog readbacks compare against the RGB-swapped value.
+            Check("SunAmbientColor", atmosphere.SunAmbientColor,
+                SWLOR.NWN.API.NWNX.AreaPlugin.GetSunMoonColors(area, AreaLightColorType.SunAmbient));
+            Check("SunDiffuseColor", atmosphere.SunDiffuseColor,
+                SWLOR.NWN.API.NWNX.AreaPlugin.GetSunMoonColors(area, AreaLightColorType.SunDiffuse));
+            Check("MoonAmbientColor", atmosphere.MoonAmbientColor,
+                SWLOR.NWN.API.NWNX.AreaPlugin.GetSunMoonColors(area, AreaLightColorType.MoonAmbient));
+            Check("MoonDiffuseColor", atmosphere.MoonDiffuseColor,
+                SWLOR.NWN.API.NWNX.AreaPlugin.GetSunMoonColors(area, AreaLightColorType.MoonDiffuse));
+            Check("SunFogColor", AreaSynthesizer.SwapRedBlue(atmosphere.SunFogColor), (int)GetFogColor(FogType.Sun, area));
+            Check("MoonFogColor", AreaSynthesizer.SwapRedBlue(atmosphere.MoonFogColor), (int)GetFogColor(FogType.Moon, area));
+            Check("SunFogAmount", atmosphere.SunFogAmount, GetFogAmount(FogType.Sun, area));
+            Check("MoonFogAmount", atmosphere.MoonFogAmount, GetFogAmount(FogType.Moon, area));
+            Check("WindPower", atmosphere.WindPower, SWLOR.NWN.API.NWNX.AreaPlugin.GetWindPower(area));
+            Check("ShadowOpacity", atmosphere.ShadowOpacity, SWLOR.NWN.API.NWNX.AreaPlugin.GetShadowOpacity(area));
+            Check("ChanceRain", atmosphere.ChanceRain,
+                SWLOR.NWN.API.NWNX.AreaPlugin.GetWeatherChance(area, WeatherEffectType.Rain));
+            Check("ChanceSnow", atmosphere.ChanceSnow,
+                SWLOR.NWN.API.NWNX.AreaPlugin.GetWeatherChance(area, WeatherEffectType.Snow));
+            Check("ChanceLightning", atmosphere.ChanceLightning,
+                SWLOR.NWN.API.NWNX.AreaPlugin.GetWeatherChance(area, WeatherEffectType.Lightning));
+
+            var fogClip = SWLOR.NWN.API.NWNX.AreaPlugin.GetFogClipDistance(area);
+            if (Math.Abs(fogClip - atmosphere.FogClipDist) > 0.01f)
+                failures.Add($"FogClipDist expected {atmosphere.FogClipDist} got {fogClip}");
+
+            if (failures.Count > 0)
+                throw new InvalidOperationException(
+                    $"{themeKey}: atmosphere readback mismatches -- {string.Join("; ", failures)}.");
+
+            Report($"{themeKey}: atmosphere verified on the live instance " +
+                   $"(skybox {atmosphere.SkyBox}, {(atmosphere.DayNightCycle ? "day/night cycle" : atmosphere.IsNight ? "always night" : "always day")}, " +
+                   $"wind {atmosphere.WindPower}, fog clip {atmosphere.FogClipDist}).");
         }
 
         private static void RunContentPhase(AreaGenerationResult result, RuntimeAreaInstance instance, string themeKey, Action onSuccess)

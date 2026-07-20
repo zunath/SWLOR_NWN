@@ -593,6 +593,13 @@ static int EmitArea(ResolvedLayout layout, DungeonTilesetProfile tileset, string
         "(\"Tileset\"\\s*:\\s*\\{[^}]*\"value\"\\s*:\\s*\")[^\"]*(\")",
         $"${{1}}{tileset.TilesetResref}$2");
 
+    // Family AREA atmosphere (skybox/day-night/sun-moon colors/fog/shadows/wind/weather): patch
+    // the composed profile's mined values over the placeholder's own daylight test-grid defaults.
+    // Null (no unambiguous family evidence, and no named profile requested) leaves the placeholder
+    // .are values untouched, exactly as before this system existed. Content is null for --matrix
+    // entries; the atmosphere is a TILESET-family property, so those still carry it.
+    are = AreaAtmosphereAreWriter.Apply(are, tileset.ResolveAtmosphere(detail?.AtmosphereProfile));
+
     var start = are.IndexOf("\"Tile_List\"", StringComparison.Ordinal);
     var open = are.IndexOf('[', start);
     var close = are.IndexOf(']', open);

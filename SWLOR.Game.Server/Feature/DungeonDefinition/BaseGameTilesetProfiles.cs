@@ -1188,6 +1188,32 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Tileset("tdc01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 8, 8)
+                // Family AREA atmosphere -- the SWLOR standard windowless-interior .are tuple, mined
+                // from the hand-built tdc01 exemplars: hiddenquestzone, vrotranccsitharc,
+                // v_swamp_undergro (3 of 5 module areas agree exactly on the full core tuple; every
+                // other tuple is a singleton). Locked night, dim blue-grey moon ambient, no skybox,
+                // no fog, no wind; LightingScheme 13 / ShadowOpacity 60 / FogClipDist 45 are
+                // unanimous among the agreeing areas.
+                .Atmosphere(a =>
+                {
+                    a.SkyBox = 0;
+                    a.DayNightCycle = false;
+                    a.IsNight = true;
+                    a.SunAmbientColor = 0;
+                    a.SunDiffuseColor = 0;
+                    a.MoonAmbientColor = 2960685;
+                    a.MoonDiffuseColor = 6457991;
+                    a.SunFogAmount = 0;
+                    a.SunFogColor = 0;
+                    a.MoonFogAmount = 5;
+                    a.MoonFogColor = 0;
+                    a.SunShadows = false;
+                    a.MoonShadows = false;
+                    a.ShadowOpacity = 60;
+                    a.WindPower = 0;
+                    a.LightingScheme = 13;
+                    a.FogClipDist = 45f;
+                })
                 .AccentTerrain("Pit")
                 .FeatureTile("[Tan] Treasure 1", 2)
                 .FeatureTile("[Tan] Treasure 2", 2)
@@ -2134,6 +2160,32 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // under any current mechanism and are excluded.
             _builder.Create(MinesAndCaverns, "Mines and Caverns*")
                 .Tileset("tdm01")
+                // Family AREA atmosphere -- the SWLOR standard windowless-interior .are tuple (same
+                // values as tdc01/zsf01: the module authors reuse one dark-interior template), mined
+                // from the hand-built tdm01 exemplars: tat_tuskcavebot, tat_tuskcavemain,
+                // tat_tuskcavetunn, tat_wormden (4 of 13 module areas agree exactly on the full core
+                // tuple; the runner-up tuple has 3). LightingScheme 13 / ShadowOpacity 60 /
+                // FogClipDist 45 are unanimous among the agreeing areas.
+                .Atmosphere(a =>
+                {
+                    a.SkyBox = 0;
+                    a.DayNightCycle = false;
+                    a.IsNight = true;
+                    a.SunAmbientColor = 0;
+                    a.SunDiffuseColor = 0;
+                    a.MoonAmbientColor = 2960685;
+                    a.MoonDiffuseColor = 6457991;
+                    a.SunFogAmount = 0;
+                    a.SunFogColor = 0;
+                    a.MoonFogAmount = 5;
+                    a.MoonFogColor = 0;
+                    a.SunShadows = false;
+                    a.MoonShadows = false;
+                    a.ShadowOpacity = 60;
+                    a.WindPower = 0;
+                    a.LightingScheme = 13;
+                    a.FogClipDist = 45f;
+                })
                 // Raised-terrain support (probed directly against the .set data): Floor carries the
                 // one-corner/two-adjacent-raised rim shapes LayoutElevationPainter needs (so
                 // MaxElevationRegions(2)), and the [Cave] family's height content -- Slope-crossered
@@ -3338,6 +3390,35 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // requires a room large enough for the footprint; smaller rooms simply never site them).
             _builder.Create(Desert, "[SW] Tatooine")
                 .Tileset("ttd01")
+                // Family AREA atmosphere -- the Tatooine daylight canyon tuple, mined from the
+                // hand-built ttd01 exemplars: 20 of 49 module areas agree exactly on the full core
+                // tuple (anchor_entreenor/anchor_entreesud/anchor_road_est/canyon_001/
+                // moseis_dow_ca001/... -- the runner-up tuple has 5). Desert skybox 77, live
+                // day/night cycle, warm sun ambient, light haze fog (10) both phases, strong wind 2.
+                // Among the agreeing areas: LightingScheme 6 and ShadowOpacity 50 are unanimous,
+                // LoadScreenID 69 (the Tatooine loadscreen) holds on 18/20, FogClipDist 70 is the
+                // modal value (12/20).
+                .Atmosphere(a =>
+                {
+                    a.SkyBox = 77;
+                    a.DayNightCycle = true;
+                    a.IsNight = false;
+                    a.SunAmbientColor = 3952475;
+                    a.SunDiffuseColor = 7325921;
+                    a.MoonAmbientColor = 0;
+                    a.MoonDiffuseColor = 132358;
+                    a.SunFogAmount = 10;
+                    a.SunFogColor = 4890809;
+                    a.MoonFogAmount = 10;
+                    a.MoonFogColor = 2178364;
+                    a.SunShadows = true;
+                    a.MoonShadows = true;
+                    a.ShadowOpacity = 50;
+                    a.WindPower = 2;
+                    a.LightingScheme = 6;
+                    a.FogClipDist = 70f;
+                    a.LoadScreenId = 69;
+                })
                 .SolidTerrainOverride("Cliff")
                 .PrimaryOpenTerrain("Desert")
                 .MaxElevationRegions(2)
@@ -4134,6 +4215,36 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
             // vocabulary, hand-built evidence, lighting sample).
             _builder.Create(FutCity, "D20 Futuristic City SW")
                 .Tileset("fcx01")
+                // Family AREA atmosphere -- the hand-built flagship's neon night-city .are tuple,
+                // taken verbatim from pw_ar_narpromena (Smuggler's Moon - Promenade), the reference
+                // area this family's whole dressing/frontage pipeline benchmarks against. fcx01's
+                // module-wide modal tuple is a 2-2 tie (24 areas span cloudscape exteriors, landing
+                // pads, and promenade streets), so the family deliberately standardizes on the
+                // flagship rather than a modal vote: skybox 78 locked to permanent night
+                // (DayNightCycle 0 / IsNight 1) with BRIGHT white sun-slot diffuse and warm ambient
+                // -- the neon-city look is "night flag with day-grade lighting", not a dark area --
+                // plus violet moon ambient/diffuse, fog amounts 0 with distinct warm/deep-blue fog
+                // colors, both shadow flags on, no wind, FogClipDist 130.
+                .Atmosphere(a =>
+                {
+                    a.SkyBox = 78;
+                    a.DayNightCycle = false;
+                    a.IsNight = true;
+                    a.SunAmbientColor = 6566450;
+                    a.SunDiffuseColor = 16777215;
+                    a.MoonAmbientColor = 5987195;
+                    a.MoonDiffuseColor = 5987248;
+                    a.SunFogAmount = 0;
+                    a.SunFogColor = 9535080;
+                    a.MoonFogAmount = 0;
+                    a.MoonFogColor = 2368329;
+                    a.SunShadows = true;
+                    a.MoonShadows = true;
+                    a.ShadowOpacity = 50;
+                    a.WindPower = 0;
+                    a.LightingScheme = 0;
+                    a.FogClipDist = 130f;
+                })
                 .SolidTerrainOverride("holes")
                 .PrimaryOpenTerrain("Cobble")
                 // PathNodeOpeningWidthAudit (fresh against fcx01's real pathnode data, Solid=holes/
@@ -5531,6 +5642,33 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Tileset("ttr01")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)
+                // Family AREA atmosphere -- the Dantooine-style open-grassland daylight tuple,
+                // mined from the hand-built ttr01 exemplars: dmfi_custom_enc, vrotrdantcourt,
+                // area042, vrotrdantkhoonda, area043 (5 of 8 module areas agree exactly on the
+                // full core tuple; every other tuple is a singleton). No skybox row, live
+                // day/night cycle, neutral pale-blue sun ambient with white diffuse, fog amounts 0,
+                // no wind; LightingScheme 0 / ShadowOpacity 50 / FogClipDist 45 are unanimous
+                // among the agreeing areas.
+                .Atmosphere(a =>
+                {
+                    a.SkyBox = 0;
+                    a.DayNightCycle = true;
+                    a.IsNight = false;
+                    a.SunAmbientColor = 6566450;
+                    a.SunDiffuseColor = 16777215;
+                    a.MoonAmbientColor = 0;
+                    a.MoonDiffuseColor = 13132900;
+                    a.SunFogAmount = 0;
+                    a.SunFogColor = 9535080;
+                    a.MoonFogAmount = 0;
+                    a.MoonFogColor = 6566450;
+                    a.SunShadows = true;
+                    a.MoonShadows = true;
+                    a.ShadowOpacity = 50;
+                    a.WindPower = 0;
+                    a.LightingScheme = 0;
+                    a.FogClipDist = 45f;
+                })
                 .PrimaryOpenTerrain("Grass")
                 .AccentTerrain("Water")
                 .ReliefBlendTerrain("GentleHill")

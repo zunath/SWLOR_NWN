@@ -2,6 +2,7 @@ using System.Numerics;
 using NWN.Core.NWNX;
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Area;
 using TilesetPlugin = SWLOR.NWN.API.NWNX.TilesetPlugin;
 using AreaPlugin = SWLOR.NWN.API.NWNX.AreaPlugin;
 
@@ -22,7 +23,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// instancing — callers must serialize Realize calls (the generation queue does).
         /// Returns OBJECT_INVALID on engine failure.
         /// </summary>
-        public static uint Realize(ResolvedLayout layout, string placeholderResref, string overrideName, string tag, string displayName, DungeonTileLighting lighting = null)
+        public static uint Realize(ResolvedLayout layout, string placeholderResref, string overrideName, string tag, string displayName, DungeonTileLighting lighting = null,
+            DungeonAreaAtmosphere atmosphere = null)
         {
             lighting ??= new DungeonTileLighting();
             TilesetPlugin.CreateTileOverride(overrideName, layout.TilesetResref, layout.Width, layout.Height);
@@ -54,9 +56,77 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 SetEventScript(area, EventScript.Area_OnEnter, ScriptName.OnAreaEnter);
                 SetEventScript(area, EventScript.Area_OnExit, ScriptName.OnAreaExit);
                 SetEventScript(area, EventScript.Area_OnUserDefined, ScriptName.OnAreaUserDefined);
+                ApplyAtmosphere(area, atmosphere);
             }
 
             return area;
+        }
+
+        /// <summary>
+        /// Applies the runtime-settable subset of a composed family atmosphere to a freshly cloned
+        /// instance (see DungeonAreaAtmosphere): skybox, day/night behavior, sun/moon
+        /// ambient/diffuse colors, fog color/amount, wind, shadow opacity, fog clip distance, and
+        /// weather chances. The instance otherwise inherits the placeholder area's daylight
+        /// test-grid values, which is exactly the "generated areas feel like white test grids"
+        /// problem the atmosphere declarations exist to fix. Null = no declared atmosphere; the
+        /// clone keeps the placeholder's values, matching the offline emitter's null behavior.
+        ///
+        /// Three .are fields have NO runtime setter (engine/NWNX expose none) and are therefore
+        /// honest offline-only fields the .are emission path alone can set: SunShadows/MoonShadows
+        /// (shadow-casting booleans), LightingScheme, and LoadScreenID. Live instances keep the
+        /// placeholder's values for those three.
+        /// </summary>
+        private static void ApplyAtmosphere(uint area, DungeonAreaAtmosphere atmosphere)
+        {
+            if (atmosphere == null)
+                return;
+
+            SetSkyBox((Skybox)atmosphere.SkyBox, area);
+
+            // .are stores the pair (DayNightCycle, IsNight); the runtime models the same three
+            // states as a single enum.
+            var cycle = atmosphere.DayNightCycle
+                ? DayNightCycle.CycleDayNight
+                : atmosphere.IsNight
+                    ? DayNightCycle.AlwaysDark
+                    : DayNightCycle.AlwaysBright;
+            AreaPlugin.SetDayNightCycle(area, cycle);
+
+            // DungeonAreaAtmosphere stores colors in the .are dword encoding, which is the engine's
+            // NATIVE byte order (BGR -- e.g. Tatooine's hand-built haze dword only reads as sandy
+            // tan in BGR). Both color-setting APIs here take standard RGB hex instead and swap to
+            // BGR internally: NWNX SetSunMoonColors swaps explicitly (see unified
+            // Plugins/Area/Area.cpp), and base SetFogColor's FOG_COLOR_* constants are RGB-encoded.
+            // Convert native -> RGB on the way in so the live instance's stored values land
+            // byte-identical to the hand-built .are evidence. (NWNX GetSunMoonColors returns the
+            // raw NATIVE value with no swap; base GetFogColor mirrors its own Set and returns RGB
+            // -- the self-test readback accounts for the asymmetry.)
+            AreaPlugin.SetSunMoonColors(area, AreaLightColorType.SunAmbient, SwapRedBlue(atmosphere.SunAmbientColor));
+            AreaPlugin.SetSunMoonColors(area, AreaLightColorType.SunDiffuse, SwapRedBlue(atmosphere.SunDiffuseColor));
+            AreaPlugin.SetSunMoonColors(area, AreaLightColorType.MoonAmbient, SwapRedBlue(atmosphere.MoonAmbientColor));
+            AreaPlugin.SetSunMoonColors(area, AreaLightColorType.MoonDiffuse, SwapRedBlue(atmosphere.MoonDiffuseColor));
+
+            SetFogColor(FogType.Sun, (FogColor)SwapRedBlue(atmosphere.SunFogColor), area);
+            SetFogColor(FogType.Moon, (FogColor)SwapRedBlue(atmosphere.MoonFogColor), area);
+            SetFogAmount(FogType.Sun, atmosphere.SunFogAmount, area);
+            SetFogAmount(FogType.Moon, atmosphere.MoonFogAmount, area);
+
+            AreaPlugin.SetWindPower(area, atmosphere.WindPower);
+            AreaPlugin.SetShadowOpacity(area, atmosphere.ShadowOpacity);
+            AreaPlugin.SetFogClipDistance(area, atmosphere.FogClipDist);
+            AreaPlugin.SetWeatherChance(area, WeatherEffectType.Rain, atmosphere.ChanceRain);
+            AreaPlugin.SetWeatherChance(area, WeatherEffectType.Snow, atmosphere.ChanceSnow);
+            AreaPlugin.SetWeatherChance(area, WeatherEffectType.Lightning, atmosphere.ChanceLightning);
+        }
+
+        /// <summary>
+        /// Swaps the red and blue channels of a 24-bit color dword -- converts between the .are/
+        /// engine-native BGR encoding DungeonAreaAtmosphere carries and the RGB hex the color-setting
+        /// script/NWNX APIs expect (see ApplyAtmosphere's conversion note).
+        /// </summary>
+        public static int SwapRedBlue(int color)
+        {
+            return ((color & 0x0000FF) << 16) | (color & 0x00FF00) | ((color >> 16) & 0x0000FF);
         }
 
         /// <summary>

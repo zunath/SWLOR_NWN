@@ -264,7 +264,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             LoadCategories();
             LoadNotesList();
-            ShowNotesTab();
+
+            // Deliberately not swapping the layout here. The base Bind has already applied the main
+            // view, which is the notes tab, and re-applying a layout is what stops NUI reflowing the
+            // window on resize (see the note above Nui.Width: the UI cannot reflow once the layout
+            // has been set up). Only an actual tab change swaps.
+            IsNotesTabToggled = true;
+            IsCategoriesTabToggled = false;
 
             WatchOnClient(model => model.ActiveNoteName);
             WatchOnClient(model => model.ActiveNoteText);
@@ -602,10 +608,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Swaps the whole window layout for the active tab. The tabs cannot be stacked rows toggled
-        /// with BindIsVisible - a hidden row still reserves its flex space - and hosting them in a
-        /// nested placeholder group stops the content filling the window, because a group sizes
-        /// itself to its content. Replacing the window root avoids both.
+        /// Swaps the whole window layout for the active tab. Only called on an actual tab change -
+        /// re-applying a layout costs the window its ability to reflow on resize, so the tab the
+        /// window opens on is left as the layout NUI built it.
         /// </summary>
         private void RestoreSelectedTabPartial()
         {

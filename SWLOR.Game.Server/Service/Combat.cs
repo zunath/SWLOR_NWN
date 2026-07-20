@@ -3155,12 +3155,7 @@ namespace SWLOR.Game.Server.Service
         {
             var skillType = GetEquippedWeaponSkillType(defender);
             var retaliationDMG = Stat.GetStatAdjustment(defender, StatType.GuardRetaliationDMG);
-            var bonusSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
-                defender,
-                StatType.GuardRetaliationDMGBonusSkillType));
-            var bonusDMG = SkillTypeMatches(skillType, bonusSkillType)
-                ? Stat.GetStatAdjustment(defender, StatType.GuardRetaliationDMGBonus)
-                : 0;
+            var pulseDMG = Stat.GetStatAdjustment(defender, StatType.GuardedHitPulseDMG);
 
             // DMG is an input to the attack-versus-defense damage range, not already-resolved HP damage.
             // Resolve each retaliation before using the non-recursive triggered-damage delivery path.
@@ -3174,18 +3169,18 @@ namespace SWLOR.Game.Server.Service
                 ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);
             }
 
-            if (bonusDMG <= 0)
+            if (pulseDMG <= 0)
                 return;
 
-            var radius = Stat.GetStatAdjustment(defender, StatType.GuardRetaliationDMGBonusRadiusMeters);
+            var radius = Stat.GetStatAdjustment(defender, StatType.GuardedHitPulseRadiusMeters);
             if (radius <= 0)
             {
-                var bonusDamage = ResolveGuardRetaliationDamage(defender, attacker, bonusDMG, skillType);
-                ApplyTriggeredDamage(defender, attacker, bonusDamage, CombatDamageType.Physical, skillType);
+                var pulseDamage = ResolveGuardRetaliationDamage(defender, attacker, pulseDMG, skillType);
+                ApplyTriggeredDamage(defender, attacker, pulseDamage, CombatDamageType.Physical, skillType);
                 return;
             }
 
-            ApplyGuardedHitRetaliationPulse(defender, attacker, incomingDamage, bonusDMG, radius, skillType);
+            ApplyGuardedHitRetaliationPulse(defender, attacker, incomingDamage, pulseDMG, radius, skillType);
         }
 
         private static void ApplyGuardedHitRetaliationPulse(
@@ -3198,12 +3193,25 @@ namespace SWLOR.Game.Server.Service
         {
             var enmityPercent = Stat.GetStatAdjustment(
                 defender,
-                StatType.GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage);
+                StatType.GuardedHitPulseEnmityPercentOfIncomingDamage);
             var additionalTargetEnmity = enmityPercent > 0
                 ? Math.Max(1, GameMath.PercentOf(incomingDamage, enmityPercent))
                 : 0;
             var location = GetLocation(defender);
             var applied = false;
+
+            // The creature whose hit was guarded is always affected, even when attacking from
+            // beyond the nearby-enemy radius. Normal Guard handling supplies this target's Enmity.
+            if (GetIsObjectValid(originalAttacker) &&
+                !GetIsDead(originalAttacker) &&
+                GetCurrentHitPoints(originalAttacker) > 0 &&
+                GetIsReactionTypeHostile(originalAttacker, defender))
+            {
+                var damage = ResolveGuardRetaliationDamage(defender, originalAttacker, dmg, skillType);
+                ApplyTriggeredDamage(defender, originalAttacker, damage, CombatDamageType.Physical, skillType);
+                applied = true;
+            }
+
             var target = GetFirstObjectInShape(
                 Shape.Sphere,
                 radius,
@@ -3212,13 +3220,14 @@ namespace SWLOR.Game.Server.Service
                 SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
-                if (!GetIsDead(target) &&
+                if (target != originalAttacker &&
+                    !GetIsDead(target) &&
                     GetCurrentHitPoints(target) > 0 &&
                     GetIsReactionTypeHostile(target, defender))
                 {
                     var damage = ResolveGuardRetaliationDamage(defender, target, dmg, skillType);
                     ApplyTriggeredDamage(defender, target, damage, CombatDamageType.Physical, skillType);
-                    if (target != originalAttacker && additionalTargetEnmity > 0)
+                    if (additionalTargetEnmity > 0)
                         Enmity.ModifyEnmity(defender, target, additionalTargetEnmity);
 
                     applied = true;
@@ -3233,7 +3242,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (applied && GetIsPC(defender))
-                FloatingTextStringOnCreature(ColorToken.Combat("Iron Elbows"), defender, false);
+                FloatingTextStringOnCreature(ColorToken.Combat("Retaliation Pulse"), defender, false);
         }
 
         private static int ResolveGuardRetaliationDamage(

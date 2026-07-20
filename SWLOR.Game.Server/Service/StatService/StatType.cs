@@ -2835,10 +2835,10 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedPerkCategoryTargetEnmityToSourcePercentAdjustment = 498,
 
         /// <summary>
-        /// DMG rating added to guard retaliation for a matching skill.
+        /// Physical DMG rating dealt by a standalone pulse after guarding a hostile hit.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardRetaliationDMGBonus = 499,
+        GuardedHitPulseDMG = 499,
 
         /// <summary>
         /// Secondary hit damage added to Venom Current single-target abilities.
@@ -4833,12 +4833,6 @@ namespace SWLOR.Game.Server.Service.StatService
         GuardedHitNextSkillAbilityStatusSkillType = 841,
 
         /// <summary>
-        /// SkillType value whose guard retaliation receives GuardRetaliationDMGBonus.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        GuardRetaliationDMGBonusSkillType = 842,
-
-        /// <summary>
         /// Duration in seconds for nearby ally Attack Deflection from matching category abilities.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
@@ -5455,18 +5449,18 @@ namespace SWLOR.Game.Server.Service.StatService
         GuardedHitSecondaryNextSkillAbilityWindowSeconds = 949,
 
         /// <summary>
-        /// Radius in meters of a skill-matched guard retaliation bonus pulse. Zero keeps the bonus
-        /// on the original attacker only.
+        /// Radius in meters of a guarded-hit pulse around the defender. Zero limits the pulse to
+        /// the original attacker.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardRetaliationDMGBonusRadiusMeters = 950,
+        GuardedHitPulseRadiusMeters = 950,
 
         /// <summary>
         /// Percent of the guarded hit's incoming damage generated as Enmity toward each additional
-        /// enemy hit by the guard retaliation bonus pulse.
+        /// enemy hit by the guarded-hit pulse. The original attacker receives normal Guard Enmity.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardRetaliationDMGBonusEnmityPercentOfIncomingDamage = 951,
+        GuardedHitPulseEnmityPercentOfIncomingDamage = 951,
 
         /// <summary>
         /// Optional SkillType restriction for the independent hostile-ability Evasion channel.

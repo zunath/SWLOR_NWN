@@ -295,6 +295,17 @@ public class CrossSkillPerkInteractionSafetyTests
         retaliationPulse.Should().Contain("ApplyTriggeredDamage(");
         retaliationPulse.Should().NotContain("ApplyDamageDealtEffects(",
             "Iron Elbows pulse damage must not recursively trigger direct-damage perks");
+        retaliationPulse.Should().Contain("ResolveGuardRetaliationDamage(defender, originalAttacker",
+            "the triggering attacker must be affected even outside the nearby-enemy radius");
+        retaliationPulse.Should().Contain("target != originalAttacker",
+            "the triggering attacker must not be struck twice when inside the pulse radius");
+
+        var guardedHitRetaliation = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliation(");
+        guardedHitRetaliation.Should().Contain("StatType.GuardedHitPulseDMG");
+        guardedHitRetaliation.Should().NotContain("SkillTypeMatches(",
+            "Iron Elbows is cross-skill and must work with any equipped weapon or unarmed");
+        guardedHitRetaliation.Should().NotContain("PerkType.",
+            "Iron Elbows behavior must be stat-driven rather than tied to a sibling perk");
 
         var evasion = ExtractMethod(combat, "private static void ApplyAbilityUsedEvasion(");
         evasion.Should().Contain("evasionStatType);",

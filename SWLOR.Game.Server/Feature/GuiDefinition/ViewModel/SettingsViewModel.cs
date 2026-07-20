@@ -11,10 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
         public const string SettingsView = "SETTINGS_VIEW";
-
-        public const string GeneralPartial = "GENERAL_VIEW";
-        public const string IdentityPartial = "IDENTITY_VIEW";
-        public const string ChatPartial = "CHAT_VIEW";
+        public const string ContentPartial = "CONTENT_VIEW";
 
         private const int NumberOfSystemColors = 2; // OOC, Emotes
 
@@ -147,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadGeneralView();
             LoadIdentityView();
 
-            ChangePartialView(SettingsView, GeneralPartial);
+            ChangePartialView(SettingsView, ContentPartial);
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.SubdualMode);
@@ -319,8 +316,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Apply the vitals display preference immediately (portrait overlay vs. docked window).
             PlayerStatusWindow.ApplyStatusDisplay(Player);
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
-
             PlayerName.RefreshNameOverridesForObserver(Player);
             PlayerName.RefreshNameOverridesForPlayer(Player);
 
@@ -342,7 +337,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = true;
             IsIdentitySelected = false;
             IsChatSelected = false;
-            ChangePartialView(SettingsView, GeneralPartial);
             LoadGeneralView();
         };
 
@@ -351,7 +345,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = false;
             IsIdentitySelected = true;
             IsChatSelected = false;
-            ChangePartialView(SettingsView, IdentityPartial);
             LoadIdentityView();
         };
 
@@ -360,7 +353,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = false;
             IsIdentitySelected = false;
             IsChatSelected = true;
-            ChangePartialView(SettingsView, ChatPartial);
             LoadChatView();
         };
 
@@ -402,8 +394,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var (red, green, blue) = Language.GetColor(type);
                     ChatColors[index] = new GuiColor(red, green, blue);
                 }
-
-                ChangePartialView(SettingsView, ChatPartial);
             });
         };
     }

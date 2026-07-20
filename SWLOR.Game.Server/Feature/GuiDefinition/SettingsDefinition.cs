@@ -12,10 +12,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
+                .SetIsClosable(true)
                 .SetInitialGeometry(0, 0, 375f, 340f)
                 .SetTitle("Settings")
 
-                .DefinePartialView(SettingsViewModel.GeneralPartial, view =>
+                .DefinePartialView(SettingsViewModel.ContentPartial, view =>
                 {
                     view.AddColumn(col =>
                     {
@@ -30,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayAchievementNotification);
                         })
-                        .SetHeight(30f);
+                        .SetHeight(30f)
+                        .BindIsVisible(model => model.IsGeneralSelected);
 
                         col.AddRow(row =>
                         {
@@ -43,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.SubdualMode);
                         })
-                            .SetHeight(30f);
+                            .SetHeight(30f)
+                            .BindIsVisible(model => model.IsGeneralSelected);
 
 
                         col.AddRow(row =>
@@ -57,7 +60,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayServerResetReminders);
                         })
-                            .SetHeight(30f);
+                            .SetHeight(30f)
+                            .BindIsVisible(model => model.IsGeneralSelected);
 
                         col.AddRow(row =>
                         {
@@ -70,7 +74,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.PortraitVitals);
                         })
-                            .SetHeight(30f);
+                            .SetHeight(30f)
+                            .BindIsVisible(model => model.IsGeneralSelected);
 
                         col.AddRow(row =>
                         {
@@ -83,15 +88,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindOnClicked(model => model.OnClickChangeDescription())
                                 .SetWidth(230f)
                                 .SetHeight(32f);
-                        });
+                        })
+                            .BindIsVisible(model => model.IsGeneralSelected);
 
-                    });
-                })
-
-                .DefinePartialView(SettingsViewModel.IdentityPartial, view =>
-                {
-                    view.AddColumn(col =>
-                    {
                         col.AddRow(row =>
                         {
                             row.AddSpacer()
@@ -103,7 +102,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.ShowOwnDescriptor);
                         })
-                            .SetHeight(30f);
+                            .SetHeight(30f)
+                            .BindIsVisible(model => model.IsIdentitySelected);
 
                         col.AddRow(row =>
                         {
@@ -116,7 +116,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.ShowDescriptorsForNamedPlayers);
                         })
-                            .SetHeight(30f);
+                            .SetHeight(30f)
+                            .BindIsVisible(model => model.IsIdentitySelected);
 
                         col.AddRow(row =>
                         {
@@ -129,14 +130,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.ScrambleAccountName);
                         })
-                            .SetHeight(30f);
-                    });
-                })
+                            .SetHeight(30f)
+                            .BindIsVisible(model => model.IsIdentitySelected);
 
-                .DefinePartialView(SettingsViewModel.ChatPartial, view =>
-                {
-                    view.AddColumn(col =>
-                    {
                         col.AddRow(row =>
                         {
                             row.AddList(template =>
@@ -184,13 +180,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 });
                             })
                                 .BindRowCount(model => model.ChatColorNames);
-                        });
+                        })
+                            .BindIsVisible(model => model.IsChatSelected);
 
                         col.AddRow(row =>
                         {
                             row.AddColorPicker()
                                 .BindSelectedColor(model => model.SelectedColor);
-                        });
+                        })
+                            .BindIsVisible(model => model.IsChatSelected);
 
                         col.AddRow(row =>
                         {
@@ -215,7 +213,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetIsEnabled(false);
 
                             row.AddSpacer();
-                        });
+                        })
+                            .BindIsVisible(model => model.IsChatSelected);
                     });
                 })
 

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
@@ -724,6 +725,21 @@ public class MimicryTests
             .MimicrySkillRequirement.Should().Be(47, "level-50 boss techniques begin the final progression band");
         techniques[FeatType.ApexCollapseTechnique]
             .MimicrySkillRequirement.Should().Be(50, "apex boss techniques remain rank-50 rewards");
+    }
+
+    [Test]
+    public void Mimicry_SkillDecayHandlerRevalidatesEquippedTechniques()
+    {
+        var handler = typeof(Mimicry).GetMethod(
+            nameof(Mimicry.OnMimicrySkillDecay),
+            BindingFlags.Public | BindingFlags.Static);
+
+        handler.Should().NotBeNull();
+        handler!.GetCustomAttributes<NWNEventHandler>()
+            .Select(attribute => attribute.Script)
+            .Should()
+            .Contain(ScriptName.OnSwlorLoseSkill,
+                "every Mimicry rank loss must immediately enforce equipped technique requirements");
     }
 
     [Test]

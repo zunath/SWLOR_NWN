@@ -759,6 +759,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Immediately removes equipped techniques whose rank requirement is no longer met when
+        /// Mimicry loses a rank. This must run for every Mimicry decay, including rank losses that
+        /// do not cross a perk requirement and therefore do not trigger a perk refund callback.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnSwlorLoseSkill)]
+        public static void OnMimicrySkillDecay()
+        {
+            var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));
+            if (skillType != SkillType.Mimicry)
+                return;
+
+            EnforceSlotBudget(OBJECT_SELF);
+        }
+
+        /// <summary>
         /// Unequips every equipped technique. Used when the Combat Analyzer perk is refunded.
         /// </summary>
         public static void UnequipAllTechniques(uint player)

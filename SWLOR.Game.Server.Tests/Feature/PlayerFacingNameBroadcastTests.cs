@@ -7,6 +7,35 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerFacingNameBroadcastTests
 {
     [Test]
+    public void CommsChannel_UsesOneCommsLabelWithoutExposingPlayerNames()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Communication.cs"));
+        var normalizedSource = source.Replace("\r\n", "\n");
+
+        source.Should().Contain("private const int PartyChatChannelNameStrRef = 66755;");
+        source.Should().Contain("private const string CommsChannelName = \"Comms\";");
+        var moduleEnterHandlerIndex = normalizedSource.IndexOf("[NWNEventHandler(ScriptName.OnModuleEnter)]", StringComparison.Ordinal);
+        var applyChannelNameIndex = normalizedSource.IndexOf("public static void ApplyCommsChannelName()", StringComparison.Ordinal);
+        var applyTlkOverrideIndex = normalizedSource.IndexOf(
+            "PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);",
+            StringComparison.Ordinal);
+        moduleEnterHandlerIndex.Should().BeGreaterThanOrEqualTo(0);
+        applyChannelNameIndex.Should().BeGreaterThan(moduleEnterHandlerIndex);
+        applyTlkOverrideIndex.Should().BeGreaterThan(applyChannelNameIndex);
+        normalizedSource.Should().Contain("var player = GetEnteringObject();");
+        normalizedSource.Should().Contain("if (!GetIsPC(player))");
+
+        source.Should().NotContain("finalMessage.Append(\"[Comms] \");");
+        source.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
+        source.Should().NotContain("ChatChannel.DMTalk");
+    }
+
+    [Test]
     public void CombatAndSpaceBroadcasts_DoNotInterpolateRawPlayerNames()
     {
         var root = FindRepositoryRoot();
@@ -121,6 +150,12 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("DB.Get<PlayerShip>(dbPlayer.ActiveShipId)");
         communicationSource.Should().Contain("distanceCheck = 20.0f;");
         communicationSource.Should().Contain("var distance = GetDistanceBetween(sender, target);");
+        normalizedCommunicationSource.Should().Contain(
+            "if (GetArea(target) == GetArea(sender) &&\n" +
+            "                        distance <= distanceCheck &&\n" +
+            "                        !recipients.Contains(target))");
+        communicationSource.Should().NotContain("channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)");
+        communicationSource.Should().Contain("Comms scope applies only to the party");
         communicationSource.Should().Contain("else if (channel == ChatChannel.PlayerWhisper)");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Whisper] \");");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Holonet] \");");

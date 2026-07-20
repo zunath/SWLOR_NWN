@@ -21,11 +21,14 @@ namespace SWLOR.Game.Server.Service
         public const string EventCommsAreaVariable = "COMMS_EVENT_AREA";
         private const string DisabledChannelMessage = "This chat channel is disabled.";
         private const string CommsOutOfRangeMessage = "Your Comms message could not reach one or more out-of-range receivers.";
-        // Base-game dialog.tlk 66755 is the PlayerParty chat-channel label. Comms must still
-        // use the native Party packet so NWNX_Rename can apply observer-specific player names,
-        // but the player-facing channel is Comms rather than Party.
+        // Base-game dialog.tlk 66755 is the PlayerParty chat-input label, while 10303 is the
+        // prefix rendered on received PlayerParty messages. Comms must still use the native
+        // Party packet so NWNX_Rename can apply observer-specific player names, but neither
+        // player-facing chat label should expose the underlying Party transport.
         private const int PartyChatChannelNameStrRef = 66755;
+        private const int PartyChatMessagePrefixStrRef = 10303;
         private const string CommsChannelName = "Comms";
+        private const string CommsMessagePrefix = "[Comms] ";
 
         public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
         public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
@@ -56,6 +59,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);
+            PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
         }
 
         /// <summary>

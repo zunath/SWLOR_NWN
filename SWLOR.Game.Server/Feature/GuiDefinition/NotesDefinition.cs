@@ -31,20 +31,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnCloseWindow())
 
-                // The categories tab replaces the whole window layout rather than being swapped into
-                // a nested placeholder group. A group sizes itself to its content, so hosting the
-                // tabs inside one pinned the panes to a fixed width and the window stopped filling
-                // horizontally. The window root has no such limit. Both layouts are registered here
-                // at boot, so their buttons keep working after a swap.
+                // Both tabs are registered as partial views and swapped into the window root, so
+                // they render through the same clean group -> column path. The base window layout
+                // that GuiWindowBuilder generates wraps its content in an extra row, and that
+                // wrapper stops the two side-by-side panes from filling the window width. A swapped
+                // partial has no such wrapper, which is why the categories tab always filled while
+                // the notes tab, when left as the base layout, did not.
+                .DefinePartialView(NotesViewModel.NotesTabPartial, BuildNotesTab)
                 .DefinePartialView(NotesViewModel.CategoriesTabPartial, BuildCategoriesTab)
 
-                .AddColumn(col =>
-                {
-                    AddTabRow(col);
-                    AddNotesContent(col);
-                });
+                // The base layout is a bare placeholder; Initialize swaps the notes tab in over it.
+                .AddColumn(col => col.AddRow(row => row.AddSpacer()));
 
             return _builder.Build();
+        }
+
+        private static void BuildNotesTab(GuiGroup<NotesViewModel> group)
+        {
+            group.AddColumn(col =>
+            {
+                AddTabRow(col);
+                AddNotesContent(col);
+            });
         }
 
         /// <summary>

@@ -81,9 +81,13 @@ public class NotesWindowTests
     {
         var definition = ReadDefinition();
 
+        // Both tabs are partial views swapped into the window root. Rendering the notes tab as the
+        // base window layout instead left its two panes unable to fill the window, because the
+        // builder wraps the base layout in an extra row the swapped partials do not get.
+        definition.Should().Contain($"DefinePartialView(NotesViewModel.{nameof(NotesViewModel.NotesTabPartial)}");
         definition.Should().Contain($"DefinePartialView(NotesViewModel.{nameof(NotesViewModel.CategoriesTabPartial)}");
 
-        // The tab selector is repeated in both layouts so it survives a root swap.
+        // The tab selector is repeated in both layouts so it survives a swap.
         Regex.Matches(definition, @"AddTabRow\(col\);").Count.Should().Be(2);
 
         definition.Should().Contain("model => model.IsNotesTabToggled");
@@ -100,8 +104,8 @@ public class NotesWindowTests
         var definition = ReadDefinition();
         var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
 
-        // A nested group sizes itself to its content, so the window stopped filling horizontally
-        // when the tabs lived in one. Nothing may be swapped into a placeholder group.
+        // Both tabs swap into the window root, never into a nested placeholder group - a group sizes
+        // itself to its content and would pin the panes to a fixed width.
         Regex.Matches(definition, @"AddPartialView\(").Count
             .Should()
             .Be(0, "tab content is swapped at the window root, not into a nested group");

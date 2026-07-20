@@ -10,9 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, GuiPayloadBase>
     {
+        public const string NotesTabPartial = "NOTES_TAB_VIEW";
         public const string CategoriesTabPartial = "NOTES_CATEGORIES_TAB_VIEW";
         private const string MainWindowElement = "_window_";
-        private const string MainWindowPartial = "%%WINDOW_MAIN%%";
 
         private const string UntitledNoteName = "Untitled Note";
 
@@ -265,12 +265,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadCategories();
             LoadNotesList();
 
-            // Deliberately not swapping the layout here. The base Bind has already applied the main
-            // view, which is the notes tab, and re-applying a layout is what stops NUI reflowing the
-            // window on resize (see the note above Nui.Width: the UI cannot reflow once the layout
-            // has been set up). Only an actual tab change swaps.
-            IsNotesTabToggled = true;
-            IsCategoriesTabToggled = false;
+            // The base window layout is just a placeholder; swap the notes tab partial in over it.
+            ShowNotesTab();
 
             WatchOnClient(model => model.ActiveNoteName);
             WatchOnClient(model => model.ActiveNoteText);
@@ -608,15 +604,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Swaps the whole window layout for the active tab. Only called on an actual tab change -
-        /// re-applying a layout costs the window its ability to reflow on resize, so the tab the
-        /// window opens on is left as the layout NUI built it.
+        /// Swaps the active tab's partial into the window root. Both tabs are partial views so they
+        /// render through the same wrapper-free path; the base window layout is only a placeholder.
         /// </summary>
         private void RestoreSelectedTabPartial()
         {
             ChangePartialView(
                 MainWindowElement,
-                IsCategoriesTabToggled ? CategoriesTabPartial : MainWindowPartial);
+                IsCategoriesTabToggled ? CategoriesTabPartial : NotesTabPartial);
 
             // Re-rendering rebuilds that tab's lists and combos, which come back empty until their
             // bound values are pushed again.

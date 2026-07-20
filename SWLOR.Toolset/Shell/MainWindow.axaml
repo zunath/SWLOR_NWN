@@ -1,10 +1,22 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:shell="using:SWLOR.Toolset.Shell"
+        mc:Ignorable="d"
         x:Class="SWLOR.Toolset.Shell.MainWindow"
+        x:DataType="shell:ShellViewModel"
         Title="SWLOR Toolset"
         Width="1280" Height="800"
         WindowStartupLocation="CenterScreen">
-    <TextBlock Text="SWLOR Toolset"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center" />
+  <Grid RowDefinitions="*,Auto">
+    <DockControl Grid.Row="0" Layout="{Binding Layout}" Margin="4" />
+    <Border Grid.Row="1"
+            Padding="8,4"
+            Background="{DynamicResource DockThemeBackgroundLowBrush}"
+            BorderBrush="{DynamicResource DockThemeBorderMidBrush}"
+            BorderThickness="0,1,0,0">
+      <TextBlock Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" />
+    </Border>
+  </Grid>
 </Window>

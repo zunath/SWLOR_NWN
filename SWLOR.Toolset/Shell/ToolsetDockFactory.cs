@@ -1,0 +1,131 @@
+using Dock.Avalonia.Controls;
+using Dock.Model.Controls;
+using Dock.Model.Core;
+using Dock.Model.Mvvm;
+using Dock.Model.Mvvm.Controls;
+using SWLOR.Toolset.Shell.Panels;
+
+namespace SWLOR.Toolset.Shell
+{
+    /// <summary>
+    /// Builds the fixed WP2.6 dock layout: Search across the top, Module Explorer / Properties
+    /// split left-right in the middle, Output across the bottom. All four tool view models are
+    /// DI-resolved singletons handed in rather than constructed here, so the same instances the
+    /// rest of the app (startup orchestration, the file watcher log) talk to are the ones docked.
+    /// </summary>
+    public sealed class ToolsetDockFactory : Factory
+    {
+        private readonly ModuleExplorerViewModel _explorer;
+        private readonly PropertiesViewModel _properties;
+        private readonly SearchViewModel _search;
+        private readonly OutputViewModel _output;
+        private IRootDock? _rootDock;
+
+        public ToolsetDockFactory(
+            ModuleExplorerViewModel explorer,
+            PropertiesViewModel properties,
+            SearchViewModel search,
+            OutputViewModel output)
+        {
+            _explorer = explorer;
+            _properties = properties;
+            _search = search;
+            _output = output;
+        }
+
+        public override IRootDock CreateLayout()
+        {
+            var explorerDock = new ToolDock
+            {
+                Id = "ExplorerDock",
+                ActiveDockable = _explorer,
+                VisibleDockables = CreateList<IDockable>(_explorer),
+                Alignment = Alignment.Left,
+                Proportion = 0.28
+            };
+
+            var propertiesDock = new ToolDock
+            {
+                Id = "PropertiesDock",
+                ActiveDockable = _properties,
+                VisibleDockables = CreateList<IDockable>(_properties),
+                Alignment = Alignment.Right,
+                Proportion = 0.72
+            };
+
+            var middleLayout = new ProportionalDock
+            {
+                Id = "MiddleLayout",
+                Orientation = Orientation.Horizontal,
+                Proportion = 0.72,
+                VisibleDockables = CreateList<IDockable>(
+                    explorerDock,
+                    new ProportionalDockSplitter(),
+                    propertiesDock)
+            };
+
+            var searchDock = new ToolDock
+            {
+                Id = "SearchDock",
+                ActiveDockable = _search,
+                VisibleDockables = CreateList<IDockable>(_search),
+                Alignment = Alignment.Top,
+                Proportion = 0.08
+            };
+
+            var outputDock = new ToolDock
+            {
+                Id = "OutputDock",
+                ActiveDockable = _output,
+                VisibleDockables = CreateList<IDockable>(_output),
+                Alignment = Alignment.Bottom,
+                Proportion = 0.20
+            };
+
+            var mainLayout = new ProportionalDock
+            {
+                Id = "MainLayout",
+                Orientation = Orientation.Vertical,
+                VisibleDockables = CreateList<IDockable>(
+                    searchDock,
+                    new ProportionalDockSplitter(),
+                    middleLayout,
+                    new ProportionalDockSplitter(),
+                    outputDock)
+            };
+
+            var rootDock = CreateRootDock();
+            rootDock.Id = "Root";
+            rootDock.IsCollapsable = false;
+            rootDock.ActiveDockable = mainLayout;
+            rootDock.DefaultDockable = mainLayout;
+            rootDock.VisibleDockables = CreateList<IDockable>(mainLayout);
+
+            _rootDock = rootDock;
+            return rootDock;
+        }
+
+        public override void InitLayout(IDockable layout)
+        {
+            ContextLocator = new Dictionary<string, Func<object?>>
+            {
+                [_explorer.Id] = () => _explorer,
+                [_properties.Id] = () => _properties,
+                [_search.Id] = () => _search,
+                [_output.Id] = () => _output
+            };
+
+            DockableLocator = new Dictionary<string, Func<IDockable?>>
+            {
+                ["Root"] = () => _rootDock
+            };
+
+            HostWindowLocator = new Dictionary<string, Func<IHostWindow?>>
+            {
+                [nameof(IDockWindow)] = () => new HostWindow()
+            };
+
+            base.InitLayout(layout);
+        }
+    }
+}

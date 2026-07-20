@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="SWLOR.Toolset.Shell.Views.ModuleExplorerView"
+             x:DataType="panels:ModuleExplorerViewModel">
+  <Grid ColumnDefinitions="160,*">
+    <ListBox Grid.Column="0"
+             ItemsSource="{Binding Categories}"
+             SelectedItem="{Binding SelectedCategory}">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="panels:CategoryNode">
+          <TextBlock Text="{Binding Label}" />
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="Padding" Value="6,4" />
+        </Style>
+      </ListBox.Styles>
+    </ListBox>
+    <GridSplitter Grid.Column="0" Width="1" HorizontalAlignment="Right" Background="Gray" />
+    <ListBox Grid.Column="1"
+             ItemsSource="{Binding Items}"
+             SelectedItem="{Binding SelectedItem}">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="panels:ExplorerItem">
+          <TextBlock Text="{Binding DisplayText}" />
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="Padding" Value="6,2" />
+        </Style>
+      </ListBox.Styles>
+    </ListBox>
+  </Grid>
+</UserControl>

@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             xmlns:workspace="using:SWLOR.Toolset.Domain.Workspace"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="120"
+             x:Class="SWLOR.Toolset.Shell.Views.SearchView"
+             x:DataType="panels:SearchViewModel">
+  <DockPanel>
+    <TextBox DockPanel.Dock="Top"
+             Watermark="Search resref / name / tag..."
+             Text="{Binding Query}"
+             Margin="4" />
+    <ListBox ItemsSource="{Binding Results}"
+             SelectedItem="{Binding SelectedResult}">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="workspace:CatalogSearchResult">
+          <Grid ColumnDefinitions="90,90,200,*">
+            <TextBlock Grid.Column="0" Text="{Binding Entry.ResourceType}" />
+            <TextBlock Grid.Column="1" Text="{Binding Entry.ResRef}" />
+            <TextBlock Grid.Column="2" Text="{Binding Entry.Name}" />
+            <TextBlock Grid.Column="3" Text="{Binding MatchKind}" Opacity="0.6" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </DockPanel>
+</UserControl>

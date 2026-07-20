@@ -159,7 +159,18 @@ done | blocked`.
   NOT added. **Known gap:** IDs passed through helper-method parameters (guild item tasks,
   ~19 fishing points) aren't resolved — acceptable for validation; revisit only if WP3.4
   false-positives it. Missing source root → empty collections + IsSourceScanAvailable=false.
-## WP2.6 — pending — Shell + read-only browser
+## WP2.6 — done — 2026-07-20 — Shell + read-only browser (PHASE 2 COMPLETE)
+- Tier: Mid (Sonnet subagent); controller-verified (130/131 green, exe builds clean).
+- Files: `Domain\Workspace\{ResourceType,ModuleWorkspace,BlueprintCatalog}.cs` (headless,
+  tested — controller deviation from plan which placed these in the app),
+  `Tests\WorkspaceTests.cs`; app: DI in App.axaml.cs, `Settings\ToolsetSettings`,
+  `Workspace\{OutputLogService,WorkspaceContext,ModuleFileWatcher}`, Dock.Avalonia shell
+  (`ToolsetDockFactory`, ShellViewModel, 4 panel VMs + views, ViewLocator, status bar).
+- Packages: Dock.Avalonia/Themes.Fluent/Model.Mvvm 11.3.12.1 (12.x needs Avalonia 12 — rejected).
+- **Measured on real launch:** module open 0ms; catalog build 2259ms for 16,686 entries
+  (counts verified exact). Explorer uses two-level virtualized lists (Avalonia TreeView won't
+  virtualize 8341-entry nodes). Game-data services registered only when repo paths resolve;
+  optional ctor params degrade to raw ids. Read-only guarantee held (settings.json only write).
 ## WP3.1 — pending — Editor schema infrastructure + UTC editor
 ## WP3.2 — pending — Remaining blueprint schemas
 ## WP3.3 — pending — Instance editing

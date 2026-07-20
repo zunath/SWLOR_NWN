@@ -93,6 +93,39 @@ public class NotesWindowTests
     }
 
     [Test]
+    public void ReservedCategoryNames_MatchTheSyntheticComboOptions()
+    {
+        // A real category sharing a synthetic option's label renders as two identical entries with
+        // different meanings, so creation must reject those names in any casing or padding.
+        Notes.IsReservedCategoryName(Notes.UncategorizedLabel).Should().BeTrue();
+        Notes.IsReservedCategoryName(Notes.AllCategoriesLabel).Should().BeTrue();
+        Notes.IsReservedCategoryName("uncategorized").Should().BeTrue();
+        Notes.IsReservedCategoryName("  <ALL CATEGORIES>  ").Should().BeTrue();
+
+        Notes.IsReservedCategoryName("Crafting").Should().BeFalse();
+        Notes.IsReservedCategoryName("Uncategorized Stuff").Should().BeFalse();
+        Notes.IsReservedCategoryName(string.Empty).Should().BeFalse();
+        Notes.IsReservedCategoryName(null).Should().BeFalse();
+    }
+
+    [Test]
+    public void ReloadPaths_FlushPendingEditsInsteadOfDiscardingThem()
+    {
+        // Every search/filter/paging/category reload funnels through LoadNotesList, which rebuilds
+        // the editor. It must write pending edits out first, and the category handlers must flush
+        // before they reorder the positional combo indices the editor is bound to.
+        var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
+
+        viewModel.Should().Contain("private void LoadNotesList()");
+        viewModel.Should().MatchRegex(@"private void LoadNotesList\(\)\s*\{[^}]*?SaveDirtyNote\(\);");
+
+        viewModel.Should().Contain("public Action OnCloseWindow() => SaveDirtyNote;");
+
+        // Deleting a note must not resurrect it via the flush on the reload that follows.
+        viewModel.Should().MatchRegex(@"IsSaveEnabled = false;\s*SelectedNoteIndex = -1;\s*DB\.Delete<PlayerNote>");
+    }
+
+    [Test]
     public void NoteQueries_PageToTheirOwnCapRatherThanTheDefaultRowLimit()
     {
         // An unpaged DBQuery falls back to a 50 record limit, which is below the note cap. Every

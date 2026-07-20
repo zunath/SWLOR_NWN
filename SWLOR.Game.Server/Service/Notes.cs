@@ -14,6 +14,17 @@ namespace SWLOR.Game.Server.Service
         public const int MaxCategoryNameLength = 32;
         public const int EntriesPerPage = 20;
 
+        /// <summary>
+        /// Label for the synthetic "no category assigned" option prepended to the note editor's
+        /// category combo box.
+        /// </summary>
+        public const string UncategorizedLabel = "Uncategorized";
+
+        /// <summary>
+        /// Label for the synthetic "no filter" option prepended to the category filter combo box.
+        /// </summary>
+        public const string AllCategoriesLabel = "<All Categories>";
+
         private static readonly GuiColor _usageFreeColor = new(90, 150, 95);
         private static readonly GuiColor _usageFullColor = new(200, 100, 70);
 
@@ -62,6 +73,19 @@ namespace SWLOR.Game.Server.Service
             return count >= maximum
                 ? 1f
                 : (float)count / maximum;
+        }
+
+        /// <summary>
+        /// Determines whether a player-supplied category name collides with one of the synthetic
+        /// combo box options. Such a category would render as a second, visually identical entry
+        /// meaning something entirely different, so these names are rejected on creation.
+        /// </summary>
+        public static bool IsReservedCategoryName(string name)
+        {
+            var trimmed = (name ?? string.Empty).Trim();
+
+            return string.Equals(trimmed, UncategorizedLabel, StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(trimmed, AllCategoriesLabel, StringComparison.OrdinalIgnoreCase);
         }
 
         public static List<PlayerNoteCategory> GetCategories(string playerId)

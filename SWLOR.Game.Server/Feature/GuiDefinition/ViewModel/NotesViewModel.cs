@@ -14,8 +14,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string NotesTabPartial = "NOTES_TAB_VIEW";
         public const string CategoriesTabPartial = "NOTES_CATEGORIES_TAB_VIEW";
 
-        private const string UncategorizedName = "Uncategorized";
-        private const string AllCategoriesName = "<All Categories>";
         private const string UntitledNoteName = "Untitled Note";
 
         private readonly List<string> _pageNoteIds = new();
@@ -309,11 +307,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var categoryToggled = new GuiBindingList<bool>();
             var filterOptions = new GuiBindingList<GuiComboEntry>
             {
-                new(AllCategoriesName, 0)
+                new(Notes.AllCategoriesLabel, 0)
             };
             var noteOptions = new GuiBindingList<GuiComboEntry>
             {
-                new(UncategorizedName, 0)
+                new(Notes.UncategorizedLabel, 0)
             };
 
             for (var index = 0; index < _categories.Count; index++)
@@ -342,6 +340,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadNotesList()
         {
+            // Rebuilding the list clears the editor, so anything the player typed has to be written
+            // out first. Every reload path (search, filter, paging, new note, category changes) goes
+            // through here, and the window already auto-saves on close - silently discarding edits
+            // because the player changed page would be inconsistent with that.
+            SaveDirtyNote();
+
             var notes = GetAllNotes();
             _totalNoteCount = notes.Count;
 
@@ -498,6 +502,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var dbNote = DB.Get<PlayerNote>(noteId);
 
+            // The note can be gone if it was deleted out from under the editor.
+            if (dbNote == null)
+                return;
+
             dbNote.Name = string.IsNullOrWhiteSpace(ActiveNoteName)
                 ? UntitledNoteName
                 : ActiveNoteName.Trim();
@@ -584,15 +592,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RestoreSelectedTabPartial();
         }
 
-        public Action OnCloseWindow() => SaveNoteOnClose;
+        public Action OnCloseWindow() => SaveDirtyNote;
 
-        private void SaveNoteOnClose()
+        /// <summary>
+        /// Flushes pending editor changes to the database without rebuilding the list. Used both on
+        /// window close and ahead of any reload which would otherwise discard them.
+        /// </summary>
+        private void SaveDirtyNote()
         {
-            if (SelectedNoteIndex <= -1 || !IsSaveEnabled)
+            if (SelectedNoteIndex <= -1 || SelectedNoteIndex >= _pageNoteIds.Count || !IsSaveEnabled)
                 return;
 
-            // Unlike OnClickSave this must not rebuild the list - the window is going away.
             ApplyEditsToNote(_pageNoteIds[SelectedNoteIndex]);
+            IsSaveEnabled = false;
         }
 
         public Action OnClickNotesTab() => ShowNotesTab;
@@ -665,6 +677,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"Are you sure you want to delete the note '{noteName}'?", () =>
             {
+                // Drop any pending edits first - the reload below flushes dirty notes, and the
+                // player explicitly asked for this one to go away.
+                IsSaveEnabled = false;
+                SelectedNoteIndex = -1;
+
                 DB.Delete<PlayerNote>(noteId);
 
                 LoadNotesList();
@@ -718,11 +735,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (name.Length > Notes.MaxCategoryNameLength)
                 name = name[..Notes.MaxCategoryNameLength];
 
+            // The combo boxes prepend synthetic entries for "no category" and "no filter". A real
+            // category sharing either label would render as two identical options with different
+            // meanings, so those names are reserved.
+            if (Notes.IsReservedCategoryName(name))
+            {
+                SendMessageToPC(Player, ColorToken.Red($"'{name}' is a reserved name. Please choose another."));
+                return;
+            }
+
             if (_categories.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)))
             {
                 SendMessageToPC(Player, ColorToken.Red($"A category named '{name}' already exists."));
                 return;
             }
+
+            // Flush before the category list changes: the editor's combo index is positional, so
+            // saving after a re-sort would file the note under the wrong category.
+            SaveDirtyNote();
 
             var playerId = GetObjectUUID(Player);
             Notes.CreateCategory(playerId, name);
@@ -741,6 +771,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"Are you sure you want to delete the category '{category.Name}'? Any notes using it will become uncategorized.", () =>
             {
+                // Flush before the category list changes: the editor's combo index is positional, so
+                // saving after the deletion shifts indices would file the note under the wrong one.
+                SaveDirtyNote();
+
                 var playerId = GetObjectUUID(Player);
                 Notes.DeleteCategory(playerId, category.Id);
 

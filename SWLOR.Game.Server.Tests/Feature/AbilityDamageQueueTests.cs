@@ -63,6 +63,41 @@ public class AbilityDamageQueueTests
     }
 
     [Test]
+    public void FailedAbilityImpacts_AbortTrackedStateForCastAndQueuedPaths()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs")).Replace("\r\n", "\n");
+        var castImpactBody = usePerkFeatSource.Substring(
+            usePerkFeatSource.IndexOf("private static void ExecuteAbilityImpact(", StringComparison.Ordinal),
+            usePerkFeatSource.IndexOf("/// Handles casting abilities.", StringComparison.Ordinal) -
+            usePerkFeatSource.IndexOf("private static void ExecuteAbilityImpact(", StringComparison.Ordinal));
+        var queuedImpactBody = usePerkFeatSource.Substring(
+            usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal),
+            usePerkFeatSource.IndexOf("/// Whenever a player enters the server", StringComparison.Ordinal) -
+            usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal));
+
+        abilitySource.Should().Contain("public static void AbortAbilityImpact(uint activator)");
+        abilitySource.Should().Contain("_trackedAbilityImpacts.Remove(activator);");
+        castImpactBody.Should().Contain("var impactEnded = false;");
+        castImpactBody.Should().Contain("impactEnded = true;");
+        castImpactBody.Should().Contain("if (!impactEnded)");
+        castImpactBody.Should().Contain("Ability.AbortAbilityImpact(activator);");
+        queuedImpactBody.Should().Contain("var impactEnded = false;");
+        queuedImpactBody.Should().Contain("impactEnded = true;");
+        queuedImpactBody.Should().Contain("if (!impactEnded)");
+        queuedImpactBody.Should().Contain("Ability.AbortAbilityImpact(activator);");
+    }
+
+    [Test]
     public void TwinFangFlurryTriggeredDamageDuringTrackedAbilityImpact_QueuesWithAbilityDamageEffects()
     {
         var root = FindRepositoryRoot();

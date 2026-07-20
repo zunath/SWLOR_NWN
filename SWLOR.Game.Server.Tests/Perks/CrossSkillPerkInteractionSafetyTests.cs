@@ -222,12 +222,8 @@ public class CrossSkillPerkInteractionSafetyTests
         StatValue(highGuard, StatType.CostlyAbilityDamageMinimumStaminaCost).Should().Be(8);
         StatValue(highGuard, StatType.CostlyAbilityUsedEvasionMinimumStaminaCost).Should().Be(8);
         StatValue(restorationStrike, StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost).Should().Be(8);
-        highGuard.StatBonuses.Should().NotContain(
-            bonus => bonus.Stat == StatType.CostlyAbilityHitMinimumStaminaCost,
-            "High Guard's threshold must not add to Restoration Strike or Crippling Defense thresholds");
-        restorationStrike.StatBonuses.Should().NotContain(
-            bonus => bonus.Stat == StatType.CostlyAbilityHitMinimumStaminaCost,
-            "each costly-ability rider requires its own non-additive threshold channel");
+        Enum.IsDefined(typeof(StatType), 778).Should().BeFalse(
+            "the superseded shared costly-ability threshold must not remain as usable stat API");
 
         var root = FindRepositoryRoot();
         var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
@@ -264,8 +260,15 @@ public class CrossSkillPerkInteractionSafetyTests
         staminaCost.Should().Contain("StatType.HostileAbilityStaminaCostFlatAdjustment");
 
         var hostileEvasion = ExtractMethod(combat, "private static void ApplyHostileAbilityUsedEvasion(");
-        hostileEvasion.Should().Contain("requiredSkillType != SkillType.Invalid",
+        hostileEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)",
             "an omitted selector makes Vigor Stance trigger from every hostile combat skill");
+        var costlyEvasion = ExtractMethod(combat, "private static void ApplyCostlyAbilityUsedEvasion(");
+        costlyEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
+        var costlyDamage = ExtractMethod(combat, "public static int GetCostlyAbilityDamageBonus(");
+        costlyDamage.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
+        var globalSkillMatch = ExtractMethod(combat, "private static bool SkillTypeMatchesOrGlobal(");
+        globalSkillMatch.Should().Contain(
+            "requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType)");
 
         combat.Should().Contain("Dictionary<(uint Creature, AbilityDetail Ability), AbilityStaminaCostState>",
             "cost-gated riders must bind the paid STM to the exact ability instead of a later ability");

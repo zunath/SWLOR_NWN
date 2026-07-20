@@ -4485,12 +4485,6 @@ namespace SWLOR.Game.Server.Service.StatService
         CostlyAbilityHitStaminaRestoreSkillType = 777,
 
         /// <summary>
-        /// Minimum Stamina cost required for CostlyAbilityHitStaminaRestore.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        CostlyAbilityHitMinimumStaminaCost = 778,
-
-        /// <summary>
         /// Stamina restored when a costly matching hostile ability successfully hits.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]

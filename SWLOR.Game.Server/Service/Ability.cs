@@ -139,6 +139,14 @@ namespace SWLOR.Game.Server.Service
             return impact.Summary;
         }
 
+        /// <summary>
+        /// Discards an incomplete tracked impact without applying its queued damage effects.
+        /// </summary>
+        public static void AbortAbilityImpact(uint activator)
+        {
+            _trackedAbilityImpacts.Remove(activator);
+        }
+
         public static bool TryQueueTrackedDamageEffect(uint activator, uint target, int damage, DamageType damageType)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);

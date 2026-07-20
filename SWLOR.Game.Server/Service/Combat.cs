@@ -4458,7 +4458,7 @@ namespace SWLOR.Game.Server.Service
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType));
-            if (requiredSkillType != SkillType.Invalid && !SkillTypeMatches(skillType, requiredSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
                 return;
 
             ApplyAbilityUsedEvasion(
@@ -4484,7 +4484,7 @@ namespace SWLOR.Game.Server.Service
             var minimumCost = Stat.GetStatAdjustment(
                 activator,
                 StatType.CostlyAbilityUsedEvasionMinimumStaminaCost);
-            if ((requiredSkillType != SkillType.Invalid && !SkillTypeMatches(skillType, requiredSkillType)) ||
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
                 minimumCost <= 0 ||
                 costState.Cost < minimumCost)
             {
@@ -4765,7 +4765,7 @@ namespace SWLOR.Game.Server.Service
             var minimumCost = Stat.GetStatAdjustment(
                 activator,
                 StatType.CostlyAbilityDamageMinimumStaminaCost);
-            if ((requiredSkillType != SkillType.Invalid && !SkillTypeMatches(skillType, requiredSkillType)) ||
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
                 minimumCost <= 0 ||
                 costState.Cost < minimumCost)
             {
@@ -5583,7 +5583,7 @@ namespace SWLOR.Game.Server.Service
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 attacker,
                 StatType.AbilityDamageToSourceAppliedStatusTargetSkillType));
-            if (requiredSkillType != SkillType.Invalid && !SkillTypeMatches(skillType, requiredSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
                 return 0;
 
             var category = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
@@ -8723,6 +8723,11 @@ namespace SWLOR.Game.Server.Service
         private static bool SkillTypeMatches(SkillType actualSkillType, SkillType requiredSkillType)
         {
             return requiredSkillType != SkillType.Invalid && actualSkillType == requiredSkillType;
+        }
+
+        private static bool SkillTypeMatchesOrGlobal(SkillType actualSkillType, SkillType requiredSkillType)
+        {
+            return requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType);
         }
 
         private static bool IsWeaponOrForceDamage(SkillType skillType, CombatDamageType damageType)

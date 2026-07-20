@@ -264,12 +264,14 @@ namespace SWLOR.Game.Server.Feature
             AbilityDetail ability,
             Location targetLocation)
         {
+            var impactEnded = false;
             try
             {
                 PlayAbilitySound(activator, ability.ImpactSound);
                 Ability.BeginAbilityImpact(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
+                impactEnded = true;
 
                 Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
                 Combat.ApplyAbilityImpactEffects(activator, summary);
@@ -281,6 +283,11 @@ namespace SWLOR.Game.Server.Feature
             }
             finally
             {
+                if (!impactEnded)
+                {
+                    Ability.AbortAbilityImpact(activator);
+                }
+
                 Combat.CompleteAbilityStaminaCostContext(activator, ability);
             }
         }
@@ -832,11 +839,13 @@ namespace SWLOR.Game.Server.Feature
 
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
             HandleStealthBreaking(activator, abilityDetail);
+            var impactEnded = false;
             try
             {
                 Ability.BeginAbilityImpact(activator, abilityDetail);
                 abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
+                impactEnded = true;
                 Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
                 Combat.ApplyAbilityImpactEffects(activator, summary);
 
@@ -847,6 +856,11 @@ namespace SWLOR.Game.Server.Feature
             }
             finally
             {
+                if (!impactEnded)
+                {
+                    Ability.AbortAbilityImpact(activator);
+                }
+
                 Combat.CompleteAbilityStaminaCostContext(activator, abilityDetail);
                 DeleteLocalString(activator, ActiveAbilityIdName);
                 DeleteLocalInt(activator, ActiveAbilityFeatIdName);

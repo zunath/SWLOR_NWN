@@ -4209,6 +4209,15 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // derivation and _scratch_decor/tilecomp_m1_before32.json /
                 // tilecomp_m1_after32_final.json for the raw measurements this comment summarizes.
                 .SetPieceRoomSupplyScaling()
+                // Hand-built tile-built fcx01 city areas assemble their towers into CONTIGUOUS blocks
+                // (24-48 adjoined tiles spanning several groups at 0.17-0.28 building share, dominated
+                // by same-group self-tiling with corner-agreeing seams -- measured July 2026 street-
+                // canyon pass, _scratch_decor/promenade_benchmark.py over ns_comrcial_ka/
+                // pw_ar_nsshipyard/vrotrnsslums/narshadaar_promi), while isolated-margin stamping
+                // plateaued at 0.145 mean share with blocks capped at single-group footprints. Every
+                // Cobble-district tower group's perimeter is uniformly Cobble-cornered and crosser-
+                // free (probe_handbuilt_seams.py), so seam-verified adjacency is always available.
+                .BuildingBlockContiguity()
                 .SetPiece("Tower00", 3)
                 .SetPiece("Tower01")
                 .SetPiece("Tower02")
@@ -4815,6 +4824,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // mode keeps most of the grid as solid mass between rooms, so its stampable interior
                 // is structurally smaller than the Packed pairing's (0.15 on the base profile).
                 .SetPieceRoomSupplyScaling()
+                // Same contiguous-block declaration as the base FutCity profile (see its own comment):
+                // the Cobble2 district's tower groups (Tower04/Tower06/d_build/d_build02/d_temple)
+                // likewise carry uniformly Cobble2-cornered, crosser-free perimeter faces, and the
+                // hand-built Cobble2-district areas (narshadaar_promi's 48-tile block) show the same
+                // adjoined-block assembly.
+                .BuildingBlockContiguity()
                 .SetPiece("Tower04", 4)
                 .SetPiece("Tower06", 2)
                 .SetPiece("d_build", 2)

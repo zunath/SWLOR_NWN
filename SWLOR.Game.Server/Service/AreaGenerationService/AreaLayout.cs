@@ -472,6 +472,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// SetPieceRoomCornerFloor.
         /// </summary>
         public bool SetPieceRoomSupplyScaling { get; set; }
+
+        /// <summary>
+        /// When true, LayoutGroupStamper's OpenSetPiece placement may stamp a building group adjacent
+        /// to an already-stamped OpenSetPiece footprint (shared edges, seam-verified) so buildings
+        /// assemble into contiguous blocks walling the street network instead of standing isolated --
+        /// see DungeonTilesetProfile.BuildingBlockContiguity for the full rule set and hand-built
+        /// evidence. Default false (fully back-compat, zero extra RNG draws for any composition that
+        /// never declares it) -- stamped from the tileset profile by
+        /// DungeonComposition.BuildLayoutParameters.
+        /// </summary>
+        public bool BuildingBlockContiguity { get; set; }
         /// <summary>Room rectangle bounds in corners (RoomsAndCorridors/Warren chambers/PackedRooms leaves).</summary>
         public int MinRoomCornerSize { get; set; } = 3;
         public int MaxRoomCornerSize { get; set; } = 7;

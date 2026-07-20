@@ -355,7 +355,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             var areaTiles = parameters.Width * parameters.Height;
             if (areaTiles <= baselineTiles) return configuredMax;
 
-            var scale = (double)areaTiles / baselineTiles;
+            // Contiguous-block compositions double the attempt budget on top of the area scale:
+            // adjacency unlocks sites the isolated-margin rule physically could not host (each stamp
+            // no longer consumes its own exclusive ring), so the per-area site ceiling roughly
+            // doubles -- and Stamp's own break-on-first-failure still stops early wherever the real
+            // ceiling is lower, so an over-request stays harmless exactly as documented above.
+            // Deliberately NOT applied at or below the 20x20 tuning baseline (same guard as the area
+            // scale itself): the per-tileset budgets AND the dressing-density gates are both tuned
+            // against 20x20 evidence, and doubling there pushed building share past what the
+            // baseline-size dressing pools can dress to the hand-built density band.
+            var contiguityScale = parameters.BuildingBlockContiguity ? 2.0 : 1.0;
+            var scale = (double)areaTiles / baselineTiles * contiguityScale;
             var scaled = (int)Math.Ceiling(configuredMax * scale);
             return Math.Max(configuredMax, scaled);
         }
@@ -1816,29 +1826,57 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             Shuffle(siteCandidates, random);
 
-            // Two-pass preference: on a road-declaring composition (LayoutRoadCarver.CarveRoads has
-            // already run -- see MacroLayoutGenerator.Generate's ordering), prefer the first valid site
-            // whose footprint fronts an already-carved Road lane (roadAdjacent -- see
+            // Tiered preference: on a road-declaring composition (LayoutRoadCarver.CarveRoads has
+            // already run -- see MacroLayoutGenerator.Generate's ordering), prefer a valid site whose
+            // footprint fronts an already-carved Road lane (roadAdjacent -- see
             // IsOpenSetPieceSiteValid), matching the hand-built fcx01 pattern of buildings fronting
-            // streets. Falls back to the first valid site of ANY kind when no road-adjacent site exists
-            // for this group (e.g. RoadCrosser unset, so roadAdjacent is always false and this degrades
-            // to the original first-valid-site behavior with zero extra RNG draws -- every non-city
-            // tileset is unaffected). A building that lands via the fallback gets a connector spur
-            // afterward -- see LayoutRoadCarver.CarveSpurs.
+            // streets. On a contiguous-block composition (see MacroLayoutParameters.
+            // BuildingBlockContiguity) the preference is additionally scored on whether the footprint
+            // ADJOINS an already-stamped building (buildingAdjacent): street-fronting AND
+            // block-forming first (canyon walls along streets, the hand-built promenade-family
+            // pattern), then street-fronting, then block-forming, then free-standing. With the knob
+            // off, buildingAdjacent is always false and this reduces exactly to the original two-pass
+            // behavior (commit on first road-adjacent site, else first valid site of any kind) with
+            // zero extra RNG draws -- every non-city tileset is unaffected. A building that lands
+            // without road frontage gets a connector spur afterward -- see LayoutRoadCarver.CarveSpurs.
+            // Inert at or below the 20x20 tuning baseline, exactly like SetPieceRoomSupplyScaling
+            // and EffectiveMaxCount's area scale (see DungeonTilesetProfile.BuildingBlockContiguity):
+            // baseline-size compositions keep the pre-mechanism placement byte-for-byte -- their
+            // budgets AND the urban dressing-density gates are tuned against 20x20 evidence, and
+            // block assembly there measurably starved the street-margin dressing pools (packed20
+            // realized density 0.92-1.14 per total tile vs the 1.2-1.35 hand-built band).
+            HashSet<(int X, int Y)> stampedCells = null;
+            if (parameters.BuildingBlockContiguity &&
+                parameters.Width * parameters.Height > LayoutParameterConstraints.RoomSupplyBaselineTiles)
+            {
+                stampedCells = new HashSet<(int X, int Y)>();
+                foreach (var stampedFootprint in layout.StampedOpenSetPieceFootprints)
+                foreach (var cell in stampedFootprint)
+                    stampedCells.Add(cell);
+            }
+
+            var topScore = stampedCells != null ? 3 : 2;
+            var bestScore = -1;
             (LayoutRoom Room, List<(int X, int Y)> Footprint, (int X, int Y)? RelocatedCenter)? fallback = null;
 
             foreach (var (room, anchor) in siteCandidates)
             {
-                if (!IsOpenSetPieceSiteValid(layout, parameters, room, group, anchor, out var footprint, out var relocatedCenter, out var roadAdjacent))
+                if (!IsOpenSetPieceSiteValid(layout, parameters, room, classified, anchor, stampedCells,
+                        out var footprint, out var relocatedCenter, out var roadAdjacent, out var buildingAdjacent))
                     continue;
 
-                if (roadAdjacent)
+                var score = (roadAdjacent ? 2 : 0) + (buildingAdjacent ? 1 : 0);
+                if (score == topScore)
                 {
                     CommitOpenSetPiece(layout, parameters, classified, room, footprint, relocatedCenter);
                     return true;
                 }
 
-                fallback ??= (room, footprint, relocatedCenter);
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    fallback = (room, footprint, relocatedCenter);
+                }
             }
 
             if (fallback.HasValue)
@@ -1899,15 +1937,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// street-fronting site -- see that method's own doc comment. Both are no-ops (roadAdjacent
         /// always false, no extra rejection) when RoadCrosser is empty, so every non-city tileset is
         /// unaffected.
+        ///
+        /// Contiguous-block mode (<paramref name="stampedCells"/> non-null, i.e.
+        /// MacroLayoutParameters.BuildingBlockContiguity): a margin-ring cell occupied by an earlier
+        /// stamped OpenSetPiece footprint no longer rejects the site -- buildings may adjoin into
+        /// blocks -- subject to seam label agreement (StampSeamsAgree), the hand-built block-size cap
+        /// (MaxContiguousBlockTiles), and room-split protection (CountRoomComponents); orthogonal
+        /// contact is reported via <paramref name="buildingAdjacent"/> for TryPlaceOpenSetPiece's
+        /// tiered street-fronting/block-forming preference. With the knob off, stampedCells is null,
+        /// buildingAdjacent is always false, and every check reduces to the pre-mechanism behavior.
         /// </summary>
         private static bool IsOpenSetPieceSiteValid(
-            MacroLayout layout, MacroLayoutParameters parameters, LayoutRoom room, TileGroupRecord group, (int X, int Y) anchor,
-            out List<(int X, int Y)> footprint, out (int X, int Y)? relocatedCenter, out bool roadAdjacent)
+            MacroLayout layout, MacroLayoutParameters parameters, LayoutRoom room, ClassifiedGroup classified, (int X, int Y) anchor,
+            HashSet<(int X, int Y)> stampedCells,
+            out List<(int X, int Y)> footprint, out (int X, int Y)? relocatedCenter, out bool roadAdjacent, out bool buildingAdjacent)
         {
             footprint = null;
             relocatedCenter = null;
             roadAdjacent = false;
+            buildingAdjacent = false;
 
+            var group = classified.Group;
             var roomTiles = new HashSet<(int X, int Y)>(room.Tiles);
             var transitionTiles = new HashSet<(int X, int Y)>(layout.Transitions.Select(t => t.Tile));
             var roadCrosser = parameters.RoadCrosser;
@@ -1924,11 +1974,31 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
             // per-cell check here (transitionTiles/PinnedTiles/CenterTile).
             var extended = new List<(int X, int Y)>();
             var touchesCenter = false;
+            var touchesStamped = false;
             for (var y = anchor.Y - 1; y <= anchor.Y + group.Rows; y++)
             {
                 for (var x = anchor.X - 1; x <= anchor.X + group.Columns; x++)
                 {
                     var cell = (X: x, Y: y);
+
+                    // Contiguous-block mode only (stampedCells non-null): a margin-ring cell already
+                    // occupied by an earlier stamped OpenSetPiece footprint is an allowed seam, not a
+                    // rejection -- the new footprint may adjoin the existing building. The footprint
+                    // itself must never overlap one (that would overwrite stamped tiles). Seam
+                    // compatibility (corner labels + edge crossers) is verified after the loop. Only
+                    // ORTHOGONAL contact (the ring cell shares an edge with the footprint rectangle,
+                    // i.e. it is not one of the 4 diagonal ring corners) counts as block adjacency,
+                    // matching the hand-built contiguity measurement's orthogonal blocks.
+                    if (stampedCells != null && stampedCells.Contains(cell))
+                    {
+                        if (fpSet.Contains(cell)) return false;
+                        touchesStamped = true;
+                        var xInside = x >= anchor.X && x < anchor.X + group.Columns;
+                        var yInside = y >= anchor.Y && y < anchor.Y + group.Rows;
+                        if (xInside || yInside) buildingAdjacent = true;
+                        continue;
+                    }
+
                     if (!roomTiles.Contains(cell)) return false;
                     if (transitionTiles.Contains(cell)) return false;
                     if (layout.PinnedTiles.ContainsKey(cell)) return false;
@@ -1954,6 +2024,38 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     }
                 }
             }
+
+            // Contiguous-block seam verification: every corner label and edge crosser the new stamp
+            // would write onto a boundary shared with an already-stamped building must EQUAL what the
+            // earlier stamp already wrote there -- WriteMember overwrites shared grid slots
+            // last-write-wins, so a disagreeing seam would silently repaint the existing building's
+            // face (and a corner disagreement changes what an unpinned neighbor cell later resolves
+            // against). Hand-built promenade-family blocks satisfy this at every seam (the fcx01
+            // tower groups carry uniform open-cornered, crosser-free perimeter faces), so requiring
+            // agreement never blocks the intended pattern -- it only blocks visually incompatible
+            // pairings (e.g. a solid-cornered platform face against an open-cornered tower face).
+            if (touchesStamped && !StampSeamsAgree(layout, parameters, classified, anchor, stampedCells, fpSet))
+                return false;
+
+            // Contiguous-block size cap: hand-built promenade-family blocks top out at 48 contiguous
+            // building tiles (narshadaar_promi's largest; the Cobble-district areas' largest is 30) --
+            // an uncapped adjacency chain measured merged blocks of 99-126 tiles, walling off far more
+            // of the area than any hand-built reference does. A site whose adjacency would grow the
+            // merged orthogonal block past the hand-built ceiling is rejected, redistributing that
+            // group instance to a different room/block instead.
+            if (buildingAdjacent &&
+                MergedBlockSize(fpSet, stampedCells) > MaxContiguousBlockTiles)
+                return false;
+
+            // Contiguous-block room-split protection: adjoined masses can form L/U shapes that pocket
+            // off part of the room's remaining open interior (the isolated-margin rule guaranteed a
+            // walkable ring around every stamp, so this could not previously happen inside a room).
+            // Reject any site whose consumption would INCREASE the number of orthogonally-connected
+            // components of the room's remaining tiles -- transitions, the (possibly relocated)
+            // center, and street continuity through the room all stay reachable exactly as before.
+            if (stampedCells != null &&
+                CountRoomComponents(room.Tiles, fpSet) > CountRoomComponents(room.Tiles, null))
+                return false;
 
             if (touchesCenter)
             {
@@ -1990,6 +2092,134 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             var footprintSet = new HashSet<(int X, int Y)>(footprint);
             room.Tiles = room.Tiles.Where(t => !footprintSet.Contains(t)).ToList();
+        }
+
+        /// <summary>
+        /// True when every corner label and edge crosser the candidate OpenSetPiece stamp would write
+        /// onto a boundary it shares with an already-stamped OpenSetPiece cell agrees with the value
+        /// already present in the shared grids -- see the call site in IsOpenSetPieceSiteValid for why
+        /// agreement is required. Corner writes are simulated in the same member order
+        /// StampOpenSetPiece/WriteMember would apply them (last-write-wins for a group's own interior
+        /// corners), then every simulated corner that also belongs to a stamped cell outside the
+        /// footprint (orthogonal OR diagonal contact -- a diagonal neighbor shares exactly one corner
+        /// point) is compared against the existing label. Edges are compared per shared orthogonal
+        /// slot. Comparison is case-insensitive (Eq), matching every other label comparison here.
+        /// </summary>
+        private static bool StampSeamsAgree(
+            MacroLayout layout, MacroLayoutParameters parameters, ClassifiedGroup classified,
+            (int X, int Y) anchor, HashSet<(int X, int Y)> stampedCells, HashSet<(int X, int Y)> fpSet)
+        {
+            // Edge agreement on shared orthogonal slots.
+            foreach (var member in classified.Members)
+            {
+                var cell = (X: anchor.X + member.LocalCol, Y: anchor.Y + member.LocalRow);
+                for (var slot = 0; slot < 4; slot++)
+                {
+                    var (dx, dy) = SlotOffsets[slot];
+                    var neighbor = (X: cell.X + dx, Y: cell.Y + dy);
+                    if (fpSet.Contains(neighbor) || !stampedCells.Contains(neighbor)) continue;
+
+                    if (!Eq(member.Tile.GetEdgeAt(0, slot), layout.Crossers.GetEdge(cell.X, cell.Y, slot)))
+                        return false;
+                }
+            }
+
+            // Corner agreement: simulate the stamp's corner writes, then compare every written corner
+            // that any stamped (non-footprint) cell also owns.
+            var writes = new Dictionary<(int X, int Y), string>();
+            foreach (var member in classified.Members)
+            {
+                var cell = (X: anchor.X + member.LocalCol, Y: anchor.Y + member.LocalRow);
+                writes[(cell.X, cell.Y + 1)] = Canonicalize(member.Tile.GetCornerAt(0, CornerSlot.TopLeft), parameters);
+                writes[(cell.X + 1, cell.Y + 1)] = Canonicalize(member.Tile.GetCornerAt(0, CornerSlot.TopRight), parameters);
+                writes[(cell.X + 1, cell.Y)] = Canonicalize(member.Tile.GetCornerAt(0, CornerSlot.BottomRight), parameters);
+                writes[(cell.X, cell.Y)] = Canonicalize(member.Tile.GetCornerAt(0, CornerSlot.BottomLeft), parameters);
+            }
+
+            foreach (var ((cx, cy), label) in writes)
+            {
+                var sharedWithStamped = false;
+                for (var dy = -1; dy <= 0 && !sharedWithStamped; dy++)
+                for (var dx = -1; dx <= 0 && !sharedWithStamped; dx++)
+                {
+                    var owner = (X: cx + dx, Y: cy + dy);
+                    if (!fpSet.Contains(owner) && stampedCells.Contains(owner))
+                        sharedWithStamped = true;
+                }
+
+                if (sharedWithStamped && !Eq(layout.Corners.Labels[cx, cy], label))
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Hand-built promenade-family ceiling on one contiguous building block's tile count -- see
+        /// the cap check in IsOpenSetPieceSiteValid (largest measured hand-built block is 48 tiles,
+        /// _scratch_decor/promenade_benchmark.py; the largest single fcx01 group footprint is 36).
+        /// </summary>
+        private const int MaxContiguousBlockTiles = 48;
+
+        /// <summary>
+        /// Size of the contiguous orthogonal building block the candidate footprint would merge into:
+        /// BFS from the footprint cells over footprint-plus-stamped-building cells. Used by the
+        /// contiguous-block size cap in IsOpenSetPieceSiteValid.
+        /// </summary>
+        private static int MergedBlockSize(HashSet<(int X, int Y)> fpSet, HashSet<(int X, int Y)> stampedCells)
+        {
+            var seen = new HashSet<(int X, int Y)>(fpSet);
+            var queue = new Queue<(int X, int Y)>(fpSet);
+            while (queue.Count > 0)
+            {
+                var (x, y) = queue.Dequeue();
+                foreach (var (dx, dy) in SlotOffsets)
+                {
+                    var next = (X: x + dx, Y: y + dy);
+                    if (!seen.Contains(next) && stampedCells.Contains(next))
+                    {
+                        seen.Add(next);
+                        queue.Enqueue(next);
+                    }
+                }
+            }
+
+            return seen.Count;
+        }
+
+        /// <summary>
+        /// Number of orthogonally-connected components of <paramref name="roomTiles"/> after removing
+        /// <paramref name="exclude"/> (null = remove nothing). Used by the contiguous-block room-split
+        /// check in IsOpenSetPieceSiteValid; room tile lists are small (a corner-size-11 room is 100
+        /// tiles), so a plain BFS per candidate site is cheap.
+        /// </summary>
+        private static int CountRoomComponents(List<(int X, int Y)> roomTiles, HashSet<(int X, int Y)> exclude)
+        {
+            var remaining = new HashSet<(int X, int Y)>(roomTiles);
+            if (exclude != null) remaining.ExceptWith(exclude);
+
+            var seen = new HashSet<(int X, int Y)>();
+            var queue = new Queue<(int X, int Y)>();
+            var components = 0;
+            foreach (var start in remaining)
+            {
+                if (seen.Contains(start)) continue;
+                components++;
+                seen.Add(start);
+                queue.Enqueue(start);
+                while (queue.Count > 0)
+                {
+                    var (x, y) = queue.Dequeue();
+                    foreach (var (dx, dy) in SlotOffsets)
+                    {
+                        var next = (X: x + dx, Y: y + dy);
+                        if (remaining.Contains(next) && seen.Add(next))
+                            queue.Enqueue(next);
+                    }
+                }
+            }
+
+            return components;
         }
 
         // ---------------- shared write helpers ----------------

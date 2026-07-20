@@ -483,6 +483,35 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public bool SetPieceRoomSupplyScaling { get; set; }
 
         /// <summary>
+        /// True for a tileset whose hand-built city references assemble stamped buildings into
+        /// CONTIGUOUS blocks -- multiple tower/platform groups sharing footprint edges so streets read
+        /// as canyons walled by building mass, not isolated towers on an open field. Hand-built
+        /// tile-built fcx01 city areas (ns_comrcial_ka, pw_ar_nsshipyard, vrotrnsslums,
+        /// narshadaar_promi) measure building blocks of 24-48 contiguous tiles (several adjoined
+        /// groups; single largest group footprint is 36) at 0.17-0.28 building-tile share, dominated
+        /// by same-group self-tiling (Tower06 beside Tower06, d_platform2 tiled into mega-platforms)
+        /// with corner-label agreement at every seam.
+        ///
+        /// When declared, LayoutGroupStamper's OpenSetPiece placement (a) accepts a site whose margin
+        /// ring touches an already-stamped OpenSetPiece footprint, PROVIDED every shared corner label
+        /// and edge crosser the new stamp would write agrees with what the earlier stamp already wrote
+        /// (so seams are only ever formed between visually compatible faces), (b) prefers sites that
+        /// front a carved road AND adjoin an existing building (canyon walls along streets) over
+        /// road-only over building-only over free-standing, (c) re-verifies that consuming the site
+        /// does not split the room's remaining open tiles into more disconnected pieces than before,
+        /// and (d) doubles the road-scaled SetPiece attempt budget (adjacency unlocks sites the
+        /// isolated-margin rule physically could not host). Default false -- every composition that
+        /// never declares it keeps byte-identical layouts (RoomSupplyScalingIsolationTests).
+        /// Only meaningful alongside configured SetPieces, and -- like SetPieceRoomSupplyScaling and
+        /// the road-scaled budget -- inert at or below the 20x20 tuning baseline
+        /// (LayoutParameterConstraints.RoomSupplyBaselineTiles): baseline-size compositions keep the
+        /// pre-mechanism placement byte-for-byte, because both the per-tileset budgets and the urban
+        /// dressing-density gates are tuned against 20x20 evidence and block assembly there starved
+        /// the street-margin dressing pools below the hand-built density band.
+        /// </summary>
+        public bool BuildingBlockContiguity { get; set; }
+
+        /// <summary>
         /// Edge-crosser name this tileset's road/route-marking tile family carves (e.g. fcx01's
         /// "Routes") -- see LayoutRoadCarver/RoadVocabularyCheck. Unlike ChannelTerrain/AccentTerrain,
         /// a road never repaints corner terrain: every road cell stays this composition's own
@@ -938,6 +967,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 // LayoutParameterConstraints.ApplySetPieceRoomSupplyScaling once dimensions exist.
                 parameters.SetPieceRoomSupplyScaling = Tileset.SetPieceRoomSupplyScaling;
             }
+            // Contiguous building blocks: only meaningful with configured SetPieces (same gate shape
+            // as the supply-scaling stamp above, minus the corner-floor requirement -- adjacency is a
+            // placement rule, not a room-size need) and inert without a road-declaring composition
+            // (LayoutGroupStamper's OpenSetPiece path is the only consumer).
+            if (Tileset.SetPieces.Count > 0)
+                parameters.BuildingBlockContiguity = Tileset.BuildingBlockContiguity;
             parameters.ExitGroups = Tileset.ExitGroups;
             parameters.DoorSlotCrossers = Tileset.DoorSlotCrossers;
             parameters.ExcludedTiles = Tileset.ExcludedTiles;
@@ -1276,6 +1311,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public DungeonTilesetProfileBuilder SetPieceRoomSupplyScaling()
         {
             _active.SetPieceRoomSupplyScaling = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares that this tileset's stamped buildings assemble into contiguous blocks walling the
+        /// street network, the hand-built city pattern -- see
+        /// DungeonTilesetProfile.BuildingBlockContiguity for the measured evidence and the exact
+        /// placement-rule changes. Declare only alongside configured SetPieces on a road-declaring
+        /// (RoadCrosser) tileset whose building groups carry mutually compatible perimeter corner
+        /// labels (verified for fcx01: every Cobble-district tower group has uniform open-cornered,
+        /// crosser-free perimeter faces, and the Cobble2 district's towers likewise agree with each
+        /// other).
+        /// </summary>
+        public DungeonTilesetProfileBuilder BuildingBlockContiguity()
+        {
+            _active.BuildingBlockContiguity = true;
             return this;
         }
 

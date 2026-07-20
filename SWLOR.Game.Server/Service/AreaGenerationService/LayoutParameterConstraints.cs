@@ -217,9 +217,26 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var minDim = Math.Min(parameters.Width, parameters.Height);
             var (_, sizeCap) = RoomSizeBounds(parameters.Style, parameters.Width, parameters.Height);
 
-            var maxSize = Math.Min(sizeCap, parameters.MaxRoomCornerSize + Math.Max(0, (minDim - 20) / 4));
+            // Contiguous-block (street-canyon) compositions grow the ceiling from a 16-corner origin
+            // instead of the 20-corner tuning baseline, but never past 10 corners: block assembly
+            // needs at least one several-buildings room by the low-20s sizes (measured at 24x24:
+            // origin 20 left the ceiling at 8 corners and building share at 0.12-0.24 vs the
+            // 0.17-0.28 hand-built band; origin 16 raises it to 9 there and the 24x24 10-seed mean to
+            // 0.215 -- the hand-built band mean exactly), while the 10-corner cap keeps 32x32 from
+            // over-densifying (uncapped, origin 16 yields 11-corner rooms there and 0.28-0.36 shares,
+            // past the band ceiling; capped at 10 it reproduces the measured-in-band 0.23-0.28).
+            var growthOrigin = parameters.BuildingBlockContiguity ? 16 : 20;
+            var maxSize = Math.Min(sizeCap, parameters.MaxRoomCornerSize + Math.Max(0, (minDim - growthOrigin) / 4));
+            if (parameters.BuildingBlockContiguity)
+                maxSize = Math.Min(maxSize, Math.Max(10, parameters.MaxRoomCornerSize));
             maxSize = Math.Max(maxSize, parameters.MaxRoomCornerSize);
-            var minSize = Math.Max(parameters.MinRoomCornerSize, maxSize - 4);
+            // Contiguous-block (street-canyon) compositions ride the floor 2 corners under the
+            // ceiling instead of 4: block assembly needs plaza-sized rooms almost everywhere (a
+            // seed whose BSP rolls mostly small rooms measured 0.128 building share vs the 0.17
+            // hand-built band floor -- July 2026 street-canyon pass), and the small/large mix the
+            // wider floor preserves matters less when adjacency lets several groups share one room.
+            var minFloorDrop = parameters.BuildingBlockContiguity ? 3 : 4;
+            var minSize = Math.Max(parameters.MinRoomCornerSize, maxSize - minFloorDrop);
 
             var midpointSize = (minSize + maxSize) / 2;
             var perRoom = (midpointSize + 1) * (midpointSize + 1);

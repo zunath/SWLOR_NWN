@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.NWN.API.Engine;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -24,6 +25,9 @@ namespace SWLOR.Game.Server.Service
     public static class Space
     {
         public const int MaxRegisteredShips = 10;
+        public const int MaxCorvetteHangarShips = 4;
+        public const float CorvetteDockRange = 25f;
+        public const string CorvetteHangarWaypointTag = "CORVETTE_HANGAR";
 
         private static readonly Dictionary<string, ShipDetail> _shipTypes = new();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
@@ -502,25 +506,77 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            if (!TryResolveLaunchLocation(player, dbProperty, out var location))
+                return;
+
             SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", GetLocation(player));
             SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
             EnterSpaceMode(player, dbShip.Id);
 
-            var dbProperty = DB.Get<WorldProperty>(propertyId);
-
-            // The existence of a current location means the ship is currently in space.
-            // Warp the player to the ship's location.
-            // Otherwise the player is docked. Warp the player to the space location of this dock.
-            var propertyLocation = dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition) 
-                ? dbProperty.Positions[PropertyLocationType.CurrentPosition]
-                : dbProperty.Positions[PropertyLocationType.SpacePosition];
-
-            var spaceArea = Area.GetAreaByResref(propertyLocation.AreaResref);
-            var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
-            var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
-
             AssignCommand(player, () => ClearAllActions());
             AssignCommand(player, () => ActionJumpToLocation(location));
+        }
+
+        /// <summary>
+        /// Resolves where a ship should appear when launching via the ship computer.
+        /// Hangared ships launch beside their host capital if that host is currently in space.
+        /// </summary>
+        private static bool TryResolveLaunchLocation(uint player, WorldProperty dbProperty, out Location location)
+        {
+            location = default;
+
+            // Already in space — return to the ship's current position.
+            if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            {
+                location = BuildLocationFromPropertyLocation(dbProperty.Positions[PropertyLocationType.CurrentPosition]);
+                return true;
+            }
+
+            // Docked inside a capital hangar — launch relative to the host if it is in space.
+            if (dbProperty.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dockPosition) &&
+                !string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
+            {
+                var hostProperty = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
+                if (hostProperty != null && hostProperty.PropertyType == PropertyType.Starship)
+                {
+                    var hostShipQuery = new DBQuery<PlayerShip>()
+                        .AddFieldSearch(nameof(PlayerShip.PropertyId), hostProperty.Id, false);
+                    var hostShip = DB.Search(hostShipQuery).FirstOrDefault();
+                    if (hostShip != null && hostShip.Status.CapitalShip)
+                    {
+                        if (!hostProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+                        {
+                            SendMessageToPC(player, ColorToken.Red("The host ship is not in space. You cannot launch from the hangar right now."));
+                            return false;
+                        }
+
+                        var hostPos = hostProperty.Positions[PropertyLocationType.CurrentPosition];
+                        location = Location(
+                            Area.GetAreaByResref(hostPos.AreaResref),
+                            Vector3(hostPos.X + 5f, hostPos.Y + 5f, hostPos.Z),
+                            hostPos.Orientation);
+                        return true;
+                    }
+                }
+            }
+
+            // Standard planet-dock launch.
+            if (!dbProperty.Positions.ContainsKey(PropertyLocationType.SpacePosition))
+            {
+                SendMessageToPC(player, ColorToken.Red("ERROR: Could not locate a launch position. Notify an admin."));
+                return false;
+            }
+
+            location = BuildLocationFromPropertyLocation(dbProperty.Positions[PropertyLocationType.SpacePosition]);
+            return true;
+        }
+
+        private static Location BuildLocationFromPropertyLocation(PropertyLocation propertyLocation)
+        {
+            var spaceArea = Area.GetAreaByResref(propertyLocation.AreaResref);
+            var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
+            return Location(spaceArea, spacePosition, propertyLocation.Orientation);
         }
 
         /// <summary>
@@ -2126,6 +2182,295 @@ namespace SWLOR.Game.Server.Service
             });
 
             SendMessageToPC(creature, ColorToken.Red($"You cannot enter stealth mode in space."));
+        }
+
+        /// <summary>
+        /// Attempts to dock the player's active non-capital ship into the nearest eligible capital hangar.
+        /// Requires EnterProperty on the host and respects <see cref="MaxCorvetteHangarShips"/>.
+        /// </summary>
+        public static void TryDockAtNearestCapitalHangar(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!IsPlayerInSpaceMode(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("You must be piloting a starship in space to dock."));
+                return;
+            }
+
+            if (Enmity.HasEnmity(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("You cannot dock while being targeted."));
+                return;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+            if (dbShip == null)
+            {
+                SendMessageToPC(player, ColorToken.Red("ERROR: Could not locate your active ship."));
+                return;
+            }
+
+            if (dbShip.Status.CapitalShip)
+            {
+                SendMessageToPC(player, ColorToken.Red("Capital ships cannot dock in a hangar."));
+                return;
+            }
+
+            var hostPropertyId = FindNearestEligibleHangarHost(player);
+            if (string.IsNullOrWhiteSpace(hostPropertyId))
+            {
+                SendMessageToPC(player, ColorToken.Red("No eligible capital ship hangar is within range."));
+                return;
+            }
+
+            var hostProperty = DB.Get<WorldProperty>(hostPropertyId);
+            if (hostProperty == null)
+            {
+                SendMessageToPC(player, ColorToken.Red("ERROR: Could not locate the host ship property."));
+                return;
+            }
+
+            if (!hostProperty.ChildPropertyIds.ContainsKey(PropertyChildType.DockedStarship))
+                hostProperty.ChildPropertyIds[PropertyChildType.DockedStarship] = new List<string>();
+
+            var docked = hostProperty.ChildPropertyIds[PropertyChildType.DockedStarship];
+            if (docked.Count >= MaxCorvetteHangarShips && !docked.Contains(dbShip.PropertyId))
+            {
+                SendMessageToPC(player, ColorToken.Red($"This hangar is full ({MaxCorvetteHangarShips} ships maximum)."));
+                return;
+            }
+
+            var hostInstance = Property.GetRegisteredInstance(hostPropertyId);
+            if (hostInstance == null || !GetIsObjectValid(hostInstance.Area))
+            {
+                SendMessageToPC(player, ColorToken.Red("ERROR: Could not locate the host ship's interior."));
+                return;
+            }
+
+            var hangarWaypoint = FindObjectByTagInArea(hostInstance.Area, CorvetteHangarWaypointTag);
+            if (!GetIsObjectValid(hangarWaypoint))
+            {
+                SendMessageToPC(player, ColorToken.Red("ERROR: This capital ship has no hangar bay configured."));
+                return;
+            }
+
+            var hangarLocation = GetLocation(hangarWaypoint);
+            var hangarPosition = GetPositionFromLocation(hangarLocation);
+            var hangarOrientation = GetFacingFromLocation(hangarLocation);
+
+            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+
+            // Must clear CurrentPosition before ExitSpaceMode so a space clone is not spawned.
+            dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
+
+            UnregisterFromHangar(dbProperty);
+            UnregisterFromStarport(dbProperty);
+
+            dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
+            {
+                AreaResref = string.Empty,
+                InstancePropertyId = hostPropertyId,
+                X = hangarPosition.X,
+                Y = hangarPosition.Y,
+                Z = hangarPosition.Z,
+                Orientation = hangarOrientation
+            };
+
+            if (!docked.Contains(dbProperty.Id))
+                docked.Add(dbProperty.Id);
+
+            DB.Set(hostProperty);
+            DB.Set(dbProperty);
+
+            ExitSpaceMode(player);
+
+            AssignCommand(player, () => ClearAllActions());
+            AssignCommand(player, () => ActionJumpToLocation(hangarLocation));
+
+            SendMessageToPC(player, ColorToken.Green($"Docked in {hostProperty.CustomName}'s hangar."));
+            Log.Write(LogGroup.Property, $"Ship '{dbProperty.CustomName}' ({dbProperty.Id}) docked in hangar of '{hostProperty.CustomName}' ({hostProperty.Id}).");
+        }
+
+        /// <summary>
+        /// Finds the nearest capital hangar host the pilot may enter.
+        /// Considers actively piloted capitals and unpiloted capitals still represented by a space clone.
+        /// </summary>
+        private static string FindNearestEligibleHangarHost(uint pilot)
+        {
+            var pilotArea = GetArea(pilot);
+            var nearestPropertyId = string.Empty;
+            var nearestDistance = CorvetteDockRange + 1f;
+
+            void ConsiderCandidate(string propertyId, float distance)
+            {
+                if (string.IsNullOrWhiteSpace(propertyId))
+                    return;
+                if (distance < 0f || distance > CorvetteDockRange || distance >= nearestDistance)
+                    return;
+                if (!Property.HasPropertyPermission(pilot, propertyId, PropertyPermissionType.EnterProperty))
+                    return;
+
+                nearestDistance = distance;
+                nearestPropertyId = propertyId;
+            }
+
+            // Capitals currently being piloted.
+            foreach (var other in _playersInSpace.ToList())
+            {
+                if (other == pilot || !GetIsObjectValid(other) || !GetIsPC(other))
+                    continue;
+
+                if (GetArea(other) != pilotArea)
+                    continue;
+
+                var otherId = GetObjectUUID(other);
+                var dbOther = DB.Get<Player>(otherId);
+                if (dbOther == null || dbOther.ActiveShipId == Guid.Empty.ToString())
+                    continue;
+
+                var otherShip = DB.Get<PlayerShip>(dbOther.ActiveShipId);
+                if (otherShip == null || !otherShip.Status.CapitalShip)
+                    continue;
+
+                ConsiderCandidate(otherShip.PropertyId, GetDistanceBetween(pilot, other));
+            }
+
+            // Capitals left in space without a pilot (NPC ship clone still present).
+            foreach (var (shipId, clone) in _shipClones.ToList())
+            {
+                if (!GetIsObjectValid(clone))
+                    continue;
+                if (GetArea(clone) != pilotArea)
+                    continue;
+
+                var cloneShip = DB.Get<PlayerShip>(shipId);
+                if (cloneShip == null || !cloneShip.Status.CapitalShip)
+                    continue;
+
+                ConsiderCandidate(cloneShip.PropertyId, GetDistanceBetween(pilot, clone));
+            }
+
+            return nearestPropertyId;
+        }
+
+        private static uint FindObjectByTagInArea(uint area, string tag)
+        {
+            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+            {
+                if (GetTag(obj) == tag)
+                    return obj;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        /// <summary>
+        /// Returns player ships currently physically present in a hangar (docked, not in space).
+        /// </summary>
+        public static List<(PlayerShip Ship, WorldProperty Property)> GetShipsPresentInHangar(string hostPropertyId)
+        {
+            var results = new List<(PlayerShip, WorldProperty)>();
+            var host = DB.Get<WorldProperty>(hostPropertyId);
+            if (host == null ||
+                !host.ChildPropertyIds.ContainsKey(PropertyChildType.DockedStarship))
+                return results;
+
+            foreach (var shipPropertyId in host.ChildPropertyIds[PropertyChildType.DockedStarship].ToList())
+            {
+                var property = DB.Get<WorldProperty>(shipPropertyId);
+                if (property == null)
+                    continue;
+
+                if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+                    continue; // Launched but still hangar-based — not boardable from hangar.
+
+                if (!property.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock) ||
+                    dock.InstancePropertyId != hostPropertyId)
+                    continue;
+
+                var shipQuery = new DBQuery<PlayerShip>()
+                    .AddFieldSearch(nameof(PlayerShip.PropertyId), shipPropertyId, false);
+                var ship = DB.Search(shipQuery).FirstOrDefault();
+                if (ship != null)
+                    results.Add((ship, property));
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// Relocates all ships hangared at the given host back to their last NPC dock.
+        /// Called when the host capital is deleted or otherwise unavailable.
+        /// </summary>
+        public static void RelocateShipsDockedAtHangar(string hostPropertyId)
+        {
+            var host = DB.Get<WorldProperty>(hostPropertyId);
+            if (host == null)
+                return;
+
+            if (!host.ChildPropertyIds.ContainsKey(PropertyChildType.DockedStarship))
+                return;
+
+            foreach (var shipPropertyId in host.ChildPropertyIds[PropertyChildType.DockedStarship].ToList())
+            {
+                var dbStarship = DB.Get<WorldProperty>(shipPropertyId);
+                if (dbStarship == null)
+                    continue;
+
+                if (dbStarship.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition))
+                {
+                    dbStarship.Positions[PropertyLocationType.DockPosition] =
+                        dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
+                }
+
+                DB.Set(dbStarship);
+                Log.Write(LogGroup.Property,
+                    $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) relocated to last NPC dock because hangar host '{host.CustomName}' ({host.Id}) is unavailable.");
+            }
+
+            host.ChildPropertyIds[PropertyChildType.DockedStarship].Clear();
+            DB.Set(host);
+        }
+
+        public static void UnregisterFromHangar(WorldProperty shipProperty)
+        {
+            if (!shipProperty.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock) ||
+                string.IsNullOrWhiteSpace(dock.InstancePropertyId))
+                return;
+
+            var host = DB.Get<WorldProperty>(dock.InstancePropertyId);
+            if (host == null)
+                return;
+
+            if (host.ChildPropertyIds.ContainsKey(PropertyChildType.DockedStarship))
+            {
+                host.ChildPropertyIds[PropertyChildType.DockedStarship].Remove(shipProperty.Id);
+                DB.Set(host);
+            }
+        }
+
+        private static void UnregisterFromStarport(WorldProperty shipProperty)
+        {
+            if (!shipProperty.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
+                return;
+
+            var oldRegistration = shipProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].FirstOrDefault();
+            if (oldRegistration == null)
+                return;
+
+            var dbOldStarport = DB.Get<WorldProperty>(oldRegistration);
+            if (dbOldStarport != null &&
+                dbOldStarport.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
+            {
+                dbOldStarport.ChildPropertyIds[PropertyChildType.Starship].Remove(shipProperty.Id);
+                DB.Set(dbOldStarport);
+            }
+
+            shipProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
         }
 
     }

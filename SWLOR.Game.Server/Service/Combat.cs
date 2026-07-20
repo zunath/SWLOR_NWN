@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Service
             { SkillType.Vibroblade, RundownStatusEffect.Refresh }
         };
         private static readonly Dictionary<uint, SameTargetPressureState> _sameTargetPressureStates = new();
-        private static readonly Dictionary<uint, AbilityStaminaCostState> _lastAbilityStaminaCosts = new();
+        private static readonly Dictionary<(uint Creature, AbilityDetail Ability), AbilityStaminaCostState> _abilityStaminaCosts = new();
         private static bool _damageTypesCached;
 
         private sealed class HostileAbilitySequenceState
@@ -116,6 +116,8 @@ namespace SWLOR.Game.Server.Service
         {
             public int Cost { get; init; }
             public DateTime SpentAt { get; init; }
+            public bool StaminaRestoreApplied { get; set; }
+            public int DeferredImpactCount { get; set; }
         }
 
         private sealed class SuppressionAbilityUseState
@@ -4346,7 +4348,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             _stealthOpeningWindows.Remove(creature);
-            _lastAbilityStaminaCosts.Remove(creature);
+            foreach (var key in _abilityStaminaCosts.Keys.Where(x => x.Creature == creature).ToList())
+            {
+                _abilityStaminaCosts.Remove(key);
+            }
             foreach (var key in _areaAbilityTargetHitSequences.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
             {
                 _areaAbilityTargetHitSequences.Remove(key);
@@ -4454,7 +4459,7 @@ namespace SWLOR.Game.Server.Service
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType));
-            if (requiredSkillType != SkillType.Invalid && !SkillTypeMatches(skillType, requiredSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
                 return;
 
             ApplyAbilityUsedEvasion(
@@ -4469,8 +4474,7 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType)
         {
             if (ability?.IsHostileAbility != true ||
-                !_lastAbilityStaminaCosts.TryGetValue(activator, out var costState) ||
-                (DateTime.UtcNow - costState.SpentAt).TotalSeconds > 10)
+                !TryGetAbilityStaminaCostState(activator, ability, out var costState))
             {
                 return;
             }
@@ -4481,7 +4485,7 @@ namespace SWLOR.Game.Server.Service
             var minimumCost = Stat.GetStatAdjustment(
                 activator,
                 StatType.CostlyAbilityUsedEvasionMinimumStaminaCost);
-            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
                 minimumCost <= 0 ||
                 costState.Cost < minimumCost)
             {
@@ -4748,22 +4752,21 @@ namespace SWLOR.Game.Server.Service
             return bonus;
         }
 
-        public static int GetCostlyAbilityDamageBonus(uint activator, SkillType skillType)
+        public static int GetCostlyAbilityDamageBonus(
+            uint activator,
+            AbilityDetail ability,
+            SkillType skillType)
         {
-            if (!_lastAbilityStaminaCosts.TryGetValue(activator, out var costState))
+            if (!TryGetAbilityStaminaCostState(activator, ability, out var costState))
                 return 0;
-
-            if ((DateTime.UtcNow - costState.SpentAt).TotalSeconds > 10)
-            {
-                _lastAbilityStaminaCosts.Remove(activator);
-                return 0;
-            }
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.CostlyAbilityDamageBonusSkillType));
-            var minimumCost = Stat.GetStatAdjustment(activator, StatType.CostlyAbilityHitMinimumStaminaCost);
-            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+            var minimumCost = Stat.GetStatAdjustment(
+                activator,
+                StatType.CostlyAbilityDamageMinimumStaminaCost);
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
                 minimumCost <= 0 ||
                 costState.Cost < minimumCost)
             {
@@ -4824,14 +4827,8 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType)
         {
             if (ability?.IsHostileAbility != true ||
-                !_lastAbilityStaminaCosts.TryGetValue(activator, out var costState))
+                !TryGetAbilityStaminaCostState(activator, ability, out var costState))
             {
-                return;
-            }
-
-            if ((DateTime.UtcNow - costState.SpentAt).TotalSeconds > 10)
-            {
-                _lastAbilityStaminaCosts.Remove(activator);
                 return;
             }
 
@@ -4841,22 +4838,29 @@ namespace SWLOR.Game.Server.Service
             var statusSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.CostlyAbilityStatusSkillType));
-            var minimumCost = Stat.GetStatAdjustment(activator, StatType.CostlyAbilityHitMinimumStaminaCost);
+            var staminaRestoreMinimumCost = Stat.GetStatAdjustment(
+                activator,
+                StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost);
+            var statusMinimumCost = Stat.GetStatAdjustment(
+                activator,
+                StatType.CostlyAbilityStatusMinimumStaminaCost);
             var staminaRestore = Stat.GetStatAdjustment(activator, StatType.CostlyAbilityHitStaminaRestore);
             var exposedDuration = Stat.GetStatAdjustment(activator, StatType.CostlyAbilityExposedDurationSeconds);
-            if (minimumCost <= 0 || costState.Cost < minimumCost)
-            {
-                return;
-            }
 
-            var applied = false;
-            if (staminaRestore > 0 && SkillTypeMatches(skillType, staminaRestoreSkillType))
+            if (staminaRestore > 0 &&
+                staminaRestoreMinimumCost > 0 &&
+                costState.Cost >= staminaRestoreMinimumCost &&
+                !costState.StaminaRestoreApplied &&
+                SkillTypeMatchesOrGlobal(skillType, staminaRestoreSkillType))
             {
                 Stat.RestoreStamina(activator, staminaRestore);
-                applied = true;
+                costState.StaminaRestoreApplied = true;
             }
 
-            if (exposedDuration > 0 && SkillTypeMatches(skillType, statusSkillType))
+            if (exposedDuration > 0 &&
+                statusMinimumCost > 0 &&
+                costState.Cost >= statusMinimumCost &&
+                SkillTypeMatchesOrGlobal(skillType, statusSkillType))
             {
                 StatusEffect.ApplyStatusEffect(
                     activator,
@@ -4864,11 +4868,7 @@ namespace SWLOR.Game.Server.Service
                     typeof(ExposedStatusEffect),
                     exposedDuration,
                     CombatDamageType.Physical);
-                applied = true;
             }
-
-            if (applied)
-                _lastAbilityStaminaCosts.Remove(activator);
         }
 
         private static void ApplyRangedAbilityHitNearTargetEffects(
@@ -5584,7 +5584,7 @@ namespace SWLOR.Game.Server.Service
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 attacker,
                 StatType.AbilityDamageToSourceAppliedStatusTargetSkillType));
-            if (requiredSkillType != SkillType.Invalid && !SkillTypeMatches(skillType, requiredSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
                 return 0;
 
             var category = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
@@ -7679,11 +7679,14 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyAbilityStaminaCostFPRestore(uint creature, AbilityDetail ability, int staminaCost)
         {
-            if (staminaCost <= 0 || ability == null)
+            if (ability == null)
                 return;
 
             var skillType = GetAbilitySkillType(creature, ability);
             TrackAbilityStaminaCost(creature, ability, staminaCost);
+            if (staminaCost <= 0)
+                return;
+
             var restoreSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 creature,
                 StatType.AbilityStaminaCostFPRestorePercentSkillType));
@@ -7697,17 +7700,81 @@ namespace SWLOR.Game.Server.Service
         private static void TrackAbilityStaminaCost(uint creature, AbilityDetail ability, int staminaCost)
         {
             if (!GetIsObjectValid(creature) ||
-                ability?.IsHostileAbility != true ||
-                staminaCost <= 0)
+                ability?.IsHostileAbility != true)
             {
                 return;
             }
 
-            _lastAbilityStaminaCosts[creature] = new AbilityStaminaCostState
+            var key = (creature, ability);
+            if (staminaCost <= 0)
+            {
+                _abilityStaminaCosts.Remove(key);
+                return;
+            }
+
+            _abilityStaminaCosts[key] = new AbilityStaminaCostState
             {
                 Cost = staminaCost,
                 SpentAt = DateTime.UtcNow
             };
+        }
+
+        private static bool TryGetAbilityStaminaCostState(
+            uint creature,
+            AbilityDetail ability,
+            out AbilityStaminaCostState state)
+        {
+            state = null;
+            if (ability == null)
+                return false;
+
+            var key = (creature, ability);
+            if (!_abilityStaminaCosts.TryGetValue(key, out state))
+                return false;
+
+            if ((DateTime.UtcNow - state.SpentAt).TotalSeconds <= 35)
+                return true;
+
+            _abilityStaminaCosts.Remove(key);
+            state = null;
+            return false;
+        }
+
+        public static void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability)
+        {
+            if (TryGetAbilityStaminaCostState(creature, ability, out var state))
+            {
+                state.DeferredImpactCount++;
+            }
+        }
+
+        public static void CompleteAbilityStaminaCostContext(uint creature, AbilityDetail ability)
+        {
+            if (ability == null)
+                return;
+
+            if (_abilityStaminaCosts.TryGetValue((creature, ability), out var state) &&
+                state.DeferredImpactCount > 0)
+            {
+                return;
+            }
+
+            _abilityStaminaCosts.Remove((creature, ability));
+        }
+
+        public static void CompleteDeferredAbilityStaminaCostContext(uint creature, AbilityDetail ability)
+        {
+            if (ability == null ||
+                !_abilityStaminaCosts.TryGetValue((creature, ability), out var state))
+            {
+                return;
+            }
+
+            state.DeferredImpactCount = Math.Max(0, state.DeferredImpactCount - 1);
+            if (state.DeferredImpactCount == 0)
+            {
+                _abilityStaminaCosts.Remove((creature, ability));
+            }
         }
 
         public static void ApplyAbilityFPCostStaminaRestore(uint creature, AbilityDetail ability, int fpCost)
@@ -8686,6 +8753,11 @@ namespace SWLOR.Game.Server.Service
         private static bool SkillTypeMatches(SkillType actualSkillType, SkillType requiredSkillType)
         {
             return requiredSkillType != SkillType.Invalid && actualSkillType == requiredSkillType;
+        }
+
+        private static bool SkillTypeMatchesOrGlobal(SkillType actualSkillType, SkillType requiredSkillType)
+        {
+            return requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType);
         }
 
         private static bool IsWeaponOrForceDamage(SkillType skillType, CombatDamageType damageType)

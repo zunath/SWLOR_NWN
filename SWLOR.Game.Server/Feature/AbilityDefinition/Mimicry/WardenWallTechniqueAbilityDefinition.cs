@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.WardenWall, 30f)
-                .MimicryStance(FeatType.WardenWall, 4, 3);
+                .MimicryStance(FeatType.WardenWall, 47, 3);
 
             ConfigureToggle(ability, typeof(WardenWallStatusEffect));
 

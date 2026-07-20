@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.ShrapnelBurst, 3, 3)
+                .MimicryTechnique(FeatType.ShrapnelBurst, 16, 3)
                 .HasTargetingCone(
                     Spell.ShrapnelBurstTechnique,
                     8f,

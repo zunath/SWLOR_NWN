@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.BrutalBash, 2, 2)
+                .MimicryTechnique(FeatType.BrutalBash, 29, 2)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

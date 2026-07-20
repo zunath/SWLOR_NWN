@@ -200,10 +200,14 @@ def update_tlk(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
         encoding="utf-8-sig",
     )
     head_document = json.loads(head_tlk_result.stdout)
-    desired_by_id = {
-        int(entry["id"]): new_by_old[collapse_whitespace(entry.get("text", ""))]
+    head_text_by_id = {
+        int(entry["id"]): entry.get("text", "")
         for entry in head_document["entries"]
-        if collapse_whitespace(entry.get("text", "")) in new_by_old
+    }
+    desired_by_id = {
+        entry_id: new_by_old[collapse_whitespace(head_text)]
+        for entry_id, head_text in head_text_by_id.items()
+        if collapse_whitespace(head_text) in new_by_old
     }
 
     entry_pattern = re.compile(
@@ -221,8 +225,17 @@ def update_tlk(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
         if desired is None:
             return match.group(0)
 
-        if json.loads(match.group("text")) == desired:
+        current = json.loads(match.group("text"))
+        if current == desired:
             return match.group(0)
+
+        head_text = head_text_by_id[entry_id]
+        if current != head_text:
+            raise RuntimeError(
+                f"Cannot safely synchronize TLK entry {entry_id}: "
+                "the working text matches neither the pinned submodule text nor its "
+                "reviewed replacement."
+            )
 
         replacement_count += 1
         return match.group("prefix") + json.dumps(desired, ensure_ascii=False)

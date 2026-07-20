@@ -16,14 +16,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             uint target,
             float percent,
             AbilityType scalingAbility = AbilityType.Willpower,
-            float multiplier = 1f)
+            float multiplier = 1f,
+            VisualEffect visualEffect = VisualEffect.Vfx_Imp_Healing_M_Silent)
         {
             var amount = AbilityEffectScaling.CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
             amount = ApplyMedicalHealingBonus(source, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyMedicalVisualEffect(target);
+            ApplyMedicalVisualEffect(target, visualEffect);
         }
 
         public static void ApplyActivatedMedicalScaledHeal(
@@ -42,9 +43,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyMedicalVisualEffect(target);
         }
 
-        public static void ApplyMedicalVisualEffect(uint target)
+        public static void ApplyMedicalVisualEffect(
+            uint target,
+            VisualEffect visualEffect = VisualEffect.Vfx_Imp_Healing_M_Silent)
         {
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M_Silent), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), target);
         }
 
         public static void GrantCombatPoint(uint activator)

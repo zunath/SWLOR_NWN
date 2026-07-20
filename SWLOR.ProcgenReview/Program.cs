@@ -291,6 +291,38 @@ try
             }
         }
 
+        // SIGNATURE COMPOSITIONS: one showcase per seed for every tileset family that declares
+        // its signature pairing (see DungeonTilesetProfile.SignatureLayoutProfileKey -- today the
+        // fcx01 street-canyon packed city at 24), so the out-of-the-box review module carries the
+        // family's hand-built reference look without any --extra-areas. The content theme is the
+        // first registered theme by key, deterministically: creature/loot content is never
+        // emitted offline, and under the urban grammar the tileset's own palette drives all
+        // dressing regardless of the composed theme.
+        foreach (var tilesetEntry in tilesetProfiles.OrderBy(t => t.Key))
+        {
+            var profile = tilesetEntry.Value;
+            if (profile.IsPaletteVariant || string.IsNullOrEmpty(profile.SignatureLayoutProfileKey))
+                continue;
+            if (!layoutProfiles.TryGetValue(profile.SignatureLayoutProfileKey, out var signatureLayout))
+                continue;
+
+            var signatureTheme = themes.OrderBy(t => t.Key).First().Value;
+            var signatureSize = profile.SignatureSize > 0 ? profile.SignatureSize : size;
+            foreach (var seed in seeds)
+            {
+                var resref = UniqueResref($"pgs_{TwoLetters(tilesetEntry.Key)}_{seed}", usedResrefs);
+                var display = ComposeDisplayName(signatureTheme.DisplayName, profile.DisplayName,
+                    signatureLayout.DisplayName, seed);
+                var signatureComposition = new DungeonComposition
+                {
+                    Content = signatureTheme,
+                    Tileset = profile,
+                    Layout = signatureLayout
+                };
+                specs.Add(new AreaSpec(resref, display, signatureComposition, seed, signatureSize));
+            }
+        }
+
         if (matrix)
         {
             const int matrixSeed = 4242;

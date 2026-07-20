@@ -124,7 +124,25 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// of their decoratives above Z 0.5m, dominated by holo signage attached to building
         /// faces (sign-family median face distance ~0, Z medians 2.4-6.6m).
         /// </summary>
-        FacadeMount = 14
+        FacadeMount = 14,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): a flat road-marking floor
+        /// plate laid ON a carved street lane cell (see DungeonDecorationPlanner.PlanStreetDressing
+        /// and <see cref="StreetDressingEntry"/>). Hand-built promenade streets pave their lanes
+        /// with marking plates at near-one-per-road-tile rates (pw_ar_narpromena 23 swd_florrd01
+        /// on 26 road tiles, pw_ar_nsshipyard 44/38, pw_ar_narscorpd 37/35), 100% cardinal-aligned
+        /// with the lane. Flat paint, not an obstruction -- the road ribbon stays a clear walkway.
+        /// </summary>
+        RoadMarking = 15,
+        /// <summary>
+        /// OUTPUT-ONLY context (never curate palette entries under it): a small street-furniture
+        /// accent (trash can, barrier, console, holo sign) standing at the EDGE of a street lane
+        /// cell, offset toward the road margin and facing back into the lane -- the hand-built
+        /// street-stretch fill pattern (narpromena 22 swd_trash01 on its 26 road tiles,
+        /// ns_comrcial_ka 40 _mdrn_pl_barrimw on 63, narshadaar_promi trash/barrier/console/holo
+        /// rows at ~1 per road tile). See DungeonDecorationPlanner.PlanStreetDressing.
+        /// </summary>
+        StreetAccent = 16
     }
 
     /// <summary>
@@ -346,6 +364,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// whole generated area. Only enforced under the urban grammar.
         /// </summary>
         public int MaxPerArea { get; set; }
+
+        /// <summary>
+        /// Z step (meters) at which one stacked copy of this entry sits directly above a base copy
+        /// -- 0 (the default) means the art never stacks. Mined from the hand-built stacked-cargo
+        /// evidence: the dressed city areas' ELEVATED dressing is dominated by cargo stacked one
+        /// model-height above its own base copy (nsshipyard 125 swd_conta003 at Z 0.96,
+        /// narscorpd 29 _mdrn_pl_crate08 at Z ~1.46, family-wide stack rates 0.2-0.55), NOT by
+        /// signage -- lit sign-family elevated counts are only 8-36 per hand-built area. Read only
+        /// under the urban grammar by the pile/depot mechanisms (see
+        /// DungeonDecorationPlanner.TryStackCargo); entries without a declaration draw no stacking
+        /// RNG at all, so non-urban plans stay byte-identical.
+        /// </summary>
+        public float StackHeight { get; set; }
     }
 
     /// <summary>
@@ -389,6 +420,48 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public float MinHeight { get; set; } = 2f;
         /// <summary>Top of the mined mounting-height band (meters above ground).</summary>
         public float MaxHeight { get; set; } = 6f;
+    }
+
+    /// <summary>
+    /// How one <see cref="StreetDressingEntry"/> stands on a carved street lane cell -- see
+    /// DungeonDecorationPlanner.PlanStreetDressing.
+    /// </summary>
+    public enum StreetDressingKind
+    {
+        /// <summary>A flat road-marking floor plate laid on the lane surface itself, cardinal-aligned
+        /// with the lane axis (walkable paint, never an obstruction).</summary>
+        RoadMarking = 0,
+        /// <summary>A small street-furniture accent (trash can, barrier, console, holo sign)
+        /// standing at the lane cell's margin edge, facing back into the street.</summary>
+        MarginAccent = 1
+    }
+
+    /// <summary>
+    /// One weighted street-dressing placeable the STREET pass (DungeonDecorationPlanner.
+    /// PlanStreetDressing) may lay along carved road-lane cells -- the hand-built dressed-street
+    /// fill mechanism. Evidence (per-road-tile inventory over the dressed promenade-family fcx01
+    /// areas, July 2026 street-dressing pass): hand-built ROAD tiles are dressed DENSER than plain
+    /// plaza tiles (2.1-6.5 decoratives per road tile vs 2.1-4.4 per plain tile) via three layers --
+    /// the municipal lamp line (already composed by the road lamp-line mechanism), flat road-marking
+    /// plates near one per road tile (narpromena 23/26, nsshipyard 44/38, narscorpd 37/35), and
+    /// margin accents (trash cans/barriers/consoles/holo signs) at ~0.5-1 per road tile. Room-anchored
+    /// interior mechanisms cannot reach this surface on corridor-heavy layouts (Complex rooms cover
+    /// ~14-17% of a 32x32 grid), which measured 2.1-2.6 decoratives per open tile against the dressed
+    /// hand-built band's 2.85 floor -- this list is the street-anchored pool that closes that gap.
+    /// DELIBERATELY separate from <see cref="DungeonDecorationEntry"/>: placement is lane-geometry
+    /// driven (road-edge cells, lane axis, margin side), not room/palette-bucket driven, and the road
+    /// ribbon's integrity contract (only declared street-legal art may stand on it) stays a single
+    /// explicit list.
+    /// </summary>
+    public class StreetDressingEntry
+    {
+        public string Resref { get; set; } = string.Empty;
+        public int Weight { get; set; } = 1;
+        public StreetDressingKind Kind { get; set; } = StreetDressingKind.RoadMarking;
+        /// <summary>Hard per-area placement cap for this resref (0 = uncapped), counted against the
+        /// SHARED per-area usage ledger, so a resref that also appears in the scatter palette (e.g.
+        /// swd_trash01's clutter curation) keeps one combined hand-built-derived ceiling.</summary>
+        public int MaxPerArea { get; set; }
     }
 
     /// <summary>
@@ -911,6 +984,37 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// Inherited by palette variants like <see cref="Decorations"/>.
         /// </summary>
         public List<FacadeMountEntry> FacadeMounts { get; set; } = new();
+
+        /// <summary>
+        /// Street-dressing placeables this tileset family lays along carved road-lane cells (see
+        /// <see cref="StreetDressingEntry"/> and DungeonDecorationPlanner.PlanStreetDressing):
+        /// flat road-marking plates on the lane surface plus margin accents at the lane edges --
+        /// the hand-built dressed-street fill pattern that room-anchored mechanisms cannot reach
+        /// on corridor-heavy layouts. Empty = no street pass (every non-city tileset; their plans
+        /// stay byte-identical). Only meaningful alongside <see cref="UrbanDressing"/> and a
+        /// declared <see cref="RoadCrosser"/>. Inherited by palette variants like
+        /// <see cref="Decorations"/>.
+        /// </summary>
+        public List<StreetDressingEntry> StreetDressings { get; set; } = new();
+
+        /// <summary>
+        /// The layout-profile key of this family's SIGNATURE composition -- the pairing its
+        /// hand-built reference areas actually look like, used as the out-of-the-box default by
+        /// review tooling (SWLOR.ContentBuilder pre-selects it when the tileset is picked;
+        /// SWLOR.ProcgenReview's default review set includes one signature showcase per declaring
+        /// family). Empty (the default) = no signature pairing; tooling keeps its generic
+        /// first-alphabetical defaults. Never restricts anything: every other layout stays
+        /// selectable. Inherited by palette variants like <see cref="Decorations"/>.
+        /// </summary>
+        public string SignatureLayoutProfileKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The area size (tiles per side) of the signature composition above -- the scale the
+        /// family's hand-built reference areas dress at (e.g. the fcx01 street-canyon city at 24,
+        /// where tile canyon blocks, placeable frontage, lamp lines, and full dressing all
+        /// compose). 0 = tooling keeps its generic default size.
+        /// </summary>
+        public int SignatureSize { get; set; }
 
         /// <summary>
         /// This tileset FAMILY's standard AREA atmosphere (see <see cref="DungeonAreaAtmosphere"/>),
@@ -1846,6 +1950,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
+        /// Declares the LAST <see cref="Decoration"/> entry as stackable cargo (see
+        /// <see cref="DungeonDecorationEntry.StackHeight"/>): a committed pile/depot member may
+        /// carry a second copy of itself directly above at this Z step -- the hand-built
+        /// stacked-cargo pattern. Derive the height from the mined Z step of the resref's own
+        /// hand-built elevated placements (which sit exactly one model height above their base
+        /// copy), never from guesswork.
+        /// </summary>
+        public DungeonTilesetProfileBuilder Stackable(float height)
+        {
+            if (_lastDecorationEntry == null)
+                throw new System.InvalidOperationException("Stackable() must follow a Decoration() call.");
+            _lastDecorationEntry.StackHeight = height;
+            return this;
+        }
+
+        /// <summary>
         /// Sets this tileset family's own evidence-derived decorative density (placeables per total
         /// area tile at 100% request density), overriding the composed theme's own base density --
         /// see <see cref="DungeonTilesetProfile.DecorationDensityPerTile"/>.
@@ -1891,6 +2011,41 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 MinHeight = minHeight,
                 MaxHeight = maxHeight
             });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a weighted street-dressing placeable to this tileset family's street pass (see
+        /// <see cref="DungeonTilesetProfile.StreetDressings"/>): a flat road-marking plate laid on
+        /// the lane surface, or a margin accent standing at the lane edge facing the street. Only
+        /// declare on urban families with a <see cref="RoadCrosser"/> whose hand-built references
+        /// dress their street stretches this way; maxPerArea counts against the shared per-area
+        /// usage ledger (combined with any scatter-palette curation of the same resref).
+        /// </summary>
+        public DungeonTilesetProfileBuilder StreetDressing(string resref, int weight, StreetDressingKind kind,
+            int maxPerArea = 0)
+        {
+            _active.StreetDressings.Add(new StreetDressingEntry
+            {
+                Resref = resref,
+                Weight = weight,
+                Kind = kind,
+                MaxPerArea = maxPerArea
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Declares this family's SIGNATURE composition (see
+        /// <see cref="DungeonTilesetProfile.SignatureLayoutProfileKey"/>/<see cref="DungeonTilesetProfile.SignatureSize"/>):
+        /// the layout pairing and scale review tooling should default to so a first-time pick of
+        /// this tileset produces the family's hand-built reference look. Purely a default -- every
+        /// other layout/size stays selectable.
+        /// </summary>
+        public DungeonTilesetProfileBuilder SignatureComposition(string layoutProfileKey, int size)
+        {
+            _active.SignatureLayoutProfileKey = layoutProfileKey;
+            _active.SignatureSize = size;
             return this;
         }
 
@@ -1991,6 +2146,35 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         p.FacadeMounts.Count > 0);
                     if (mountBasis != null)
                         profile.FacadeMounts = mountBasis.FacadeMounts;
+                }
+
+                // Street dressing is a family property like frontage/mounts above: a variant that
+                // declared no street pool of its own dresses its lanes like its family basis
+                // (fcx01's Cobble2 district shares the Cobble district's road-plate/street-accent
+                // evidence -- the hand-built exemplars span both districts' areas).
+                if (profile.StreetDressings.Count == 0)
+                {
+                    var streetBasis = profiles.Values.FirstOrDefault(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                        p.StreetDressings.Count > 0);
+                    if (streetBasis != null)
+                        profile.StreetDressings = streetBasis.StreetDressings;
+                }
+
+                // The signature composition inherits like the palette: a variant district of an
+                // urban family showcases at the same layout pairing/scale unless it declared its
+                // own.
+                if (string.IsNullOrEmpty(profile.SignatureLayoutProfileKey))
+                {
+                    var signatureBasis = profiles.Values.FirstOrDefault(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                        !string.IsNullOrEmpty(p.SignatureLayoutProfileKey));
+                    if (signatureBasis != null)
+                    {
+                        profile.SignatureLayoutProfileKey = signatureBasis.SignatureLayoutProfileKey;
+                        if (profile.SignatureSize == 0)
+                            profile.SignatureSize = signatureBasis.SignatureSize;
+                    }
                 }
 
                 // The urban placement grammar is a family property like density below: a variant of

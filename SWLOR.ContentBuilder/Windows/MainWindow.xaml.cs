@@ -682,6 +682,47 @@ namespace SWLOR.ContentBuilder.Windows
             {
                 _suppressEvents = false;
             }
+
+            ApplySignatureComposition();
+        }
+
+        /// <summary>
+        /// Applies the selected tileset's declared SIGNATURE composition (see
+        /// DungeonTilesetProfile.SignatureLayoutProfileKey/SignatureSize): pre-selects the layout
+        /// pairing and area scale the family's hand-built reference areas actually look like --
+        /// e.g. picking the fcx01 city tileset defaults to the street-canyon Packed Rooms pairing
+        /// at 24x24, so the first preview a reviewer sees composes canyon blocks, placeable
+        /// frontage, lamp lines, atmosphere, and full dressing rather than a generic
+        /// first-alphabetical layout at a test-grid size. Purely a DEFAULT: every layout stays in
+        /// the combo and every knob/size stays editable afterwards. No-op for the (majority of)
+        /// tilesets that declare no signature pairing.
+        /// </summary>
+        private void ApplySignatureComposition()
+        {
+            var tileset = SelectedTilesetProfile();
+            if (tileset == null || string.IsNullOrEmpty(tileset.SignatureLayoutProfileKey))
+                return;
+
+            var wasSuppressed = _suppressEvents;
+            _suppressEvents = true;
+            try
+            {
+                SelectComboByKey(_layoutCombo, tileset.SignatureLayoutProfileKey);
+                if (tileset.SignatureSize > 0)
+                {
+                    _widthSlider.Value = tileset.SignatureSize;
+                    _heightSlider.Value = tileset.SignatureSize;
+                }
+            }
+            finally
+            {
+                _suppressEvents = wasSuppressed;
+            }
+
+            // The signature layout selection replaces whatever the combo carried over, so its
+            // knobs load exactly like a manual selection would have loaded them.
+            _overriddenKnobs.Clear();
+            LoadLayoutProfileKnobs(SelectedLayoutProfile());
         }
 
         /// <summary>
@@ -830,6 +871,10 @@ namespace SWLOR.ContentBuilder.Windows
         {
             AutoDefaultThemeForTileset();
             RepopulateLayoutCombo();
+            // The tileset's own signature pairing/scale wins over the carried-over layout
+            // selection (same auto-default spirit as AutoDefaultThemeForTileset above): a
+            // first-time pick of a signature-declaring family must produce its reference look.
+            ApplySignatureComposition();
             RepopulateDecorationProfileCombo();
             UpdateAccentAvailability();
             UpdateFeatureAvailability();

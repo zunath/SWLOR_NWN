@@ -80,14 +80,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
         /// <summary>
         /// Facade-mount budget as a fraction of the rest of the plan (ground dressing +
-        /// frontage buildings): mounts target ~0.22x the other placements, converging the
-        /// elevated share M/(rest+M) on ~0.18 -- the middle of the hand-built dense-city
-        /// elevated band (0.13-0.23 of decoratives above Z 0.5m across velundr/narscorpd/
-        /// nsshipyard/ns_comrcial_ka/narshadaar_promi). A flat per-slot chance alone overshot at
-        /// 24-32 (measured 0.24-0.37), because tile-block faces multiply with area while ground
-        /// dressing grows with room supply; the budget keeps every size inside the band.
+        /// frontage buildings). RECALIBRATED against the elevated-inventory COMPOSITION (July 2026
+        /// street-dressing pass): the hand-built dense-city elevated band (0.13-0.23 of
+        /// decoratives above Z 0.5m) is dominated by NON-LIT stacked cargo (nsshipyard 319 non-lit
+        /// elevated vs 20 lit; narscorpd 225 vs 36; ns_comrcial_ka 92 vs 14) -- lit sign-family
+        /// elevated counts run only 8-36 per hand-built area. The original 0.22 budget realized the
+        /// whole band from holo signage alone, pushing generated lit-model share (0.31-0.45) past
+        /// the hand-built dressed maximum (0.3243, narpromena). 0.115 converges mounts on
+        /// ~0.10x the plan while the stacked-cargo layer (see DungeonDecorationEntry.StackHeight /
+        /// DungeonDecorationPlanner.StackCargo) supplies the non-lit elevated mass, keeping the
+        /// TOTAL elevated share inside the 0.13-0.23 band with a hand-built-composition mix
+        /// (measured 0.138-0.146 mean at packed 20/24 with the per-area caps enforced on stacks).
         /// </summary>
-        internal const double MountBudgetShare = 0.22;
+        internal const double MountBudgetShare = 0.115;
 
         /// <summary>Faces at least this wide roll a second, independently-jittered mount.</summary>
         internal const float WideFaceWidth = 18f;

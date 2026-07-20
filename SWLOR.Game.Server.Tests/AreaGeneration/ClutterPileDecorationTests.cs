@@ -217,7 +217,14 @@ public class ClutterPileDecorationTests
         {
             var (_, plan) = PlanFor(c, SeedBase + 200 + i, 20);
 
-            foreach (var decal in plan.Where(p => GroundDecalResrefs.Contains(p.Resref)))
+            // Road-marking plates laid by the street pass are the one evidenced stand-alone decal
+            // use: hand-built streets pave their lanes at ~1 plate per road tile (narpromena
+            // 23 swd_florrd01 on 26 road tiles, nsshipyard 44/38, narscorpd 37/35) as lane paint,
+            // not as pile padding -- see DecorationContext.RoadMarking / PlanStreetDressing. The
+            // never-stand-alone rule guards PLAZA decals (pads under junk), so the street channel
+            // is scoped out by its own output context, never by resref.
+            foreach (var decal in plan.Where(p =>
+                         GroundDecalResrefs.Contains(p.Resref) && p.Context != DecorationContext.RoadMarking))
             {
                 decalsChecked++;
                 var hasNeighbor = plan.Any(other =>

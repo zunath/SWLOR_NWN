@@ -4445,6 +4445,36 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FacadeMount("swd_pholo03", 1, 2.3f, 4.8f)
                 .FacadeMount("swd_holog06", 1, 1.5f, 6.5f)
                 .FacadeMount("swd_holog08", 1, 4.7f, 5.4f)
+                // STREET DRESSING (dressed-street fill pass -- see StreetDressingEntry and
+                // DungeonDecorationPlanner.PlanStreetDressing): hand-built promenade streets are
+                // dressed DENSER than their plazas (2.1-6.5 decoratives per road tile), in three
+                // layers -- the municipal lamp line (already composed by the road lamp-line
+                // mechanism), flat road-marking plates near one per road tile, and margin accents
+                // at ~0.5-1 per road tile. Mined per-road-tile inventory (July 2026 street pass):
+                //   plates: swd_florrd01 narpromena 23/26 road tiles, nsshipyard 44/38,
+                //           narscorpd 37/35; swd_florrt02 the rarer variant (4/area).
+                //   accents: swd_trash01 narpromena 22/26 + nsshipyard 14 + narscorpd 18;
+                //            _mdrn_pl_barrimw ns_comrcial_ka 40/63; _mdrn_pl_trshcn2 promi 10;
+                //            _mdrn_pl_barr001 promi 10; _mdrn_pl_conso05 promi 8;
+                //            _mdrn_pl_holod01/_mdrn_pl_holoco2 promi 7 each.
+                // Caps follow the hand-built per-area maxima; swd_trash01's cap is COMBINED with
+                // its clutter-palette usage via the shared per-area ledger.
+                .StreetDressing("swd_florrd01", 3, StreetDressingKind.RoadMarking)
+                .StreetDressing("swd_florrt02", 1, StreetDressingKind.RoadMarking, maxPerArea: 10)
+                .StreetDressing("swd_trash01", 3, StreetDressingKind.MarginAccent, maxPerArea: 24)
+                .StreetDressing("_mdrn_pl_trshcn2", 2, StreetDressingKind.MarginAccent, maxPerArea: 12)
+                .StreetDressing("_mdrn_pl_barrimw", 2, StreetDressingKind.MarginAccent, maxPerArea: 20)
+                .StreetDressing("_mdrn_pl_barr001", 1, StreetDressingKind.MarginAccent, maxPerArea: 10)
+                .StreetDressing("_mdrn_pl_conso05", 1, StreetDressingKind.MarginAccent, maxPerArea: 8)
+                .StreetDressing("_mdrn_pl_holod01", 1, StreetDressingKind.MarginAccent, maxPerArea: 8)
+                .StreetDressing("_mdrn_pl_holoco2", 1, StreetDressingKind.MarginAccent, maxPerArea: 8)
+                // SIGNATURE COMPOSITION: the street-canyon packed city at 24 -- the pairing/scale
+                // where tile canyon blocks (BuildingBlockContiguity), placeable frontage, municipal
+                // lamp lines, night-city atmosphere, and full dressing all compose into the
+                // hand-built promenade look. Review tooling defaults to this when the family is
+                // picked (every other layout/size stays selectable) and the default review module
+                // carries one signature showcase.
+                .SignatureComposition(StandardLayoutProfiles.Packed, 24)
                 // STRUCTURAL-ITEM REMOVALS (July 2026 semantic-context pass, user report "this gate
                 // without a wall ... doesn't make a lot of sense" -- see DecorationAnchoring and
                 // _scratch_decor/mine_r7_semantics.py):
@@ -4529,51 +4559,51 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // end of this palette -- an 83-silo blanket over one generated area was the round-7
                 // reported repetition.
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1)).MaxPerArea(35)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1)).MaxPerArea(35).Stackable(1.46f)
                 .Decoration("_mdrn_pl_crate07", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 2)).MaxPerArea(28)
+                    .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 2)).MaxPerArea(28).Stackable(0.96f)
                 .Decoration("_mdrn_pl_crate06", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Industrial, 1)).MaxPerArea(24)
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Industrial, 1)).MaxPerArea(24).Stackable(0.75f)
                 .Decoration("_mdrn_pl_crate05", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12).Stackable(1.50f)
                 .Decoration("_mdrn_pl_conta39", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
-                    .MaxPerArea(30)
+                    .MaxPerArea(30).Stackable(1.98f)
                 .Decoration("_mdrn_pl_conta36", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .MaxPerArea(30)
+                    .MaxPerArea(30).Stackable(0.68f)
                 .Decoration("_mdrn_pl_conta54", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(12)
                 .Decoration("swd_conta004", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(30)
+                    .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(30).Stackable(0.88f)
                 .Decoration("swd_conta006", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
-                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(20)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(20).Stackable(1.82f)
                 .Decoration("swd_conta002", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
-                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(14)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(14).Stackable(1.60f)
                 .Decoration("_mdrn_pl_conta17", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(14)
                 .Decoration("_mdrn_pl_conta25", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(14)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(14).Stackable(0.70f)
                 .Decoration("_mdrn_pl_conta53", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12).Stackable(1.17f)
                 .Decoration("_mdrn_pl_conta38", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Commercial, 1)).MaxPerArea(10)
+                    .Districts((DistrictFlavor.Commercial, 1)).MaxPerArea(10).Stackable(0.82f)
                 .Decoration("_mdrn_pl_conta51", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(10)
                 .Decoration("_mdrn_pl_conta32", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Civic, 1)).MaxPerArea(10)
                 .Decoration("swd2_cont008", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(16)
+                    .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(16).Stackable(0.96f)
                 .Decoration("_mdrn_pl_crgc4b", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(10)
                 .Decoration("_mdrn_pl_ration6", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12)
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(12).Stackable(1.20f)
                 .Decoration("_mdrn_pl_malette", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Commercial, 1)).MaxPerArea(8)
                 .Decoration("swd_palet01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter)
-                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(16)
+                    .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(16).Stackable(1.05f)
                 .Decoration("swd_barrel01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(14)
                 .Decoration("swd_spack01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)
-                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(10)
+                    .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(10).Stackable(0.84f)
                 .Decoration("_mdrn_pl_cagebst", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(6)
                 .Decoration("swd_trash01", 1, DecorationContext.WallAdjacent, DecorationRole.Clutter, size: DecorationSize.Small)

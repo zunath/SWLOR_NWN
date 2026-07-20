@@ -425,6 +425,96 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// inside a 2.8m-radius pile can only interpenetrate the first.</summary>
         private const int LargeMaxPerPile = 1;
 
+        /// <summary>
+        /// Per-street-cell chance of laying a flat road-marking plate on the lane surface (see
+        /// PlanStreetDressing). Hand-built dressed promenade streets pave near one plate per road
+        /// tile in three of the five dressed reference areas (narpromena 23/26, nsshipyard 44/38,
+        /// narscorpd 37/35) and few in the other two (comrcial 3/63) -- 0.8 sits just under the
+        /// paving areas' own rate, with the closed-loop fill ceiling bounding the top end.
+        /// </summary>
+        private const double RoadMarkingChance = 0.8;
+
+        /// <summary>
+        /// Per-street-cell chance of standing a margin accent (trash can/barrier/console/holo) at
+        /// the lane edge (see PlanStreetDressing). Hand-built rates: narpromena 22 trash on 26 road
+        /// tiles (0.85), comrcial 43 barrier/trash on 63 (0.68), promi ~1.05, shipyard/narscorpd
+        /// ~0.5 -- 0.65 sits at the evidence mean (accents additionally require a real margin
+        /// side, which not every street cell has, and the closed-loop fill ceiling bounds the
+        /// total).
+        /// </summary>
+        private const double StreetAccentChance = 0.65;
+
+        /// <summary>
+        /// GROUND-dressing fill ceiling (decoratives per open-ish tile, pre-facade-mounts) the
+        /// street pass may fill up to but never past: the dressed hand-built promenade family tops
+        /// out at 4.873 decoratives per open tile INCLUDING elevated facade signage; dividing by
+        /// (1 + BuildingFrontagePlanner.MountBudgetShare) converts that to the pre-mount ground
+        /// count this pass can see, and 4.5 leaves real margin under the 4.873 ceiling. Compositions
+        /// already dressing at the band's top (packed city at 24, measured 4.6) get little or no
+        /// street budget -- the pass fills corridor-heavy layouts (complex city at 32, measured
+        /// 2.1-2.6 against the dressed band's 2.85 floor) without pushing dense ones over.
+        /// </summary>
+        private const double StreetFillCeilingDensity = 4.5;
+
+        /// <summary>Chance a marked lane cell lays a SECOND plate at its opposite along-axis
+        /// half -- the heaviest-paved hand-built streets exceed one plate per road tile
+        /// (nsshipyard 1.16, narscorpd 1.06).</summary>
+        private const double RoadMarkingSecondChance = 0.25;
+
+        /// <summary>Road-marking plates jitter this far along the lane axis off the cell center
+        /// (and a smaller amount across it), so a paved stretch reads as builder-laid plates
+        /// rather than one machine-perfect strip.</summary>
+        private const float RoadMarkingAlongJitter = 2.0f;
+        private const float RoadMarkingCrossJitter = 0.8f;
+
+        /// <summary>Margin accents keep at least the minimum along-axis offset from the cell's
+        /// face-center point -- the municipal lamp line places its fixture exactly there (no
+        /// jitter), so the accent flanks the lamp instead of z-fighting it.</summary>
+        private const float StreetAccentAlongJitterMin = 0.8f;
+        private const float StreetAccentAlongJitterMax = 2.5f;
+
+        /// <summary>Chance an out-of-room lane cell whose OPPOSITE margin also exists lights
+        /// both edges -- the hand-built flagship's paired lamp rows (narpromena flanks its 26
+        /// road tiles with 96 lamps from both sides).</summary>
+        private const double StreetLampSecondSideChance = 0.65;
+
+        /// <summary>Chance the OPPOSITE margin side of a lane cell hosts its own accent after the
+        /// primary side placed one -- hand-built streets accent both margins (narshadaar_promi
+        /// ~1.05 accents per road tile against the primary roll's 0.65).</summary>
+        private const double StreetAccentSecondSideChance = 0.35;
+
+        /// <summary>Salt XORed into the layout seed for the street pass's own RNG stream (see
+        /// PlanStreetDressing) -- independent of the main planner stream (SeedSalt), the frontage
+        /// stream, and the facade-mount stream, so adding the pass shifts no existing sequence.</summary>
+        private const int StreetSeedSalt = 0x005EE71;
+
+        /// <summary>
+        /// Open-loop target-shave ceiling (decoratives per open-proxy cell, pre-facade-mounts) for
+        /// the urban dressing target -- see Plan's URBAN GROUND-FILL CEILINGS comment. Set above
+        /// the closed-loop band ceiling (<see cref="StreetFillCeilingDensity"/>) on purpose:
+        /// realization saturates under its target on mid-size compositions, so this level only
+        /// bites on the small promenade-scale grids whose realization tracks the target.
+        /// </summary>
+        private const double UrbanGroundTargetCeilingDensity = 5.0;
+
+        /// <summary>Salt XORed into the layout seed for the deferred stacked-cargo pass's own RNG
+        /// stream (see StackCargo) -- independent of every other stream, so the layer adds without
+        /// shifting any existing sequence.</summary>
+        private const int StackSeedSalt = 0x057ACC;
+
+        /// <summary>
+        /// Chance a committed pile/depot member whose entry declares a
+        /// <see cref="DungeonDecorationEntry.StackHeight"/> carries a second copy of itself
+        /// stacked directly above (see TryStackCargo). Hand-built per-resref stack rates run
+        /// 0.19-0.55 across the crate/container family (nsshipyard swd_conta003 125/167 elevated,
+        /// narscorpd _mdrn_pl_crate08 29/70, ns_comrcial_ka _mdrn_pl_conta36 59/213) -- 0.35
+        /// sits at the family aggregate; the shared per-area caps (enforced on stacked copies
+        /// too) bound the stack-heavy outlier seeds, keeping the TOTAL elevated share (stacks +
+        /// facade mounts) inside the hand-built 0.13-0.23 band. Urban grammar + standard palette
+        /// only; entries without a declared stack height draw no RNG at all.
+        /// </summary>
+        private const double CargoStackChance = 0.35;
+
         private static readonly (int Dx, int Dy)[] CardinalDirections =
         {
             (1, 0), (-1, 0), (0, 1), (0, -1)
@@ -591,6 +681,40 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             for (var i = 0; i < rooms.Count; i++)
             foreach (var tile in rooms[i].Room.Tiles)
                 tileToRoom.TryAdd(tile, i);
+
+            // URBAN GROUND-FILL CEILINGS (round-13 convergence): the family density constant is
+            // calibrated per TOTAL area tile at the packed-20 eligible-surface fraction, but the
+            // open-surface fraction varies with size/layout -- small promenade-scale grids realize
+            // a much larger fraction of the target and, with the structural channels (frontage,
+            // mounts) and the stacked-cargo/street layers on top, measured up to 6.2 decoratives
+            // per open tile against the dressed hand-built family maximum of 4.873. Two levels,
+            // both over the layout's own open-cell proxy and both inert (int.MaxValue / no clamp)
+            // outside the urban grammar so non-urban budgets stay byte-identical:
+            //
+            //  1. TARGET SHAVE (open-loop): the dressing target is clamped at
+            //     UrbanGroundTargetCeilingDensity per proxy cell (pre-mount). Deliberately set
+            //     ABOVE the band ceiling -- mechanism realization saturates well under its target
+            //     on most compositions, so a tight clamp here measurably starved mid-size
+            //     compositions (packed-20 fell to 2.25-2.7 per open tile against the dressed
+            //     band's 2.845 floor when clamped at the band ceiling itself). This level only
+            //     shaves the small-grid outliers whose realization tracks the target.
+            //  2. ADDITIVE BUDGETS (closed-loop): the deferred stacked-cargo layer and the street
+            //     pass run AFTER the room mechanisms, when the realized ground count is exact, and
+            //     stop at fillCeiling -- the dressed-band maximum converted to a pre-mount ground
+            //     count -- so the additive layers can never push a plan past the band.
+            var fillCeiling = int.MaxValue;
+            var openCellProxy = 0;
+            if (urban)
+            {
+                openCellProxy = ComputeOpenCellProxy(layout, rooms, roadCrosser);
+                if (openCellProxy > 0)
+                {
+                    fillCeiling = (int)Math.Floor(
+                        StreetFillCeilingDensity / (1.0 + BuildingFrontagePlanner.MountBudgetShare) * openCellProxy);
+                    targetCount = Math.Min(targetCount,
+                        Math.Max(0.0, UrbanGroundTargetCeilingDensity * openCellProxy - plan.Count));
+                }
+            }
 
             // PASS 1: count the eligible pool for each bucket, ignoring RNG entirely — the centerpiece/
             // doorway-flank/vignette anchor tiles' exclusion from the wall pool is intentionally not
@@ -816,6 +940,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // centerpiece, vignette, clutter piles, then rhythmic wall/corridor runs.
             var motifCache = new Dictionary<(int RoomId, DecorationContext Context), List<string>>();
 
+            // Stackable committed pile/depot members, collected during the room loop and rolled by
+            // the DEFERRED stacked-cargo pass after it (see StackCargo) -- deferral is what lets
+            // the layer respect the closed-loop fillCeiling against the EXACT realized ground
+            // count. Only ever populated under the urban grammar with a non-organic palette.
+            var stackCandidates = new List<(PlannedDecoration Member, float Height, int MaxPerArea)>();
+
             foreach (var state in rooms)
             {
                 var (room, isCorridorLike, tileSet, courtyardAnchor) =
@@ -846,13 +976,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     view.ClutterEntries.Count > 0)
                 {
                     if (PlanDepotBlock(plan, room, tileSet, view, excluded, consumedTiles, layout,
-                            roadCrosser, rng, areaUsage))
+                            roadCrosser, rng, areaUsage, stackCandidates))
                         depotBlocksPlaced++;
 
                     if (depotBlocksPlaced > 0 && room.Tiles.Count >= 12 &&
                         rng.NextDouble() < DepotSecondBlockChance &&
                         PlanDepotBlock(plan, room, tileSet, view, excluded, consumedTiles, layout,
-                            roadCrosser, rng, areaUsage))
+                            roadCrosser, rng, areaUsage, stackCandidates))
                         depotBlocksPlaced++;
                 }
 
@@ -1018,7 +1148,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                                 availableClutter.Count > 0 ? availableClutter : view.ClutterEntries, rng);
                         }
                         if (PlanClutterPile(plan, tile, tileSet, junkMotif, view.DecalEntries, rng,
-                                urban, organicSpin, IsStructureAdjacent(tile, layout), areaUsage) &&
+                                urban, organicSpin, IsStructureAdjacent(tile, layout), areaUsage,
+                                stackCandidates) &&
                             !IsStructureAdjacent(tile, layout))
                         {
                             // A piled tile is consumed so the wall runs never double-dress it --
@@ -1034,6 +1165,38 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                 PlaceWallRuns(plan, room, tileSet, isCorridorLike, layout, roadCrosser, view.ByContext, excluded,
                     consumedTiles, centerpieceAnchor, wallProbability, rng, motifCache, urban, areaUsage);
+            }
+
+            // DEFERRED STACKED-CARGO PASS (see StackCargo/CargoStackChance): rolls the collected
+            // stackable pile/depot members on its own RNG stream, stopping at the closed-loop
+            // fillCeiling -- the hand-built pattern that supplies the dressed city areas' NON-LIT
+            // elevated mass. Empty candidate list (every non-urban/organic plan) means no pass and
+            // no RNG.
+            if (stackCandidates.Count > 0)
+            {
+                StackCargo(plan, stackCandidates, new System.Random(layout.Seed ^ StackSeedSalt),
+                    areaUsage, fillCeiling);
+            }
+
+            // PASS 2c: street dressing along the carved road lanes (see PlanStreetDressing) --
+            // road-marking plates on the lane surface plus margin accents at the lane edges, the
+            // hand-built dressed-street fill the room-anchored mechanisms above cannot reach on
+            // corridor-heavy layouts. Own RNG stream (StreetSeedSalt), after every room mechanism,
+            // so nothing upstream shifts; a strict no-op for tilesets without declared
+            // StreetDressings/RoadCrosser and for NAMED profiles (a named palette is one coherent
+            // replacement statement -- the clean-city street pool stays with the standard palette).
+            if (urban && namedProfile == null && !string.IsNullOrEmpty(roadCrosser) &&
+                tileset?.StreetDressings is { Count: > 0 })
+            {
+                // The municipal lamp line's one area-wide fixture pick (cached by PlaceWallRuns
+                // under sentinel room id -1) continues onto the out-of-room lane stretches, so the
+                // line reads as one city-owned installation from plaza to plaza.
+                var areaLampResref = motifCache.TryGetValue((-1, DecorationContext.CorridorSide), out var areaLampMotif) &&
+                                     areaLampMotif.Count > 0
+                    ? areaLampMotif[0]
+                    : null;
+                PlanStreetDressing(plan, layout, tileset, rooms, excluded, consumedTiles, roadCrosser, areaUsage,
+                    fillCeiling, areaLampResref, openCellProxy);
             }
 
             // FINAL PASS: wall-mounted facade dressing (see BuildingFrontagePlanner.
@@ -1167,7 +1330,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 AllowOnRoadSurface = entry.AllowOnRoadSurface,
                 Size = entry.Size,
                 DistrictWeights = entry.DistrictWeights,
-                MaxPerArea = entry.MaxPerArea
+                MaxPerArea = entry.MaxPerArea,
+                StackHeight = entry.StackHeight
             };
         }
 
@@ -1580,6 +1744,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // entries may stand on the street ribbon -- see RoadSurfaceEligible); OnRoad is always
             // false otherwise, so non-urban bucketing is unchanged.
             var runs = new Dictionary<(DecorationContext Context, int Direction, bool OnRoad), List<(int X, int Y)>>();
+            var roadLampTiles = new List<((int X, int Y) Tile, DecorationContext Context, List<DungeonDecorationEntry> Entries)>();
 
             foreach (var tile in room.Tiles)
             {
@@ -1593,16 +1758,36 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 if (!TryResolveContext(tile, isCorridorLike, layout, roadCrosser, byContext, out var context, out var tileEntries))
                     continue;
 
-                var onRoad = false;
                 if (urban && TileCarriesRoadEdge(tile, layout, roadCrosser))
                 {
-                    if (!tileEntries.Any(e => e.AllowOnRoadSurface))
+                    // A road tile whose RESOLVED bucket curates no road-surface entries (e.g. the
+                    // DoorwayFlank upgrade near a transition -- flank clutter is never street
+                    // furniture) falls back to the CorridorSide road-legal subset: hand-built lamp
+                    // rows run right up to the gates, and the 1-2-tile gap at every transition
+                    // fragmented the line into 20m+ NN outliers at promenade scale.
+                    var roadEntries = tileEntries;
+                    var roadContext = context;
+                    if (!roadEntries.Any(e => e.AllowOnRoadSurface) &&
+                        byContext.TryGetValue(DecorationContext.CorridorSide, out var corridorEntries))
+                    {
+                        roadEntries = corridorEntries;
+                        roadContext = DecorationContext.CorridorSide;
+                    }
+
+                    if (!roadEntries.Any(e => e.AllowOnRoadSurface))
                         continue;
-                    onRoad = true;
+                    // Municipal lamp-line tiles are collected SEPARATELY from the wall-direction
+                    // buckets: bucketing them by each tile's own nearest-wall side made a 2-wide
+                    // lane's lamps alternate sides tile-by-tile (two staggered 20m-pitch rows,
+                    // lamp NN medians 12.2-12.5m at promenade scale) instead of the hand-built
+                    // straight 10m-pitch line. The lane-grouped STREETLAMP LINE block after the
+                    // run loop places them side-consistently per lane.
+                    roadLampTiles.Add((tile, roadContext, roadEntries));
+                    continue;
                 }
 
                 var direction = QuantizeDirection(wallDir.Value.Dx, wallDir.Value.Dy);
-                var key = (context, direction, onRoad);
+                var key = (context, direction, false);
                 if (!runs.TryGetValue(key, out var list))
                 {
                     list = new List<(int X, int Y)>();
@@ -1625,6 +1810,86 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // "a room repeats a small handful of fixture types" pattern PickMotif exists to encode).
             var secondaryMotifCache = new Dictionary<DecorationContext, List<string>>();
 
+            // STREETLAMP LINE: hand-built city streets repeat ONE street-light model area-wide at
+            // tile pitch -- pw_ar_narpromena carries 54x _mdrn_pl_lights3 and ns_comrcial_ka 87x
+            // _mdrn_pl_lamp4, with same-resref nearest-neighbor medians of 9.65-10.0m across the
+            // whole promenade family's lamp rows. Road lamp lines bypass the row walk entirely:
+            // one weighted pick per AREA (cached under sentinel room id -1, shared by every
+            // room's road tiles regardless of resolved context), repeated at every eligible road
+            // tile (10m pitch), no jitter, no segment gaps, no fixture swaps, no per-room repeat
+            // cap (that cap stops accidental same-fixture walls, not deliberate street
+            // furniture); an explicitly declared MaxPerArea still wins. Tiles are grouped into
+            // LANES (shared road axis + cross coordinate) and each lane offsets its lamps toward
+            // ONE consistent side -- per-tile nearest-wall sides made a 2-wide lane's lamps
+            // zigzag into two staggered 20m-pitch rows (NN 12.2-12.5m) instead of the hand-built
+            // straight line. Junction tiles belong to both axes' lanes and are lamped once.
+            if (roadLampTiles.Count > 0)
+            {
+                var firstEligible = roadLampTiles[0].Entries.Where(e => e.AllowOnRoadSurface).ToList();
+                var lampKey = (-1, DecorationContext.CorridorSide);
+                if (!motifCache.TryGetValue(lampKey, out var lampMotif))
+                {
+                    lampMotif = new List<string> { PickWeighted(firstEligible, rng) };
+                    motifCache[lampKey] = lampMotif;
+                }
+
+                var lampResref = lampMotif[0];
+                var lampedTiles = new HashSet<(int X, int Y)>();
+                var lanes = roadLampTiles
+                    .GroupBy(t => RoadAxisIsX(t.Tile, layout, roadCrosser)
+                        ? (Axis: 0, Line: t.Tile.Y)
+                        : (Axis: 1, Line: t.Tile.X))
+                    .OrderBy(g => g.Key.Axis).ThenBy(g => g.Key.Line);
+
+                foreach (var lane in lanes)
+                {
+                    var laneTiles = lane.Key.Axis == 0
+                        ? lane.OrderBy(t => t.Tile.X).ToList()
+                        : lane.OrderBy(t => t.Tile.Y).ToList();
+
+                    // The lane's one consistent side: the first lane tile whose nearest-wall
+                    // direction quantizes PERPENDICULAR to the lane axis picks it for the whole
+                    // lane; a lane with no perpendicular wall side (crossing open plaza) offsets
+                    // toward the positive perpendicular, deterministically.
+                    (float Dx, float Dy) laneSide = lane.Key.Axis == 0 ? (0f, 1f) : (1f, 0f);
+                    foreach (var t in laneTiles)
+                    {
+                        var dir = NearestWallDirection(t.Tile, tileSet);
+                        if (dir == null)
+                            continue;
+                        var quantized = QuantizeDirection(dir.Value.Dx, dir.Value.Dy);
+                        var perpendicular = lane.Key.Axis == 0 ? quantized is 2 or 3 : quantized is 0 or 1;
+                        if (!perpendicular)
+                            continue;
+                        laneSide = quantized switch
+                        {
+                            0 => (1f, 0f),
+                            1 => (-1f, 0f),
+                            2 => (0f, 1f),
+                            _ => (0f, -1f)
+                        };
+                        break;
+                    }
+
+                    foreach (var t in laneTiles)
+                    {
+                        var lampEntry = t.Entries.FirstOrDefault(e => e.Resref == lampResref);
+                        if (IsAtAreaCap(lampEntry, areaUsage))
+                            break;
+                        if (!lampedTiles.Add(t.Tile))
+                            continue;
+
+                        var lampPlacement = BuildUrbanWallPlacement(t.Tile, laneSide, lampResref,
+                            t.Context, layout, roadCrosser);
+                        if (lampPlacement == null)
+                            continue;
+
+                        plan.Add(lampPlacement);
+                        RecordUse(areaUsage, lampResref);
+                    }
+                }
+            }
+
             foreach (var ((context, direction, onRoad), tiles) in runs
                          .OrderBy(kv => kv.Key.Direction).ThenBy(kv => kv.Key.Context).ThenBy(kv => kv.Key.OnRoad))
             {
@@ -1639,59 +1904,6 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     entries = byContext.GetValueOrDefault(DecorationContext.WallAdjacent);
                 if (entries == null || entries.Count == 0)
                     continue;
-
-                // A lamp-line bucket draws exclusively from the road-surface-allowed subset; the
-                // bucketing above guarantees it is non-empty for at least the resolved context, but
-                // the WallAdjacent fallback may not curate any -- skip then.
-                if (onRoad)
-                {
-                    entries = entries.Where(e => e.AllowOnRoadSurface).ToList();
-                    if (entries.Count == 0)
-                        continue;
-
-                    // STREETLAMP LINE: hand-built city streets repeat ONE street-light model
-                    // area-wide at tile pitch -- pw_ar_narpromena carries 54x _mdrn_pl_lights3 and
-                    // ns_comrcial_ka 87x _mdrn_pl_lamp4, with same-resref nearest-neighbor medians
-                    // of 9.65-10.0m across the whole promenade family's lamp rows. The general
-                    // urban row walk below (density-derived spacing, per-segment fixture swaps,
-                    // per-room repeat caps) measured 20-26m same-resref NN medians on generated
-                    // 24/32 city areas -- scattered varied lamps instead of a continuous municipal
-                    // line. Road lamp lines therefore bypass the row walk entirely: one weighted
-                    // pick per AREA (cached under sentinel room id -1, shared by every room's road
-                    // buckets regardless of resolved context), repeated at every eligible road tile
-                    // (10m pitch), with no jitter, no segment gaps, no fixture swaps, and no
-                    // per-room repeat cap (that cap exists to stop accidental same-fixture walls,
-                    // not deliberate street furniture); an explicitly declared MaxPerArea still
-                    // wins.
-                    var lampKey = (-1, DecorationContext.CorridorSide);
-                    if (!motifCache.TryGetValue(lampKey, out var lampMotif))
-                    {
-                        lampMotif = new List<string> { PickWeighted(entries, rng) };
-                        motifCache[lampKey] = lampMotif;
-                    }
-
-                    var lampResref = lampMotif[0];
-                    var lampEntry = entries.FirstOrDefault(e => e.Resref == lampResref);
-                    foreach (var lampTile in ordered)
-                    {
-                        if (IsAtAreaCap(lampEntry, areaUsage))
-                            break;
-
-                        var lampWallDir = NearestWallDirection(lampTile, tileSet);
-                        if (lampWallDir == null)
-                            continue;
-
-                        var lampPlacement = BuildUrbanWallPlacement(lampTile, lampWallDir.Value, lampResref,
-                            context, layout, roadCrosser);
-                        if (lampPlacement == null)
-                            continue;
-
-                        plan.Add(lampPlacement);
-                        RecordUse(areaUsage, lampResref);
-                    }
-
-                    continue;
-                }
 
                 var motifKey = (room.Id, context);
                 if (!motifCache.TryGetValue(motifKey, out var motif))
@@ -2371,7 +2583,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             List<PlannedDecoration> plan, LayoutRoom room, HashSet<(int X, int Y)> tileSet,
             PaletteView view, HashSet<(int X, int Y)> excluded, HashSet<(int X, int Y)> consumedTiles,
             ResolvedLayout layout, string roadCrosser, System.Random rng,
-            Dictionary<string, int> areaUsage)
+            Dictionary<string, int> areaUsage,
+            List<(PlannedDecoration Member, float Height, int MaxPerArea)> stackCandidates = null)
         {
             var found = FindDepotSegment(room, tileSet, excluded, consumedTiles, layout, roadCrosser);
             if (found == null)
@@ -2435,6 +2648,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var perRow = (totalItems + rowCount - 1) / rowCount;
 
             var members = new List<PlannedDecoration>();
+            // Parallel per-member stack heights + per-area caps (see
+            // DungeonDecorationEntry.StackHeight) feeding the deferred stacked-cargo pass -- a
+            // depot's butt-jointed rows are exactly where hand-built industrial yards stack their
+            // second cargo tier.
+            var memberStacks = new List<(float Height, int Cap)>();
             for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
             {
                 var rowOffset = DepotWallOffset - rowIndex * DepotRowSeparation;
@@ -2461,6 +2679,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         Facing = rng.Next(4) == 0 ? (baseFacing + 90f) % 360f : baseFacing,
                         Context = DecorationContext.DepotRow
                     });
+                    memberStacks.Add((entry.StackHeight, entry.MaxPerArea));
 
                     along += DepotRowPitch * (0.95f + (float)(rng.NextDouble() * 0.2));
                 }
@@ -2499,6 +2718,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         Facing = (baseFacing + 90f * rng.Next(2)) % 360f,
                         Context = DecorationContext.DepotRow
                     });
+                    // End-of-row satellite props are loose one-offs -- never stacked.
+                    memberStacks.Add((0f, 0));
                 }
             }
 
@@ -2526,6 +2747,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             plan.AddRange(members);
             foreach (var member in members)
                 RecordUse(areaUsage, member.Resref);
+
+            // Committed rows feed the deferred stacked-cargo pass (see StackCargo): hand-built
+            // industrial yards stack a second tier over their butt-jointed cargo rows.
+            // PlanDepotBlock only ever runs under the urban grammar with a non-organic palette.
+            if (stackCandidates != null)
+            {
+                for (var i = 0; i < members.Count && i < memberStacks.Count; i++)
+                {
+                    if (memberStacks[i].Height > 0f)
+                        stackCandidates.Add((members[i], memberStacks[i].Height, memberStacks[i].Cap));
+                }
+            }
+
             foreach (var tile in segment)
                 consumedTiles.Add(tile);
 
@@ -2680,7 +2914,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             List<PlannedDecoration> plan, (int X, int Y) anchor, HashSet<(int X, int Y)> tileSet,
             List<DungeonDecorationEntry> junkMotif, List<DungeonDecorationEntry> decalEntries, System.Random rng,
             bool urban = false, bool organicSpin = false, bool structureAdjacent = false,
-            Dictionary<string, int> areaUsage = null)
+            Dictionary<string, int> areaUsage = null,
+            List<(PlannedDecoration Member, float Height, int MaxPerArea)> stackCandidates = null)
         {
             areaUsage ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var flat = TileCenter(anchor.X, anchor.Y);
@@ -2779,6 +3014,11 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // instead of shrinking the pile -- caps redistribute variety, they must not thin the
             // hand-built pile density.
             var largeInPile = 0;
+            // Parallel per-member stack heights + per-area caps (see
+            // DungeonDecorationEntry.StackHeight): height 0 for entries that never stack, so the
+            // deferred stacked-cargo pass draws no RNG for them (and none at all for non-urban
+            // palettes, which declare no stack heights).
+            var memberStacks = new List<(float Height, int Cap)>();
             var pendingUse = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             List<DungeonDecorationEntry> FilterMembers(List<DungeonDecorationEntry> source)
             {
@@ -2833,8 +3073,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         continue;
 
                     var memberResref = PickWeighted(memberPool, rng);
+                    var pickedEntry = memberPool.First(e => e.Resref == memberResref);
                     pendingUse[memberResref] = pendingUse.GetValueOrDefault(memberResref) + 1;
-                    if (memberPool.First(e => e.Resref == memberResref).Size == DecorationSize.Large)
+                    if (pickedEntry.Size == DecorationSize.Large)
                         largeInPile++;
                     members.Add(new PlannedDecoration
                     {
@@ -2844,6 +3085,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         Facing = (baseFacing + 90f * rng.Next(2)) % 360f,
                         Context = DecorationContext.ClutterPile
                     });
+                    memberStacks.Add((pickedEntry.StackHeight, pickedEntry.MaxPerArea));
                 }
             }
             else
@@ -2896,8 +3138,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         continue;
 
                     var memberResref = PickWeighted(memberPool, rng);
+                    var pickedEntry = memberPool.First(e => e.Resref == memberResref);
                     pendingUse[memberResref] = pendingUse.GetValueOrDefault(memberResref) + 1;
-                    if (memberPool.First(e => e.Resref == memberResref).Size == DecorationSize.Large)
+                    if (pickedEntry.Size == DecorationSize.Large)
                         largeInPile++;
                     members.Add(new PlannedDecoration
                     {
@@ -2906,6 +3149,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         Facing = facing,
                         Context = DecorationContext.ClutterPile
                     });
+                    memberStacks.Add((pickedEntry.StackHeight, pickedEntry.MaxPerArea));
                 }
             }
 
@@ -2929,7 +3173,478 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // per-area budget.
             foreach (var member in members)
                 RecordUse(areaUsage, member.Resref);
+
+            // Committed members whose entries declare a StackHeight feed the deferred
+            // stacked-cargo pass (see StackCargo) -- the hand-built pattern that supplies the
+            // dressed city areas' NON-LIT elevated mass. Organic ruined junk never stacks neatly;
+            // non-urban palettes declare no stack heights, so the candidate list stays empty and
+            // the deferred pass never runs (no RNG anywhere).
+            if (urban && !organicSpin && stackCandidates != null)
+            {
+                for (var i = 0; i < members.Count && i < memberStacks.Count; i++)
+                {
+                    if (memberStacks[i].Height > 0f)
+                        stackCandidates.Add((members[i], memberStacks[i].Height, memberStacks[i].Cap));
+                }
+            }
             return true;
+        }
+
+        /// <summary>
+        /// DEFERRED stacked-cargo pass over the room loop's collected candidates: each committed
+        /// pile/depot member whose palette entry declares a
+        /// <see cref="DungeonDecorationEntry.StackHeight"/> rolls
+        /// <see cref="CargoStackChance"/> and, on success, places ONE copy of the same resref
+        /// directly above its base copy at the declared Z step, sharing the base bearing -- the
+        /// hand-built stacked-cargo pattern (nsshipyard stacks swd_conta003 at Z 0.96 over 125 of
+        /// its 167 copies; narscorpd _mdrn_pl_crate08 at ~1.46). Runs AFTER every room mechanism
+        /// on its own RNG stream so the closed-loop fill ceiling compares against the EXACT
+        /// realized ground count; stacked copies are real placements and count against the shared
+        /// per-area ledger (whose caps were mined from hand-built totals INCLUDING elevated
+        /// copies).
+        /// </summary>
+        private static void StackCargo(
+            List<PlannedDecoration> plan, List<(PlannedDecoration Member, float Height, int MaxPerArea)> candidates,
+            System.Random rng, Dictionary<string, int> areaUsage, int fillCeiling)
+        {
+            foreach (var (member, stackHeight, maxPerArea) in candidates)
+            {
+                // Closed-loop urban ground-fill ceiling (see Plan's fillCeiling): stacking stops
+                // once the plan reaches the dressed-band pre-mount ground count.
+                if (plan.Count >= fillCeiling)
+                    return;
+
+                // The shared per-area cap holds for stacked copies too -- the hand-built caps
+                // were mined from per-area totals INCLUDING elevated copies.
+                if (maxPerArea > 0 && areaUsage.GetValueOrDefault(member.Resref) >= maxPerArea)
+                    continue;
+
+                if (rng.NextDouble() >= CargoStackChance)
+                    continue;
+
+                plan.Add(new PlannedDecoration
+                {
+                    Resref = member.Resref,
+                    Position = new Vector3(member.Position.X, member.Position.Y, stackHeight),
+                    Facing = member.Facing,
+                    Context = member.Context
+                });
+                RecordUse(areaUsage, member.Resref);
+            }
+        }
+
+        /// <summary>
+        /// STREET-DRESSING pass (urban grammar, standard palette only -- see
+        /// <see cref="DungeonTilesetProfile.StreetDressings"/>): dresses every eligible carved
+        /// road-lane cell -- in-room street ribbons AND the out-of-room lane stretches between
+        /// plazas that no room-anchored mechanism can reach -- with the two hand-built street
+        /// layers the municipal lamp line doesn't cover:
+        ///
+        ///  1. ROAD-MARKING plates laid flat ON the lane surface, jittered along the lane axis and
+        ///     cardinal-aligned with it (hand-built: swd_florrd01 at 23/26 road tiles on
+        ///     pw_ar_narpromena, 44/38 on pw_ar_nsshipyard, 37/35 on pw_ar_narscorpd, 100%
+        ///     cardinal). Flat paint -- the ribbon stays a clear walkway.
+        ///  2. MARGIN ACCENTS (trash cans/barriers/consoles/holo signs) standing at the lane
+        ///     cell's margin edge (a perpendicular side whose neighbor is neither open room nor
+        ///     lane -- building faces and rim walls), offset like the lamp line but jittered
+        ///     along-axis so they flank the lamps, facing back into the street (hand-built:
+        ///     narpromena 22 swd_trash01 on its 26 road tiles, ns_comrcial_ka 40 _mdrn_pl_barrimw
+        ///     on 63, narshadaar_promi trash/barrier/console/holo at ~1 per road tile).
+        ///
+        /// Budget honesty: the pass fills TOWARD the dressed hand-built family band and never past
+        /// it -- placements stop at <see cref="StreetFillCeilingDensity"/> (pre-facade-mount)
+        /// times the layout's open-cell proxy, so corridor-heavy compositions (whose room-anchored
+        /// mechanisms saturate far below the band -- complex-city 32 measured 2.1-2.6 per open
+        /// tile against the dressed band's 2.85 floor) gain the street layer while compositions
+        /// already at the band's top (packed city 24, measured ~4.6) receive little or nothing.
+        /// Own RNG stream (<see cref="StreetSeedSalt"/>); per-resref caps count against the shared
+        /// per-area usage ledger.
+        /// </summary>
+        private static void PlanStreetDressing(
+            List<PlannedDecoration> plan, ResolvedLayout layout, DungeonTilesetProfile tileset,
+            List<RoomState> rooms, HashSet<(int X, int Y)> excluded, HashSet<(int X, int Y)> consumedTiles,
+            string roadCrosser, Dictionary<string, int> areaUsage, int fillCeiling, string areaLampResref,
+            int openCellProxy)
+        {
+            var stamped = layout.StampedStructureTiles ?? new HashSet<(int X, int Y)>();
+            var occupied = layout.PlaceableStructureCells ?? new HashSet<(int X, int Y)>();
+            var featureCells = layout.FeatureTileCells;
+
+            var roomTiles = new HashSet<(int X, int Y)>();
+            foreach (var state in rooms)
+                roomTiles.UnionWith(state.TileSet);
+
+            // Eligible street cells, in deterministic scan order: every cell whose own edges carry
+            // the carved road crosser, excluding transition approaches (doorway clarity), stamped/
+            // frontage-occupied structure cells, dressed feature cells, and cells an earlier
+            // mechanism already consumed.
+            var streetCells = new List<(int X, int Y)>();
+            // Near-doorway lane cells host the LAMP LINE only (hand-built streets run their lamp
+            // rows right up to the gates; a 1-2-cell lamp gap at every transition fragmented the
+            // line into 20-30m NN outliers at promenade scale) -- markings/accents still keep the
+            // doorway approach clear.
+            var lampOnlyCells = new List<(int X, int Y)>();
+            for (var y = 0; y < layout.Height; y++)
+            for (var x = 0; x < layout.Width; x++)
+            {
+                var cell = (X: x, Y: y);
+                if (!TileCarriesRoadEdge(cell, layout, roadCrosser))
+                    continue;
+                if (excluded.Contains(cell) || consumedTiles.Contains(cell) ||
+                    stamped.Contains(cell) || occupied.Contains(cell))
+                    continue;
+                if (featureCells != null && featureCells.ContainsKey(cell))
+                    continue;
+                if (IsNearDoorway(cell, layout))
+                {
+                    lampOnlyCells.Add(cell);
+                    continue;
+                }
+
+                streetCells.Add(cell);
+            }
+
+            if (streetCells.Count == 0 && lampOnlyCells.Count == 0)
+                return;
+
+            // Shared urban ground-fill ceiling (see Plan's fillCeiling): the street layer stops at
+            // the dressed-band pre-mount ground count -- compositions already at the band's top
+            // receive little or nothing.
+            var ceiling = fillCeiling == int.MaxValue ? int.MaxValue : fillCeiling - plan.Count;
+            if (ceiling <= 0)
+                return;
+
+            var markings = tileset.StreetDressings.Where(e => e.Kind == StreetDressingKind.RoadMarking).ToList();
+            var accents = tileset.StreetDressings.Where(e => e.Kind == StreetDressingKind.MarginAccent).ToList();
+            var rng = new System.Random(layout.Seed ^ StreetSeedSalt);
+            var placedCount = 0;
+
+            // MUNICIPAL LAMP-LINE CONTINUATION: the in-room lamp line (see PlaceWallRuns'
+            // STREETLAMP LINE block) stops at each room's border, so at promenade scale the line
+            // fragmented at every out-of-room lane stretch -- lamp nearest-neighbor medians
+            // measured 11-23m on 12-20 grids against the hand-built rows' 9.65-10.0m pitch. The
+            // same area-wide fixture continues here over the out-of-room lane cells, grouped into
+            // lanes with ONE consistent margin side each, at the same 10m tile pitch. Falls back
+            // to a weighted pick from the palette's own road-surface lamp family when no in-room
+            // line ran (deterministic, street-stream RNG).
+            var outOfRoomCells = streetCells.Concat(lampOnlyCells)
+                .Where(c => !roomTiles.Contains(c))
+                .OrderBy(c => c.Y).ThenBy(c => c.X)
+                .ToList();
+            // Lamp budget: the dressed hand-built lamp ratio tops out at 0.676 per open tile
+            // (narpromena); the continuation stops at 0.5 per open-proxy cell -- the proxy runs
+            // up to ~15% above the benchmark's own open-tile denominator on lane-heavy layouts,
+            // so the margin keeps lamp-rich seeds (many short lanes) under the band ceiling.
+            var lampBudget = openCellProxy > 0 ? (int)Math.Floor(0.5 * openCellProxy) : int.MaxValue;
+            if (outOfRoomCells.Count > 0)
+            {
+                var lampPool = (tileset.Decorations ?? new List<DungeonDecorationEntry>())
+                    .Where(e => e.AllowOnRoadSurface)
+                    .ToList();
+                var lampResref = areaLampResref;
+                if (lampResref == null && lampPool.Count > 0)
+                    lampResref = PickWeighted(lampPool, rng);
+
+                if (lampResref != null)
+                {
+                    var lampEntry = lampPool.FirstOrDefault(e =>
+                        string.Equals(e.Resref, lampResref, StringComparison.OrdinalIgnoreCase));
+                    var lanes = outOfRoomCells
+                        .GroupBy(c => RoadAxisIsX(c, layout, roadCrosser)
+                            ? (Axis: 0, Line: c.Y)
+                            : (Axis: 1, Line: c.X))
+                        .OrderBy(g => g.Key.Axis).ThenBy(g => g.Key.Line);
+
+                    foreach (var lane in lanes)
+                    {
+                        var laneCells = lane.Key.Axis == 0
+                            ? lane.OrderBy(c => c.X).ToList()
+                            : lane.OrderBy(c => c.Y).ToList();
+
+                        // One consistent side per lane: the first cell with a real margin picks it.
+                        (int Dx, int Dy)? laneSide = null;
+                        foreach (var c in laneCells)
+                        {
+                            laneSide = StreetMarginDirection(c, lane.Key.Axis == 0, roomTiles, layout, roadCrosser);
+                            if (laneSide != null)
+                                break;
+                        }
+
+                        if (laneSide == null)
+                            continue;
+
+                        foreach (var c in laneCells)
+                        {
+                            if (placedCount >= ceiling)
+                                break;
+                            if (IsAtAreaCap(lampEntry, areaUsage))
+                                break;
+                            if (areaUsage.GetValueOrDefault(lampResref) >= lampBudget)
+                                break;
+
+                            var lampCenter = TileCenter(c.X, c.Y);
+                            plan.Add(new PlannedDecoration
+                            {
+                                Resref = lampResref,
+                                Position = new Vector3(
+                                    lampCenter.X + laneSide.Value.Dx * WallOffset,
+                                    lampCenter.Y + laneSide.Value.Dy * WallOffset,
+                                    0f),
+                                Facing = CardinalFacing(-laneSide.Value.Dx, -laneSide.Value.Dy),
+                                Context = DecorationContext.CorridorSide
+                            });
+                            RecordUse(areaUsage, lampResref);
+                            placedCount++;
+
+                            // TWO-SIDED lane lighting where both margins exist: the hand-built
+                            // flagship runs paired lamp rows (narpromena's 96 lamps flank 26 road
+                            // tiles from both edges; family NN medians reach 4.95m from exactly
+                            // this cross-street pairing). Budget-gated like the primary row.
+                            var oppositeSide = (Dx: -laneSide.Value.Dx, Dy: -laneSide.Value.Dy);
+                            var oppositeNeighbor = (c.X + oppositeSide.Dx, c.Y + oppositeSide.Dy);
+                            if (placedCount < ceiling &&
+                                !roomTiles.Contains(oppositeNeighbor) &&
+                                !TileCarriesRoadEdge(oppositeNeighbor, layout, roadCrosser) &&
+                                areaUsage.GetValueOrDefault(lampResref) < lampBudget &&
+                                !IsAtAreaCap(lampEntry, areaUsage) &&
+                                rng.NextDouble() < StreetLampSecondSideChance)
+                            {
+                                plan.Add(new PlannedDecoration
+                                {
+                                    Resref = lampResref,
+                                    Position = new Vector3(
+                                        lampCenter.X + oppositeSide.Dx * WallOffset,
+                                        lampCenter.Y + oppositeSide.Dy * WallOffset,
+                                        0f),
+                                    Facing = CardinalFacing(-oppositeSide.Dx, -oppositeSide.Dy),
+                                    Context = DecorationContext.CorridorSide
+                                });
+                                RecordUse(areaUsage, lampResref);
+                                placedCount++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var cell in streetCells)
+            {
+                if (placedCount >= ceiling)
+                    break;
+
+                var alongX = RoadAxisIsX(cell, layout, roadCrosser);
+                var center = TileCenter(cell.X, cell.Y);
+
+                if (markings.Count > 0 && rng.NextDouble() < RoadMarkingChance)
+                {
+                    var pool = UnderStreetCap(markings, areaUsage);
+                    if (pool.Count > 0)
+                    {
+                        var entry = PickWeightedStreet(pool, rng);
+                        var along = (float)(rng.NextDouble() * 2.0 - 1.0) * RoadMarkingAlongJitter;
+                        var cross = (float)(rng.NextDouble() * 2.0 - 1.0) * RoadMarkingCrossJitter;
+                        plan.Add(new PlannedDecoration
+                        {
+                            Resref = entry.Resref,
+                            Position = alongX
+                                ? new Vector3(center.X + along, center.Y + cross, 0f)
+                                : new Vector3(center.X + cross, center.Y + along, 0f),
+                            Facing = alongX ? 0f : 90f,
+                            Context = DecorationContext.RoadMarking
+                        });
+                        RecordUse(areaUsage, entry.Resref);
+                        placedCount++;
+
+                        // The heaviest-paved hand-built streets exceed one plate per road tile
+                        // (nsshipyard 44/38, narscorpd 37/35) -- a second plate rolls at the
+                        // OPPOSITE along-axis half of the cell so the pair reads as lane paving,
+                        // never a z-fighting overlap.
+                        if (placedCount < ceiling && rng.NextDouble() < RoadMarkingSecondChance)
+                        {
+                            var pool2 = UnderStreetCap(markings, areaUsage);
+                            if (pool2.Count > 0)
+                            {
+                                var entry2 = PickWeightedStreet(pool2, rng);
+                                var along2 = (RoadMarkingAlongJitter + 0.6f +
+                                              (float)rng.NextDouble() * 1.2f) * (along >= 0f ? -1f : 1f);
+                                var cross2 = (float)(rng.NextDouble() * 2.0 - 1.0) * RoadMarkingCrossJitter;
+                                plan.Add(new PlannedDecoration
+                                {
+                                    Resref = entry2.Resref,
+                                    Position = alongX
+                                        ? new Vector3(center.X + along2, center.Y + cross2, 0f)
+                                        : new Vector3(center.X + cross2, center.Y + along2, 0f),
+                                    Facing = alongX ? 0f : 90f,
+                                    Context = DecorationContext.RoadMarking
+                                });
+                                RecordUse(areaUsage, entry2.Resref);
+                                placedCount++;
+                            }
+                        }
+                    }
+                }
+
+                if (placedCount >= ceiling)
+                    break;
+
+                if (accents.Count > 0 && rng.NextDouble() < StreetAccentChance)
+                {
+                    var margin = StreetMarginDirection(cell, alongX, roomTiles, layout, roadCrosser);
+                    if (margin == null)
+                        continue;
+
+                    if (PlaceStreetAccent(plan, accents, cell, center, margin.Value, alongX, rng, areaUsage))
+                        placedCount++;
+
+                    // Hand-built streets accent BOTH margins (narshadaar_promi ~1.05 accents per
+                    // road tile; both lamp families flank narpromena's lanes) -- when the opposite
+                    // perpendicular side is margin too, it rolls its own (rarer) accent.
+                    var opposite = (Dx: -margin.Value.Dx, Dy: -margin.Value.Dy);
+                    var oppositeNeighbor = (cell.X + opposite.Dx, cell.Y + opposite.Dy);
+                    if (placedCount < ceiling &&
+                        !roomTiles.Contains(oppositeNeighbor) &&
+                        !TileCarriesRoadEdge(oppositeNeighbor, layout, roadCrosser) &&
+                        rng.NextDouble() < StreetAccentSecondSideChance &&
+                        PlaceStreetAccent(plan, accents, cell, center, opposite, alongX, rng, areaUsage))
+                        placedCount++;
+                }
+            }
+        }
+
+        /// <summary>Places one street-margin accent at the given perpendicular margin side of a
+        /// lane cell, jittered along the lane axis clear of the lamp line's face-center point,
+        /// facing back into the street. Returns false when every accent entry is at its cap.</summary>
+        private static bool PlaceStreetAccent(
+            List<PlannedDecoration> plan, List<StreetDressingEntry> accents, (int X, int Y) cell,
+            Vector3 center, (int Dx, int Dy) margin, bool alongX, System.Random rng,
+            Dictionary<string, int> areaUsage)
+        {
+            var pool = UnderStreetCap(accents, areaUsage);
+            if (pool.Count == 0)
+                return false;
+
+            var entry = PickWeightedStreet(pool, rng);
+            var magnitude = StreetAccentAlongJitterMin +
+                            (float)rng.NextDouble() * (StreetAccentAlongJitterMax - StreetAccentAlongJitterMin);
+            var along = rng.NextDouble() < 0.5 ? -magnitude : magnitude;
+            plan.Add(new PlannedDecoration
+            {
+                Resref = entry.Resref,
+                Position = new Vector3(
+                    center.X + margin.Dx * WallOffset + (alongX ? along : 0f),
+                    center.Y + margin.Dy * WallOffset + (alongX ? 0f : along),
+                    0f),
+                Facing = CardinalFacing(-margin.Dx, -margin.Dy),
+                Context = DecorationContext.StreetAccent
+            });
+            RecordUse(areaUsage, entry.Resref);
+            return true;
+        }
+
+        /// <summary>
+        /// Open-cell proxy for the urban ground-fill ceiling: dressable room tiles (minus stamped
+        /// structure footprints, frontage-occupied cells, and dressed feature cells) plus the
+        /// out-of-room carved road-lane cells -- the same surface the family density band's
+        /// per-open-tile denominator measures, to the extent the planner can see it.
+        /// </summary>
+        private static int ComputeOpenCellProxy(ResolvedLayout layout, List<RoomState> rooms, string roadCrosser)
+        {
+            var stamped = layout.StampedStructureTiles ?? new HashSet<(int X, int Y)>();
+            var occupied = layout.PlaceableStructureCells ?? new HashSet<(int X, int Y)>();
+            var featureCells = layout.FeatureTileCells;
+
+            var roomTiles = new HashSet<(int X, int Y)>();
+            foreach (var state in rooms)
+                roomTiles.UnionWith(state.TileSet);
+
+            var openProxy = 0;
+            foreach (var tile in roomTiles)
+            {
+                if (!stamped.Contains(tile) && !occupied.Contains(tile) &&
+                    (featureCells == null || !featureCells.ContainsKey(tile)))
+                    openProxy++;
+            }
+
+            if (!string.IsNullOrEmpty(roadCrosser))
+            {
+                for (var y = 0; y < layout.Height; y++)
+                for (var x = 0; x < layout.Width; x++)
+                {
+                    var cell = (X: x, Y: y);
+                    if (roomTiles.Contains(cell) || stamped.Contains(cell) || occupied.Contains(cell))
+                        continue;
+                    if (TileCarriesRoadEdge(cell, layout, roadCrosser))
+                        openProxy++;
+                }
+            }
+
+            return openProxy;
+        }
+
+        /// <summary>
+        /// True when the carved road crosser runs along the X axis through this cell (crosser on
+        /// the Left/Right edges -- an east-west lane crosses the cell's vertical edges); false for
+        /// a north-south lane. Junction cells (both axes) report X, deterministically.
+        /// </summary>
+        private static bool RoadAxisIsX((int X, int Y) cell, ResolvedLayout layout, string roadCrosser)
+        {
+            return string.Equals(layout.Crossers.GetEdge(cell.X, cell.Y, EdgeSlot.Left), roadCrosser, System.StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(layout.Crossers.GetEdge(cell.X, cell.Y, EdgeSlot.Right), roadCrosser, System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// The margin side a street accent stands against: a direction perpendicular to the lane
+        /// axis whose neighbor cell is genuinely margin -- not open room space and not another
+        /// lane cell (building faces, rim walls, and the grid edge all qualify). Deterministic
+        /// probe order; null when both perpendicular sides are open (a lane crossing a plaza
+        /// interior keeps its flanks clear).
+        /// </summary>
+        private static (int Dx, int Dy)? StreetMarginDirection(
+            (int X, int Y) cell, bool alongX, HashSet<(int X, int Y)> roomTiles,
+            ResolvedLayout layout, string roadCrosser)
+        {
+            var probes = alongX
+                ? new[] { (Dx: 0, Dy: 1), (Dx: 0, Dy: -1) }
+                : new[] { (Dx: 1, Dy: 0), (Dx: -1, Dy: 0) };
+
+            foreach (var dir in probes)
+            {
+                var neighbor = (cell.X + dir.Dx, cell.Y + dir.Dy);
+                if (roomTiles.Contains(neighbor))
+                    continue;
+                if (TileCarriesRoadEdge(neighbor, layout, roadCrosser))
+                    continue;
+
+                return dir;
+            }
+
+            return null;
+        }
+
+        private static List<StreetDressingEntry> UnderStreetCap(
+            List<StreetDressingEntry> entries, Dictionary<string, int> areaUsage)
+        {
+            return entries
+                .Where(e => e.MaxPerArea <= 0 || areaUsage.GetValueOrDefault(e.Resref) < e.MaxPerArea)
+                .ToList();
+        }
+
+        private static StreetDressingEntry PickWeightedStreet(List<StreetDressingEntry> entries, System.Random rng)
+        {
+            var total = entries.Sum(e => e.Weight);
+            if (total <= 0)
+                return entries[0];
+
+            var roll = rng.Next(total);
+            var cumulative = 0;
+            foreach (var entry in entries)
+            {
+                cumulative += entry.Weight;
+                if (roll < cumulative)
+                    return entry;
+            }
+
+            return entries[^1];
         }
 
         /// <summary>

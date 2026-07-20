@@ -123,7 +123,21 @@ public class UrbanDressingCompositionTests
         var entries = profileName != null && tileset.DecorationProfiles.TryGetValue(profileName, out var named)
             ? named.Decorations
             : tileset.Decorations;
-        return entries.Where(e => e.AllowOnRoadSurface).Select(e => e.Resref).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var allowed = entries.Where(e => e.AllowOnRoadSurface).Select(e => e.Resref)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // The declared street-dressing pool (DungeonTilesetProfile.StreetDressings) is the second
+        // explicitly street-legal class: flat road-marking plates laid ON the lane plus margin
+        // accents at the lane edges -- the hand-built dressed-street inventory (narpromena/
+        // nsshipyard/narscorpd pave ~1 marking plate per road tile with trash/barrier accents
+        // flanking the lamps). Standard palette only: named profiles never run the street pass.
+        if (profileName == null)
+        {
+            foreach (var entry in tileset.StreetDressings)
+                allowed.Add(entry.Resref);
+        }
+
+        return allowed;
     }
 
     /// <summary>Resrefs curated ONLY by the ruined profile (the destruction content) -- the set the
@@ -544,6 +558,9 @@ public class UrbanDressingCompositionTests
             // facade mounts are family-curated content too, just outside the dressing palette.
             .Concat(c.Tileset.FrontageBuildings.Select(e => e.Resref))
             .Concat(c.Tileset.FacadeMounts.Select(e => e.Resref))
+            // The street-dressing pool (road-marking plates + margin accents) is family-curated
+            // the same way -- see DungeonTilesetProfile.StreetDressings.
+            .Concat(c.Tileset.StreetDressings.Select(e => e.Resref))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         for (var i = 0; i < SeedCount; i++)

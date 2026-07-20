@@ -7,6 +7,35 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerFacingNameBroadcastTests
 {
     [Test]
+    public void CommsChannel_UsesOneCommsLabelWithoutExposingPlayerNames()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Communication.cs"));
+        var normalizedSource = source.Replace("\r\n", "\n");
+
+        source.Should().Contain("private const int PartyChatChannelNameStrRef = 66755;");
+        source.Should().Contain("private const string CommsChannelName = \"Comms\";");
+        var moduleEnterHandlerIndex = normalizedSource.IndexOf("[NWNEventHandler(ScriptName.OnModuleEnter)]", StringComparison.Ordinal);
+        var applyChannelNameIndex = normalizedSource.IndexOf("public static void ApplyCommsChannelName()", StringComparison.Ordinal);
+        var applyTlkOverrideIndex = normalizedSource.IndexOf(
+            "PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);",
+            StringComparison.Ordinal);
+        moduleEnterHandlerIndex.Should().BeGreaterThanOrEqualTo(0);
+        applyChannelNameIndex.Should().BeGreaterThan(moduleEnterHandlerIndex);
+        applyTlkOverrideIndex.Should().BeGreaterThan(applyChannelNameIndex);
+        normalizedSource.Should().Contain("var player = GetEnteringObject();");
+        normalizedSource.Should().Contain("if (!GetIsPC(player))");
+
+        source.Should().NotContain("finalMessage.Append(\"[Comms] \");");
+        source.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
+        source.Should().NotContain("ChatChannel.DMTalk");
+    }
+
+    [Test]
     public void CombatAndSpaceBroadcasts_DoNotInterpolateRawPlayerNames()
     {
         var root = FindRepositoryRoot();

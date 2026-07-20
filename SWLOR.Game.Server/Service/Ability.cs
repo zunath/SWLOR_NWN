@@ -351,7 +351,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Must be within line of sight.
-            if (GetIsObjectValid(target) && !HasAbilityLineOfSight(activator, target))
+            if (ability.RequiresTarget &&
+                GetIsObjectValid(target) &&
+                !HasAbilityLineOfSight(activator, target))
             {
                 SendMessageToPC(activator, "You cannot see your target.");
                 return false;
@@ -378,8 +380,27 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            // Range check. Targetless activations, such as self buffs, queued attacks,
-            // and ground-targeted areas, should not validate against a synthetic target.
+            // Aimed areas use the feat's location cursor. They must not use RequiresTarget,
+            // because empty-ground casts have no target object and object range/hostility checks
+            // do not describe a selected location or direction.
+            if (ability.RequiresLocationTarget)
+            {
+                var targetArea = GetAreaFromLocation(targetLocation);
+                if (!GetIsObjectValid(targetArea) || targetArea != GetArea(activator))
+                {
+                    SendMessageToPC(activator, "A target location in your current area is required.");
+                    return false;
+                }
+
+                if (ability.HasExplicitMaxRange &&
+                    GetDistanceBetweenLocations(GetLocation(activator), targetLocation) > ability.MaxRange)
+                {
+                    SendMessageToPC(activator, "You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
+                    return false;
+                }
+            }
+
+            // Object range check. Location-targeted areas are validated separately above.
             if (ability.RequiresTarget &&
                 GetIsObjectValid(target) &&
                 GetDistanceBetween(activator, target) > ability.MaxRange)

@@ -478,6 +478,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder HasMaxRange(float maxRange)
         {
             _activeAbility.MaxRange = maxRange;
+            _activeAbility.HasExplicitMaxRange = true;
             return this;
         }
 
@@ -741,18 +742,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 flags,
                 sizeResolver,
                 updatesClientTargeting);
-
-            var originatesOnSelf =
-                (flags & AbilityTargetingFlags.OriginOnSelf) == AbilityTargetingFlags.OriginOnSelf;
-            var requiresManualAreaTarget =
-                shape is AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone ||
-                shape == AbilityTargetingShapeType.Sphere && !originatesOnSelf;
-            if (updatesClientTargeting &&
-                _activeAbility.ActivationType != AbilityActivationType.Weapon &&
-                requiresManualAreaTarget)
-            {
-                _activeAbility.RequiresTarget = true;
-            }
 
             return this;
         }

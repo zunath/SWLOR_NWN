@@ -45,7 +45,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     4f,
                     AbilityTargetingFlags.HarmsEnemies,
                     DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
-                .RequiresTarget()
                 .HasImpactAction(AdhesiveGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -71,7 +70,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     4f,
                     AbilityTargetingFlags.HarmsEnemies,
                     DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
-                .RequiresTarget()
                 .HasImpactAction(AdhesiveGrenade2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

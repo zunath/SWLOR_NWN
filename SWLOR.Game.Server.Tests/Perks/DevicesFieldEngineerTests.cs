@@ -65,33 +65,33 @@ public class DevicesFieldEngineerTests
     public void DevicesFieldEngineerAbilities_MatchCombatBible()
     {
         var blasterBeacon = new BlasterBeaconAbilityDefinition().BuildAbilities();
-        AssertAbility(blasterBeacon[FeatType.BlasterBeacon1], "Blaster Beacon I", 1, RecastGroup.BlasterBeacon, 45f, 1.5f, 3, true, true, false, true);
-        AssertAbility(blasterBeacon[FeatType.BlasterBeacon2], "Blaster Beacon II", 2, RecastGroup.BlasterBeacon, 45f, 1.5f, 4, true, true, false, true);
-        AssertAbility(blasterBeacon[FeatType.BlasterBeacon3], "Blaster Beacon III", 3, RecastGroup.BlasterBeacon, 45f, 1.5f, 6, true, true, false, true);
+        AssertAbility(blasterBeacon[FeatType.BlasterBeacon1], "Blaster Beacon I", 1, RecastGroup.BlasterBeacon, 45f, 1.5f, 3, true, true, false, false);
+        AssertAbility(blasterBeacon[FeatType.BlasterBeacon2], "Blaster Beacon II", 2, RecastGroup.BlasterBeacon, 45f, 1.5f, 4, true, true, false, false);
+        AssertAbility(blasterBeacon[FeatType.BlasterBeacon3], "Blaster Beacon III", 3, RecastGroup.BlasterBeacon, 45f, 1.5f, 6, true, true, false, false);
         AssertBeaconTargetingResolver(blasterBeacon[FeatType.BlasterBeacon1]);
         AssertBeaconTargetingResolver(blasterBeacon[FeatType.BlasterBeacon2]);
         AssertBeaconTargetingResolver(blasterBeacon[FeatType.BlasterBeacon3]);
 
         var incendiaryField = new IncendiaryFieldAbilityDefinition().BuildAbilities();
-        AssertAbility(incendiaryField[FeatType.IncendiaryField1], "Incendiary Field I", 1, RecastGroup.IncendiaryField, 30f, 1.5f, 4, true, true, false, true);
-        AssertAbility(incendiaryField[FeatType.IncendiaryField2], "Incendiary Field II", 2, RecastGroup.IncendiaryField, 30f, 1.5f, 5, true, true, false, true);
-        AssertAbility(incendiaryField[FeatType.IncendiaryField3], "Incendiary Field III", 3, RecastGroup.IncendiaryField, 30f, 1.5f, 7, true, true, false, true);
+        AssertAbility(incendiaryField[FeatType.IncendiaryField1], "Incendiary Field I", 1, RecastGroup.IncendiaryField, 30f, 1.5f, 4, true, true, false, false);
+        AssertAbility(incendiaryField[FeatType.IncendiaryField2], "Incendiary Field II", 2, RecastGroup.IncendiaryField, 30f, 1.5f, 5, true, true, false, false);
+        AssertAbility(incendiaryField[FeatType.IncendiaryField3], "Incendiary Field III", 3, RecastGroup.IncendiaryField, 30f, 1.5f, 7, true, true, false, false);
 
         var remoteCharge = new RemoteChargeAbilityDefinition().BuildAbilities();
-        AssertAbility(remoteCharge[FeatType.RemoteCharge1], "Remote Charge I", 1, RecastGroup.RemoteCharge, 18f, 1f, 4, true, true, false, true);
-        AssertAbility(remoteCharge[FeatType.RemoteCharge2], "Remote Charge II", 2, RecastGroup.RemoteCharge, 18f, 1f, 5, true, true, false, true);
+        AssertAbility(remoteCharge[FeatType.RemoteCharge1], "Remote Charge I", 1, RecastGroup.RemoteCharge, 18f, 1f, 4, true, true, false, false);
+        AssertAbility(remoteCharge[FeatType.RemoteCharge2], "Remote Charge II", 2, RecastGroup.RemoteCharge, 18f, 1f, 5, true, true, false, false);
 
         var signalJammer = new SignalJammerAbilityDefinition().BuildAbilities();
-        AssertAbility(signalJammer[FeatType.SignalJammer1], "Signal Jammer", 1, RecastGroup.SignalJammer, 24f, 1.5f, 4, true, true, false, true);
+        AssertAbility(signalJammer[FeatType.SignalJammer1], "Signal Jammer", 1, RecastGroup.SignalJammer, 24f, 1.5f, 4, true, true, false, false);
 
         var shockBeacon = new ShockBeaconAbilityDefinition().BuildAbilities();
-        AssertAbility(shockBeacon[FeatType.ShockBeacon1], "Shock Beacon I", 1, RecastGroup.ShockBeacon, 36f, 1.5f, 5, true, true, false, true);
-        AssertAbility(shockBeacon[FeatType.ShockBeacon2], "Shock Beacon II", 2, RecastGroup.ShockBeacon, 36f, 1.5f, 6, true, true, false, true);
+        AssertAbility(shockBeacon[FeatType.ShockBeacon1], "Shock Beacon I", 1, RecastGroup.ShockBeacon, 36f, 1.5f, 5, true, true, false, false);
+        AssertAbility(shockBeacon[FeatType.ShockBeacon2], "Shock Beacon II", 2, RecastGroup.ShockBeacon, 36f, 1.5f, 6, true, true, false, false);
         AssertBeaconTargetingResolver(shockBeacon[FeatType.ShockBeacon1]);
         AssertBeaconTargetingResolver(shockBeacon[FeatType.ShockBeacon2]);
 
         var killzoneBeacon = new KillzoneBeaconAbilityDefinition().BuildAbilities();
-        AssertAbility(killzoneBeacon[FeatType.KillzoneBeacon1], "Killzone Beacon", 1, RecastGroup.Capstone, 90f, 2f, 15, true, true, false, true);
+        AssertAbility(killzoneBeacon[FeatType.KillzoneBeacon1], "Killzone Beacon", 1, RecastGroup.Capstone, 90f, 2f, 15, true, true, false, false);
         AssertBeaconTargetingResolver(killzoneBeacon[FeatType.KillzoneBeacon1]);
     }
 

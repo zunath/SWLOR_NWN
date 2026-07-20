@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool BreaksStealth { get; set; }
         public bool PreservesStealthDuringActivation { get; set; }
         public bool RequiresTarget { get; set; }
+        public bool HasExplicitMaxRange { get; set; }
         public bool UsesActiveAttackTarget { get; set; }
         public int AbilityLevel { get; set; }
         public SkillType SkillType { get; set; }
@@ -63,6 +64,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public FeatType MimicrySourceFeat { get; set; }
         public int MimicrySkillRequirement { get; set; }
         public int MimicrySlotCost { get; set; }
+
+        /// <summary>
+        /// True when this area ability uses a player-selected location or direction. This is
+        /// deliberately separate from <see cref="RequiresTarget"/>, which requires a real target
+        /// object and activates object hostility and range validation.
+        /// </summary>
+        public bool RequiresLocationTarget =>
+            !RequiresTarget &&
+            IsAreaAbility &&
+            ActivationType != AbilityActivationType.Weapon &&
+            Targeting is { UpdatesClientTargeting: true } &&
+            (Targeting.Shape is AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone ||
+             Targeting.Shape == AbilityTargetingShapeType.Sphere &&
+             !Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf));
 
         /// <summary>
         /// When true the activation delay is a channel: the ability's impact, costs, and recast delay
@@ -138,6 +153,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             BreaksStealth = false;
             PreservesStealthDuringActivation = false;
             RequiresTarget = false;
+            HasExplicitMaxRange = false;
             UsesActiveAttackTarget = false;
             AbilityLevel = 1;
             SkillType = SkillType.Invalid;

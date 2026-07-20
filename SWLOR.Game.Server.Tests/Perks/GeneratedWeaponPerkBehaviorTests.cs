@@ -345,8 +345,9 @@ public class GeneratedWeaponPerkBehaviorTests
         {
             explosiveToss[feat].ActivationType.Should().Be(AbilityActivationType.Casted);
             explosiveToss[feat].IsHostileAbility.Should().BeTrue();
-            explosiveToss[feat].RequiresTarget.Should().BeTrue(
-                "the Bible places Explosive Toss at a target location rather than on the caster");
+            explosiveToss[feat].RequiresTarget.Should().BeFalse(
+                "the Bible places Explosive Toss at a location, not on a required target object");
+            explosiveToss[feat].RequiresLocationTarget.Should().BeTrue();
 
             var featRow = featRows[(int)feat];
             featRow["TARGETSELF"].Should().Be("****");

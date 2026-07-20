@@ -10,9 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, GuiPayloadBase>
     {
-        public const string TabContentPartialElement = "NOTES_TAB_CONTENT";
-        public const string NotesTabPartial = "NOTES_TAB_VIEW";
         public const string CategoriesTabPartial = "NOTES_CATEGORIES_TAB_VIEW";
+        private const string MainWindowElement = "_window_";
+        private const string MainWindowPartial = "%%WINDOW_MAIN%%";
 
         private const string UntitledNoteName = "Untitled Note";
 
@@ -602,28 +602,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Swaps the tab content placeholder for the active tab's partial view. The two tabs cannot
-        /// simply be stacked rows toggled with BindIsVisible - a hidden row still reserves its flex
-        /// space, which would leave half the window empty on whichever tab is showing.
+        /// Swaps the whole window layout for the active tab. The tabs cannot be stacked rows toggled
+        /// with BindIsVisible - a hidden row still reserves its flex space - and hosting them in a
+        /// nested placeholder group stops the content filling the window, because a group sizes
+        /// itself to its content. Replacing the window root avoids both.
         /// </summary>
         private void RestoreSelectedTabPartial()
         {
-            void ApplySelectedTabPartial()
-            {
-                ChangePartialView(
-                    TabContentPartialElement,
-                    IsCategoriesTabToggled ? CategoriesTabPartial : NotesTabPartial);
+            ChangePartialView(
+                MainWindowElement,
+                IsCategoriesTabToggled ? CategoriesTabPartial : MainWindowPartial);
 
-                // Re-rendering the tab rebuilds its combo boxes, which come back with no selection.
+            // Re-rendering rebuilds that tab's lists and combos, which come back empty until their
+            // bound values are pushed again.
+            RefreshActiveTabData();
+            // NUI can drop a layout while its parent is still being redrawn, so push once more on
+            // the next tick.
+            DelayCommand(0.0f, RefreshActiveTabData);
+        }
+
+        /// <summary>
+        /// Re-pushes the bound data for whichever tab is showing.
+        /// </summary>
+        private void RefreshActiveTabData()
+        {
+            if (IsCategoriesTabToggled)
+            {
+                LoadCategories();
+            }
+            else
+            {
+                LoadNotesList();
                 RefreshComboSelections();
             }
-
-            // Use the same root redraw path as modal close/open before replacing the nested panel.
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
-            ApplySelectedTabPartial();
-            // NUI can drop nested partial layouts while its parent is being redrawn.
-            // Reapply on the next tick so tab switches use the same refresh path as modal swaps.
-            DelayCommand(0.0f, ApplySelectedTabPartial);
         }
 
         protected override void OnMainViewRestored()

@@ -24,49 +24,53 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnCloseWindow())
 
-                .DefinePartialView(NotesViewModel.NotesTabPartial, BuildNotesTab)
+                // The categories tab replaces the whole window layout rather than being swapped into
+                // a nested placeholder group. A group sizes itself to its content, so hosting the
+                // tabs inside one pinned the panes to a fixed width and the window stopped filling
+                // horizontally. The window root has no such limit. Both layouts are registered here
+                // at boot, so their buttons keep working after a swap.
                 .DefinePartialView(NotesViewModel.CategoriesTabPartial, BuildCategoriesTab)
 
                 .AddColumn(col =>
                 {
-                    col.AddRow(row =>
-                    {
-                        row.SetHeight(RowHeight);
-
-                        row.AddSpacer();
-
-                        row.AddToggleButton()
-                            .SetText("Notes")
-                            .SetHeight(ControlHeight)
-                            .SetWidth(180f)
-                            .BindIsToggled(model => model.IsNotesTabToggled)
-                            .BindOnClicked(model => model.OnClickNotesTab());
-
-                        row.AddToggleButton()
-                            .SetText("Manage Categories")
-                            .SetHeight(ControlHeight)
-                            .SetWidth(180f)
-                            .BindIsToggled(model => model.IsCategoriesTabToggled)
-                            .BindOnClicked(model => model.OnClickCategoriesTab());
-
-                        row.AddSpacer();
-                    });
-
-                    // The two tabs are swapped into this placeholder rather than stacked and toggled
-                    // with BindIsVisible - a hidden row still reserves its flex space, which would
-                    // leave half the window empty on whichever tab is active.
-                    col.AddRow(row =>
-                    {
-                        row.AddPartialView(NotesViewModel.TabContentPartialElement);
-                    });
+                    AddTabRow(col);
+                    AddNotesContent(col);
                 });
 
             return _builder.Build();
         }
 
-        private static void BuildNotesTab(GuiGroup<NotesViewModel> group)
+        /// <summary>
+        /// The tab selector, repeated at the top of both tab layouts so it survives a swap.
+        /// </summary>
+        private static void AddTabRow(GuiColumn<NotesViewModel> col)
         {
-            group.AddColumn(shell =>
+            col.AddRow(row =>
+            {
+                row.SetHeight(RowHeight);
+
+                row.AddSpacer();
+
+                row.AddToggleButton()
+                    .SetText("Notes")
+                    .SetHeight(ControlHeight)
+                    .SetWidth(180f)
+                    .BindIsToggled(model => model.IsNotesTabToggled)
+                    .BindOnClicked(model => model.OnClickNotesTab());
+
+                row.AddToggleButton()
+                    .SetText("Manage Categories")
+                    .SetHeight(ControlHeight)
+                    .SetWidth(180f)
+                    .BindIsToggled(model => model.IsCategoriesTabToggled)
+                    .BindOnClicked(model => model.OnClickCategoriesTab());
+
+                row.AddSpacer();
+            });
+        }
+
+        private static void AddNotesContent(GuiColumn<NotesViewModel> shell)
+        {
             {
                 shell.AddRow(root =>
                 {
@@ -212,12 +216,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     });
                 });
-            });
+            }
         }
 
         private static void BuildCategoriesTab(GuiGroup<NotesViewModel> group)
         {
             group.AddColumn(col =>
+            {
+                AddTabRow(col);
+                AddCategoriesContent(col);
+            });
+        }
+
+        private static void AddCategoriesContent(GuiColumn<NotesViewModel> col)
+        {
             {
                 col.AddRow(row =>
                 {
@@ -284,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     row.AddSpacer();
                 });
-            });
+            }
         }
     }
 }

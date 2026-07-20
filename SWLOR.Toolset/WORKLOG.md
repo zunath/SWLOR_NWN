@@ -171,7 +171,24 @@ done | blocked`.
   (counts verified exact). Explorer uses two-level virtualized lists (Avalonia TreeView won't
   virtualize 8341-entry nodes). Game-data services registered only when repo paths resolve;
   optional ctor params degrade to raw ids. Read-only guarantee held (settings.json only write).
-## WP3.1 — pending — Editor schema infrastructure + UTC editor
+## WP3.1 — done — 2026-07-20 — Editor schema infrastructure + UTC editor
+- Tier: Lead (controller-executed). 135/136 tests green; app launch smoke-verified.
+- Domain: `Editors\{EditorKind,FieldDescriptor,EditorSchema,SchemaFieldAccessor}.cs`,
+  `Editors\Schemas\UtcSchema.cs` (field names/types verified against corpus),
+  tests `EditorSchemaTests.cs` (schema-vs-corpus conformance, transaction edit →
+  undo → byte-identical, create-missing-field lands at case-insensitive sorted position).
+- App: `Editors\{LookupOptionProvider,FieldViewModels,VarTableSectionViewModel,
+  BlueprintEditorViewModel,EditorService}.cs`, `Editors\Views\BlueprintEditorView.axaml`,
+  DocumentDock added to ToolsetDockFactory (+OpenDocument/ActivateDocument), explorer
+  double-click opens editors, DI wiring (Func<EditorService> breaks the factory cycle),
+  DataGrid Fluent theme added to App.axaml.
+- **Pattern for WP3.2 stamping:** add `Editors\Schemas\<Type>Schema.cs` + register in
+  `EditorService.GetSchema`. Dropdowns degrade to numeric when lookups missing; VarTable grid
+  has known-key completion + live NPCGroupType hint via IGameCodeIndex.
+- Notes: editor Save is a minimal atomic write (temp + File.Move overwrite) — WP3.5 replaces
+  it with SaveService (EOL audit, dirty-only multi-doc). VarTable Type consts made public.
+  In-UI end-to-end diff verification rides with the WP3.6 human gate; the equivalent
+  Domain-level guarantee is covered by EditorSchemaTests.
 ## WP3.2 — pending — Remaining blueprint schemas
 ## WP3.3 — pending — Instance editing
 ## WP3.4 — pending — Validation rules

@@ -19,6 +19,7 @@
 
   <Application.Styles>
     <FluentTheme />
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
     <DockFluentTheme DensityStyle="Normal" />
 
     <Style Selector="ToolControl">

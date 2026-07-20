@@ -24,7 +24,8 @@
     <GridSplitter Grid.Column="0" Width="1" HorizontalAlignment="Right" Background="Gray" />
     <ListBox Grid.Column="1"
              ItemsSource="{Binding Items}"
-             SelectedItem="{Binding SelectedItem}">
+             SelectedItem="{Binding SelectedItem}"
+             DoubleTapped="OnItemsDoubleTapped">
       <ListBox.ItemTemplate>
         <DataTemplate DataType="panels:ExplorerItem">
           <TextBlock Text="{Binding DisplayText}" />

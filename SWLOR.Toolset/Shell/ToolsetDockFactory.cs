@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.Shell
         private readonly SearchViewModel _search;
         private readonly OutputViewModel _output;
         private IRootDock? _rootDock;
+        private DocumentDock? _documentDock;
 
         public ToolsetDockFactory(
             ModuleExplorerViewModel explorer,
@@ -50,7 +51,16 @@ namespace SWLOR.Toolset.Shell
                 ActiveDockable = _properties,
                 VisibleDockables = CreateList<IDockable>(_properties),
                 Alignment = Alignment.Right,
-                Proportion = 0.72
+                Proportion = 0.25
+            };
+
+            _documentDock = new DocumentDock
+            {
+                Id = "Documents",
+                IsCollapsable = false,
+                CanCreateDocument = false,
+                VisibleDockables = CreateList<IDockable>(),
+                Proportion = 0.47
             };
 
             var middleLayout = new ProportionalDock
@@ -60,6 +70,8 @@ namespace SWLOR.Toolset.Shell
                 Proportion = 0.72,
                 VisibleDockables = CreateList<IDockable>(
                     explorerDock,
+                    new ProportionalDockSplitter(),
+                    _documentDock,
                     new ProportionalDockSplitter(),
                     propertiesDock)
             };
@@ -103,6 +115,26 @@ namespace SWLOR.Toolset.Shell
 
             _rootDock = rootDock;
             return rootDock;
+        }
+
+        /// <summary>Docks an editor document into the Documents area and activates it.</summary>
+        public void OpenDocument(Document document)
+        {
+            if (_documentDock == null)
+                return;
+
+            AddDockable(_documentDock, document);
+            ActivateDocument(document);
+        }
+
+        /// <summary>Brings an already-open editor document to the front.</summary>
+        public void ActivateDocument(Document document)
+        {
+            if (_documentDock == null)
+                return;
+
+            SetActiveDockable(document);
+            SetFocusedDockable(_documentDock, document);
         }
 
         public override void InitLayout(IDockable layout)

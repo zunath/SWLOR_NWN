@@ -18,6 +18,7 @@ namespace SWLOR.Toolset.Shell.Panels
     {
         private readonly WorkspaceContext _workspaceContext;
         private readonly PropertiesViewModel _properties;
+        private readonly Func<Editors.EditorService>? _editorService;
 
         private Dictionary<ResourceType, List<CatalogEntry>>? _catalogByType;
 
@@ -30,12 +31,25 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private ExplorerItem? _selectedItem;
 
-        public ModuleExplorerViewModel(WorkspaceContext workspaceContext, PropertiesViewModel properties)
+        public ModuleExplorerViewModel(
+            WorkspaceContext workspaceContext,
+            PropertiesViewModel properties,
+            Func<Editors.EditorService>? editorService = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
+            _editorService = editorService;
             Id = "ModuleExplorer";
             Title = "Module Explorer";
+        }
+
+        /// <summary>Opens the selected item in its blueprint editor (double-click).</summary>
+        public void OpenSelectedItem()
+        {
+            if (SelectedCategory == null || SelectedItem == null)
+                return;
+
+            _editorService?.Invoke().TryOpenEditor(SelectedCategory.Type, SelectedItem.ResRef);
         }
 
         /// <summary>Populates the category list from the workspace's (unparsed) resref enumeration. Cheap - safe to call as soon as a workspace is open.</summary>

@@ -59,6 +59,22 @@ namespace SWLOR.Toolset
             var repoRoot = AutoDetectRepoRoot();
             RegisterGameDataServices(services, repoRoot);
 
+            services.AddSingleton(sp => new Editors.LookupOptionProvider(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetService<AppearanceService>(),
+                sp.GetService<PortraitService>()));
+            services.AddSingleton(sp => new Editors.EditorService(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetRequiredService<Editors.LookupOptionProvider>(),
+                sp.GetRequiredService<OutputLogService>(),
+                sp.GetRequiredService<ToolsetDockFactory>(),
+                sp.GetService<IGameCodeIndex>()));
+
+            // The explorer needs to open editors, but EditorService depends on the dock factory,
+            // which depends on the explorer — a Func breaks the construction cycle.
+            services.AddSingleton<Func<Editors.EditorService>>(sp =>
+                () => sp.GetRequiredService<Editors.EditorService>());
+
             services.AddSingleton<PropertiesViewModel>();
             services.AddSingleton<ModuleExplorerViewModel>();
             services.AddSingleton<SearchViewModel>();

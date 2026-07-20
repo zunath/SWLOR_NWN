@@ -37,9 +37,9 @@ namespace SWLOR.Toolset.Domain.Documents
     /// </summary>
     public sealed class VarTable : IEnumerable<VarTableEntry>
     {
-        internal const int TypeInt = 1;
-        internal const int TypeFloat = 2;
-        internal const int TypeString = 3;
+        public const int TypeInt = 1;
+        public const int TypeFloat = 2;
+        public const int TypeString = 3;
 
         private const string FieldName = "VarTable";
 

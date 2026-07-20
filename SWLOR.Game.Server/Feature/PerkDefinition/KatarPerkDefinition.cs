@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.WhirlingGuard1)
-                .Description("For 30 seconds, you gain +20 Guard and deal 8 DMG back to attackers whenever you guard a hit. Your current Guarded target automatically receives the same effect if they are within 5 meters.")
+                .Description("For 30 seconds, you gain +20 Guard. Whenever you guard a hit, you deal a fixed 8 physical DMG to that attacker; this damage does not scale. Your current Guarded target automatically receives the same effect if they are within 5 meters when activated.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 20);
         }

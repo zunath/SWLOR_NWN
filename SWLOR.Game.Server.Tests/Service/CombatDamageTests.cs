@@ -373,18 +373,26 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void GuardRetaliationDamage_IsScaledAndAppliedAsPhysicalTriggeredDamage()
+    public void GuardRetaliationDamage_KeepsBaseDamageFixedAndScalesOnlySkillBonus()
     {
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
             .Replace("\r\n", "\n");
+        var whirlingGuardSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "WhirlingGuardStatusEffect.cs"));
 
         var retaliation = ExtractMethod(combatSource, "private static void ApplyGuardedHitRetaliation");
         retaliation.Should().Contain("StatType.GuardRetaliationDamage");
-        retaliation.Should().Contain("AbilityEffectScaling.ScaleDirectEffect");
+        retaliation.Should().Contain("if (retaliationDamage > 0)\n                ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);");
+        retaliation.Should().NotContain("retaliationDamage = AbilityEffectScaling.ScaleDirectEffect");
+        retaliation.Should().Contain("bonusDamage = AbilityEffectScaling.ScaleDirectEffect");
         retaliation.Should().Contain("GetAbilityScore(defender, scalingAbility)");
-        retaliation.Should().Contain("ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);");
         retaliation.Should().NotContain("EffectDamage(retaliationDamage");
+        whirlingGuardSource.Should().Contain("StatGroup.Stats[StatType.GuardRetaliationDamage] = 8;");
 
         var scalingAbility = ExtractMethod(combatSource, "private static AbilityType GetGuardRetaliationDamageAbility");
         scalingAbility.Should().Contain("GetRelevantSkillWeapon(defender, skillType)");

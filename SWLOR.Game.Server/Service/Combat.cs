@@ -930,6 +930,7 @@ namespace SWLOR.Game.Server.Service
                 damage += bonus;
 
             damage += ConsumeNextSkillAutoAttackDamageBonus(attacker, skillType);
+            damage += ConsumeNextAttackGuardedHitDamageBonus(attacker);
 
             var nextAutoAttackBonus = TemporaryStatModifier.Consume(
                 attacker,
@@ -2899,7 +2900,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             _recentGuardedHits[creature] = DateTime.UtcNow;
-            ApplyGuardedHitNextHostileAbilityEffects(creature);
+            ApplyGuardedHitNextAttackEffects(creature);
             ApplyGuardedHitNextSkillAbilityEffects(creature);
             ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
         }
@@ -6958,32 +6959,32 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
-        private static void ApplyGuardedHitNextHostileAbilityEffects(uint creature)
+        private static void ApplyGuardedHitNextAttackEffects(uint creature)
         {
             var damageBonus = Stat.GetStatAdjustment(
                 creature,
-                StatType.GuardedHitNextHostileAbilityDamageBonus);
+                StatType.GuardedHitNextAttackDamageBonus);
             var criticalRate = Stat.GetStatAdjustment(
                 creature,
-                StatType.GuardedHitNextHostileAbilityCriticalRatePercentAdjustment);
+                StatType.GuardedHitNextAttackCriticalRatePercentAdjustment);
             var window = Stat.GetStatAdjustment(
                 creature,
-                StatType.GuardedHitNextHostileAbilityWindowSeconds);
+                StatType.GuardedHitNextAttackWindowSeconds);
             if (window <= 0 || damageBonus == 0 && criticalRate == 0)
                 return;
 
             TemporaryStatModifier.Replace(
                 creature,
-                StatType.NextHostileAbilityGuardedHitDamageBonus,
+                StatType.NextAttackGuardedHitDamageBonus,
                 damageBonus,
                 window,
-                StatType.NextHostileAbilityGuardedHitDamageBonus);
+                StatType.NextAttackGuardedHitDamageBonus);
             TemporaryStatModifier.Replace(
                 creature,
-                StatType.NextHostileAbilityGuardedHitCriticalRatePercentAdjustment,
+                StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
                 criticalRate,
                 window,
-                StatType.NextHostileAbilityGuardedHitDamageBonus);
+                StatType.NextAttackGuardedHitDamageBonus);
 
             if (GetIsPC(creature))
             {
@@ -7578,19 +7579,35 @@ namespace SWLOR.Game.Server.Service
             return (damageBonus, criticalRate, defenseIgnore);
         }
 
-        public static (int DamageBonus, int CriticalRatePercentAdjustment) ConsumeNextHostileAbilityGuardedHitBonuses(
+        public static (int DamageBonus, int CriticalRatePercentAdjustment) ConsumeNextAttackGuardedHitBonuses(
             uint creature)
         {
             var damageBonus = TemporaryStatModifier.Consume(
                 creature,
-                StatType.NextHostileAbilityGuardedHitDamageBonus,
-                StatType.NextHostileAbilityGuardedHitDamageBonus);
+                StatType.NextAttackGuardedHitDamageBonus,
+                StatType.NextAttackGuardedHitDamageBonus);
             var criticalRate = TemporaryStatModifier.Consume(
                 creature,
-                StatType.NextHostileAbilityGuardedHitCriticalRatePercentAdjustment,
-                StatType.NextHostileAbilityGuardedHitDamageBonus);
+                StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
+                StatType.NextAttackGuardedHitDamageBonus);
 
             return (damageBonus, criticalRate);
+        }
+
+        public static int ConsumeNextAttackGuardedHitCriticalRateBonus(uint creature)
+        {
+            return TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
+                StatType.NextAttackGuardedHitDamageBonus);
+        }
+
+        private static int ConsumeNextAttackGuardedHitDamageBonus(uint creature)
+        {
+            return TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAttackGuardedHitDamageBonus,
+                StatType.NextAttackGuardedHitDamageBonus);
         }
 
         public static void GrantNextAbilityDamageBonus(uint creature, int perkTypeValue, int bonus, int durationSeconds)

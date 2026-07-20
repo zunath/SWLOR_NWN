@@ -190,15 +190,17 @@ public class CrossSkillPerkInteractionSafetyTests
 
         var redirectingCounter = MaxLevel(perks[PerkType.RedirectingCounter]);
         var retaliatoryFlow = MaxLevel(perks[PerkType.RetaliatoryFlow]);
-        StatValue(redirectingCounter, StatType.GuardedHitNextHostileAbilityDamageBonus)
+        redirectingCounter.Description.Should().Be(
+            "When you guard an attack, your next attack within 30 seconds gains +10% critical chance and deals +10 DMG.");
+        StatValue(redirectingCounter, StatType.GuardedHitNextAttackDamageBonus)
             .Should().Be(10);
-        StatValue(redirectingCounter, StatType.GuardedHitNextHostileAbilityCriticalRatePercentAdjustment)
+        StatValue(redirectingCounter, StatType.GuardedHitNextAttackCriticalRatePercentAdjustment)
             .Should().Be(10);
-        StatValue(redirectingCounter, StatType.GuardedHitNextHostileAbilityWindowSeconds)
+        StatValue(redirectingCounter, StatType.GuardedHitNextAttackWindowSeconds)
             .Should().Be(30);
         redirectingCounter.StatBonuses.Should().NotContain(
             bonus => bonus.Stat == StatType.GuardedHitNextSkillAbilitySkillType,
-            "Redirecting Counter must be consumable by hostile abilities from every skill line");
+            "Redirecting Counter must work with hostile abilities and auto attacks from every skill line");
         StatValue(retaliatoryFlow, StatType.GuardedHitSecondaryNextSkillAbilitySkillType)
             .Should().Be((int)SkillType.Katar);
         retaliatoryFlow.StatBonuses.Should().NotContain(
@@ -230,16 +232,23 @@ public class CrossSkillPerkInteractionSafetyTests
         guardedBonuses.Should().Contain("primary.DamageBonus + secondary.DamageBonus");
         guardedBonuses.Should().Contain("Math.Max(primary.Window, secondary.Window)");
 
-        var crossSkillCounter = ExtractMethod(combat, "private static void ApplyGuardedHitNextHostileAbilityEffects(");
-        crossSkillCounter.Should().Contain("StatType.GuardedHitNextHostileAbilityDamageBonus");
-        crossSkillCounter.Should().Contain("StatType.NextHostileAbilityGuardedHitDamageBonus");
+        var crossSkillCounter = ExtractMethod(combat, "private static void ApplyGuardedHitNextAttackEffects(");
+        crossSkillCounter.Should().Contain("StatType.GuardedHitNextAttackDamageBonus");
+        crossSkillCounter.Should().Contain("StatType.NextAttackGuardedHitDamageBonus");
 
         var abilitySource = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
         var beginAbilityImpact = ExtractMethod(abilitySource, "public static void BeginAbilityImpact(");
         beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
-        beginAbilityImpact.Should().Contain("ConsumeNextHostileAbilityGuardedHitBonuses");
+        beginAbilityImpact.Should().Contain("ConsumeNextAttackGuardedHitBonuses");
         beginAbilityImpact.Should().Contain("guardedHitBonuses.DamageBonus");
         beginAbilityImpact.Should().Contain("guardedHitBonuses.CriticalRatePercentAdjustment");
+
+        var nativeAttackSource = Read(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
+        nativeAttackSource.Should().Contain("ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf)",
+            "the next landed non-queued auto attack must receive Redirecting Counter's critical chance");
+        var autoAttackDamage = ExtractMethod(combat, "public static int ApplyAutoAttackDamageModifiers(");
+        autoAttackDamage.Should().Contain("ConsumeNextAttackGuardedHitDamageBonus(attacker)",
+            "the next landed non-queued auto attack must receive Redirecting Counter's flat damage");
 
         var retaliationPulse = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliationPulse(");
         retaliationPulse.Should().Contain("ApplyTriggeredDamage(");

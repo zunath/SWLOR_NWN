@@ -1194,9 +1194,9 @@ def description_stat_entries(row, base):
         add_stat(stats, "StatusAppliedSelfDefensePercentAdjustment", parse_percent(r"gain \+(\d+)% Defense", description))
         add_stat(stats, "StatusAppliedSelfDurationSeconds", parse_duration(description) or 30)
     if base == "Redirecting Counter":
-        add_stat(stats, "GuardedHitNextHostileAbilityCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% critical chance", description))
-        add_stat(stats, "GuardedHitNextHostileAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
-        add_stat(stats, "GuardedHitNextHostileAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        add_stat(stats, "GuardedHitNextAttackCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% critical chance", description))
+        add_stat(stats, "GuardedHitNextAttackDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     elif base == "Redirecting Guard":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "StatusAppliedSelfEnmityPercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
@@ -2334,6 +2334,15 @@ def is_area(description):
     return hostile_radius_phrase(lowered) is not None
 
 
+def has_explicit_area_target_point(lowered):
+    return any(marker in lowered for marker in (
+        "target location",
+        "target point",
+        "selected location",
+        "selected point",
+    ))
+
+
 def is_aimed_area(row):
     """True when the area is directional and the player must aim it.
 
@@ -2347,14 +2356,7 @@ def is_aimed_area(row):
     # before inference because wording such as "a 5m-radius area at the target location" still
     # identifies the player's aim point even if a new radius phrase is not yet recognized below.
     lowered = row["Description"].lower()
-    if any(marker in lowered for marker in (
-        "at a target location",
-        "at the target location",
-        "at a target point",
-        "at the target point",
-        "at a selected location",
-        "at the selected location",
-    )):
+    if has_explicit_area_target_point(lowered):
         return True
 
     inferred = infer_targeting_from_description(row)
@@ -2461,6 +2463,7 @@ def infer_targeting_from_description(row):
     description = row["Description"]
     lowered = description.lower()
     stated = extract_stated_dimensions(lowered)
+    is_explicitly_aimed = has_explicit_area_target_point(lowered)
 
     if describes_shape(lowered, "line"):
         default_length = 20.0 if row["Tab"] in {"Pistol", "Rifle", "Throwing"} else 8.0
@@ -2487,12 +2490,9 @@ def infer_targeting_from_description(row):
     # The radius itself is still read from whatever the description states.
     if (
         "nearby enemies" in lowered or
+        is_explicitly_aimed or
         "in an area" in lowered or
         "in the area" in lowered or
-        "area at a target location" in lowered or
-        "area at the target location" in lowered or
-        "area at a selected location" in lowered or
-        "area at the selected location" in lowered or
         "enemies within" in lowered or
         "sphere" in lowered or
         "all enemies" in lowered or
@@ -2503,6 +2503,7 @@ def infer_targeting_from_description(row):
             "AbilityTargetingShapeType.Sphere",
             f"{radius:.1f}f",
             "0.0f",
+            "AbilityTargetingFlags.HarmsEnemies" if is_explicitly_aimed else
             "AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf")
 
     return None

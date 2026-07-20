@@ -104,9 +104,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RedirectingCounterTrait)
                 .Description("When you guard an attack, your next attack within 30 seconds gains +10% critical chance and deals +10 DMG.")
-                .IncreasesStat(StatType.GuardedHitNextHostileAbilityCriticalRatePercentAdjustment, 10)
-                .IncreasesStat(StatType.GuardedHitNextHostileAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.GuardedHitNextHostileAbilityWindowSeconds, 30)
+                .IncreasesStat(StatType.GuardedHitNextAttackCriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.GuardedHitNextAttackDamageBonus, 10)
+                .IncreasesStat(StatType.GuardedHitNextAttackWindowSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 8);
         }

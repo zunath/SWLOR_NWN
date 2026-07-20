@@ -89,7 +89,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         AssertSourceStat("KatarPerkDefinition.cs", StatType.Guard, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardDamageReductionPercentAdjustment, "10");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextHostileAbilityDamageBonus, "10");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextAttackDamageBonus, "10");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityStatusSkillType, "(int)SkillType.Katar");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityExposedDamageBonus, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId, "(int)PerkCategoryType.KatarIronGuard");
@@ -355,6 +355,10 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
         generatorSource.Should().Contain("(?:this|it) deals weapon DMG");
+        generatorSource.Should().Contain("def has_explicit_area_target_point(lowered):");
+        generatorSource.Should().Contain("is_explicitly_aimed = has_explicit_area_target_point(lowered)");
+        generatorSource.Should().Contain("\"AbilityTargetingFlags.HarmsEnemies\" if is_explicitly_aimed else",
+            "explicitly placed spheres must not be regenerated as caster-centered areas");
 
         var cripplingSlice = new CripplingSliceAbilityDefinition().BuildAbilities();
         foreach (var feat in new[] { FeatType.CripplingSlice1, FeatType.CripplingSlice2, FeatType.CripplingSlice3 })

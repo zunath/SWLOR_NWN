@@ -5526,36 +5526,35 @@ namespace SWLOR.Game.Server.Service.StatService
         StealthMovementSpeedPercentAdjustment = 959,
 
         /// <summary>
-        /// Flat damage granted to the next hostile ability after guarding a hit, regardless of skill line.
+        /// Flat damage granted to the next attack after guarding a hit, regardless of skill line.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitNextHostileAbilityDamageBonus = 960,
+        GuardedHitNextAttackDamageBonus = 960,
 
         /// <summary>
-        /// Critical-rate adjustment granted to the next hostile ability after guarding a hit,
-        /// regardless of skill line.
+        /// Critical-rate adjustment granted to the next attack after guarding a hit, regardless of skill line.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitNextHostileAbilityCriticalRatePercentAdjustment = 961,
+        GuardedHitNextAttackCriticalRatePercentAdjustment = 961,
 
         /// <summary>
-        /// Duration in seconds of the cross-skill guarded-hit hostile-ability bonus.
+        /// Duration in seconds of the cross-skill guarded-hit next-attack bonus.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        GuardedHitNextHostileAbilityWindowSeconds = 962,
+        GuardedHitNextAttackWindowSeconds = 962,
 
         /// <summary>
-        /// Internal temporary flat damage consumed by the next hostile ability from any skill line.
+        /// Internal temporary flat damage consumed by the next hostile ability or landed auto attack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        NextHostileAbilityGuardedHitDamageBonus = 963,
+        NextAttackGuardedHitDamageBonus = 963,
 
         /// <summary>
-        /// Internal temporary critical-rate adjustment consumed by the next hostile ability from
-        /// any skill line.
+        /// Internal temporary critical-rate adjustment consumed by the next hostile ability or
+        /// landed auto attack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        NextHostileAbilityGuardedHitCriticalRatePercentAdjustment = 964,
+        NextAttackGuardedHitCriticalRatePercentAdjustment = 964,
     }
 
     public class StatTypeAttribute : Attribute

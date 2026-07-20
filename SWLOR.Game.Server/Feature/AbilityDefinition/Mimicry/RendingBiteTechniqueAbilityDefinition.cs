@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Rending Bite")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.RendingBite, 1, 1)
+                .MimicryTrait(FeatType.RendingBite, 7, 1)
                 .MimicryTraitStat(StatType.DamageDealtBleedChance, 6);
 
             return _builder.Build();

@@ -50,7 +50,7 @@ public class ArmorProvokeTests
         provoke2.IsAreaAbility.Should().BeTrue();
         provoke2.IsSingleTargetAbility.Should().BeFalse();
         AssertHostileTargeting(provoke2);
-        provoke2.RequiresTarget.Should().BeFalse();
+        provoke2.RequiresTarget.Should().BeTrue();
         provoke2.Targeting!.Flags.Should().NotHaveFlag(AbilityTargetingFlags.OriginOnSelf);
     }
 

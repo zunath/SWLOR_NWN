@@ -24,6 +24,7 @@ public class AbilityRangeAuditTests
         var auditedAbilities = abilities
             .Where(entry =>
                 entry.Value.RequiresTarget &&
+                !entry.Value.IsAreaAbility &&
                 expectedRangesBySkill.ContainsKey(entry.Value.SkillType))
             .ToArray();
 
@@ -43,6 +44,7 @@ public class AbilityRangeAuditTests
         var abilities = BuildAllAbilities()
             .Where(entry =>
                 entry.Value.RequiresTarget &&
+                !entry.Value.IsAreaAbility &&
                 entry.Value.SkillType == SkillType.Force)
             .ToArray();
 

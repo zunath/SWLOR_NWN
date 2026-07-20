@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Chitin Guard")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.ChitinGuard, 2, 2)
+                .MimicryTrait(FeatType.ChitinGuard, 20, 2)
                 .MimicryTraitStat(StatType.PhysicalDefensePercentAdjustment, 10)
                 .MimicryTraitStat(StatType.ForceDefensePercentAdjustment, 15)
                 .MimicryTraitResistance(ResistanceType.Fire, 20)

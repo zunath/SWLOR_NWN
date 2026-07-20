@@ -353,7 +353,7 @@ public class CombatUpgradeBibleSyncTests
             .Where(row => ImplementedStatuses.Contains(row.DevStatus))
             .ToArray();
         var abilities = BuildAbilities()
-            .Where(x => x.Value.Detail.MimicryTier > 0)
+            .Where(x => x.Value.Detail.IsMimicryTechnique)
             .ToArray();
         var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
@@ -399,17 +399,10 @@ public class CombatUpgradeBibleSyncTests
                     AssertTlkDescription(row, spellRow.GetValueOrDefault("SpellDesc"), tlkEntries, failures, $"{feat} spells.2da SpellDesc");
                 }
             }
-            var expectedTier = row.SkillRequirements switch
+            var expectedRequirement = ParseMimicrySkillRequirement(row, failures);
+            if (expectedRequirement != null && detail.MimicrySkillRequirement != expectedRequirement.Value)
             {
-                "-" or "" => 1,
-                "Mimicry 15" => 2,
-                "Mimicry 30" => 3,
-                "Mimicry 45" => 4,
-                _ => 0
-            };
-            if (detail.MimicryTier != expectedTier)
-            {
-                failures.Add($"{Describe(row)}: Mimicry tier mismatch. Bible={expectedTier}, Code={detail.MimicryTier}.");
+                failures.Add($"{Describe(row)}: Mimicry skill requirement mismatch. Bible={expectedRequirement}, Code={detail.MimicrySkillRequirement}.");
             }
 
             var expectedSlots = TryParseWholeNumber(row.Slots);
@@ -852,7 +845,7 @@ public class CombatUpgradeBibleSyncTests
         List<string> failures)
     {
         var matches = abilities
-            .Where(x => x.Value.Detail.MimicryTier > 0)
+            .Where(x => x.Value.Detail.IsMimicryTechnique)
             .Where(x => x.Value.Detail.Name.Equals(row.PerkName, StringComparison.Ordinal))
             .ToArray();
         if (matches.Length != 1)
@@ -865,21 +858,10 @@ public class CombatUpgradeBibleSyncTests
         var detail = ability.Detail;
         AssertAbilityDefinitionName(row, ability, failures);
 
-        var expectedTier = row.SkillRequirements switch
+        var expectedRequirement = ParseMimicrySkillRequirement(row, failures);
+        if (expectedRequirement != null && detail.MimicrySkillRequirement != expectedRequirement.Value)
         {
-            "-" or "" => 1,
-            "Mimicry 15" => 2,
-            "Mimicry 30" => 3,
-            "Mimicry 45" => 4,
-            _ => 0
-        };
-        if (expectedTier == 0)
-        {
-            failures.Add($"{Describe(row)}: unsupported Mimicry skill requirement '{row.SkillRequirements}'.");
-        }
-        else if (detail.MimicryTier != expectedTier)
-        {
-            failures.Add($"{Describe(row)}: Mimicry tier mismatch. Bible={expectedTier}, Code={detail.MimicryTier}.");
+            failures.Add($"{Describe(row)}: Mimicry skill requirement mismatch. Bible={expectedRequirement}, Code={detail.MimicrySkillRequirement}.");
         }
 
         var expectedSlots = TryParseWholeNumber(row.Slots);
@@ -988,12 +970,12 @@ public class CombatUpgradeBibleSyncTests
         }
 
         return new MimicryReviewEvidence(
-            $"{feat}/{ability.DefinitionType.Name}/Mimicry tier {detail.MimicryTier}",
+            $"{feat}/{ability.DefinitionType.Name}/Mimicry rank {detail.MimicrySkillRequirement}",
             "-",
             row.Description,
-            $"Mimicry tier {detail.MimicryTier}; slots {detail.MimicrySlotCost}",
+            $"Mimicry rank {detail.MimicrySkillRequirement}; slots {detail.MimicrySlotCost}",
             feat.ToString(),
-            $"{DescribeAbilityEvidence(feat, ability)} mimicryTier={detail.MimicryTier} slots={detail.MimicrySlotCost} trait={detail.IsMimicryTrait} stance={detail.IsMimicryStance}",
+            $"{DescribeAbilityEvidence(feat, ability)} mimicryRank={detail.MimicrySkillRequirement} slots={detail.MimicrySlotCost} trait={detail.IsMimicryTrait} stance={detail.IsMimicryStance}",
             featEvidence,
             spellEvidence);
     }
@@ -1382,7 +1364,7 @@ public class CombatUpgradeBibleSyncTests
             // collide with the source NPC feat, e.g. ToxicSpitTechnique vs ToxicSpit), while their
             // player-facing name deliberately drops it. Compare against the suffixed form for those.
             var baseName = GetBaseName(ability.Detail.Name);
-            var expected = NormalizeName(ability.Detail.MimicryTier > 0 ? baseName + "Technique" : baseName);
+            var expected = NormalizeName(ability.Detail.IsMimicryTechnique ? baseName + "Technique" : baseName);
             var actual = NormalizeName(definitionName[..^suffix.Length]);
             if (!actual.Equals(expected, StringComparison.Ordinal))
             {
@@ -1602,10 +1584,10 @@ public class CombatUpgradeBibleSyncTests
                 continue;
             }
 
-            // Mimicry techniques use Combat Analyzer as their EffectiveLevelPerkType for scaling/tier gating, but they
+            // Mimicry techniques use Combat Analyzer as their EffectiveLevelPerkType for scaling, but they
             // are granted by equipping a learned technique through the Mimicry system, not by any perk level's granted
             // feats. Skip them here the same way IsTameRow/IsAuxiliaryGrantedFeat carve out other equip/aux-granted feats.
-            if (ability.Detail.MimicryTier > 0)
+            if (ability.Detail.IsMimicryTechnique)
             {
                 continue;
             }
@@ -1939,7 +1921,7 @@ public class CombatUpgradeBibleSyncTests
 
         var expected = NormalizeName(GetBaseName(ability.Detail.Name));
         var actualBaseName = definitionName[..^suffix.Length];
-        if (ability.Detail.MimicryTier > 0 && actualBaseName.EndsWith("Technique", StringComparison.Ordinal))
+        if (ability.Detail.IsMimicryTechnique && actualBaseName.EndsWith("Technique", StringComparison.Ordinal))
         {
             actualBaseName = actualBaseName[..^"Technique".Length];
         }
@@ -2578,6 +2560,19 @@ public class CombatUpgradeBibleSyncTests
             return new SkillRequirement(skill, ParseWholeNumber(match.Groups[1].Value));
         }
 
+        return null;
+    }
+
+    private static int? ParseMimicrySkillRequirement(BiblePerkRow row, List<string> failures)
+    {
+        if (string.IsNullOrWhiteSpace(row.SkillRequirements) || row.SkillRequirements == "-")
+            return 0;
+
+        var requirement = TryParseSkillRequirement(row.SkillRequirements);
+        if (requirement is { } parsed && parsed.Skill == SkillType.Mimicry && parsed.Rank is >= 0 and <= 50)
+            return parsed.Rank;
+
+        failures.Add($"{Describe(row)}: unsupported Mimicry skill requirement '{row.SkillRequirements}'.");
         return null;
     }
 

@@ -56,8 +56,8 @@ public class FirstAidCombatUpgradeTests
         AssertAbility(treatmentKit[FeatType.TreatmentKit3], "Treatment Kit III", 3, RecastGroup.TreatmentKit, 12f, 1f, 5, null, 0, false, true);
 
         var koltoMist = new KoltoMistAbilityDefinition().BuildAbilities();
-        AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 18f, 1.5f, 6, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
-        AssertAbility(koltoMist[FeatType.KoltoMist2], "Kolto Mist II", 2, RecastGroup.KoltoMist, 18f, 1.5f, 7, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
+        AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 18f, 1.5f, 6, "med_supplies", 1, true, true, maxRange: 15f, expectsCustomValidation: true);
+        AssertAbility(koltoMist[FeatType.KoltoMist2], "Kolto Mist II", 2, RecastGroup.KoltoMist, 18f, 1.5f, 7, "med_supplies", 1, true, true, maxRange: 15f, expectsCustomValidation: true);
 
         var resuscitation = new ResuscitationAbilityDefinition().BuildAbilities();
         AssertAbility(resuscitation[FeatType.Resuscitation1], "Resuscitation I", 1, RecastGroup.Resuscitation, 60f, 4f, 10, "med_supplies", 1, false, true);

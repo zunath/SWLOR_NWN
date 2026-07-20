@@ -43,8 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    TemporaryCostlyAbilityStatusSkillType = (int)SkillType.Spear,
-                    TemporaryCostlyAbilityHitMinimumStaminaCost = 8,
+                    TemporaryCostlyAbilityStatusMinimumStaminaCost = 8,
                     TemporaryCostlyAbilityExposedDurationSeconds = 30,
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45
                 });

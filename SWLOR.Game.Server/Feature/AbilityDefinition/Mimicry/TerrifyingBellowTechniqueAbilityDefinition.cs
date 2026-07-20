@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.TerrifyingBellow, 4, 3)
+                .MimicryTechnique(FeatType.TerrifyingBellow, 11, 3)
                 .HasTargetingSphere(
                     Spell.TerrifyingBellowTechnique,
                     6f,

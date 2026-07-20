@@ -52,9 +52,9 @@ public class ForceDarkManipulatorTests
     public void ForceDarkManipulatorAbilities_MatchCombatBible()
     {
         var creepingTerror = new CreepingTerrorAbilityDefinition().BuildAbilities();
-        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 32f, 1f, 4, true, false, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 32f, 1f, 6, true, false, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 32f, 1.5f, 8, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 32f, 1f, 4, true, true, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 32f, 1f, 6, true, true, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 32f, 1.5f, 8, true, true, false, true, AbilityActivationType.Casted, 15f, true);
 
         var weakenResolve = new WeakenResolveAbilityDefinition().BuildAbilities();
         AssertAbility(weakenResolve[FeatType.WeakenResolve1], "Weaken Resolve I", 1, RecastGroup.WeakenResolve, 12f, 1f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, false);

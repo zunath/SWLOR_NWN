@@ -38,24 +38,24 @@ Only the **damage-dealing subset** scales off a core attribute (via `CombatImpac
 
 Every non-damage active carries **no effect-magnitude or damage-scaling attribute** (`Primary Stat = None` in the Bible); its power is a fixed-magnitude effect (duration, percent, heal/shield amount), balanced through Stamina cost, cooldown, and effect duration rather than a damage number. An internal accuracy attribute may still be declared to resolve whether a hostile control effect lands; that does not scale the effect's magnitude.
 
-## Damage / Cost Tiers
+## Damage / Cost Bands
 
-For the **damage-dealing subset**, base damage and Stamina cost are banded by tier. Single-target hits use the higher damage figure in a band; area techniques (cone/sphere/line) use the lower figure, reflecting that they hit multiple targets. Non-damage actives use the same Stamina/cooldown bands but replace the damage figure with a fixed-magnitude effect.
+For the **damage-dealing subset**, base damage and Stamina cost use four tuning bands. These bands describe payload strength only; they are not runtime tiers and do not determine when a technique can be learned. Single-target hits use the higher damage figure in a band; area techniques (cone/sphere/line) use the lower figure, reflecting that they hit multiple targets. Non-damage actives use the same Stamina/cooldown bands but replace the damage figure with a fixed-magnitude effect.
 
-| Tier | Single dmg | Area dmg | STM | Cooldown (single/area) |
+| Power band | Single dmg | Area dmg | STM | Cooldown (single/area) |
 |---|---|---|---|---|
-| T1 | 12 | 10 | 3 | 12s / 15s |
-| T2 | 22 | 18 | 5 | 15s / 18s |
-| T3 | 34 | 28 | 7 (+1 for area, i.e. 8) | 18s / 24s |
-| T4 | 48 | 40 | 9 (+1 for area, i.e. 10) | 24s / 30s |
+| Starter | 12 | 10 | 3 | 12s / 15s |
+| Standard | 22 | 18 | 5 | 15s / 18s |
+| Advanced | 34 | 28 | 7 (+1 for area, i.e. 8) | 18s / 24s |
+| Signature | 48 | 40 | 9 (+1 for area, i.e. 10) | 24s / 30s |
 
 Damage bands target roughly **75% of a same-gate weapon active's per-cast damage**: techniques pay
 technique slots and learn RNG, carry no weapon requirement, and do not scale with gear, so they sit
 deliberately below dedicated weapon actives while remaining a meaningful extra button.
 
-Learn gates (Mimicry skill requirement) scale with tier: **T1 = Mimicry 0, T2 = Mimicry 15, T3 = Mimicry 30, T4 = Mimicry 45.**
+Each technique has an individual Mimicry requirement ordered by its earliest player-accessible source in the Design Bible's `World NPCs` tab. `Additional` and `Training` rows do not establish progression. Practical encounter order breaks nominal-level ties: CZ-220 Mynock techniques begin at rank 0, the more difficult Probe Droid techniques begin at rank 1, and the remaining starting encounters continue from there. Later source bands progress continuously through rank 40. Techniques first found in level-50 encounters are ordered by Tough, Elite, and Boss source difficulty across ranks 41–50, with apex boss techniques remaining at rank 50. Every Mimicry rank from 0 through 50 unlocks at least one technique.
 
-Cooldowns are banded by tier and shape (higher tiers and area techniques recast slower), replacing the ad-hoc creature values inherited during generation.
+Cooldowns are banded by payload strength and shape (stronger and area techniques recast slower), replacing the ad-hoc creature values inherited during generation.
 
 ### Non-damage actives (the majority)
 
@@ -69,36 +69,36 @@ Traits declare their bonuses on the ability builder (`MimicryTraitStat` / `Mimic
 
 That is a statement about the trait's own lifecycle, not about what it does in combat. An on-hit proc trait still inflicts an ordinary status effect on its *target* when it fires (see below); those are transient, carry their own icons, and are unaffected by this.
 
-Each trait grants a **unique** effect, and effect strength scales with tier so a higher-tier trait is always worth more than a lower-tier one (no two traits are interchangeable). Two flavours exist:
+Each trait grants a **unique** effect, and stronger payload bands provide larger bonuses (no two traits are interchangeable). Two flavours exist:
 
-- **On-hit procs** — a percent chance for a landed hit to inflict a status effect. Elemental DoT procs (Poison/Shock/Freezing) scale roughly T1 = 12%, T2 = 15-18%. The debuff families (Bleed, Hemorrhage, Sunder) run at **half those rates** (T1 = 6%, T2 = 9-10%, T3 = 12%): their payloads scale with target max HP or strip defenses, so at equal chances they dwarf every perk-priced passive against elite/boss targets. Halved, their steady-state uptime lands near 25-45% instead of 55-85%.
-- **Flat buffs** — a permanent stat bonus, scaling roughly T1 = +4%, T2 = +6%, T3 = +8%.
+- **On-hit procs** — a percent chance for a landed hit to inflict a status effect. Elemental DoT procs (Poison/Shock/Freezing) scale roughly from 12% to 15–18%. The debuff families (Bleed, Hemorrhage, Sunder) run at **half those rates** (6%, 9–10%, then 12%): their payloads scale with target max HP or strip defenses, so at equal chances they dwarf every perk-priced passive against elite/boss targets. Halved, their steady-state uptime lands near 25–45% instead of 55–85%.
+- **Flat buffs** — a permanent stat bonus, scaling roughly from +4% through +6% to +8%.
 
 Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. The two defensive traits (`Chitin Guard`, `Iron Carapace`) are deliberately given **different** resistance/defense profiles so they are complementary rather than identical.
 
-| Technique | Tier | Slot | Passive trait effect |
+| Technique | Power band | Slot | Passive trait effect |
 |---|---|---|---|
-| Rending Bite | T1 | 1 | 6% chance to inflict Bleed |
-| Crippling Talons | T1 | 1 | 6% chance to inflict Hemorrhage |
-| Target Lock | T1 | 1 | +4% Accuracy |
-| Bonecrusher Bite | T2 | 2 | 9% chance to inflict Sunder |
-| Chitin Guard | T2 | 2 | +10% Physical Def, +15% Force Def, +20 Fire & Poison Resist |
-| Force Rend | T2 | 2 | +6% Force Attack |
-| Glacial Slime | T2 | 2 | 18% chance to inflict Poison |
-| Hoarfrost Glob | T2 | 2 | 18% chance to inflict Freezing |
-| Iron Carapace | T2 | 2 | +15% Physical Def, +10% Force Def, +25 Trauma, +15 Fire & Poison Resist |
-| Mauling Bite | T2 | 2 | 9% chance to inflict Bleed |
-| Mind Spike | T2 | 2 | +6% Accuracy |
-| Overload Shot | T2 | 2 | 18% chance to inflict Shock |
-| Precision Shot | T2 | 2 | +6% Critical Rate |
-| Rending Carve | T2 | 2 | 9% chance to inflict Hemorrhage |
-| Rime Pounce | T2 | 2 | 15% chance to inflict Freezing |
-| Serrated Slash | T2 | 2 | 10% chance to inflict Bleed |
-| Tactical Mark | T2 | 2 | +6% Attack |
-| Essence Scar | T3 | 2 | +8% Force Attack |
-| Force Sunder | T3 | 2 | 12% chance to inflict Sunder |
-| Opening Cut | T3 | 2 | 12% chance to inflict Bleed |
-| Rangefinder Shot | T3 | 2 | +8% Accuracy |
+| Rending Bite | Starter | 1 | 6% chance to inflict Bleed |
+| Crippling Talons | Starter | 1 | 6% chance to inflict Hemorrhage |
+| Target Lock | Starter | 1 | +4% Accuracy |
+| Bonecrusher Bite | Standard | 2 | 9% chance to inflict Sunder |
+| Chitin Guard | Standard | 2 | +10% Physical Def, +15% Force Def, +20 Fire & Poison Resist |
+| Force Rend | Standard | 2 | +6% Force Attack |
+| Glacial Slime | Standard | 2 | 18% chance to inflict Poison |
+| Hoarfrost Glob | Standard | 2 | 18% chance to inflict Freezing |
+| Iron Carapace | Standard | 2 | +15% Physical Def, +10% Force Def, +25 Trauma, +15 Fire & Poison Resist |
+| Mauling Bite | Standard | 2 | 9% chance to inflict Bleed |
+| Mind Spike | Standard | 2 | +6% Accuracy |
+| Overload Shot | Standard | 2 | 18% chance to inflict Shock |
+| Precision Shot | Standard | 2 | +6% Critical Rate |
+| Rending Carve | Standard | 2 | 9% chance to inflict Hemorrhage |
+| Rime Pounce | Standard | 2 | 15% chance to inflict Freezing |
+| Serrated Slash | Standard | 2 | 10% chance to inflict Bleed |
+| Tactical Mark | Standard | 2 | +6% Attack |
+| Essence Scar | Advanced | 2 | +8% Force Attack |
+| Force Sunder | Advanced | 2 | 12% chance to inflict Sunder |
+| Opening Cut | Advanced | 2 | 12% chance to inflict Bleed |
+| Rangefinder Shot | Advanced | 2 | +8% Accuracy |
 
 ### Effect durations (match the rest of the Bible)
 
@@ -115,11 +115,11 @@ Passive on-hit trait procs are a deliberate exception to the active-technique du
 
 ### Loadout economy (technique slots)
 
-The slot budget is the primary limiter on simultaneous power, since a player can freely swap techniques out of combat and cheaply learns the entire pool. Combat Analyzer grants **2** slots; Analyzer Memory adds **+2 per rank** (3 ranks = +6) and the Overclocked Analyzer capstone adds **+2**, for a maximum of **10**. With slot costs of 1–3 (rising with tier), a fully-invested analyst runs roughly 4–6 techniques at once — enough to build a real per-encounter kit while still forcing choices, rather than a standing library of every effect.
+The slot budget is the primary limiter on simultaneous power, since a player can freely swap techniques out of combat and cheaply learns the entire pool. Combat Analyzer grants **2** slots; Analyzer Memory adds **+2 per rank** (3 ranks = +6) and the Overclocked Analyzer capstone adds **+2**, for a maximum of **10**. With slot costs of 1–3 (stronger payloads generally cost more), a fully-invested analyst runs roughly 4–6 techniques at once — enough to build a real per-encounter kit while still forcing choices, rather than a standing library of every effect.
 
-### Tier-4 signature mechanics
+### Signature mechanics
 
-Tier-4 (Mimicry 45–50) contains 30 combat actives and 3 stances. Eleven combat actives deal direct damage, while nineteen are control, debuff, support, threat, reactive, or self-buff tools. Non-damage abilities carry no damage-scaling **Primary Stat** (`None` in the Bible).
+The signature payload band contains 30 combat actives and 3 stances. Eleven combat actives deal direct damage, while nineteen are control, debuff, support, threat, reactive, or self-buff tools. Their individual Mimicry requirements follow encounter order and source difficulty rather than payload strength alone. Non-damage abilities carry no damage-scaling **Primary Stat** (`None` in the Bible).
 
 | Damaging technique | Distinct role |
 |---|---|
@@ -163,11 +163,11 @@ Mechanics reuse shared, stat-driven building blocks such as the chain, detonatio
 
 ### Per-technique reference
 
-The authoritative per-technique specifics — name, tier, slot cost, role, scaling stat (or `None`), and full effect text — live in the **Design Bible workbook** (`Mimicry` tab) and its generated manifest `SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv`. That is the single source of truth. A duplicate damage-centric table previously lived here and repeatedly drifted, so it has been removed; the passive traits are tabulated above, the Tier-4 roles are mapped above, and the pre-45 active roles are summarised below.
+The authoritative per-technique specifics — name, Mimicry requirement, slot cost, role, scaling stat (or `None`), and full effect text — live in the **Design Bible workbook** (`Mimicry` tab) and its generated manifest `SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv`. The `World NPCs` tab is authoritative for source encounter level. A duplicate damage-centric table previously lived here and repeatedly drifted, so it has been removed; the passive traits are tabulated above, the signature roles are mapped above, and the other active roles are summarised below.
 
-### Pre-45 active roles
+### Non-signature active roles
 
-The 34 pre-45 combat actives contain 16 damage techniques and 18 non-damage techniques.
+The 34 combat actives outside the signature payload band contain 16 damage techniques and 18 non-damage techniques.
 
 - **Damage** — Raking Claws, Toxic Spit, Barbed Volley, Brutal Bash, Pouncing Strike, Sonic Shriek, Tail Sweep, Venom Spray, Blood Frenzy Flurry, Dread Wave, Goring Charge, Grenade Burst, Seismic Slam, Shrapnel Burst, Static Burst, and Toxic Cloud.
 - **Non-damage control and debuff** — Frost Spit, Capacitor Surge, Concussive Challenge, Ion Burst, Piercing Quills, Savage Roar, Static Web, Suppressing Shot, Arc Pulse, Brace Breaker, Dark Shock, Disorienting Screech, Null Shock, Pack Harrier, Permafrost Rupture, Rally Breaker, and Signal Snare.

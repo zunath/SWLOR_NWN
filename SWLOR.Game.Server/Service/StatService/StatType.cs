@@ -4485,12 +4485,6 @@ namespace SWLOR.Game.Server.Service.StatService
         CostlyAbilityHitStaminaRestoreSkillType = 777,
 
         /// <summary>
-        /// Minimum Stamina cost required for CostlyAbilityHitStaminaRestore.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        CostlyAbilityHitMinimumStaminaCost = 778,
-
-        /// <summary>
         /// Stamina restored when a costly matching hostile ability successfully hits.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -5520,65 +5514,87 @@ namespace SWLOR.Game.Server.Service.StatService
         HostileAbilityStaminaCostFlatAdjustment = 958,
 
         /// <summary>
+        /// Minimum final Stamina cost required for CostlyAbilityDamageBonus.
+        /// Kept separate from other costly-ability riders so thresholds do not add together.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityDamageMinimumStaminaCost = 959,
+
+        /// <summary>
+        /// Minimum final Stamina cost required for CostlyAbilityHitStaminaRestore.
+        /// Kept separate from other costly-ability riders so thresholds do not add together.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityHitStaminaRestoreMinimumStaminaCost = 960,
+
+        /// <summary>
+        /// Minimum final Stamina cost required for CostlyAbilityExposedDurationSeconds.
+        /// Kept separate from other costly-ability riders so thresholds do not add together.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityStatusMinimumStaminaCost = 961,
+
+        /// <summary>
         /// Movement speed percent adjustment applied only while the creature is stealthed.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        StealthMovementSpeedPercentAdjustment = 959,
+        StealthMovementSpeedPercentAdjustment = 962,
 
         /// <summary>
         /// DMG granted to the next attack after guarding a hit, regardless of skill line.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitNextAttackDMGBonus = 960,
+        GuardedHitNextAttackDMGBonus = 963,
 
         /// <summary>
         /// Critical-rate adjustment granted to the next attack after guarding a hit, regardless of skill line.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitNextAttackCriticalRatePercentAdjustment = 961,
+        GuardedHitNextAttackCriticalRatePercentAdjustment = 964,
 
         /// <summary>
         /// Duration in seconds of the cross-skill guarded-hit next-attack bonus.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        GuardedHitNextAttackWindowSeconds = 962,
+        GuardedHitNextAttackWindowSeconds = 965,
 
         /// <summary>
         /// Internal temporary DMG consumed by the next hostile ability or landed auto attack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        NextAttackGuardedHitDMGBonus = 963,
+        NextAttackGuardedHitDMGBonus = 966,
 
         /// <summary>
         /// Internal temporary critical-rate adjustment consumed by the next hostile ability or
         /// landed auto attack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        NextAttackGuardedHitCriticalRatePercentAdjustment = 964,
+        NextAttackGuardedHitCriticalRatePercentAdjustment = 967,
 
         /// <summary>
         /// DMG granted by an independent second cross-skill guarded-hit next-attack channel.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitSecondaryNextAttackDMGBonus = 965,
+        GuardedHitSecondaryNextAttackDMGBonus = 968,
 
         /// <summary>
         /// Flat Enmity granted by the independent second cross-skill guarded-hit next-attack channel.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitSecondaryNextAttackEnmityBonus = 966,
+        GuardedHitSecondaryNextAttackEnmityBonus = 969,
 
         /// <summary>
         /// Duration in seconds of the independent second cross-skill guarded-hit next-attack channel.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        GuardedHitSecondaryNextAttackWindowSeconds = 967,
+        GuardedHitSecondaryNextAttackWindowSeconds = 970,
 
         /// <summary>
         /// Internal temporary flat Enmity consumed by the next hostile ability or landed auto attack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        NextAttackGuardedHitEnmityBonus = 968,
+        NextAttackGuardedHitEnmityBonus = 971,
+
     }
 
     public class StatTypeAttribute : Attribute

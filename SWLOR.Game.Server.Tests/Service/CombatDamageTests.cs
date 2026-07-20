@@ -529,7 +529,14 @@ public class CombatDamageTests
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
         combatSource.Should().Contain("ApplyGuardedHitModifiers(uint defender, uint attacker, int damage, CombatDamageType damageType)");
-        combatSource.Should().Contain("!damageType.IsPhysicalDamageType()");
+        var guard = ExtractMethod(combatSource, "public static int ApplyGuardedHitModifiers(");
+        guard.Should().Contain("!GetIsObjectValid(attacker)");
+        guard.Should().Contain("defender == attacker");
+        guard.Should().Contain("damage <= 0");
+        guard.Should().Contain("!damageType.IsPhysicalDamageType()");
+        guard.IndexOf("damage <= 0", StringComparison.Ordinal).Should().BeLessThan(
+            guard.IndexOf("var guardChance", StringComparison.Ordinal),
+            "idle, self, and zero-damage events must never enter the Guard roll");
         damageRollSource.Should().Contain("Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);");
         damageRollSource.Should().NotContain("Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage);");
     }

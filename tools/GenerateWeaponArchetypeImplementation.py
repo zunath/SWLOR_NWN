@@ -443,6 +443,23 @@ def ensure_tlk_text(tlk, by_id, by_text, text):
     return str(str_ref)
 
 
+def ensure_tlk_text_preserving_matching_ref(tlk, by_id, by_text, current_ref, text):
+    """Keep an existing custom TLK ref when it already resolves to the requested text.
+
+    The TLK contains intentional duplicate text in legacy and newer slots. Relinking a working
+    2DA row to a different duplicate creates noisy unrelated asset changes and can invalidate a
+    deployed TLK/2DA pairing even though the visible text is identical.
+    """
+    text = text.strip()
+    if current_ref.isdigit():
+        entry_id = int(current_ref) - CUSTOM_TLK_OFFSET
+        existing = by_id.get(entry_id)
+        if existing is not None and existing.get("text", "").strip() == text:
+            return current_ref
+
+    return ensure_tlk_text(tlk, by_id, by_text, text)
+
+
 def ensure_status_effect_tlk_entries(tlk, by_id, by_text):
     status_dir = ROOT / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition"
     for path in status_dir.glob("*StatusEffect.cs"):
@@ -555,10 +572,12 @@ def update_spell_descriptions(spell_updates, tlk, tlk_by_id, tlk_by_text):
             raise RuntimeError(f"Unexpected spells.2da row width for row {row_number}")
 
         spell_desc_token_index = tokens_by_header(tokens, headers, "SpellDesc")
-        spell_desc = ensure_tlk_text(
+        current_spell_desc = tokens[spell_desc_token_index]
+        spell_desc = ensure_tlk_text_preserving_matching_ref(
             tlk,
             tlk_by_id,
             tlk_by_text,
+            current_spell_desc,
             description)
         new_line = replace_2da_token(lines[row_line[row_number]], spell_desc_token_index, spell_desc)
         if lines[row_line[row_number]] != new_line:
@@ -1174,11 +1193,10 @@ def description_stat_entries(row, base):
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "StatusAppliedSelfDefensePercentAdjustment", parse_percent(r"gain \+(\d+)% Defense", description))
         add_stat(stats, "StatusAppliedSelfDurationSeconds", parse_duration(description) or 30)
-    if "guard an attack" in lowered and "next katar attack" in lowered and "critical chance" in lowered:
-        add_stat(stats, "GuardedHitNextSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "GuardedHitNextSkillAbilityCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% critical chance", description))
-        add_stat(stats, "GuardedHitNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
-        add_stat(stats, "GuardedHitNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+    if base == "Redirecting Counter":
+        add_stat(stats, "GuardedHitNextHostileAbilityCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% critical chance", description))
+        add_stat(stats, "GuardedHitNextHostileAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitNextHostileAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     elif base == "Redirecting Guard":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "StatusAppliedSelfEnmityPercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
@@ -2154,7 +2172,7 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("SelfGuardDurationSecondsIfRecentGuardedAllyHit", guarded_ally_guard.group(3))
 
     recent_guard_counter = re.search(
-        r"If you guarded an attack within the last (\d+) seconds, this deals weapon DMG \+\s*(\d+) instead(?: and inflicts Dazed for (\d+) seconds)?",
+        r"If you guarded an attack within the last (\d+) seconds, (?:this|it) deals weapon DMG \+\s*(\d+) instead(?: and inflicts Dazed for (\d+) seconds)?",
         description,
         re.IGNORECASE)
     if recent_guard_counter:
@@ -2324,27 +2342,29 @@ def is_aimed_area(row):
     Radius areas ("within Nm", "nearby enemies") always originate on the caster and must not
     prompt. See the Ability Definitions section of AGENTS.md.
     """
-    inferred = infer_targeting_from_description(row)
-    if not inferred:
-        return False
-
-    if inferred[0] in (
-        "AbilityTargetingShapeType.Rect",
-        "AbilityTargetingShapeType.Cone",
-    ):
-        return True
-
     # A sphere can also be aimed when it is placed at a selected point. Keep this explicit so
-    # radius-only wording such as "enemies within 5m of you" remains self-centered.
+    # radius-only wording such as "enemies within 5m of you" remains self-centered. Check this
+    # before inference because wording such as "a 5m-radius area at the target location" still
+    # identifies the player's aim point even if a new radius phrase is not yet recognized below.
     lowered = row["Description"].lower()
-    return any(marker in lowered for marker in (
+    if any(marker in lowered for marker in (
         "at a target location",
         "at the target location",
         "at a target point",
         "at the target point",
         "at a selected location",
         "at the selected location",
-    ))
+    )):
+        return True
+
+    inferred = infer_targeting_from_description(row)
+    if not inferred:
+        return False
+
+    return inferred[0] in (
+        "AbilityTargetingShapeType.Rect",
+        "AbilityTargetingShapeType.Cone",
+    )
 
 
 def format_float_literal(value):
@@ -2430,6 +2450,10 @@ def extract_stated_dimensions(lowered):
     if single:
         return float(single.group(1)), None
 
+    radius = re.search(r'(\d+(?:\.\d+)?)\s*m\s*-\s*radius\b', lowered)
+    if radius:
+        return float(radius.group(1)), None
+
     return None
 
 
@@ -2465,6 +2489,10 @@ def infer_targeting_from_description(row):
         "nearby enemies" in lowered or
         "in an area" in lowered or
         "in the area" in lowered or
+        "area at a target location" in lowered or
+        "area at the target location" in lowered or
+        "area at a selected location" in lowered or
+        "area at the selected location" in lowered or
         "enemies within" in lowered or
         "sphere" in lowered or
         "all enemies" in lowered or
@@ -2757,11 +2785,15 @@ def add_missing_feats(rows):
 
         icon_index = tokens_by_header(tokens, headers, "ICON")
         tokens[tokens_by_header(tokens, headers, "LABEL")] = metadata["label"]
-        tokens[tokens_by_header(tokens, headers, "FEAT")] = ensure_tlk_text(tlk, tlk_by_id, tlk_by_text, metadata["name"])
-        tokens[tokens_by_header(tokens, headers, "DESCRIPTION")] = ensure_tlk_text(
+        feat_index = tokens_by_header(tokens, headers, "FEAT")
+        description_index = tokens_by_header(tokens, headers, "DESCRIPTION")
+        tokens[feat_index] = ensure_tlk_text_preserving_matching_ref(
+            tlk, tlk_by_id, tlk_by_text, tokens[feat_index], metadata["name"])
+        tokens[description_index] = ensure_tlk_text_preserving_matching_ref(
             tlk,
             tlk_by_id,
             tlk_by_text,
+            tokens[description_index],
             metadata["description"])
         if tokens[icon_index].lower() in TEMPLATE_ACTIVE_ICON_RESREFS:
             tokens[icon_index] = generated_icon_resref(feat, row_number)
@@ -2800,11 +2832,15 @@ def add_missing_feats(rows):
 
         icon_index = tokens_by_header(tokens, headers, "ICON")
         tokens[tokens_by_header(tokens, headers, "LABEL")] = metadata["label"]
-        tokens[tokens_by_header(tokens, headers, "FEAT")] = ensure_tlk_text(tlk, tlk_by_id, tlk_by_text, metadata["name"])
-        tokens[tokens_by_header(tokens, headers, "DESCRIPTION")] = ensure_tlk_text(
+        feat_index = tokens_by_header(tokens, headers, "FEAT")
+        description_index = tokens_by_header(tokens, headers, "DESCRIPTION")
+        tokens[feat_index] = ensure_tlk_text_preserving_matching_ref(
+            tlk, tlk_by_id, tlk_by_text, tokens[feat_index], metadata["name"])
+        tokens[description_index] = ensure_tlk_text_preserving_matching_ref(
             tlk,
             tlk_by_id,
             tlk_by_text,
+            tokens[description_index],
             metadata["description"])
         expected_icon = generated_icon_resref(feat, row_number)
         if tokens[icon_index] != expected_icon:
@@ -3138,7 +3174,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                 re.IGNORECASE):
                 statuses = [status for status in statuses if status != "DazedStatusEffect"]
             if re.search(
-                r"If you guarded an attack within the last \d+ seconds, this deals weapon DMG \+\s*\d+ instead and inflicts Dazed",
+                r"If you guarded an attack within the last \d+ seconds, (?:this|it) deals weapon DMG \+\s*\d+ instead and inflicts Dazed",
                 row["Description"],
                 re.IGNORECASE):
                 statuses = [status for status in statuses if status != "DazedStatusEffect"]

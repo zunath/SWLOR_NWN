@@ -174,6 +174,27 @@ public class AreaAbilityTargetingTests
     }
 
     [Test]
+    public void AimedAreaAbilities_RequireATargetInCode()
+    {
+        var playerFeats = GetPlayerGrantedFeats();
+
+        var offenders = GetTargetedAbilities()
+            .Where(x => x.IsHostile && x.IsArea && !x.RequiresTarget)
+            .Where(x => playerFeats.Contains(x.Feat))
+            .Where(x =>
+                AimedShapes.Contains(x.Targeting.Shape) ||
+                x.Targeting.Shape == AbilityTargetingShapeType.Sphere &&
+                !x.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            .Select(x => $"{x.DefinitionName}.{x.Feat}")
+            .OrderBy(x => x, StringComparer.Ordinal)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "aimed areas need the selected direction or ground point supplied by the target cursor; offenders: {0}",
+            string.Join(", ", offenders));
+    }
+
+    [Test]
     public void SphereAreaAbilities_DeclareARadiusAndNoWidth()
     {
         var offenders = GetTargetedAbilities()

@@ -73,10 +73,26 @@ def csharp_escape(value: str) -> str:
     return value.replace("\\", "\\\\").replace('"', '\\"')
 
 
+def build_replacement_map(changes: list[tuple[str, str, str]]) -> dict[str, str]:
+    replacements: dict[str, str] = {}
+    source_perks: dict[str, str] = {}
+    for perk_name, old, new in changes:
+        existing = replacements.get(old)
+        if existing is not None and existing != new:
+            raise RuntimeError(
+                "Cannot safely synchronize duplicate old description text: "
+                f"{source_perks[old]!r} and {perk_name!r} map {old!r} to "
+                "different replacements."
+            )
+        replacements[old] = new
+        source_perks.setdefault(old, perk_name)
+    return replacements
+
+
 def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
     replacement_map = {
         csharp_escape(old): csharp_escape(new)
-        for _, old, new in changes
+        for old, new in build_replacement_map(changes).items()
     }
     description_pattern = re.compile(
         r'\.Description\("(?P<text>(?:\\.|[^"\\])*)"\)'
@@ -146,7 +162,7 @@ def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
 
 def update_tlk(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
     raw = TLK_JSON.read_text(encoding="utf-8-sig")
-    new_by_old = {old: new for _, old, new in changes}
+    new_by_old = build_replacement_map(changes)
 
     tree_result = subprocess.run(
         ["git", "ls-tree", "HEAD", "SWLOR_Haks"],

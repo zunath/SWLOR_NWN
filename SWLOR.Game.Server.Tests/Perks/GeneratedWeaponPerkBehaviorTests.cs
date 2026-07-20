@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Spear;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -88,7 +89,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         AssertSourceStat("KatarPerkDefinition.cs", StatType.Guard, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardDamageReductionPercentAdjustment, "10");
-        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityDamageBonus, "10");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextHostileAbilityDamageBonus, "10");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityStatusSkillType, "(int)SkillType.Katar");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityExposedDamageBonus, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId, "(int)PerkCategoryType.KatarIronGuard");
@@ -283,7 +284,7 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
-    public void ReportedVibroknifeAndPistolAbilityTargeting_MatchesActivationBehavior()
+    public void ReportedQueuedWeaponAndPistolAbilityTargeting_MatchesActivationBehavior()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root, "SWLOR_Haks", "sw_2da", "feat.2da");
@@ -304,6 +305,56 @@ public class GeneratedWeaponPerkBehaviorTests
             virulentBlade[feat].RequiresTarget.Should().BeFalse();
             AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "M", "0x03", "0");
         }
+
+        var guardCounter = new GuardCounterAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.GuardCounter1, FeatType.GuardCounter2, FeatType.GuardCounter3 })
+        {
+            guardCounter[feat].ActivationType.Should().Be(AbilityActivationType.Weapon);
+            guardCounter[feat].IsHostileAbility.Should().BeTrue();
+            guardCounter[feat].RequiresTarget.Should().BeFalse();
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "P", "0x01", "0");
+        }
+
+        var guardCounterSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Katar",
+            "GuardCounterAbilityDefinition.cs"));
+        (guardCounterSource.Split("IsQueuedWeaponAbility = true").Length - 1).Should().Be(3);
+        guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 8");
+        guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 12");
+        guardCounterSource.Should().Contain("ExtraDamageIfRecentGuardedHit = 17");
+        guardCounterSource.Should().Contain("RequireRecentGuardedHitForConditionalStatus = true");
+        guardCounterSource.Should().Contain("ConditionalTargetStatusEffect = typeof(DazedStatusEffect)");
+
+        var explosiveToss = new ExplosiveTossAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[]
+                 {
+                     FeatType.ExplosiveToss1,
+                     FeatType.ExplosiveToss2,
+                     FeatType.ExplosiveToss3,
+                     FeatType.ExplosiveToss4
+                 })
+        {
+            explosiveToss[feat].ActivationType.Should().Be(AbilityActivationType.Casted);
+            explosiveToss[feat].IsHostileAbility.Should().BeTrue();
+            explosiveToss[feat].RequiresTarget.Should().BeTrue(
+                "the Bible places Explosive Toss at a target location rather than on the caster");
+
+            var featRow = featRows[(int)feat];
+            featRow["TARGETSELF"].Should().Be("****");
+            featRow["HostileFeat"].Should().Be("1");
+
+            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            spellRow["TargetShape"].Should().Be("sphere");
+            spellRow["TargetSizeX"].Should().Be("5");
+            spellRow["TargetFlags"].Should().Be("1");
+        }
+
+        var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
+        generatorSource.Should().Contain("(?:this|it) deals weapon DMG");
 
         var cripplingSlice = new CripplingSliceAbilityDefinition().BuildAbilities();
         foreach (var feat in new[] { FeatType.CripplingSlice1, FeatType.CripplingSlice2, FeatType.CripplingSlice3 })

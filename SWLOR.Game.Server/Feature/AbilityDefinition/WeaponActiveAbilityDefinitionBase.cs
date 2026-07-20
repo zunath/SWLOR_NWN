@@ -1294,6 +1294,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     ability.IsAreaAbility();
                     ApplyTargetingMetadata(ability, activationDelay, targetingSpell, targetingShape, targetingSizeX, targetingSizeY, targetingFlags);
+
+                    // Directional lines/cones and spheres placed at a selected location need the
+                    // target point supplied by the cursor. Self-centered spheres and queued
+                    // weapon abilities execute without an up-front target selection.
+                    if (!profile.IsQueuedWeaponAbility &&
+                        RequiresManualAreaTarget(targetingShape, targetingFlags))
+                    {
+                        ability.RequiresTarget();
+                    }
                 }
                 else
                 {
@@ -1359,6 +1368,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static bool CenterAreaOnActivator(AbilityTargetingFlags targetingFlags)
         {
             return (targetingFlags & AbilityTargetingFlags.OriginOnSelf) == AbilityTargetingFlags.OriginOnSelf;
+        }
+
+        private static bool RequiresManualAreaTarget(
+            AbilityTargetingShapeType targetingShape,
+            AbilityTargetingFlags targetingFlags)
+        {
+            return targetingShape is AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone ||
+                   targetingShape == AbilityTargetingShapeType.Sphere && !CenterAreaOnActivator(targetingFlags);
         }
 
         private static void ApplyTargetingMetadata(

@@ -190,8 +190,15 @@ public class CrossSkillPerkInteractionSafetyTests
 
         var redirectingCounter = MaxLevel(perks[PerkType.RedirectingCounter]);
         var retaliatoryFlow = MaxLevel(perks[PerkType.RetaliatoryFlow]);
-        StatValue(redirectingCounter, StatType.GuardedHitNextSkillAbilitySkillType)
-            .Should().Be((int)SkillType.Katar);
+        StatValue(redirectingCounter, StatType.GuardedHitNextHostileAbilityDamageBonus)
+            .Should().Be(10);
+        StatValue(redirectingCounter, StatType.GuardedHitNextHostileAbilityCriticalRatePercentAdjustment)
+            .Should().Be(10);
+        StatValue(redirectingCounter, StatType.GuardedHitNextHostileAbilityWindowSeconds)
+            .Should().Be(30);
+        redirectingCounter.StatBonuses.Should().NotContain(
+            bonus => bonus.Stat == StatType.GuardedHitNextSkillAbilitySkillType,
+            "Redirecting Counter must be consumable by hostile abilities from every skill line");
         StatValue(retaliatoryFlow, StatType.GuardedHitSecondaryNextSkillAbilitySkillType)
             .Should().Be((int)SkillType.Katar);
         retaliatoryFlow.StatBonuses.Should().NotContain(
@@ -222,6 +229,17 @@ public class CrossSkillPerkInteractionSafetyTests
         var guardedBonuses = ExtractMethod(combat, "private static void ApplyGuardedHitNextSkillAbilityEffects(");
         guardedBonuses.Should().Contain("primary.DamageBonus + secondary.DamageBonus");
         guardedBonuses.Should().Contain("Math.Max(primary.Window, secondary.Window)");
+
+        var crossSkillCounter = ExtractMethod(combat, "private static void ApplyGuardedHitNextHostileAbilityEffects(");
+        crossSkillCounter.Should().Contain("StatType.GuardedHitNextHostileAbilityDamageBonus");
+        crossSkillCounter.Should().Contain("StatType.NextHostileAbilityGuardedHitDamageBonus");
+
+        var abilitySource = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+        var beginAbilityImpact = ExtractMethod(abilitySource, "public static void BeginAbilityImpact(");
+        beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
+        beginAbilityImpact.Should().Contain("ConsumeNextHostileAbilityGuardedHitBonuses");
+        beginAbilityImpact.Should().Contain("guardedHitBonuses.DamageBonus");
+        beginAbilityImpact.Should().Contain("guardedHitBonuses.CriticalRatePercentAdjustment");
 
         var retaliationPulse = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliationPulse(");
         retaliationPulse.Should().Contain("ApplyTriggeredDamage(");

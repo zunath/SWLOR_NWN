@@ -5524,6 +5524,38 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         StealthMovementSpeedPercentAdjustment = 959,
+
+        /// <summary>
+        /// Flat damage granted to the next hostile ability after guarding a hit, regardless of skill line.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitNextHostileAbilityDamageBonus = 960,
+
+        /// <summary>
+        /// Critical-rate adjustment granted to the next hostile ability after guarding a hit,
+        /// regardless of skill line.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitNextHostileAbilityCriticalRatePercentAdjustment = 961,
+
+        /// <summary>
+        /// Duration in seconds of the cross-skill guarded-hit hostile-ability bonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedHitNextHostileAbilityWindowSeconds = 962,
+
+        /// <summary>
+        /// Internal temporary flat damage consumed by the next hostile ability from any skill line.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        NextHostileAbilityGuardedHitDamageBonus = 963,
+
+        /// <summary>
+        /// Internal temporary critical-rate adjustment consumed by the next hostile ability from
+        /// any skill line.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        NextHostileAbilityGuardedHitCriticalRatePercentAdjustment = 964,
     }
 
     public class StatTypeAttribute : Attribute

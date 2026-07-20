@@ -928,7 +928,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
             AddStat("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability.");
             AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Affects Force ability effectiveness based on type. Range: -10 to 10. Negative represents Dark-side and positive represents Light-side.");
-            AddStat("Detection", Stat.GetDetection(_target).ToString(), "PER + WIL + equipment and perk bonuses; Detect mode adds +5.");
+            AddStat("Detection", Stat.GetDetection(_target).ToString(), "PER + WIL plus equipment, perk, and status-effect bonuses; Detect mode adds +5.");
             AddStat("Stealth", Stat.GetStealth(_target).ToString(), "Twice AGI plus equipment, perk, and status-effect bonuses.");
             AddStat("Experience", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ExperiencePercentAdjustment)), "Bonus or penalty applied to experience gained from skill use.");
 

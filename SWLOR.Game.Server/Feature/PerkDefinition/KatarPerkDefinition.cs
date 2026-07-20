@@ -52,19 +52,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter1)
-                .Description("Your next attack deals weapon DMG + 8. If you guarded an attack within the last 30 seconds, this deals weapon DMG + 16 instead.")
+                .Description("Queue your next auto attack to deal weapon DMG + 8. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 16 instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter2)
-                .Description("Your next attack deals weapon DMG + 18. If you guarded an attack within the last 30 seconds, this deals weapon DMG + 30 instead.")
+                .Description("Queue your next auto attack to deal weapon DMG + 18. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 30 instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter3)
-                .Description("Your next attack deals weapon DMG + 28. If you guarded an attack within the last 30 seconds, this deals weapon DMG + 45 instead and inflicts Dazed for 15 seconds.")
+                .Description("Queue your next auto attack to deal weapon DMG + 28. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 45 instead and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 38);
         }
@@ -103,11 +103,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RedirectingCounterTrait)
-                .Description("When you guard an attack, your next Katar attack within 30 seconds gains +10% critical chance and deals +10 DMG.")
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilitySkillType, (int)SkillType.Katar)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityCriticalRatePercentAdjustment, 10)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityWindowSeconds, 30)
+                .Description("When you guard an attack, your next attack within 30 seconds gains +10% critical chance and deals +10 DMG.")
+                .IncreasesStat(StatType.GuardedHitNextHostileAbilityCriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.GuardedHitNextHostileAbilityDamageBonus, 10)
+                .IncreasesStat(StatType.GuardedHitNextHostileAbilityWindowSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 8);
         }

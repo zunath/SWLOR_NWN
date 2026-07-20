@@ -104,11 +104,14 @@ namespace SWLOR.Game.Server.Service
             var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
             var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
             var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
+            var guardedHitBonuses = ability.IsHostileAbility
+                ? Combat.ConsumeNextHostileAbilityGuardedHitBonuses(activator)
+                : (DamageBonus: 0, CriticalRatePercentAdjustment: 0);
             BeginAbilityImpact(
                 activator,
                 ability,
-                nextAbilityDamageBonus + nextSkillAbilityBonuses.DamageBonus,
-                nextSkillAbilityBonuses.CriticalRatePercentAdjustment,
+                nextAbilityDamageBonus + nextSkillAbilityBonuses.DamageBonus + guardedHitBonuses.DamageBonus,
+                nextSkillAbilityBonuses.CriticalRatePercentAdjustment + guardedHitBonuses.CriticalRatePercentAdjustment,
                 nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment);
         }
 

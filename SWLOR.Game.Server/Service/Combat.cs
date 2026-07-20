@@ -2899,6 +2899,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             _recentGuardedHits[creature] = DateTime.UtcNow;
+            ApplyGuardedHitNextHostileAbilityEffects(creature);
             ApplyGuardedHitNextSkillAbilityEffects(creature);
             ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
         }
@@ -6957,6 +6958,45 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
+        private static void ApplyGuardedHitNextHostileAbilityEffects(uint creature)
+        {
+            var damageBonus = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitNextHostileAbilityDamageBonus);
+            var criticalRate = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitNextHostileAbilityCriticalRatePercentAdjustment);
+            var window = Stat.GetStatAdjustment(
+                creature,
+                StatType.GuardedHitNextHostileAbilityWindowSeconds);
+            if (window <= 0 || damageBonus == 0 && criticalRate == 0)
+                return;
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextHostileAbilityGuardedHitDamageBonus,
+                damageBonus,
+                window,
+                StatType.NextHostileAbilityGuardedHitDamageBonus);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextHostileAbilityGuardedHitCriticalRatePercentAdjustment,
+                criticalRate,
+                window,
+                StatType.NextHostileAbilityGuardedHitDamageBonus);
+
+            if (GetIsPC(creature))
+            {
+                var criticalText = criticalRate != 0
+                    ? $", +{criticalRate}% Crit"
+                    : string.Empty;
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"Counter Ready: +{damageBonus} DMG{criticalText}"),
+                    creature,
+                    false);
+            }
+        }
+
         public static int GetAbilityCriticalRate(
             uint attacker,
             SkillType skillType,
@@ -7536,6 +7576,21 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextSkillAbilitySkillType);
 
             return (damageBonus, criticalRate, defenseIgnore);
+        }
+
+        public static (int DamageBonus, int CriticalRatePercentAdjustment) ConsumeNextHostileAbilityGuardedHitBonuses(
+            uint creature)
+        {
+            var damageBonus = TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextHostileAbilityGuardedHitDamageBonus,
+                StatType.NextHostileAbilityGuardedHitDamageBonus);
+            var criticalRate = TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextHostileAbilityGuardedHitCriticalRatePercentAdjustment,
+                StatType.NextHostileAbilityGuardedHitDamageBonus);
+
+            return (damageBonus, criticalRate);
         }
 
         public static void GrantNextAbilityDamageBonus(uint creature, int perkTypeValue, int bonus, int durationSeconds)

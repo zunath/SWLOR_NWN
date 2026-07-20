@@ -79,6 +79,14 @@ namespace SWLOR.Toolset.Editors
             return type switch
             {
                 ResourceType.Utc => UtcSchema.Build(),
+                ResourceType.Uti => UtiSchema.Build(),
+                ResourceType.Utp => UtpSchema.Build(),
+                ResourceType.Utd => UtdSchema.Build(),
+                ResourceType.Utw => UtwSchema.Build(),
+                ResourceType.Uts => UtsSchema.Build(),
+                ResourceType.Utt => UttSchema.Build(),
+                ResourceType.Utm => UtmSchema.Build(),
+                ResourceType.Area => AreSchema.Build(),
                 _ => null
             };
         }

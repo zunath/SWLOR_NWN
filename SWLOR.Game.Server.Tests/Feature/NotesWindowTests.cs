@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 
@@ -58,7 +59,6 @@ public class NotesWindowTests
     {
         var definition = ReadDefinition();
 
-        definition.Should().Contain("browser.AddPagination(");
         definition.Should().Contain("model => model.PageNumbers");
         definition.Should().Contain("model => model.SelectedPageIndex");
 
@@ -81,10 +81,11 @@ public class NotesWindowTests
     {
         var definition = ReadDefinition();
 
+        definition.Should().Contain($"DefinePartialView(NotesViewModel.{nameof(NotesViewModel.NotesTabPartial)}");
         definition.Should().Contain($"DefinePartialView(NotesViewModel.{nameof(NotesViewModel.CategoriesTabPartial)}");
 
-        // The tab selector is repeated in both layouts so it survives a root swap.
-        Regex.Matches(definition, @"AddTabRow\(col\);").Count.Should().Be(2);
+        // The tab selector is repeated in both layouts so it survives a swap.
+        Regex.Matches(definition, @"AddTabRow\(outer\);").Count.Should().Be(2);
 
         definition.Should().Contain("model => model.IsNotesTabToggled");
         definition.Should().Contain("model => model.IsCategoriesTabToggled");
@@ -95,21 +96,65 @@ public class NotesWindowTests
     }
 
     [Test]
-    public void Layout_NestsNoGroupsAndPinsNoControlWidths()
+    public void EveryClickableElementHasAStableId()
     {
+        // The layout is regenerated per window width. Element ids default to a fresh Guid, so any
+        // clickable element without an explicit SetId loses its handler the moment the layout is
+        // rebuilt - the button simply stops responding, with nothing logged.
         var definition = ReadDefinition();
 
-        // A nested group sizes itself to its content, so the window stopped filling horizontally
-        // when the tabs lived in one. Nothing may be swapped into a placeholder group any more.
-        Regex.Matches(definition, @"AddPartialView\(").Count
-            .Should()
-            .Be(0, "tab content is swapped at the window root, not into a nested group");
+        var clickHandlers = Regex.Matches(definition, @"BindOnClicked\(").Count;
+        var explicitIds = Regex.Matches(definition, @"\.SetId\(").Count;
 
-        // Pinning a width on these combo boxes made every list and combo in the tab render empty.
-        definition.Should().Contain("row.AddComboBox()");
-        Regex.Matches(definition, @"AddComboBox\(\)[\s\S]{0,400}?SetWidth\(").Count
-            .Should()
-            .Be(0, "a fixed combo width blanked every bound list in the tab");
+        clickHandlers.Should().BeGreaterThan(0);
+        explicitIds.Should().Be(
+            clickHandlers,
+            "every element with a click handler needs a stable id to survive layout regeneration");
+
+        // The shared pagination control generates its own Guid ids, so it cannot be used here.
+        definition.Should().NotContain("AddPagination(");
+        definition.Should().Contain("model => model.OnClickPreviousPage()");
+        definition.Should().Contain("model => model.OnClickNextPage()");
+    }
+
+    [Test]
+    public void ContentWidth_TracksTheWindowAndSplitsIntoTwoPanes()
+    {
+        var atDefault = NotesDefinition.CalculateContentWidth(NotesDefinition.DefaultWindowWidth);
+        var wider = NotesDefinition.CalculateContentWidth(NotesDefinition.DefaultWindowWidth + 400f);
+
+        // Content must grow with the window, one pixel for one pixel.
+        (wider - atDefault).Should().BeApproximately(400f, 0.01f);
+
+        // A narrow window must not collapse the content.
+        NotesDefinition.CalculateContentWidth(0f).Should().BeGreaterThan(0f);
+
+        // The two panes split the content, so each grows by half of what the window gains.
+        var paneAtDefault = NotesDefinition.CalculatePaneWidth(atDefault);
+        var paneWider = NotesDefinition.CalculatePaneWidth(wider);
+
+        (paneWider - paneAtDefault).Should().BeApproximately(200f, 0.01f);
+        (paneAtDefault * 2).Should().BeLessThan(atDefault, "the panes need a gutter between them");
+    }
+
+    [Test]
+    public void ComboRows_AreNotPinnedToAFixedHeight()
+    {
+        // A width-pinned combo inside a fixed-height row made every list in the tab render empty.
+        // The Key Items window pairs a width-pinned combo with a heightless row; match it.
+        var definition = ReadDefinition();
+
+        var comboRows = Regex.Matches(
+            definition,
+            @"AddRow\(row =>\s*\{(?:(?!AddRow)[\s\S])*?AddComboBox\(\)(?:(?!AddRow)[\s\S])*?\}\);");
+
+        comboRows.Count.Should().BeGreaterThan(0);
+        foreach (Match comboRow in comboRows)
+        {
+            comboRow.Value.Should().NotContain(
+                "row.SetHeight(",
+                "a width-pinned combo in a fixed-height row blanks the tab's lists");
+        }
     }
 
     [Test]

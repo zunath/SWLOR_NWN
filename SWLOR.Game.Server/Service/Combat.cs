@@ -117,6 +117,7 @@ namespace SWLOR.Game.Server.Service
             public int Cost { get; init; }
             public DateTime SpentAt { get; init; }
             public bool StaminaRestoreApplied { get; set; }
+            public int DeferredImpactCount { get; set; }
         }
 
         private sealed class SuppressionAbilityUseState
@@ -4850,7 +4851,7 @@ namespace SWLOR.Game.Server.Service
                 staminaRestoreMinimumCost > 0 &&
                 costState.Cost >= staminaRestoreMinimumCost &&
                 !costState.StaminaRestoreApplied &&
-                (staminaRestoreSkillType == SkillType.Invalid || SkillTypeMatches(skillType, staminaRestoreSkillType)))
+                SkillTypeMatchesOrGlobal(skillType, staminaRestoreSkillType))
             {
                 Stat.RestoreStamina(activator, staminaRestore);
                 costState.StaminaRestoreApplied = true;
@@ -4859,7 +4860,7 @@ namespace SWLOR.Game.Server.Service
             if (exposedDuration > 0 &&
                 statusMinimumCost > 0 &&
                 costState.Cost >= statusMinimumCost &&
-                (statusSkillType == SkillType.Invalid || SkillTypeMatches(skillType, statusSkillType)))
+                SkillTypeMatchesOrGlobal(skillType, statusSkillType))
             {
                 StatusEffect.ApplyStatusEffect(
                     activator,
@@ -7739,9 +7740,38 @@ namespace SWLOR.Game.Server.Service
             return false;
         }
 
+        public static void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability)
+        {
+            if (TryGetAbilityStaminaCostState(creature, ability, out var state))
+            {
+                state.DeferredImpactCount++;
+            }
+        }
+
         public static void CompleteAbilityStaminaCostContext(uint creature, AbilityDetail ability)
         {
-            if (ability != null)
+            if (ability == null)
+                return;
+
+            if (_abilityStaminaCosts.TryGetValue((creature, ability), out var state) &&
+                state.DeferredImpactCount > 0)
+            {
+                return;
+            }
+
+            _abilityStaminaCosts.Remove((creature, ability));
+        }
+
+        public static void CompleteDeferredAbilityStaminaCostContext(uint creature, AbilityDetail ability)
+        {
+            if (ability == null ||
+                !_abilityStaminaCosts.TryGetValue((creature, ability), out var state))
+            {
+                return;
+            }
+
+            state.DeferredImpactCount = Math.Max(0, state.DeferredImpactCount - 1);
+            if (state.DeferredImpactCount == 0)
             {
                 _abilityStaminaCosts.Remove((creature, ability));
             }

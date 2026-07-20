@@ -84,9 +84,14 @@ public class AbilityDamageQueueTests
             usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal),
             usePerkFeatSource.IndexOf("/// Whenever a player enters the server", StringComparison.Ordinal) -
             usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal));
+        var abortImpactBody = abilitySource.Substring(
+            abilitySource.IndexOf("public static void AbortAbilityImpact(uint activator)", StringComparison.Ordinal),
+            abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal) -
+            abilitySource.IndexOf("public static void AbortAbilityImpact(uint activator)", StringComparison.Ordinal));
 
-        abilitySource.Should().Contain("public static void AbortAbilityImpact(uint activator)");
-        abilitySource.Should().Contain("_trackedAbilityImpacts.Remove(activator);");
+        abortImpactBody.Should().Contain("_trackedAbilityImpacts.Remove(activator);");
+        abortImpactBody.Should().Contain("Log.WriteStructured(");
+        abortImpactBody.Should().Contain("LogGroup.Error");
         castImpactBody.Should().Contain("var impactEnded = false;");
         castImpactBody.Should().Contain("impactEnded = true;");
         castImpactBody.Should().Contain("if (!impactEnded)");
@@ -160,6 +165,41 @@ public class AbilityDamageQueueTests
         delayedImpactBody.Should().Contain("BeginAbilityImpact(");
         delayedImpactBody.Should().Contain("nextAbilityDamageBonus");
         delayedImpactBody.Should().Contain("nextAbilityCriticalRatePercentAdjustment");
+    }
+
+    [Test]
+    public void DelayedTelegraphedImpacts_RetainCostContextAndCleanUpEveryExitPath()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs")).Replace("\r\n", "\n");
+        var telegraphMethod = abilitySource.Substring(
+            abilitySource.IndexOf("public static int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal),
+            abilitySource.IndexOf("private static void ShowAreaImpactFlash(", StringComparison.Ordinal) -
+            abilitySource.IndexOf("public static int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal));
+        var delayedImpactBody = abilitySource.Substring(
+            abilitySource.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
+            abilitySource.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            abilitySource.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
+
+        telegraphMethod.Should().Contain("Combat.DeferAbilityStaminaCostContext(activator, trackedImpact?.Ability);");
+        delayedImpactBody.Should().Contain("var impactStarted = false;");
+        delayedImpactBody.Should().Contain("var impactEnded = false;");
+        delayedImpactBody.Should().Contain("finally");
+        delayedImpactBody.Should().Contain("if (impactStarted && !impactEnded)");
+        delayedImpactBody.Should().Contain("AbortAbilityImpact(creator);");
+        delayedImpactBody.Should().Contain("Combat.CompleteDeferredAbilityStaminaCostContext(creator, ability);");
+
+        combatSource.Should().Contain("state.DeferredImpactCount++;");
+        combatSource.Should().Contain("state.DeferredImpactCount = Math.Max(0, state.DeferredImpactCount - 1);");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

@@ -277,10 +277,20 @@ public class CrossSkillPerkInteractionSafetyTests
         costlyHitEffects.Should().Contain("StatType.CostlyAbilityStatusMinimumStaminaCost");
         costlyHitEffects.Should().Contain("!costState.StaminaRestoreApplied",
             "Restoration Strike may restore STM only once without consuming High Guard's Evasion context");
+        costlyHitEffects.Should().Contain("SkillTypeMatchesOrGlobal(skillType, staminaRestoreSkillType)");
+        costlyHitEffects.Should().Contain("SkillTypeMatchesOrGlobal(skillType, statusSkillType)");
         costlyHitEffects.Should().NotContain("_abilityStaminaCosts.Remove",
             "hit riders must not erase the context before post-use High Guard Evasion runs");
+        var deferCostContext = ExtractMethod(combat, "public static void DeferAbilityStaminaCostContext(");
+        deferCostContext.Should().Contain("state.DeferredImpactCount++");
         var completeCostContext = ExtractMethod(combat, "public static void CompleteAbilityStaminaCostContext(");
+        completeCostContext.Should().Contain("state.DeferredImpactCount > 0");
         completeCostContext.Should().Contain("_abilityStaminaCosts.Remove((creature, ability))");
+        var completeDeferredCostContext = ExtractMethod(
+            combat,
+            "public static void CompleteDeferredAbilityStaminaCostContext(");
+        completeDeferredCostContext.Should().Contain("state.DeferredImpactCount - 1");
+        completeDeferredCostContext.Should().Contain("_abilityStaminaCosts.Remove((creature, ability))");
 
         var usePerkFeat = Read(root, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
         usePerkFeat.Should().Contain("Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);");

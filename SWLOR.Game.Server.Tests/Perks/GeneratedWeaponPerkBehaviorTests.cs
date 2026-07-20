@@ -622,6 +622,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityExposedDurationSeconds = 30");
         AssertAbilitySourceContains(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityStatusMinimumStaminaCost = 8");
         AssertAbilitySourceDoesNotContain(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityStatusSkillType");
+        var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
+        generatorSource.Should().Contain("def add_high_stm_exposed_properties():");
+        generatorSource.Split("if \"high-stm abilities also inflict exposed\" in lowered:")
+            .Should().HaveCount(2, "the high-STM Exposed rule must have one canonical case-insensitive branch");
         AssertAbilitySourceContains(root, "Staff", "WorldbreakerAbilityDefinition.cs", "RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control");
         AssertAbilitySourceContains(root, "Vibroknife", "PathogenStrikeAbilityDefinition.cs", "SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStatusEffect = typeof(VenomStatusEffect)");

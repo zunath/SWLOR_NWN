@@ -476,10 +476,20 @@ public class MimicryTests
         combatAnalyzer.RefundedTriggers.Should().ContainSingle();
         var expectedAnalyzerPrices = new[] { 2, 3, 3, 3 };
         var expectedAnalyzerSkillRanks = new[] { 0, 15, 30, 45 };
+        var expectedAnalyzerDescriptions = new[]
+        {
+            "Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots.",
+            "Upgrades the combat analyzer, increasing equipped technique potency by 5%.",
+            "Further upgrades the combat analyzer, increasing equipped technique potency by 10% in total.",
+            "Maximizes the combat analyzer, increasing equipped technique potency by 15% in total.",
+        };
         for (var level = 1; level <= 4; level++)
         {
             combatAnalyzer.PerkLevels[level].Price.Should().Be(expectedAnalyzerPrices[level - 1]);
             AssertSkillRequirement(combatAnalyzer.PerkLevels[level], SkillType.Mimicry, expectedAnalyzerSkillRanks[level - 1]);
+            combatAnalyzer.PerkLevels[level].Description.Should().Be(
+                expectedAnalyzerDescriptions[level - 1],
+                "Combat Analyzer ranks improve potency but never gate technique rank bands");
         }
         combatAnalyzer.PerkLevels.Values.Should().OnlyContain(
             lvl => !lvl.Requirements.OfType<PerkRequirementMustHavePerk>().Any(),

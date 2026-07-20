@@ -256,6 +256,15 @@ public class CrossSkillPerkInteractionSafetyTests
         beginAbilityImpact.Should().Contain("guardedHitBonuses.CriticalRatePercentAdjustment");
         beginAbilityImpact.Should().Contain("guardedHitBonuses.EnmityBonus");
         abilitySource.Should().Contain("trackedImpact?.NextAttackEnmityBonus");
+        var telegraphedImpact = ExtractMethod(abilitySource, "public static int ApplyTelegraphedCombatImpact(");
+        telegraphedImpact.Should().Contain("trackedImpact?.NextAttackEnmityBonus ?? 0",
+            "a telegraphed hostile ability must carry Retaliatory Flow's consumed Enmity into its delayed impact");
+        var delayedImpact = ExtractMethod(
+            abilitySource,
+            "private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(");
+        delayedImpact.Should().Contain("int nextAttackEnmityBonus");
+        delayedImpact.Should().Contain("nextAttackEnmityBonus);",
+            "the reconstructed tracked impact must retain the guarded-hit Enmity bonus");
 
         var nativeAttackSource = Read(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
         nativeAttackSource.Should().Contain("ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf)",

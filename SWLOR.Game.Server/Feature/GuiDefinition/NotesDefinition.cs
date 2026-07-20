@@ -13,14 +13,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ProgressBarHeight = 20f;
         private const float ProgressBarTextWidth = 440f;
 
-        /// <summary>
-        /// Width of the two category combo boxes. Unlike a text edit, a combo does not stretch to
-        /// fill its row, so without this it renders at a narrow default. NUI cannot bind a width,
-        /// and the only way to vary one is to regenerate the layout - which is not worth nesting
-        /// extra groups into these pinned rows, so this is sized for the default window width.
-        /// </summary>
-        private const float ComboWidth = 290f;
-
         private readonly GuiWindowBuilder<NotesViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -109,8 +101,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             row.AddComboBox()
                                 .BindOptions(model => model.CategoryFilterOptions)
-                                .BindSelectedIndex(model => model.SelectedCategoryFilterIndex)
-                                .SetWidth(ComboWidth);
+                                .BindSelectedIndex(model => model.SelectedCategoryFilterIndex);
                         });
 
                         browser.AddRow(row =>
@@ -191,8 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddComboBox()
                                 .BindOptions(model => model.NoteCategoryOptions)
                                 .BindSelectedIndex(model => model.ActiveNoteCategoryIndex)
-                                .BindIsEnabled(model => model.IsNoteSelected)
-                                .SetWidth(ComboWidth);
+                                .BindIsEnabled(model => model.IsNoteSelected);
                         });
 
                         editor.AddRow(row =>

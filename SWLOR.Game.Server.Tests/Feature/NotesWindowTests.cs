@@ -108,9 +108,8 @@ public class NotesWindowTests
 
         definition.Should().Contain($"row.AddPartialView(NotesViewModel.{nameof(NotesViewModel.TabContentPartialElement)})");
 
-        // The combos are declared inline in their rows, sized by a plain width.
+        // The combos are declared inline in their rows.
         definition.Should().Contain("row.AddComboBox()");
-        definition.Should().Contain(".SetWidth(ComboWidth)");
     }
 
     [Test]

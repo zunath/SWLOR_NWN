@@ -80,7 +80,19 @@ done | blocked`.
   setters mutate Value in place for minimal diffs. Palette CC/DELETE_ME absent from this
   corpus (exposed as nullable for toolset-authored files).
 
-## WP1.5 — pending — Transactions/undo/dirty
+## WP1.5 — done — 2026-07-20 — Transactions/undo/dirty
+- Tier: Mid (Sonnet subagent); controller-verified (83/84 green incl. corpus gate).
+- Files: `SWLOR.Toolset.Domain\Editing\*` (IDocumentEdit, EditScope, FieldValueEdit,
+  StructFieldEdits, ListElementEdits, LocStringEdits, DocumentTransaction, UndoStack,
+  DocumentSession), `SWLOR.Toolset.Tests\EditingTests.*.cs`; additive guard hooks in
+  JsonGffField/JsonGffStruct/Documents\LocString.
+- **Design decision recorded:** ambient `EditScope` (AsyncLocal) — mutations throw when a
+  DocumentSession is open with no active transaction; replay suppression on undo/redo;
+  value mementos restore RAW BYTES (fidelity through undo), structural edits replay through
+  the guarded methods. Guard is process-ambient (one-document-editing usage), not per-document.
+- **Open item for WP3.x:** `VarTable.cs` pre-existing direct list mutations (and raw
+  `Elements`/`LocStringEntries` list access generally) bypass the guard — route through the
+  new guarded `InsertElement`/`RemoveElementAt` APIs when instance editing lands.
 
 ## WP1.6 — done — 2026-07-20 — Radoub bridge
 - Tier: Low (Sonnet subagent); controller-verified.
@@ -94,7 +106,17 @@ done | blocked`.
   char/double/dword64/int64 occur ZERO times in the module corpus (covered by unit test only).
   Radoub locstring no-strref sentinel is 0xFFFFFFFF.
 ## WP2.1 — pending — 2DA + TLK services
-## WP2.2 — pending — SET parser
+## WP2.2 — done — 2026-07-20 — SET parser
+- Tier: Mid (Sonnet subagent); controller-verified.
+- Files: `SWLOR.Toolset.Domain\GameData\Tilesets\{SetFileParser,TilesetDefinition,
+  TileDefinition}.cs`, `SWLOR.Toolset.Tests\SetParserTests.cs`.
+- All 70 `.set` files under `SWLOR_Haks\sw_t_*` parse; spot values verified against tde01.set.
+- **Grammar findings recorded:** rule sections are `[PRIMARY RULE0]` (space before index);
+  every corpus file has SECONDARY RULES Count=0; one file uses lowercase `floor=`; strings
+  decoded via Latin-1 (one file has a raw Windows-1252 byte). **Declared counts are
+  untrustworthy** (sw_t_season wsf10.set has garbage `Doors` counts like -481034240) — parser
+  discovers repeated blocks by sequential index scan, never by declared Count. Duplicate keys:
+  last-wins (documented convention choice).
 ## WP2.3 — pending — Resource index
 ## WP2.4 — pending — Lookup services
 ## WP2.5 — pending — Game-code index

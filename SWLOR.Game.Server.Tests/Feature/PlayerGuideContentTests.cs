@@ -97,8 +97,9 @@ public class PlayerGuideContentTests
 
         guideText.Should().Contain($"costs {HoloNetViewModel.BroadcastPrice} credits");
         guideText.Should().Contain($"limited to {HoloNetViewModel.MaxHoloNetTextLength} characters");
-        guideText.Should().Contain($"up to {NotesViewModel.MaxNumberOfNotes} notes");
-        guideText.Should().Contain($"up to {NotesViewModel.MaxNoteLength} characters");
+        guideText.Should().Contain($"up to {Notes.MaxNumberOfNotes} notes");
+        guideText.Should().Contain($"up to {Notes.MaxNoteLength} characters");
+        guideText.Should().Contain($"up to {Notes.MaxNumberOfCategories} categories");
         guideText.Should().Contain($"normal listing limit is {Player.DefaultMarketListingLimit} items");
 
         guideText.Should().Contain($"up to {QuestContractBoard.MaxActiveContractsPerCDKey} published");

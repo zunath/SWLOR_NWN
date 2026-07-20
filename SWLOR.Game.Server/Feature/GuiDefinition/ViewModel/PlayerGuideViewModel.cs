@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Settings",
                             "Settings controls achievement notifications, subdual mode, reset reminders, Mini-Vitals, chat and emote colors, language colors, character-description access, and identity/privacy options for descriptors and account names."),
                         new ArticleBlock("Notes",
-                            "Notes are private player notes. You can keep up to 25 notes, and each note can hold up to 1000 characters."),
+                            "Notes are private player notes. You can keep up to 100 notes, and each note can hold up to 1000 characters. Notes can be searched, sorted into up to 25 categories you create yourself, and filtered by category."),
                         new ArticleBlock("Names",
                             "Unrecognized player characters appear with a gray descriptor until you personally set a known name. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to forget that personal name. Target yourself with /name <description> to set the gray text others see before they name you. Names and descriptions are limited to 64 characters and cannot include color codes."),
                         new ArticleBlock("Emotes and Languages",

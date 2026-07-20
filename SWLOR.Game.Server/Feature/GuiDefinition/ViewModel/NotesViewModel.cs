@@ -4,17 +4,27 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, GuiPayloadBase>
     {
-        public const int MaxNumberOfNotes = 25;
-        public const int MaxNoteLength = 1000;
+        public const string TabContentPartialElement = "NOTES_TAB_CONTENT";
+        public const string NotesTabPartial = "NOTES_TAB_VIEW";
+        public const string CategoriesTabPartial = "NOTES_CATEGORIES_TAB_VIEW";
 
-        private readonly List<string> _noteIds = new();
+        private const string UncategorizedName = "Uncategorized";
+        private const string AllCategoriesName = "<All Categories>";
+        private const string UntitledNoteName = "Untitled Note";
+
+        private readonly List<string> _pageNoteIds = new();
+        private readonly List<PlayerNoteCategory> _categories = new();
 
         private bool _isLoadingNote;
+        private bool _suppressReload;
+        private int _totalNoteCount;
+
         public bool IsSaveEnabled
         {
             get => Get<bool>();
@@ -75,44 +85,378 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        public int ActiveNoteCategoryIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+
+                if (!_isLoadingNote)
+                    IsSaveEnabled = true;
+            }
+        }
+
+        public GuiBindingList<GuiComboEntry> NoteCategoryOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
         public int SelectedNoteIndex
         {
             get => Get<int>();
             set => Set(value);
         }
 
+        public float NoteUsageProgress
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+        public string NoteUsageText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiColor NoteUsageColor
+        {
+            get => Get<GuiColor>();
+            set => Set(value);
+        }
+
+        public string SearchText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> CategoryFilterOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedCategoryFilterIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (_suppressReload)
+                    return;
+
+                _suppressReload = true;
+                SelectedPageIndex = 0;
+                _suppressReload = false;
+                ReloadIfBound();
+            }
+        }
+
+        public int SelectedPageIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_suppressReload)
+                    ReloadIfBound();
+            }
+        }
+
+        public GuiBindingList<GuiComboEntry> PageNumbers
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public bool IsNotesTabToggled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsCategoriesTabToggled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> CategoryNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> CategoryToggled
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public int SelectedCategoryIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public string NewCategoryName
+        {
+            get => Get<string>();
+            set
+            {
+                Set(value);
+                IsAddCategoryEnabled = CanAddCategory();
+            }
+        }
+
+        public bool IsAddCategoryEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsDeleteCategoryEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public float CategoryUsageProgress
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+        public string CategoryUsageText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiColor CategoryUsageColor
+        {
+            get => Get<GuiColor>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            var playerId = GetObjectUUID(Player);
-            var query = new DBQuery<PlayerNote>()
-                .AddFieldSearch(nameof(PlayerNote.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(PlayerNote.IsDMNote), false)
-                .OrderBy(nameof(PlayerNote.Name));
-            var notes = DB.Search(query)
-                .ToList();
-
-            _noteIds.Clear();
-            var noteNames = new GuiBindingList<string>();
-            var noteToggled = new GuiBindingList<bool>();
-
-            foreach (var note in notes)
-            {
-                _noteIds.Add(note.Id);
-                noteNames.Add(note.Name);
-                noteToggled.Add(false);
-            }
-
+            _suppressReload = true;
+            SearchText = string.Empty;
+            NewCategoryName = string.Empty;
+            SelectedCategoryFilterIndex = 0;
+            SelectedPageIndex = 0;
             SelectedNoteIndex = -1;
-            IsNewEnabled = notes.Count < MaxNumberOfNotes;
-            NoteNames = noteNames;
-            NoteToggled = noteToggled;
+            SelectedCategoryIndex = -1;
+            _suppressReload = false;
+
+            _isLoadingNote = true;
             ActiveNoteName = string.Empty;
             ActiveNoteText = string.Empty;
+            ActiveNoteCategoryIndex = 0;
+            _isLoadingNote = false;
+
             IsNoteSelected = false;
+            IsDeleteEnabled = false;
             IsSaveEnabled = false;
+            IsDeleteCategoryEnabled = false;
+
+            LoadCategories();
+            LoadNotesList();
+            ShowNotesTab();
 
             WatchOnClient(model => model.ActiveNoteName);
             WatchOnClient(model => model.ActiveNoteText);
+            WatchOnClient(model => model.ActiveNoteCategoryIndex);
+            WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.NewCategoryName);
+            WatchOnClient(model => model.SelectedCategoryFilterIndex);
+            WatchOnClient(model => model.SelectedPageIndex);
+        }
+
+        private void ReloadIfBound()
+        {
+            if (Player != 0 && WindowToken > 0)
+                LoadNotesList();
+        }
+
+        private List<PlayerNote> GetAllNotes()
+        {
+            var playerId = GetObjectUUID(Player);
+
+            // Paging is mandatory, not an optimization: an unpaged DBQuery falls back to a 50 record
+            // limit, which would silently truncate a player's list well below the note cap.
+            var query = new DBQuery<PlayerNote>()
+                .AddFieldSearch(nameof(PlayerNote.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(PlayerNote.IsDMNote), false)
+                .OrderBy(nameof(PlayerNote.Name))
+                .AddPaging(Notes.MaxNumberOfNotes, 0);
+
+            return DB.Search(query).ToList();
+        }
+
+        private void LoadCategories()
+        {
+            var playerId = GetObjectUUID(Player);
+
+            _categories.Clear();
+            _categories.AddRange(Notes.GetCategories(playerId));
+
+            var categoryNames = new GuiBindingList<string>();
+            var categoryToggled = new GuiBindingList<bool>();
+            var filterOptions = new GuiBindingList<GuiComboEntry>
+            {
+                new(AllCategoriesName, 0)
+            };
+            var noteOptions = new GuiBindingList<GuiComboEntry>
+            {
+                new(UncategorizedName, 0)
+            };
+
+            for (var index = 0; index < _categories.Count; index++)
+            {
+                var category = _categories[index];
+
+                categoryNames.Add(category.Name);
+                categoryToggled.Add(false);
+                filterOptions.Add(new GuiComboEntry(category.Name, index + 1));
+                noteOptions.Add(new GuiComboEntry(category.Name, index + 1));
+            }
+
+            CategoryNames = categoryNames;
+            CategoryToggled = categoryToggled;
+            CategoryFilterOptions = filterOptions;
+            NoteCategoryOptions = noteOptions;
+
+            SelectedCategoryIndex = -1;
+            IsDeleteCategoryEnabled = false;
+            IsAddCategoryEnabled = CanAddCategory();
+
+            CategoryUsageProgress = Notes.GetCategoryUsagePercentage(_categories.Count);
+            CategoryUsageText = Notes.GetCategoryUsageText(_categories.Count);
+            CategoryUsageColor = Notes.GetCategoryUsageColor(_categories.Count);
+        }
+
+        private void LoadNotesList()
+        {
+            var notes = GetAllNotes();
+            _totalNoteCount = notes.Count;
+
+            var filtered = ApplyFilters(notes);
+
+            UpdatePagination(filtered.Count);
+
+            var pageNotes = filtered
+                .Skip(SelectedPageIndex * Notes.EntriesPerPage)
+                .Take(Notes.EntriesPerPage)
+                .ToList();
+
+            var noteNames = new GuiBindingList<string>();
+            var noteToggled = new GuiBindingList<bool>();
+            _pageNoteIds.Clear();
+
+            foreach (var note in pageNotes)
+            {
+                _pageNoteIds.Add(note.Id);
+                noteNames.Add(BuildNoteLabel(note));
+                noteToggled.Add(false);
+            }
+
+            NoteNames = noteNames;
+            NoteToggled = noteToggled;
+
+            SelectedNoteIndex = -1;
+            IsNoteSelected = false;
+            IsDeleteEnabled = false;
+            IsSaveEnabled = false;
+
+            _isLoadingNote = true;
+            ActiveNoteName = string.Empty;
+            ActiveNoteText = string.Empty;
+            ActiveNoteCategoryIndex = 0;
+            _isLoadingNote = false;
+
+            RefreshNoteUsage();
+        }
+
+        private List<PlayerNote> ApplyFilters(List<PlayerNote> notes)
+        {
+            var search = (SearchText ?? string.Empty).Trim();
+            var categoryId = GetCategoryIdByOptionIndex(SelectedCategoryFilterIndex);
+
+            return notes
+                .Where(note => string.IsNullOrEmpty(categoryId) || note.CategoryId == categoryId)
+                .Where(note => search.Length == 0 ||
+                               (note.Name ?? string.Empty).Contains(search, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        private void UpdatePagination(int totalRecordCount)
+        {
+            var wasSuppressingReload = _suppressReload;
+            _suppressReload = true;
+
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                Notes.EntriesPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
+
+            _suppressReload = wasSuppressingReload;
+        }
+
+        private void RefreshNoteUsage()
+        {
+            NoteUsageProgress = Notes.GetNoteUsagePercentage(_totalNoteCount);
+            NoteUsageText = Notes.GetNoteUsageText(_totalNoteCount);
+            NoteUsageColor = Notes.GetNoteUsageColor(_totalNoteCount);
+            IsNewEnabled = !Notes.IsNoteListFull(_totalNoteCount);
+        }
+
+        private string BuildNoteLabel(PlayerNote note)
+        {
+            var categoryName = GetCategoryNameById(note.CategoryId);
+
+            return string.IsNullOrEmpty(categoryName)
+                ? note.Name
+                : $"{note.Name} [{categoryName}]";
+        }
+
+        private string GetCategoryNameById(string categoryId)
+        {
+            if (string.IsNullOrEmpty(categoryId))
+                return string.Empty;
+
+            return _categories.FirstOrDefault(x => x.Id == categoryId)?.Name ?? string.Empty;
+        }
+
+        private string GetCategoryIdByOptionIndex(int optionIndex)
+        {
+            var categoryIndex = optionIndex - 1;
+
+            return categoryIndex >= 0 && categoryIndex < _categories.Count
+                ? _categories[categoryIndex].Id
+                : string.Empty;
+        }
+
+        private int GetOptionIndexByCategoryId(string categoryId)
+        {
+            if (string.IsNullOrEmpty(categoryId))
+                return 0;
+
+            var categoryIndex = _categories.FindIndex(x => x.Id == categoryId);
+
+            return categoryIndex < 0 ? 0 : categoryIndex + 1;
+        }
+
+        private bool CanAddCategory()
+        {
+            return !Notes.IsCategoryListFull(_categories.Count) &&
+                   !string.IsNullOrWhiteSpace(NewCategoryName);
         }
 
         private void LoadNote()
@@ -121,11 +465,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             _isLoadingNote = true;
-            var noteId = _noteIds[SelectedNoteIndex];
+            var noteId = _pageNoteIds[SelectedNoteIndex];
             var dbNote = DB.Get<PlayerNote>(noteId);
 
             ActiveNoteName = dbNote.Name;
             ActiveNoteText = dbNote.Text;
+            ActiveNoteCategoryIndex = GetOptionIndexByCategoryId(dbNote.CategoryId);
             _isLoadingNote = false;
         }
 
@@ -134,23 +479,159 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedNoteIndex <= -1)
                 return;
 
-            var noteId = _noteIds[SelectedNoteIndex];
-            var dbNote = DB.Get<PlayerNote>(noteId);
-
-            dbNote.Name = ActiveNoteName;
-            dbNote.Text = ActiveNoteText;
-
-            DB.Set(dbNote);
+            var noteId = _pageNoteIds[SelectedNoteIndex];
+            ApplyEditsToNote(noteId);
 
             IsSaveEnabled = false;
-            NoteNames[SelectedNoteIndex] = ActiveNoteName;
+
+            // A rename or category change can move the note between pages or out of the active
+            // filter, so rebuild the list and reselect the note wherever it landed.
+            ReloadAndSelectNote(noteId);
         }
 
-        public Action OnCloseWindow() => SaveNote;
+        /// <summary>
+        /// Writes the editor's current contents onto the given note. The name doubles as the list
+        /// label and the search key, so a blank one falls back to a placeholder rather than leaving
+        /// an unclickable empty row behind.
+        /// </summary>
+        private void ApplyEditsToNote(string noteId)
+        {
+            var dbNote = DB.Get<PlayerNote>(noteId);
+
+            dbNote.Name = string.IsNullOrWhiteSpace(ActiveNoteName)
+                ? UntitledNoteName
+                : ActiveNoteName.Trim();
+            dbNote.Text = ActiveNoteText ?? string.Empty;
+            dbNote.CategoryId = GetCategoryIdByOptionIndex(ActiveNoteCategoryIndex);
+
+            DB.Set(dbNote);
+        }
+
+        private void ReloadAndSelectNote(string noteId)
+        {
+            var filtered = ApplyFilters(GetAllNotes());
+            var index = filtered.FindIndex(x => x.Id == noteId);
+
+            if (index >= 0)
+            {
+                _suppressReload = true;
+                SelectedPageIndex = index / Notes.EntriesPerPage;
+                _suppressReload = false;
+            }
+
+            LoadNotesList();
+
+            var pageIndex = _pageNoteIds.IndexOf(noteId);
+            if (pageIndex < 0)
+                return;
+
+            SelectNote(pageIndex);
+        }
+
+        private void SelectNote(int index)
+        {
+            if (SelectedNoteIndex > -1 && SelectedNoteIndex < NoteToggled.Count)
+                NoteToggled[SelectedNoteIndex] = false;
+
+            SelectedNoteIndex = index;
+            NoteToggled[index] = true;
+
+            LoadNote();
+
+            IsDeleteEnabled = true;
+            IsNoteSelected = true;
+            IsSaveEnabled = false;
+        }
+
+        private void ShowNotesTab()
+        {
+            IsNotesTabToggled = true;
+            IsCategoriesTabToggled = false;
+            RestoreSelectedTabPartial();
+        }
+
+        private void ShowCategoriesTab()
+        {
+            IsNotesTabToggled = false;
+            IsCategoriesTabToggled = true;
+            RestoreSelectedTabPartial();
+        }
+
+        /// <summary>
+        /// Swaps the tab content placeholder for the active tab's partial view. The two tabs cannot
+        /// simply be stacked rows toggled with BindIsVisible - a hidden row still reserves its flex
+        /// space, which would leave half the window empty on whichever tab is showing.
+        /// </summary>
+        private void RestoreSelectedTabPartial()
+        {
+            void ApplySelectedTabPartial()
+            {
+                ChangePartialView(
+                    TabContentPartialElement,
+                    IsCategoriesTabToggled ? CategoriesTabPartial : NotesTabPartial);
+            }
+
+            // Use the same root redraw path as modal close/open before replacing the nested panel.
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            ApplySelectedTabPartial();
+            // NUI can drop nested partial layouts while its parent is being redrawn.
+            // Reapply on the next tick so tab switches use the same refresh path as modal swaps.
+            DelayCommand(0.0f, ApplySelectedTabPartial);
+        }
+
+        protected override void OnMainViewRestored()
+        {
+            RestoreSelectedTabPartial();
+        }
+
+        public Action OnCloseWindow() => SaveNoteOnClose;
+
+        private void SaveNoteOnClose()
+        {
+            if (SelectedNoteIndex <= -1 || !IsSaveEnabled)
+                return;
+
+            // Unlike OnClickSave this must not rebuild the list - the window is going away.
+            ApplyEditsToNote(_pageNoteIds[SelectedNoteIndex]);
+        }
+
+        public Action OnClickNotesTab() => ShowNotesTab;
+
+        public Action OnClickCategoriesTab() => ShowCategoriesTab;
+
+        public Action OnClickSearch() => () =>
+        {
+            _suppressReload = true;
+            SelectedPageIndex = 0;
+            _suppressReload = false;
+
+            LoadNotesList();
+        };
+
+        public Action OnClickClearSearch() => () =>
+        {
+            SearchText = string.Empty;
+
+            _suppressReload = true;
+            SelectedPageIndex = 0;
+            _suppressReload = false;
+
+            LoadNotesList();
+        };
+
+        public Action OnClickPreviousPage() => () =>
+        {
+            SelectedPageIndex = Math.Max(0, SelectedPageIndex - 1);
+        };
+
+        public Action OnClickNextPage() => () =>
+        {
+            SelectedPageIndex = Math.Min(PageNumbers.Count - 1, SelectedPageIndex + 1);
+        };
 
         public Action OnClickNewNote() => () =>
         {
-            if (_noteIds.Count >= MaxNumberOfNotes)
+            if (Notes.IsNoteListFull(_totalNoteCount))
                 return;
 
             var playerId = GetObjectUUID(Player);
@@ -161,12 +642,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Text = string.Empty,
             };
 
-            _noteIds.Add(note.Id);
-            NoteNames.Add(note.Name);
-            NoteToggled.Add(false);
-            IsNewEnabled = _noteIds.Count < MaxNumberOfNotes;
-
             DB.Set(note);
+
+            // A new note is uncategorized and named "New Note", so an active filter or search would
+            // hide it and the button would look like it did nothing. Clear both so it is visible.
+            SearchText = string.Empty;
+
+            _suppressReload = true;
+            SelectedCategoryFilterIndex = 0;
+            _suppressReload = false;
+
+            ReloadAndSelectNote(note.Id);
         };
 
         public Action OnClickDeleteNote() => () =>
@@ -174,44 +660,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedNoteIndex < 0)
                 return;
 
-            var noteId = _noteIds[SelectedNoteIndex];
-            var noteName = NoteNames[SelectedNoteIndex];
+            var noteId = _pageNoteIds[SelectedNoteIndex];
+            var noteName = ActiveNoteName;
 
             ShowModal($"Are you sure you want to delete the note '{noteName}'?", () =>
             {
-                _noteIds.RemoveAt(SelectedNoteIndex);
-                NoteNames.RemoveAt(SelectedNoteIndex);
-                NoteToggled.RemoveAt(SelectedNoteIndex);
-                SelectedNoteIndex = -1;
-
-                _isLoadingNote = true;
-                IsNoteSelected = false;
-                IsDeleteEnabled = false;
-                IsNewEnabled = _noteIds.Count < MaxNumberOfNotes;
-                ActiveNoteName = string.Empty;
-                ActiveNoteText = string.Empty;
-                IsSaveEnabled = false;
-                _isLoadingNote = false;
-
                 DB.Delete<PlayerNote>(noteId);
+
+                LoadNotesList();
             });
         };
 
         public Action OnSelectNote() => () =>
         {
-            if (SelectedNoteIndex > -1)
-                NoteToggled[SelectedNoteIndex] = false;
-
             var index = NuiGetEventArrayIndex();
-            SelectedNoteIndex = index;
+            if (index < 0 || index >= _pageNoteIds.Count)
+                return;
 
-            LoadNote();
-
-            IsDeleteEnabled = true;
-            NoteToggled[index] = true;
-            IsNoteSelected = true;
-
-            IsSaveEnabled = false;
+            SelectNote(index);
         };
 
         public Action OnClickSave() => SaveNote;
@@ -221,5 +687,81 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadNote();
             IsSaveEnabled = false;
         };
+
+        public Action OnSelectCategory() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= _categories.Count)
+                return;
+
+            if (SelectedCategoryIndex > -1 && SelectedCategoryIndex < CategoryToggled.Count)
+                CategoryToggled[SelectedCategoryIndex] = false;
+
+            SelectedCategoryIndex = index;
+            CategoryToggled[index] = true;
+            IsDeleteCategoryEnabled = true;
+        };
+
+        public Action OnClickAddCategory() => () =>
+        {
+            var name = (NewCategoryName ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+            if (Notes.IsCategoryListFull(_categories.Count))
+            {
+                SendMessageToPC(Player, ColorToken.Red("You have reached the maximum number of note categories."));
+                return;
+            }
+
+            if (name.Length > Notes.MaxCategoryNameLength)
+                name = name[..Notes.MaxCategoryNameLength];
+
+            if (_categories.Any(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)))
+            {
+                SendMessageToPC(Player, ColorToken.Red($"A category named '{name}' already exists."));
+                return;
+            }
+
+            var playerId = GetObjectUUID(Player);
+            Notes.CreateCategory(playerId, name);
+
+            NewCategoryName = string.Empty;
+
+            RefreshAfterCategoryChange();
+        };
+
+        public Action OnClickDeleteCategory() => () =>
+        {
+            if (SelectedCategoryIndex < 0 || SelectedCategoryIndex >= _categories.Count)
+                return;
+
+            var category = _categories[SelectedCategoryIndex];
+
+            ShowModal($"Are you sure you want to delete the category '{category.Name}'? Any notes using it will become uncategorized.", () =>
+            {
+                var playerId = GetObjectUUID(Player);
+                Notes.DeleteCategory(playerId, category.Id);
+
+                RefreshAfterCategoryChange();
+            });
+        };
+
+        private void RefreshAfterCategoryChange()
+        {
+            var activeFilterId = GetCategoryIdByOptionIndex(SelectedCategoryFilterIndex);
+
+            LoadCategories();
+
+            // The category the note list was filtered on may no longer exist. Fall back to showing
+            // every note rather than leaving the player on an empty, unexplained list.
+            _suppressReload = true;
+            SelectedCategoryFilterIndex = GetOptionIndexByCategoryId(activeFilterId);
+            SelectedPageIndex = 0;
+            _suppressReload = false;
+
+            LoadNotesList();
+        }
     }
 }

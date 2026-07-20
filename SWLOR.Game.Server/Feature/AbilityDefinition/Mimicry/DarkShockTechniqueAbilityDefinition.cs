@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.DarkShock, 40, 3)
+                .MimicryTechnique(FeatType.DarkShock, 37, 3)
                 .HasTargetingSphere(
                     Spell.DarkShockTechnique,
                     4.5f,

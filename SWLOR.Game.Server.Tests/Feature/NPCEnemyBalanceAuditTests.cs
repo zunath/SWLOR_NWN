@@ -679,7 +679,7 @@ public class NPCEnemyBalanceAuditTests
     }
 
     [Test]
-    public void MimicryTechniqueRequirements_FollowWorldNpcProgressionAndReviewedEncounterFloors()
+    public void MimicryTechniqueRequirements_CoverEveryRankAndFollowWorldNpcEncounterProgression()
     {
         var root = FindRepositoryRoot();
         using var archive = ZipFile.OpenRead(Path.Combine(
@@ -730,7 +730,7 @@ public class NPCEnemyBalanceAuditTests
         }
 
         var failures = new List<string>();
-        var techniqueCount = 0;
+        var requirementsByTechnique = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         var mimicryLastRow = mimicry
             .Descendants(ns + "row")
             .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
@@ -744,26 +744,12 @@ public class NPCEnemyBalanceAuditTests
                 continue;
             }
 
-            techniqueCount++;
             var technique = GetWorkbookCellText(mimicry, sharedStrings, $"C{row}");
             if (!sourcesByTechnique.TryGetValue(technique, out var sources) || sources.Count == 0)
             {
                 failures.Add($"{technique}: no player-accessible source is listed in World NPCs Existing Abilities (AQ).");
                 continue;
             }
-
-            var earliestLevel = sources.Min(source => source.Level);
-            var earliestSources = sources.Where(source => source.Level == earliestLevel).ToArray();
-            var bossOnlyAtLevel50 = earliestLevel >= 50 && earliestSources.All(source =>
-                source.Difficulty.Equals("Boss", StringComparison.OrdinalIgnoreCase));
-            var reviewedEncounterFloor = earliestSources.Any(source =>
-                source.Area.Equals("CZ220", StringComparison.OrdinalIgnoreCase) &&
-                source.Enemy.Equals("Probe Droid", StringComparison.OrdinalIgnoreCase))
-                ? 1
-                : 0;
-            var expectedRequirement = bossOnlyAtLevel50
-                ? 50
-                : Math.Clamp(Math.Max(earliestLevel - 1, reviewedEncounterFloor), 0, 50);
 
             var requirementText = GetWorkbookCellText(mimicry, sharedStrings, $"D{row}");
             var actualRequirement = requirementText == "-"
@@ -778,17 +764,63 @@ public class NPCEnemyBalanceAuditTests
                     ? parsedRequirement
                     : -1;
 
-            if (actualRequirement != expectedRequirement)
+            if (actualRequirement is < 0 or > 50)
             {
-                var sourceSummary = string.Join(", ", earliestSources.Select(source =>
-                    $"{source.Area}/{source.Enemy} ({source.Difficulty} {source.Level})"));
-                failures.Add($"{technique}: expected Mimicry {expectedRequirement} from {sourceSummary}, found '{requirementText}'.");
+                failures.Add($"{technique}: expected a Mimicry requirement from 0 through 50, found '{requirementText}'.");
+                continue;
             }
+
+            requirementsByTechnique[technique] = actualRequirement;
         }
 
-        techniqueCount.Should().Be(88, "the complete Mimicry technique pool must be audited against World NPCs");
+        requirementsByTechnique.Should().HaveCount(88, "the complete Mimicry technique pool must be audited against World NPCs");
         failures.Should().BeEmpty(
-            "Mimicry requirements come from player-accessible World NPC progression plus reviewed encounter floors, excluding Additional and Training rows");
+            "Mimicry requirements use player-accessible World NPC progression, excluding Additional and Training rows");
+
+        requirementsByTechnique.Values
+            .Distinct()
+            .OrderBy(requirement => requirement)
+            .Should()
+            .Equal(Enumerable.Range(0, 51), "every Mimicry rank from 0 through 50 must unlock at least one technique");
+
+        requirementsByTechnique["Sonic Shriek"].Should().Be(0, "CZ220 Mynocks are the first Mimicry source");
+        requirementsByTechnique["Disorienting Screech"].Should().Be(0, "CZ220 Mynocks are the first Mimicry source");
+        requirementsByTechnique["Precision Shot"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+        requirementsByTechnique["Static Web"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+        requirementsByTechnique["Suppressing Shot"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+
+        var priorBandMaximum = -1;
+        var preEndgameBands = requirementsByTechnique
+            .Select(entry => new
+            {
+                Technique = entry.Key,
+                Requirement = entry.Value,
+                EarliestSourceLevel = sourcesByTechnique[entry.Key].Min(source => source.Level),
+            })
+            .Where(entry => entry.EarliestSourceLevel < 50)
+            .GroupBy(entry => entry.EarliestSourceLevel)
+            .OrderBy(group => group.Key);
+
+        foreach (var band in preEndgameBands)
+        {
+            var bandMinimum = band.Min(entry => entry.Requirement);
+            bandMinimum.Should().BeGreaterThan(
+                priorBandMaximum,
+                $"techniques first encountered at level {band.Key} should follow all earlier source bands");
+            priorBandMaximum = band.Max(entry => entry.Requirement);
+        }
+
+        foreach (var entry in requirementsByTechnique)
+        {
+            var earliestLevel = sourcesByTechnique[entry.Key].Min(source => source.Level);
+            if (earliestLevel < 50)
+                continue;
+
+            entry.Value.Should().BeInRange(
+                41,
+                50,
+                $"{entry.Key} is first learned from level-50 endgame encounters");
+        }
     }
 
     [Test]

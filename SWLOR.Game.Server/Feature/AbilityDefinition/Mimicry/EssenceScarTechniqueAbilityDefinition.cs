@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Essence Scar")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.EssenceScar, 49, 2)
+                .MimicryTrait(FeatType.EssenceScar, 42, 2)
                 .MimicryTraitStat(StatType.ForceAttackPercentAdjustment, 8);
 
             return _builder.Build();

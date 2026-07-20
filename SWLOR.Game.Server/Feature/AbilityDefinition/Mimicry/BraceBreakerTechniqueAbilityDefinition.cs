@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Vitality)
-                .MimicryTechnique(FeatType.BraceBreaker, 49, 2)
+                .MimicryTechnique(FeatType.BraceBreaker, 41, 2)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

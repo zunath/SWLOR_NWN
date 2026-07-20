@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Overload Shot")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.OverloadShot, 13, 2)
+                .MimicryTrait(FeatType.OverloadShot, 17, 2)
                 .MimicryTraitStat(StatType.DamageDealtShockChance, 18);
 
             return _builder.Build();

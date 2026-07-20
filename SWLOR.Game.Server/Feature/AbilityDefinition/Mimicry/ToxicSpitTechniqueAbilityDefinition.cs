@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.ToxicSpit, 24, 1)
+                .MimicryTechnique(FeatType.ToxicSpit, 28, 1)
                 .MimicryElement(CombatDamageType.Poison);
 
             return _builder.Build();

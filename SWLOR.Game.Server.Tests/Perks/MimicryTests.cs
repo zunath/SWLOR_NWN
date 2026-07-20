@@ -28,16 +28,16 @@ public class MimicryTests
     // full-pool coverage is asserted separately by the reflection-driven tests below.
     private static readonly (FeatType Technique, string Name, int RequiredRank, int SlotCost, FeatType SourceFeat)[] TechniqueTable =
     {
-        (FeatType.ToxicSpitTechnique, "Toxic Spit", 24, 1, FeatType.ToxicSpit),
-        (FeatType.FrostSpitTechnique, "Frost Spit", 0, 1, FeatType.FrostSpit),
-        (FeatType.RakingClawsTechnique, "Raking Claws", 3, 1, FeatType.RakingClaws),
+        (FeatType.ToxicSpitTechnique, "Toxic Spit", 28, 1, FeatType.ToxicSpit),
+        (FeatType.FrostSpitTechnique, "Frost Spit", 3, 1, FeatType.FrostSpit),
+        (FeatType.RakingClawsTechnique, "Raking Claws", 6, 1, FeatType.RakingClaws),
         (FeatType.SonicShriekTechnique, "Sonic Shriek", 0, 2, FeatType.SonicShriek),
-        (FeatType.TailSweepTechnique, "Tail Sweep", 3, 2, FeatType.TailSweep),
+        (FeatType.TailSweepTechnique, "Tail Sweep", 10, 2, FeatType.TailSweep),
         (FeatType.StaticWebTechnique, "Static Web", 1, 2, FeatType.StaticWeb),
-        (FeatType.GoringChargeTechnique, "Goring Charge", 11, 2, FeatType.GoringCharge),
-        (FeatType.ToxicCloudTechnique, "Toxic Cloud", 30, 3, FeatType.ToxicCloud),
-        (FeatType.ScorchingBreathTechnique, "Scorching Breath", 49, 3, FeatType.ScorchingBreath),
-        (FeatType.TerrifyingBellowTechnique, "Terrifying Bellow", 3, 3, FeatType.TerrifyingBellow),
+        (FeatType.GoringChargeTechnique, "Goring Charge", 14, 2, FeatType.GoringCharge),
+        (FeatType.ToxicCloudTechnique, "Toxic Cloud", 33, 3, FeatType.ToxicCloud),
+        (FeatType.ScorchingBreathTechnique, "Scorching Breath", 50, 3, FeatType.ScorchingBreath),
+        (FeatType.TerrifyingBellowTechnique, "Terrifying Bellow", 11, 3, FeatType.TerrifyingBellow),
     };
 
     [Test]
@@ -698,10 +698,17 @@ public class MimicryTests
     }
 
     [Test]
-    public void Mimicry_Cz220AndBossTechniquesUseReviewedSkillRequirements()
+    public void Mimicry_RequirementsCoverEveryRankAndRespectReviewedEncounterOrder()
     {
         var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
             .ToDictionary(x => x.Feat, x => x.Detail);
+
+        techniques.Values
+            .Select(detail => detail.MimicrySkillRequirement)
+            .Distinct()
+            .OrderBy(requirement => requirement)
+            .Should()
+            .Equal(Enumerable.Range(0, 51), "every Mimicry rank must unlock at least one technique");
 
         techniques[FeatType.SonicShriekTechnique]
             .MimicrySkillRequirement.Should().Be(0, "CZ-220 Mynocks are a level-1 source");
@@ -714,7 +721,9 @@ public class MimicryTests
         techniques[FeatType.SuppressingShotTechnique]
             .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
         techniques[FeatType.WardenWallTechnique]
-            .MimicrySkillRequirement.Should().Be(50, "a level-50 boss-exclusive source can award a rank-50 technique");
+            .MimicrySkillRequirement.Should().Be(47, "level-50 boss techniques begin the final progression band");
+        techniques[FeatType.ApexCollapseTechnique]
+            .MimicrySkillRequirement.Should().Be(50, "apex boss techniques remain rank-50 rewards");
     }
 
     [Test]

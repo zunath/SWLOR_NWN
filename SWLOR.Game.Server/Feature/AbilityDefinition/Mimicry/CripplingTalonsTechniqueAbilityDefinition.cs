@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Crippling Talons")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.CripplingTalons, 1, 1)
+                .MimicryTrait(FeatType.CripplingTalons, 4, 1)
                 .MimicryTraitStat(StatType.DamageDealtHemorrhageChance, 6);
 
             return _builder.Build();

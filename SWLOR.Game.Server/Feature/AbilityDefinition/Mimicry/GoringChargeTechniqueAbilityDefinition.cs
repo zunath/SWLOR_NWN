@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.GoringCharge, 11, 2)
+                .MimicryTechnique(FeatType.GoringCharge, 14, 2)
                 .HasTargetingLine(
                     Spell.GoringChargeTechnique,
                     8f,

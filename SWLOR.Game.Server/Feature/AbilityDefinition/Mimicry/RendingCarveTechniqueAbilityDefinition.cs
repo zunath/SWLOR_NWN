@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Rending Carve")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.RendingCarve, 49, 2)
+                .MimicryTrait(FeatType.RendingCarve, 43, 2)
                 .MimicryTraitStat(StatType.DamageDealtHemorrhageChance, 9);
 
             return _builder.Build();

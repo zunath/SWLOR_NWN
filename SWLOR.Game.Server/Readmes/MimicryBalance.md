@@ -53,7 +53,7 @@ Damage bands target roughly **75% of a same-gate weapon active's per-cast damage
 technique slots and learn RNG, carry no weapon requirement, and do not scale with gear, so they sit
 deliberately below dedicated weapon actives while remaining a meaningful extra button.
 
-Each technique has an individual Mimicry requirement based on the earliest player-accessible source in the Design Bible's `World NPCs` tab. `Additional` and `Training` rows do not establish progression. The normal requirement is the source level minus one, clamped to 0–50, with reviewed encounter floors where enemies at the same nominal level differ in practical difficulty. In CZ-220, Mynock techniques begin at rank 0 while the more difficult Probe Droid's techniques begin at rank 1. Techniques whose first sources are exclusively level-50 bosses remain rank-50 rewards. This keeps techniques learnable when their source first appears instead of forcing unrelated abilities into four broad cliffs.
+Each technique has an individual Mimicry requirement ordered by its earliest player-accessible source in the Design Bible's `World NPCs` tab. `Additional` and `Training` rows do not establish progression. Practical encounter order breaks nominal-level ties: CZ-220 Mynock techniques begin at rank 0, the more difficult Probe Droid techniques begin at rank 1, and the remaining starting encounters continue from there. Later source bands progress continuously through rank 40. Techniques first found in level-50 encounters are ordered by Tough, Elite, and Boss source difficulty across ranks 41–50, with apex boss techniques remaining at rank 50. Every Mimicry rank from 0 through 50 unlocks at least one technique.
 
 Cooldowns are banded by payload strength and shape (stronger and area techniques recast slower), replacing the ad-hoc creature values inherited during generation.
 
@@ -119,7 +119,7 @@ The slot budget is the primary limiter on simultaneous power, since a player can
 
 ### Signature mechanics
 
-The signature payload band contains 30 combat actives and 3 stances. Eleven combat actives deal direct damage, while nineteen are control, debuff, support, threat, reactive, or self-buff tools. Their individual Mimicry requirements follow source level and may therefore be earlier than their payload strength would imply. Non-damage abilities carry no damage-scaling **Primary Stat** (`None` in the Bible).
+The signature payload band contains 30 combat actives and 3 stances. Eleven combat actives deal direct damage, while nineteen are control, debuff, support, threat, reactive, or self-buff tools. Their individual Mimicry requirements follow encounter order and source difficulty rather than payload strength alone. Non-damage abilities carry no damage-scaling **Primary Stat** (`None` in the Bible).
 
 | Damaging technique | Distinct role |
 |---|---|

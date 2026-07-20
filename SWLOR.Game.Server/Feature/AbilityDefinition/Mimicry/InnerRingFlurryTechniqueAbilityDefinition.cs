@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.InnerRingFlurry, 49, 3)
+                .MimicryTechnique(FeatType.InnerRingFlurry, 44, 3)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.ScorchingBreath, 49, 3)
+                .MimicryTechnique(FeatType.ScorchingBreath, 50, 3)
                 .HasTargetingCone(
                     Spell.ScorchingBreathTechnique,
                     8f,

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.ArcPulse, 32, 3)
+                .MimicryTechnique(FeatType.ArcPulse, 35, 3)
                 .HasTargetingSphere(
                     Spell.ArcPulseTechnique,
                     4.5f,

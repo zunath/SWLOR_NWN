@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.WardenMark, 50, 3)
+                .MimicryTechnique(FeatType.WardenMark, 49, 3)
                 .HasTargetingSphere(
                     Spell.WardenMarkTechnique,
                     5.5f,

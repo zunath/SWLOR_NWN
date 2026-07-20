@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .HasRecastDelay(RecastGroup.LastBastion, 30f)
                 .RequirementStamina(10)
                 .IsCastedAbility()
-                .MimicryTechnique(FeatType.LastBastion, 50, 3)
+                .MimicryTechnique(FeatType.LastBastion, 47, 3)
                 .MimicryUtility()
                 .HasImpactAction((activator, target, level, location) =>
                 {

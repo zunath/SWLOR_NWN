@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.FinalLine, 50, 3)
+                .MimicryTechnique(FeatType.FinalLine, 49, 3)
                 .HasTargetingLine(
                     Spell.FinalLineTechnique,
                     8f,

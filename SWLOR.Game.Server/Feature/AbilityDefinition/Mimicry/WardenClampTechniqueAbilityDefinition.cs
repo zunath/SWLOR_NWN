@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.WardenClamp, 50, 3)
+                .MimicryTechnique(FeatType.WardenClamp, 48, 3)
                 .HasTargetingSphere(
                     Spell.WardenClampTechnique,
                     5.5f,

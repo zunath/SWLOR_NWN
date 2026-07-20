@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.RakingClaws, 3, 1)
+                .MimicryTechnique(FeatType.RakingClaws, 6, 1)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

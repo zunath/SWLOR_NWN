@@ -93,14 +93,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MedicalInjectorRigTrait)
-                .Description("Med Kit, Kolto Mist, Emergency Triage, and Infusion healing is increased by 10%.")
-                .IncreasesStat(StatType.FirstAidMedicalHealingPercentAdjustment, 10)
+                .Description("All direct, area, and periodic healing caused by your abilities is increased by 5%.")
+                .IncreasesStat(StatType.OutgoingAbilityHealingPercentAdjustment, 5)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 8)
 
                 .AddPerkLevel()
-                .Description("Med Kit, Kolto Mist, Emergency Triage, and Infusion healing is increased by 20%.")
-                .IncreasesStat(StatType.FirstAidMedicalHealingPercentAdjustment, 20)
+                .Description("All direct, area, and periodic healing caused by your abilities is increased by 10%.")
+                .IncreasesStat(StatType.OutgoingAbilityHealingPercentAdjustment, 10)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 38);
         }

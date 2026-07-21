@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -230,6 +231,71 @@ public class FirstAidCombatUpgradeTests
         cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration)");
         cocktail.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");
+    }
+
+    [Test]
+    public void MedicalInjectorRig_AppliesToAbilityHealingAcrossSkillsButNotDamageDerivedHealing()
+    {
+        const string rank1Description =
+            "All direct, area, and periodic healing caused by your abilities is increased by 5%.";
+        const string rank2Description =
+            "All direct, area, and periodic healing caused by your abilities is increased by 10%.";
+
+        var root = FindRepositoryRoot();
+        var perkSource = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "FirstAidTraumaMedicPerkDefinition.cs").FullName);
+        perkSource.Should().Contain($".Description(\"{rank1Description}\")");
+        perkSource.Should().Contain($".Description(\"{rank2Description}\")");
+        perkSource.Should().Contain(
+            ".IncreasesStat(StatType.OutgoingAbilityHealingPercentAdjustment, 5)");
+        perkSource.Should().Contain(
+            ".IncreasesStat(StatType.OutgoingAbilityHealingPercentAdjustment, 10)");
+
+        Stat.CalculateOutgoingAbilityHealingAmount(100, 5).Should().Be(105);
+        Stat.CalculateOutgoingAbilityHealingAmount(101, 10).Should().Be(112);
+        Stat.CalculateOutgoingAbilityHealingAmount(100, 0).Should().Be(100);
+
+        var includedSources = new[]
+        {
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "MedKitAbilityDefinition.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "RewardAbilityDefinition.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "InnervateAbilityDefinition.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Mimicry" / "WardenOrderTechniqueAbilityDefinition.cs"
+        };
+
+        foreach (var sourcePath in includedSources)
+        {
+            File.ReadAllText(sourcePath.FullName)
+                .Should()
+                .Contain(
+                    "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                    $"{Path.GetFileName(sourcePath.FullName)} should apply Medical Injector Rig to eligible ability healing");
+        }
+
+        var statSource = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
+        statSource.Should().Contain("BeastMastery.IsPlayerBeast(source)");
+        statSource.Should().Contain("GetMaster(source)");
+
+        var excludedSources = new[]
+        {
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceDrainAbilityDefinition.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "WeaponActiveAbilityDefinitionBase.cs",
+            root / "SWLOR.Game.Server" / "Service" / "Combat.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "NaturalRegeneration.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "RestStatusEffect.cs"
+        };
+
+        foreach (var sourcePath in excludedSources)
+        {
+            File.ReadAllText(sourcePath.FullName)
+                .Should()
+                .NotContain(
+                    "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                    $"{Path.GetFileName(sourcePath.FullName)} should not apply Medical Injector Rig to damage-derived or system healing");
+        }
     }
 
     [Test]

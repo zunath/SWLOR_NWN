@@ -57,20 +57,6 @@ public class EquipmentRestrictionsTests
         error.Should().Be("Pistols may only be equipped in the right hand.");
     }
 
-    [TestCase(BaseItem.Pistol)]
-    [TestCase(BaseItem.Sling)]
-    public void LegacyLeftHandPistols_CanMoveDirectlyToTheRightHand(BaseItem pistolType)
-    {
-        var error = EquipmentRestrictions.GetPistolEquipmentError(
-            pistolType,
-            InventorySlot.RightHand,
-            null,
-            pistolType,
-            InventorySlot.LeftHand);
-
-        error.Should().BeEmpty();
-    }
-
     [TestCase(BaseItem.Pistol, BaseItem.Longsword)]
     [TestCase(BaseItem.Pistol, BaseItem.Dagger)]
     [TestCase(BaseItem.Pistol, BaseItem.Pistol)]

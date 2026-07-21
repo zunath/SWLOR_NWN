@@ -36,18 +36,12 @@ namespace SWLOR.Game.Server.Feature
                 var leftHandType = GetIsObjectValid(leftHand)
                     ? GetBaseItemType(leftHand)
                     : (BaseItem?)null;
-                InventorySlot? currentItemHand = null;
-                if (rightHand == item)
-                    currentItemHand = InventorySlot.RightHand;
-                else if (leftHand == item)
-                    currentItemHand = InventorySlot.LeftHand;
 
                 canUseItem = GetPistolEquipmentError(
                     GetBaseItemType(item),
                     slot,
                     rightHandType,
-                    leftHandType,
-                    currentItemHand);
+                    leftHandType);
             }
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
@@ -82,16 +76,8 @@ namespace SWLOR.Game.Server.Feature
             BaseItem itemType,
             InventorySlot slot,
             BaseItem? rightHandType,
-            BaseItem? leftHandType,
-            InventorySlot? currentItemHand = null)
+            BaseItem? leftHandType)
         {
-            // Evaluate the hands as they will look after the equip finishes. This lets legacy
-            // left-hand pistols move directly to the newly required right-hand slot.
-            if (currentItemHand == InventorySlot.RightHand)
-                rightHandType = null;
-            else if (currentItemHand == InventorySlot.LeftHand)
-                leftHandType = null;
-
             if (itemType == BaseItem.OffHandPistol)
                 return "Off-hand pistols cannot be equipped.";
 

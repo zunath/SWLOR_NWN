@@ -611,7 +611,7 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   every edit commits a full scene rebuild that reassigns Scene. Fixed by framing the camera only on
   the first non-null scene (initial load) and preserving the user's camera on all later rebuilds.
   Build clean, 334/335 green, smoke OK.
-## WP6.2 — code done, human gate pending — 2026-07-21 — Perf + fidelity pass
+## WP6.2 — done (gate passed) — 2026-07-21 — Perf + fidelity pass (PHASE 6 COMPLETE)
 - Tier: Mid. Lead-driven (GL/perf + small UI); the one remaining UI nice-to-have (shared
   DataTemplates) is queued for a Sonnet subagent.
 - **Per-area lighting (fidelity):** AreaScene now carries a decoded `AreaLighting` (Domain:
@@ -643,9 +643,12 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   fully off-screen, big help when zoomed/panned into a region) and a **raw-texture-name memo**
   (BindMeshTexture no longer re-runs MaterialResolver string resolution on every one of ~2500
   per-frame draws). Build clean, 338/339 green, smoke OK.
-- **Remaining: human re-gate** — (1) night area brightness now feels right; (2) largest area
-  (pw_ar_czarmrange) is smooth on orbit/zoom/pan. If full-area orbit is still laggy, the next lever
-  is instanced tile rendering (deferred — larger shader/render change).
+- **Gate re-test PASSED (2026-07-21):** (1) night lighting looks good; (2) pw_ar_czarmrange is
+  "silky smooth" on orbit/zoom/pan — culling + texture memo were enough; instanced tile rendering
+  was NOT needed (stays a backlog option if a future area stresses it). **WP6.2 accepted; PHASE 6
+  COMPLETE.** Deferred items remain in the backlog: per-tile point/main lights; CLI binary refresh
+  + PackService fallback drop. WP6.1's elevated-tile placement-Z check is still pending tile editing
+  (WP7.3).
 ## WP7.1 — pending — Tile adjacency corpus
 ## WP7.2 — pending — Tile rule matcher
 ## WP7.3 — pending — Paint tools + new-area wizard

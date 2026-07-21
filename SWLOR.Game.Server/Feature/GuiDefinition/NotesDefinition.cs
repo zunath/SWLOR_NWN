@@ -15,6 +15,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ProgressBarTextWidth = 440f;
 
         /// <summary>
+        /// A pinned width on the Search button keeps it compact so the flexing search box beside it
+        /// gets the extra room. Without a width the button sizes to its label and steals it.
+        /// </summary>
+        private const float SearchButtonWidth = 64f;
+
+        /// <summary>
         /// Width of a combo box. A combo does not stretch to fill its row the way a text edit does,
         /// so it needs an explicit width. It must sit in a row with no pinned height, or the window's
         /// lists render empty.
@@ -145,6 +151,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddButton()
                     .SetText("Search")
                     .SetHeight(ControlHeight)
+                    .SetWidth(SearchButtonWidth)
                     .BindOnClicked(model => model.OnClickSearch());
             });
 

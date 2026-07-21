@@ -71,5 +71,11 @@ namespace SWLOR.Toolset.Editors
             if (AreaView != null && HideCeilingsCheck != null)
                 AreaView.HideCeilings = HideCeilingsCheck.IsChecked == true;
         }
+
+        private void OnPlaceableModelsChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (AreaView != null && PlaceableModelsCheck != null)
+                AreaView.ShowPlaceableModels = PlaceableModelsCheck.IsChecked == true;
+        }
     }
 }

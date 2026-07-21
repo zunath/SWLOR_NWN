@@ -206,6 +206,32 @@ void main()
             }
         }
 
+        private bool _showPlaceableModels = true;
+
+        /// <summary>
+        /// When true (default), placeable instances with resolved geometry render their actual 3D
+        /// model; when false they fall back to their kind-colored pyramid marker (useful when
+        /// models visually bury the editing markers). The same switch is planned for creatures
+        /// once creature appearance models render in the area view.
+        /// </summary>
+        public bool ShowPlaceableModels
+        {
+            get => _showPlaceableModels;
+            set
+            {
+                if (_showPlaceableModels == value)
+                    return;
+
+                _showPlaceableModels = value;
+                RequestNextFrameRendering();
+            }
+        }
+
+        /// <summary>True when this instance should draw its resolved model rather than a marker.</summary>
+        private bool DrawsAsModel(InstanceMarker instance) =>
+            instance.Model != null &&
+            (_showPlaceableModels || instance.Kind != InstanceMarkerKind.Placeable);
+
         /// <summary>Layered resource index used to resolve tile/mesh textures and MTR materials. Null degrades every mesh to a flat gray fallback.</summary>
         public ResourceIndex? ResourceIndex { get; set; }
 
@@ -440,8 +466,16 @@ void main()
             if (width <= 0 || height <= 0)
                 return;
 
+            // Logical units for input/camera math (pointer deltas arrive in logical pixels)...
             _viewportWidth = width;
             _viewportHeight = height;
+
+            // ...but the framebuffer Avalonia hands us is in PHYSICAL pixels (Bounds x
+            // RenderScaling). Passing logical bounds to glViewport leaves the render in the
+            // lower-left fraction of the panel on any display scale above 100%.
+            var scaling = VisualRoot?.RenderScaling ?? 1.0;
+            var pixelWidth = (uint)Math.Max(1, (int)Math.Ceiling(width * scaling));
+            var pixelHeight = (uint)Math.Max(1, (int)Math.Ceiling(height * scaling));
 
             _gl.ClearColor(0.12f, 0.14f, 0.18f, 1f);
             _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
@@ -449,7 +483,7 @@ void main()
             _gl.DepthFunc(DepthFunction.Less);
             // NWN tile/prop meshes have inconsistent winding - culling would drop real faces.
             _gl.Disable(EnableCap.CullFace);
-            _gl.Viewport(0, 0, (uint)width, (uint)height);
+            _gl.Viewport(0, 0, pixelWidth, pixelHeight);
 
             if (_scene == null)
                 return;
@@ -692,7 +726,39 @@ void main()
 
         private void DrawInstanceMarkers()
         {
-            if (_scene == null || _markerMeshBuffer is not { } marker)
+            if (_scene == null)
+                return;
+
+            // Pass 1: instances with resolved render geometry (placeables, doors) draw their
+            // actual model, textured and lit, at the instance's position/heading.
+            foreach (var instance in _scene.Instances)
+            {
+                if (!DrawsAsModel(instance))
+                    continue;
+
+                var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
+                var instanceTransform =
+                    Matrix4x4.CreateRotationZ(heading) * Matrix4x4.CreateTranslation(instance.Position);
+
+                var buffer = GetOrBuildModelBuffer(instance.Model);
+                _gl!.BindVertexArray(buffer.Vao);
+                SetUniformBool("unlit", false);
+
+                foreach (var meshRange in buffer.MeshRanges)
+                {
+                    SetUniformMatrix4("model", meshRange.MeshTransform * instanceTransform);
+                    BindMeshTexture(meshRange.TextureName);
+
+                    unsafe
+                    {
+                        _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                            DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                    }
+                }
+            }
+
+            // Pass 2: everything else draws its kind-colored pyramid marker.
+            if (_markerMeshBuffer is not { } marker)
                 return;
 
             _gl!.BindVertexArray(marker.Vao);
@@ -702,6 +768,9 @@ void main()
 
             foreach (var instance in _scene.Instances)
             {
+                if (DrawsAsModel(instance))
+                    continue;
+
                 var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
                 var model = Matrix4x4.CreateRotationZ(heading) * Matrix4x4.CreateTranslation(instance.Position);
 

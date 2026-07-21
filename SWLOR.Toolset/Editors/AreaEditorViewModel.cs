@@ -48,6 +48,8 @@ namespace SWLOR.Toolset.Editors
         private readonly string _areResRef;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly TileModelCache? _tileModelCache;
+        private readonly PlaceableAppearanceService? _placeableAppearances;
+        private readonly DoorTypeService? _doorTypes;
         private bool _sceneBuildRequested;
 
         public ObservableCollection<EditorGroup> AreaPropertyGroups { get; } = new();
@@ -104,12 +106,16 @@ namespace SWLOR.Toolset.Editors
             OutputLogService log,
             TilesetCatalog? tilesetCatalog = null,
             TileModelCache? tileModelCache = null,
-            ResourceIndex? resourceIndex = null)
+            ResourceIndex? resourceIndex = null,
+            PlaceableAppearanceService? placeableAppearances = null,
+            DoorTypeService? doorTypes = null)
         {
             _log = log;
             _areResRef = areResRef;
             _tilesetCatalog = tilesetCatalog;
             _tileModelCache = tileModelCache;
+            _placeableAppearances = placeableAppearances;
+            _doorTypes = doorTypes;
             ResourceIndex = resourceIndex;
             Id = $"area-editor:{areResRef}";
 
@@ -176,7 +182,8 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var scene = await Task.Run(() => AreaSceneBuilder.Build(are, git, tilesetCatalog, tileModelCache));
+                var scene = await Task.Run(() => AreaSceneBuilder.Build(
+                    are, git, tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes));
 
                 AreaScene = scene;
                 SceneStatus = scene.Diagnostics.MissingModels.Count == 0

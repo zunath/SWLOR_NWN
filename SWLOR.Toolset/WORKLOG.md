@@ -387,8 +387,26 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
 - **Backlog added:** PLT color-layer rendering for body parts/armor tints (user-accepted
   follow-up, target WP6.2); consider base-game/hak fallback for equipped-armor uti resrefs
   missing from the module (e.g. via ResourceIndex + GffJsonBridge).
-- **Remaining: human visual RE-gate #3** (robed NPCs assemble; camera orbit/pan/zoom works;
-  ceiling toggle) and the 10-area WP4.5 spot-check.
+- **Re-gate #3 (human, 2026-07-21): WP4.3 GATE PASSED** — segmented previews work for most
+  models; residual missing-texture polish explicitly tabled to a later phase (backlog).
+  Camera orbit/pan/zoom and ceiling toggle confirmed working. Two WP4.5 findings fixed:
+  - **Viewport not filling the panel:** glViewport was fed logical Bounds while Avalonia's
+    framebuffer is physical pixels (Bounds × RenderScaling) — at 150% Windows scaling the
+    render occupied the lower-left ⅔ exactly. Fixed (logical units retained for input math).
+    Radoub's ModelPreviewGLControl has the same latent bug — worth an upstream report.
+  - **Placeables/doors as real models:** instance appearance lives ON the git instance
+    (placeable `Appearance` → placeables.2da ModelName; doors carry BOTH `GenericType_New`
+    and `Appearance` as doortypes candidates — corpus shows either populated — first row
+    with a real Model wins). AreaSceneBuilder resolves through the shared TileModelCache
+    when the appearance services are supplied; InstanceMarker gained `Model`; GlAreaControl
+    draws model instances textured/lit and everything else as pyramids. Corpus test:
+    coxxian_hq zep_barricade resolves geometry.
+  - **"Placeable models" toggle (user request):** checkbox in the 3D View toolbar switches
+    placeables between 3D model (default) and pyramid marker. Same switch planned for
+    creatures when creature models land in the area view (noted for WP5.x/6.x).
+  - Verified: build clean, 265/266 green, smoke OK.
+- **Remaining: WP4.5 final visual check** — viewport fills panel, placeable models render,
+  toggle works, then the 10-area spot-check.
 - Tier: Low (controller-executed inline; subagent dispatch avoided — the WP4.4 subagent
   died on the monthly spend limit, so remaining Phase 4 packages run inline).
 - Files: `Domain\Render\BlueprintModelResolver.cs` (headless, tested),

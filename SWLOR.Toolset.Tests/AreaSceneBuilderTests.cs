@@ -185,6 +185,42 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Build_WithAppearanceServices_ResolvesPlaceableAndDoorModels()
+        {
+            // coxxian_hq's Placeable List[0] (zep_barricade) carries Appearance 2627 on the
+            // instance itself; with the appearance services + base-game index supplied, the marker
+            // must resolve real render geometry. Doors resolve via GenericType_New/Appearance.
+            var installPath = NwnInstallLocator.Locate();
+            if (installPath == null)
+            {
+                Assert.Ignore("No local NWN:EE installation found; placeable models are mostly base-game resources.");
+                return;
+            }
+
+            var baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+            var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory, baseLayer);
+            var tilesetCatalog = new TilesetCatalog(index);
+            var modelCache = new TileModelCache(index);
+            var twoDa = new Domain.GameData.TwoDa.TwoDaService(Path.Combine(HaksDirectory, "sw_2da"));
+            var tlk = Domain.GameData.Tlk.TlkService.Load(Path.Combine(HaksDirectory, "sw_tlk", "sw_tlk.tlk.json"));
+            var placeables = new PlaceableAppearanceService(twoDa, tlk);
+            var doors = new DoorTypeService(twoDa, tlk);
+
+            var (are, git) = LoadArea("coxxian_hq");
+            var scene = AreaSceneBuilder.Build(are, git, tilesetCatalog, modelCache, placeables, doors);
+
+            var barricade = scene.Instances.Single(i => i.Kind == InstanceMarkerKind.Placeable && i.Tag == "ZEP_BARRICADE");
+            barricade.Model.Should().NotBeNull("Appearance 2627's placeables.2da ModelName should resolve through the index");
+            barricade.Model!.Meshes.Should().NotBeEmpty();
+
+            // Without the services (previous behavior) the marker stays geometry-less.
+            var plainScene = AreaSceneBuilder.Build(are, git, tilesetCatalog, modelCache);
+            plainScene.Instances
+                .Single(i => i.Kind == InstanceMarkerKind.Placeable && i.Tag == "ZEP_BARRICADE")
+                .Model.Should().BeNull();
+        }
+
+        [Test]
         public void Build_TileIdBeyondTilesetRange_FallsBackWithoutThrowing()
         {
             var (are, git) = LoadArea("bank");

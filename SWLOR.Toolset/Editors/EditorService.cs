@@ -27,6 +27,8 @@ namespace SWLOR.Toolset.Editors
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly TileModelCache? _tileModelCache;
         private readonly ResourceIndex? _resourceIndex;
+        private readonly PlaceableAppearanceService? _placeableAppearances;
+        private readonly DoorTypeService? _doorTypes;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
 
@@ -39,7 +41,9 @@ namespace SWLOR.Toolset.Editors
             ModelPreviewViewModel? modelPreview = null,
             TilesetCatalog? tilesetCatalog = null,
             TileModelCache? tileModelCache = null,
-            ResourceIndex? resourceIndex = null)
+            ResourceIndex? resourceIndex = null,
+            PlaceableAppearanceService? placeableAppearances = null,
+            DoorTypeService? doorTypes = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -50,6 +54,8 @@ namespace SWLOR.Toolset.Editors
             _tilesetCatalog = tilesetCatalog;
             _tileModelCache = tileModelCache;
             _resourceIndex = resourceIndex;
+            _placeableAppearances = placeableAppearances;
+            _doorTypes = doorTypes;
         }
 
         public void TryOpenEditor(ResourceType type, string resRef)
@@ -132,7 +138,8 @@ namespace SWLOR.Toolset.Editors
             {
                 var editor = new AreaEditorViewModel(
                     resRef, workspace, _lookups, _gameCodeIndex, _log,
-                    _tilesetCatalog, _tileModelCache, _resourceIndex);
+                    _tilesetCatalog, _tileModelCache, _resourceIndex,
+                    _placeableAppearances, _doorTypes);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);

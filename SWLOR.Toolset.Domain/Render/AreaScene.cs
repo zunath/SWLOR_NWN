@@ -96,6 +96,14 @@ namespace SWLOR.Toolset.Domain.Render
 
         /// <summary>Polygon points (world-space) for trigger/encounter volumes; null for every other kind or when absent.</summary>
         public IReadOnlyList<Vector3>? Geometry { get; init; }
+
+        /// <summary>
+        /// Resolved render geometry for kinds whose appearance lives on the instance itself
+        /// (placeables via placeables.2da ModelName, doors via doortypes.2da Model), shared
+        /// through the model cache. Null when unresolvable or when appearance services weren't
+        /// supplied — the renderer draws the kind marker instead.
+        /// </summary>
+        public RenderModel? Model { get; init; }
     }
 
     /// <summary>Diagnostics collected while assembling one <see cref="AreaScene"/>.</summary>

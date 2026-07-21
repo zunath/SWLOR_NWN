@@ -27,7 +27,9 @@ namespace SWLOR.Toolset.Domain.Render
             AreDocument are,
             GitDocument git,
             TilesetCatalog tilesetCatalog,
-            TileModelCache modelCache)
+            TileModelCache modelCache,
+            PlaceableAppearanceService? placeableAppearances = null,
+            DoorTypeService? doorTypes = null)
         {
             ArgumentNullException.ThrowIfNull(are);
             ArgumentNullException.ThrowIfNull(git);
@@ -51,7 +53,7 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics);
-            var instances = BuildInstances(git);
+            var instances = BuildInstances(git, modelCache, placeableAppearances, doorTypes);
 
             return new AreaScene
             {
@@ -159,14 +161,20 @@ namespace SWLOR.Toolset.Domain.Render
             return placements;
         }
 
-        private static List<InstanceMarker> BuildInstances(GitDocument git)
+        private static List<InstanceMarker> BuildInstances(
+            GitDocument git,
+            TileModelCache modelCache,
+            PlaceableAppearanceService? placeableAppearances,
+            DoorTypeService? doorTypes)
         {
             var markers = new List<InstanceMarker>();
 
             AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc);
-            AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd);
+            AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd,
+                resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache));
             AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti);
-            AddMarkers(markers, git.Placeables, InstanceMarkerKind.Placeable, ResourceType.Utp);
+            AddMarkers(markers, git.Placeables, InstanceMarkerKind.Placeable, ResourceType.Utp,
+                resolveModel: instance => ResolvePlaceableModel(instance, placeableAppearances, modelCache));
             AddMarkers(markers, git.Sounds, InstanceMarkerKind.Sound, ResourceType.Uts);
             AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm);
             AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true);
@@ -181,7 +189,8 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyList<JsonGffStruct> instances,
             InstanceMarkerKind kind,
             ResourceType type,
-            bool includeGeometry = false)
+            bool includeGeometry = false,
+            Func<JsonGffStruct, RenderModel?>? resolveModel = null)
         {
             foreach (var instance in instances)
             {
@@ -197,9 +206,52 @@ namespace SWLOR.Toolset.Domain.Render
                     Tag = tag,
                     Position = new Vector3(x, y, z),
                     Orientation = new Vector2(xo, yo),
-                    Geometry = includeGeometry ? ReadGeometry(instance) : null
+                    Geometry = includeGeometry ? ReadGeometry(instance) : null,
+                    Model = resolveModel?.Invoke(instance)
                 });
             }
+        }
+
+        /// <summary>Placeable instances carry their appearance directly: Appearance → placeables.2da ModelName.</summary>
+        private static RenderModel? ResolvePlaceableModel(
+            JsonGffStruct instance, PlaceableAppearanceService? placeableAppearances, TileModelCache modelCache)
+        {
+            if (placeableAppearances == null)
+                return null;
+
+            var appearanceId = instance.GetIntOrNull("Appearance") ?? -1;
+            var row = placeableAppearances.GetAll().FirstOrDefault(r => r.Id == appearanceId);
+
+            return string.IsNullOrWhiteSpace(row?.ModelName) ? null : modelCache.GetOrBuild(row.ModelName);
+        }
+
+        /// <summary>
+        /// Door instances carry two candidate doortypes.2da indices — GenericType_New and Appearance —
+        /// and the corpus uses either (e.g. GenericType_New=0 with Appearance=24). Take the first
+        /// whose row yields a real model.
+        /// </summary>
+        private static RenderModel? ResolveDoorModel(
+            JsonGffStruct instance, DoorTypeService? doorTypes, TileModelCache modelCache)
+        {
+            if (doorTypes == null)
+                return null;
+
+            foreach (var field in new[] { "GenericType_New", "Appearance" })
+            {
+                var id = instance.GetIntOrNull(field) ?? -1;
+                if (id <= 0)
+                    continue;
+
+                var row = doorTypes.GetAll().FirstOrDefault(r => r.Id == id);
+                if (string.IsNullOrWhiteSpace(row?.Model))
+                    continue;
+
+                var model = modelCache.GetOrBuild(row.Model);
+                if (model != null)
+                    return model;
+            }
+
+            return null;
         }
 
         /// <summary>

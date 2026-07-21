@@ -21,20 +21,23 @@ public class EquipmentRestrictionsTests
         error.Should().BeEmpty();
     }
 
-    [TestCase(BaseItem.SmallShield)]
-    [TestCase(BaseItem.LargeShield)]
-    [TestCase(BaseItem.TowerShield)]
-    public void Pistols_CanBePairedWithShields(BaseItem shieldType)
+    [TestCase(BaseItem.Pistol, BaseItem.SmallShield)]
+    [TestCase(BaseItem.Pistol, BaseItem.LargeShield)]
+    [TestCase(BaseItem.Pistol, BaseItem.TowerShield)]
+    [TestCase(BaseItem.Sling, BaseItem.SmallShield)]
+    [TestCase(BaseItem.Sling, BaseItem.LargeShield)]
+    [TestCase(BaseItem.Sling, BaseItem.TowerShield)]
+    public void Pistols_CanBePairedWithShields(BaseItem pistolType, BaseItem shieldType)
     {
         var pistolError = EquipmentRestrictions.GetPistolEquipmentError(
-            BaseItem.Pistol,
+            pistolType,
             InventorySlot.RightHand,
             null,
             shieldType);
         var shieldError = EquipmentRestrictions.GetPistolEquipmentError(
             shieldType,
             InventorySlot.LeftHand,
-            BaseItem.Pistol,
+            pistolType,
             null);
 
         pistolError.Should().BeEmpty();
@@ -54,13 +57,30 @@ public class EquipmentRestrictionsTests
         error.Should().Be("Pistols may only be equipped in the right hand.");
     }
 
-    [TestCase(BaseItem.Longsword)]
-    [TestCase(BaseItem.Dagger)]
     [TestCase(BaseItem.Pistol)]
-    public void Pistols_CannotBePairedWithNonShieldItems(BaseItem leftHandType)
+    [TestCase(BaseItem.Sling)]
+    public void LegacyLeftHandPistols_CanMoveDirectlyToTheRightHand(BaseItem pistolType)
     {
         var error = EquipmentRestrictions.GetPistolEquipmentError(
-            BaseItem.Pistol,
+            pistolType,
+            InventorySlot.RightHand,
+            null,
+            pistolType,
+            InventorySlot.LeftHand);
+
+        error.Should().BeEmpty();
+    }
+
+    [TestCase(BaseItem.Pistol, BaseItem.Longsword)]
+    [TestCase(BaseItem.Pistol, BaseItem.Dagger)]
+    [TestCase(BaseItem.Pistol, BaseItem.Pistol)]
+    [TestCase(BaseItem.Sling, BaseItem.Longsword)]
+    [TestCase(BaseItem.Sling, BaseItem.Dagger)]
+    [TestCase(BaseItem.Sling, BaseItem.Pistol)]
+    public void Pistols_CannotBePairedWithNonShieldItems(BaseItem pistolType, BaseItem leftHandType)
+    {
+        var error = EquipmentRestrictions.GetPistolEquipmentError(
+            pistolType,
             InventorySlot.RightHand,
             null,
             leftHandType);
@@ -68,13 +88,14 @@ public class EquipmentRestrictionsTests
         error.Should().Be("Pistols may only be paired with a shield in the left hand.");
     }
 
-    [Test]
-    public void NonShieldItems_CannotBeEquippedOppositeAPistol()
+    [TestCase(BaseItem.Pistol)]
+    [TestCase(BaseItem.Sling)]
+    public void NonShieldItems_CannotBeEquippedOppositeAPistol(BaseItem pistolType)
     {
         var error = EquipmentRestrictions.GetPistolEquipmentError(
             BaseItem.Longsword,
             InventorySlot.LeftHand,
-            BaseItem.Pistol,
+            pistolType,
             null);
 
         error.Should().Be("Pistols may only be paired with a shield in the left hand.");

@@ -159,7 +159,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.Longsword] = new LongswordAppearanceDefinition();
             var pistolAppearance = new PistolAppearanceDefinition();
             _weaponAppearances[BaseItem.Pistol] = pistolAppearance;
-            _weaponAppearances[BaseItem.PistolWithShield] = pistolAppearance;
+            _weaponAppearances[BaseItem.Sling] = pistolAppearance;
+            _weaponAppearances[BaseItem.LegacyPistol] = pistolAppearance;
             _weaponAppearances[BaseItem.QuarterStaff] = new QuarterstaffAppearanceDefinition();
             _weaponAppearances[BaseItem.Rifle] = new RifleAppearanceDefinition();
             _weaponAppearances[BaseItem.Shuriken] = new ShurikenAppearanceDefinition();

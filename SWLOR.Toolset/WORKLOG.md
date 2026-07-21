@@ -649,6 +649,27 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   COMPLETE.** Deferred items remain in the backlog: per-tile point/main lights; CLI binary refresh
   + PackService fallback drop. WP6.1's elevated-tile placement-Z check is still pending tile editing
   (WP7.3).
-## WP7.1 — pending — Tile adjacency corpus
+## WP7.1 — done — 2026-07-21 — Tile adjacency corpus
+- Tier: Low, done inline as Lead — the subtle part (the orientation rotation convention + the
+  "is a mismatch a model bug or a real exception?" judgment) needed the corpus as oracle and must
+  not tempt weakening the assertion; the leftover was mechanical.
+- Evidence-first (systematic-debugging): a throwaway probe ran a candidate orientation model against
+  all 438 areas BEFORE any production code. It nailed the model — 392,150 shared-corner comparisons,
+  99.971% match. The 0.029% (112) corner exceptions are ALL the `fcx01` tileset's special "holes"
+  gap terrain abutting Cobble/Cobble2. All 114 edge "mismatches" are blank-vs-crosser (a wall/doorway
+  declared by one tile, absent on the neighbour), i.e. crossers only need to match when BOTH sides
+  declare one. Probe deleted after use.
+- Domain: `GameData\Tilesets\TileAdjacency.cs` — TileEdge/TileCorner enums; WorldCornerTerrain /
+  WorldEdgeCrosser (Tile_Orientation 0-3 = CCW quarter turns, north=+Y east=+X, matching
+  AreaSceneBuilder); SharedCorners/OppositeEdge adjacency primitives; CornerTerrainsMatch (exact,
+  case-insensitive) and EdgeCrossersMatch (blank-tolerant). This is the reusable extraction the
+  WP7.2 matcher builds on.
+- Tests: TileAdjacencyTests (6 — deterministic rotation at orientation 0/1, four-turn identity,
+  shared-corner pairing, both match predicates). SetRuleCorpusTests (1, the acceptance gate): every
+  adjacent pair in all 438 areas is corner/edge consistent under TileAdjacency, allowing ONLY the
+  documented fcx01/holes exception; asserts unexpected==0, 300k+ corners compared, allowlist live
+  (100-130). Base-layer install-gated (16 areas use base-game tilesets); skips without an install.
+- Verified: build clean, 345/346 green (338 prior + 7 new; 1 pre-existing skip). Domain + tests only
+  (no app change), so no smoke needed. No human gate — the corpus itself is the validation.
 ## WP7.2 — pending — Tile rule matcher
 ## WP7.3 — pending — Paint tools + new-area wizard

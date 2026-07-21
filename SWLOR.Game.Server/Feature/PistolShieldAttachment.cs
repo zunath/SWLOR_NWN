@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature
         private static bool CanSynchronize(uint creature)
         {
             return GetIsObjectValid(creature) &&
-                   GetIsPC(creature) &&
+                   (GetIsPC(creature) || Droid.IsDroid(creature)) &&
                    !GetIsDM(creature) &&
                    !GetIsDMPossessed(creature);
         }

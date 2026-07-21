@@ -63,6 +63,28 @@ public class SettingsWindowTests
         definitionSource.Should().Contain(".SetIsClosable(true)");
     }
 
+    [Test]
+    public void CommsRangeWarnings_AreEnabledByDefaultAndPersistedFromChatSettings()
+    {
+        var root = FindRepositoryRoot();
+        var playerSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Entity",
+            "Player.cs"));
+        var (definitionSource, viewModelSource) = LoadSettingsSources();
+
+        playerSource.Should().Contain("public bool? DisplayCommsOutOfRangeWarnings { get; set; }");
+        playerSource.Should().Contain("DisplayCommsOutOfRangeWarnings = true;");
+        definitionSource.Should().Contain(".SetText(\"Comms Range Warnings\")");
+        definitionSource.Should().Contain(".BindIsChecked(model => model.DisplayCommsOutOfRangeWarnings)");
+        viewModelSource.Should().Contain("WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);");
+        viewModelSource.Should().Contain(
+            "DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;");
+        viewModelSource.Should().Contain(
+            "dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;");
+    }
+
     private static string ExtractMethod(string source, string startMarker, string endMarker)
     {
         var start = source.IndexOf(startMarker, StringComparison.Ordinal);

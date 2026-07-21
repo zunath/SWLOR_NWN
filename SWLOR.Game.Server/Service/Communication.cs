@@ -309,7 +309,11 @@ namespace SWLOR.Game.Server.Service
 
             if (outOfRangeCommsPartyMembers > 0)
             {
-                SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));
+                var dbSender = DB.Get<Player>(GetObjectUUID(sender));
+                if (dbSender?.Settings?.DisplayCommsOutOfRangeWarnings ?? true)
+                {
+                    SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));
+                }
             }
 
             // The speaker and the language being spoken are the same for every recipient, so resolve

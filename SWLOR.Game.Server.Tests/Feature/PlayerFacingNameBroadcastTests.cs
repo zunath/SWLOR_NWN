@@ -140,6 +140,7 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("Nearby non-party listeners can still overhear it.");
         normalizedCommunicationSource.Should().Contain("recipients.AddRange(allDMs);\n\n                needsAreaCheck = true;\n                distanceCheck = 20.0f;");
         communicationSource.Should().NotContain("AddSameStarshipCommsRecipients");
+        communicationSource.Should().Contain("if (dbSender?.Settings?.DisplayCommsOutOfRangeWarnings ?? true)");
         communicationSource.Should().Contain("SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));");
         communicationSource.Should().NotContain("SendCommsOutOfRangeMessage(sender);");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.ServerMessage, ColorToken.Red(CommsOutOfRangeMessage), sender, sender);");

@@ -361,16 +361,23 @@ void main()
         /// <summary>Layered resource index used to resolve tile/mesh textures and MTR materials. Null degrades every mesh to a flat gray fallback.</summary>
         public ResourceIndex? ResourceIndex { get; set; }
 
-        /// <summary>The scene to render, or null to show an empty viewport. Setting this recomputes the initial camera framing and marks GPU state for rebuild on the next render.</summary>
+        /// <summary>
+        /// The scene to render, or null to show an empty viewport. The camera is framed to the
+        /// area only on the FIRST non-null scene (initial load). Later assignments are edit-driven
+        /// rebuilds of the same area (move/rotate/place/undo/redo, or the manual Rebuild) - those
+        /// keep the user's current orbit/zoom rather than snapping back to the default framing.
+        /// Always marks GPU state for rebuild on the next render.
+        /// </summary>
         public AreaScene? Scene
         {
             get => _scene;
             set
             {
+                var hadScene = _scene != null;
                 _scene = value;
                 _sceneDirty = true;
 
-                if (value != null)
+                if (value != null && !hadScene)
                     ResetCameraForScene(value);
 
                 RequestNextFrameRendering();

@@ -566,7 +566,7 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
 - **PHASE 5 human gate: PASSED** (2026-07-21) — WP3.6's quest-NPC task completed fully in 3D
   (place creature, drag/rotate, Tag/VarTable, spawn waypoint, Save All → Pack Module
   auto-deploy → verified in game). WP5.1 + WP5.2 accepted. **PHASE 5 COMPLETE.**
-## WP6.1 — code done, human visual gate pending — 2026-07-21 — Walkmesh (WOK)
+## WP6.1 — done (gate passed; elevated-Z deferred to WP7.3) — 2026-07-21 — Walkmesh (WOK)
 - Tier: Mid. Domain core (parser/cache/raycast/tests) dispatched to a Sonnet subagent; app/GL
   integration (overlay, snap, toggle, DI) done inline by the controller. Controller-verified:
   build clean (0 errors), 334/335 tests green (311 prior + 23 new; 1 pre-existing skip), launch
@@ -600,9 +600,17 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   corner-origin [0,10]; prior gates confirmed instances/tiles align in true area space, so this is
   most likely a raw-vs-node-baked measurement artifact, not a real placement offset — the gate will
   confirm.
-- **Remaining: human visual gate** — open an area's 3D view, toggle "Show walkmesh" (expect green
-  walkable / red blocked faces sitting flush on the tile floors), then place an instance on an
-  elevated tile and confirm its Z matches the in-game ground (the WP6.1 acceptance criterion).
+- **Gate result (2026-07-21):** overlay renders flush on the tile floors — item 1 PASSED. The
+  elevated-tile Z check (item 2) is untestable today because the toolset has no way to alter/place
+  tiles yet (that's Phase 7 tile painting); the height-snap logic itself is covered by
+  AreaWalkmeshTests (synthetic raycast + preferWalkable). WP6.1 accepted; re-confirm elevated-Z
+  once WP7.3 lands tile editing.
+- **Gate feedback — camera reset on instance drag (fixed):** dragging a placeable (any gizmo
+  move/rotate, place, or undo/redo) reset the camera's zoom/pan/orbit. Root cause was pre-existing
+  (WP5.2-era): the GlAreaControl.Scene setter called ResetCameraForScene on EVERY assignment, and
+  every edit commits a full scene rebuild that reassigns Scene. Fixed by framing the camera only on
+  the first non-null scene (initial load) and preserving the user's camera on all later rebuilds.
+  Build clean, 334/335 green, smoke OK.
 ## WP6.2 — pending — Perf + fidelity pass
 ## WP6.2 — pending — Perf + fidelity pass
 ## WP7.1 — pending — Tile adjacency corpus

@@ -403,6 +403,9 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 Release(session);
                 return "The slicing target is no longer available.";
             }
+            if (GetIsInCombat(player))
+                return "You cannot continue slicing while in combat.";
+
             var playerId = GetObjectUUID(player);
             var owner = GetLocalString(session.Target, OwnerVariable);
             if (!IsClaimOwner(playerId, owner))

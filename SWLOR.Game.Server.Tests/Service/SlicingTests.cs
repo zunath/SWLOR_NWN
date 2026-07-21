@@ -151,6 +151,8 @@ public class SlicingTests
         var validateAction = Between(source, "private static string ValidateAction", "private static bool TryClaim");
         var swap = Between(source, "public static bool SwapSelectedWith", "public static bool ActivateTool");
 
+        validateAction.IndexOf("GetIsInCombat(player)", StringComparison.Ordinal)
+            .Should().BeLessThan(validateAction.IndexOf("Touch(session)", StringComparison.Ordinal));
         validateAction.IndexOf("IsClaimOwner", StringComparison.Ordinal)
             .Should().BeLessThan(validateAction.IndexOf("Touch(session)", StringComparison.Ordinal));
         validateAction.Should().Contain("RemoveSession(session);");

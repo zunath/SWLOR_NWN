@@ -86,6 +86,10 @@ namespace SWLOR.Toolset.Services
 
                 stopwatch.Stop();
                 _log.AppendLine($"Pack finished with exit code {process.ExitCode} in {stopwatch.ElapsedMilliseconds}ms.");
+
+                if (process.ExitCode == 0)
+                    DeployToDebugServer(repoRoot, moduleRoot, moduleFileName);
+
                 return process.ExitCode;
             }
             catch (Exception ex)
@@ -96,6 +100,36 @@ namespace SWLOR.Toolset.Services
             finally
             {
                 Interlocked.Exchange(ref _isPacking, 0);
+            }
+        }
+
+        /// <summary>
+        /// Copies the freshly packed .mod into debugserver\modules so an in-app pack is playable
+        /// without a separate deploy step. The CLI's pack (-p) deliberately does NOT do this —
+        /// only its full deploy (-o, DeployBuild) copies the module, along with binaries and haks
+        /// the toolset has no business rebuilding. Skipped quietly (with a hint) when the
+        /// debugserver directory doesn't exist.
+        /// </summary>
+        private void DeployToDebugServer(string repoRoot, string moduleRoot, string moduleFileName)
+        {
+            try
+            {
+                var modulesDirectory = Path.Combine(repoRoot, "debugserver", "modules");
+                if (!Directory.Exists(modulesDirectory))
+                {
+                    _log.AppendLine(
+                        "debugserver\\modules not found - skipping deploy copy (run the CLI's full deploy (-o) once to create it).");
+                    return;
+                }
+
+                var source = Path.Combine(moduleRoot, moduleFileName);
+                var destination = Path.Combine(modulesDirectory, moduleFileName);
+                File.Copy(source, destination, overwrite: true);
+                _log.AppendLine($"Deployed '{moduleFileName}' to debugserver\\modules.");
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Pack succeeded but the debugserver copy failed: {ex.Message}");
             }
         }
 

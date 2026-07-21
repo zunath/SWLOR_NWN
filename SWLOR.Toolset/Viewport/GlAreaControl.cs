@@ -655,7 +655,8 @@ void main()
 
         public void HandlePointerWheel(PointerWheelEventArgs e)
         {
-            var factor = (float)Math.Pow(1.1, e.Delta.Y);
+            // Wheel up (positive delta) zooms IN (shrinks distance) per common convention.
+            var factor = (float)Math.Pow(1.1, -e.Delta.Y);
             _distance = AreaCameraMath.ClampDistance(_distance * factor, _initialDistance);
 
             RequestNextFrameRendering();

@@ -256,8 +256,9 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   Candidate: WP6.2 polish pass.
 - Base-game/hak fallback when an equipped armor's uti resref isn't in the module (e.g.
   atris_robes) — would need ResourceIndex bytes → GffJsonBridge. Low priority.
-- Output panel should auto-scroll to the latest line as entries arrive (user request,
-  2026-07-20). Candidate: WP6.2 polish pass.
+- Output panel: auto-scroll to the latest entry as lines arrive — OR consider rendering it
+  tailed in reverse order (newest at top), user's suggested alternative (re-requested
+  2026-07-21). Candidate: WP6.2 polish pass.
 - Shared resource dictionary for the field DataTemplates duplicated between
   BlueprintEditorView and AreaEditorView (noted in WP3.3).
 - Refresh committed tools\SWLOR.CLI\SWLOR.CLI.exe with the --no-prompt build, then drop
@@ -540,6 +541,15 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   WP6.x candidate). Trigger/Encounter Geometry polygons don't follow a Move (pre-existing
   list-editor behavior too).
 - **WP6.x notes:** height-aware placement drop; rotate angle snapping; multi-select move.
+- **Gate feedback round 1 (2026-07-21, "otherwise looking great"):** three fixes applied —
+  (1) blank Place popup on area load: the popup's IsVisible bound through
+  `PlacementSection.ActivePaletteBrowser` while PlacementSection was still null, so the
+  binding never resolved and IsVisible stayed default-true; fixed with FallbackValue=False.
+  (2) Wheel zoom direction inverted vs common practice — wheel up now zooms in.
+  (3) Pack Module now copies the packed .mod to `debugserver\modules` after a successful
+  pack (with a hint when the directory doesn't exist). Root cause of the user's confusion:
+  the CLI's pack (-p) never deployed — only its full deploy (-o, DeployBuild) copies the
+  module (plus binaries/haks); WP3.6's gate must have run that separately.
 - **Remaining: the Phase 5 human gate** — WP3.6's quest-NPC task done fully in 3D.
 ## WP6.1 — pending — Walkmesh (WOK)
 ## WP6.2 — pending — Perf + fidelity pass

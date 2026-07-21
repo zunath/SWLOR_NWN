@@ -251,7 +251,10 @@
           <!-- WP5.2: place-from-palette. Choosing a blueprint here arms placement mode; the next
                viewport click (or Esc/right-click to cancel) resolves it via
                AreaEditorViewModel.CommitPlacement/CancelPlacement. -->
-          <Border IsVisible="{Binding PlacementSection.ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}}"
+          <!-- FallbackValue matters: with no kind chosen yet, PlacementSection is null and the
+               binding path can't resolve - without a fallback IsVisible would stay at its
+               default (true) and show an empty popup on area load. -->
+          <Border IsVisible="{Binding PlacementSection.ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
                   Background="#E0202020" BorderBrush="{DynamicResource DockThemeBorderMidBrush}" BorderThickness="1"
                   Padding="10" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420">
             <StackPanel Spacing="6" DataContext="{Binding PlacementSection.ActivePaletteBrowser}"

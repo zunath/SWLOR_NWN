@@ -567,6 +567,26 @@
       "Name": "sw_t_cepunder",
       "Path": "../SWLOR_Haks/sw_t_cepunder/",
       "CompileModels": false
+    },
+    {
+      "Name": "sw_tint_mtr",
+      "Path": "../SWLOR_Haks/sw_tint_mtr/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_tint0",
+      "Path": "../SWLOR_Haks/sw_tint0/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_tint1",
+      "Path": "../SWLOR_Haks/sw_tint1/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_tint2",
+      "Path": "../SWLOR_Haks/sw_tint2/",
+      "CompileModels": false
     }
   ]
 }

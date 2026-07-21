@@ -133,7 +133,10 @@ namespace SWLOR.Toolset.Tests
             }
 
             areasUnresolved.Should().Be(0, "every corpus area's tileset should resolve from the SWLOR haks");
-            areasChecked.Should().Be(438, "the module corpus should have 438 areas");
+            // A floor rather than an exact count: since WP7.3 the toolset can create areas, so the
+            // module is a living corpus that legitimately grows. The real strength of this gate is
+            // the cornerCompares floor below plus unexpected == 0, not the area tally.
+            areasChecked.Should().BeGreaterThanOrEqualTo(438, "the module corpus has at least the 438 original areas");
             cornerCompares.Should().BeGreaterThan(300_000, "the adjacency model must be genuinely exercised, not trivially satisfied");
             allowedExceptions.Should().BeInRange(100, 130,
                 "the documented fcx01 'holes' corner exception should still be present - guards against a dead allowlist");

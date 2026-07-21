@@ -18,7 +18,9 @@ namespace SWLOR.Toolset.Tests
             document.Tag.Should().Be("SWLOR");
             document.EntryArea.Should().Be("ooc_area");
             document.Name.Text.Should().Be("Star Wars Legends of the Old Republic MODULE");
-            document.AreaList.Should().HaveCount(438);
+            // A floor rather than an exact count: since WP7.3 the toolset can create areas (which
+            // register themselves here), so the module is a living corpus that legitimately grows.
+            document.AreaList.Should().HaveCountGreaterThanOrEqualTo(438);
             document.AreaResRefs[0].Should().Be("anchor_entreenor");
             document.AreaResRefs[1].Should().Be("anchor_entreesud");
             document.HakList.Should().HaveCount(113);

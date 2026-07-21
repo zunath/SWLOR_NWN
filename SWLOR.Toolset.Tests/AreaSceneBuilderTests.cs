@@ -295,7 +295,10 @@ namespace SWLOR.Toolset.Tests
 
             var workspace = new ModuleWorkspace(ModuleDirectory);
             var areaResRefs = workspace.EnumerateAreaResRefs();
-            areaResRefs.Count.Should().Be(438, "the module corpus should have 438 areas");
+            // A floor rather than an exact count: since WP7.3 the toolset can create areas, so the
+            // module is a living corpus that legitimately grows. What this guards is that the gate
+            // enumerated the real corpus instead of an empty/trivial set.
+            areaResRefs.Count.Should().BeGreaterThanOrEqualTo(438, "the module corpus has at least the 438 original areas");
 
             var totalPlacements = 0;
             var totalFallbacks = 0;

@@ -8,11 +8,17 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
-    /// The new-area wizard (WP7.3): collects a resref, display name, tileset, terrain, and size,
-    /// then creates the area triplet through <see cref="NewAreaWriter"/>. Presented inline by the
-    /// Module Explorer (the same overlay pattern the palette browser uses) rather than as a separate
-    /// window, so it needs no window lifetime plumbing.
+    /// The new-area wizard (WP7.3): collects a resref, display name, tileset, and size, then creates
+    /// the area triplet through <see cref="NewAreaWriter"/>. Presented inline by the Module Explorer
+    /// (the same overlay pattern the palette browser uses) rather than as a separate window, so it
+    /// needs no window lifetime plumbing.
     /// </summary>
+    /// <remarks>
+    /// Deliberately does NOT ask for a terrain. An area is not "a Grass area" - it uses as many
+    /// terrains as the user paints into it - and the tileset's .set already declares what a blank
+    /// area of it is made of ([GENERAL] Floor/Default). Terrain selection lives solely in the area
+    /// editor's paint palette.
+    /// </remarks>
     public partial class NewAreaViewModel : ObservableObject
     {
         private readonly ModuleWorkspace _workspace;
@@ -23,9 +29,6 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>Every tileset the resource index can see, for the tileset picker.</summary>
         public ObservableCollection<string> Tilesets { get; } = new();
 
-        /// <summary>The selected tileset's fillable terrains - what the new area's floor can be made of.</summary>
-        public ObservableCollection<string> Terrains { get; } = new();
-
         [ObservableProperty]
         private string _resRef = string.Empty;
 
@@ -34,9 +37,6 @@ namespace SWLOR.Toolset.Shell.Panels
 
         [ObservableProperty]
         private string? _selectedTileset;
-
-        [ObservableProperty]
-        private string? _selectedTerrain;
 
         [ObservableProperty]
         private double _width = 4;
@@ -67,26 +67,9 @@ namespace SWLOR.Toolset.Shell.Panels
             foreach (var name in _tilesetCatalog.GetTilesetNames())
                 Tilesets.Add(name);
 
-            // Default to the template's own tileset when it is available, so the wizard opens on a
-            // known-good combination.
+            // Open on the same tileset the area template itself uses, so the default is one the
+            // clone path is known to handle.
             SelectedTileset = Tilesets.Contains("tms01") ? "tms01" : Tilesets.FirstOrDefault();
-        }
-
-        partial void OnSelectedTilesetChanged(string? value) => RefreshTerrains(value);
-
-        private void RefreshTerrains(string? tilesetResRef)
-        {
-            Terrains.Clear();
-            SelectedTerrain = null;
-
-            if (_tilesetCatalog == null || string.IsNullOrWhiteSpace(tilesetResRef) ||
-                !_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
-                return;
-
-            foreach (var terrain in TilePainter.FillableTerrains(tileset))
-                Terrains.Add(terrain);
-
-            SelectedTerrain = TilePainter.DefaultFillTerrain(tileset) ?? Terrains.FirstOrDefault();
         }
 
         [RelayCommand]
@@ -98,7 +81,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             if (NewAreaWriter.TryCreate(
                     _workspace, resolver, ResRef, DisplayName, SelectedTileset ?? string.Empty,
-                    (int)Width, (int)Height, SelectedTerrain, out var error))
+                    (int)Width, (int)Height, out var error))
             {
                 _onCreated(ResRef.Trim().ToLowerInvariant());
                 return;

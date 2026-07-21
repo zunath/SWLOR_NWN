@@ -23,9 +23,9 @@
       <TextBlock Text="New Area" FontWeight="Bold" Foreground="White" />
       <TextBox Text="{Binding ResRef, Mode=TwoWay}" Watermark="Resref (lowercase, max 16)" />
       <TextBox Text="{Binding DisplayName, Mode=TwoWay}" Watermark="Display name" />
+      <!-- Tileset only: terrain is not an area-level property (the area's blank fill comes from the
+           tileset's own [GENERAL] Floor/Default), so terrain selection lives in the paint palette. -->
       <ComboBox ItemsSource="{Binding Tilesets}" SelectedItem="{Binding SelectedTileset, Mode=TwoWay}"
-                HorizontalAlignment="Stretch" />
-      <ComboBox ItemsSource="{Binding Terrains}" SelectedItem="{Binding SelectedTerrain, Mode=TwoWay}"
                 HorizontalAlignment="Stretch" />
       <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="6">
         <TextBlock Grid.Column="0" Text="Width" VerticalAlignment="Center" Foreground="White" />

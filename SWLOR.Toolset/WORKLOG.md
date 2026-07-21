@@ -767,10 +767,54 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
 - Verified: solution builds clean, full suite 381/382 green (373 prior + 8; 1 pre-existing skip),
   2m09s. Launch-and-kill smoke: window came up ("SWLOR Toolset"), ran 12s stably, exited on kill with
   no leftover process.
+- **Correction (2026-07-21, from gate feedback):** the New Area dialog offered a **terrain** picker
+  next to the tileset, which mis-models the domain — a terrain is not a property of an area. An area
+  uses as many terrains as get painted into it; presenting one at creation reads as "this is a Grass
+  area". It looked especially wrong because the wizard defaults to `tms01`, the *template* tileset,
+  which declares exactly ONE terrain (Grass); real tilesets are rich (`ztd01` 12, `zcn01` 19).
+  - Removed the picker. The blank fill now always comes from the tileset's own `[GENERAL]`
+    `Floor`/`Default` — which is precisely what those fields mean — via the existing
+    `TilePainter.DefaultFillTerrain` (Floor → Default → first fillable). `NewAreaWriter.TryCreate`
+    lost its `terrain` parameter, so a caller cannot express the wrong idea at all.
+  - No data was affected: the terrain was never persisted on the area, only used once to pick a fill
+    tile id. Nothing had to be migrated.
+  - The paint side was already correct and is unchanged — `AreaEditorViewModel.TerrainBrushes` comes
+    from `TilePainter.FillableTerrains`, which offers every terrain the tileset can fill a tile with.
+    Verified against real data: for `ztr01`/`zcn01`/`ztd01`, ZERO declared terrains get filtered out
+    and every one has a crosser-free uniform tile. Terrain selection now lives in exactly one place.
+  - Test: the existing solid-fill assertion was strengthened to pin the fill to the tileset's declared
+    floor, plus a new discriminating gate on `ztd01` — chosen because it declares `Floor=Desert` while
+    its terrain list STARTS with `Cliff`, so an implementation that grabbed the first terrain (or
+    honoured a caller's choice) would fail. It asserts that precondition too, so the test cannot
+    silently stop proving anything. (On `tms01` alone the assertion would be vacuous — one terrain.)
+  - Deferred, agreed as its own package: `[GROUPS]` / Aurora "Features" (multi-tile arrangements like
+    `tms01`'s AntHill or `zcn01`'s 295 groups). Placing those is a capability the toolset does not
+    have yet, distinct from terrain painting.
+- **"Floor" is the default FILL, not "walkable ground".** Found by inspecting a real wizard-created
+  area (`tib01`, filled entirely with tile 2 = uniform `Wall`). `tib01` declares `Floor=Wall` and its
+  terrain list is `Wall, Room, RoomBlood, ...` — for INTERIOR tilesets the declared fill is solid rock
+  and `Room` is the walkable terrain, so a new interior area is meant to start solid and have its
+  rooms carved out by painting. That is exactly Aurora's behavior, so the fill is correct; what was
+  wrong were code comments claiming the wizard produces "a plain walkable floor". Corrected in
+  `NewAreaWriter`, `TilePainter.FindSolidTile`, and `TilePainter.DefaultFillTerrain`. Practical
+  consequence for the gate: on an interior tileset you must paint `Room` before anything is walkable.
+- **Corpus-count gates relaxed to a floor.** Four pre-existing gates asserted the module has EXACTLY
+  438 areas (`AreaSceneBuilderTests`, `DocumentTests.Ifo`, `SetRuleCorpusTests`, `WorkspaceTests`).
+  Now that the toolset can create areas, any builder-created area turns the whole suite red — as it
+  did the moment the wizard was first used. Changed to `>= 438` with a comment: the module is a living
+  corpus that legitimately grows, and what these assertions actually guard is that the gate enumerated
+  the real corpus rather than an empty set (the substantive strength lives in `cornerCompares > 300k`,
+  `unexpected == 0`, `areasUnresolved == 0`, which are untouched). Blueprint counts stay exact —
+  nothing in the toolset creates blueprints yet. New areas are now *included* in these gates, so a
+  painted area is itself held to the adjacency rules.
 - **PENDING HUMAN GATE** — needs a person in the app + game:
-  1. Module Explorer → "New Area...", create a small area (e.g. 4x4), confirm it opens.
+  1. Module Explorer → "New Area..." (resref, name, tileset, size — no terrain picker), create a
+     small area (e.g. 4x4), confirm it opens as a solid floor of the tileset's own floor terrain.
   2. In its 3D View, toggle **Paint**, pick a terrain, click tiles — the clicked tile should fill and
      its neighbours should blend. Try Rotate/Raise/Lower. Esc disarms.
   3. Save, then reopen the area and paint the same terrain on the same tile again — it should be a
      no-op (nothing marked dirty).
-  4. Pack the module and **walk the new area in game** — the floor should be solid and walkable.
+  4. Pack the module and **walk the new area in game**. NOTE: on an INTERIOR tileset (e.g. `tib01`)
+     the area starts as solid rock by design — paint the walkable terrain (`Room` for `tib01`) first,
+     and walk that. On an exterior tileset (`tms01` Grass, `ztd01` Desert) the initial fill is already
+     walkable ground.

@@ -105,7 +105,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// <summary>
         /// The tile that best fills a whole cell with <paramref name="terrain"/> (all four corners),
         /// preferring a crosser-free tile, then the caller's ranking, then lowest id - or null when
-        /// the tileset has no such tile. Used by the new-area wizard to pick a walkable floor fill.
+        /// the tileset has no such tile. Used by the new-area wizard to pick its blank-canvas fill.
+        /// "Solid" here means uniform terrain with no edge features, NOT necessarily walkable - an
+        /// interior tileset's fill terrain is typically solid rock (see <see cref="DefaultFillTerrain"/>).
         /// </summary>
         public static TileCandidate? FindSolidTile(TilesetDefinition tileset, string terrain, Func<int, int>? tileRank = null)
         {
@@ -122,9 +124,14 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         }
 
         /// <summary>
-        /// The tileset's most sensible default fill terrain: its declared Floor or Default surface
-        /// when that names a fillable terrain, otherwise the first terrain the tileset can present as
-        /// a full solid tile. Null when nothing fills (degenerate tileset).
+        /// The tileset's declared blank-canvas terrain: its Floor or Default surface when that names
+        /// a fillable terrain, otherwise the first terrain the tileset can present as a full solid
+        /// tile. Null when nothing fills (degenerate tileset).
+        ///
+        /// This is what a NEW area of the tileset is made of, which is not the same as "walkable
+        /// ground": exterior tilesets declare ground here (tms01 Floor=Grass), interior ones declare
+        /// solid rock (tib01 Floor=Wall, whose walkable terrain is Room). Both are correct - an
+        /// interior area is meant to start solid and have its rooms painted out of it.
         /// </summary>
         public static string? DefaultFillTerrain(TilesetDefinition tileset, Func<int, int>? tileRank = null)
         {

@@ -7,7 +7,7 @@ namespace SWLOR.Toolset.Domain.Workspace
     /// <summary>
     /// Creates a new area on disk (the WP7.3 new-area wizard's action): clones the module's area
     /// template triplet under a new resref, reshapes the .are into a solid fill of the chosen
-    /// tileset/terrain, and registers the area in module.ifo. The .git/.gic halves are copied
+    /// tileset's own floor terrain, and registers the area in module.ifo. The .git/.gic halves are copied
     /// byte-for-byte - they are generic empty instance lists with nothing area-specific in them, so
     /// copying is both simpler and safer than re-serializing.
     ///
@@ -35,12 +35,17 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// Creates the area, returning false with a human-readable <paramref name="error"/> if
         /// anything is invalid or the write fails. Every check runs before the first write, so a
         /// rejected request leaves the module untouched.
+        ///
+        /// There is deliberately no terrain parameter: a terrain is not a property of an area (an
+        /// area uses many terrains at once - that is what the paint tool is for), and every .set
+        /// already declares what a blank area of that tileset is made of via [GENERAL] Floor/Default.
+        /// Terrain selection belongs solely to the paint palette.
         /// </summary>
         public static bool TryCreate(
             ModuleWorkspace workspace,
             TilesetResolver? resolveTileset,
             string resRef, string displayName, string tilesetResRef,
-            int width, int height, string? terrain,
+            int width, int height,
             out string error)
         {
             ArgumentNullException.ThrowIfNull(workspace);
@@ -76,9 +81,16 @@ namespace SWLOR.Toolset.Domain.Workspace
                 return false;
             }
 
-            // Fill with a solid, crosser-free tile of the chosen terrain so the new area is a plain
-            // walkable floor rather than an arbitrary tile that might be a wall or a pit.
-            var fillTerrain = string.IsNullOrWhiteSpace(terrain) ? TilePainter.DefaultFillTerrain(tileset) : terrain;
+            // Fill with a solid, crosser-free tile of the tileset's own declared fill terrain
+            // (DefaultFillTerrain resolves [GENERAL] Floor, then Default, then the first fillable
+            // terrain) rather than an arbitrary legal tile.
+            //
+            // NOTE: "Floor" is the tileset's DEFAULT FILL, not necessarily walkable ground. Exterior
+            // tilesets declare walkable ground (tms01 Floor=Grass, ztd01 Floor=Desert), but interior
+            // ones declare solid rock (tib01 Floor=Wall, with Room being the walkable terrain). A new
+            // interior area therefore starts as solid fill that the builder carves rooms out of by
+            // painting - which is exactly how the Aurora toolset behaves, so this is faithful.
+            var fillTerrain = TilePainter.DefaultFillTerrain(tileset);
             if (fillTerrain == null || TilePainter.FindSolidTile(tileset, fillTerrain) is not { } fill)
             {
                 error = $"Tileset '{tilesetResRef}' has no solid tile for terrain '{fillTerrain ?? "(none)"}'.";

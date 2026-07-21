@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature
                     BaseItem.Scimitar,
                     BaseItem.Scythe,
                     BaseItem.Pistol,
-                    BaseItem.PistolWithShield,
+                    BaseItem.LegacyPistol,
                     BaseItem.ShortSpear,
                     BaseItem.ShortSword,
                     BaseItem.Shuriken,

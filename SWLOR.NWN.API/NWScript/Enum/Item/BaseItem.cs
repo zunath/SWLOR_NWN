@@ -104,7 +104,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         Saberstaff = 511,
         Lightsaber = 512,
         Electronics1 = 513,
-        PistolWithShield = 514,
+        LegacyPistol = 514,
 
         BaseFuel = 515,
         Electronics2 = 516,

@@ -405,8 +405,9 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
     placeables between 3D model (default) and pyramid marker. Same switch planned for
     creatures when creature models land in the area view (noted for WP5.x/6.x).
   - Verified: build clean, 265/266 green, smoke OK.
-- **Remaining: WP4.5 final visual check** — viewport fills panel, placeable models render,
-  toggle works, then the 10-area spot-check.
+- **WP4.5 GATE PASSED (human, 2026-07-21):** placeables and doors render as real models,
+  toggles work, viewport fills the panel, camera works — "Phase 4 looking good."
+  **PHASE 4 COMPLETE.** (Residual texture/PLT polish deliberately tabled — see backlog.)
 - Tier: Low (controller-executed inline; subagent dispatch avoided — the WP4.4 subagent
   died on the monthly spend limit, so remaining Phase 4 packages run inline).
 - Files: `Domain\Render\BlueprintModelResolver.cs` (headless, tested),

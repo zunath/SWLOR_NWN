@@ -198,9 +198,11 @@ public class NotesWindowTests
         // The text edit caps length on the client; ApplyEditsToNote must cap again so a crafted
         // client cannot persist an oversized note. It is the single funnel for every note write.
         var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
+        var body = ExtractMethodBody(viewModel, "private void ApplyEditsToNote(string noteId)");
 
-        viewModel.Should().MatchRegex(
-            @"private void ApplyEditsToNote\(string noteId\)[\s\S]*?Notes\.MaxNoteLength[\s\S]*?DB\.Set\(dbNote\);");
+        // Scoped to this method's body so the checks cannot pass on unrelated code elsewhere.
+        body.Should().Contain("Notes.MaxNoteLength");
+        body.Should().Contain("DB.Set(dbNote);");
     }
 
     [Test]
@@ -218,6 +220,26 @@ public class NotesWindowTests
         Notes.MaxNumberOfNotes.Should().BeGreaterThan(
             50,
             "the paging above only matters because the cap exceeds the default row limit");
+    }
+
+    /// <summary>
+    /// Returns the source of a single method, from its signature up to the next method declaration,
+    /// so assertions cannot accidentally match tokens in a neighbouring method.
+    /// </summary>
+    private static string ExtractMethodBody(string source, string signature)
+    {
+        var start = source.IndexOf(signature, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0, $"method '{signature}' should exist");
+
+        // Stop at the next method declaration at the class's indentation level.
+        var rest = source[start..];
+        var next = Regex.Match(
+            rest,
+            @"\n        (private|public|protected|internal|static)\b",
+            RegexOptions.None,
+            TimeSpan.FromSeconds(1));
+
+        return next.Success ? rest[..next.Index] : rest;
     }
 
     private static string ReadDefinition()

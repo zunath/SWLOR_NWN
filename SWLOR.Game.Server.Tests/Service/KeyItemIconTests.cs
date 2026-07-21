@@ -112,7 +112,7 @@ public class KeyItemIconTests
 
         var pixelOffset = 18 + bytes[0];
         var pixelLength = checked(width * height * (bytes[16] / 8));
-        bytes.Length.Should().BeGreaterOrEqualTo(
+        bytes.Length.Should().BeGreaterThanOrEqualTo(
             pixelOffset + pixelLength,
             $"{label} should contain its complete pixel payload");
 

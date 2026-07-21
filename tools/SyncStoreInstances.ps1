@@ -25,7 +25,7 @@ $mode = if ($Check) {
     "--syncStoreInstances"
 }
 $project = Join-Path $repoRoot "SWLOR.CLI\SWLOR.CLI.csproj"
-$cliDll = Join-Path $repoRoot "SWLOR.CLI\bin\Debug\net8.0\SWLOR.CLI.dll"
+$cliDll = Join-Path $repoRoot "SWLOR.CLI\bin\Debug\net10.0\SWLOR.CLI.dll"
 
 if ($Build -or !(Test-Path $cliDll)) {
     dotnet build $project --no-restore --no-dependencies

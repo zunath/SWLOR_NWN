@@ -100,19 +100,19 @@ public class EquipmentRestrictionsTests
     }
 
     [Test]
-    public void PistolShieldVisualForm_RemainsAPistolForEquipmentRestrictions()
+    public void LegacyPistols_RemainPistolsForEquipmentRestrictions()
     {
         SWLOR.Game.Server.Service.Item.PistolBaseItemTypes
             .Should()
-            .Contain(BaseItem.PistolWithShield);
+            .Contain(BaseItem.LegacyPistol);
 
         var offHandError = EquipmentRestrictions.GetPistolEquipmentError(
-            BaseItem.PistolWithShield,
+            BaseItem.LegacyPistol,
             InventorySlot.LeftHand,
             null,
             null);
         var pairedWithWeaponError = EquipmentRestrictions.GetPistolEquipmentError(
-            BaseItem.PistolWithShield,
+            BaseItem.LegacyPistol,
             InventorySlot.RightHand,
             null,
             BaseItem.Longsword);
@@ -121,19 +121,20 @@ public class EquipmentRestrictionsTests
         pairedWithWeaponError.Should().Be("Pistols may only be paired with a shield in the left hand.");
     }
 
-    [TestCase(BaseItem.Pistol, true, BaseItem.PistolWithShield)]
-    [TestCase(BaseItem.Pistol, false, BaseItem.Pistol)]
-    [TestCase(BaseItem.PistolWithShield, true, BaseItem.PistolWithShield)]
-    [TestCase(BaseItem.PistolWithShield, false, BaseItem.Pistol)]
-    [TestCase(BaseItem.Sling, true, BaseItem.Sling)]
-    public void PistolShieldVisualForm_OnlyChangesForTheShieldCombination(
+    [TestCase(BaseItem.Pistol, "b_pistol", BaseItem.Sling)]
+    [TestCase(BaseItem.LegacyPistol, "b_pistol", BaseItem.Sling)]
+    [TestCase(BaseItem.Sling, "b_pistol", BaseItem.Sling)]
+    [TestCase(BaseItem.Sling, "blast_jawa_d", BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.Sling, "dualpistolmain", BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.LegacyPistol, "blast_jawa_d", BaseItem.LegacyPistol)]
+    public void PistolBaseItems_AreCanonicalizedWithoutShieldDependentSwaps(
         BaseItem currentBaseItem,
-        bool hasShield,
+        string resref,
         BaseItem expectedBaseItem)
     {
-        var result = PistolShieldAttachment.GetDesiredBaseItem(
+        var result = PistolBaseItemCompatibility.GetCanonicalBaseItem(
             currentBaseItem,
-            hasShield);
+            resref);
 
         result.Should().Be(expectedBaseItem);
     }
@@ -157,10 +158,16 @@ public class EquipmentRestrictionsTests
             if (column == "label")
                 continue;
 
-            rows[514][column].Should().Be(
+            rows[61][column].Should().Be(
                 value,
-                $"the shield attachment form must preserve the pistol's {column} behavior");
+                $"the native sling form must preserve the pistol's {column} behavior");
         }
+
+        rows[514]["label"].Should().Be("legacy_smallarms");
+        rows[514]["EquipableSlots"].Should().Be("0x00030");
+        rows[514]["NumDice"].Should().Be("1");
+        rows[514]["DieToRoll"].Should().Be("6");
+        rows[514]["AmmunitionType"].Should().Be("3");
     }
 
     private static Dictionary<int, Dictionary<string, string>> Read2daRows(string path)

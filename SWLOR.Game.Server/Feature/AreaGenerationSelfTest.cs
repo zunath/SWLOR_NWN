@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 using SWLOR.Game.Server.Service.LogService;
@@ -106,11 +107,102 @@ namespace SWLOR.Game.Server.Feature
         {
             if (index >= themes.Count)
             {
-                Report($"PASS - all {themes.Count} theme passes succeeded: tiles, content, and teardown verified.");
+                // Final pass: the city frontage composition, asserting the live per-instance
+                // scale-transform path (see RunCityFrontagePass) before reporting overall PASS.
+                RunCityFrontagePass(themes[0], () =>
+                    Report($"PASS - all {themes.Count} theme passes succeeded (tiles, content, teardown) " +
+                           "and the city frontage pass verified live per-instance scale transforms."));
                 return;
             }
 
             RunPassChain(themes[index], 12345 + index, () => RunThemeChain(themes, index + 1));
+        }
+
+        /// <summary>
+        /// City-composition pass: generates the frontage-declaring FutCity tileset (Packed layout,
+        /// fixed seed) and asserts the live decoration path applied every planned per-instance
+        /// visual scale (frontage scale jitter -- see DungeonTilesetProfile.FrontageScaleJitter and
+        /// DungeonPopulationResult.ScaleTransformsPlanned/Applied): the offline review module
+        /// persists the same scales as .git VisualTransform structs, and this keeps the two paths
+        /// from silently diverging.
+        /// </summary>
+        private static void RunCityFrontagePass(string themeKey, Action onSuccess)
+        {
+            AreaGenerationResult result;
+            RuntimeAreaInstance instance;
+            try
+            {
+                var composition = DungeonContentPlacer.GetComposition(
+                    themeKey, BaseGameTilesetProfiles.FutCity, StandardLayoutProfiles.Packed);
+                var request = new AreaGenerationRequest
+                {
+                    TilesetResref = composition.Tileset.TilesetResref,
+                    TilesetProfileKey = composition.Tileset.Key,
+                    PlaceholderResref = composition.Tileset.PlaceholderResref,
+                    OpenTerrainOverride = composition.Tileset.PrimaryOpenTerrain,
+                    Lighting = composition.Tileset.Lighting,
+                    Atmosphere = composition.Tileset.ResolveAtmosphere(composition.Content.AtmosphereProfile),
+                    Layout = composition.BuildLayoutParameters(),
+                    Width = 16,
+                    Height = 16,
+                    Seed = 24242,
+                    DisplayName = "SelfTest city frontage",
+                    Tag = "GEN_SELFTEST_CITY"
+                };
+
+                result = AreaGeneration.Generate(request);
+                if (!result.Success)
+                    throw new InvalidOperationException($"city frontage pass: generation failed: {result.FailureReason}");
+                if (!RuntimeAreaRegistry.TryGetByArea(result.Area, out instance))
+                    throw new InvalidOperationException("city frontage pass: generated area is not registered.");
+            }
+            catch (Exception ex)
+            {
+                Report($"FAIL - {ex.Message}");
+                return;
+            }
+
+            Scheduler.Schedule(() =>
+            {
+                try
+                {
+                    var population = DungeonContentPlacer.Populate(instance, themeKey, 1);
+                    Scheduler.Schedule(() =>
+                    {
+                        try
+                        {
+                            if (!population.DecorationsSpawnComplete)
+                                throw new InvalidOperationException(
+                                    "city frontage pass: batched decoration spawning did not complete " +
+                                    $"({population.DecorationsPlaced}/{population.DecorationsPlanned} spawned).");
+                            if (population.ScaleTransformsPlanned == 0)
+                                throw new InvalidOperationException(
+                                    "city frontage pass: the plan carried zero per-instance scale transforms — " +
+                                    "FrontageScaleJitter did not reach the live plan.");
+                            if (population.ScaleTransformsApplied != population.ScaleTransformsPlanned)
+                                throw new InvalidOperationException(
+                                    $"city frontage pass: only {population.ScaleTransformsApplied}/" +
+                                    $"{population.ScaleTransformsPlanned} live scale transforms verified.");
+
+                            Report($"city frontage pass: {population.ScaleTransformsApplied}/" +
+                                   $"{population.ScaleTransformsPlanned} per-instance scale transforms verified live.");
+
+                            if (!AreaGeneration.DestroyGeneratedArea(result.InstanceId, out var destroyFailure))
+                                throw new InvalidOperationException($"city frontage pass: teardown failed: {destroyFailure}");
+
+                            onSuccess();
+                        }
+                        catch (Exception ex)
+                        {
+                            Report($"FAIL - {ex.Message}");
+                        }
+                    }, TimeSpan.FromSeconds(3));
+                }
+                catch (Exception ex)
+                {
+                    Report($"FAIL - {ex.Message}");
+                }
+            }, TimeSpan.FromSeconds(2));
         }
 
         /// <summary>

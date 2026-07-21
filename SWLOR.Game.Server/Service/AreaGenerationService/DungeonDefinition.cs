@@ -402,6 +402,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// per-area counts: the dominant wall models stay uncapped, accents cap near their
         /// hand-built maxima so no single accent tower can blanket an area.</summary>
         public int MaxPerArea { get; set; }
+        /// <summary>Minimum center distance (meters) between two placements of THIS model in one
+        /// area (0 = no spacing rule). Mined for narrow repeat-risk accent towers: hand-built
+        /// same-model NN medians run 18.9-36.0m for the swd2_elev002 lift cylinder
+        /// (_scratch_decor/r14_mine_variety.py), while unspaced generated areas packed them 10m
+        /// apart -- the reported "same neon cylinder several times in one view".</summary>
+        public float MinSameModelSpacing { get; set; }
     }
 
     /// <summary>
@@ -976,6 +982,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// remaining margins. Inherited by palette variants like <see cref="Decorations"/>.
         /// </summary>
         public List<BuildingFrontageEntry> FrontageBuildings { get; set; } = new();
+
+        /// <summary>
+        /// When true, every placed frontage building rolls a subtle per-instance uniform visual
+        /// scale (0.94-1.08, see BuildingFrontagePlanner.MinScaleJitter/MaxScaleJitter) so
+        /// same-model neighbors read as distinct structures instead of clone rows. JUDGMENT CALL,
+        /// not mined evidence: hand-built areas achieve silhouette variety with model mixing, but
+        /// they also ship per-instance VisualTransform scale on placeables (90 instances in
+        /// ar_pw_indusvel alone), so the mechanism itself is an established hand-building tool.
+        /// The scale is applied to the footprint BEFORE the walkable-clearance fit check, persists
+        /// through the review module as a .git VisualTransform struct (toolset + client render it)
+        /// and through the live path as SetObjectVisualTransform. Off (the default) for every
+        /// family that does not declare it. Inherited by palette variants like
+        /// <see cref="Decorations"/>.
+        /// </summary>
+        public bool FrontageScaleJitter { get; set; }
 
         /// <summary>
         /// Wall-mounted sign/holo placeables this tileset family hangs on building faces (see
@@ -1984,7 +2005,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// building placeables.
         /// </summary>
         public DungeonTilesetProfileBuilder FrontageBuilding(string resref, int weight, float faceWidth, float depth,
-            int maxPerArea = 0)
+            int maxPerArea = 0, float minSpacing = 0f)
         {
             _active.FrontageBuildings.Add(new BuildingFrontageEntry
             {
@@ -1992,8 +2013,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 Weight = weight,
                 FaceWidth = faceWidth,
                 Depth = depth,
-                MaxPerArea = maxPerArea
+                MaxPerArea = maxPerArea,
+                MinSameModelSpacing = minSpacing
             });
+            return this;
+        }
+
+        /// <summary>
+        /// Enables the subtle per-instance visual-scale jitter on this family's frontage buildings
+        /// (see <see cref="DungeonTilesetProfile.FrontageScaleJitter"/>).
+        /// </summary>
+        public DungeonTilesetProfileBuilder FrontageScaleJitter()
+        {
+            _active.FrontageScaleJitter = true;
             return this;
         }
 
@@ -2185,6 +2217,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 {
                     profile.UrbanDressing = profiles.Values.Any(p =>
                         !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref && p.UrbanDressing);
+                }
+
+                // Frontage scale jitter travels with the frontage vocabulary it modifies: a variant
+                // that inherits its family's frontage walls jitters them the same way.
+                if (!profile.FrontageScaleJitter)
+                {
+                    profile.FrontageScaleJitter = profiles.Values.Any(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref && p.FrontageScaleJitter);
                 }
 
                 // The family AREA atmosphere inherits like the palette above: a variant that

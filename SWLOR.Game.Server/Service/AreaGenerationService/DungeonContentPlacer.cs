@@ -39,6 +39,14 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// <summary>True once every batched decoration spawn tick has run (or the pass was skipped
         /// entirely). See DungeonContentPlacer.PlaceDecorations.</summary>
         public bool DecorationsSpawnComplete { get; set; }
+
+        /// <summary>How many spawned decorations carried a non-1 per-instance visual scale in the
+        /// plan (frontage scale jitter -- see PlannedDecoration.VisualScale).</summary>
+        public int ScaleTransformsPlanned { get; set; }
+        /// <summary>How many of those scales were verified applied on the live object (read back
+        /// via GetObjectVisualTransform after SetObjectVisualTransform). The self-test asserts
+        /// this converges 1:1 with <see cref="ScaleTransformsPlanned"/>.</summary>
+        public int ScaleTransformsApplied { get; set; }
     }
 
     /// <summary>
@@ -360,6 +368,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var placeable = CreateObject(ObjectType.Placeable, planned.Resref, location);
                 if (!GetIsObjectValid(placeable))
                     continue;
+
+                // Per-instance uniform scale (frontage scale jitter -- see
+                // PlannedDecoration.VisualScale): the live mirror of the .git VisualTransform
+                // struct the offline review path persists. Read back and counted so the
+                // self-test can assert the live path really applied every planned transform.
+                if (System.Math.Abs(planned.VisualScale - 1f) > 0.0001f)
+                {
+                    result.ScaleTransformsPlanned++;
+                    SetObjectVisualTransform(placeable, ObjectVisualTransform.Scale, planned.VisualScale);
+                    var applied = GetObjectVisualTransform(placeable, ObjectVisualTransform.Scale);
+                    if (System.Math.Abs(applied - planned.VisualScale) < 0.001f)
+                        result.ScaleTransformsApplied++;
+                }
 
                 instance.SpawnedObjects.Add(placeable);
                 result.DecorationsPlaced++;

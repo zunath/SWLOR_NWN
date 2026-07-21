@@ -238,11 +238,16 @@ public class UrbanDressingCompositionTests
 
         // Interior contexts are intentional set pieces (courtyards/centerpieces/ensembles/depot
         // blocks), never scatter -- their composure is asserted by their own suites
-        // (CourtyardCompositionTests, InteriorEnsembleCompositionTests).
+        // (CourtyardCompositionTests, InteriorEnsembleCompositionTests). BuildingFrontage is
+        // composed structure with its own anchoring/fit contract suite
+        // (BuildingFrontageCompositionTests): the deepest round-14 pool models (buildg2/buildg4,
+        // 36.8-42.2m deep) legitimately center 2+ cells outside the grid rim, which this test's
+        // center-tile heuristic would misread as an unanchored single.
         var intentionalContexts = new[]
         {
             DecorationContext.RoomCenter, DecorationContext.CourtyardCenter, DecorationContext.Courtyard,
-            DecorationContext.EnsembleCenter, DecorationContext.EnsembleMember, DecorationContext.DepotRow
+            DecorationContext.EnsembleCenter, DecorationContext.EnsembleMember, DecorationContext.DepotRow,
+            DecorationContext.BuildingFrontage
         };
 
         for (var i = 0; i < SeedCount; i++)

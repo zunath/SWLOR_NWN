@@ -4424,7 +4424,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // accent tower caps near its hand-built ceiling so no accent blankets an area.
                 .FrontageBuilding("swd_build007", 6, 13.8f, 15.1f)
                 .FrontageBuilding("swd_build003", 3, 19.3f, 9.3f)
-                .FrontageBuilding("swd2_elev002", 2, 5.4f, 5.5f, maxPerArea: 9)
+                // The narrow lift cylinder is the mined repeat-risk accent (round-14 variety
+                // pass): hand-built same-model NN medians run 18.9-36.0m (narpromena 18.9,
+                // nsshipyard 27.4, narscorpd 36.0) while unspaced generated areas packed pairs
+                // 10m apart -- minSpacing enforces the mined spread floor.
+                .FrontageBuilding("swd2_elev002", 2, 5.4f, 5.5f, maxPerArea: 9, minSpacing: 15f)
                 .FrontageBuilding("swd_build006", 1, 33.5f, 17.8f, maxPerArea: 6)
                 .FrontageBuilding("swd_build001", 1, 22.5f, 22.5f, maxPerArea: 8)
                 .FrontageBuilding("swd_build004", 1, 61.5f, 20.3f, maxPerArea: 6)
@@ -4432,6 +4436,32 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .FrontageBuilding("swd_build002", 1, 37.5f, 37.5f, maxPerArea: 4)
                 .FrontageBuilding("_mdrn_pl_kyru12", 1, 11.7f, 13.3f, maxPerArea: 5)
                 .FrontageBuilding("_mdrn_pl_indtowr", 1, 11.8f, 11.8f, maxPerArea: 4)
+                // ROUND-14 POOL EXPANSION (user directive "a lot of reuse of assets -- any way to
+                // get more variety?"): the delivered showcases drew 8-10 distinct building models
+                // per area while comparable-mass hand-built areas draw 12-17 (nsshipyard 17,
+                // narshadaar_promi 16, narscorpd 12, ns_comrcial_ka 23 --
+                // _scratch_decor/r14_mine_variety.py building pool). Every entry below is mined
+                // from that pool (multi-area hand-built usage, measured model XY extents from
+                // r11_model_sizes.json, caps at the hand-built per-area maxima) and passes the
+                // same walkable-clearance fit rules as the original ten. _mdrn_pl_pillr03 (68x68m,
+                // shipyard runs of 3) is deliberately NOT added: its footprint dwarfs every other
+                // frontage member and reads as terrain, not a street wall.
+                .FrontageBuilding("_mdrn_pl_kyru08", 1, 11.4f, 11.4f, maxPerArea: 4)
+                .FrontageBuilding("_mdrn_pl_kyru14", 1, 11.2f, 10.5f, maxPerArea: 2)
+                .FrontageBuilding("_mdrn_pl_kyru07", 1, 10.9f, 10.9f, maxPerArea: 2)
+                .FrontageBuilding("_mdrn_pl_kyru06", 1, 21.8f, 21.8f, maxPerArea: 2)
+                .FrontageBuilding("_mdrn_pl_fac13d", 1, 33.7f, 33.4f, maxPerArea: 2)
+                .FrontageBuilding("_mdrn_pl_buildg2", 1, 42.2f, 42.2f, maxPerArea: 3)
+                .FrontageBuilding("_mdrn_pl_buildg4", 1, 61.0f, 36.8f, maxPerArea: 2)
+                .FrontageBuilding("swd_impmed01", 1, 14.5f, 10.6f, maxPerArea: 3)
+                .FrontageBuilding("_mdrn_pl_pillr06", 1, 19.6f, 13.8f, maxPerArea: 4)
+                .FrontageBuilding("_mdrn_pl_colony1", 1, 24.5f, 21.9f, maxPerArea: 2)
+                .FrontageBuilding("_mdrn_pl_mechtwb", 1, 24.8f, 16.4f, maxPerArea: 2)
+                // Subtle per-instance scale jitter on the frontage walls (round-14; see
+                // DungeonTilesetProfile.FrontageScaleJitter -- documented judgment call, applied
+                // to the fit-checked footprint, persisted as .git VisualTransform offline and
+                // SetObjectVisualTransform live).
+                .FrontageScaleJitter()
                 // WALL-MOUNTED FACADE DRESSING (round-11 -- see BuildingFrontagePlanner.
                 // PlanFacadeMounts): the dense hand-built city areas hang holo signage on building
                 // faces at Z bands mined per resref (velundr/narscorpd/nsshipyard/ns_comrcial_ka/
@@ -4733,8 +4763,13 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                     .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(4)
                 .Decoration("swd_canopy01", 1, DecorationContext.RoomCenter, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(3)
+                // Round-14 repeat cap: the round pale kiosk pavilion measured 7-12 per delivered
+                // area across its four channels while the hand-built per-area max is 6 (NN median
+                // 14.8m -- _scratch_decor/r14_mine_variety.py large-prop pool). The cap is
+                // declared on EVERY kiosk004 entry so the shared per-resref ledger holds the
+                // hand-built ceiling across all channels combined.
                 .Decoration("swd2_kiosk004", 2, DecorationContext.DoorwayFlank, size: DecorationSize.Large)
-                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1))
+                    .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(6)
                 .Decoration("swd_streel01", 2, DecorationContext.DoorwayFlank)
                 .Decoration("_mdrn_pl_trshcn2", 1, DecorationContext.DoorwayFlank, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 1))
@@ -4755,7 +4790,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("_mdrn_pl_lights8", 1, DecorationContext.CorridorSide, DecorationRole.Fixture, allowOnRoadSurface: true)
                     .Districts((DistrictFlavor.Industrial, 1))
                 .Decoration("swd2_kiosk004", 2, DecorationContext.CorridorSide, size: DecorationSize.Large)
-                    .Districts((DistrictFlavor.Commercial, 3), (DistrictFlavor.Civic, 1)).MaxPerArea(8)
+                    .Districts((DistrictFlavor.Commercial, 3), (DistrictFlavor.Civic, 1)).MaxPerArea(6)
                 .Decoration("swd2_kiosk006", 1, DecorationContext.CorridorSide)
                     .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1))
                 // Courtyard arrangement buckets (see DungeonDecorationPlanner.PlanCourtyard), mined
@@ -4799,7 +4834,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("swd_holot03", 2, DecorationContext.CourtyardCenter)
                     .Districts((DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1))
                 .Decoration("swd2_kiosk004", 1, DecorationContext.CourtyardCenter, size: DecorationSize.Large)
-                    .Districts((DistrictFlavor.Commercial, 2))
+                    .Districts((DistrictFlavor.Commercial, 2)).MaxPerArea(6)
                 .Decoration("_mdrn_pl_marktfr", 1, DecorationContext.CourtyardCenter)
                     .Districts((DistrictFlavor.Commercial, 1))
                 .Decoration("_mdrn_pl_lghtpl3", 3, DecorationContext.Courtyard)
@@ -4823,7 +4858,7 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // bucket too but is EXCLUDED: its appearance row (7038) has a blank ModelName and
                 // renders invisible (caught by AllDungeonDefinitions_DecorationsExistAndAreVisible).
                 .Decoration("swd2_kiosk004", 1, DecorationContext.Courtyard, size: DecorationSize.Large)
-                    .Districts((DistrictFlavor.Commercial, 1))
+                    .Districts((DistrictFlavor.Commercial, 1)).MaxPerArea(6)
                 .Vignette("PromenadeKioskLight", 3)
                 .VignetteMember("swd2_kiosk004", 0f, 0f)
                 .VignetteMember("_mdrn_pl_lights3", 0.7f, 0.5f)

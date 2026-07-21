@@ -23,6 +23,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public Vector3 Position { get; set; }
         public float Facing { get; set; }
         public DecorationContext Context { get; set; }
+
+        /// <summary>Per-instance uniform visual scale (1 = none). Non-1 only for frontage
+        /// buildings on families declaring <see cref="DungeonTilesetProfile.FrontageScaleJitter"/>;
+        /// persisted as a .git VisualTransform struct offline (the toolset and client both render
+        /// it -- hand-built SWLOR areas carry the same struct) and applied via
+        /// SetObjectVisualTransform on the live path.</summary>
+        public float VisualScale { get; set; } = 1f;
     }
 
     /// <summary>
@@ -596,6 +603,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var vignettes = namedProfile?.Vignettes ?? tileset?.Vignettes ?? new List<DungeonVignette>();
             var roadCrosser = tileset?.RoadCrosser ?? string.Empty;
 
+            // Per-resref area-cap ceiling for VIGNETTE members (round-14): the vignette mechanism
+            // records member usage against the shared per-area ledger but never used to CHECK it,
+            // so a capped repeat-risk model (swd2_kiosk004, hand-built per-area max 6) could still
+            // blanket an area through its vignette. The ceiling per resref is the largest cap any
+            // palette entry declares for it; resrefs with no capped entry stay uncapped, so
+            // palettes without caps keep their exact behavior (and RNG streams).
+            var vignetteCapByResref = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            foreach (var capEntry in palette)
+            {
+                if (capEntry.MaxPerArea <= 0)
+                    continue;
+                vignetteCapByResref[capEntry.Resref] = Math.Max(
+                    vignetteCapByResref.GetValueOrDefault(capEntry.Resref), capEntry.MaxPerArea);
+            }
+
             var excluded = BuildExclusionSet(layout);
 
             // PASS 0: structural building-placeable frontage (see BuildingFrontagePlanner) -- the
@@ -899,6 +921,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             {
                 var pairView = rooms[tileToRoom[pair.A]].View;
                 var doorwayFallback = UnderAreaCap(pairView.DoorwayFallback, areaUsage);
+                // Round-14: a flank PAIR places up to two copies, so a capped repeat-risk entry
+                // needs two units of headroom -- picking it at cap-1 overshot the hand-built
+                // per-area ceiling by one. No-op for cap-free palettes (identical list and RNG).
+                if (doorwayFallback != null && doorwayFallback.Any(e => e.MaxPerArea > 0))
+                    doorwayFallback = doorwayFallback
+                        .Where(e => e.MaxPerArea <= 0 || areaUsage.GetValueOrDefault(e.Resref) + 2 <= e.MaxPerArea)
+                        .ToList();
                 if (rng.NextDouble() >= doorwayFlankProbability || doorwayFallback == null || doorwayFallback.Count == 0)
                     continue;
 
@@ -1099,11 +1128,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     if (anchor != null)
                     {
                         var vignette = PickWeightedVignette(vignettes, rng);
-                        var wallDir = NearestWallDirection(anchor.Value, tileSet)!.Value;
-                        PlaceVignette(plan, anchor.Value, wallDir, vignette);
-                        foreach (var member in vignette.Members)
-                            RecordUse(areaUsage, member.Resref);
-                        consumedTiles.Add(anchor.Value);
+                        // Round-14: a vignette whose member would push a capped repeat-risk model
+                        // past its hand-built per-area ceiling is skipped outright (see
+                        // vignetteCapByResref above). No-op for palettes without caps.
+                        var underCaps = vignette.Members.All(m =>
+                            !vignetteCapByResref.TryGetValue(m.Resref, out var cap) ||
+                            areaUsage.GetValueOrDefault(m.Resref) < cap);
+                        if (underCaps)
+                        {
+                            var wallDir = NearestWallDirection(anchor.Value, tileSet)!.Value;
+                            PlaceVignette(plan, anchor.Value, wallDir, vignette);
+                            foreach (var member in vignette.Members)
+                                RecordUse(areaUsage, member.Resref);
+                            consumedTiles.Add(anchor.Value);
+                        }
                     }
                 }
 
@@ -1208,6 +1246,36 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 plan.AddRange(BuildingFrontagePlanner.PlanFacadeMounts(layout, tileset, frontage, plan.Count));
 
             return plan;
+        }
+
+        /// <summary>
+        /// Round-14 cap-aware motif cycling for composed rings/surrounds: ring motifs cycle 2-3
+        /// resrefs across several members, so a capped repeat-risk entry drawn while UNDER its cap
+        /// could still exceed its hand-built per-area ceiling by the cycle count. Returns the first
+        /// motif entry (starting at the member's own cycle index) whose committed-plus-pending
+        /// total stays under its declared cap; when every motif option is capped the original pick
+        /// stands -- ring composure always wins over the ceiling. No RNG, and a strict no-op for
+        /// cap-free pools (every non-city palette), so those rings keep their exact members.
+        /// </summary>
+        private static string PickRingMemberUnderCap(
+            List<string> motif, int index, List<DungeonDecorationEntry> pool,
+            Dictionary<string, int> areaUsage, Dictionary<string, int> pending)
+        {
+            for (var m = 0; m < motif.Count; m++)
+            {
+                var candidate = motif[(index + m) % motif.Count];
+                var entry = pool.FirstOrDefault(e => e.Resref.Equals(candidate, StringComparison.OrdinalIgnoreCase));
+                if (entry == null || entry.MaxPerArea <= 0 ||
+                    areaUsage.GetValueOrDefault(candidate) + pending.GetValueOrDefault(candidate) < entry.MaxPerArea)
+                {
+                    pending[candidate] = pending.GetValueOrDefault(candidate) + 1;
+                    return candidate;
+                }
+            }
+
+            var fallback = motif[index % motif.Count];
+            pending[fallback] = pending.GetValueOrDefault(fallback) + 1;
+            return fallback;
         }
 
         /// <summary>
@@ -2199,6 +2267,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             var startAngle = rng.NextDouble() * Math.PI * 2.0;
             var members = new List<PlannedDecoration>();
             var memberTiles = new List<(int X, int Y)>();
+            var pendingUse = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
             for (var i = 0; i < ringCount; i++)
             {
@@ -2218,7 +2287,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var facing = (float)(Math.Atan2(center.Y - y, center.X - x) * (180.0 / Math.PI));
                 members.Add(new PlannedDecoration
                 {
-                    Resref = motif[i % motif.Count],
+                    Resref = PickRingMemberUnderCap(motif, i, ringPool, areaUsage, pendingUse),
                     Position = new Vector3(x, y, 0f),
                     Facing = facing,
                     Context = DecorationContext.Courtyard
@@ -2255,14 +2324,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             if (centerEntry is { Role: DecorationRole.GroundDecal })
             {
                 var toppingCount = 1 + rng.Next(2);
+                var toppingPending = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 for (var i = 0; i < toppingCount; i++)
                 {
                     var angle = rng.NextDouble() * Math.PI * 2.0;
                     var r = CourtyardDecalToppingMinRadius +
                             (float)(rng.NextDouble() * (CourtyardDecalToppingMaxRadius - CourtyardDecalToppingMinRadius));
+                    var toppingResref = PickRingMemberUnderCap(motif, i, ringPool, areaUsage, toppingPending);
                     plan.Add(new PlannedDecoration
                     {
-                        Resref = motif[i % motif.Count],
+                        Resref = toppingResref,
                         Position = new Vector3(
                             center.X + (float)Math.Cos(angle) * r,
                             center.Y + (float)Math.Sin(angle) * r,
@@ -2270,7 +2341,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                         Facing = urban ? 90f * rng.Next(4) : (float)(rng.NextDouble() * 360.0),
                         Context = DecorationContext.ClutterPile
                     });
-                    RecordUse(areaUsage, motif[i % motif.Count]);
+                    RecordUse(areaUsage, toppingResref);
                 }
             }
 
@@ -2424,6 +2495,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
             var members = new List<PlannedDecoration>();
             var memberTiles = new List<(int X, int Y)>();
+            var pendingUse = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < satelliteCount; i++)
             {
                 var angle = startAngle + i * (Math.PI * 2.0 / satelliteCount) + (rng.NextDouble() - 0.5) * 0.3;
@@ -2441,7 +2513,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 var facing = (float)(Math.Atan2(center.Y - y, center.X - x) * (180.0 / Math.PI));
                 members.Add(new PlannedDecoration
                 {
-                    Resref = motif[i % motif.Count],
+                    Resref = PickRingMemberUnderCap(motif, i, satellitePool, areaUsage, pendingUse),
                     Position = new Vector3(x, y, 0f),
                     Facing = facing,
                     Context = DecorationContext.EnsembleMember
@@ -2845,6 +2917,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     continue;
 
                 var startAngle = rng.NextDouble() * Math.PI * 2.0;
+                var surroundPending = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 for (var i = 0; i < count; i++)
                 {
                     var angle = startAngle + i * (Math.PI * 2.0 / count) + (rng.NextDouble() - 0.5) * 0.2;
@@ -2858,7 +2931,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                     var facing = (float)(Math.Atan2(center.Y - y, center.X - x) * (180.0 / Math.PI));
                     committed.Add(new PlannedDecoration
                     {
-                        Resref = motif[i % motif.Count],
+                        Resref = PickRingMemberUnderCap(motif, i, satellitePool, areaUsage, surroundPending),
                         Position = new Vector3(x, y, 0f),
                         Facing = facing,
                         Context = DecorationContext.EnsembleMember

@@ -76,14 +76,18 @@ public class BuildingFrontageCompositionTests
     };
 
     /// <summary>Reconstructs a frontage placement's axis-aligned footprint from its declared
-    /// entry dimensions and cardinal facing (the face's outward normal).</summary>
+    /// entry dimensions (scaled by the placement's per-instance visual scale -- see
+    /// DungeonTilesetProfile.FrontageScaleJitter) and cardinal facing (the face's outward
+    /// normal).</summary>
     private static (float MinX, float MinY, float MaxX, float MaxY) FootprintOf(
         PlannedDecoration p, Dictionary<string, BuildingFrontageEntry> entries)
     {
         var entry = entries[p.Resref];
         var outward = OutwardOf(p);
-        var halfX = outward.Dx != 0 ? entry.Depth / 2f : entry.FaceWidth / 2f;
-        var halfY = outward.Dx != 0 ? entry.FaceWidth / 2f : entry.Depth / 2f;
+        var width = entry.FaceWidth * p.VisualScale;
+        var depth = entry.Depth * p.VisualScale;
+        var halfX = outward.Dx != 0 ? depth / 2f : width / 2f;
+        var halfY = outward.Dx != 0 ? width / 2f : depth / 2f;
         return (p.Position.X - halfX, p.Position.Y - halfY, p.Position.X + halfX, p.Position.Y + halfY);
     }
 
@@ -169,8 +173,8 @@ public class BuildingFrontageCompositionTests
                 var outward = OutwardOf(p);
                 var entry = entries[p.Resref];
                 var facePoint = (
-                    X: p.Position.X + outward.Dx * entry.Depth / 2f,
-                    Y: p.Position.Y + outward.Dy * entry.Depth / 2f);
+                    X: p.Position.X + outward.Dx * entry.Depth * p.VisualScale / 2f,
+                    Y: p.Position.Y + outward.Dy * entry.Depth * p.VisualScale / 2f);
                 var facedCell = ((int)MathF.Floor(facePoint.X / 10f), (int)MathF.Floor(facePoint.Y / 10f));
                 if (!open.Contains(facedCell))
                     violations.Add($"seed {seed}: '{p.Resref}' at ({p.Position.X:F1},{p.Position.Y:F1}) faces {p.Facing} but its face plane lands on non-open cell {facedCell}");
@@ -249,6 +253,10 @@ public class BuildingFrontageCompositionTests
 
     [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 12, 4)]
     [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 20, 5)]
+    // Round-14 expanded-pool floor at the signature scale: comparable-mass hand-built areas draw
+    // 12-17 distinct building models (nsshipyard 17, narscorpd 12 -- r14_mine_variety.py);
+    // measured generated 24x24 draws 16-21 with the expanded pool.
+    [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 24, 12)]
     public void FrontageModelVariety_MeetsHandBuiltMinimum(string themeKey, string layoutKey, int size, int minVariety)
     {
         var c = Composition(themeKey, BaseGameTilesetProfiles.FutCity, layoutKey);

@@ -1142,13 +1142,13 @@ static string BuildPlaceableEntries(List<PlannedDecoration> plan, Dictionary<str
         var tag = $"PG_DEC_{index}";
         var bearingRadians = planned.Facing * Math.PI / 180.0;
         var appearance = decorationAppearances.GetValueOrDefault(planned.Resref, 0);
-        entries.Add(PlaceableEntry(tag, planned.Resref, planned.Position.X, planned.Position.Y, planned.Position.Z, bearingRadians, appearance));
+        entries.Add(PlaceableEntry(tag, planned.Resref, planned.Position.X, planned.Position.Y, planned.Position.Z, bearingRadians, appearance, planned.VisualScale));
     }
 
     return string.Join(",\n", entries);
 }
 
-static string PlaceableEntry(string tag, string templateResref, float x, float y, float z, double bearingRadians, int appearance)
+static string PlaceableEntry(string tag, string templateResref, float x, float y, float z, double bearingRadians, int appearance, float visualScale = 1f)
 {
     return $$"""
           {
@@ -1358,7 +1358,7 @@ static string PlaceableEntry(string tag, string templateResref, float x, float y
             "Useable": {
               "type": "byte",
               "value": 0
-            },
+            },{{VisualTransformField(visualScale)}}
             "Will": {
               "type": "byte",
               "value": 0
@@ -1376,6 +1376,42 @@ static string PlaceableEntry(string tag, string templateResref, float x, float y
               "value": {{FormatFloat(z)}}
             }
           }
+    """;
+}
+
+/// <summary>
+/// Optional per-instance VisualTransform struct (uniform scale) for a placeable instance --
+/// emitted only when the plan carries a non-1 scale (frontage scale jitter, see
+/// DungeonTilesetProfile.FrontageScaleJitter). Field shape mirrors the hand-built exemplars
+/// (Module/git/ar_pw_indusvel.git.json placeables carry exactly this struct_id-6 ScaleX/Y/Z
+/// shape), which both the toolset and the client render.
+/// </summary>
+static string VisualTransformField(float visualScale)
+{
+    if (Math.Abs(visualScale - 1f) < 0.0001f)
+        return string.Empty;
+
+    return $$"""
+
+            "VisualTransform": {
+              "__struct_id": 6,
+              "type": "struct",
+              "value": {
+                "__struct_id": 6,
+                "ScaleX": {
+                  "type": "float",
+                  "value": {{FormatFloat(visualScale)}}
+                },
+                "ScaleY": {
+                  "type": "float",
+                  "value": {{FormatFloat(visualScale)}}
+                },
+                "ScaleZ": {
+                  "type": "float",
+                  "value": {{FormatFloat(visualScale)}}
+                }
+              }
+            },
     """;
 }
 

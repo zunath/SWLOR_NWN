@@ -28,6 +28,11 @@ $project = Join-Path $repoRoot "SWLOR.CLI\SWLOR.CLI.csproj"
 $cliDll = Join-Path $repoRoot "SWLOR.CLI\bin\Debug\net10.0\SWLOR.CLI.dll"
 
 if ($Build -or !(Test-Path $cliDll)) {
+    dotnet restore $project
+    if ($LASTEXITCODE -ne 0) {
+        exit $LASTEXITCODE
+    }
+
     dotnet build $project --no-restore --no-dependencies
     if ($LASTEXITCODE -ne 0) {
         exit $LASTEXITCODE

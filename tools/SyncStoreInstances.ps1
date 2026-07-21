@@ -33,7 +33,8 @@ if ($Build -or !(Test-Path $cliDll)) {
         exit $LASTEXITCODE
     }
 
-    dotnet build $project --no-restore --no-dependencies
+    # Clean checkouts need the CLI's project references built, but not the server deployment step.
+    dotnet build $project --no-restore -p:RunPostBuildEvent=Never
     if ($LASTEXITCODE -ne 0) {
         exit $LASTEXITCODE
     }

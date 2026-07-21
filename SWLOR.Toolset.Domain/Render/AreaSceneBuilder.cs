@@ -1,0 +1,261 @@
+using System.Numerics;
+using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Tilesets;
+using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Workspace;
+
+namespace SWLOR.Toolset.Domain.Render
+{
+    /// <summary>
+    /// Assembles a render-ready <see cref="AreaScene"/> from an area's .are/.git documents: tile
+    /// grid placements (resolved against the area's tileset and shared render geometry via
+    /// <see cref="TileModelCache"/>) plus placed-instance markers. Headless/Domain-level - no GL or
+    /// app dependency; consumed later by the WP4.5 area view.
+    /// </summary>
+    public static class AreaSceneBuilder
+    {
+        /// <summary>NWN area tiles sit on a 10-meter grid.</summary>
+        public const float TileSize = 10f;
+
+        /// <summary>
+        /// Builds the scene for one area. Never throws for missing/unresolvable tile models or
+        /// tilesets - those degrade to fallback placements with a diagnostic note on the returned
+        /// scene's <see cref="AreaScene.Diagnostics"/>.
+        /// </summary>
+        public static AreaScene Build(
+            AreDocument are,
+            GitDocument git,
+            TilesetCatalog tilesetCatalog,
+            TileModelCache modelCache)
+        {
+            ArgumentNullException.ThrowIfNull(are);
+            ArgumentNullException.ThrowIfNull(git);
+            ArgumentNullException.ThrowIfNull(tilesetCatalog);
+            ArgumentNullException.ThrowIfNull(modelCache);
+
+            var diagnostics = new AreaSceneDiagnostics();
+            var tilesetResRef = are.Tileset ?? string.Empty;
+            var width = are.Width ?? 0;
+            var height = are.Height ?? 0;
+
+            TilesetDefinition? tileset = null;
+            if (!string.IsNullOrWhiteSpace(tilesetResRef) && tilesetCatalog.TryGetTileset(tilesetResRef, out var resolved))
+            {
+                tileset = resolved;
+            }
+            else
+            {
+                diagnostics.AddMissingModel(
+                    $"tileset '{tilesetResRef}' could not be resolved/parsed; every tile in this area falls back.");
+            }
+
+            var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics);
+            var instances = BuildInstances(git);
+
+            return new AreaScene
+            {
+                Tileset = tilesetResRef,
+                Width = width,
+                Height = height,
+                Tiles = tiles,
+                Instances = instances,
+                Diagnostics = diagnostics
+            };
+        }
+
+        private static List<TilePlacement> BuildTiles(
+            AreDocument are,
+            TilesetDefinition? tileset,
+            string tilesetResRef,
+            int width,
+            TileModelCache modelCache,
+            AreaSceneDiagnostics diagnostics)
+        {
+            var tileStructs = are.Tiles;
+            var placements = new List<TilePlacement>(tileStructs.Count);
+
+            // A missing/zero Width would make column/row math divide-by-zero; this is corrupt
+            // input the corpus never actually has (WORKLOG confirms real Tile_List length ==
+            // Width*Height), but assembly must still not throw for it - treat every tile as a
+            // single column rather than crash.
+            var effectiveWidth = width > 0 ? width : 1;
+
+            for (var i = 0; i < tileStructs.Count; i++)
+            {
+                var tileStruct = tileStructs[i];
+                var tileId = tileStruct.GetIntOrNull("Tile_ID") ?? -1;
+                var orientation = tileStruct.GetIntOrNull("Tile_Orientation") ?? 0;
+                var tileHeight = tileStruct.GetIntOrNull("Tile_Height") ?? 0;
+
+                var col = i % effectiveWidth;
+                var row = i / effectiveWidth;
+
+                var centerX = col * TileSize + TileSize / 2f;
+                var centerY = row * TileSize + TileSize / 2f;
+                var heightOffset = tileset != null ? tileHeight * tileset.Transition : 0;
+
+                var angle = (float)(orientation * (Math.PI / 2.0));
+                var transform =
+                    Matrix4x4.CreateTranslation(-TileSize / 2f, -TileSize / 2f, 0f) *
+                    Matrix4x4.CreateRotationZ(angle) *
+                    Matrix4x4.CreateTranslation(centerX, centerY, heightOffset);
+
+                string? modelResRef = null;
+                RenderModel? model = null;
+                var isFallback = false;
+
+                if (tileset == null)
+                {
+                    isFallback = true; // Already noted once for the whole area above.
+                }
+                else if (tileId < 0 || tileId >= tileset.Tiles.Count)
+                {
+                    isFallback = true;
+                    diagnostics.AddMissingModel(
+                        $"tile #{i} (col {col}, row {row}): Tile_ID {tileId} is out of range for tileset '{tilesetResRef}' ({tileset.Tiles.Count} tiles).");
+                }
+                else
+                {
+                    var tileDef = tileset.Tiles[tileId];
+                    modelResRef = tileDef.Model;
+
+                    if (string.IsNullOrWhiteSpace(modelResRef))
+                    {
+                        isFallback = true;
+                        diagnostics.AddMissingModel(
+                            $"tile #{i} (col {col}, row {row}): Tile_ID {tileId} in tileset '{tilesetResRef}' has no Model resref.");
+                    }
+                    else
+                    {
+                        model = modelCache.GetOrBuild(modelResRef);
+                        if (model == null)
+                        {
+                            isFallback = true;
+                            diagnostics.AddMissingModel(
+                                $"tile #{i} (col {col}, row {row}): model '{modelResRef}' (Tile_ID {tileId}, tileset '{tilesetResRef}') could not be resolved/parsed.");
+                        }
+                    }
+                }
+
+                placements.Add(new TilePlacement
+                {
+                    TileIndex = i,
+                    Column = col,
+                    Row = row,
+                    TileId = tileId,
+                    Orientation = orientation,
+                    HeightLevel = tileHeight,
+                    CenterX = centerX,
+                    CenterY = centerY,
+                    HeightOffset = heightOffset,
+                    Transform = transform,
+                    ModelResRef = modelResRef,
+                    Model = model,
+                    IsFallback = isFallback
+                });
+            }
+
+            return placements;
+        }
+
+        private static List<InstanceMarker> BuildInstances(GitDocument git)
+        {
+            var markers = new List<InstanceMarker>();
+
+            AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc);
+            AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd);
+            AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti);
+            AddMarkers(markers, git.Placeables, InstanceMarkerKind.Placeable, ResourceType.Utp);
+            AddMarkers(markers, git.Sounds, InstanceMarkerKind.Sound, ResourceType.Uts);
+            AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm);
+            AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true);
+            AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw);
+            AddEncounterMarkers(markers, git.Encounters);
+
+            return markers;
+        }
+
+        private static void AddMarkers(
+            List<InstanceMarker> markers,
+            IReadOnlyList<JsonGffStruct> instances,
+            InstanceMarkerKind kind,
+            ResourceType type,
+            bool includeGeometry = false)
+        {
+            foreach (var instance in instances)
+            {
+                var (x, y, z) = InstanceFieldMap.GetPosition(type, instance);
+                var (xo, yo) = InstanceFieldMap.GetOrientation(type, instance);
+                var templateResRef = InstanceFieldMap.GetTemplateResRef(type, instance);
+                var tag = InstanceFieldMap.GetTag(instance);
+
+                markers.Add(new InstanceMarker
+                {
+                    Kind = kind,
+                    TemplateResRef = templateResRef,
+                    Tag = tag,
+                    Position = new Vector3(x, y, z),
+                    Orientation = new Vector2(xo, yo),
+                    Geometry = includeGeometry ? ReadGeometry(instance) : null
+                });
+            }
+        }
+
+        /// <summary>
+        /// Encounters carry no single X/Y/Z field in the Aurora GIT format - unlike every other
+        /// supported instance list, an encounter is defined by a Geometry polygon (same shape as
+        /// TriggerList's) plus a separate spawn-point list. No corpus area in this repo actually
+        /// has an Encounter List entry (WORKLOG/verification both confirm zero), so this path is
+        /// unverified against real data; it is written defensively (every field read is
+        /// null-tolerant) so a future authored encounter still assembles instead of throwing. The
+        /// reported Position is the Geometry polygon's centroid when present, else the origin.
+        /// </summary>
+        private static void AddEncounterMarkers(List<InstanceMarker> markers, IReadOnlyList<JsonGffStruct> instances)
+        {
+            foreach (var instance in instances)
+            {
+                var tag = InstanceFieldMap.GetTag(instance);
+                var geometry = ReadGeometry(instance);
+                var position = geometry is { Count: > 0 } ? Centroid(geometry) : Vector3.Zero;
+
+                markers.Add(new InstanceMarker
+                {
+                    Kind = InstanceMarkerKind.Encounter,
+                    TemplateResRef = null,
+                    Tag = tag,
+                    Position = position,
+                    Orientation = new Vector2(1f, 0f),
+                    Geometry = geometry
+                });
+            }
+        }
+
+        private static IReadOnlyList<Vector3>? ReadGeometry(JsonGffStruct instance)
+        {
+            var points = instance.GetListOrEmpty("Geometry");
+            if (points.Count == 0)
+                return null;
+
+            var result = new List<Vector3>(points.Count);
+            foreach (var point in points)
+            {
+                var x = point.GetSingleOrNull("PointX") ?? 0f;
+                var y = point.GetSingleOrNull("PointY") ?? 0f;
+                var z = point.GetSingleOrNull("PointZ") ?? 0f;
+                result.Add(new Vector3(x, y, z));
+            }
+
+            return result;
+        }
+
+        private static Vector3 Centroid(IReadOnlyList<Vector3> points)
+        {
+            var sum = Vector3.Zero;
+            foreach (var point in points)
+                sum += point;
+
+            return sum / points.Count;
+        }
+    }
+}

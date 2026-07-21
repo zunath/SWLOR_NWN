@@ -301,7 +301,33 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   - MaterialResolver/TxiInfo deliberately not yet chained into TextureLoader — WP4.4/4.5
     decide composition.
 ## WP4.3 — pending — Model preview panes
-## WP4.4 — pending — Area scene assembly
+## WP4.4 — done — 2026-07-20 — Area scene assembly
+- Tier: Mid. Split execution: Sonnet subagent produced all four files then died on the
+  monthly spend limit before running any build/test; controller verified inline (build
+  clean on first try — the subagent's API assumptions were all correct — full suite green,
+  scope exact).
+- Files: `Domain\Render\{AreaScene,AreaSceneBuilder,TileModelCache}.cs`,
+  `Tests\AreaSceneBuilderTests.cs` (8 tests). No csproj change (Pfim already present from WP4.2).
+- **438-area acceptance gate PASSED (ran for real via the GOG install, not skipped):**
+  438 areas, 103,913 tile placements, 5,831 distinct tile models parsed, **0 fallbacks**
+  (every tile model across the whole corpus resolved and parsed), 106,221 instance markers,
+  29.5s (< 2-min target). Full suite 225 passed / 1 benign skip.
+- **Decisions/findings recorded:**
+  - Tile_List field spellings verified against corpus: `Tile_ID`, `Tile_Orientation` (0-3,
+    each step 90° CCW about +Z), `Tile_Height` (integer level × tileset transition height).
+    Tileset transition height is `TilesetDefinition.Transition` (from SET `[GENERAL]`).
+  - Grid: 10m cells (`AreaSceneBuilder.TileSize`), tile index i → col `i % Width`, row
+    `i / Width`; TilePlacement.Transform = translate-to-origin × rotateZ(orient×90°) ×
+    translate-to-(centerX,centerY,heightOffset), so a rotated tile keeps its grid cell.
+  - TileModelCache: ConcurrentDictionary<resref, RenderModel?> caching hits AND misses;
+    caller owns one instance across the batch so placements share RenderModel objects and
+    each distinct model parses at most once (what makes 438-area assembly 30s not minutes).
+    GetOrBuild never throws — blank/missing/unparseable → null → fallback placement.
+  - Instance markers cover all git lists (Creature/Door/Item/Placeable/Sound/Store/Trigger/
+    Waypoint via InstanceFieldMap; Encounter via geometry centroid). Trigger/Encounter carry
+    the Geometry polygon (PointX/Y/Z); appearance-model resolution deferred to WP4.5 by design.
+  - Encounter path is defensive/unverified — zero Encounter List entries in the corpus (re-
+    confirmed). Missing/zero area Width degrades to single-column layout rather than div-by-0.
 ## WP4.5 — pending — Area view
 ## WP5.1 — pending — Picking + selection sync
 ## WP5.2 — pending — Gizmos + placement

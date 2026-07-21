@@ -679,6 +679,151 @@ public class NPCEnemyBalanceAuditTests
     }
 
     [Test]
+    public void MimicryTechniqueRequirements_CoverEveryRankAndFollowWorldNpcEncounterProgression()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
+        var mimicry = ReadWorksheetByName(archive, "Mimicry");
+        var sharedStrings = ReadSharedStrings(archive);
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
+        var sourcesByTechnique = new Dictionary<string, List<(int Level, string Difficulty, string Area, string Enemy)>>(
+            StringComparer.OrdinalIgnoreCase);
+        var worldLastRow = worldNpcs
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Max();
+
+        for (var row = 2; row <= worldLastRow; row++)
+        {
+            var area = GetWorkbookCellText(worldNpcs, sharedStrings, $"A{row}");
+            if (string.IsNullOrWhiteSpace(area) ||
+                area.Equals("Additional", StringComparison.OrdinalIgnoreCase) ||
+                area.Equals("Training", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var levelText = GetWorkbookCellText(worldNpcs, sharedStrings, $"D{row}");
+            if (!decimal.TryParse(levelText, NumberStyles.Number, CultureInfo.InvariantCulture, out var levelValue))
+                continue;
+
+            var level = decimal.ToInt32(levelValue);
+            var difficulty = GetWorkbookCellText(worldNpcs, sharedStrings, $"E{row}");
+            var enemy = GetWorkbookCellText(worldNpcs, sharedStrings, $"B{row}");
+            var actualAbilities = GetWorkbookCellText(worldNpcs, sharedStrings, $"AQ{row}");
+            foreach (var technique in actualAbilities.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                if (!sourcesByTechnique.TryGetValue(technique, out var sources))
+                {
+                    sources = new List<(int Level, string Difficulty, string Area, string Enemy)>();
+                    sourcesByTechnique[technique] = sources;
+                }
+
+                sources.Add((level, difficulty, area, enemy));
+            }
+        }
+
+        var failures = new List<string>();
+        var requirementsByTechnique = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var mimicryLastRow = mimicry
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Max();
+
+        for (var row = 8; row <= mimicryLastRow; row++)
+        {
+            if (!GetWorkbookCellText(mimicry, sharedStrings, $"A{row}")
+                    .Equals("Technique", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var technique = GetWorkbookCellText(mimicry, sharedStrings, $"C{row}");
+            if (!sourcesByTechnique.TryGetValue(technique, out var sources) || sources.Count == 0)
+            {
+                failures.Add($"{technique}: no player-accessible source is listed in World NPCs Existing Abilities (AQ).");
+                continue;
+            }
+
+            var requirementText = GetWorkbookCellText(mimicry, sharedStrings, $"D{row}");
+            var actualRequirement = requirementText == "-"
+                ? 0
+                : int.TryParse(
+                    requirementText.StartsWith("Mimicry ", StringComparison.OrdinalIgnoreCase)
+                        ? requirementText["Mimicry ".Length..]
+                        : string.Empty,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out var parsedRequirement)
+                    ? parsedRequirement
+                    : -1;
+
+            if (actualRequirement is < 0 or > 50)
+            {
+                failures.Add($"{technique}: expected a Mimicry requirement from 0 through 50, found '{requirementText}'.");
+                continue;
+            }
+
+            requirementsByTechnique[technique] = actualRequirement;
+        }
+
+        requirementsByTechnique.Should().HaveCount(88, "the complete Mimicry technique pool must be audited against World NPCs");
+        failures.Should().BeEmpty(
+            "Mimicry requirements use player-accessible World NPC progression, excluding Additional and Training rows");
+
+        requirementsByTechnique.Values
+            .Distinct()
+            .OrderBy(requirement => requirement)
+            .Should()
+            .Equal(Enumerable.Range(0, 51), "every Mimicry rank from 0 through 50 must unlock at least one technique");
+
+        requirementsByTechnique["Sonic Shriek"].Should().Be(0, "CZ220 Mynocks are the first Mimicry source");
+        requirementsByTechnique["Disorienting Screech"].Should().Be(0, "CZ220 Mynocks are the first Mimicry source");
+        requirementsByTechnique["Precision Shot"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+        requirementsByTechnique["Static Web"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+        requirementsByTechnique["Suppressing Shot"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+
+        var priorBandMaximum = -1;
+        var preEndgameBands = requirementsByTechnique
+            .Select(entry => new
+            {
+                Technique = entry.Key,
+                Requirement = entry.Value,
+                EarliestSourceLevel = sourcesByTechnique[entry.Key].Min(source => source.Level),
+            })
+            .Where(entry => entry.EarliestSourceLevel < 50)
+            .GroupBy(entry => entry.EarliestSourceLevel)
+            .OrderBy(group => group.Key);
+
+        foreach (var band in preEndgameBands)
+        {
+            var bandMinimum = band.Min(entry => entry.Requirement);
+            bandMinimum.Should().BeGreaterThan(
+                priorBandMaximum,
+                $"techniques first encountered at level {band.Key} should follow all earlier source bands");
+            priorBandMaximum = band.Max(entry => entry.Requirement);
+        }
+
+        foreach (var entry in requirementsByTechnique)
+        {
+            var earliestLevel = sourcesByTechnique[entry.Key].Min(source => source.Level);
+            if (earliestLevel < 50)
+                continue;
+
+            entry.Value.Should().BeInRange(
+                41,
+                50,
+                $"{entry.Key} is first learned from level-50 endgame encounters");
+        }
+    }
+
+    [Test]
     public void WorldNpcsBible_CalculatesResistanceAdjustmentsWithHandEntryColumns()
     {
         var root = FindRepositoryRoot();

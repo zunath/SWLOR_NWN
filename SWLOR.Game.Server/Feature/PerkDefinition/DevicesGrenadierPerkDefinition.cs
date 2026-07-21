@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FragGrenade1)
 
                 .AddPerkLevel()
-                .Description("Deals 32 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.")
+                .Description("Deals 32 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed for 12 seconds. Consumes explosives.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FragGrenade2)
 
                 .AddPerkLevel()
-                .Description("Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.")
+                .Description("Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed for 12 seconds. Consumes explosives.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonGrenade1)
 
                 .AddPerkLevel()
-                .Description("Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and inflicts Shock. Consumes explosives.")
+                .Description("Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and inflicts Shock for 12 seconds. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cluster Grenade")
 
                 .AddPerkLevel()
-                .Description("Throws three adjacent grenades around the target point, each dealing 18 fire DMG plus PER scaling in a 2m blast. Overlapping blasts can hit the same enemy. Consumes explosives.")
+                .Description("Throws three adjacent grenades within 3m of the target point. Each grenade deals 18 fire DMG plus PER scaling in a 2m blast, and overlapping blasts can hit the same enemy. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)

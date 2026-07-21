@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Plan
 
-Last reviewed against the Combat Upgrade Bible on 2026-06-08.
+Last reviewed against the Combat Upgrade Bible on 2026-07-19.
 
 ## Source Of Truth
 
@@ -27,6 +27,8 @@ All visible tabs were exported/reviewed, not only the linked tab:
 - System Changes & Migrations
 - Character Stats
 - Status Effects
+- Espionage
+- Mimicry
 - Armor
 - Vibroblade
 - Vibroknife
@@ -63,7 +65,6 @@ All visible tabs were exported/reviewed, not only the linked tab:
 - Fishing
 - Equipment - Weapons
 - Equipment - Armor
-- Equipment - Crafting
 - Equipment - Enhancements
 - Equipment - Droids
 - Starships
@@ -76,16 +77,14 @@ All visible tabs were exported/reviewed, not only the linked tab:
 
 ## Scope Exclusions
 
-The following Bible areas are intentionally out of scope for this combat upgrade and must not be counted as missing combat-upgrade work:
+The only Bible perk rows intentionally outside the combat-upgrade implementation surface are the five unimplemented Agriculture rows such as Crop Management. Agriculture is deferred beyond the first iteration.
 
-- Espionage
-- Farming, including Agriculture/Farming-only rows such as Crop Management
-
-If future audits compare every visible Bible tab against code, filter these areas out of the required-work totals. Agriculture rows that support Cooking or combat-upgrade-adjacent crafting can still be in scope when they are explicitly tied to the combat upgrade, but Farming-only mechanics are not.
+Espionage and Mimicry are mandatory review scope. Future audits must include every Espionage perk row, every Mimicry core perk row, and every Mimicry technique row. The five current Agriculture rows are unimplemented and explicitly excluded from the first iteration; do not count them as unreviewed combat-upgrade work.
 
 ## Hard Rules
 
 - Every combat upgrade implementation decision must be traceable to a row or formula in the Bible.
+- Espionage and Mimicry must be reviewed with the same row-by-row implementation, text, balance, targeting, feat/spell, TLK, and icon checks as every other included category.
 - If a player-facing perk is currently implemented in code but does not exist in the Bible, remove its implementation from the feature branch.
 - Perk removal means removing the perk definition, ability definition, feat grant/use path, migration/refund handling, 2DA/TLK exposure when applicable, and any combat/stat hooks that only exist for that removed perk.
 - Existing implemented perks that remain in the Bible must be updated to the Bible's name, skill requirement, SP price, character type, type, resource cost, activation time, cooldown, description, status effects, and notes.
@@ -198,6 +197,17 @@ Acceptance criteria:
 - Perks present in code but absent from the Bible are removed.
 - Status-effect conversions remain consistent with the XM-style service work already carried into the feature branch.
 
+### Espionage And Mimicry
+
+Implement and audit the complete `Espionage` and `Mimicry` tabs. Espionage includes Tradecraft, Infiltrator, and Saboteur. Mimicry includes the core analyzer perks and all 88 techniques, including passive traits, stances, damage abilities, control, support, and threat tools.
+
+Acceptance criteria:
+
+- Every included row has an implemented perk or technique surface with matching price, requirements, type, resources, casting time, cooldown, scaling, description, notes, and status behavior.
+- Every active surface has matching feat/spell/TLK data and correct aimed-versus-self-centered targeting metadata.
+- Mimicry technique tier, slot cost, analyzer source feat, loadout limits, damage scaling, status duration, and unique icon are validated.
+- Espionage stealth, Back Attack, slicing, disguise, Venom, trap, and cap mechanics match their documented formulas and limits.
+
 ### Beast Mastery
 
 Implement `Beast Mastery` using the supporting `Beast Calcs`, `Beast Levels`, `Beast Lookups`, and `Beast Purity Calc` tabs.
@@ -215,7 +225,7 @@ Update non-combat and support systems only where the Bible requires them:
 - Smithery, Engineering, Fabrication, Research, Agriculture, Gathering
 - Smithery Recipes, Engineering Recipes, Cooking Recipes, Fabrication Recipes
 - Fishing
-- Equipment - Weapons, Equipment - Armor, Equipment - Crafting, Equipment - Enhancements, Equipment - Droids
+- Equipment - Weapons, Equipment - Armor, Equipment - Enhancements, Equipment - Droids
 - Starships
 - Crafting Calc
 - World NPCs
@@ -297,7 +307,7 @@ Migration must:
 Implement Bible perk trees in this order:
 
 1. Weapon tabs, because they drive combat identity.
-2. Force, Devices, Leadership, and First Aid.
+2. Force, Devices, Leadership, First Aid, Espionage, and Mimicry.
 3. Beast Mastery with supporting beast calculation tabs.
 4. Crafting/gathering/equipment/recipe support tabs, including Armor equipment requirements.
 5. Starships, XP, merits, and world NPC adjustments.
@@ -332,7 +342,8 @@ Before release:
 - Smoke-test weapon delay cadence by weapon family.
 - Smoke-test elemental damage and 0%-100% resistance behavior.
 - Smoke-test representative combat perks from every weapon tab.
-- Smoke-test Force, Devices, Leadership, First Aid, and Beast Mastery.
+- Smoke-test Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage, including the curated cross-skill danger profiles.
+- Run `CrossSkillPerkInteractionSafetyTests` and the active-context 400 SP support frontier so recursive procs, transfers, resource conversion, cooldown resets, and compound profiles remain statically bounded.
 
 ## Current Known Local Follow-Up
 
@@ -351,8 +362,9 @@ Status: removed from the feature branch implementation on 2026-05-05.
 - `CombatUpgradePerkAudit.csv` compares Bible perk rows against current perk definitions by normalized perk name.
 - `CombatUpgradeBiblePerkManifest.csv` is the exported perk-row manifest from all audited Bible tabs with perk tables.
 - Current local-workbook audit summary from the checked-in workbook snapshot. The current manifest includes current Bible General rows that use Armor requirements, but excludes stale Heavy/Light Armor perk-tree rows from required-work totals:
-  - Manifest rows: 895
-  - Scoped implemented rows: 810
+  - Manifest rows: 1003
+  - Scoped implemented rows: 998
+  - Intentionally skipped unimplemented, first-iteration-out-of-scope Agriculture rows: 5
   - Scoped audit findings: 0
   - Missing Bible perk names in code: 0
   - Active Bible rows missing ability definitions: 0
@@ -363,7 +375,7 @@ The audit is intentionally a work queue, not final truth. A clean audit means th
 
 If an older local workbook or generated manifest includes obsolete Heavy/Light Armor or stale Armor perk-tree rows, treat those rows as stale design data. Current Bible General rows that use Armor requirements remain in scope as general character-level perks, not as an Armor specialization tree.
 
-Audit totals should exclude Espionage and Farming-only rows. If an all-tab export includes those rows, keep them in the raw manifest for traceability but omit them from combat-upgrade missing-work counts.
+Audit totals must include Espionage and Mimicry. Only the five unimplemented Agriculture rows, explicitly out of scope for the first iteration, are intentionally skipped in the current workbook snapshot.
 
 Implemented cleanup so far:
 
@@ -376,6 +388,7 @@ Implemented cleanup so far:
 - Added Coolant-Scarred Mynock, Byysk Cryo Adept, and Sith Frostbinder as spawned resistance-pressure variants that expand Ice-resistance pressure beyond the original Hutlar Qion set.
 - Confirmed logged-out status effects are process-local runtime cache and do not survive the fresh boot migration path.
 - Routed Marked for Death bonus damage through the shared triggered-damage path while preserving recursion protection.
+- Added static cross-skill feedback-loop coverage and an active-context 400 SP support frontier, with curated poison/trap/Mimicry, stealth, resource, sustain, reflection/deflection, and control profiles.
 
 Additional follow-up:
 

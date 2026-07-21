@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Bonecrusher Bite")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.BonecrusherBite, 2, 2)
+                .MimicryTrait(FeatType.BonecrusherBite, 19, 2)
                 .MimicryTraitStat(StatType.DamageDealtSunderChance, 9);
 
             return _builder.Build();

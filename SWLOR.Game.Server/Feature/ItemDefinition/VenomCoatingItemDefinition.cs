@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
-    public class VenomCoatingItemDefinition: IItemListDefinition
+    public class VenomCoatingItemDefinition : IItemListDefinition
     {
         // Local variables set on the weapon. The combat-consumption side (owned elsewhere)
         // reads these three locals when resolving on-hit poison application.
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 {
                     var potency = Stat.GetStatAdjustment(user, StatType.PoisonBonus);
                     var coatingDurationBonus = Stat.GetStatAdjustment(user, StatType.PoisonCoatingDurationPercent);
-                    var charges = BaseCharges * (100 + coatingDurationBonus) / 100;
+                    var charges = CalculateCharges(coatingDurationBonus);
 
                     SetLocalInt(target, PoisonCoatingTierVariable, tier);
                     SetLocalInt(target, PoisonCoatingChargesVariable, charges);
@@ -88,6 +88,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         $"Player '{GetName(user)}' ({GetObjectUUID(user)}) applied Tier {_tierLabels[tier]} venom coating to '{GetName(target)}' (potency {potency}, {charges} charges).");
                     SendMessageToPC(user, $"You coat {GetName(target)} in Tier {_tierLabels[tier]} venom. ({charges} charges)");
                 });
+        }
+
+        public static int CalculateCharges(int coatingDurationBonusPercent)
+        {
+            return BaseCharges * (100 + Math.Max(0, coatingDurationBonusPercent)) / 100;
         }
     }
 }

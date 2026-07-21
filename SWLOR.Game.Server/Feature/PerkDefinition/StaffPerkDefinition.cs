@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
-                .Description("Deals weapon DMG + 35 to enemies within 5m. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 35 to enemies within 5m of you. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)
                 .RequirementQuest(StaffCapstoneQuestDefinition.WorldbreakerMasteryQuestId);
@@ -237,25 +237,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker1)
-                .Description("Deals weapon DMG + 8 in a line and inflicts Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 8 in an 8m x 2.5m line and inflicts Disoriented for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker2)
-                .Description("Deals weapon DMG + 18 in a line and inflicts Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 18 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker3)
-                .Description("Deals weapon DMG + 28 in a line and inflicts Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 28 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker4)
-                .Description("Deals weapon DMG + 38 in a line and inflicts Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 38 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Staff, 40);
         }

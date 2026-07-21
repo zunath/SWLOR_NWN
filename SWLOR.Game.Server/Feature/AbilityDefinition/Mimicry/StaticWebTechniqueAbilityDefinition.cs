@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.StaticWeb, 2, 2)
+                .MimicryTechnique(FeatType.StaticWeb, 1, 2)
                 .HasTargetingSphere(
                     Spell.StaticWebTechnique,
                     4.5f,

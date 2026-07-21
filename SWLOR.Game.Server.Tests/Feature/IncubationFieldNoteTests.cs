@@ -165,4 +165,18 @@ public class IncubationFieldNoteTests
             }
         }
     }
+
+    [Test]
+    public void EnzymeRequirement_ExposesEachEnzymeAsASeparateDescription()
+    {
+        var requirement = new MutationRequirementEnzyme();
+        requirement.LyaseEnzymeColors[EnzymeColorType.Black] = 2;
+        requirement.IsomeraseEnzymeColors[EnzymeColorType.Red] = 2;
+        requirement.HydrolaseEnzymeColors[EnzymeColorType.Red] = 1;
+
+        requirement.GetEnzymeDescriptions().Should().Equal(
+            "2x Black Lyase",
+            "2x Red Isomerase",
+            "1x Red Hydrolase");
+    }
 }

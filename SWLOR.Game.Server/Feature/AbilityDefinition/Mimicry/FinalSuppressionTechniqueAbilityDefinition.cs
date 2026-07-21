@@ -34,12 +34,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Lightning_S,
                 VisualEffect.Vfx_Fnf_Storm,
-                maxRange: 8f,
-                damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(DazedStatusEffect), typeof(DisorientedStatusEffect), typeof(StunnedStatusEffect)))
+                maxRange: 8f)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.FinalSuppression, 4, 3)
+                .MimicryTechnique(FeatType.FinalSuppression, 48, 3)
                 .HasTargetingLine(
                     Spell.FinalSuppressionTechnique,
                     8f,

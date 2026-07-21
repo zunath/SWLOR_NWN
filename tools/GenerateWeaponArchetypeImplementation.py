@@ -207,6 +207,7 @@ STATUS_KEYWORDS = [
     ("Infection", "InfectionStatusEffect"),
     ("Bleed", "BleedStatusEffect"),
     ("Toxin", "ToxinStatusEffect"),
+    ("Burn", "BurnStatusEffect"),
     ("Burning", "BurnStatusEffect"),
     ("Marked", "MarkedStatusEffect"),
     ("Smoke", "SmokeBombStatusEffect"),
@@ -442,6 +443,23 @@ def ensure_tlk_text(tlk, by_id, by_text, text):
     return str(str_ref)
 
 
+def ensure_tlk_text_preserving_matching_ref(tlk, by_id, by_text, current_ref, text):
+    """Keep an existing custom TLK ref when it already resolves to the requested text.
+
+    The TLK contains intentional duplicate text in legacy and newer slots. Relinking a working
+    2DA row to a different duplicate creates noisy unrelated asset changes and can invalidate a
+    deployed TLK/2DA pairing even though the visible text is identical.
+    """
+    text = text.strip()
+    if current_ref.isdigit():
+        entry_id = int(current_ref) - CUSTOM_TLK_OFFSET
+        existing = by_id.get(entry_id)
+        if existing is not None and existing.get("text", "").strip() == text:
+            return current_ref
+
+    return ensure_tlk_text(tlk, by_id, by_text, text)
+
+
 def ensure_status_effect_tlk_entries(tlk, by_id, by_text):
     status_dir = ROOT / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition"
     for path in status_dir.glob("*StatusEffect.cs"):
@@ -499,7 +517,7 @@ def read_spell_targeting():
     for row in rows.values():
         label = row.get("Label", "****")
         shape = row.get("TargetShape", "****")
-        if label == "****" or shape == "****":
+        if label == "****":
             continue
 
         targeting[label] = {
@@ -554,14 +572,73 @@ def update_spell_descriptions(spell_updates, tlk, tlk_by_id, tlk_by_text):
             raise RuntimeError(f"Unexpected spells.2da row width for row {row_number}")
 
         spell_desc_token_index = tokens_by_header(tokens, headers, "SpellDesc")
-        spell_desc = ensure_tlk_text(
+        current_spell_desc = tokens[spell_desc_token_index]
+        spell_desc = ensure_tlk_text_preserving_matching_ref(
             tlk,
             tlk_by_id,
             tlk_by_text,
+            current_spell_desc,
             description)
         new_line = replace_2da_token(lines[row_line[row_number]], spell_desc_token_index, spell_desc)
         if lines[row_line[row_number]] != new_line:
             lines[row_line[row_number]] = new_line
+            changed = True
+
+    if changed:
+        spells_path.write_text("\n".join(lines) + "\n")
+
+
+def update_spell_targeting(spell_updates):
+    """Keep generated ability targeting metadata aligned with the Bible description.
+
+    The feat row controls whether the client opens a manual cursor, while the spell row controls
+    the marker's shape and size. Updating only the feat row leaves a valid-looking ability with a
+    stale (or entirely blank) marker, so both halves are generated from the same wording.
+    """
+    if not spell_updates:
+        return
+
+    spells_path = ROOT / "SWLOR_Haks" / "sw_2da" / "spells.2da"
+    lines = spells_path.read_text().splitlines()
+    _, headers = get_2da_header(lines)
+    row_line = {}
+    for line_index, line in enumerate(lines):
+        tokens = line.split()
+        if tokens and tokens[0].isdigit():
+            row_line[int(tokens[0])] = line_index
+
+    changed = False
+    for spell_id, row in spell_updates.items():
+        if not spell_id.isdigit() or int(spell_id) not in row_line:
+            continue
+
+        inferred = infer_targeting_from_description(row)
+        if not inferred:
+            continue
+
+        shape_expression, size_x_literal, size_y_literal, _ = inferred
+        shape = {
+            "AbilityTargetingShapeType.Sphere": "sphere",
+            "AbilityTargetingShapeType.Rect": "rectangle",
+            "AbilityTargetingShapeType.Cone": "cone",
+        }[shape_expression]
+        size_x = f"{float(size_x_literal[:-1]):g}"
+        size_y_value = float(size_y_literal[:-1])
+        size_y = f"{size_y_value:g}" if size_y_value > 0 else "****"
+        flags = "1" if shape == "sphere" and is_aimed_area(row) else "17"
+
+        line_index = row_line[int(spell_id)]
+        new_line = lines[line_index]
+        for header, value in (
+            ("TargetShape", shape),
+            ("TargetSizeX", size_x),
+            ("TargetSizeY", size_y),
+            ("TargetFlags", flags),
+        ):
+            new_line = replace_2da_token(new_line, tokens_by_header(new_line.split(), headers, header), value)
+
+        if lines[line_index] != new_line:
+            lines[line_index] = new_line
             changed = True
 
     if changed:
@@ -591,7 +668,13 @@ def perk_base_id(tab, base):
 
 def parse_int(value):
     value = value.strip()
-    return int(value) if value and value != "-" else 0
+    if not value or value == "-":
+        return 0
+
+    parsed = float(value)
+    if not parsed.is_integer():
+        raise ValueError(f"Expected a whole number, got {value!r}")
+    return int(parsed)
 
 
 def parse_seconds(value):
@@ -618,6 +701,7 @@ def parse_damage(description, level):
     patterns = [
         r"weapon DMG \+ (\d+)",
         r"weapon damage \+ (\d+)",
+        r"(?:deal|deals|dealing) (\d+) (?:Force )?DMG",
         r"\+(\d+) DMG",
     ]
     for pattern in patterns:
@@ -1045,6 +1129,10 @@ def description_stat_entries(row, base):
     if base == "Improved Attentiveness":
         add_stat(stats, "AvoidedAttackAccuracyPercentAdjustment", parse_percent(r"gain \+(\d+)% Accuracy", description))
         add_stat(stats, "AvoidedAttackAccuracyDurationSeconds", parse_duration(description) or 30)
+    if base == "Lateral Footwork":
+        add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+        add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
+        add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
     if base == "Flowing Footwork":
         add_stat(stats, "AreaAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AreaAbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
@@ -1105,11 +1193,10 @@ def description_stat_entries(row, base):
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "StatusAppliedSelfDefensePercentAdjustment", parse_percent(r"gain \+(\d+)% Defense", description))
         add_stat(stats, "StatusAppliedSelfDurationSeconds", parse_duration(description) or 30)
-    if "guard an attack" in lowered and "next katar attack" in lowered and "critical chance" in lowered:
-        add_stat(stats, "GuardedHitNextSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "GuardedHitNextSkillAbilityCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% critical chance", description))
-        add_stat(stats, "GuardedHitNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
-        add_stat(stats, "GuardedHitNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+    if base == "Redirecting Counter":
+        add_stat(stats, "GuardedHitNextAttackCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% critical chance", description))
+        add_stat(stats, "GuardedHitNextAttackDMGBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     elif base == "Redirecting Guard":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "StatusAppliedSelfEnmityPercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
@@ -1135,12 +1222,13 @@ def description_stat_entries(row, base):
             add_stat(stats, "GuardedAllyHitNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
             add_stat(stats, "GuardedAllyHitNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Iron Elbows":
-        add_stat(stats, "GuardRetaliationDamageBonusSkillType", skill_expr)
-        add_stat(stats, "GuardRetaliationDamageBonus", parse_count(r"deal \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitPulseDMG", parse_count(r"deals (\d+) physical DMG", description))
+        add_stat(stats, "GuardedHitPulseRadiusMeters", parse_count(r"within (\d+) meters", description) or 5)
+        add_stat(stats, "GuardedHitPulseEnmityPercentOfIncomingDamage", 100)
     if base == "Retaliatory Flow":
-        add_stat(stats, "GuardedHitNextSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "GuardedHitNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
-        add_stat(stats, "GuardedHitNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        add_stat(stats, "GuardedHitSecondaryNextAttackDMGBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitSecondaryNextAttackEnmityBonus", parse_count(r"\+(\d+) Enmity", description))
+        add_stat(stats, "GuardedHitSecondaryNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Impenetrable Grip":
         add_stat(stats, "MobilityResistance", parse_percent(r"\+(\d+)% Knockdown Resistance", description))
         add_stat(stats, "MindResistance", parse_percent(r"\+(\d+)% Daze Resistance", description))
@@ -1279,18 +1367,22 @@ def description_stat_entries(row, base):
         damage = parse_count(r"deal \+(\d+) DMG", description)
         stamina_restore = parse_count(r"restore[s]? (\d+) STM", description)
         if damage:
-            add_stat(stats, "CostlyAbilityDamageBonusSkillType", skill_expr)
-            add_stat(stats, "CostlyAbilityHitMinimumStaminaCost", 8)
+            if base != "High Guard":
+                add_stat(stats, "CostlyAbilityDamageBonusSkillType", skill_expr)
+            add_stat(stats, "CostlyAbilityDamageMinimumStaminaCost", 8)
             add_stat(stats, "CostlyAbilityDamageBonus", damage)
         if stamina_restore:
-            add_stat(stats, "CostlyAbilityHitStaminaRestoreSkillType", skill_expr)
-            add_stat(stats, "CostlyAbilityHitMinimumStaminaCost", 8)
+            if base != "Restoration Strike":
+                add_stat(stats, "CostlyAbilityHitStaminaRestoreSkillType", skill_expr)
+            add_stat(stats, "CostlyAbilityHitStaminaRestoreMinimumStaminaCost", 8)
             add_stat(stats, "CostlyAbilityHitStaminaRestore", stamina_restore)
-        add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         evasion = parse_percent(r"\+(\d+)% Evasion", description)
         if evasion:
-            add_stat(stats, "AbilityUsedEvasionPercentAdjustment", evasion)
-            add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
+            if base != "High Guard":
+                add_stat(stats, "CostlyAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+            add_stat(stats, "CostlyAbilityUsedEvasionMinimumStaminaCost", 8)
+            add_stat(stats, "CostlyAbilityUsedEvasionPercentAdjustment", evasion)
+            add_stat(stats, "CostlyAbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
     if "When an enemy misses you" in description or "After an enemy misses you" in description or "After you evade an attack" in description:
         stamina_cost = parse_count(r"costs (\d+) less STM", description)
         if stamina_cost:
@@ -1379,7 +1471,11 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityUsedRangedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityUsedRangedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Ranged Evasion", description))
         add_stat(stats, "AbilityUsedRangedEvasionDurationSeconds", parse_duration(description) or 30)
-    if "After using a hostile ranged ability, gain" in description and "Evasion" in description and "Ranged Evasion" not in description:
+    if base == "Mobile Footwork":
+        add_stat(stats, "SecondaryAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
+        add_stat(stats, "SecondaryAbilityUsedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Evasion", description))
+        add_stat(stats, "SecondaryAbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
+    elif "After using a hostile ranged ability, gain" in description and "Evasion" in description and "Ranged Evasion" not in description:
         add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Evasion", description))
         add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
@@ -1458,11 +1554,10 @@ def exact_weapon_stance_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Vigor Stance":
-        add_stat(stats, "SkillAbilityStaminaCostFlatAdjustmentSkillType", skill_expr)
-        add_stat(stats, "SkillAbilityStaminaCostFlatAdjustment", parse_count(r"cost (\d+) additional STM", description))
-        add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
-        add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"grant \+(\d+)% Evasion", description))
-        add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
+        add_stat(stats, "HostileAbilityStaminaCostFlatAdjustment", parse_count(r"costs? (\d+) additional STM", description))
+        add_stat(stats, "DamageDealtPercentAdjustment", parse_percent(r"damage is increased by (\d+)%", description))
+        add_stat(stats, "HostileAbilityUsedEvasionPercentAdjustment", parse_percent(r"grants? \+(\d+)% Evasion", description))
+        add_stat(stats, "HostileAbilityUsedEvasionDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
         return list(stats.items())
 
     if base == "Cyclone Stance":
@@ -1679,11 +1774,25 @@ def profile_property_lines(row, level, primary_status):
         if not any(existing_name == name for existing_name, _ in properties):
             properties.append((name, value))
 
+    def add_high_stm_exposed_properties():
+        if base != "Crippling Defense":
+            add_profile_property("TemporaryCostlyAbilityStatusSkillType", skill_type_expression(row))
+        add_profile_property("TemporaryCostlyAbilityStatusMinimumStaminaCost", "8")
+        add_profile_property(
+            "TemporaryCostlyAbilityExposedDurationSeconds",
+            str(parse_count(r"Exposed for (\d+) seconds", description) or 30))
+        add_profile_property(
+            "TemporaryDefeatedEnemyEffectDurationSeconds",
+            str(first_sentence_duration(description) or parse_duration(description) or 45))
+
     if row["Type"] in {"Stance", "Toggle", "Aura"}:
         return properties
 
     if row.get("CastingTime", "").strip().lower() == "queued":
         add_profile_property("IsQueuedWeaponAbility", "true")
+
+    if "force dmg" in lowered:
+        add_profile_property("DamageType", "CombatDamageType.Force")
 
     if base == "Pathogen Strike":
         add_profile_property(
@@ -1819,10 +1928,11 @@ def profile_property_lines(row, level, primary_status):
         if debuffed_percent:
             properties.append(("DamagePercentIfTargetDebuffed", str(debuffed_percent)))
 
-    if "sundered target" in lowered:
+    if "sundered target" in lowered or "already inflicted with sunder" in lowered:
         sundered_damage = (
             first_int(r"Sundered targets take \+(\d+) DMG", description) or
-            first_int(r"If the target is Sundered, deals \+(\d+) DMG", description)
+            first_int(r"If the target is Sundered, deals \+(\d+) DMG", description) or
+            first_int(r"Targets already inflicted with Sunder take an additional (\d+)(?: Force)? DMG", description)
         )
         if sundered_damage:
             add_profile_property("ExtraDamageTargetStatusEffect", "typeof(SunderStatusEffect)")
@@ -2075,7 +2185,7 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("SelfGuardDurationSecondsIfRecentGuardedAllyHit", guarded_ally_guard.group(3))
 
     recent_guard_counter = re.search(
-        r"If you guarded an attack within the last (\d+) seconds, this deals weapon DMG \+\s*(\d+) instead(?: and inflicts Dazed for (\d+) seconds)?",
+        r"If you guarded an attack within the last (\d+) seconds, (?:this|it) deals weapon DMG \+\s*(\d+) instead(?: and inflicts Dazed for (\d+) seconds)?",
         description,
         re.IGNORECASE)
     if recent_guard_counter:
@@ -2155,11 +2265,8 @@ def profile_property_lines(row, level, primary_status):
             "TemporarySuppressionStackEvasionPenaltyPercentAdjustment",
             parse_count(r"additional (\d+)%", description) or 0)
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
-    if "high-STM abilities also inflict Exposed" in description:
-        add_profile_property("TemporaryCostlyAbilityStatusSkillType", skill_type_expression(row))
-        add_profile_property("TemporaryCostlyAbilityHitMinimumStaminaCost", "8")
-        add_profile_property("TemporaryCostlyAbilityExposedDurationSeconds", str(parse_count(r"Exposed for (\d+) seconds", description) or 30))
-        add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
+    if "high-stm abilities also inflict exposed" in lowered:
+        add_high_stm_exposed_properties()
     if "area attacks pulse" in lowered or "fragmentation zones" in lowered:
         fragmentation_damage = (
             parse_count(r"pulse for (\d+) physical", description) or
@@ -2182,12 +2289,6 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("TemporaryStatusAppliedSelfDurationSeconds", parse_count(r"Attack Deflection for (\d+) seconds", description) or 30)
         add_profile_property("TemporaryStatusAppliedSelfStaminaRestore", parse_count(r"restore (\d+) STM", description))
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
-    if "high-stm abilities also inflict exposed" in lowered:
-        add_profile_property("TemporaryCostlyAbilityStatusSkillType", skill_type_expression(row))
-        add_profile_property("TemporaryCostlyAbilityHitMinimumStaminaCost", "8")
-        add_profile_property("TemporaryCostlyAbilityExposedDurationSeconds", parse_count(r"Exposed for (\d+) seconds", description) or 30)
-        add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
-
     factory = primary_status_factory(description, primary_status)
     if factory:
         properties.append(("StatusEffectFactory", factory))
@@ -2237,6 +2338,15 @@ def is_area(description):
     return hostile_radius_phrase(lowered) is not None
 
 
+def has_explicit_area_target_point(lowered):
+    return any(marker in lowered for marker in (
+        "target location",
+        "target point",
+        "selected location",
+        "selected point",
+    ))
+
+
 def is_aimed_area(row):
     """True when the area is directional and the player must aim it.
 
@@ -2245,6 +2355,14 @@ def is_aimed_area(row):
     Radius areas ("within Nm", "nearby enemies") always originate on the caster and must not
     prompt. See the Ability Definitions section of AGENTS.md.
     """
+    # A sphere can also be aimed when it is placed at a selected point. Keep this explicit so
+    # radius-only wording such as "enemies within 5m of you" remains self-centered. Check this
+    # before inference because wording such as "a 5m-radius area at the target location" still
+    # identifies the player's aim point even if a new radius phrase is not yet recognized below.
+    lowered = row["Description"].lower()
+    if has_explicit_area_target_point(lowered):
+        return True
+
     inferred = infer_targeting_from_description(row)
     if not inferred:
         return False
@@ -2338,6 +2456,10 @@ def extract_stated_dimensions(lowered):
     if single:
         return float(single.group(1)), None
 
+    radius = re.search(r'(\d+(?:\.\d+)?)\s*m\s*-\s*radius\b', lowered)
+    if radius:
+        return float(radius.group(1)), None
+
     return None
 
 
@@ -2345,6 +2467,7 @@ def infer_targeting_from_description(row):
     description = row["Description"]
     lowered = description.lower()
     stated = extract_stated_dimensions(lowered)
+    is_explicitly_aimed = has_explicit_area_target_point(lowered)
 
     if describes_shape(lowered, "line"):
         default_length = 20.0 if row["Tab"] in {"Pistol", "Rifle", "Throwing"} else 8.0
@@ -2371,6 +2494,7 @@ def infer_targeting_from_description(row):
     # The radius itself is still read from whatever the description states.
     if (
         "nearby enemies" in lowered or
+        is_explicitly_aimed or
         "in an area" in lowered or
         "in the area" in lowered or
         "enemies within" in lowered or
@@ -2383,6 +2507,7 @@ def infer_targeting_from_description(row):
             "AbilityTargetingShapeType.Sphere",
             f"{radius:.1f}f",
             "0.0f",
+            "AbilityTargetingFlags.HarmsEnemies" if is_explicitly_aimed else
             "AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf")
 
     return None
@@ -2400,6 +2525,18 @@ def targeting_arguments_for_row(row, feat, spell_targeting):
                 f"{feat}: description implies {inferred[0]} but there is no spells.2da row for it. "
                 f"Add a '{feat}' row to SWLOR_Haks/sw_2da/spells.2da and a matching Spell enum "
                 f"value before regenerating. See AGENTS.md > Ability Definitions.")
+        return (
+            "Spell.Invalid",
+            "AbilityTargetingShapeType.None",
+            "0.0f",
+            "0.0f",
+            "AbilityTargetingFlags.HarmsEnemies",
+        )
+
+    if targeting["shape"] == "****":
+        if inferred:
+            return (f"Spell.{feat}", *inferred)
+
         return (
             "Spell.Invalid",
             "AbilityTargetingShapeType.None",
@@ -2550,6 +2687,7 @@ def add_missing_feats(rows):
                 "description": row["Description"].strip(),
                 "hostile": "1" if hostile else "****",
                 "target_self": "1" if no_manual_target else "****",
+                "row": row,
             }
             if feat not in feat_values:
                 existing_rows = feat_rows_by_label.get(feat)
@@ -2652,11 +2790,15 @@ def add_missing_feats(rows):
 
         icon_index = tokens_by_header(tokens, headers, "ICON")
         tokens[tokens_by_header(tokens, headers, "LABEL")] = metadata["label"]
-        tokens[tokens_by_header(tokens, headers, "FEAT")] = ensure_tlk_text(tlk, tlk_by_id, tlk_by_text, metadata["name"])
-        tokens[tokens_by_header(tokens, headers, "DESCRIPTION")] = ensure_tlk_text(
+        feat_index = tokens_by_header(tokens, headers, "FEAT")
+        description_index = tokens_by_header(tokens, headers, "DESCRIPTION")
+        tokens[feat_index] = ensure_tlk_text_preserving_matching_ref(
+            tlk, tlk_by_id, tlk_by_text, tokens[feat_index], metadata["name"])
+        tokens[description_index] = ensure_tlk_text_preserving_matching_ref(
             tlk,
             tlk_by_id,
             tlk_by_text,
+            tokens[description_index],
             metadata["description"])
         if tokens[icon_index].lower() in TEMPLATE_ACTIVE_ICON_RESREFS:
             tokens[icon_index] = generated_icon_resref(feat, row_number)
@@ -2695,11 +2837,15 @@ def add_missing_feats(rows):
 
         icon_index = tokens_by_header(tokens, headers, "ICON")
         tokens[tokens_by_header(tokens, headers, "LABEL")] = metadata["label"]
-        tokens[tokens_by_header(tokens, headers, "FEAT")] = ensure_tlk_text(tlk, tlk_by_id, tlk_by_text, metadata["name"])
-        tokens[tokens_by_header(tokens, headers, "DESCRIPTION")] = ensure_tlk_text(
+        feat_index = tokens_by_header(tokens, headers, "FEAT")
+        description_index = tokens_by_header(tokens, headers, "DESCRIPTION")
+        tokens[feat_index] = ensure_tlk_text_preserving_matching_ref(
+            tlk, tlk_by_id, tlk_by_text, tokens[feat_index], metadata["name"])
+        tokens[description_index] = ensure_tlk_text_preserving_matching_ref(
             tlk,
             tlk_by_id,
             tlk_by_text,
+            tokens[description_index],
             metadata["description"])
         expected_icon = generated_icon_resref(feat, row_number)
         if tokens[icon_index] != expected_icon:
@@ -2732,6 +2878,7 @@ def add_missing_feats(rows):
                 feat_file_changed = True
 
     spell_updates = {}
+    spell_targeting_updates = {}
     for feat, metadata in active_metadata.items():
         row_number = feat_values.get(feat)
         if row_number is None or row_number not in row_line:
@@ -2744,8 +2891,10 @@ def add_missing_feats(rows):
         spell_id = tokens[tokens_by_header(tokens, headers, "SPELLID")]
         if spell_id.isdigit():
             spell_updates[spell_id] = metadata["description"]
+            spell_targeting_updates[spell_id] = metadata["row"]
 
     update_spell_descriptions(spell_updates, tlk, tlk_by_id, tlk_by_text)
+    update_spell_targeting(spell_targeting_updates)
 
     if enum_insertions:
         passive_entries = [f"        {name} = {row}," for name, row, kind in enum_insertions if kind == "passive"]
@@ -3030,7 +3179,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                 re.IGNORECASE):
                 statuses = [status for status in statuses if status != "DazedStatusEffect"]
             if re.search(
-                r"If you guarded an attack within the last \d+ seconds, this deals weapon DMG \+\s*\d+ instead and inflicts Dazed",
+                r"If you guarded an attack within the last \d+ seconds, (?:this|it) deals weapon DMG \+\s*\d+ instead and inflicts Dazed",
                 row["Description"],
                 re.IGNORECASE):
                 statuses = [status for status in statuses if status != "DazedStatusEffect"]

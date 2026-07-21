@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -35,11 +36,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Shake,
                 maxRange: 5f,
-                additionalStatusEffects: new[] { typeof(SunderStatusEffect) })
+                afterSuccessfulHit: (activator, target) =>
+                    StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f, CombatDamageType.Physical))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.LockstepCrush, 4, 3)
+                .MimicryTechnique(FeatType.LockstepCrush, 43, 3)
                 .HasTargetingCone(
                     Spell.LockstepCrushTechnique,
                     5f,

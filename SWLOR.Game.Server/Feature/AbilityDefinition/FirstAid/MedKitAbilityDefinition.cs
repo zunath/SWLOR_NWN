@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             };
             var baseAmount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
             var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
-            amount = FirstAidTreatmentAdjustments.ApplyMedicalHealingBonus(activator, amount);
+            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.SonicShriek, 2, 2)
+                .MimicryTechnique(FeatType.SonicShriek, 0, 2)
                 .HasTargetingCone(
                     Spell.SonicShriekTechnique,
                     8f,

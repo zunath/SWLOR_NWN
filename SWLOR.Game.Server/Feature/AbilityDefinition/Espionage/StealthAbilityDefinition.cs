@@ -16,15 +16,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
-            Stealth(builder, FeatType.Stealth1, "Stealth I", 1);
-            Stealth(builder, FeatType.Stealth2, "Stealth II", 2);
-            Stealth(builder, FeatType.Stealth3, "Stealth III", 3);
-            Stealth(builder, FeatType.Stealth4, "Stealth IV", 4);
+            AddStealthRank(builder, FeatType.Stealth1, "Stealth I", 1);
+            AddStealthRank(builder, FeatType.Stealth2, "Stealth II", 2);
+            AddStealthRank(builder, FeatType.Stealth3, "Stealth III", 3);
+            AddStealthRank(builder, FeatType.Stealth4, "Stealth IV", 4);
 
             return builder.Build();
         }
 
-        private static void Stealth(AbilityBuilder builder, FeatType feat, string name, int level)
+        private static void AddStealthRank(AbilityBuilder builder, FeatType feat, string name, int level)
         {
             builder
                 .Create(feat, PerkType.Stealth)
@@ -34,8 +34,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasRecastDelay(RecastGroup.Stealth, 8f)
                 .SkillType(SkillType.Espionage)
+                .HasCustomValidation(ValidateStealthUse)
                 .HasImpactAction(ToggleStealthMode)
+                .PreservesStealthDuringActivation()
                 .IsCastedAbility();
+        }
+
+        private static string ValidateStealthUse(uint activator, uint target, int level, Location targetLocation)
+        {
+            // Exiting stealth is always valid. Entry remains out-of-combat only, except for the
+            // short explicit window opened by Ghost Protocol.
+            if (GetActionMode(activator, ActionMode.Stealth) ||
+                !GetIsInCombat(activator) ||
+                GetLocalInt(activator, Stealth.CombatEntryWindowVariable) != 0)
+            {
+                return string.Empty;
+            }
+
+            return "You cannot enter stealth while in combat.";
         }
 
         private static void ToggleStealthMode(uint activator, uint target, int level, Location targetLocation)

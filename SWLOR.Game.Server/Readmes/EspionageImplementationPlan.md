@@ -26,7 +26,7 @@ Six player-facing equipment stats are documented on the Bible `Character Stats` 
 | Trap Bonus | Trap effect strength |
 | Disarm | Hostile-trap disarm checks |
 | Poison Bonus | Venom damage potency, snapshotted from the applier |
-| Lockpicking | Lockbox success checks |
+| Lockpicking | Additional trace budget for slicing lockboxes and terminals |
 
 Perk-only adjustments such as flat Stealth rating, stealthed movement speed, stealth drain reduction, Back Attack damage/critical rate, trap capacity, trap arming speed, trap detection range, coating charges, and disguise capacity/cooldown are also represented by `StatType` values. Shared stealth, movement, damage, poison, trap, and disguise systems consume those stats; they do not special-case perk ownership.
 
@@ -47,8 +47,12 @@ Perk-only adjustments such as flat Stealth rating, stealthed movement speed, ste
 ## Infiltrator behavior
 
 - Back Attack applies only to melee weapon attacks made from behind: +3/+5/+8% damage, with +3/+5% Critical Rate at ranks II/III.
-- For the first iteration, Slicing applies only to lockboxes. Slicing I-V unlock tier 1-5 lockboxes; Slicing III-V shorten the lockbox interaction by 20/30/40%, reducing its 2-second base delay to 1.6/1.4/1.2 seconds. It does not claim support for world locks or terminals.
-- Lockbox success uses the Lockpicking stat and a tier-scaled roll. Failed attempts impose a 30-second retry lockout; the box is not destroyed.
+- Slicing I-V unlock tier 1-5 portable lockboxes and shared world terminals. Mandalorian Facility quest terminals and ordinary world locks remain outside this system.
+- Slicing is a turn-based NUI circuit puzzle with no timers or heartbeat work. Players rotate circuit tiles or swap adjacent tiles to connect the entry node to the core before exhausting trace. Every board is generated from a deterministic, guaranteed-solvable route.
+- Boards scale from 3x3 at tier 1 to 5x5 at tier 5. Slicing III-V grant +1/+2/+3 trace. Every five points of combined Lockpicking and positive Perception modifier grants another trace, capped at +5.
+- Cancelling before the first move is free. Once committed, aborting, moving away, dying, or disconnecting counts as a failure. A trace fuse grants +1 trace on the first move, while information tools provide immediate puzzle assistance and are consumed when used.
+- Lockboxes preserve their seed and failure count when transferred. The first failure cannot destroy the box; later failures raise the destruction chance to 10/25/50/100%. Shared terminals reserve one player at a time, release stale reservations after three minutes, and respawn at a random valid walkmesh point after 45-75 minutes.
+- Success awards experience once and one weighted reward. Direct rewards are fixed-stat items balanced by Armor skill requirements rather than Espionage rank; they do not grant raw attributes. The system has separate 50-item lockbox and 50-item terminal pools, supplemented by suitable existing items.
 - Tactical Escape I/II reduce enmity by 35/60% and grant +8/+12% Evasion for 30 seconds; rank II also removes negative movement-speed effects.
 - Shadow Step I/II moves the user behind one hostile target within 5m and grants +10/+15% Evasion for 30 seconds; rank II also removes negative movement-speed effects. It does not grant invisibility.
 - Ghost Protocol reduces enmity by 80%, permits up to 30 seconds of stealth, and primes the next back attack within 30 seconds to critically hit and apply Exposed (-20% Defense for 30 seconds).
@@ -73,6 +77,6 @@ Perk-only adjustments such as flat Stealth rating, stealthed movement speed, ste
 
 ## Verification and release work
 
-The static implementation review currently covers all 41 rows: exact price, requirements, type, resource/cast/recast values, description text, perk/feat wiring, active definitions, spell links, TLK entries, scaling declarations, and targeting metadata. Focused tests also cover disguise progression, stealth drain timing, Slicing delay, coating charges, Venom duration/damage, trap ranges, and category totals.
+The static implementation review currently covers all 41 rows: exact price, requirements, type, resource/cast/recast values, description text, perk/feat wiring, active definitions, spell links, TLK entries, scaling declarations, and targeting metadata. Focused tests also cover disguise progression, slicing board solvability and failure escalation, reward catalogs and obtainability, coating charges, Venom duration/damage, trap ranges, and category totals.
 
 Remaining release work is live playtesting and deployment packaging, including NPC trap placement where desired, module repack, and hak rebuild. These are release tasks, not reasons to exclude Espionage rows from the Bible review or mark them unimplemented.

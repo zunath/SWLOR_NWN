@@ -110,31 +110,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SlicingTrait)
-                .Description("Can open tier 1 lockboxes.")
+                .Description("Can slice tier 1 lockboxes and terminals.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 8)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can open tier 2 lockboxes.")
+                .Description("Can slice tier 2 lockboxes and terminals.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 22)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can open tier 3 lockboxes. Lockbox opening is 20% faster.")
+                .Description("Can slice tier 3 lockboxes and terminals. Grants +1 trace during slicing.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 30)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can open tier 4 lockboxes. Lockbox opening is 30% faster.")
+                .Description("Can slice tier 4 lockboxes and terminals. Grants +2 trace during slicing.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 42)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can open tier 5 lockboxes. Lockbox opening is 40% faster.")
+                .Description("Can slice tier 5 lockboxes and terminals. Grants +3 trace during slicing.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 48);

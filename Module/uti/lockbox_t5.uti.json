@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed tier 5 lockbox. Requires Slicing rank 5 to crack open."
+      "0": "A sealed tier 5 lockbox. Requires Slicing rank 5. Its circuit seed, failures, and integrity remain attached to the box when traded."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed tier 5 lockbox. Requires Slicing rank 5 to crack open."
+      "0": "A sealed tier 5 lockbox. Requires Slicing rank 5. Its circuit seed, failures, and integrity remain attached to the box when traded."
     }
   },
   "Identified": {

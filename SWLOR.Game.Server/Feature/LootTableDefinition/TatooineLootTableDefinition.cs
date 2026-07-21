@@ -210,7 +210,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ruby", 8, 1, true)
                 .AddItem("hyphae_wood", 4, 1, true)
                 .AddItem("map_038", 1, 1, true)
-                .AddItem("map_036", 1, 1, true);
+                .AddItem("map_036", 1, 1, true)
+                .AddItem("lockbox_t4", 2, 1, true);
         }
 
         private void TuskenCrate()
@@ -249,6 +250,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("emerald", 1, 1, true)
                 .AddItem("chiro_shard", 1, 1, true)
+                .AddItem("lockbox_t5", 2, 1, true)
                 .AddGold(1000, 5);
         }
     }

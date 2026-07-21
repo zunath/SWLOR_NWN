@@ -69,9 +69,14 @@ def collect():
         r'new\s+ItemReward\(\s*"([^"]+)"', r'\.RewardItem\(\s*"([^"]+)"',
         r'\.AddItemReward\(\s*"([^"]+)"',
         r'RefinedItemResref\s*=\s*"([^"]+)"', r'new\s+TerminalItem\([^,]+,\s*"([^"]+)"',
+        r'(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*"([^"]+)"',
     ]
     # Files whose bare string literals are all item resrefs (attribute-decorated registries).
-    literal_registries = ("FishType.cs", "FishingRodType.cs", "FishingBaitType.cs")
+    literal_registries = (
+        "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs",
+        "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
+        "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs",
+    )
     for f in glob.glob(os.path.join(ROOT, "SWLOR.Game.Server", "**", "*.cs"), recursive=True):
         if os.path.join(".claude", "worktrees") in f:
             continue

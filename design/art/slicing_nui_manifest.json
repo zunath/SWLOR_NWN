@@ -1,0 +1,53 @@
+{
+  "source": "design\\art\\slicing_nui_source.png",
+  "backgrounds": [
+    "slc_bg_l",
+    "slc_bg_t"
+  ],
+  "tile_count": 256,
+  "themes": {
+    "l": {
+      "name": "lockbox",
+      "accent": [
+        232,
+        151,
+        42
+      ],
+      "secondary": [
+        255,
+        205,
+        92
+      ]
+    },
+    "t": {
+      "name": "terminal",
+      "accent": [
+        40,
+        195,
+        225
+      ],
+      "secondary": [
+        124,
+        239,
+        255
+      ]
+    }
+  },
+  "types": [
+    "s",
+    "c",
+    "j",
+    "x",
+    "e",
+    "o",
+    "b",
+    "q"
+  ],
+  "orientations": 4,
+  "states": [
+    "u",
+    "p",
+    "s",
+    "d"
+  ]
+}

@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.5f,
                 24f,
                 8,
-                20,
-                12,
+                0,
+                30,
                 typeof(ForceSuppressionStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 4.5f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.DarkShock, 3, 3)
+                .MimicryTechnique(FeatType.DarkShock, 37, 3)
                 .HasTargetingSphere(
                     Spell.DarkShockTechnique,
                     4.5f,

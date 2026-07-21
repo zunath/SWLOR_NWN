@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.5f,
                 24f,
                 8,
-                20,
-                10,
+                28,
+                30,
                 typeof(BleedStatusEffect),
                 CombatImpactAreaShape.Line,
                 8f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.GoringCharge, 3, 2)
+                .MimicryTechnique(FeatType.GoringCharge, 14, 2)
                 .HasTargetingLine(
                     Spell.GoringChargeTechnique,
                     8f,

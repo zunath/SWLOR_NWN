@@ -24,21 +24,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.4f,
                 18f,
                 5,
-                13,
-                4,
+                18,
+                15,
                 typeof(DazedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 4.5f,
                 0f,
                 CombatDamageType.Physical,
                 ResistanceType.Mind,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
+                VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.TailSweep, 2, 2)
+                .MimicryTechnique(FeatType.TailSweep, 10, 2)
                 .HasTargetingSphere(
                     Spell.TailSweepTechnique,
                     4.5f,

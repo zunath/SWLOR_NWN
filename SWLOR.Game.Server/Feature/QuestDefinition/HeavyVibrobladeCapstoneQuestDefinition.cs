@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Absolute Defense Forge Heat Ledger is in hand. Return it to Valis Korr on Korriban.")
+                    "The Absolute Defense Forge Heat Ledger is in hand. Return it to Valis Korr at the Korriban Sith Academy.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Absolute Defense Sith Tempering Matrix. Bring it to Valis Korr on Korriban.")
+                    "You recovered the Absolute Defense Sith Tempering Matrix. Bring it to Valis Korr at the Korriban Sith Academy.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Absolute Defense Cracked Anvil Sigil is yours. Return to Valis Korr on Korriban.")
+                    "The warden is defeated and the Absolute Defense Cracked Anvil Sigil is yours. Return to Valis Korr at the Korriban Sith Academy.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Absolute Defense Overseer's Clearance Token from the inner circle. Deliver it to Valis Korr on Korriban.")
+                    "You took the Absolute Defense Overseer's Clearance Token from the inner circle. Deliver it to Valis Korr at the Korriban Sith Academy.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Absolute Defense master is defeated. Return to Valis Korr on Korriban.")
+                    "The Absolute Defense master is defeated. Return to Valis Korr at the Korriban Sith Academy.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Soul Ascension Forge Heat Ledger is in hand. Return it to Senn Dralok on Korriban.")
+                    "The Soul Ascension Forge Heat Ledger is in hand. Return it to Senn Dralok at the Korriban wasteland outpost.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Soul Ascension Sith Tempering Matrix. Bring it to Senn Dralok on Korriban.")
+                    "You recovered the Soul Ascension Sith Tempering Matrix. Bring it to Senn Dralok at the Korriban wasteland outpost.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Soul Ascension Cracked Anvil Sigil is yours. Return to Senn Dralok on Korriban.")
+                    "The warden is defeated and the Soul Ascension Cracked Anvil Sigil is yours. Return to Senn Dralok at the Korriban wasteland outpost.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Soul Ascension Overseer's Clearance Token from the inner circle. Deliver it to Senn Dralok on Korriban.")
+                    "You took the Soul Ascension Overseer's Clearance Token from the inner circle. Deliver it to Senn Dralok at the Korriban wasteland outpost.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Soul Ascension master is defeated. Return to Senn Dralok on Korriban.")
+                    "The Soul Ascension master is defeated. Return to Senn Dralok at the Korriban wasteland outpost.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -20,21 +20,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Holdfast Slam",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.HoldfastSlam,
                 1.3f,
                 24f,
                 9,
-                32,
-                12,
+                0,
+                30,
                 typeof(SunderStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
-                maxRange: 3f)
+                maxRange: 3f,
+                enmityBonus: 100,
+                additionalStatusEffects: new[] { typeof(ExposedStatusEffect) })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Vitality)
-                .MimicryTechnique(FeatType.HoldfastSlam, 4, 3)
+                .MimicryTechnique(FeatType.HoldfastSlam, 44, 3)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

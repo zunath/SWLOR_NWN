@@ -22,6 +22,8 @@ public class LightsaberPerkBehaviorTests
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackPercent, "3");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackPercent, "10");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackPercent, "15");
+        AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackMaxPercent, "9");
+        AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackMaxPercent, "10");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackMaxPercent, "15");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackMinFPCost, "5");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackDurationSeconds, "30");
@@ -106,8 +108,8 @@ public class LightsaberPerkBehaviorTests
         var source = AbilitySource("GuardiansChallengeAbilityDefinition.cs");
         source.Should().Contain("SelfEnmityPercentIfTargetRecentlyDamagedActivator = enmityPercent");
         source.Should().Contain("ProtectedTargetHitWindowSeconds = 30");
-        source.Should().Contain("Build(builder, FeatType.GuardiansChallenge1, \"Guardian's Challenge I\", 1, 12, 4, 1, 20)");
-        source.Should().Contain("Build(builder, FeatType.GuardiansChallenge2, \"Guardian's Challenge II\", 2, 24, 8, 2, 30)");
+        source.Should().Contain("Build(builder, FeatType.GuardiansChallenge1, \"Guardian's Challenge I\", 1, 12, 4, 1, 20, Spell.GuardiansChallenge1)");
+        source.Should().Contain("Build(builder, FeatType.GuardiansChallenge2, \"Guardian's Challenge II\", 2, 24, 8, 2, 30, Spell.GuardiansChallenge2)");
         source.Should().NotContain("RequiresRecentWardHitTarget");
         source.Should().NotContain("GuardiansChallenge3");
     }
@@ -127,6 +129,19 @@ public class LightsaberPerkBehaviorTests
         var source = AbilitySource("ShatteringStrikeAbilityDefinition.cs");
         source.Should().Contain("StatusEffectFactory = () => new SunderStatusEffect(10)");
         source.Should().Contain("StatusEffectFactory = () => new SunderStatusEffect(12)");
+    }
+
+    [Test]
+    public void Epicenter_IsSelfCenteredForceAreaWithPreExistingSunderBonus()
+    {
+        var source = AbilitySource("EpicenterAbilityDefinition.cs");
+        source.Should().Contain("Spell.Epicenter1");
+        source.Should().Contain("AbilityTargetingShapeType.Sphere");
+        source.Should().Contain("6.0f");
+        source.Should().Contain("AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf");
+        source.Should().Contain("DamageType = CombatDamageType.Force");
+        source.Should().Contain("ExtraDamageTargetStatusEffect = typeof(SunderStatusEffect)");
+        source.Should().Contain("ExtraDamageIfTargetStatusEffect = 15");
     }
 
     [Test]
@@ -151,8 +166,43 @@ public class LightsaberPerkBehaviorTests
         aegis.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(18);
         aegis.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(22);
         aegis.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
-        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionPercent].Should().Be(24);
-        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapPercent].Should().Be(75);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionOverridePercent].Should().Be(24);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapOverridePercent].Should().Be(75);
+    }
+
+    [Test]
+    public void ForceConversionSplit_RoundsAndClampsConvertedPortion()
+    {
+        Combat.GetIncomingPhysicalToForceConversionPortion(100, 15).Should().Be(15);
+        Combat.GetIncomingPhysicalToForceConversionPortion(100, 30).Should().Be(30);
+        Combat.GetIncomingPhysicalToForceConversionPortion(10, 25).Should().Be(3); // 2.5 rounds away from zero
+        Combat.GetIncomingPhysicalToForceConversionPortion(0, 30).Should().Be(0);
+        Combat.GetIncomingPhysicalToForceConversionPortion(50, 0).Should().Be(0);
+        Combat.GetIncomingPhysicalToForceConversionPortion(50, 150).Should().Be(50); // percent clamps to 100
+        Combat.GetIncomingPhysicalToForceConversionPortion(7, 100).Should().Be(7);
+    }
+
+    [Test]
+    public void SaberWardConversion_RetypesPhysicalShareToRealForceDamage()
+    {
+        var root = FindRepositoryRoot().FullName;
+
+        // The converted share is dealt as a real Force damage instance (Force resistance + combat-log
+        // visibility) via ApplyTriggeredDamage, not merely approximated by blending defense.
+        var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combat.Should().Contain("ApplyTriggeredDamage(attacker, defender, forcePortion, CombatDamageType.Force)");
+
+        // The Force portion must be deferred off the native damage-roll hook (DelayCommand), not applied
+        // synchronously mid-hook, or it re-enters the damage/AI chain and cascades with reflect effects.
+        combat.Should().Contain("DelayCommand");
+
+        // The native auto-attack path splits the physical hit before physical resistance.
+        var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        native.Should().Contain("Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage)");
+
+        // Both ability damage paths do the same before their physical resistance stage.
+        var ability = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        ability.Should().Contain("Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage)");
     }
 
     [Test]
@@ -163,6 +213,56 @@ public class LightsaberPerkBehaviorTests
         pressure.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(6);
         pressure.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(6);
         pressure.StatGroup.Stats[StatType.MobilityResistance].Should().Be(10);
+    }
+
+    [Test]
+    public void Embattled_RefreshesOnEveryAttemptedAttackNotJustLandedHits()
+    {
+        var resolve = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+
+        // Attack resolution refreshes Embattled regardless of hit/miss/deflect outcome.
+        resolve.Should().Contain("EmbattledStatusEffect.Refresh(defender.m_idSelf, attacker.m_idSelf)");
+    }
+
+    [Test]
+    public void DeflectingReturn_ReflectsCappedShareOfWeaponDamage()
+    {
+        // 8% of a 50-DMG attack = 4, under the 25% cap of a 60-DMG saber (15).
+        Combat.GetRangedDeflectionReflectionAmount(50, 8, 60, 25).Should().Be(4);
+        // Cap binds: 16% of 100 = 16, capped at 50% of 20 = 10.
+        Combat.GetRangedDeflectionReflectionAmount(100, 16, 20, 50).Should().Be(10);
+        // No reflection without a percent or without incoming damage.
+        Combat.GetRangedDeflectionReflectionAmount(50, 0, 60, 25).Should().Be(0);
+        Combat.GetRangedDeflectionReflectionAmount(0, 8, 60, 25).Should().Be(0);
+        // No cap applied when the cap percent is 0.
+        Combat.GetRangedDeflectionReflectionAmount(100, 16, 20, 0).Should().Be(16);
+    }
+
+    [Test]
+    public void DeflectingReturn_UsesEmbattledBonusAndPerfectAegisFinalOverrides()
+    {
+        Combat.GetRangedDeflectionReflectionRates(16, 50, 2, 3, 4, 0, 0)
+            .Should().Be((16, 50));
+        Combat.GetRangedDeflectionReflectionRates(16, 50, 3, 3, 4, 0, 0)
+            .Should().Be((20, 50));
+
+        // Stat totals remain additive globally, so Perfect Aegis uses separate final-override stats.
+        // This prevents its documented 24% / 75% ceiling from becoming 40% / 125% when the
+        // permanent Deflecting Return III values are also present.
+        Combat.GetRangedDeflectionReflectionRates(16, 50, 5, 3, 4, 24, 75)
+            .Should().Be((24, 75));
+    }
+
+    [Test]
+    public void DeflectingReturn_WiredIntoRangedDeflectionResolution()
+    {
+        var resolve = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+
+        // Only a deflected ranged attack reflects, and it does so through the stat-driven helper.
+        resolve.Should().Contain("attackType == (uint)AttackType.Ranged");
+        resolve.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
     }
 
     [Test]

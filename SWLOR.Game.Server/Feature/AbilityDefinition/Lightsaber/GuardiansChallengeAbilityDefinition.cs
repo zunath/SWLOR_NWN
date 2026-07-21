@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            Build(builder, FeatType.GuardiansChallenge1, "Guardian's Challenge I", 1, 12, 4, 1, 20);
-            Build(builder, FeatType.GuardiansChallenge2, "Guardian's Challenge II", 2, 24, 8, 2, 30);
+            Build(builder, FeatType.GuardiansChallenge1, "Guardian's Challenge I", 1, 12, 4, 1, 20, Spell.GuardiansChallenge1);
+            Build(builder, FeatType.GuardiansChallenge2, "Guardian's Challenge II", 2, 24, 8, 2, 30, Spell.GuardiansChallenge2);
 
             return builder.Build();
         }
@@ -30,7 +30,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             int baseDamage,
             int stamina,
             int fp,
-            int enmityPercent)
+            int enmityPercent,
+            Spell targetingSpell)
         {
             ConfigureGeneratedWeaponAbility(
                 builder.Create(feat, PerkType.GuardiansChallenge)
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                targetingSpell,
                 AbilityTargetingShapeType.Rect,
                 8.0f,
                 3.0f,

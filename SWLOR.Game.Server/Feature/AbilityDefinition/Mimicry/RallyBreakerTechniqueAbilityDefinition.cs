@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Rally Breaker",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.RallyBreaker,
                 0.8f,
                 18f,
                 7,
-                24,
-                6,
+                0,
+                30,
                 typeof(MarkedStatusEffect),
                 CombatDamageType.Sonic,
                 ResistanceType.Mind,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.RallyBreaker, 3, 2)
+                .MimicryTechnique(FeatType.RallyBreaker, 42, 2)
                 .MimicryElement(CombatDamageType.Sonic);
 
             return _builder.Build();

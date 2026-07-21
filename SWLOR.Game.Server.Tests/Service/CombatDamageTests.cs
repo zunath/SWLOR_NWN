@@ -64,6 +64,39 @@ public class CombatDamageTests
         maxDamage.Should().Be(0);
     }
 
+    [TestCase(100, 0, 80, 50)]
+    [TestCase(100, 30, 25, 20)]
+    [TestCase(100, 50, 25, 0)]
+    [TestCase(0, 0, 25, 0)]
+    public void DamageDerivedHealing_IsCappedAcrossOneHit(
+        int damage,
+        int healingAlreadyApplied,
+        int requestedHealing,
+        int expectedHealing)
+    {
+        Combat.CalculateCappedDamageDerivedHealingAmount(damage, healingAlreadyApplied, requestedHealing)
+            .Should()
+            .Be(expectedHealing);
+    }
+
+    [Test]
+    public void CombatSystemLimits_ClampToDocumentedBounds()
+    {
+        Combat.CalculateHitRate(0, 1000, 0).Should().Be(Combat.MinimumHitRate);
+        Combat.CalculateHitRate(1000, 0, 0).Should().Be(Combat.MaximumHitRate);
+        Combat.CalculateCriticalRate(0, 1000, 0, -100).Should().Be(Combat.MinimumCriticalRate);
+        Combat.CalculateCriticalRate(1000, 0, 1000, 1000).Should().Be(Combat.MaximumCriticalRate);
+        Combat.ClampCriticalDamagePercentAdjustment(500)
+            .Should()
+            .Be(Combat.MaximumCriticalDamagePercentAdjustment);
+        Enmity.ClampEnmityPercentAdjustment(-500)
+            .Should()
+            .Be(Enmity.MinimumEnmityPercentAdjustment);
+        Enmity.ClampEnmityPercentAdjustment(500)
+            .Should()
+            .Be(Enmity.MaximumEnmityPercentAdjustment);
+    }
+
     [Test]
     public void ForceDamage_UsesForceCombatMetadataWithoutStatusResistanceAndMagicEnginePayload()
     {
@@ -340,18 +373,34 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void GuardRetaliationDamage_IsScaledAndAppliedAsPhysicalTriggeredDamage()
+    public void GuardRetaliationDMG_UsesCombatDamageRangeAndTriggeredDelivery()
     {
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
             .Replace("\r\n", "\n");
+        var whirlingGuardSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "WhirlingGuardStatusEffect.cs"));
 
         var retaliation = ExtractMethod(combatSource, "private static void ApplyGuardedHitRetaliation");
-        retaliation.Should().Contain("StatType.GuardRetaliationDamage");
-        retaliation.Should().Contain("AbilityEffectScaling.ScaleDirectEffect");
-        retaliation.Should().Contain("GetAbilityScore(defender, scalingAbility)");
+        retaliation.Should().Contain("StatType.GuardRetaliationDMG");
+        retaliation.Should().Contain("ResolveGuardRetaliationDamage(");
+        retaliation.Should().NotContain("AbilityEffectScaling.ScaleDirectEffect");
         retaliation.Should().Contain("ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);");
         retaliation.Should().NotContain("EffectDamage(retaliationDamage");
+        whirlingGuardSource.Should().Contain("StatGroup.Stats[StatType.GuardRetaliationDMG] = 8;");
+
+        var resolver = ExtractMethod(combatSource, "private static int ResolveGuardRetaliationDamage");
+        resolver.Should().Contain("Stat.GetAttack(source, damageAbility, skillType)");
+        resolver.Should().Contain("ApplyTargetStatusAttackModifiers(source, target, attack, skillType)");
+        resolver.Should().Contain("Stat.GetDefense(target, damageType, defenseAbility)");
+        resolver.Should().Contain("ApplyStatusSourceDefenseModifiers(source, target, defense)");
+        resolver.Should().Contain("return CalculateDamage(");
+        resolver.Should().NotContain("ApplyCombatImpact");
+        resolver.Should().NotContain("CalculateAbilityCriticalRating");
 
         var scalingAbility = ExtractMethod(combatSource, "private static AbilityType GetGuardRetaliationDamageAbility");
         scalingAbility.Should().Contain("GetRelevantSkillWeapon(defender, skillType)");
@@ -396,8 +445,7 @@ public class CombatDamageTests
                     source.Contains("ConfigureWeapon(") ||
                     source.Contains("ConfigureCastedTarget(") ||
                     source.Contains("ConfigureMultiHit(") ||
-                    source.Contains("ConfigureInterrupt(") ||
-                    source.Contains("ConfigureTelegraphedArea(");
+                    source.Contains("ConfigureInterrupt(");
                 if (!usesDirectCombatImpact && !usesCombatImpactHelper)
                     continue;
 
@@ -446,7 +494,6 @@ public class CombatDamageTests
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "FirstAidTreatmentAdjustments.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "MedKitAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "HeavyVibroblade", "HeavyVibrobladeActiveAbilityDefinitionBase.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "InnervateAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "RewardAbilityDefinition.cs"),
         };
@@ -455,6 +502,19 @@ public class CombatDamageTests
         {
             File.ReadAllText(sourcePath).Should().Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude");
         }
+
+        var heavyVibrobladeSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "HeavyVibroblade",
+            "HeavyVibrobladeActiveAbilityDefinitionBase.cs"));
+        heavyVibrobladeSource.Should().Contain("Combat.ApplyDamageDerivedHealing(");
+        heavyVibrobladeSource.Should().Contain("applyCombatReadiness: true");
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
+            .Should()
+            .Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, amount)");
 
         var directScaledHealingSources = new[]
         {
@@ -485,7 +545,14 @@ public class CombatDamageTests
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
         combatSource.Should().Contain("ApplyGuardedHitModifiers(uint defender, uint attacker, int damage, CombatDamageType damageType)");
-        combatSource.Should().Contain("!damageType.IsPhysicalDamageType()");
+        var guard = ExtractMethod(combatSource, "public static int ApplyGuardedHitModifiers(");
+        guard.Should().Contain("!GetIsObjectValid(attacker)");
+        guard.Should().Contain("defender == attacker");
+        guard.Should().Contain("damage <= 0");
+        guard.Should().Contain("!damageType.IsPhysicalDamageType()");
+        guard.IndexOf("damage <= 0", StringComparison.Ordinal).Should().BeLessThan(
+            guard.IndexOf("var guardChance", StringComparison.Ordinal),
+            "idle, self, and zero-damage events must never enter the Guard roll");
         damageRollSource.Should().Contain("Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);");
         damageRollSource.Should().NotContain("Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage);");
     }
@@ -573,7 +640,8 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("public static void ApplyLowHPGuardEffectFromProtectedTarget(uint guardRecipient, uint protectedTarget, int damage)");
         combatSource.Should().Contain("ApplyLowHPGuardEffect(protectedTarget, damage, guardRecipient);");
-        lowHPGuardTrigger.Should().Contain("TemporaryStatModifier.Replace(");
+        lowHPGuardTrigger.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        lowHPGuardTrigger.Should().Contain("new GuardianReflexesStatusEffect(guardChance)");
         lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
         lowHPGuardTrigger.Should().Contain("TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown)");
         lowHPGuardTrigger.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false);");

@@ -26,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 175
+    "value": 176
   },
   "Cursed": {
     "type": "byte",
@@ -73,7 +73,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 15
+    "value": 5
   },
   "PaletteID": {
     "type": "byte",

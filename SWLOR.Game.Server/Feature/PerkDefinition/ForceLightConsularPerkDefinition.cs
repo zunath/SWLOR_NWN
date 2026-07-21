@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ThrowRock()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ThrowRock)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.ThrowRock)
                 .Name("Throw Rock")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Benevolence()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.Benevolence)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.Benevolence)
                 .Name("Benevolence")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceJudgment()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceJudgment)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.ForceJudgment)
                 .Name("Force Judgment")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -112,26 +112,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RadiantLance()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.RadiantLance)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.RadiantLance)
                 .Name("Radiant Lance")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Fires a focused lance of radiant Force energy in an 8m line, dealing 12 force DMG plus WIL scaling to hostile targets in the line.")
+                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 12 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.RadiantLance1)
 
                 .AddPerkLevel()
-                .Description("Fires a focused lance of radiant Force energy in an 8m line, dealing 22 force DMG plus WIL scaling to hostile targets in the line.")
+                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 22 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.RadiantLance2)
 
                 .AddPerkLevel()
-                .Description("Fires a focused lance of radiant Force energy in an 8m line, dealing 32 force DMG plus WIL scaling to hostile targets in the line.")
+                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 32 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Renewal()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.Renewal)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.Renewal)
                 .Name("Renewal")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SereneFocus()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.SereneFocus)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.SereneFocus)
                 .Name("Serene Focus")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MindTrick()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.MindTrick)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.MindTrick)
                 .Name("Mind Trick")
 
                 .AddPerkLevel()
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceMend()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceMend)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.ForceMend)
                 .Name("Force Mend")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceSanctuary()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceSanctuary)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.ForceSanctuary)
                 .Name("Force Sanctuary")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void HarmonicRestoration()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.HarmonicRestoration)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.HarmonicRestoration)
                 .Name("Harmonic Restoration")
                 .ForceAffinity(ForceAffinityType.Light)
 

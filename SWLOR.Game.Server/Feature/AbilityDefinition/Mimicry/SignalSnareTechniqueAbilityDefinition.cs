@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Signal Snare",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.SignalSnare,
                 0.8f,
                 18f,
                 7,
-                24,
-                6,
+                0,
+                30,
                 typeof(DisorientedStatusEffect),
                 CombatDamageType.Sonic,
                 ResistanceType.Mind,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.SignalSnare, 3, 2)
+                .MimicryTechnique(FeatType.SignalSnare, 41, 2)
                 .MimicryElement(CombatDamageType.Sonic);
 
             return _builder.Build();

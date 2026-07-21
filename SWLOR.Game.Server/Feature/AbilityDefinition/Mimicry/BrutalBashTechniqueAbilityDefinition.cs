@@ -24,16 +24,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.0f,
                 15f,
                 5,
-                16,
-                3,
+                22,
+                6,
                 typeof(KnockdownStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Mobility,
-                VisualEffect.Vfx_Fnf_Screen_Bump)
+                VisualEffect.Vfx_Com_Chunk_Red_Medium)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.BrutalBash, 2, 2)
+                .MimicryTechnique(FeatType.BrutalBash, 29, 2)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 30.0f,
                 7,
                 27,
-                10,
+                6,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 5.5f,

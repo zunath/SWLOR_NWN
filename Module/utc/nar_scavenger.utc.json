@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 1.0
+    "value": 19.0
   },
   "ClassList": {
     "type": "list",
@@ -77,13 +77,6 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "cz220_dr_pistol"
-        }
-      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -191,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 564
+    "value": 592
   },
   "NaturalAC": {
     "type": "byte",

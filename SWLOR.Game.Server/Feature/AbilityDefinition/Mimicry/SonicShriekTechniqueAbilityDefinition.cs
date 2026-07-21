@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.3f,
                 18f,
                 5,
-                13,
-                12,
+                18,
+                30,
                 typeof(DisorientedStatusEffect),
                 CombatImpactAreaShape.Cone,
                 8f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.SonicShriek, 2, 2)
+                .MimicryTechnique(FeatType.SonicShriek, 0, 2)
                 .HasTargetingCone(
                     Spell.SonicShriekTechnique,
                     8f,

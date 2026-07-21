@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class StonewakeRelayStatusEffect : StatusEffectBase
     {
         public override string Name => "Stonewake Relay";
-        public override EffectIconType Icon => EffectIconType.CalibratedField1StatusEffect;
+        public override EffectIconType Icon => EffectIconType.StonewakeRelayStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

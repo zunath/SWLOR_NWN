@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Crippling Talons")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.CripplingTalons, 1, 1, typeof(CripplingInstinctStatusEffect));
+                .MimicryTrait(FeatType.CripplingTalons, 4, 1)
+                .MimicryTraitStat(StatType.DamageDealtHemorrhageChance, 6);
 
             return _builder.Build();
         }

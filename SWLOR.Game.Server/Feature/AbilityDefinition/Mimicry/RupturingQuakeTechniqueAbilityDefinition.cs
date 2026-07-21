@@ -26,7 +26,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .IsCastedAbility()
                 .HasMaxRange(9f)
                 .IsAreaAbility()
-                .RequiresTarget()
                 .IsHostileAbility()
                 .RequirementStamina(10)
                 .HasImpactAction((activator, target, level, location) =>
@@ -36,8 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        28,
-                        3,
+                        40,
+                        6,
                         typeof(KnockdownStatusEffect),
                         CombatImpactAreaShape.Sphere,
                         0.75f,
@@ -48,12 +47,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Nature,
                         areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake,
                         maxTargets: 12,
+                        afterSuccessfulHit: hitTarget =>
+                            StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, hitTarget, 30f, CombatDamageType.Physical),
                         useNPCStatScaling: InnateAbility.ShouldUseNPCStatScaling(activator));
                 })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.RupturingQuake, 4, 3)
+                .MimicryTechnique(FeatType.RupturingQuake, 26, 3)
                 .MimicryElement(CombatDamageType.Physical)
                 .HasTargetingSphere(
                     Spell.RupturingQuakeTechnique,

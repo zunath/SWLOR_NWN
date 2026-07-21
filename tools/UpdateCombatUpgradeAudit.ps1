@@ -205,6 +205,12 @@ function Test-AbilitySatisfiesStatusCheck {
         return $true
     }
 
+    if ($StatusEffectClass -eq "ExposedStatusEffect" -and
+        $AbilityContent -match "\bStatType\.BackAttackExposedPercent\b" -and
+        $AbilityContent -match "\bStatType\.BackAttackExposedDurationSeconds\b") {
+        return $true
+    }
+
     if ($StatusEffectClass -eq "HemorrhageStatusEffect" -and
         $AbilityContent -match "\bConsumeBleedIntoHemorrhage\b") {
         return $true
@@ -544,6 +550,8 @@ function Get-CanonicalManifestHeader {
         "devstatus" { return "DevStatus" }
         "additionalrequirements" { return "AdditionalRequirements" }
         "notes" { return "Notes" }
+        "slots" { return "Slots" }
+        "slot" { return "Slots" }
         default { return "" }
     }
 }
@@ -686,6 +694,7 @@ function Import-BibleWorkbookManifestRows {
                     DevStatus = $devStatus
                     AdditionalRequirements = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "AdditionalRequirements"
                     Notes = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Notes"
+                    Slots = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Slots"
                 }) | Out-Null
             }
         }
@@ -754,6 +763,7 @@ if ($RefreshBible) {
                 DevStatus = Get-FirstPropertyValue $row @("DevStatus", "Dev Status")
                 AdditionalRequirements = Get-FirstPropertyValue $row @("AdditionalRequirements", "Additional Requirements")
                 Notes = Get-PropertyValue $row "Notes"
+                Slots = Get-FirstPropertyValue $row @("Slots", "Slot")
             }) | Out-Null
         }
     }
@@ -780,7 +790,6 @@ if ($RefreshLocalBible) {
 }
 
 $outOfScopeTabs = @(
-    "Espionage",
     "Farming",
     "Agriculture",
     "Smithery",
@@ -803,7 +812,7 @@ if (@($manifest).Count -eq 0) {
 $perkIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition") -Filter "*PerkDefinition.cs"
 $abilityNameIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -Filter "*AbilityDefinition.cs"
 $abilityFileIndex = Import-AbilityFileIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition")
-$playerAbilityFeatLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+$playerAbilityFeatLabelsRequiringSpellLink = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 Get-ChildItem (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -Filter "*AbilityDefinition.cs" -Recurse |
     Where-Object { $_.FullName -notmatch "\\NPC\\" } |
     ForEach-Object {
@@ -812,8 +821,13 @@ Get-ChildItem (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -
             return
         }
 
-        foreach ($match in [regex]::Matches($content, "\bFeatType\.(\w+)")) {
-            $playerAbilityFeatLabels.Add($match.Groups[1].Value) | Out-Null
+        if ($content -notmatch "\bSpell\.(?!Invalid\b)\w+") {
+            return
+        }
+
+        $createdFeatPattern = "(?s)(?:\.Create\s*\(\s*|BuildArea\s*\(\s*[^,]+,\s*)FeatType\.(\w+)"
+        foreach ($match in [regex]::Matches($content, $createdFeatPattern)) {
+            $playerAbilityFeatLabelsRequiringSpellLink.Add($match.Groups[1].Value) | Out-Null
         }
     }
 $statusDefinitionContentByName = @{}
@@ -979,7 +993,7 @@ foreach ($row in $featRows) {
     if ($row.Number -ge 2000 -and
         $row.Fields[1] -ne "****" -and
         $row.Fields[$spellIndex] -eq "****" -and
-        $playerAbilityFeatLabels.Contains($row.Fields[1])) {
+        $playerAbilityFeatLabelsRequiringSpellLink.Contains($row.Fields[1])) {
         $auditRows.Add([pscustomobject]@{
             AuditType = "GeneratedFeatMissingSpellLink"
             Tab = "2DA"

@@ -25,21 +25,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 30f,
                 10,
                 0,
-                18,
-                typeof(TerrifiedStatusEffect),
+                15,
+                typeof(DazedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 6f,
                 0f,
                 CombatDamageType.Physical,
                 ResistanceType.Mind,
-                VisualEffect.Vfx_Fnf_Howl_Mind,
+                VisualEffect.Vfx_Imp_Sonic,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
                 maxRange: 6f,
                 centerOnActivator: true,
-                enmityBonus: 8)
+                afterSuccessfulHit: InnateAbility.InterruptOnHit())
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.TerrifyingBellow, 4, 3)
+                .MimicryTechnique(FeatType.TerrifyingBellow, 11, 3)
                 .HasTargetingSphere(
                     Spell.TerrifyingBellowTechnique,
                     6f,

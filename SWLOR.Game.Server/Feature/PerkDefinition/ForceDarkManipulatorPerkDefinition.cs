@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CreepingTerror()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.CreepingTerror)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.CreepingTerror)
                 .Name("Creeping Terror")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void WeakenResolve()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.WeakenResolve)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.WeakenResolve)
                 .Name("Weaken Resolve")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void NightmareField()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.NightmareField)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.NightmareField)
                 .Name("Nightmare Field")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceChoke()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceChoke)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.ForceChoke)
                 .Name("Force Choke")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CollapseWill()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.CollapseWill)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.CollapseWill)
                 .Name("Collapse Will")
                 .ForceAffinity(ForceAffinityType.Dark)
 
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EclipseOfResolve()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.EclipseOfResolve)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.EclipseOfResolve)
                 .Name("Eclipse of Resolve")
                 .ForceAffinity(ForceAffinityType.Dark)
 

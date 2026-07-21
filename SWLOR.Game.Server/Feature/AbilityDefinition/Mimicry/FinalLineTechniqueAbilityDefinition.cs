@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Final Line",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.FinalLine,
                 1.4f,
                 30f,
                 10,
-                28,
-                14,
+                40,
+                30,
                 typeof(ExposedStatusEffect),
                 CombatImpactAreaShape.Line,
                 8f,
@@ -34,11 +34,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Special_Red_White,
                 VisualEffect.Vfx_Fnf_Screen_Bump,
-                maxRange: 8f)
+                maxRange: 8f,
+                damagePercentAdjustment: InnateAbility.MissingHpRamp(35))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.FinalLine, 4, 3)
+                .MimicryTechnique(FeatType.FinalLine, 49, 3)
                 .HasTargetingLine(
                     Spell.FinalLineTechnique,
                     8f,

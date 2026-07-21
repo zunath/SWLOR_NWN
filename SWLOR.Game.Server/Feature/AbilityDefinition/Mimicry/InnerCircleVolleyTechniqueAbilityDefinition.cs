@@ -20,21 +20,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Inner Circle Volley",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.InnerCircleVolley,
                 1.3f,
                 24f,
                 9,
-                32,
-                12,
+                48,
+                30,
                 typeof(DisorientedStatusEffect),
                 CombatDamageType.Sonic,
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Dazed_S,
-                maxRange: 12f)
+                maxRange: 12f,
+                damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(DisorientedStatusEffect), typeof(DazedStatusEffect)))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.InnerCircleVolley, 4, 3)
+                .MimicryTechnique(FeatType.InnerCircleVolley, 45, 3)
                 .MimicryElement(CombatDamageType.Sonic);
 
             return _builder.Build();

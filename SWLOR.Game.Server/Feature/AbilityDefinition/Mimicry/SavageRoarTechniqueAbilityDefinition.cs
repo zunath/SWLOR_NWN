@@ -25,20 +25,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 18f,
                 5,
                 0,
-                14,
+                30,
                 typeof(WeakenedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 6f,
                 0f,
                 CombatDamageType.Sonic,
                 ResistanceType.Mind,
-                VisualEffect.Vfx_Fnf_Howl_War_Cry,
+                VisualEffect.Vfx_Imp_Sonic,
                 VisualEffect.Vfx_Fnf_Howl_War_Cry,
                 centerOnActivator: true)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.SavageRoar, 2, 2)
+                .MimicryTechnique(FeatType.SavageRoar, 22, 2)
                 .HasTargetingSphere(
                     Spell.SavageRoarTechnique,
                     6f,

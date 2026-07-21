@@ -20,21 +20,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Brace Breaker",
                 Animation.ShieldWall,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.BraceBreaker,
                 0.8f,
                 18f,
                 7,
-                24,
-                6,
+                0,
+                15,
                 typeof(DazedStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Mobility,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
+                VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 maxRange: 3f)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Vitality)
-                .MimicryTechnique(FeatType.BraceBreaker, 3, 2)
+                .MimicryTechnique(FeatType.BraceBreaker, 41, 2)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

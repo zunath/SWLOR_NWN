@@ -181,8 +181,8 @@ public class LightsaberWorkbenchTests
         var token = JObject.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", "wpn_sub_token.uti.json")));
         token["Tag"]!["value"]!.Value<string>().Should().Be("wpn_sub_token");
 
-        // The workbench transfers the token's stats but never its damage profile or
-        // the token blueprint's own skill requirement.
+        // The workbench transfers the token's stats but never its damage profile,
+        // its own skill requirement, or its anti-equip Use Limitation: Perk lock.
         var viewModel = File.ReadAllText(Path.Combine(serverRoot, "Feature", "GuiDefinition", "ViewModel", "LightsaberWorkbenchViewModel.cs"));
         viewModel.Should().Contain("LightsaberWorkbench.WeaponSubmissionTokenTag");
         foreach (var excluded in new[]
@@ -191,6 +191,7 @@ public class LightsaberWorkbenchTests
                      "ItemPropertyType.Delay",
                      "ItemPropertyType.WeaponDamageType",
                      "ItemPropertyType.RequiresSkill",
+                     "ItemPropertyType.UseLimitationPerk",
                  })
         {
             viewModel.Should().Contain(excluded, $"the submission token transfer must skip {excluded}");
@@ -225,11 +226,24 @@ public class LightsaberWorkbenchTests
             saberMigration.Should().Contain(normalizedProperty, $"{normalizedProperty} is part of the normalized damage profile");
         }
 
-        // The retired single-step kits are cleaned up by the obsolete-item sweep.
+        // The recipes that taught the retired single-step kits have no equivalent to
+        // convert into, so they're just cleaned up by the obsolete-item sweep.
         var obsoleteItems = File.ReadAllText(Path.Combine(migrationRoot, "ObsoleteItemMigration.cs"));
-        foreach (var retired in new[] { "saber_upg1", "saberstaff_upg1", "recipe_saberupg1", "recipe_staffupg1" })
+        foreach (var retired in new[] { "recipe_saberupg1", "recipe_staffupg1" })
         {
             obsoleteItems.Should().Contain($"\"{retired}\",");
+        }
+
+        // The retired single-step kits themselves are converted to the lowest tier of
+        // the current tiered Engineering upgrade kit line rather than destroyed.
+        foreach (var (legacyKit, lowestTierKit) in new[]
+                 {
+                     ("saber_upg1", "saber_upg2"),
+                     ("saberstaff_upg1", "staff_upg2"),
+                 })
+        {
+            obsoleteItems.Should().Contain($"\"{legacyKit}\", \"{lowestTierKit}\"",
+                $"{legacyKit} must convert to {lowestTierKit} instead of being destroyed");
         }
     }
 

@@ -30,24 +30,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CombatAnalyzerTrait)
-                .Description("Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots and lets you replicate Mimicry 1-14 techniques.")
+                .Description("Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots.")
                 .Price(2)
                 .RequirementSkill(SkillType.Mimicry, 0)
 
                 .AddPerkLevel()
-                .Description("Upgrades the combat analyzer, improving equipped technique potency and letting you replicate Mimicry 15-29 techniques.")
+                .Description("Upgrades the combat analyzer, increasing equipped technique potency by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 15)
                 .IncreasesStat(StatType.MimicryPotencyPercent, 5)
 
                 .AddPerkLevel()
-                .Description("Further upgrades the combat analyzer, improving equipped technique potency and letting you replicate Mimicry 30-44 techniques.")
+                .Description("Further upgrades the combat analyzer, increasing equipped technique potency by 10% in total.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 30)
                 .IncreasesStat(StatType.MimicryPotencyPercent, 10)
 
                 .AddPerkLevel()
-                .Description("Maximizes the combat analyzer, improving equipped technique potency and letting you replicate Mimicry 45-50 techniques.")
+                .Description("Maximizes the combat analyzer, increasing equipped technique potency by 15% in total.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 45)
                 .IncreasesStat(StatType.MimicryPotencyPercent, 15);
@@ -62,19 +62,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AnalyzerMemoryTrait)
-                .Description("Expands your combat analyzer's memory, granting 1 additional technique slot.")
+                .Description("Expands your combat analyzer's memory, granting 2 additional technique slots.")
                 .Price(2)
                 .RequirementSkill(SkillType.Mimicry, 10)
                 .RequirementMustHavePerk(PerkType.CombatAnalyzer)
 
                 .AddPerkLevel()
-                .Description("Expands your combat analyzer's memory further, granting 2 additional technique slots in total.")
+                .Description("Expands your combat analyzer's memory further, granting 4 additional technique slots in total.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 25)
                 .RequirementMustHavePerk(PerkType.CombatAnalyzer)
 
                 .AddPerkLevel()
-                .Description("Maximizes your combat analyzer's memory, granting 3 additional technique slots in total.")
+                .Description("Maximizes your combat analyzer's memory, granting 6 additional technique slots in total.")
                 .Price(4)
                 .RequirementSkill(SkillType.Mimicry, 40)
                 .RequirementMustHavePerk(PerkType.CombatAnalyzer);

@@ -7,6 +7,41 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerFacingNameBroadcastTests
 {
     [Test]
+    public void CommsChannel_UsesOneCommsLabelWithoutExposingPlayerNames()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Communication.cs"));
+        var normalizedSource = source.Replace("\r\n", "\n");
+
+        source.Should().Contain("private const int PartyChatChannelNameStrRef = 66755;");
+        source.Should().Contain("private const int PartyChatMessagePrefixStrRef = 10303;");
+        source.Should().Contain("private const string CommsChannelName = \"Comms\";");
+        source.Should().Contain("private const string CommsMessagePrefix = \"[Comms] \";");
+        var moduleEnterHandlerIndex = normalizedSource.IndexOf("[NWNEventHandler(ScriptName.OnModuleEnter)]", StringComparison.Ordinal);
+        var applyChannelNameIndex = normalizedSource.IndexOf("public static void ApplyCommsChannelName()", StringComparison.Ordinal);
+        var applyChannelNameOverrideIndex = normalizedSource.IndexOf(
+            "PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, ColorToken.Orange(CommsChannelName));",
+            StringComparison.Ordinal);
+        var applyMessagePrefixOverrideIndex = normalizedSource.IndexOf(
+            "PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);",
+            StringComparison.Ordinal);
+        moduleEnterHandlerIndex.Should().BeGreaterThanOrEqualTo(0);
+        applyChannelNameIndex.Should().BeGreaterThan(moduleEnterHandlerIndex);
+        applyChannelNameOverrideIndex.Should().BeGreaterThan(applyChannelNameIndex);
+        applyMessagePrefixOverrideIndex.Should().BeGreaterThan(applyChannelNameOverrideIndex);
+        normalizedSource.Should().Contain("var player = GetEnteringObject();");
+        normalizedSource.Should().Contain("if (!GetIsPC(player))");
+
+        source.Should().NotContain("finalMessage.Append(\"[Comms] \");");
+        source.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
+        source.Should().NotContain("ChatChannel.DMTalk");
+    }
+
+    [Test]
     public void CombatAndSpaceBroadcasts_DoNotInterpolateRawPlayerNames()
     {
         var root = FindRepositoryRoot();
@@ -105,6 +140,7 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("Nearby non-party listeners can still overhear it.");
         normalizedCommunicationSource.Should().Contain("recipients.AddRange(allDMs);\n\n                needsAreaCheck = true;\n                distanceCheck = 20.0f;");
         communicationSource.Should().NotContain("AddSameStarshipCommsRecipients");
+        communicationSource.Should().Contain("if (dbSender?.Settings?.DisplayCommsOutOfRangeWarnings ?? true)");
         communicationSource.Should().Contain("SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));");
         communicationSource.Should().NotContain("SendCommsOutOfRangeMessage(sender);");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.ServerMessage, ColorToken.Red(CommsOutOfRangeMessage), sender, sender);");
@@ -121,15 +157,25 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("DB.Get<PlayerShip>(dbPlayer.ActiveShipId)");
         communicationSource.Should().Contain("distanceCheck = 20.0f;");
         communicationSource.Should().Contain("var distance = GetDistanceBetween(sender, target);");
+        normalizedCommunicationSource.Should().Contain(
+            "if (GetArea(target) == GetArea(sender) &&\n" +
+            "                        distance <= distanceCheck &&\n" +
+            "                        !recipients.Contains(target))");
+        communicationSource.Should().NotContain("channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)");
+        communicationSource.Should().Contain("Comms scope applies only to the party");
         communicationSource.Should().Contain("else if (channel == ChatChannel.PlayerWhisper)");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Whisper] \");");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Holonet] \");");
         communicationSource.Should().Contain("SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);");
         communicationSource.Should().Contain("private static void SendProcessedChatMessage(");
         communicationSource.Should().NotContain("SendMessageToPC(receiver");
-        communicationSource.Should().Contain("var finalChannel = channel == ChatChannel.PlayerParty");
-        communicationSource.Should().Contain("? ChatChannel.DMTalk");
-        communicationSource.Should().Contain("ChatPlugin.SendMessage(finalChannel, message, speaker, receiver)");
+        // NWNX_Rename only patches the per-observer name override around the native Party/Shout/Tell
+        // chat functions (see its HOOK_CHAT registrations) - not Talk/Whisper (which instead rely on
+        // the speaker's object update already being visible/patched to a nearby observer) and not any
+        // DM_* channel. Comms must dispatch on the native PlayerParty channel, not DMTalk, or the
+        // override never applies and the speaker's true name leaks once they leave the receiver's area.
+        communicationSource.Should().NotContain("ChatChannel.DMTalk");
+        communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
         communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");
         communicationSource.Should().NotContain("ChatChannel.PlayerDM, finalMessageColored");
@@ -215,10 +261,14 @@ public class PlayerFacingNameBroadcastTests
             .Where(path =>
             {
                 var areaResref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(path));
-                return areaResref.StartsWith("vrotr") ||
+                var hasEventResref = areaResref.StartsWith("vrotr") ||
                        areaResref.StartsWith("ka_") ||
                        areaResref.StartsWith("na_ka_") ||
                        areaResref == "republicshipevnt";
+                // The DM Comms event areas are all "[Prefab] ..." prefab areas. Require the prefab
+                // name too, so non-prefab areas that merely share a resref prefix (e.g. the capstone
+                // boss arena ka_ar_czweaparen) are not held to the COMMS_EVENT_AREA invariant.
+                return hasEventResref && GetAreaDisplayName(path).StartsWith("[Prefab]", StringComparison.Ordinal);
             })
             .ToList();
 
@@ -238,8 +288,9 @@ public class PlayerFacingNameBroadcastTests
             "SWLOR.Game.Server",
             "Feature",
             "TlkOverrides.cs"));
+        tlkOverrideSource.Should().Contain("SetTlkOverride(10303, \"[Comms] \");");
         tlkOverrideSource.Should().Contain("SetTlkOverride(66751, \"Disabled\");");
-        tlkOverrideSource.Should().Contain("SetTlkOverride(66755, \"Comms\");");
+        tlkOverrideSource.Should().Contain("SetTlkOverride(66755, ColorToken.Orange(\"Comms\"));");
 
         var settingsDefinitionSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -562,14 +613,34 @@ public class PlayerFacingNameBroadcastTests
     private static int? GitLocalInt(string gitPath, string variableName)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(gitPath));
-        var areaProperties = document.RootElement
-            .GetProperty("AreaProperties")
-            .GetProperty("value");
+        var root = document.RootElement;
 
-        if (!areaProperties.TryGetProperty("VarTable", out var varTable) ||
-            !varTable.TryGetProperty("value", out var variables))
+        // The runtime reads this with GetLocalInt(area, ...), i.e. the area instance's top-level
+        // VarTable, which is also where the toolset writes area locals. Older hand-authored areas
+        // keep it under AreaProperties, so accept either location.
+        if (TryReadIntLocal(root, variableName, out var topLevel))
         {
-            return null;
+            return topLevel;
+        }
+
+        if (root.TryGetProperty("AreaProperties", out var areaProperties) &&
+            areaProperties.TryGetProperty("value", out var areaPropertiesValue) &&
+            TryReadIntLocal(areaPropertiesValue, variableName, out var nested))
+        {
+            return nested;
+        }
+
+        return null;
+    }
+
+    private static bool TryReadIntLocal(JsonElement container, string variableName, out int result)
+    {
+        result = 0;
+        if (!container.TryGetProperty("VarTable", out var varTable) ||
+            !varTable.TryGetProperty("value", out var variables) ||
+            variables.ValueKind != JsonValueKind.Array)
+        {
+            return false;
         }
 
         foreach (var variable in variables.EnumerateArray())
@@ -585,13 +656,14 @@ public class PlayerFacingNameBroadcastTests
                 !variable.TryGetProperty("Value", out var value) ||
                 value.GetProperty("type").GetString() != "int")
             {
-                return null;
+                return false;
             }
 
-            return value.GetProperty("value").GetInt32();
+            result = value.GetProperty("value").GetInt32();
+            return true;
         }
 
-        return null;
+        return false;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

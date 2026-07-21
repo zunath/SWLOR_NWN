@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService
@@ -123,6 +124,20 @@ namespace SWLOR.Game.Server.Service.CraftService
         public RecipeBuilder RequirementUnlocked()
         {
             var requirement = new RecipeUnlockRequirement(_activeType);
+            _activeRecipe.Requirements.Add(requirement);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a perk level requirement to craft this recipe.
+        /// </summary>
+        /// <param name="perkType">The perk required to craft the recipe.</param>
+        /// <param name="requiredLevel">The minimum perk level required.</param>
+        /// <param name="perkName">The player-facing perk name shown in the requirement text.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder RequirementPerk(PerkType perkType, int requiredLevel, string perkName)
+        {
+            var requirement = new RecipePerkRequirement(perkType, requiredLevel, perkName);
             _activeRecipe.Requirements.Add(requirement);
             return this;
         }

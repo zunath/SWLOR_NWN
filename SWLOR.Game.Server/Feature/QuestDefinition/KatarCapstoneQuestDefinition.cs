@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Adamantine Guard Breaker Yard Work Order. Deliver it to Tressa Kade on CZ-220.")
+                    "You secured the Adamantine Guard Breaker Yard Work Order. Deliver it to Tressa Kade at the CZ-220 offices.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Adamantine Guard Junkline Control Relay. Deliver it to Tressa Kade on CZ-220.")
+                    "You secured the Adamantine Guard Junkline Control Relay. Deliver it to Tressa Kade at the CZ-220 offices.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Adamantine Guard Sheared Bay Sigil. Deliver it to Tressa Kade on CZ-220.")
+                    "You secured the Adamantine Guard Sheared Bay Sigil. Deliver it to Tressa Kade at the CZ-220 offices.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Adamantine Guard Foreman's Override Chip. Deliver it to Tressa Kade on CZ-220.")
+                    "You secured the Adamantine Guard Foreman's Override Chip. Deliver it to Tressa Kade at the CZ-220 offices.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You defeated the Adamantine Guard master. Return to Tressa Kade on CZ-220 to close out the trial.")
+                    "You defeated the Adamantine Guard master. Return to Tressa Kade at the CZ-220 offices to close out the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Scrapheap Lockdown Breaker Yard Work Order. Deliver it to Borrik Sen on CZ-220.")
+                    "You secured the Scrapheap Lockdown Breaker Yard Work Order. Deliver it to Borrik Sen at the CZ-220 hangar.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Scrapheap Lockdown Junkline Control Relay. Deliver it to Borrik Sen on CZ-220.")
+                    "You secured the Scrapheap Lockdown Junkline Control Relay. Deliver it to Borrik Sen at the CZ-220 hangar.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Scrapheap Lockdown Sheared Bay Sigil. Deliver it to Borrik Sen on CZ-220.")
+                    "You secured the Scrapheap Lockdown Sheared Bay Sigil. Deliver it to Borrik Sen at the CZ-220 hangar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Scrapheap Lockdown Foreman's Override Chip. Deliver it to Borrik Sen on CZ-220.")
+                    "You secured the Scrapheap Lockdown Foreman's Override Chip. Deliver it to Borrik Sen at the CZ-220 hangar.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You defeated the Scrapheap Lockdown master. Return to Borrik Sen on CZ-220 to close the case.")
+                    "You defeated the Scrapheap Lockdown master. Return to Borrik Sen at the CZ-220 hangar to close the case.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

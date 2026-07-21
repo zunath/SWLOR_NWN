@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class LucidSpliceStatusEffect : StatusEffectBase
     {
         public override string Name => "Lucid Splice";
-        public override EffectIconType Icon => EffectIconType.CourageousResolve1StatusEffect;
+        public override EffectIconType Icon => EffectIconType.LucidSpliceStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

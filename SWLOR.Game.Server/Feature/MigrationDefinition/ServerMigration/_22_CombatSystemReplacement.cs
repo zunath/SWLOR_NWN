@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
@@ -321,12 +322,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.BindingCross, new[] { 3, 4 } },
             { PerkType.BlazingSpikes, new[] { 3 } },
             { PerkType.BleedersEye, new[] { 4 } },
-            { PerkType.BloodPrice, new[] { 2 } },
             { PerkType.BloodWeapon, new[] { 3 } },
-            { PerkType.BloodWard, new[] { 4 } },
             { PerkType.BombardierStance, new[] { 2 } },
             { PerkType.Bonecrusher, new[] { 3 } },
-            { PerkType.BreakerGuard, new[] { 2 } },
             { PerkType.BreakerStance, new[] { 4 } },
             { PerkType.BreachStrike, new[] { 4 } },
             { PerkType.BrutalAssault, new[] { 3 } },
@@ -342,8 +340,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.CombatMomentum, new[] { 2, 4, 4 } },
             { PerkType.ConduitFlare, new[] { 3 } },
             { PerkType.CoveringClaws, new[] { 3 } },
-            { PerkType.CoveringPresence, new[] { 4 } },
-            { PerkType.CoverReversal, new[] { 4 } },
             { PerkType.CrimsonFury, new[] { 3 } },
             { PerkType.CripplingPrecision, new[] { 3 } },
             { PerkType.CriticalWard, new[] { 2 } },
@@ -358,14 +354,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.DeflectionCounter, new[] { 3 } },
             { PerkType.DeflectionMastery, new[] { 3 } },
             { PerkType.DeflectionRiposte, new[] { 3 } },
-            { PerkType.DualEdgeRhythm, new[] { 4 } },
             { PerkType.DuelistStance, new[] { 2 } },
             { PerkType.DuelistsChallenge, new[] { 3 } },
             { PerkType.Earthshatter, new[] { 3, 3 } },
             { PerkType.EssenceCleave, new[] { 2, 2, 3, 5 } },
             { PerkType.EssenceHunter, new[] { 3 } },
             { PerkType.EvasiveCombat, new[] { 2, 3 } },
-            { PerkType.ExploitOpening, new[] { 4 } },
             { PerkType.ExposedNerve, new[] { 2, 4, 4 } },
             { PerkType.ExposeWeakPoint, new[] { 3 } },
             { PerkType.FeintingCut, new[] { 3, 2, 4 } },
@@ -386,8 +380,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.FrenzySlash, new[] { 2, 2, 3, 5 } },
             { PerkType.GraveTremor, new[] { 3, 3 } },
             { PerkType.GuardCounter, new[] { 2, 2, 3 } },
-            { PerkType.GuardDoctrine, new[] { 2 } },
-            { PerkType.GuardGrip, new[] { 2 } },
             { PerkType.GuardLock, new[] { 3, 3 } },
             { PerkType.GuardedFlow, new[] { 4 } },
             { PerkType.GuardianReflexes, new[] { 4 } },
@@ -411,25 +403,21 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.NeuralShock, new[] { 3 } },
             { PerkType.NeurotoxinMastery, new[] { 4 } },
             { PerkType.NeutralizingShot, new[] { 4 } },
-            { PerkType.OpeningRead, new[] { 2 } },
             { PerkType.Opportunist, new[] { 3 } },
             { PerkType.OpportunistStance, new[] { 4 } },
             { PerkType.Overcharge, new[] { 4 } },
             { PerkType.OverwhelmingStrike, new[] { 3 } },
             { PerkType.PacificationField, new[] { 3 } },
-            { PerkType.PatientBreaker, new[] { 2 } },
             { PerkType.PatientSentinel, new[] { 3 } },
             { PerkType.PerfectBalance, new[] { 4 } },
             { PerkType.PerfectFootwork, new[] { 4 } },
             { PerkType.PerfectThrow, new[] { 4 } },
             { PerkType.PrecisionArc, new[] { 3 } },
-            { PerkType.PrecisionClaws, new[] { 2 } },
             { PerkType.PrecisionStrikes, new[] { 2 } },
             { PerkType.PunishingAngle, new[] { 2 } },
             { PerkType.PunishingStrike, new[] { 3 } },
             { PerkType.Rampart, new[] { 4 } },
             { PerkType.ReapingStrike, new[] { 2, 4, 4 } },
-            { PerkType.RecklessPower, new[] { 2, 4, 4 } },
             { PerkType.ReactiveDeflection, new[] { 2, 3 } },
             { PerkType.RetaliatoryFlow, new[] { 2 } },
             { PerkType.ReversalCut, new[] { 3 } },
@@ -691,6 +679,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 CombatReadinessMigration.ResetCombatReadiness(dbPlayer);
                 EnsureUnknownDisplayName(dbPlayer);
                 dbPlayer.RebuildComplete = false;
+                GrantCombatUpgradeRebuildToken(dbPlayer);
 
                 refundAmount += CleanPerks(
                     dbPlayer.Perks,
@@ -711,6 +700,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
 
             progress.Finish($"{playerCount} players migrated.");
+        }
+
+        private static void GrantCombatUpgradeRebuildToken(Player dbPlayer)
+        {
+            if (!dbPlayer.Currencies.ContainsKey(CurrencyType.RebuildToken))
+                dbPlayer.Currencies[CurrencyType.RebuildToken] = 0;
+
+            dbPlayer.Currencies[CurrencyType.RebuildToken]++;
         }
 
         private static void EnsureUnknownDisplayName(Player dbPlayer)

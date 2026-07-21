@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Crypt Trial Tablet has been recovered. Return to Seris Nahl in the Korriban Sith Crypt Depths.")
+                    "The Last Stand of the Light Crypt Trial Tablet has been recovered. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Ritual Focus Shard has been recovered. Return to Seris Nahl in the Korriban Sith Crypt Depths.")
+                    "The Last Stand of the Light Ritual Focus Shard has been recovered. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Splintered Tomb Sigil has been recovered. Return to Seris Nahl in the Korriban Sith Crypt Depths.")
+                    "The Last Stand of the Light Splintered Tomb Sigil has been recovered. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Keeper's Rite Token has been recovered. Return to Seris Nahl in the Korriban Sith Crypt Depths.")
+                    "The Last Stand of the Light Keeper's Rite Token has been recovered. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light master has been defeated. Return to Seris Nahl in the Korriban Sith Crypt Depths.")
+                    "The Last Stand of the Light master has been defeated. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Crypt Trial Tablet has been recovered. Return to Neth Kyr in the Korriban Sith Crypt Depths.")
+                    "The Hunger of the Dark Crypt Trial Tablet has been recovered. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Ritual Focus Shard has been recovered. Return to Neth Kyr in the Korriban Sith Crypt Depths.")
+                    "The Hunger of the Dark Ritual Focus Shard has been recovered. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Splintered Tomb Sigil has been recovered. Return to Neth Kyr in the Korriban Sith Crypt Depths.")
+                    "The Hunger of the Dark Splintered Tomb Sigil has been recovered. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Keeper's Rite Token has been recovered. Return to Neth Kyr in the Korriban Sith Crypt Depths.")
+                    "The Hunger of the Dark Keeper's Rite Token has been recovered. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark master has been defeated. Return to Neth Kyr in the Korriban Sith Crypt Depths.")
+                    "The Hunger of the Dark master has been defeated. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Crypt Trial Tablet has been recovered. Return to Acolyte Varn in the Korriban Sith Crypt Depths.")
+                    "The Eclipse of Resolve Crypt Trial Tablet has been recovered. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Ritual Focus Shard has been recovered. Return to Acolyte Varn in the Korriban Sith Crypt Depths.")
+                    "The Eclipse of Resolve Ritual Focus Shard has been recovered. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Splintered Tomb Sigil has been recovered. Return to Acolyte Varn in the Korriban Sith Crypt Depths.")
+                    "The Eclipse of Resolve Splintered Tomb Sigil has been recovered. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Keeper's Rite Token has been recovered. Return to Acolyte Varn in the Korriban Sith Crypt Depths.")
+                    "The Eclipse of Resolve Keeper's Rite Token has been recovered. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve master has been defeated. Return to Acolyte Varn in the Korriban Sith Crypt Depths.")
+                    "The Eclipse of Resolve master has been defeated. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

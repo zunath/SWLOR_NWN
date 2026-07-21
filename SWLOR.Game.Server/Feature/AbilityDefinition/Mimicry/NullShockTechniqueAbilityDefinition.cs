@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.5f,
                 24f,
                 8,
-                20,
-                12,
+                0,
+                30,
                 typeof(ForceSuppressionStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 4.5f,
@@ -34,11 +34,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Disruption,
                 VisualEffect.Vfx_Imp_Aura_Negative_Energy,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Evil,
-                maxRange: 8f)
+                maxRange: 8f,
+                afterSuccessfulHit: InnateAbility.DrainOnHit(10, 10))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.NullShock, 3, 3)
+                .MimicryTechnique(FeatType.NullShock, 48, 3)
                 .HasTargetingSphere(
                     Spell.NullShockTechnique,
                     4.5f,

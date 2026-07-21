@@ -18,7 +18,96 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             ColicoidExperiment();
             ColicoidExperimentRares();
 
+            CapstoneCZ220DungeonRares();
+            CapstoneCZ220RareElites();
             return _builder.Build();
+        }
+
+        // Unique loot for the named rare elite droids that spawn in the Breaker Yard.
+        // Each drops a small pool of reusable industrial-salvage gear.
+        private void CapstoneCZ220RareElites()
+        {
+            // Rare pool: unique gear plus a blueprint that unlocks a salvage crafting recipe.
+            _builder.Create("CZ220_BULWARK_RARES")
+                .IsRare()
+                .AddItem("yard_plate", 1, 1, true)
+                .AddItem("servo_frame", 1, 1, true)
+                .AddItem("bp_reactorpl", 1, 1, true);
+            _builder.Create("CZ220_SLAGBORN_RARES")
+                .IsRare()
+                .AddItem("slag_crusher", 1, 1, true)
+                .AddItem("reclaim_gaunt", 1, 1, true)
+                .AddItem("bp_pistongaunt", 1, 1, true);
+            _builder.Create("CZ220_DEMOLISHER_RARES")
+                .IsRare()
+                .AddItem("ord_rig", 1, 1, true)
+                .AddItem("blast_harness", 1, 1, true)
+                .AddItem("bp_siegeoptic", 1, 1, true);
+
+            // Guaranteed encounter-specific salvage component that the recipes require.
+            _builder.Create("CZ220_BULWARK_COMPONENT")
+                .AddItem("reactor_core", 1, 1);
+            _builder.Create("CZ220_SLAGBORN_COMPONENT")
+                .AddItem("crusher_piston", 1, 1);
+            _builder.Create("CZ220_DEMOLISHER_COMPONENT")
+                .AddItem("targeting_lens", 1, 1);
+        }
+
+        private void CapstoneCZ220DungeonRares()
+        {
+            _builder.Create("CAPSTONE_ADAMGUARD_RARES")
+                .IsRare()
+                .AddItem("adamguard_l1", 1, 1, true)
+                .AddItem("adamguard_l2", 1, 1, true)
+                .AddItem("adamguard_l3", 1, 1, true)
+                .AddItem("adamguard_l4", 1, 1, true)
+                .AddItem("adamguard_l5", 1, 1, true)
+                .AddItem("adamguard_l6", 1, 1, true)
+                .AddItem("adamguard_l7", 1, 1, true)
+                .AddItem("adamguard_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_ADAMGUARD_WD_RARES")
+                .IsRare()
+                .AddItem("adamguard_w1", 1, 1, true)
+                .AddItem("adamguard_w2", 1, 1, true)
+                .AddItem("adamguard_w3", 1, 1, true)
+                .AddItem("adamguard_w4", 1, 1, true)
+                .AddItem("adamguard_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_SCRAPLOCK_RARES")
+                .IsRare()
+                .AddItem("scraplock_l1", 1, 1, true)
+                .AddItem("scraplock_l2", 1, 1, true)
+                .AddItem("scraplock_l3", 1, 1, true)
+                .AddItem("scraplock_l4", 1, 1, true)
+                .AddItem("scraplock_l5", 1, 1, true)
+                .AddItem("scraplock_l6", 1, 1, true)
+                .AddItem("scraplock_l7", 1, 1, true)
+                .AddItem("scraplock_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_SCRAPLOCK_WD_RARES")
+                .IsRare()
+                .AddItem("scraplock_w1", 1, 1, true)
+                .AddItem("scraplock_w2", 1, 1, true)
+                .AddItem("scraplock_w3", 1, 1, true)
+                .AddItem("scraplock_w4", 1, 1, true)
+                .AddItem("scraplock_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_WORLDBRK_RARES")
+                .IsRare()
+                .AddItem("worldbrk_l1", 1, 1, true)
+                .AddItem("worldbrk_l2", 1, 1, true)
+                .AddItem("worldbrk_l3", 1, 1, true)
+                .AddItem("worldbrk_l4", 1, 1, true)
+                .AddItem("worldbrk_l5", 1, 1, true)
+                .AddItem("worldbrk_l6", 1, 1, true)
+                .AddItem("worldbrk_l7", 1, 1, true)
+                .AddItem("worldbrk_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_WORLDBRK_WD_RARES")
+                .IsRare()
+                .AddItem("worldbrk_w1", 1, 1, true)
+                .AddItem("worldbrk_w2", 1, 1, true)
+                .AddItem("worldbrk_w3", 1, 1, true)
+                .AddItem("worldbrk_w4", 1, 1, true)
+                .AddItem("worldbrk_w5", 1, 1, true);
         }
 
         private void Credits()
@@ -69,7 +158,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("CZ220_LOOT_DROID_RARES")
                 .IsRare()
-                .AddItem("map_22", 50, 1, true);
+                .AddItem("map_22", 50, 1, true)
+                .AddItem("lockbox_t1", 4, 1, true);
         }
 
         private void ColicoidExperiment()

@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.5f,
                 24f,
                 8,
-                20,
-                12,
+                28,
+                30,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 4.5f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.GrenadeBurst, 3, 3)
+                .MimicryTechnique(FeatType.GrenadeBurst, 12, 3)
                 .HasTargetingSphere(
                     Spell.GrenadeBurstTechnique,
                     4.5f,

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -100,6 +101,84 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         source.Should().Contain("EffectVisualEffect(FlamethrowerVisualEffect)");
         source.Should().NotContain("ActionPlayAnimation(Animation.CastOutAnimation, 1f, 2.1f)");
         source.Should().NotContain("playImpactAnimation: false");
+    }
+
+    [Test]
+    public void ReportedAssaultGadgetEffects_AreStaticallyWiredForRetest()
+    {
+        var root = FindRepositoryRoot();
+        var perks = BuildDevicesAssaultGadgetsPerksWithout2daLookup();
+        var gadgetHarness = perks[PerkType.GadgetHarness].PerkLevels[1];
+
+        AssertStatBonus(gadgetHarness, StatType.AssaultGadgetAccuracyPercentAdjustment, 8);
+        AssertStatBonus(gadgetHarness, StatType.AssaultGadgetCriticalRatePercentAdjustment, 8);
+
+        var assaultAbilityFiles = new[]
+        {
+            "ArcProjectorAbilityDefinition.cs",
+            "CryoSprayerAbilityDefinition.cs",
+            "FlamethrowerAbilityDefinition.cs",
+            "IonLanceAbilityDefinition.cs",
+            "OverloadBarrageAbilityDefinition.cs",
+            "RailDartAbilityDefinition.cs",
+            "SonicBurstAbilityDefinition.cs",
+            "WristRocketAbilityDefinition.cs"
+        };
+        foreach (var fileName in assaultAbilityFiles)
+        {
+            var source = File.ReadAllText(
+                (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / fileName).FullName);
+            source.Should().Contain(
+                "DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator)",
+                $"{fileName} must consume Gadget Harness and Tactical Uplink critical chance");
+        }
+
+        var sonicBurst = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SonicBurstAbilityDefinition.cs").FullName);
+        sonicBurst.Should().Contain("InterruptActivation(hitTarget);");
+        sonicBurst.Should().Contain("AssignCommand(target, () => ClearAllActions());");
+
+        var flamethrower = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FlamethrowerAbilityDefinition.cs").FullName);
+        flamethrower.Should().Contain("typeof(BurnStatusEffect)");
+        flamethrower.Split("typeof(BurnStatusEffect)").Should().HaveCount(3,
+            "Flamethrower II and III each apply the documented 12-second Burn");
+
+        var railDart = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "RailDartAbilityDefinition.cs").FullName);
+        railDart.Split("typeof(BleedStatusEffect)").Should().HaveCount(4,
+            "all three Rail Dart ranks apply the documented 12-second Bleed");
+
+        perks[PerkType.Flamethrower].PerkLevels[2].Description.Should().Contain("Burn for 12 seconds");
+        perks[PerkType.Flamethrower].PerkLevels[3].Description.Should().Contain("Burn for 12 seconds");
+        perks[PerkType.RailDart].PerkLevels.Values.Should().OnlyContain(
+            level => level.Description.Contains("Bleed for 12 seconds", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void AssaultGadgetCriticalChance_IsAdditiveAndObservable()
+    {
+        Combat.CalculateAbilityCriticalChance(0).Should().Be(5);
+        Combat.CalculateAbilityCriticalChance(8).Should().Be(13,
+            "Gadget Harness adds eight points to the five-percent ability baseline");
+        Combat.CalculateAbilityCriticalChance(13).Should().Be(18,
+            "Gadget Harness and Tactical Uplink stack additively");
+        Combat.CalculateAbilityCriticalChance(100).Should().Be(50);
+        Combat.CalculateAbilityCriticalChance(-100).Should().Be(5);
+
+        var root = FindRepositoryRoot();
+        var characterSheet = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "CharacterSheetViewModel.cs").FullName);
+        var ability = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var combat = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+
+        characterSheet.Should().Contain("Assault Gadget Crit");
+        ability.Split("Combat.SendAbilityCriticalHitFeedback(").Should().HaveCount(3,
+            "player and NPC-scaled ability criticals both need visible combat feedback");
+        combat.Should().Contain("PlayerName.GetColoredDisplayName(observer, attacker)");
+        combat.Should().Contain("critically hits");
     }
 
     [Test]

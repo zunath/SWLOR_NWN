@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Warden Mark",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.WardenMark,
                 1.1f,
                 30f,
                 10,
-                28,
-                10,
+                0,
+                30,
                 typeof(MarkedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 5.5f,
@@ -34,11 +34,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Magical_Vision,
                 VisualEffect.Vfx_Fnf_Storm,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                enmityBonus: 75)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.WardenMark, 4, 3)
+                .MimicryTechnique(FeatType.WardenMark, 49, 3)
                 .HasTargetingSphere(
                     Spell.WardenMarkTechnique,
                     5.5f,

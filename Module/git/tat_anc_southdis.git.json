@@ -99946,10 +99946,6 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -100701,10 +100697,6 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -100932,10 +100924,6 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -101162,10 +101150,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": []
         },
         "Will": {
           "type": "byte",
@@ -299710,6 +299694,21 @@
         "Value": {
           "type": "int",
           "value": 66
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
         }
       }
     ]

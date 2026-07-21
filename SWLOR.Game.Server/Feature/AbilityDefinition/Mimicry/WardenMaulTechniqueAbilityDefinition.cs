@@ -20,25 +20,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Warden Maul",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.WardenMaul,
                 1.1f,
                 30f,
                 10,
-                28,
-                3,
+                0,
+                6,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 5.5f,
                 0f,
                 CombatDamageType.Physical,
                 ResistanceType.Mobility,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
+                VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Shake,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                enmityBonus: 100,
+                afterSuccessfulHit: InnateAbility.PullOnHit())
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.WardenMaul, 4, 3)
+                .MimicryTechnique(FeatType.WardenMaul, 50, 3)
                 .HasTargetingSphere(
                     Spell.WardenMaulTechnique,
                     5.5f,

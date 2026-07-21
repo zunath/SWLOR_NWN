@@ -29,6 +29,9 @@ public class TeleportPlaceableConfigurationTests
         {
             "Module/git/veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
             "Module/git/dathgrottocavern.git.json|Enter the Grotto Apex Den|DATH_APEX_DEN_INSIDE|tele_obj|tele_obj",
+            "Module/git/pw_ar_nsficlub.git.json|[Back Rooms]|SMUG_BACKROOMS|tele_obj|tele_obj",
+            "Module/git/czs220_maintlvl.git.json|Enter the Breaker Bay|CZ220_MAINT_ENTRANCE_BREAKER|tele_obj|tele_obj",
+            "Module/git/pw_ar_narscorpd.git.json|[Enter Czerka Weapons Testing Facility]|SMUG_CZERKA_WEAPONS_TEST_ENT|tele_obj|tele_obj",
         });
 
         LoadTeleportObjects()

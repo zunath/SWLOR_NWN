@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.4f,
                 24f,
                 8,
-                20,
-                12,
+                28,
+                30,
                 typeof(ShockStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 4.5f,
@@ -34,11 +34,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_S,
                 VisualEffect.Vfx_Fnf_Storm,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                afterSuccessfulHit: InnateAbility.ChainOnHit(InnateAbilityProfile.Mimicry, 2, 5f, 10, typeof(ShockStatusEffect), 30, CombatDamageType.Electrical))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.StaticBurst, 3, 3)
+                .MimicryTechnique(FeatType.StaticBurst, 43, 3)
                 .HasTargetingSphere(
                     Spell.StaticBurstTechnique,
                     4.5f,

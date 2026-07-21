@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Pressure Lock",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.PressureLock,
                 1.0f,
                 30f,
                 10,
-                28,
-                8,
+                0,
+                15,
                 typeof(ImmobilizedStatusEffect),
                 CombatImpactAreaShape.Cone,
                 5f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.PressureLock, 4, 3)
+                .MimicryTechnique(FeatType.PressureLock, 44, 3)
                 .HasTargetingCone(
                     Spell.PressureLockTechnique,
                     5f,

@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[KA] Czerka Weapons Testing Facility"
+      "0": "Smuggler's Moon - Czerka Weapons Testing Facility"
     }
   },
   "NoRest": {
@@ -11173,7 +11173,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 3
+    "value": 6
   },
   "Width": {
     "type": "int",

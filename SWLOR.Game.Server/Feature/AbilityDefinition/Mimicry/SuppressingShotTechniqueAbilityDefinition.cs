@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.2f,
                 18f,
                 5,
-                13,
-                4,
+                0,
+                15,
                 typeof(DazedStatusEffect),
                 CombatImpactAreaShape.Line,
                 10f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.SuppressingShot, 2, 2)
+                .MimicryTechnique(FeatType.SuppressingShot, 1, 2)
                 .HasTargetingLine(
                     Spell.SuppressingShotTechnique,
                     10f,

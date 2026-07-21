@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Final Suppression",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.FinalSuppression,
                 1.4f,
                 30f,
                 10,
-                28,
-                3,
+                0,
+                6,
                 typeof(StunnedStatusEffect),
                 CombatImpactAreaShape.Line,
                 8f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.FinalSuppression, 4, 3)
+                .MimicryTechnique(FeatType.FinalSuppression, 48, 3)
                 .HasTargetingLine(
                     Spell.FinalSuppressionTechnique,
                     8f,

@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Crossfire Drill",
                 Animation.FireForgetDodgeSide,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.CrossfireDrill,
                 1.0f,
                 30f,
                 10,
-                28,
-                8,
+                0,
+                30,
                 typeof(SuppressionStatusEffect),
                 CombatImpactAreaShape.Cone,
                 5f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.CrossfireDrill, 4, 3)
+                .MimicryTechnique(FeatType.CrossfireDrill, 45, 3)
                 .HasTargetingCone(
                     Spell.CrossfireDrillTechnique,
                     5f,

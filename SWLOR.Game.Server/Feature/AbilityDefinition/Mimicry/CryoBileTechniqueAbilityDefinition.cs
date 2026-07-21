@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.6f,
                 30f,
                 10,
-                28,
-                12,
+                0,
+                6,
                 typeof(FreezingStatusEffect),
                 CombatImpactAreaShape.Cone,
                 8f,
@@ -35,11 +35,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Imp_Frost_L,
                 VisualEffect.Vfx_Fnf_Icestorm,
                 maxRange: 8f,
-                enmityBonus: 100)
+                enmityBonus: 100,
+                additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.CryoBile, 4, 3)
+                .MimicryTechnique(FeatType.CryoBile, 40, 3)
                 .HasTargetingCone(
                     Spell.CryoBileTechnique,
                     8f,

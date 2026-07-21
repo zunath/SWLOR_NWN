@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Incendiary Field")
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 30 seconds. Enemies inside take 8 fire DMG plus PER scaling every 3 seconds.")
+                .Description("Deploys a visible 5m-radius fire field at the target location for 30 seconds. Enemies inside take 8 fire DMG plus PER scaling every 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IncendiaryField1)
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 30 seconds. Enemies inside take 12 fire DMG plus PER scaling every 3 seconds.")
+                .Description("Deploys a visible 5m-radius fire field at the target location for 30 seconds. Enemies inside take 12 fire DMG plus PER scaling every 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IncendiaryField2)
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 30 seconds. Enemies inside take 16 fire DMG plus PER scaling every 3 seconds.")
+                .Description("Deploys a visible 5m-radius fire field at the target location for 30 seconds. Enemies inside take 16 fire DMG plus PER scaling every 3 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Remote Charge")
 
                 .AddPerkLevel()
-                .Description("Arms a visible charge at your target location that detonates after 3 seconds in a 5m sphere for 30 fire DMG plus PER scaling.")
+                .Description("Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 30 fire DMG plus PER scaling.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RemoteCharge1)
 
                 .AddPerkLevel()
-                .Description("Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 10 seconds.")
+                .Description("Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 42 fire DMG plus PER scaling and inflicts Knockdown for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)

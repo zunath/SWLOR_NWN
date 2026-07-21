@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -52,6 +53,84 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             .BeEmpty("the layout manifest should only reference workbook tabs");
         expectedColumnsBySheet.Should().HaveCount(worksheetsByName.Count, "every workbook tab should have explicit layout columns");
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
+    public void CharacterStats_DocumentsRuntimeCombatLimits()
+    {
+        var root = FindRepositoryRoot();
+        var workbookPath = Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx");
+
+        using var archive = ZipFile.OpenRead(workbookPath);
+        var worksheetEntry = ReadWorksheetsByName(archive)["Character Stats"];
+        var worksheet = ReadWorkbookXml(archive, worksheetEntry);
+        var sharedStrings = ReadSharedStrings(archive);
+        var stats = worksheet
+            .Descendants(SpreadsheetNs + "row")
+            .Select(row => row
+                .Elements(SpreadsheetNs + "c")
+                .ToDictionary(
+                    cell => new string(((string)cell.Attribute("r") ?? string.Empty).TakeWhile(char.IsLetter).ToArray()),
+                    cell => GetCellText(cell, sharedStrings)))
+            .Where(row => row.TryGetValue("A", out var name) && !string.IsNullOrWhiteSpace(name))
+            .ToDictionary(row => row["A"], StringComparer.Ordinal);
+
+        AssertStatRange(stats, "Combat Readiness", 0, Stat.MaximumCombatReadinessPercent);
+        AssertStatRange(stats, "Shield Deflection", 0, Stat.MaximumShieldDeflectionChance);
+        AssertStatRange(stats, "Attack Deflection", 0, Stat.MaximumDeflectionChanceCap);
+        AssertStatRange(stats, "Guard", 0, Stat.MaximumGuardChance);
+        AssertStatRange(stats, "Critical Rate", Combat.MinimumCriticalRate, Combat.MaximumCriticalRate);
+        AssertStatRange(stats, "Critical Damage", 0, Combat.MaximumCriticalDamagePercentAdjustment);
+        AssertStatRange(
+            stats,
+            "Enmity",
+            Enmity.MinimumEnmityPercentAdjustment,
+            Enmity.MaximumEnmityPercentAdjustment);
+        AssertStatRange(stats, "Haste", 0, Combat.MaximumAttackDelayAdjustmentPercent);
+        AssertStatRange(stats, "Slow", 0, Combat.MaximumAttackDelayAdjustmentPercent);
+        AssertStatRange(
+            stats,
+            "Movement Speed",
+            (decimal)Stat.MinimumMovementSpeedMultiplier,
+            (decimal)Stat.MaximumMovementSpeedMultiplier);
+        AssertStatRange(
+            stats,
+            "Damage-Derived Healing per Hit",
+            0,
+            Combat.MaximumDamageDerivedHealingPercentPerHit);
+        AssertStatRange(stats, "Hit Rate", Combat.MinimumHitRate, Combat.MaximumHitRate);
+        AssertStatRange(stats, "Damage Bonus per Hit", 0, Combat.MaximumDamageBonusPercent);
+        AssertStatRange(
+            stats,
+            "Single Damage Reduction Modifier",
+            0,
+            Combat.MaximumNormalDamageReductionPercent);
+        AssertStatRange(
+            stats,
+            "Combined Damage Reduction per Hit",
+            0,
+            Combat.MaximumCombinedDamageReductionPercent);
+
+        stats["Attack Deflection"]["K"].Should().Contain($"Default chance cap is {Stat.DefaultAttackDeflectionChanceCap}%");
+        stats["Guard"]["K"].Should().Contain($"reduces damage by {Combat.BaseGuardDamageReductionPercent}% by default");
+        stats["Guard"]["K"].Should().Contain($"{Combat.MaximumGuardDamageReductionPercent}% hard limit");
+        stats["Damage-Derived Healing per Hit"]["K"].Should().Contain("after Combat Readiness and healing-received modifiers");
+    }
+
+    private static void AssertStatRange(
+        IReadOnlyDictionary<string, Dictionary<string, string>> stats,
+        string name,
+        decimal expectedMinimum,
+        decimal expectedMaximum)
+    {
+        stats.Should().ContainKey(name);
+        var row = stats[name];
+        decimal.Parse(row["I"], System.Globalization.CultureInfo.InvariantCulture).Should().Be(expectedMinimum);
+        decimal.Parse(row["J"], System.Globalization.CultureInfo.InvariantCulture).Should().Be(expectedMaximum);
     }
 
     private static void AssertColumns(

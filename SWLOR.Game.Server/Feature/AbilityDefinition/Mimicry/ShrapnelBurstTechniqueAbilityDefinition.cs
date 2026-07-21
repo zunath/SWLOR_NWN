@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.4f,
                 24f,
                 8,
-                20,
-                12,
+                28,
+                30,
                 typeof(SunderStatusEffect),
                 CombatImpactAreaShape.Cone,
                 8f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.ShrapnelBurst, 3, 3)
+                .MimicryTechnique(FeatType.ShrapnelBurst, 16, 3)
                 .HasTargetingCone(
                     Spell.ShrapnelBurstTechnique,
                     8f,

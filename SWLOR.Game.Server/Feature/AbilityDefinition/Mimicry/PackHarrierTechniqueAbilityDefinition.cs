@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Pack Harrier",
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.PackHarrier,
                 0.8f,
                 18f,
                 7,
-                24,
-                6,
+                0,
+                30,
                 typeof(HobbleStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Mobility,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.PackHarrier, 3, 2)
+                .MimicryTechnique(FeatType.PackHarrier, 42, 2)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

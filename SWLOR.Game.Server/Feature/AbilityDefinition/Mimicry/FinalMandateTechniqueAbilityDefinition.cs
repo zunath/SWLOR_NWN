@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -14,36 +15,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildArea(
-                _builder,
-                FeatType.FinalMandateTechnique,
-                "Final Mandate",
-                Animation.FireForgetTaunt,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
-                1.4f,
-                30f,
-                10,
-                28,
-                14,
-                typeof(SuppressionStatusEffect),
-                CombatImpactAreaShape.Line,
-                8f,
-                2.5f,
-                CombatDamageType.Sonic,
-                ResistanceType.Mind,
-                VisualEffect.Vfx_Imp_Magical_Vision,
-                VisualEffect.Vfx_Fnf_Howl_War_Cry,
-                maxRange: 8f)
+            _builder
+                .Create(FeatType.FinalMandateTechnique, PerkType.CombatAnalyzer)
+                .Name("Final Mandate")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.FinalMandate, 4, 3)
-                .HasTargetingLine(
-                    Spell.FinalMandateTechnique,
-                    8f,
-                    2.5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                .UsesAnimation(Animation.CastOutAnimation)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.FinalMandate, 30f)
+                .RequirementStamina(10)
+                .IsCastedAbility()
+                .MimicryTechnique(FeatType.FinalMandate, 49, 3)
+                .MimicryUtility()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
+                    {
+                        StatusEffect.ApplyStatusEffect(activator, ally, new FinalMandateStatusEffect(), 30f);
+                    }
+                });
 
             return _builder.Build();
         }

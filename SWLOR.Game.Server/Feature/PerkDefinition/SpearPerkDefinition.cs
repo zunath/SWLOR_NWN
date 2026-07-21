@@ -160,13 +160,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisruptionField1)
-                .Description("Enemies in the area take weapon DMG + 16 and suffer Force Disruption for 30 seconds.")
+                .Description("Deals weapon DMG + 16 to enemies within 5m of you and inflicts Force Disruption for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisruptionField2)
-                .Description("Enemies in the area take weapon DMG + 30 and suffer Force Disruption for 30 seconds.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m of you and inflicts Force Disruption for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 32);
         }
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Forcebane1)
-                .Description("Deals weapon DMG + 25 in a 5m sphere. Enemies suffer Foggy Mind, Force Disruption, and -20% Ability Accuracy for 45 seconds.")
+                .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Foggy Mind, Force Disruption, and -20% Ability Accuracy for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Spear, 50)
                 .RequirementQuest(SpearCapstoneQuestDefinition.ForcebaneMasteryQuestId);
@@ -230,25 +230,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust1)
-                .Description("Deals weapon DMG + 8. Costs 2 additional STM to grant +6% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 8 and grants +6% Evasion for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust2)
-                .Description("Deals weapon DMG + 18. Costs 2 additional STM to grant +8% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 18 and grants +8% Evasion for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust3)
-                .Description("Deals weapon DMG + 28. Costs 2 additional STM to grant +10% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 28 and grants +10% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorThrust4)
-                .Description("Deals weapon DMG + 38. Costs 2 additional STM to grant +12% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 38 and grants +12% Evasion for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Spear, 40);
         }
@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LateralFootworkTrait)
-                .Description("After spending 8 or more STM on an ability, gain +10% Evasion for 30 seconds.")
+                .Description("After using a Spear ability, gain +10% Evasion for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 10)
                 .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
@@ -276,34 +276,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HighGuardTrait)
                 .Description("Hostile combat abilities costing at least 8 STM deal +6 DMG and grant +3% Evasion for 30 seconds.")
-                .IncreasesStat(StatType.CostlyAbilityDamageBonusSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.CostlyAbilityHitMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityDamageMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityDamageBonus, 6)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 3)
-                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustment, 3)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 8)
 
                 .AddPerkLevel()
                 .Description("Hostile combat abilities costing at least 8 STM deal +10 DMG and grant +5% Evasion for 30 seconds.")
-                .IncreasesStat(StatType.CostlyAbilityDamageBonusSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.CostlyAbilityHitMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityDamageMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 5)
-                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustment, 5)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 22)
 
                 .AddPerkLevel()
                 .Description("Hostile combat abilities costing at least 8 STM deal +14 DMG and grant +7% Evasion for 30 seconds.")
-                .IncreasesStat(StatType.CostlyAbilityDamageBonusSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.CostlyAbilityHitMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityDamageMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityDamageBonus, 14)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 7)
-                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionPercentAdjustment, 7)
+                .IncreasesStat(StatType.CostlyAbilityUsedEvasionDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 45);
         }
@@ -353,13 +350,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HamperingBarrage1)
-                .Description("Deals weapon DMG + 16 in a cone and inflicts Hamstring for 30 seconds.")
+                .Description("Deals weapon DMG + 16 in a 5m x 5m cone and inflicts Hamstring for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HamperingBarrage2)
-                .Description("Deals weapon DMG + 30 in a cone and inflicts Hamstring for 30 seconds.")
+                .Description("Deals weapon DMG + 30 in a 5m x 5m cone and inflicts Hamstring for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 32);
         }
@@ -371,7 +368,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VigorStance1)
-                .Description("While active, hostile combat abilities cost 2 additional STM, deal +10% damage, and grant +8% Evasion for 30 seconds.")
+                .Description("While active, all outgoing damage is increased by 10%. Using any hostile combat ability costs 2 additional STM and grants +8% Evasion for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 20);
         }
@@ -384,10 +381,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RestorationStrikeTrait)
                 .Description("When a hostile combat ability costing at least 8 STM hits, restore 3 STM.")
-                .IncreasesStat(StatType.CostlyAbilityHitStaminaRestoreSkillType, (int)SkillType.Spear)
-                .IncreasesStat(StatType.CostlyAbilityHitMinimumStaminaCost, 8)
+                .IncreasesStat(StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityHitStaminaRestore, 3)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Spear)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 25);
         }

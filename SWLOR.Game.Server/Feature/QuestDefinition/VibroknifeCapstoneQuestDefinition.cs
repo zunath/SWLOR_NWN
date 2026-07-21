@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Veles Drill Ledger is in hand. Return to Mikka Varn.")
+                    "The Vital Rupture Veles Drill Ledger is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Militia Range Relay is in hand. Return to Mikka Varn.")
+                    "The Vital Rupture Militia Range Relay is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture warden is defeated and the Vital Rupture Scored Challenge Badge is in hand. Return to Mikka Varn.")
+                    "The Vital Rupture warden is defeated and the Vital Rupture Scored Challenge Badge is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Captain's Challenge Chit is in hand. Return to Mikka Varn.")
+                    "The Vital Rupture Captain's Challenge Chit is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture master is defeated. Return to Mikka Varn.")
+                    "The Vital Rupture master is defeated. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown Veles Drill Ledger has been recovered. Deliver it to Dalen Orso.")
+                    "The Systemic Shutdown Veles Drill Ledger has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown Militia Range Relay has been recovered. Deliver it to Dalen Orso.")
+                    "The Systemic Shutdown Militia Range Relay has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown warden is down and the Systemic Shutdown Scored Challenge Badge has been recovered. Deliver it to Dalen Orso.")
+                    "The Systemic Shutdown warden is down and the Systemic Shutdown Scored Challenge Badge has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown Captain's Challenge Chit has been recovered. Deliver it to Dalen Orso.")
+                    "The Systemic Shutdown Captain's Challenge Chit has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }

@@ -20,21 +20,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Inner Circle Surge",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.InnerCircleSurge,
                 1.3f,
                 24f,
                 9,
-                32,
-                12,
+                48,
+                30,
                 typeof(ExposedStatusEffect),
                 CombatDamageType.Electrical,
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_M,
-                maxRange: 12f)
+                maxRange: 12f,
+                damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(ShockStatusEffect)),
+                afterSuccessfulHit: InnateAbility.ChainOnHit(InnateAbilityProfile.Mimicry, 3, 6f, 16, typeof(ShockStatusEffect), 30, CombatDamageType.Electrical))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.InnerCircleSurge, 4, 3)
+                .MimicryTechnique(FeatType.InnerCircleSurge, 45, 3)
                 .MimicryElement(CombatDamageType.Electrical);
 
             return _builder.Build();

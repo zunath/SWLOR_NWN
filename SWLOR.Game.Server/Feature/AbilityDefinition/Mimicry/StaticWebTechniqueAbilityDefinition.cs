@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.4f,
                 18f,
                 5,
-                13,
-                10,
+                0,
+                30,
                 typeof(ShockStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 4.5f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.StaticWeb, 2, 2)
+                .MimicryTechnique(FeatType.StaticWeb, 1, 2)
                 .HasTargetingSphere(
                     Spell.StaticWebTechnique,
                     4.5f,

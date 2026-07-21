@@ -20,12 +20,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Warden Clamp",
                 Animation.FireForgetTaunt,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.WardenClamp,
                 1.1f,
                 30f,
                 10,
-                28,
-                6,
+                0,
+                15,
                 typeof(DazedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 5.5f,
@@ -34,11 +34,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Dazed_S,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
-                centerOnActivator: true)
+                centerOnActivator: true,
+                enmityBonus: 75)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.WardenClamp, 4, 3)
+                .MimicryTechnique(FeatType.WardenClamp, 48, 3)
                 .HasTargetingSphere(
                     Spell.WardenClampTechnique,
                     5.5f,

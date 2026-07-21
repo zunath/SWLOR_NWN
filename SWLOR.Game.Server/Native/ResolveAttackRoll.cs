@@ -2,6 +2,7 @@ using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
@@ -227,7 +228,14 @@ namespace SWLOR.Game.Server.Native
                 // Check for deflection
                 var deflected = CheckDeflection(isHit, attacker, defender);
                 if (deflected)
+                {
                     isHit = false;
+
+                    // Deflecting Return: a deflected directly targeted ranged attack reflects a capped
+                    // share of weapon damage back to its source.
+                    if (attackType == (uint)AttackType.Ranged)
+                        Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType);
+                }
 
                 // Hit
                 if (isHit)
@@ -242,10 +250,12 @@ namespace SWLOR.Game.Server.Native
                         var criticalStat = attackerStats.GetDEXStat();
                         var criticalRoll = Random.D100(1);
                         var criticalModifier = CalculateCriticalRateModifier(attacker, defender, weaponSkillType);
+                        criticalModifier += Combat.ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf);
                         criticalModifier += Combat.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.GetAutoAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
+                        criticalModifier += Combat.GetBackAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
                         var criticalRate = Combat.CalculateCriticalRate(
                             criticalStat,
@@ -315,6 +325,11 @@ namespace SWLOR.Game.Server.Native
                     }
                     pAttackData.m_nMissedBy = DefaultMissedBy;
                 }
+
+                // Embattled ramps from every attempted hostile attack (hit, miss, or deflect), not only
+                // landed hits. Refresh no-ops unless the defender owns the trait.
+                if (GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf))
+                    EmbattledStatusEffect.Refresh(defender.m_idSelf, attacker.m_idSelf);
 
                 Log.Write(LogGroup.Attack, $"Resolving NWN defensive effects");
                 // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is

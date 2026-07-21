@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 0.8f,
                 24f,
                 8,
-                20,
-                12,
+                28,
+                30,
                 typeof(BleedStatusEffect),
                 CombatImpactAreaShape.Cone,
                 5f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.BloodFrenzyFlurry, 3, 3)
+                .MimicryTechnique(FeatType.BloodFrenzyFlurry, 43, 3)
                 .HasTargetingCone(
                     Spell.BloodFrenzyFlurryTechnique,
                     5f,

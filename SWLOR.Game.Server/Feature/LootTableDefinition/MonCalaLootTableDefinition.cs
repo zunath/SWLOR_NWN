@@ -61,6 +61,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("MONCALA_AMPHIHYDRUS_RARES")
                 .IsRare()
+                .AddItem("fnote_2000", 1, 1, true)
+                .AddItem("fnote_2002", 1, 1, true)
+                .AddItem("fnote_2010", 1, 1, true)
                 .AddItem("map_028", 2, 1, true)
                 .AddItem("map_029", 2, 1, true)
                 .AddItem("agate", 1, 1, true);
@@ -209,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("MONCALA_REEFMAW_RARES")
                 .IsRare()
+                .AddItem("fnote_2096", 2, 1, true)
                 .AddItem("bptgharness", 1, 1, true)
                 .AddItem("bptgwraps", 1, 1, true)
                 .AddItem("bptgtreads", 1, 1, true)
@@ -229,6 +233,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("MONCALA_SABLE_QUARR_RARES")
                 .IsRare()
+                .AddItem("fnote_2097", 2, 1, true)
                 .AddItem("bpstructure0411", 1, 1, true)
                 .AddItem("bpstructure0412", 1, 1, true)
                 .AddItem("bpstructure0413", 1, 1, true)
@@ -250,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("MONCALA_KAEL_DROX_RARES")
                 .IsRare()
+                .AddItem("fnote_2126", 2, 1, true)
                 .AddItem("bpstructure0421", 1, 1, true)
                 .AddItem("bpstructure0422", 1, 1, true)
                 .AddItem("bpstructure0423", 1, 1, true)
@@ -271,6 +277,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("MONCALA_INKVEIL_RARES")
                 .IsRare()
+                .AddItem("fnote_2138", 2, 1, true)
                 .AddItem("bpigharness", 1, 1, true)
                 .AddItem("bpigwraps", 1, 1, true)
                 .AddItem("bpigtreads", 1, 1, true)

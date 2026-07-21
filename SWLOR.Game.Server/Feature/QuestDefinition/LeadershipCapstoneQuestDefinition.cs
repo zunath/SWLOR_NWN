@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line Triage Ward Ledger has been recovered. Return it to Edda Maln on Dantooine.")
+                    "The Hold the Line Triage Ward Ledger has been recovered. Return it to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line Kolto Conduit Coupler has been recovered. Bring it to Edda Maln on Dantooine.")
+                    "The Hold the Line Kolto Conduit Coupler has been recovered. Bring it to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line Fractured Ward Sigil has been recovered from the warden. Return it to Edda Maln on Dantooine.")
+                    "The Hold the Line Fractured Ward Sigil has been recovered from the warden. Return it to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line Matron's Ward Token has been recovered. Return it to Edda Maln on Dantooine.")
+                    "The Hold the Line Matron's Ward Token has been recovered. Return it to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line master is defeated. Return to Edda Maln on Dantooine.")
+                    "The Hold the Line master is defeated. Return to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command Republic Bunker Docket has been recovered. Return it to Varen Kell on Viscara.")
+                    "The Decisive Command Republic Bunker Docket has been recovered. Return it to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command Shield Grid Relay has been recovered. Bring it to Varen Kell on Viscara.")
+                    "The Decisive Command Shield Grid Relay has been recovered. Bring it to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command Cracked Command Crest has been recovered from the warden. Return it to Varen Kell on Viscara.")
+                    "The Decisive Command Cracked Command Crest has been recovered from the warden. Return it to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command Quartermaster Override Chip has been recovered. Return it to Varen Kell on Viscara.")
+                    "The Decisive Command Quartermaster Override Chip has been recovered. Return it to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command master is defeated. Return to Varen Kell on Viscara.")
+                    "The Decisive Command master is defeated. Return to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

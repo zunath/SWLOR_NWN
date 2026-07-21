@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.3f,
                 18f,
                 5,
-                13,
-                12,
+                0,
+                30,
                 typeof(DisorientedStatusEffect),
                 CombatImpactAreaShape.Cone,
                 8f,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.IonBurst, 2, 2)
+                .MimicryTechnique(FeatType.IonBurst, 36, 2)
                 .HasTargetingCone(
                     Spell.IonBurstTechnique,
                     8f,

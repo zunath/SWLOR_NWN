@@ -20,21 +20,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Inner Void",
                 Animation.CastOutAnimation,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.InnerVoid,
                 1.3f,
                 24f,
                 9,
-                32,
-                12,
+                48,
+                30,
                 typeof(WeakenedStatusEffect),
                 CombatDamageType.Force,
                 ResistanceType.Disruption,
                 VisualEffect.Vfx_Imp_Negative_Energy,
-                maxRange: 12f)
+                maxRange: 12f,
+                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(5))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .MimicryTechnique(FeatType.InnerVoid, 4, 3)
+                .MimicryTechnique(FeatType.InnerVoid, 46, 3)
                 .MimicryElement(CombatDamageType.Force);
 
             return _builder.Build();

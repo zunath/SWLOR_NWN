@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             Provoke();
             DualWield();
+            Alertness();
 
             return _builder.Build();
         }
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Provoke1)
 
                 .AddPerkLevel()
-                .Description("Goads the selected target and all other enemies within range into attacking you. Enmity generated increases by 1% per VIT.")
+                .Description("Goads the selected target and all other enemies within 8m of it into attacking you. Enmity generated increases by 1% per VIT.")
                 .Price(3)
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.Armor, 15)
@@ -63,6 +64,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 30 : 0);
         }
 
+        private void Alertness()
+        {
+            _builder.Create(PerkCategoryType.General, PerkType.Alertness)
+                .Name("Alertness")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.AlertnessTrait)
+                .Description("Increases Detection by 10, improving your chance to notice stealthed creatures.")
+                .Price(2)
+                .RequirementSkill(SkillType.Armor, 5)
+                .IncreasesStat(StatType.Detection, 10)
+
+                .AddPerkLevel()
+                .Description("Increases Detection by 15, improving your chance to notice stealthed creatures.")
+                .Price(3)
+                .RequirementSkill(SkillType.Armor, 25)
+                .IncreasesStat(StatType.Detection, 15)
+
+                .AddPerkLevel()
+                .Description("Increases Detection by 20, improving your chance to notice stealthed creatures.")
+                .Price(4)
+                .RequirementSkill(SkillType.Armor, 40)
+                .IncreasesStat(StatType.Detection, 20);
+        }
+
     }
 }
-

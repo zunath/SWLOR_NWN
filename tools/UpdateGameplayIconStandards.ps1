@@ -8,7 +8,7 @@ param(
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
     [string]$TlkJsonPath = "SWLOR_Haks\sw_tlk\sw_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2791,
+    [int]$GeneratedFeatEnd = 2898,
     [int]$CustomFeatStart = 1116,
     [int]$CustomSpellStart = 1000,
     [int]$StatusEffectIconStart = 141,
@@ -81,6 +81,11 @@ $IconWordAliases = @{
     Protocol = "prot"; Twin = "twin"; Unbreakable = "unbrk"; Unmoving = "unmove"; Untouchable = "untch"
     Instinct = "inst"; Vital = "vital"; Vulnerable = "vuln"; Watchful = "watch"; Weakened = "weak"
     Weaken = "weaken"; Whirling = "whirl"
+    # Vowel-stripping would reduce these to unreadable fragments ("Overload" -> "vrld"), so they
+    # carry explicit abbreviations that keep the leading sound.
+    Overload = "ovrld"; Apex = "apex"; Collapse = "cllps"; Sustain = "sstn"; Warden = "wrdn"
+    Mandate = "mndt"; Canister = "cnstr"; Sweep = "swp"; Tempo = "tempo"
+    Butchers = "btchrs"; Stealth = "stlth"
 }
 
 function Resolve-RepoPath([string]$path) {
@@ -224,7 +229,52 @@ function Get-PreservedCategory([hashtable]$existing, [string]$type, [string]$key
         return $existing[$manifestKey].SemanticCategory
     }
 
+    # A row's Type can move between refreshes (an ability whose feat row falls outside the generated
+    # range is rediscovered as a custom Feat, and vice versa). The Type-qualified key misses in that
+    # case, which would silently discard a hand-corrected category and replace it with the regex
+    # guess. Fall back to the name alone so a deliberate category survives a Type change.
+    $row = Get-ManifestRowByKey $existing $key
+    if ($null -ne $row -and ![string]::IsNullOrWhiteSpace($row.SemanticCategory)) {
+        return $row.SemanticCategory
+    }
+
     return $fallback
+}
+
+# Looks up a manifest row by name across every Type. Returns $null when the name is absent or
+# ambiguous (the same name under two Types), since a guess would be worse than the derived default.
+function Get-ManifestRowByKey([hashtable]$existing, [string]$key) {
+    $suffix = "|$($key.ToLowerInvariant())"
+    $matched = @()
+    foreach ($manifestKey in $existing.Keys) {
+        if ($manifestKey.EndsWith($suffix)) {
+            $matched += $existing[$manifestKey]
+        }
+    }
+
+    if ($matched.Count -eq 1) {
+        return $matched[0]
+    }
+
+    return $null
+}
+
+# The Force alignment gem is owned by UpdateFeatSpellIconBorders.ps1, which reads the manifest's
+# Alignment column as its source of truth. This script never derives that value, so it must carry the
+# existing one through on a refresh; otherwise Export-Csv drops the column and every gem assignment
+# is silently lost.
+function Get-PreservedAlignment([hashtable]$existing, [string]$type, [string]$key) {
+    $manifestKey = Get-ManifestKey $type $key
+    if ($existing.ContainsKey($manifestKey)) {
+        return (Get-OptionalProperty $existing[$manifestKey] "Alignment")
+    }
+
+    $row = Get-ManifestRowByKey $existing $key
+    if ($null -ne $row) {
+        return (Get-OptionalProperty $row "Alignment")
+    }
+
+    return ""
 }
 
 function Get-RankFromText([string]$text) {
@@ -444,6 +494,7 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
             Rank = Get-RankFromText $key
             IconResRef = $group.IconResRef
             SourcePath = $group.SourcePath
+            Alignment = Get-PreservedAlignment $existing $type $key
         }
     }
 
@@ -534,6 +585,12 @@ function Get-EffectIconLabel([pscustomobject]$entry) {
 }
 
 function Get-AbilitySemanticCategory([string]$label) {
+    # Disruption Field is an instant area silence, not a placed object, so the "Field" in its
+    # name must not pull it into Deployable. Its player-facing intent is control.
+    if ($label -match "DisruptionField") {
+        return "Control"
+    }
+
     if ($label -match "Beacon|Field|Standard|Bunker|RemoteCharge|Killzone|KillZone|DampeningField|IncendiaryField|EmergencyBunker") {
         return "Deployable"
     }
@@ -546,7 +603,7 @@ function Get-AbilitySemanticCategory([string]$label) {
         return "Control"
     }
 
-    if ($label -match "MedKit|TreatmentKit|Kolto|Infusion|Mend|Benevolence|Renewal|Shielding|Deflector|Rayshield|Barrier|Ward|Sanctuary|Guard|Bastion|Resolve|Rally|Rousing|Bolster|Recovery|Cleanse|Antitoxin|Coagulant|PainSuppressant|Adrenal|FocusStim|PowerCell|Maintenance|Soothe|Revive|Reward|Hasten|IronHide|Warding|Unbreakable|Untouchable|PackRecovery|FieldRecovery|SteadyFormation|HoldTheLine|WatchfulPresence|HarmonicRestoration|SereneFocus") {
+    if ($label -match "MedKit|TreatmentKit|Kolto|Infusion|Mend|Benevolence|Renewal|Shielding|Deflector|Rayshield|Barrier|Ward|Sanctuary|Guard|Bastion|Resolve|Rally|Rousing|Bolster|Recovery|Cleanse|Antitoxin|Coagulant|PainSuppressant|Adrenal|FocusStim|PowerCell|Maintenance|Soothe|Revive|Reward|Hasten|IronHide|IronShell|Warding|Unbreakable|Untouchable|PackRecovery|FieldRecovery|SteadyFormation|HoldTheLine|WatchfulPresence|HarmonicRestoration|SereneFocus") {
         return "Beneficial"
     }
 
@@ -558,6 +615,15 @@ function Get-AbilitySemanticCategory([string]$label) {
 }
 
 function Get-StatusSemanticCategory([string]$className, [string]$name, [string]$content) {
+    # Stances take the Self frame (see IconStandards.md), and the class declares that it is one, so
+    # read the declaration instead of guessing from the name. This has to precede the keyword checks
+    # below: a stance whose name happens to contain a debuff word ("Sustain Burn") is otherwise
+    # classified Harmful, and hand-correcting the manifest only survives until the next refresh that
+    # has no prior row to preserve the value from.
+    if ($content -match "StatusEffectSourceType\.Stance") {
+        return "Self"
+    }
+
     if ($content -match "StatusEffectCategory\.[A-Za-z0-9_ ]*(Debuff|Control|Bleeding)" -or
         $className -match "Burn|Poison|Toxin|Bleed|Sunder|Weaken|Exhaust|Dazed|Stun|Blind|Vulnerable|Exposed|Hemorrhage|Hobble|Immobil|Mark|Terrified|Tranquil|Disease|Penalty|Drain|Choke|Terror|Sonic|WeaponJam|Distracting|Flash|Erosion|Fracture|Disruption|Breach|Crippling|Incapacitate|SmokeBomb|Decoy|ChallengeStatusEffect|Vulnerability|Fatigue|Taunting|CoveringClaws") {
         return "Harmful"
@@ -604,9 +670,22 @@ function Get-StatusEffectClasses([string]$path) {
         }
 
         $className = $Matches[2]
+
+        # Every status effect that can be applied to a creature must carry a gameplay icon so the
+        # player can see it is active; an effect with nothing worth showing on the icon bar should be
+        # modelled as a static stat contribution instead of a status effect. So no class is exempt
+        # here: a definition left on EffectIconType.Invalid is picked up, assigned a real icon by
+        # -UpdateStatusEffectCode, and required to carry an effecticons.2da row and TLK entry.
+
         $name = $className -replace "StatusEffect$", ""
         if ($content -match 'public\s+override\s+string\s+Name\s*=>\s*"([^"]+)"') {
             $name = $Matches[1]
+        }
+        elseif ($content -match 'public\s+override\s+string\s+Name\s*=>\s*\$"([^"{]+)') {
+            # Interpolated names (e.g. stack counters such as "Cruel Momentum ({Stacks})") use their
+            # literal prefix as the static display name; the dynamic suffix is combat-log-only and the
+            # TLK/effecticons.2da row carries the base name.
+            $name = ($Matches[1] -replace '[\s(+\-]+$', '').Trim()
         }
 
         $rank = Get-RankFromText ($className -replace "StatusEffect$", "")
@@ -868,12 +947,70 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.FillRectangle((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 4, 5, 8))), 56, 51, 16, 36)
         $g.FillRectangle((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 4, 5, 8))), 46, 61, 36, 16)
     }
+    elseif ($className -match "Canister|Injector") {
+        # A combat stim is injected, not healing: it buffs attack and attack speed. Give it an
+        # injector rather than the medical cross, which belongs to the restoration family above and
+        # would otherwise read as a heal.
+        $g.DrawLine($shadowPen, 47, 96, 88, 55)
+        $barrel = @(
+            [System.Drawing.Point]::new(58, 39), [System.Drawing.Point]::new(89, 70),
+            [System.Drawing.Point]::new(76, 83), [System.Drawing.Point]::new(45, 52)
+        )
+        $g.FillPolygon($brush, $barrel)
+        $g.DrawPolygon($thin, $barrel)
+        # Plunger at the top, needle running down to the tip.
+        $g.DrawLine($pen, 66, 31, 83, 48)
+        $g.DrawLine($thin, 38, 90, 60, 68)
+        $g.DrawLine($hot, 55, 52, 74, 71)
+        $g.FillEllipse($brush, 33, 88, 10, 10)
+    }
     elseif ($className -match "Heal|Mend|Kolto|Treatment|Triage|Recovery|Regenerative|Rejuvenation|Coagulant|Antitoxin|Soothe") {
         $g.FillEllipse($shadowBrush, 28, 28, 76, 76)
         $g.FillRectangle($brush, 54, 29, 20, 70)
         $g.FillRectangle($brush, 29, 54, 70, 20)
         $g.DrawEllipse($thin, 27, 27, 74, 74)
         $g.DrawLine($hot, 64, 35, 64, 90)
+    }
+    elseif ($className -match "WardenWallAura") {
+        # The radiated, ally-facing counterpart to a defensive shield: the same crest ringed by
+        # concentric arcs, so a party member cannot confuse it with the self-side buff it pairs with.
+        $crest = @(
+            [System.Drawing.Point]::new(64, 38), [System.Drawing.Point]::new(85, 47),
+            [System.Drawing.Point]::new(80, 79), [System.Drawing.Point]::new(64, 92),
+            [System.Drawing.Point]::new(48, 79), [System.Drawing.Point]::new(43, 47)
+        )
+        $shadow = @($crest | ForEach-Object { [System.Drawing.Point]::new($_.X + 3, $_.Y + 4) })
+        $g.FillPolygon($shadowBrush, $shadow)
+        $g.FillPolygon($brush, $crest)
+        $g.DrawPolygon($thin, $crest)
+        foreach ($ring in @(@(26, 26, 76), @(17, 17, 94))) {
+            $g.DrawEllipse($thin, $ring[0], $ring[1], $ring[2], $ring[2])
+        }
+        $g.DrawLine($hot, 64, 45, 64, 84)
+    }
+    elseif ($className -match "WardenSweep") {
+        # Retaliation rather than plain mitigation: a crest throwing damage back out, so it reads
+        # differently from the damage-reduction shields it sits beside.
+        $crest = @(
+            [System.Drawing.Point]::new(64, 36), [System.Drawing.Point]::new(84, 46),
+            [System.Drawing.Point]::new(79, 78), [System.Drawing.Point]::new(64, 91),
+            [System.Drawing.Point]::new(49, 78), [System.Drawing.Point]::new(44, 46)
+        )
+        $shadow = @($crest | ForEach-Object { [System.Drawing.Point]::new($_.X + 3, $_.Y + 4) })
+        $g.FillPolygon($shadowBrush, $shadow)
+        $g.FillPolygon($brush, $crest)
+        $g.DrawPolygon($thin, $crest)
+        foreach ($chevron in @(
+            @(64, 16, 50, 31, 78, 31), @(26, 64, 41, 50, 41, 78), @(102, 64, 87, 50, 87, 78)
+        )) {
+            $arrow = @(
+                [System.Drawing.Point]::new($chevron[0], $chevron[1]),
+                [System.Drawing.Point]::new($chevron[2], $chevron[3]),
+                [System.Drawing.Point]::new($chevron[4], $chevron[5])
+            )
+            $g.FillPolygon($brush, $arrow)
+            $g.DrawPolygon($thin, $arrow)
+        }
     }
     elseif ($className -match "Shield|Guard|Ward|Barrier|Bastion|Defense|Resolve|Armor|Hide|Warding") {
         $points = @(
@@ -960,7 +1097,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.DrawLine($pen, 20, 64, 108, 64)
         $g.DrawLine($hot, 64, 35, 64, 93)
     }
-    elseif ($className -match "Order|Command|Rally|Standard|Formation|Presence|Shout") {
+    elseif ($className -match "Order|Command|Rally|Standard|Formation|Presence|Shout|Mandate") {
         $g.DrawLine($shadowPen, 45, 31, 45, 104)
         $g.DrawLine($pen, 43, 28, 43, 103)
         $flag = @(
@@ -971,7 +1108,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.DrawPolygon($thin, $flag)
         $g.DrawLine($hot, 53, 38, 83, 43)
     }
-    elseif ($className -match "Smoke|Decoy|Fog") {
+    elseif ($className -match "Smoke|Decoy|Fog|Stealth|Conceal|Cloak") {
         foreach ($circle in @(
             @(32, 61, 33), @(50, 45, 42), @(74, 55, 36), @(43, 74, 45)
         )) {
@@ -980,7 +1117,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         }
         $g.DrawArc($thin, 34, 46, 62, 50, 190, 190)
     }
-    elseif ($className -match "WeaponJam|Disruption|Dampening|Suppression|PowerCell|Capacitor") {
+    elseif ($className -match "WeaponJam|Disruption|Dampening|Suppression|PowerCell|Capacitor|Overload|Overcharge") {
         $g.FillEllipse($shadowBrush, 31, 31, 70, 70)
         $g.DrawEllipse($thin, 32, 32, 66, 66)
         for ($i = 0; $i -lt 8; $i++) {
@@ -994,7 +1131,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.FillEllipse($brush, 52, 52, 24, 24)
         $g.DrawLine($hot, 44, 84, 84, 44)
     }
-    elseif ($className -match "Haste|Speed|Movement|Hobble|Hamstring|Immobil|Slow|Dash") {
+    elseif ($className -match "Haste|Speed|Movement|Hobble|Hamstring|Immobil|Slow|Dash|Tempo|FinishingDriveMomentum") {
         $g.DrawArc($shadowPen, 31, 39, 66, 52, 35, 250)
         $g.DrawArc($pen, 30, 37, 66, 52, 35, 250)
         $arrow = @([System.Drawing.Point]::new(91, 37), [System.Drawing.Point]::new(112, 38), [System.Drawing.Point]::new(98, 57))
@@ -1078,7 +1215,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.DrawArc($hot, 52, 31, 35, 35, 85, 230)
         $g.FillEllipse((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 5, 7, 10))), 64, 27, 34, 34)
     }
-    elseif ($className -match "Stance|Focus|Centering|Attentiveness|Precision") {
+    elseif ($className -match "Stance|Focus|Centering|Attentiveness|Precision|Collapse|CruelMomentum") {
         $g.FillEllipse($shadowBrush, 53, 25, 24, 24)
         $g.FillEllipse($brush, 52, 24, 24, 24)
         $g.DrawLine($pen, 64, 49, 64, 86)
@@ -1187,6 +1324,7 @@ function Build-ManifestRows([hashtable]$existing) {
             Rank = $ability.Rank
             IconResRef = $ability.IconResRef
             SourcePath = $ability.SourcePath
+            Alignment = Get-PreservedAlignment $existing $ability.Type $ability.Key
         }
     }
 
@@ -1203,6 +1341,7 @@ function Build-ManifestRows([hashtable]$existing) {
             Rank = $status.Rank
             IconResRef = $resref
             SourcePath = $relativePath
+            Alignment = Get-PreservedAlignment $existing $status.Type $status.Key
         }
     }
 
@@ -1492,6 +1631,23 @@ function Add-SemanticFrameValidationErrors(
 function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStrRefsByKey) {
     $errors = [System.Collections.Generic.List[string]]::new()
 
+    # -AuditOnly reads the manifest CSV rather than rediscovering definitions, so a status effect
+    # that never made it into the manifest is invisible to every per-row check below -- which is
+    # exactly the state a newly added class is in. Reconcile the definitions on disk against the
+    # manifest first, so a new effect cannot pass simply by being absent.
+    $manifestStatusKeys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($row in $rows) {
+        if ($row.Type -eq "StatusEffect") {
+            [void]$manifestStatusKeys.Add($row.Key)
+        }
+    }
+
+    foreach ($discovered in Get-StatusEffectClasses (Resolve-RepoPath $StatusEffectPath)) {
+        if (!$manifestStatusKeys.Contains($discovered.Key)) {
+            $errors.Add("StatusEffect '$($discovered.Key)' has no gameplay icon manifest row. Every applied status effect must declare a real EffectIconType; run -RefreshManifest -UpdateStatusEffectCode and generate its icon, or model it as a static stat contribution instead of a status effect.") | Out-Null
+        }
+    }
+
     # NWN's 2DA parser cannot read a file that begins with a UTF-8 byte-order
     # mark: it fails to load the entire table and crashes clients that resolve
     # its rows (e.g. effect icons applied on rest). Editors that save as
@@ -1575,6 +1731,7 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                 $effectIconRowsByResRef[$resRef.ToLowerInvariant()] = [pscustomobject]@{
                     Label = $label
                     StrRef = $strRef
+                    Row = $row
                 }
             }
         }
@@ -1669,6 +1826,26 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                 $errors.Add("StatusEffect '$($entry.Key)' is missing from EffectIconType.") | Out-Null
             }
 
+            # The manifest, enum, 2DA row and artwork can all be present and correct while the C#
+            # definition still declares EffectIconType.Invalid -- which is the only thing the runtime
+            # actually reads, and which disables icon linkage entirely. Generating icons without
+            # -UpdateStatusEffectCode produces exactly that state, so the source declaration has to be
+            # audited too rather than assumed.
+            $statusSourcePath = Resolve-RepoPath $entry.SourcePath
+            if (!(Test-Path -LiteralPath $statusSourcePath)) {
+                $errors.Add("StatusEffect '$($entry.Key)' source file '$($entry.SourcePath)' was not found.") | Out-Null
+            }
+            else {
+                $statusSourceText = Get-Content -Path $statusSourcePath -Raw
+                $expectedIcon = "EffectIconType.$($entry.Key)"
+                if ($statusSourceText -match "EffectIconType\s+Icon\s*=>\s*EffectIconType\.Invalid\b") {
+                    $errors.Add("StatusEffect '$($entry.Key)' declares EffectIconType.Invalid, so no icon is linked at runtime and the player sees nothing while it is active. Declare '$expectedIcon', or model it as a static stat contribution instead of a status effect.") | Out-Null
+                }
+                elseif ($statusSourceText -notmatch "EffectIconType\s+Icon\s*=>\s*$([regex]::Escape($expectedIcon))\s*;") {
+                    $errors.Add("StatusEffect '$($entry.Key)' should declare 'Icon => $expectedIcon;'.") | Out-Null
+                }
+            }
+
             $iconResRefKey = $entry.IconResRef.ToLowerInvariant()
             if (!$effectIconRowsByResRef.ContainsKey($iconResRefKey)) {
                 $errors.Add("StatusEffect '$($entry.Key)' is missing from effecticons.2da.") | Out-Null
@@ -1679,6 +1856,17 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                 $actualLabel = $actualRow.Label
                 if ($actualLabel -ne $expectedLabel) {
                     $errors.Add("StatusEffect '$($entry.Key)' effecticons.2da label '$actualLabel' should be '$expectedLabel'.") | Out-Null
+                }
+
+                # EffectIconType values ARE effecticons.2da row numbers: the runtime hands the enum
+                # value to the engine as a row index. Checking that the name exists in the enum and
+                # the resref exists in the 2DA is not enough -- a renumbered enum paired with a stale
+                # Haks table passes both checks while every icon resolves to the wrong row.
+                if ($enumText -match "\b$([regex]::Escape($entry.Key))\s*=\s*(\d+)") {
+                    $enumValue = [int]$Matches[1]
+                    if ($enumValue -ne $actualRow.Row) {
+                        $errors.Add("StatusEffect '$($entry.Key)' has EffectIconType value $enumValue but occupies effecticons.2da row $($actualRow.Row); the enum value must equal the row number or the icon resolves to the wrong row at runtime.") | Out-Null
+                    }
                 }
 
                 if (!$statusEffectStrRefsByKey.ContainsKey($entry.Key)) {

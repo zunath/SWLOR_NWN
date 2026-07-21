@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         target,
                         location,
                         InnateAbility.ResolveSkillType(activator, profile),
-                        28,
-                        24,
+                        40,
+                        30,
                         typeof(BurnStatusEffect),
                         CombatImpactAreaShape.Cone,
                         0.5f,
@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         centerOnActivator: !GetIsObjectValid(target),
                         damageType: CombatDamageType.Fire,
                         statusResistanceType: ResistanceType.Fire,
+                        damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(BurnStatusEffect)),
                         targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                         areaVisualEffect: VisualEffect.Fnf_Fireball,
                         maxTargets: 8,
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.InfernoBlast, 4, 3)
+                .MimicryTechnique(FeatType.InfernoBlast, 15, 3)
                 .MimicryElement(CombatDamageType.Fire)
                 .HasTargetingCone(
                     Spell.InfernoBlastTechnique,

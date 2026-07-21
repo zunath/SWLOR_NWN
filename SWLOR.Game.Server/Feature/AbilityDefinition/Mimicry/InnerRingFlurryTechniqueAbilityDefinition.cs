@@ -20,21 +20,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 "Inner Ring Flurry",
                 Animation.CrossCut,
                 InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
+                RecastGroup.InnerRingFlurry,
                 1.3f,
                 24f,
                 9,
-                32,
-                12,
-                typeof(ExposedStatusEffect),
+                0,
+                30,
+                typeof(BleedStatusEffect),
                 CombatDamageType.Physical,
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Special_Red_White,
-                maxRange: 3f)
+                maxRange: 3f,
+                afterSuccessfulHit: InnateAbility.RestoreStaminaOnHit(4))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.InnerRingFlurry, 4, 3)
+                .MimicryTechnique(FeatType.InnerRingFlurry, 44, 3)
                 .MimicryElement(CombatDamageType.Physical);
 
             return _builder.Build();

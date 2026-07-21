@@ -1,49 +1,48 @@
+using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
-    public class FinishingDriveTechniqueAbilityDefinition : IAbilityListDefinition
+    public class FinishingDriveTechniqueAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
+        private const float MomentumDurationSeconds = 30f;
+
         private readonly AbilityBuilder _builder = new AbilityBuilder();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            InnateAbility.BuildArea(
-                _builder,
-                FeatType.FinishingDriveTechnique,
-                "Finishing Drive",
-                Animation.Whirlwind,
-                InnateAbilityProfile.Mimicry,
-                RecastGroup.Capstone,
-                1.4f,
-                30f,
-                10,
-                28,
-                14,
-                typeof(HemorrhageStatusEffect),
-                CombatImpactAreaShape.Line,
-                8f,
-                2.5f,
-                CombatDamageType.Physical,
-                ResistanceType.Trauma,
-                VisualEffect.Vfx_Com_Blood_Crt_Red,
-                VisualEffect.Vfx_Fnf_Screen_Shake,
-                maxRange: 8f)
+            _builder
+                .Create(FeatType.FinishingDriveTechnique, PerkType.CombatAnalyzer)
+                .Name("Finishing Drive")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .CombatImpactDamageAbility(AbilityType.Agility)
-                .MimicryTechnique(FeatType.FinishingDrive, 4, 3)
-                .HasTargetingLine(
-                    Spell.FinishingDriveTechnique,
-                    8f,
-                    2.5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                .UsesAnimation(Animation.CastOutAnimation)
+                .HasRecastDelay(RecastGroup.FinishingDrive, 30f)
+                .MimicryTechnique(FeatType.FinishingDrive, 48, 3)
+                .MimicryUtility()
+                .HasActivationDelay(0f)
+                .RequirementStamina(10)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    // Stacking momentum: each cast adds a stack (up to the cap) and refreshes the
+                    // duration. The status effect's magnitude is stacks * potency-per-stack.
+                    var existing = StatusEffect.GetStatusEffect(activator, typeof(FinishingDriveMomentumStatusEffect)) as FinishingDriveMomentumStatusEffect;
+                    var stacks = Math.Min(FinishingDriveMomentumStatusEffect.MaxStacks, (existing?.Stacks ?? 0) + 1);
+
+                    if (existing != null)
+                        StatusEffect.RemoveStatusEffect(activator, typeof(FinishingDriveMomentumStatusEffect), activator, false);
+
+                    StatusEffect.ApplyStatusEffect(activator, activator, new FinishingDriveMomentumStatusEffect(stacks), MomentumDurationSeconds);
+                });
 
             return _builder.Build();
         }

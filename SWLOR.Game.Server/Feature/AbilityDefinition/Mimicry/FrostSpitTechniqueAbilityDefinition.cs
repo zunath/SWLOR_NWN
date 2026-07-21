@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.2f,
                 12f,
                 3,
-                10,
-                6,
-                typeof(FreezingStatusEffect),
+                0,
+                30,
+                typeof(HamstringStatusEffect),
                 CombatDamageType.Ice,
                 ResistanceType.Ice,
                 VisualEffect.Vfx_Imp_Frost_S,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.FrostSpit, 1, 1)
+                .MimicryTechnique(FeatType.FrostSpit, 3, 1)
                 .MimicryElement(CombatDamageType.Ice);
 
             return _builder.Build();

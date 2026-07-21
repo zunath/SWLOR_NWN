@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .IsCastedAbility()
                 .HasMaxRange(6f)
                 .IsAreaAbility()
-                .RequiresTarget()
                 .IsHostileAbility()
                 .RequirementStamina(6)
                 .HasActivationTargetingSphere(

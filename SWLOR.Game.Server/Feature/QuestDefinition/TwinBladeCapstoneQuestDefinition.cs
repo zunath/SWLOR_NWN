@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are dead and the Tempest Bloom Backroom Bout Ledger is in hand. Return it to Iven Brask at the fight club on Nar Shaddaa.")
+                    "The six adepts are dead and the Tempest Bloom Backroom Bout Ledger is in hand. Return it to Iven Brask at the Tilted Visor on Nar Shaddaa.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The specialists are finished and the Tempest Bloom Ring Shock Regulator has been torn out. Bring it to Iven Brask at the fight club on Nar Shaddaa.")
+                    "The specialists are finished and the Tempest Bloom Ring Shock Regulator has been torn out. Bring it to Iven Brask at the Tilted Visor on Nar Shaddaa.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is dead and the Tempest Bloom Cracked Pit Sigil is in hand. Return it to Iven Brask at the fight club on Nar Shaddaa.")
+                    "The warden is dead and the Tempest Bloom Cracked Pit Sigil is in hand. Return it to Iven Brask at the Tilted Visor on Nar Shaddaa.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The inner circle is broken and the Tempest Bloom Promoter's Payout Chit is in hand. Deliver it to Iven Brask at the fight club on Nar Shaddaa.")
+                    "The inner circle is broken and the Tempest Bloom Promoter's Payout Chit is in hand. Deliver it to Iven Brask at the Tilted Visor on Nar Shaddaa.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Tempest Bloom master is defeated and the backroom bill is finished. Return to Iven Brask at the fight club on Nar Shaddaa.")
+                    "The Tempest Bloom master is defeated and the backroom bill is finished. Return to Iven Brask at the Tilted Visor on Nar Shaddaa.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are dead and the Red Bloom Backroom Bout Ledger is in hand. Return it to Nyra Tane at the fight club on Nar Shaddaa.")
+                    "The six adepts are dead and the Red Bloom Backroom Bout Ledger is in hand. Return it to Nyra Tane at the Nar Shaddaa casino.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The specialists are dead and the Red Bloom Ring Shock Regulator has been pulled. Bring it to Nyra Tane at the fight club on Nar Shaddaa.")
+                    "The specialists are dead and the Red Bloom Ring Shock Regulator has been pulled. Bring it to Nyra Tane at the Nar Shaddaa casino.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is dead and the Red Bloom Cracked Pit Sigil is in hand. Return it to Nyra Tane at the fight club on Nar Shaddaa.")
+                    "The warden is dead and the Red Bloom Cracked Pit Sigil is in hand. Return it to Nyra Tane at the Nar Shaddaa casino.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The inner circle is dead and the Red Bloom Promoter's Payout Chit is in hand. Deliver it to Nyra Tane at the fight club on Nar Shaddaa.")
+                    "The inner circle is dead and the Red Bloom Promoter's Payout Chit is in hand. Deliver it to Nyra Tane at the Nar Shaddaa casino.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Red Bloom master is defeated and the backroom school is finished. Return to Nyra Tane at the fight club on Nar Shaddaa.")
+                    "The Red Bloom master is defeated and the backroom school is finished. Return to Nyra Tane at the Nar Shaddaa casino.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

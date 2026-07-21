@@ -21,6 +21,7 @@ namespace SWLOR.Toolset.Shell
         private readonly SearchViewModel _search;
         private readonly OutputViewModel _output;
         private readonly ValidationViewModel _validation;
+        private readonly ModelPreviewViewModel _modelPreview;
         private IRootDock? _rootDock;
         private DocumentDock? _documentDock;
 
@@ -29,13 +30,15 @@ namespace SWLOR.Toolset.Shell
             PropertiesViewModel properties,
             SearchViewModel search,
             OutputViewModel output,
-            ValidationViewModel validation)
+            ValidationViewModel validation,
+            ModelPreviewViewModel modelPreview)
         {
             _explorer = explorer;
             _properties = properties;
             _search = search;
             _output = output;
             _validation = validation;
+            _modelPreview = modelPreview;
         }
 
         public override IRootDock CreateLayout()
@@ -53,7 +56,7 @@ namespace SWLOR.Toolset.Shell
             {
                 Id = "PropertiesDock",
                 ActiveDockable = _properties,
-                VisibleDockables = CreateList<IDockable>(_properties),
+                VisibleDockables = CreateList<IDockable>(_properties, _modelPreview),
                 Alignment = Alignment.Right,
                 Proportion = 0.25
             };
@@ -149,7 +152,8 @@ namespace SWLOR.Toolset.Shell
                 [_properties.Id] = () => _properties,
                 [_search.Id] = () => _search,
                 [_output.Id] = () => _output,
-                [_validation.Id] = () => _validation
+                [_validation.Id] = () => _validation,
+                [_modelPreview.Id] = () => _modelPreview
             };
 
             DockableLocator = new Dictionary<string, Func<IDockable?>>

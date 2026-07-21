@@ -77,6 +77,13 @@ namespace SWLOR.Toolset
 
             services.AddSingleton<Services.SaveService>();
             services.AddSingleton<Services.PackService>();
+            services.AddSingleton(sp => new ModelPreviewViewModel(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetRequiredService<OutputLogService>(),
+                sp.GetService<AppearanceService>(),
+                sp.GetService<ResourceIndex>(),
+                sp.GetService<TwoDaService>(),
+                sp.GetService<TlkService>()));
             services.AddSingleton<PropertiesViewModel>();
             services.AddSingleton<ModuleExplorerViewModel>();
             services.AddSingleton<SearchViewModel>();

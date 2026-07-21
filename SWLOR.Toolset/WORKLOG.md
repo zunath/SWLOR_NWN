@@ -258,7 +258,22 @@ done | blocked`.
   BlueprintEditorView and AreaEditorView (noted in WP3.3).
 - Refresh committed tools\SWLOR.CLI\SWLOR.CLI.exe with the --no-prompt build, then drop
   PackService's fallback path (noted in WP3.5).
-## WP4.1 — pending — GL spike
+## WP4.1 — done — 2026-07-20 — GL spike
+- Tier: Lead (controller-executed).
+- **Spike findings (full record in `SWLOR.Toolset\Viewport\README.md`):** Radoub renders via
+  Avalonia's built-in `OpenGlControlBase` + Silk.NET.OpenGL; `ModelPreviewGLControl` +
+  `OpenGLShaderManager` + `TextureService` + `MdlPartComposer` are all public in Radoub.UI,
+  which we already reference — the blueprint preview control is REUSED, not rebuilt.
+  TextureService needs only FindResource/FindBaseResource/FindResourceWithSource from
+  IGameDataService.
+- Files: `Viewport\README.md`, `Viewport\SwlorGameDataService.cs` (minimal IGameDataService
+  adapter over ResourceIndex/TwoDaService/TlkService), `Shell\Panels\ModelPreviewViewModel.cs`
+  + `Shell\Views\ModelPreviewView.axaml(.cs)` (Model Preview panel tabbed with Properties:
+  creature selection → appearance.2da → MODELTYPE S/L model resref → MdlReader →
+  ModelPreviewGLControl with textures; MODELTYPE P reports "arrives with WP4.3").
+- Verified: build clean, 203/204 tests green, 12s launch smoke with the GL panel docked.
+  Visual confirmation of an actual rendered model = human spot-check (select a beast/simple
+  creature in the explorer and look at the Model Preview tab).
 ## WP4.2 — pending — Mesh/texture pipeline
 ## WP4.3 — pending — Model preview panes
 ## WP4.4 — pending — Area scene assembly

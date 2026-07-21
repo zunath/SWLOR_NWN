@@ -19,6 +19,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly WorkspaceContext _workspaceContext;
         private readonly PropertiesViewModel _properties;
         private readonly Func<Editors.EditorService>? _editorService;
+        private readonly ModelPreviewViewModel? _modelPreview;
 
         private Dictionary<ResourceType, List<CatalogEntry>>? _catalogByType;
 
@@ -34,11 +35,13 @@ namespace SWLOR.Toolset.Shell.Panels
         public ModuleExplorerViewModel(
             WorkspaceContext workspaceContext,
             PropertiesViewModel properties,
-            Func<Editors.EditorService>? editorService = null)
+            Func<Editors.EditorService>? editorService = null,
+            ModelPreviewViewModel? modelPreview = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
             _editorService = editorService;
+            _modelPreview = modelPreview;
             Id = "ModuleExplorer";
             Title = "Module Explorer";
         }
@@ -99,6 +102,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
 
             _properties.ShowEntry(new CatalogEntry(SelectedCategory.Type, value.ResRef, value.Name, value.Tag, string.Empty));
+            _modelPreview?.ShowFor(SelectedCategory.Type, value.ResRef);
         }
 
         private void PopulateItems(CategoryNode category)

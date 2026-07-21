@@ -21,7 +21,10 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>
         /// Builds the scene for one area. Never throws for missing/unresolvable tile models or
         /// tilesets - those degrade to fallback placements with a diagnostic note on the returned
-        /// scene's <see cref="AreaScene.Diagnostics"/>.
+        /// scene's <see cref="AreaScene.Diagnostics"/>. When <paramref name="walkmeshes"/> is
+        /// supplied, every non-fallback tile also gets its <see cref="TilePlacement.Walkmesh"/>
+        /// resolved (WP6.1); omitting it (the default) leaves every tile's Walkmesh null,
+        /// matching prior behavior exactly.
         /// </summary>
         public static AreaScene Build(
             AreDocument are,
@@ -29,7 +32,8 @@ namespace SWLOR.Toolset.Domain.Render
             TilesetCatalog tilesetCatalog,
             TileModelCache modelCache,
             PlaceableAppearanceService? placeableAppearances = null,
-            DoorTypeService? doorTypes = null)
+            DoorTypeService? doorTypes = null,
+            TileWalkmeshCache? walkmeshes = null)
         {
             ArgumentNullException.ThrowIfNull(are);
             ArgumentNullException.ThrowIfNull(git);
@@ -52,7 +56,7 @@ namespace SWLOR.Toolset.Domain.Render
                     $"tileset '{tilesetResRef}' could not be resolved/parsed; every tile in this area falls back.");
             }
 
-            var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics);
+            var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics, walkmeshes);
             var instances = BuildInstances(git, modelCache, placeableAppearances, doorTypes);
 
             return new AreaScene
@@ -72,7 +76,8 @@ namespace SWLOR.Toolset.Domain.Render
             string tilesetResRef,
             int width,
             TileModelCache modelCache,
-            AreaSceneDiagnostics diagnostics)
+            AreaSceneDiagnostics diagnostics,
+            TileWalkmeshCache? walkmeshes)
         {
             var tileStructs = are.Tiles;
             var placements = new List<TilePlacement>(tileStructs.Count);
@@ -140,6 +145,15 @@ namespace SWLOR.Toolset.Domain.Render
                     }
                 }
 
+                // Walkmesh resolution mirrors the model resolution above: only attempt it once a
+                // real modelResRef resolved to a real model (i.e. this placement isn't a
+                // fallback) - a tile with no usable model has no meaningful floor to snap to
+                // either. A missing/unparseable .wok degrades to Walkmesh == null, same as a
+                // missing/unparseable .mdl degrades to Model == null.
+                WalkMesh? walkmesh = null;
+                if (walkmeshes != null && !isFallback && modelResRef != null)
+                    walkmesh = walkmeshes.GetOrBuild(modelResRef);
+
                 placements.Add(new TilePlacement
                 {
                     TileIndex = i,
@@ -154,7 +168,8 @@ namespace SWLOR.Toolset.Domain.Render
                     Transform = transform,
                     ModelResRef = modelResRef,
                     Model = model,
-                    IsFallback = isFallback
+                    IsFallback = isFallback,
+                    Walkmesh = walkmesh
                 });
             }
 

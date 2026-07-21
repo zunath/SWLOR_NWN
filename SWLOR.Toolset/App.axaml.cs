@@ -74,7 +74,8 @@ namespace SWLOR.Toolset
                 sp.GetService<Domain.Render.TileModelCache>(),
                 sp.GetService<ResourceIndex>(),
                 sp.GetService<PlaceableAppearanceService>(),
-                sp.GetService<DoorTypeService>()));
+                sp.GetService<DoorTypeService>(),
+                sp.GetService<Domain.Render.TileWalkmeshCache>()));
 
             // The explorer needs to open editors, but EditorService depends on the dock factory,
             // which depends on the explorer — a Func breaks the construction cycle.
@@ -151,6 +152,12 @@ namespace SWLOR.Toolset
                 // ResourceIndex dependency when the repo layout wasn't found.
                 services.AddSingleton(sp => new Domain.GameData.Lookups.TilesetCatalog(sp.GetRequiredService<ResourceIndex>()));
                 services.AddSingleton(sp => new Domain.Render.TileModelCache(sp.GetRequiredService<ResourceIndex>()));
+
+                // WP6.1 walkmesh cache: resolves each tile model's .wok and classifies faces via
+                // surfacemat.2da's Walk column (for the overlay color + placement height-snap).
+                services.AddSingleton(sp => new Domain.Render.TileWalkmeshCache(
+                    sp.GetRequiredService<ResourceIndex>(),
+                    BuildSurfaceWalkability(sp.GetService<TwoDaService>())));
             }
 
             // AppearanceService/PortraitService are only registered when their 2DA/TLK
@@ -172,6 +179,33 @@ namespace SWLOR.Toolset
                 services.AddSingleton(sp =>
                     new PortraitService(sp.GetRequiredService<TwoDaService>()));
             }
+        }
+
+        /// <summary>
+        /// Builds the walkmesh face-walkability predicate from surfacemat.2da's "Walk" column
+        /// (1 = walkable). When the table can't be read, treats every surface as walkable so
+        /// height-snapping still works everywhere (the overlay just shows all faces as walkable)
+        /// rather than snapping to nothing.
+        /// </summary>
+        private static Func<int, bool> BuildSurfaceWalkability(TwoDaService? twoDa)
+        {
+            if (twoDa == null || !twoDa.TryGetTable("surfacemat", out var table) || table == null)
+                return _ => true;
+
+            var walkable = new bool[table.RowCount];
+            for (var row = 0; row < table.RowCount; row++)
+            {
+                try
+                {
+                    walkable[row] = table.GetInt(row, "Walk") == 1;
+                }
+                catch (FormatException)
+                {
+                    walkable[row] = false; // A malformed Walk cell is treated as blocked, not fatal.
+                }
+            }
+
+            return material => material >= 0 && material < walkable.Length && walkable[material];
         }
 
         /// <summary>

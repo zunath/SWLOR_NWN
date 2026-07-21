@@ -62,6 +62,13 @@ namespace SWLOR.Toolset.Viewport
         private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
         private static readonly Vector3 SelectionHighlightColor = new(1f, 0.95f, 0.2f);
 
+        // Walkmesh overlay (WP6.1): walkable faces green, non-walkable red, drawn translucent just
+        // above the floor so the tile geometry still shows through.
+        private static readonly Vector3 WalkmeshWalkableColor = new(0.25f, 0.9f, 0.35f);
+        private static readonly Vector3 WalkmeshBlockedColor = new(0.9f, 0.2f, 0.2f);
+        private const float WalkmeshOverlayAlpha = 0.4f;
+        private const float WalkmeshHeightOffset = 0.06f; // lift above the floor to avoid z-fighting (just above PolygonHeightOffset)
+
         // ----- GLSL source (kept inline per the WP4.5 brief; adapted from, not shared with,
         // Radoub.UI's OpenGLShaderManager - this control needs an alpha-cutoff/unlit uniform that
         // control doesn't expose, and Radoub's sources must never be modified). -----
@@ -103,6 +110,7 @@ uniform bool hasTexture;
 uniform vec3 flatColor;
 uniform bool unlit;
 uniform float alphaCutoff;
+uniform float flatAlpha;
 uniform float ceilingClipZ;
 uniform vec3 lightDir;
 uniform vec3 lightColor;
@@ -122,7 +130,9 @@ void main()
 
     if (unlit)
     {
-        FragColor = vec4(texColor.rgb, 1.0);
+        // flatAlpha defaults to 1.0 for every opaque unlit draw (markers, outlines, selection box);
+        // the translucent walkmesh overlay is the only pass that lowers it.
+        FragColor = vec4(texColor.rgb, flatAlpha);
         return;
     }
 
@@ -180,6 +190,14 @@ void main()
         private uint _polygonVbo;
         private bool _hasPolygonBuffer;
         private List<(int Start, int Count)> _polygonRanges = new();
+
+        // Walkmesh overlay (WP6.1): one VBO of world-space triangles, walkable faces first then
+        // blocked faces, drawn as two flat-colored translucent ranges.
+        private uint _walkmeshVao;
+        private uint _walkmeshVbo;
+        private bool _hasWalkmeshBuffer;
+        private int _walkmeshWalkableVertexCount;
+        private int _walkmeshBlockedVertexCount;
 
         private uint _highlightVao;
         private uint _highlightVbo;
@@ -311,6 +329,26 @@ void main()
                     return;
 
                 _showPlaceableModels = value;
+                RequestNextFrameRendering();
+            }
+        }
+
+        private bool _showWalkmesh;
+
+        /// <summary>
+        /// When true, draws each tile's walkmesh as a translucent overlay (green walkable / red
+        /// blocked faces) just above the floor - the visual for the WP6.1 walkmesh feature. Off by
+        /// default; tiles without a resolved walkmesh simply contribute nothing.
+        /// </summary>
+        public bool ShowWalkmesh
+        {
+            get => _showWalkmesh;
+            set
+            {
+                if (_showWalkmesh == value)
+                    return;
+
+                _showWalkmesh = value;
                 RequestNextFrameRendering();
             }
         }
@@ -650,11 +688,16 @@ void main()
             if (ray == null)
                 return;
 
-            if (AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f) is not { } point)
+            // WP6.1: snap the new instance onto the real walkmesh floor under the cursor (its Z
+            // then matches in-game ground, including on elevated tiles). Areas/tiles with no
+            // resolvable .wok fall back to the flat Z=0 ground plane the pre-6.1 flow always used.
+            var point = (_scene != null ? AreaWalkmesh.RaycastGround(ray.Value, _scene) : null)
+                        ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
+            if (point is not { } hit)
                 return;
 
             _isPlacementActive = false;
-            PlacementPointPicked?.Invoke(point);
+            PlacementPointPicked?.Invoke(hit);
         }
 
         public void HandlePointerWheel(PointerWheelEventArgs e)
@@ -770,6 +813,7 @@ void main()
                         DeleteBuffer(marker.Vao, marker.Vbo, marker.Ebo);
 
                     DeletePolygonBuffer();
+                    DeleteWalkmeshBuffer();
 
                     if (_hasHighlightBuffer)
                     {
@@ -834,6 +878,7 @@ void main()
                 if (_sceneDirty)
                 {
                     RebuildPolygonBuffer(_scene);
+                    RebuildWalkmeshBuffer(_scene);
                     _tileBatches = AreaDrawBatcher.GroupByModel(_scene.Tiles);
                     _sceneDirty = false;
                 }
@@ -1001,8 +1046,9 @@ void main()
 
             DrawTileBatches();
 
-            // Markers and trigger outlines are never ceiling-clipped — reset the sticky per-tile value.
+            // Markers, walkmesh overlay, and trigger outlines are never ceiling-clipped — reset the sticky per-tile value.
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
+            DrawWalkmeshOverlay();
             DrawInstanceMarkers();
             DrawPolygonOverlays();
             DrawSelectionHighlight();
@@ -1114,6 +1160,7 @@ void main()
             SetUniformBool("hasTexture", false);
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", 1f);
 
             foreach (var raw in _scene.Instances)
             {
@@ -1135,6 +1182,45 @@ void main()
             }
         }
 
+        /// <summary>
+        /// Draws the walkmesh overlay (WP6.1): translucent world-space triangles, walkable faces
+        /// green and blocked faces red, blended over the tile floor with depth-writes disabled so
+        /// it tints the geometry rather than occluding it. A no-op when the toggle is off or the
+        /// scene resolved no walkmeshes.
+        /// </summary>
+        private void DrawWalkmeshOverlay()
+        {
+            if (!_showWalkmesh || !_hasWalkmeshBuffer || _gl == null)
+                return;
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.DepthMask(false); // tint the floor, don't occlude geometry behind the overlay
+
+            _gl.BindVertexArray(_walkmeshVao);
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", WalkmeshOverlayAlpha);
+            SetUniformMatrix4("model", Matrix4x4.Identity); // vertices are already world-space
+
+            if (_walkmeshWalkableVertexCount > 0)
+            {
+                SetUniformVec3("flatColor", WalkmeshWalkableColor);
+                _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint)_walkmeshWalkableVertexCount);
+            }
+
+            if (_walkmeshBlockedVertexCount > 0)
+            {
+                SetUniformVec3("flatColor", WalkmeshBlockedColor);
+                _gl.DrawArrays(PrimitiveType.Triangles, _walkmeshWalkableVertexCount, (uint)_walkmeshBlockedVertexCount);
+            }
+
+            _gl.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
+            SetUniformFloat("flatAlpha", 1f); // restore for the opaque unlit draws that follow this pass
+        }
+
         private void DrawPolygonOverlays()
         {
             if (!_hasPolygonBuffer || _polygonRanges.Count == 0)
@@ -1144,6 +1230,7 @@ void main()
             SetUniformBool("hasTexture", false);
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", 1f);
             SetUniformVec3("flatColor", PolygonOverlayColor);
             SetUniformMatrix4("model", Matrix4x4.Identity);
 
@@ -1181,6 +1268,7 @@ void main()
             SetUniformBool("hasTexture", false);
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", 1f);
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             SetUniformVec3("flatColor", SelectionHighlightColor);
             SetUniformMatrix4("model", Matrix4x4.Identity); // bounds are already world-space
@@ -1571,6 +1659,87 @@ void main()
         }
 
         // ----- Trigger/encounter polygon overlays (scene-specific; rebuilt whenever the scene changes) -----
+
+        /// <summary>
+        /// Rebuilds the walkmesh overlay VBO from the scene's per-tile walkmeshes: each face's
+        /// tile-local vertices are transformed to world space by that tile's Transform (the same
+        /// transform its rendered model uses, so overlay and floor stay aligned) and lifted a hair
+        /// above the floor. Walkable faces are emitted first, then blocked faces, so the draw
+        /// colors each group with one contiguous range. Built once per scene change, beside
+        /// <see cref="RebuildPolygonBuffer"/>.
+        /// </summary>
+        private void RebuildWalkmeshBuffer(AreaScene scene)
+        {
+            DeleteWalkmeshBuffer();
+
+            var walkable = new List<float>();
+            var blocked = new List<float>();
+
+            foreach (var tile in scene.Tiles)
+            {
+                var mesh = tile.Walkmesh;
+                if (mesh == null)
+                    continue;
+
+                var verts = mesh.Vertices;
+                foreach (var face in mesh.Faces)
+                {
+                    if (face.A < 0 || face.B < 0 || face.C < 0 ||
+                        face.A >= verts.Count || face.B >= verts.Count || face.C >= verts.Count)
+                        continue;
+
+                    var target = face.Walkable ? walkable : blocked;
+                    AppendWalkmeshVertex(target, Vector3.Transform(verts[face.A], tile.Transform));
+                    AppendWalkmeshVertex(target, Vector3.Transform(verts[face.B], tile.Transform));
+                    AppendWalkmeshVertex(target, Vector3.Transform(verts[face.C], tile.Transform));
+                }
+            }
+
+            _walkmeshWalkableVertexCount = walkable.Count / FloatsPerVertex;
+            _walkmeshBlockedVertexCount = blocked.Count / FloatsPerVertex;
+            if (_walkmeshWalkableVertexCount == 0 && _walkmeshBlockedVertexCount == 0)
+                return;
+
+            var data = new float[walkable.Count + blocked.Count];
+            walkable.CopyTo(data, 0);
+            blocked.CopyTo(data, walkable.Count);
+
+            _walkmeshVao = _gl!.GenVertexArray();
+            _walkmeshVbo = _gl.GenBuffer();
+            _gl.BindVertexArray(_walkmeshVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _walkmeshVbo);
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(data.Length * sizeof(float)),
+                new ReadOnlySpan<float>(data), BufferUsageARB.StaticDraw);
+            SetVertexAttribPointers();
+            _gl.BindVertexArray(0);
+
+            _hasWalkmeshBuffer = true;
+        }
+
+        /// <summary>Appends one overlay vertex (position lifted above the floor, an up-normal, zero UV) in the shared 8-float layout.</summary>
+        private static void AppendWalkmeshVertex(List<float> target, Vector3 world)
+        {
+            target.Add(world.X);
+            target.Add(world.Y);
+            target.Add(world.Z + WalkmeshHeightOffset);
+            target.Add(0f);
+            target.Add(0f);
+            target.Add(1f);
+            target.Add(0f);
+            target.Add(0f);
+        }
+
+        private void DeleteWalkmeshBuffer()
+        {
+            if (!_hasWalkmeshBuffer || _gl == null)
+                return;
+
+            _gl.DeleteVertexArray(_walkmeshVao);
+            _gl.DeleteBuffer(_walkmeshVbo);
+            _hasWalkmeshBuffer = false;
+            _walkmeshWalkableVertexCount = 0;
+            _walkmeshBlockedVertexCount = 0;
+        }
 
         private void RebuildPolygonBuffer(AreaScene scene)
         {

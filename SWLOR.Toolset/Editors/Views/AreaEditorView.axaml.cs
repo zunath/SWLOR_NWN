@@ -110,6 +110,12 @@ namespace SWLOR.Toolset.Editors
                 AreaView.HideCeilings = HideCeilingsCheck.IsChecked == true;
         }
 
+        private void OnShowWalkmeshChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (AreaView != null && ShowWalkmeshCheck != null)
+                AreaView.ShowWalkmesh = ShowWalkmeshCheck.IsChecked == true;
+        }
+
         private void OnPlaceableModelsChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (AreaView != null && PlaceableModelsCheck != null)

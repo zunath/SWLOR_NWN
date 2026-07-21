@@ -295,6 +295,10 @@
             <CheckBox Content="Hide ceilings" x:Name="HideCeilingsCheck"
                       IsCheckedChanged="OnHideCeilingsChanged"
                       Background="#B0202020" Padding="6,2" />
+            <CheckBox Content="Show walkmesh" x:Name="ShowWalkmeshCheck"
+                      IsCheckedChanged="OnShowWalkmeshChanged"
+                      ToolTip.Tip="Overlay each tile's walkmesh (green walkable / red blocked). Placed instances snap to this floor's height."
+                      Background="#B0202020" Padding="6,2" />
             <Button Content="Rebuild" Command="{Binding RebuildSceneCommand}" />
           </StackPanel>
         </Grid>

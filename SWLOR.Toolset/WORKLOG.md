@@ -566,7 +566,44 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
 - **PHASE 5 human gate: PASSED** (2026-07-21) — WP3.6's quest-NPC task completed fully in 3D
   (place creature, drag/rotate, Tag/VarTable, spawn waypoint, Save All → Pack Module
   auto-deploy → verified in game). WP5.1 + WP5.2 accepted. **PHASE 5 COMPLETE.**
-## WP6.1 — pending — Walkmesh (WOK)
+## WP6.1 — code done, human visual gate pending — 2026-07-21 — Walkmesh (WOK)
+- Tier: Mid. Domain core (parser/cache/raycast/tests) dispatched to a Sonnet subagent; app/GL
+  integration (overlay, snap, toggle, DI) done inline by the controller. Controller-verified:
+  build clean (0 errors), 334/335 tests green (311 prior + 23 new; 1 pre-existing skip), launch
+  smoke OK.
+- **EMPIRICAL FORMAT FINDING:** every real `.wok` in this project — SWLOR hak-source tiles AND
+  the retail base game (verified via KeyBifCatalog) — is plain ASCII "NWmax walkmesh" export text
+  (reliable marker keyword `beginwalkmeshgeom`), NOT the binary "BWM V1.0" layout WP6.1 originally
+  assumed. A byte search for "BWM V1.0" across every tileset .bif found zero matches. WokMeshLoader
+  parses the ASCII grammar (the path every real resource takes) and keeps a self-consistency-guarded
+  binary BWM parser as a forward-compatible fallback (pinned by a hand-built byte test only). Full
+  grammar is documented in the WokMeshLoader class comment.
+- Domain (subagent): `Render\WokMeshLoader.cs` (WalkMesh/WalkFace + Parse, never throws),
+  `Render\TileWalkmeshCache.cs` (resolves `<tileModel>.wok`, caches hits+nulls like TileModelCache),
+  `Render\AreaWalkmesh.cs` (RaycastGround: transform each tile's faces by TilePlacement.Transform,
+  two-sided Möller-Trumbore; prefers walkable faces, falls back to any). AreaScene.TilePlacement
+  gains a nullable `Walkmesh`; AreaSceneBuilder.Build takes an optional TileWalkmeshCache and
+  populates it for non-fallback tiles (null cache = prior behavior exactly). Tests:
+  WokMeshLoaderTests (14, incl. a deterministic hand-built byte blob + real-corpus probe),
+  AreaWalkmeshTests (9, incl. synthetic raycast, preferWalkable filtering, builder integration).
+- App/GL (controller): GlAreaControl — `ShowWalkmesh` toggle; per-scene overlay VBO (world-space
+  faces, walkable range then blocked range) drawn translucent (green/red, alpha 0.4, depth-write
+  off, lifted 0.06m) via a new default-1.0 `flatAlpha` shader uniform (opaque unlit draws set it
+  back to 1); placement clicks (RaisePlacementPointPicked) now snap Z to AreaWalkmesh.RaycastGround,
+  falling back to the Z=0 plane when no walkmesh is hit — resolves WP5.2's flagged Z=0 placement
+  deviation. DI: TileWalkmeshCache registered from ResourceIndex + a surfacemat.2da "Walk"-column
+  predicate (BuildSurfaceWalkability; all-walkable fallback when the table is unreadable), threaded
+  through EditorService → AreaEditorViewModel → Build. UI: "Show walkmesh" checkbox in AreaEditorView.
+- **Frame note (verify at the gate):** overlay and tiles share the exact same TilePlacement.Transform,
+  so they render mutually aligned regardless of the tile-local frame, and the snap raycast hits the
+  same walkmesh that is drawn. The subagent measured raw MDL verts as centered [-5,5] vs the assumed
+  corner-origin [0,10]; prior gates confirmed instances/tiles align in true area space, so this is
+  most likely a raw-vs-node-baked measurement artifact, not a real placement offset — the gate will
+  confirm.
+- **Remaining: human visual gate** — open an area's 3D view, toggle "Show walkmesh" (expect green
+  walkable / red blocked faces sitting flush on the tile floors), then place an instance on an
+  elevated tile and confirm its Z matches the in-game ground (the WP6.1 acceptance criterion).
+## WP6.2 — pending — Perf + fidelity pass
 ## WP6.2 — pending — Perf + fidelity pass
 ## WP7.1 — pending — Tile adjacency corpus
 ## WP7.2 — pending — Tile rule matcher

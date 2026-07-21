@@ -29,6 +29,7 @@ namespace SWLOR.Toolset.Editors
         private readonly ResourceIndex? _resourceIndex;
         private readonly PlaceableAppearanceService? _placeableAppearances;
         private readonly DoorTypeService? _doorTypes;
+        private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
 
@@ -43,7 +44,8 @@ namespace SWLOR.Toolset.Editors
             TileModelCache? tileModelCache = null,
             ResourceIndex? resourceIndex = null,
             PlaceableAppearanceService? placeableAppearances = null,
-            DoorTypeService? doorTypes = null)
+            DoorTypeService? doorTypes = null,
+            TileWalkmeshCache? tileWalkmeshCache = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -56,6 +58,7 @@ namespace SWLOR.Toolset.Editors
             _resourceIndex = resourceIndex;
             _placeableAppearances = placeableAppearances;
             _doorTypes = doorTypes;
+            _tileWalkmeshCache = tileWalkmeshCache;
         }
 
         public void TryOpenEditor(ResourceType type, string resRef)
@@ -139,7 +142,7 @@ namespace SWLOR.Toolset.Editors
                 var editor = new AreaEditorViewModel(
                     resRef, workspace, _lookups, _gameCodeIndex, _log,
                     _tilesetCatalog, _tileModelCache, _resourceIndex,
-                    _placeableAppearances, _doorTypes);
+                    _placeableAppearances, _doorTypes, _tileWalkmeshCache);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);

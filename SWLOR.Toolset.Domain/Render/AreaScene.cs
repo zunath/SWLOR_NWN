@@ -59,6 +59,13 @@ namespace SWLOR.Toolset.Domain.Render
         /// placeholder at <see cref="Transform"/> for these instead of skipping the tile.
         /// </summary>
         public required bool IsFallback { get; init; }
+
+        /// <summary>
+        /// This tile's walkmesh in tile-local space (apply <see cref="Transform"/> to reach world
+        /// space), or null when the tile has no resolvable .wok. Shared/cached per tile-model
+        /// resref like <see cref="Model"/>.
+        /// </summary>
+        public WalkMesh? Walkmesh { get; init; }
     }
 
     /// <summary>The kind of placed-instance list an <see cref="InstanceMarker"/> came from.</summary>

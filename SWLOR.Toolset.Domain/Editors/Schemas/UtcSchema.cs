@@ -38,9 +38,9 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
                         {
                             new FieldDescriptor { Label = "Appearance", FieldName = "Appearance_Type", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Word, LookupKey = LookupKeys.Appearance },
                             new FieldDescriptor { Label = "Portrait", FieldName = "PortraitId", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Word, LookupKey = LookupKeys.Portraits },
-                            new FieldDescriptor { Label = "Gender", FieldName = "Gender", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Phenotype", FieldName = "Phenotype", Kind = EditorKind.Integer, FieldType = GffFieldType.Int },
-                            new FieldDescriptor { Label = "Sound Set", FieldName = "SoundSetFile", Kind = EditorKind.Integer, FieldType = GffFieldType.Word }
+                            new FieldDescriptor { Label = "Gender", FieldName = "Gender", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Byte, LookupKey = LookupKeys.Gender },
+                            new FieldDescriptor { Label = "Phenotype", FieldName = "Phenotype", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Int, LookupKey = LookupKeys.Phenotype },
+                            new FieldDescriptor { Label = "Sound Set", FieldName = "SoundSetFile", Kind = EditorKind.TwoDaDropdown, FieldType = GffFieldType.Word, LookupKey = LookupKeys.SoundSets }
                         }
                     },
                     new FieldGroup

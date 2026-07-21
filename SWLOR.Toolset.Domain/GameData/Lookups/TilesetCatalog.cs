@@ -24,6 +24,8 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         private readonly Lazy<IReadOnlyList<string>> _names;
         private readonly ConcurrentDictionary<string, Lazy<TilesetDefinition?>> _cache =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, string> _displayNames =
+            new(StringComparer.OrdinalIgnoreCase);
 
         public TilesetCatalog(ResourceIndex resourceIndex)
         {
@@ -37,6 +39,55 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         /// for the lifetime of the catalog.
         /// </summary>
         public IReadOnlyList<string> GetTilesetNames() => _names.Value;
+
+        /// <summary>
+        /// A human-readable label for a tileset picker: "ztd01 - [CEP] Desert". The name comes from
+        /// the .set's [GENERAL] block, preferring UnlocalizedName ("[CEP] Desert") over the internal
+        /// Name ("ZTD01"), which is usually just the resref in caps and adds nothing. Falls back to
+        /// the bare resref when the file declares no useful name or cannot be read. Uses a
+        /// header-only read (<see cref="SetFileParser.ParseHeader"/>), so labelling the whole
+        /// tileset list does not parse ~16 MB of tile tables.
+        /// </summary>
+        public string GetDisplayLabel(string resref)
+        {
+            var name = GetDisplayName(resref);
+            return string.IsNullOrEmpty(name) ? resref : $"{resref} - {name}";
+        }
+
+        /// <summary>
+        /// The tileset's human-readable name alone (no resref prefix), or an empty string when the
+        /// .set declares nothing better than its own resref. Cached per resref.
+        /// </summary>
+        public string GetDisplayName(string resref)
+        {
+            if (string.IsNullOrWhiteSpace(resref))
+                return string.Empty;
+
+            return _displayNames.GetOrAdd(resref, key =>
+            {
+                try
+                {
+                    var identity = new ResourceIdentity(key, SetResourceType);
+                    if (!_resourceIndex.TryLookup(identity, out var handle))
+                        return string.Empty;
+
+                    var header = SetFileParser.ParseHeader(handle.GetBytes());
+                    if (!string.IsNullOrWhiteSpace(header.UnlocalizedName))
+                        return header.UnlocalizedName.Trim();
+
+                    // The internal Name is normally just the resref in caps; only useful when it
+                    // actually differs from the resref.
+                    return !string.IsNullOrWhiteSpace(header.Name)
+                           && !header.Name.Equals(key, StringComparison.OrdinalIgnoreCase)
+                        ? header.Name.Trim()
+                        : string.Empty;
+                }
+                catch
+                {
+                    return string.Empty; // an unreadable tileset just shows its resref
+                }
+            });
+        }
 
         /// <summary>
         /// Attempts to resolve and parse a tileset by resref (e.g. "tde01", matching an area

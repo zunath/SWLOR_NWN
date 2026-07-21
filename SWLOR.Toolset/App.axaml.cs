@@ -62,7 +62,11 @@ namespace SWLOR.Toolset
             services.AddSingleton(sp => new Editors.LookupOptionProvider(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetService<AppearanceService>(),
-                sp.GetService<PortraitService>()));
+                sp.GetService<PortraitService>(),
+                sp.GetService<PlaceableAppearanceService>(),
+                sp.GetService<DoorTypeService>(),
+                sp.GetService<SoundService>(),
+                sp.GetService<TwoDaLookupService>()));
             services.AddSingleton(sp => new Editors.EditorService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<Editors.LookupOptionProvider>(),
@@ -179,6 +183,10 @@ namespace SWLOR.Toolset
                     new PlaceableAppearanceService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
                 services.AddSingleton(sp =>
                     new DoorTypeService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
+                services.AddSingleton(sp =>
+                    new SoundService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
+                services.AddSingleton(sp =>
+                    new TwoDaLookupService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
             }
 
             if (hasTwoDa)

@@ -16,21 +16,40 @@ namespace SWLOR.Toolset.Editors
     /// optional — a missing service (or unknown key) yields an empty list, and the editor
     /// degrades that field to a plain numeric box.
     /// </summary>
+    /// <remarks>
+    /// Note that an unhandled key degrades SILENTLY to a numeric box, which is how Door Type,
+    /// placeable Appearance, and ambient Sound spent a while rendering as raw ids even though their
+    /// schemas already declared dropdowns and their services already existed — the switch below
+    /// simply had no case for them. When adding a lookup key, wire it here too; the
+    /// LookupOptionProviderTests coverage exists to catch exactly that omission.
+    /// </remarks>
     public sealed class LookupOptionProvider
     {
         private readonly AppearanceService? _appearances;
         private readonly PortraitService? _portraits;
+        private readonly PlaceableAppearanceService? _placeables;
+        private readonly DoorTypeService? _doorTypes;
+        private readonly SoundService? _sounds;
+        private readonly TwoDaLookupService? _twoDaLookups;
         private readonly WorkspaceContext _workspaceContext;
         private readonly Dictionary<string, IReadOnlyList<LookupOption>> _cache = new(StringComparer.OrdinalIgnoreCase);
 
         public LookupOptionProvider(
             WorkspaceContext workspaceContext,
             AppearanceService? appearances = null,
-            PortraitService? portraits = null)
+            PortraitService? portraits = null,
+            PlaceableAppearanceService? placeables = null,
+            DoorTypeService? doorTypes = null,
+            SoundService? sounds = null,
+            TwoDaLookupService? twoDaLookups = null)
         {
             _workspaceContext = workspaceContext;
             _appearances = appearances;
             _portraits = portraits;
+            _placeables = placeables;
+            _doorTypes = doorTypes;
+            _sounds = sounds;
+            _twoDaLookups = twoDaLookups;
         }
 
         public IReadOnlyList<LookupOption> GetOptions(string? lookupKey)
@@ -60,6 +79,28 @@ namespace SWLOR.Toolset.Editors
                         return _portraits.GetAll()
                             .Select(row => new LookupOption(row.Id, row.BaseResRef))
                             .ToList();
+                    case LookupKeys.Placeables when _placeables != null:
+                        return _placeables.GetAll()
+                            .Select(row => new LookupOption(row.Id, row.DisplayName))
+                            .ToList();
+                    case LookupKeys.DoorTypes when _doorTypes != null:
+                        return _doorTypes.GetAll()
+                            .Select(row => new LookupOption(row.Id, row.DisplayName))
+                            .ToList();
+                    case LookupKeys.AmbientSounds when _sounds != null:
+                        return _sounds.GetAll()
+                            .Select(row => new LookupOption(row.Id, row.DisplayName))
+                            .ToList();
+                    case LookupKeys.Gender:
+                        return FromTable(TwoDaLookupTables.Gender);
+                    case LookupKeys.Phenotype:
+                        return FromTable(TwoDaLookupTables.Phenotype);
+                    case LookupKeys.SoundSets:
+                        return FromTable(TwoDaLookupTables.SoundSet);
+                    case LookupKeys.BaseItems:
+                        return FromTable(TwoDaLookupTables.BaseItem);
+                    case LookupKeys.TriggerTypes:
+                        return TriggerTypeOptions;
                     case LookupKeys.Factions:
                         return BuildFactions();
                     default:
@@ -72,6 +113,24 @@ namespace SWLOR.Toolset.Editors
                 return Array.Empty<LookupOption>();
             }
         }
+
+        private IReadOnlyList<LookupOption> FromTable(TwoDaLookupTable table)
+        {
+            if (_twoDaLookups == null)
+                return Array.Empty<LookupOption>();
+
+            return _twoDaLookups.GetRows(table.TableName, table.LabelColumn, table.StrRefColumn)
+                .Select(row => new LookupOption(row.Id, row.DisplayName))
+                .ToList();
+        }
+
+        /// <summary>Trigger Type is a fixed engine enum rather than a 2DA table.</summary>
+        private static readonly IReadOnlyList<LookupOption> TriggerTypeOptions = new[]
+        {
+            new LookupOption(0, "Generic"),
+            new LookupOption(1, "Trap"),
+            new LookupOption(2, "Area Transition")
+        };
 
         /// <summary>Faction ids come from the module's repute.fac: FactionList index = id.</summary>
         private IReadOnlyList<LookupOption> BuildFactions()

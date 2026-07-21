@@ -26,8 +26,14 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly Action<string> _onCreated;
         private readonly Action _onCancelled;
 
+        /// <summary>One tileset in the picker: the resref that gets written to the area, shown with its readable name.</summary>
+        public sealed record TilesetChoice(string ResRef, string Label)
+        {
+            public override string ToString() => Label;
+        }
+
         /// <summary>Every tileset the resource index can see, for the tileset picker.</summary>
-        public ObservableCollection<string> Tilesets { get; } = new();
+        public ObservableCollection<TilesetChoice> Tilesets { get; } = new();
 
         [ObservableProperty]
         private string _resRef = string.Empty;
@@ -36,7 +42,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private string _displayName = string.Empty;
 
         [ObservableProperty]
-        private string? _selectedTileset;
+        private TilesetChoice? _selectedTileset;
 
         [ObservableProperty]
         private double _width = 4;
@@ -65,11 +71,12 @@ namespace SWLOR.Toolset.Shell.Panels
             }
 
             foreach (var name in _tilesetCatalog.GetTilesetNames())
-                Tilesets.Add(name);
+                Tilesets.Add(new TilesetChoice(name, _tilesetCatalog.GetDisplayLabel(name)));
 
             // Open on the same tileset the area template itself uses, so the default is one the
             // clone path is known to handle.
-            SelectedTileset = Tilesets.Contains("tms01") ? "tms01" : Tilesets.FirstOrDefault();
+            SelectedTileset = Tilesets.FirstOrDefault(t => t.ResRef.Equals("tms01", StringComparison.OrdinalIgnoreCase))
+                              ?? Tilesets.FirstOrDefault();
         }
 
         [RelayCommand]
@@ -80,7 +87,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 : (string resRef, out TilesetDefinition tileset) => _tilesetCatalog.TryGetTileset(resRef, out tileset);
 
             if (NewAreaWriter.TryCreate(
-                    _workspace, resolver, ResRef, DisplayName, SelectedTileset ?? string.Empty,
+                    _workspace, resolver, ResRef, DisplayName, SelectedTileset?.ResRef ?? string.Empty,
                     (int)Width, (int)Height, out var error))
             {
                 _onCreated(ResRef.Trim().ToLowerInvariant());

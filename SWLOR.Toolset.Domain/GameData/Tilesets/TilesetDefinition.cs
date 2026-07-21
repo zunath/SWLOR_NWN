@@ -1,6 +1,15 @@
 namespace SWLOR.Toolset.Domain.GameData.Tilesets
 {
     /// <summary>
+    /// Just the identifying fields of a tileset's [GENERAL] block, for labelling a tileset picker
+    /// without parsing the whole file (see <see cref="SetFileParser.ParseHeader"/>).
+    /// </summary>
+    /// <param name="Name">The tileset's internal name, usually the resref in caps ("ZTD01").</param>
+    /// <param name="UnlocalizedName">The human-readable name ("[CEP] Desert"), absent in some tilesets.</param>
+    /// <param name="DisplayNameStrRef">Strref for a localized name, or -1 when not declared.</param>
+    public sealed record TilesetHeader(string Name, string UnlocalizedName, int DisplayNameStrRef);
+
+    /// <summary>
     /// The parsed contents of one NWN .set tileset file: [GENERAL]/[GRASS] properties plus the
     /// terrain, crosser, auto-terrain rule, tile, and group tables. Pure data - no rendering, no
     /// file watching, no resolution against haks/2das.

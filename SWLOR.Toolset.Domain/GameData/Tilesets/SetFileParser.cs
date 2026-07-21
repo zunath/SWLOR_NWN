@@ -72,6 +72,57 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             return Parse(File.ReadAllBytes(path));
         }
 
+        /// <summary>
+        /// Reads ONLY the [GENERAL] header (name/display name) without building the tile, terrain,
+        /// crosser, or group tables. The corpus is 70 files / ~16 MB, and the largest single tileset
+        /// declares over a thousand tiles, so fully parsing every one just to label a picker would
+        /// be wasteful - [GENERAL] is the first section, and this stops as soon as the next section
+        /// begins. Never throws; a file with no [GENERAL] yields empty strings.
+        /// </summary>
+        public static TilesetHeader ParseHeader(byte[] content)
+        {
+            var text = Encoding.Latin1.GetString(content);
+            string name = "", unlocalizedName = "";
+            var displayName = -1;
+            var inGeneral = false;
+
+            foreach (var rawLine in text.Split('\n'))
+            {
+                var line = rawLine.Trim();
+                if (line.Length == 0 || line[0] == ';')
+                    continue;
+
+                if (line[0] == '[')
+                {
+                    if (inGeneral)
+                        break; // [GENERAL] is done - everything after it is table data we don't need.
+
+                    inGeneral = line.Equals("[GENERAL]", StringComparison.OrdinalIgnoreCase);
+                    continue;
+                }
+
+                if (!inGeneral)
+                    continue;
+
+                var separator = line.IndexOf('=');
+                if (separator <= 0)
+                    continue;
+
+                var key = line[..separator].Trim();
+                var value = line[(separator + 1)..].Trim();
+
+                if (key.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                    name = value;
+                else if (key.Equals("UnlocalizedName", StringComparison.OrdinalIgnoreCase))
+                    unlocalizedName = value;
+                else if (key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase)
+                         && int.TryParse(value, out var parsed))
+                    displayName = parsed;
+            }
+
+            return new TilesetHeader(name, unlocalizedName, displayName);
+        }
+
         private static TilesetDefinition Build(IReadOnlyDictionary<string, IniSection> sections)
         {
             var general = GetSection(sections, "GENERAL");

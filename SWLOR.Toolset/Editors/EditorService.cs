@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -96,6 +97,9 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
+                if (!CanRepresentEveryValue(filePath, resRef, schema))
+                    return;
+
                 var editor = new BlueprintEditorViewModel(
                     filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log);
                 editor.Closed += _ => _openEditors.Remove(filePath);
@@ -151,6 +155,55 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open area editor for {resRef}: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Refuses to open a blueprint whose dropdown-backed fields hold values their lookup tables
+        /// cannot represent, reporting exactly which ones instead.
+        ///
+        /// A combo box can only select values its lookup knows about, so an unknown id renders as a
+        /// blank box - the stored value becomes invisible, and touching that field would overwrite
+        /// it sight-unseen. Aborting the open leaves the file completely untouched, which is the
+        /// safest outcome: the data is preserved and the problem is stated rather than hidden.
+        /// Returns true when the blueprint is safe to open.
+        /// </summary>
+        private bool CanRepresentEveryValue(string filePath, string resRef, EditorSchema schema)
+        {
+            IReadOnlyList<UnresolvedFieldValue> unresolved;
+            try
+            {
+                var document = JsonGffDocument.Load(filePath);
+                unresolved = DropdownValueValidator.FindUnresolved(
+                    document, schema,
+                    lookupKey => _lookups.GetOptions(lookupKey).Select(option => option.Id).ToHashSet());
+            }
+            catch (Exception ex)
+            {
+                // Never let the safety check itself block an otherwise-openable file.
+                _log.AppendLine($"Could not validate lookup values for {resRef}: {ex.Message}");
+                return true;
+            }
+
+            if (unresolved.Count == 0)
+                return true;
+
+            var details = unresolved
+                .Select(u => $"{u.Label} ({u.FieldName}) = {u.Value}   [not found in {u.LookupKey}]")
+                .ToList();
+
+            foreach (var line in details)
+                _log.AppendLine($"{resRef}: {line}");
+
+            Shell.Views.ErrorDialog.Show(
+                $"Cannot open '{resRef}'",
+                "This blueprint stores values that are not present in the game data tables the editor "
+                + "uses to fill its dropdowns. Opening it would show those fields as blank, and editing "
+                + "anything else could overwrite them without you seeing the original value.\n\n"
+                + "The file has NOT been modified. Fix the referenced rows in the 2DA data (or correct "
+                + "the blueprint outside the toolset), then reopen it.",
+                details);
+
+            return false;
         }
 
         /// <summary>Points the Model Preview panel at an editor's live document (creatures/placeables/doors).</summary>

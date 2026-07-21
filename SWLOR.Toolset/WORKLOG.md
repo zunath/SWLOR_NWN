@@ -818,3 +818,56 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
      the area starts as solid rock by design — paint the walkable terrain (`Room` for `tib01`) first,
      and walk that. On an exterior tileset (`tms01` Grass, `ztd01` Desert) the initial fill is already
      walkable ground.
+## Editor lookups — 2026-07-21 — Resolve names in dropdowns (post-WP7.3 gate feedback)
+- Reported: the tileset picker showed only a code, and many pick-lists showed raw numeric ids
+  (Door Type 48, placeable Appearance 1068, Base Item 516, Gender/Phenotype/Sound Set, trigger Type).
+- **Root cause for three of them was not missing data — it was a silent fall-through.**
+  `LookupOptionProvider.Build`'s switch had no `case` for `Placeables`, `DoorTypes`, or
+  `AmbientSounds`, even though the schemas already declared those fields as `TwoDaDropdown` AND
+  `PlaceableAppearanceService`/`DoorTypeService`/`SoundService` already existed. An unhandled key
+  returns an empty option list, and an empty list is exactly how the editor signals "no lookup,
+  degrade to a numeric box" — so a wiring omission was indistinguishable from a missing 2DA and
+  nothing failed. Wired them (plus `SoundService`, which was never registered in DI at all).
+- New lookups: gender, phenotype, soundset, baseitems via one generic
+  `GameData\Lookups\TwoDaLookupService` (label column + optional strref column) rather than four
+  near-identical service classes — those tables differ only in which columns to read.
+  `DoorTypeService`/`AppearanceService` keep their own types because they expose extra columns
+  (model resrefs) that the renderer uses. Trigger `Type` is a fixed engine enum (generic/trap/area
+  transition), so it gets a static option list, not a 2DA.
+- Only the SWLOR custom TLK is loaded (no base `dialog.tlk`), so base-game strrefs do not resolve
+  and every wired table falls back to its label column. That is why the tables chosen all have
+  readable labels ("shortsword", "Aasimar", "Normal", "Armoire 1"). Wiring a binary `dialog.tlk`
+  reader would upgrade these to true in-game names — a worthwhile follow-up, not required here.
+- Tileset picker now shows "ztd01 - [CEP] Desert". The readable name is `UnlocalizedName` from the
+  .set's [GENERAL] block (`Name` is just the resref in caps and is skipped when it adds nothing).
+  Uses a new header-only `SetFileParser.ParseHeader` that stops at the end of [GENERAL]: the corpus
+  is 70 files / ~16 MB and the largest tileset declares 1400+ tiles, so fully parsing every file just
+  to label a picker would be pure waste. The early stop is tested directly, because the terrain
+  blocks that follow [GENERAL] also use `Name=` keys and a reader that ran on would report the first
+  terrain's name as the tileset's.
+- **Data-safety guard (`Editors\DropdownValueValidator` + `Shell\Views\ErrorDialog`).** Converting a
+  numeric field to a dropdown is not free: a combo box can only select values its lookup knows, so an
+  unknown id renders BLANK — the stored value becomes invisible and a user editing anything else
+  could overwrite it unseen. Measured against the corpus before shipping rather than assumed:
+  - **2982 of 8317 placeable blueprints (~36%)** reference appearance rows that are entirely `****`
+    in placeables.2da (row 1005 has no label AND no model) — genuinely broken references.
+  - 1 creature (`darthmalek001`) has SoundSetFile 954, past the last row.
+  - doortypes / baseitems / phenotype / gender: zero.
+  Per the decision to prevent data loss first, opening such a blueprint now aborts with a dialog
+  naming each field and value; the file is not touched. Area editing and placement are unaffected
+  (they do not go through the schema editor), so painting still works.
+- **The measurement also caught a bug in the guard itself:** 45 creatures store SoundSetFile 65535,
+  which is NWN's Word "none" marker, not a broken row. Blocking those would have been a defect in the
+  check rather than in the data, so unset sentinels (255/65535/4294967295 and -1) are exempt. Zero is
+  deliberately NOT exempt — row 0 is real in every wired table.
+- Tests (+33): `TwoDaLookupServiceTests` (every wired table yields readable, uniquely-keyed options;
+  ids are row indices; unknown table/column degrades instead of throwing; caching),
+  `TilesetDisplayNameTests` (header stops at [GENERAL]; UnlocalizedName preferred; resref-only
+  fallback; every hak tileset gets a label), `SchemaLookupKeyTests` (every dropdown names a DECLARED
+  lookup key, plus the seven reported fields pinned by name so a schema edit cannot quietly revert
+  one to a numeric box), `DropdownValueValidatorTests` (present/missing/absent/unavailable-lookup,
+  all offenders reported, sentinel exemption, zero not exempt).
+- Known gap: no test can prove `LookupOptionProvider` has a case for a given key, because it lives in
+  the Avalonia app project which the headless test project deliberately does not reference — the same
+  boundary that hid the original bug. `SchemaLookupKeyTests` covers the schema half and the provider
+  carries a remark pointing at it.

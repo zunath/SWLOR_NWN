@@ -29,5 +29,12 @@ namespace SWLOR.Toolset.Domain.Editors
         public const string DoorTypes = "doortypes";
         public const string AmbientSounds = "ambientsounds";
         public const string Factions = "factions";
+        public const string Gender = "gender";
+        public const string Phenotype = "phenotype";
+        public const string SoundSets = "soundsets";
+        public const string BaseItems = "baseitems";
+
+        /// <summary>Trigger "Type" - a small fixed engine enum, not a 2DA table.</summary>
+        public const string TriggerTypes = "triggertypes";
     }
 }

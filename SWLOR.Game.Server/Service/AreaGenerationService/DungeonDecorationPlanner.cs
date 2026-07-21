@@ -911,6 +911,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // cap) -- shared by every mechanism below. Entries without caps are never filtered, so
             // palettes that declare no caps keep their exact pick pools.
             var areaUsage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            // Round 15: frontage buildings seed the ledger, so a model that stands in BOTH the
+            // structural frontage pool and a capped scatter palette (the dual-channel industrial
+            // towers kyru08/indtowr) keeps its COMBINED per-area count at the hand-built ceiling
+            // -- the round-15 delivered-module audit caught indtowr at 6 (4 frontage + 2 yard)
+            // against its hand-built per-area max of 4. No-op for tilesets without frontage
+            // (the ledger stays empty exactly as before, and no RNG is consumed).
+            if (frontage != null)
+            {
+                foreach (var placement in frontage.Placements)
+                    areaUsage[placement.Decoration.Resref] =
+                        areaUsage.GetValueOrDefault(placement.Decoration.Resref) + 1;
+            }
             var hugePlacedTotal = 0;
 
             // PASS 2a: doorway flank pairs, in deterministic transition order, BEFORE the per-room pass

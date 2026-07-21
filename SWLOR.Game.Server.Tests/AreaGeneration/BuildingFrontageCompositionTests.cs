@@ -276,14 +276,150 @@ public class BuildingFrontageCompositionTests
                 .Should().BeGreaterOrEqualTo(minVariety,
                     $"seed {seed}: frontage variety must reach the hand-built minimum");
 
-            // Accent caps hold (the dominant wall models are deliberately uncapped).
+            // Per-model caps hold (round 15: every model is capped -- accents at their
+            // comparable-mass hand-built maxima, workhorses at their all-areas maxima).
             foreach (var group in buildings.GroupBy(p => p.Resref, StringComparer.OrdinalIgnoreCase))
             {
                 if (caps.TryGetValue(group.Key, out var cap))
                     group.Count().Should().BeLessOrEqualTo(cap,
-                        $"seed {seed}: accent '{group.Key}' exceeded its per-area frontage cap");
+                        $"seed {seed}: '{group.Key}' exceeded its per-area frontage cap");
             }
         }
+    }
+
+    // ============================================================
+    // Round 15 -- salience histogram shape: the per-model/per-family histogram, the
+    // omnidirectional same-model spacing floors, the building budget ceiling, and the
+    // workhorse/accent split (see _scratch_decor/r15_mine_salience.py). Perceived variety
+    // follows the histogram SHAPE: hand-builders repeat plain workhorse towers while
+    // distinctive neon/emissive models stay rare and spread -- round-14's entropy/run gates
+    // were salience-blind and let the neon build003 anchor a street ("still seeing a lot of
+    // repetition" on the halls-20 showcase).
+    // ============================================================
+
+    [Test]
+    public void FrontagePool_DeclaresMinedSalienceClassification()
+    {
+        var c = Composition(MineCaveDungeonDefinition.ThemeKey, BaseGameTilesetProfiles.FutCity,
+            StandardLayoutProfiles.Packed);
+        var entries = c.Tileset.FrontageBuildings;
+
+        // Exactly the three mined workhorses are dominant-eligible (top-2 hand-built per-area
+        // counts sum >= 20 AND diffuse neon share < 0.15).
+        entries.Where(e => e.DominantEligible).Select(e => e.Resref).Should().BeEquivalentTo(
+            new[] { "swd_build007", "swd_build004", "_mdrn_pl_kyru08" },
+            "only the mined low-salience workhorse models may anchor a street");
+
+        // Every pool member carries a hard per-area cap mined from the hand-built histograms.
+        foreach (var entry in entries)
+            entry.MaxPerArea.Should().BeGreaterThan(0,
+                $"'{entry.Resref}' must cap at its hand-built per-area maximum");
+
+        // Every non-workhorse model is spread by an omnidirectional spacing floor (or is
+        // effectively unique per area), so no distinctive tower recurs across parallel rows.
+        foreach (var entry in entries.Where(e => !e.DominantEligible))
+            (entry.MinSameModelSpacing > 0f || entry.MaxPerArea <= 1).Should().BeTrue(
+                $"accent '{entry.Resref}' needs a mined same-model spacing floor or a cap of 1");
+
+        // The reported clone tower: the neon-clad build003 (emissive coverage 0.61, neon share
+        // 0.35 -- the highest-salience member) caps at its comparable-mass hand-built max of 4
+        // and joins the shared-atlas daf neon family.
+        var build003 = entries.Single(e => e.Resref.Equals("swd_build003", StringComparison.OrdinalIgnoreCase));
+        build003.DominantEligible.Should().BeFalse();
+        build003.MaxPerArea.Should().Be(4);
+        build003.MinSameModelSpacing.Should().Be(15f);
+        build003.FamilyKey.Should().Be("dafneon");
+
+        // Shared-texture families aggregate their caps (dafneon 15 = narcatwalk family max;
+        // jsfsky 5 = randoncity's total).
+        entries.Where(e => e.FamilyKey == "dafneon").Select(e => e.Resref).Should().BeEquivalentTo(
+            new[] { "swd_build001", "swd_build002", "swd_build003", "swd_build005", "swd_build006" });
+        entries.Where(e => e.FamilyKey == "dafneon").Should().OnlyContain(e => e.FamilyMaxPerArea == 15);
+        entries.Where(e => e.FamilyKey == "jsfsky").Select(e => e.Resref).Should().BeEquivalentTo(
+            new[] { "_mdrn_pl_buildg2", "_mdrn_pl_buildg4" });
+        entries.Where(e => e.FamilyKey == "jsfsky").Should().OnlyContain(e => e.FamilyMaxPerArea == 5);
+    }
+
+    [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 12)]
+    [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 20)]
+    [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 24)]
+    [TestCase(AlienRuinDungeonDefinition.ThemeKey, StandardLayoutProfiles.Halls, 20)]
+    public void FrontageSalience_HistogramSpacingAndBudget_MatchHandBuiltShape(
+        string themeKey, string layoutKey, int size)
+    {
+        var c = Composition(themeKey, BaseGameTilesetProfiles.FutCity, layoutKey);
+        var entries = c.Tileset.FrontageBuildings.ToDictionary(e => e.Resref, StringComparer.OrdinalIgnoreCase);
+        var violations = new List<string>();
+
+        for (var i = 0; i < SeedCount; i++)
+        {
+            var seed = SeedBase + i;
+            var (layout, plan) = PlanFor(c, seed, size);
+            var buildings = plan.Where(p => p.Context == DecorationContext.BuildingFrontage).ToList();
+            if (buildings.Count == 0)
+                continue;
+
+            var groups = buildings
+                .GroupBy(p => p.Resref, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+
+            // Per-model histogram: no model exceeds its mined per-area cap.
+            foreach (var (resref, list) in groups)
+            {
+                var entry = entries[resref];
+                if (entry.MaxPerArea > 0 && list.Count > entry.MaxPerArea)
+                    violations.Add($"seed {seed}: {resref} x{list.Count} > cap {entry.MaxPerArea}");
+            }
+
+            // Family histogram: shared-atlas families aggregate.
+            foreach (var family in groups.Keys
+                         .Select(r => entries[r])
+                         .Where(e => !string.IsNullOrEmpty(e.FamilyKey))
+                         .GroupBy(e => e.FamilyKey))
+            {
+                var total = family.Sum(e => groups[e.Resref].Count);
+                var cap = family.Max(e => e.FamilyMaxPerArea);
+                if (cap > 0 && total > cap)
+                    violations.Add($"seed {seed}: family {family.Key} x{total} > cap {cap}");
+            }
+
+            // Omnidirectional same-model spacing (the parallel-row / facing-pair clone check):
+            // every pair of a spaced model keeps the mined distance in ANY direction.
+            foreach (var (resref, list) in groups)
+            {
+                var spacing = entries[resref].MinSameModelSpacing;
+                if (spacing <= 0f || list.Count < 2)
+                    continue;
+                for (var a = 0; a < list.Count; a++)
+                for (var b = a + 1; b < list.Count; b++)
+                {
+                    var dx = list[a].Position.X - list[b].Position.X;
+                    var dy = list[a].Position.Y - list[b].Position.Y;
+                    var d = MathF.Sqrt(dx * dx + dy * dy);
+                    if (d < spacing - 0.05f)
+                        violations.Add($"seed {seed}: {resref} pair {d:F1}m < spacing {spacing}m");
+                }
+            }
+
+            // Building budget: never denser per open floor tile than the densest hand-built
+            // precedent (narcatwalk 0.589; see BuildingFrontagePlanner.MaxBuildingsPerOpenTile).
+            var open = OpenCells(layout).Count;
+            var budget = Math.Max(1, (int)Math.Round(open * BuildingFrontagePlanner.MaxBuildingsPerOpenTile));
+            if (buildings.Count > budget)
+                violations.Add($"seed {seed}: {buildings.Count} buildings > budget {budget} ({open} open tiles)");
+
+            // Salience-weighted share: the non-workhorse slice of the skyline stays under the
+            // hand-built ceiling (narscorpd 0.571, the swd-palette maximum).
+            if (buildings.Count >= 15)
+            {
+                var nonWorkhorse = buildings.Count(p => !entries[p.Resref].DominantEligible);
+                var share = nonWorkhorse / (double)buildings.Count;
+                if (share > 0.60)
+                    violations.Add($"seed {seed}: non-workhorse share {share:F3} > hand-built ceiling 0.60");
+            }
+        }
+
+        violations.Should().BeEmpty(string.Join(Environment.NewLine, violations.Take(20)));
     }
 
     // ============================================================

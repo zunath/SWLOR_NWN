@@ -4397,6 +4397,12 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // (so budget alone cannot restore it); measured packed20 realized 1.16 at 3.3 and
                 // ~1.24 at 3.6 with the urban cap/floor adjustments -- 3.8 keeps the realized band
                 // (1.2-1.35 per total tile) with margin.
+                // (Round 15 checked a 3.8 -> 3.9 bump to lift three 24/32 sweep seeds sitting
+                // 0.5-3% under the hand-built 2.845 decoratives-per-open-tile floor after the
+                // frontage budget trim; realized output was BYTE-IDENTICAL -- the arrangement
+                // mechanisms run cap-saturated, exactly as the round-9 note predicts -- so the
+                // knob stays at its calibrated 3.8 and those seeds are documented sweep variance,
+                // the same band-edge tail the pre-round-15 baseline showed on other cells.)
                 // see DungeonTilesetProfile.DecorationDensityPerTile.
                 .DecorationDensity(3.8)
                 // Urban placement grammar (round 6, "it still feels like a scattering of different
@@ -4419,23 +4425,55 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // STRUCTURAL channel the round-7 removal note anticipated: swd_build007 stays
                 // Excluded from every scatter palette, and returns here as deliberate composed
                 // structure only.
-                // Per-area caps follow the hand-built per-model maxima (narpromena/narscorpd/
-                // nsshipyard counts): the build007/build003 wall workhorses stay uncapped, every
-                // accent tower caps near its hand-built ceiling so no accent blankets an area.
-                .FrontageBuilding("swd_build007", 6, 13.8f, 15.1f)
-                .FrontageBuilding("swd_build003", 3, 19.3f, 9.3f)
+                // ROUND-15 SALIENCE CLASSIFICATION (_scratch_decor/r15_mine_salience.py; user:
+                // "Still seeing a lot of repetition -- maybe even more than before"): perceived
+                // variety follows the per-model histogram SHAPE, not entropy -- hand-builders
+                // repeat PLAIN workhorse towers heavily (build007 18-36 per area) while
+                // distinctive neon/emissive towers stay rare (the neon-clad build003: 1-4 per
+                // comparable-mass area). Emissive _i-map coverage + diffuse neon-pixel share are
+                // measured per model from the hak textures; per-area count histograms from the
+                // hand-built fcx01 areas.
+                //  - WORKHORSE (workhorse: true, dominant-eligible): top-2 hand-built per-area
+                //    counts sum 20+ AND diffuse neon share < 0.15. build007 (36+30, neon 0.13 --
+                //    the muted khaki daf_sw101 tower), build004 (21+7, 0.03), kyru08 (10+10,
+                //    0.00 -- randoncity walls whole streets with the cistern). Even workhorses
+                //    cap at their hand-built per-area MAXIMUM (36/21/10) so no generated area
+                //    out-repeats the heaviest hand-built usage.
+                //  - Every other model is an ACCENT: hard per-area cap at its hand-built maximum
+                //    in comparable-mass (<=60-building) areas, plus an omnidirectional
+                //    minSpacing floor mined from the hand-built same-model cross-line
+                //    nearest-neighbor distances (r15 evidence), so the same distinctive tower
+                //    never recurs across parallel rows or facing pairs the way the reviewed
+                //    halls-20 showcase repeated the cyan-lit build003 through the plaza.
+                //  - FAMILIES: build001/002/003/005/006 share the daf_sw011_5/6 neon poster
+                //    atlases and read as one neon line ("dafneon", family cap 15 = the
+                //    narcatwalk comparable-mass family max; narpromena carries 11);
+                //    buildg2/buildg4 share the full jsf_bldgtx set ("jsfsky", cap 5 =
+                //    randoncity's 5+5 capped at the comparable-mass total). No same-mesh recolor
+                //    pairs exist in this pool (decompiled-geometry hash check).
+                .FrontageBuilding("swd_build007", 6, 13.8f, 15.1f, maxPerArea: 36, workhorse: true)
+                .FrontageBuilding("swd_build003", 3, 19.3f, 9.3f, maxPerArea: 4, minSpacing: 15f,
+                    family: "dafneon", familyMaxPerArea: 15)
                 // The narrow lift cylinder is the mined repeat-risk accent (round-14 variety
                 // pass): hand-built same-model NN medians run 18.9-36.0m (narpromena 18.9,
                 // nsshipyard 27.4, narscorpd 36.0) while unspaced generated areas packed pairs
                 // 10m apart -- minSpacing enforces the mined spread floor.
                 .FrontageBuilding("swd2_elev002", 2, 5.4f, 5.5f, maxPerArea: 9, minSpacing: 15f)
-                .FrontageBuilding("swd_build006", 1, 33.5f, 17.8f, maxPerArea: 6)
-                .FrontageBuilding("swd_build001", 1, 22.5f, 22.5f, maxPerArea: 8)
-                .FrontageBuilding("swd_build004", 1, 61.5f, 20.3f, maxPerArea: 6)
-                .FrontageBuilding("swd_build005", 1, 36.5f, 36.5f, maxPerArea: 4)
-                .FrontageBuilding("swd_build002", 1, 37.5f, 37.5f, maxPerArea: 4)
-                .FrontageBuilding("_mdrn_pl_kyru12", 1, 11.7f, 13.3f, maxPerArea: 5)
-                .FrontageBuilding("_mdrn_pl_indtowr", 1, 11.8f, 11.8f, maxPerArea: 4)
+                .FrontageBuilding("swd_build006", 1, 33.5f, 17.8f, maxPerArea: 5, minSpacing: 20f,
+                    family: "dafneon", familyMaxPerArea: 15)
+                .FrontageBuilding("swd_build001", 1, 22.5f, 22.5f, maxPerArea: 3, minSpacing: 20f,
+                    family: "dafneon", familyMaxPerArea: 15)
+                .FrontageBuilding("swd_build004", 1, 61.5f, 20.3f, maxPerArea: 21, workhorse: true)
+                .FrontageBuilding("swd_build005", 1, 36.5f, 36.5f, maxPerArea: 2, minSpacing: 30f,
+                    family: "dafneon", familyMaxPerArea: 15)
+                .FrontageBuilding("swd_build002", 1, 37.5f, 37.5f, maxPerArea: 2, minSpacing: 30f,
+                    family: "dafneon", familyMaxPerArea: 15)
+                .FrontageBuilding("_mdrn_pl_kyru12", 1, 11.7f, 13.3f, maxPerArea: 5, minSpacing: 12f)
+                // indtowr also places via the industrial cargo-yard scatter channel at the mined
+                // 10m row pitch, so its omnidirectional floor is 10m (not the 12m the kyru
+                // accents carry) and the shared usage ledger keeps the combined count at the
+                // hand-built max of 4.
+                .FrontageBuilding("_mdrn_pl_indtowr", 1, 11.8f, 11.8f, maxPerArea: 4, minSpacing: 10f)
                 // ROUND-14 POOL EXPANSION (user directive "a lot of reuse of assets -- any way to
                 // get more variety?"): the delivered showcases drew 8-10 distinct building models
                 // per area while comparable-mass hand-built areas draw 12-17 (nsshipyard 17,
@@ -4446,17 +4484,19 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // same walkable-clearance fit rules as the original ten. _mdrn_pl_pillr03 (68x68m,
                 // shipyard runs of 3) is deliberately NOT added: its footprint dwarfs every other
                 // frontage member and reads as terrain, not a street wall.
-                .FrontageBuilding("_mdrn_pl_kyru08", 1, 11.4f, 11.4f, maxPerArea: 4)
-                .FrontageBuilding("_mdrn_pl_kyru14", 1, 11.2f, 10.5f, maxPerArea: 2)
-                .FrontageBuilding("_mdrn_pl_kyru07", 1, 10.9f, 10.9f, maxPerArea: 2)
-                .FrontageBuilding("_mdrn_pl_kyru06", 1, 21.8f, 21.8f, maxPerArea: 2)
-                .FrontageBuilding("_mdrn_pl_fac13d", 1, 33.7f, 33.4f, maxPerArea: 2)
-                .FrontageBuilding("_mdrn_pl_buildg2", 1, 42.2f, 42.2f, maxPerArea: 3)
-                .FrontageBuilding("_mdrn_pl_buildg4", 1, 61.0f, 36.8f, maxPerArea: 2)
-                .FrontageBuilding("swd_impmed01", 1, 14.5f, 10.6f, maxPerArea: 3)
-                .FrontageBuilding("_mdrn_pl_pillr06", 1, 19.6f, 13.8f, maxPerArea: 4)
-                .FrontageBuilding("_mdrn_pl_colony1", 1, 24.5f, 21.9f, maxPerArea: 2)
-                .FrontageBuilding("_mdrn_pl_mechtwb", 1, 24.8f, 16.4f, maxPerArea: 2)
+                .FrontageBuilding("_mdrn_pl_kyru08", 1, 11.4f, 11.4f, maxPerArea: 10, workhorse: true)
+                .FrontageBuilding("_mdrn_pl_kyru14", 1, 11.2f, 10.5f, maxPerArea: 2, minSpacing: 20f)
+                .FrontageBuilding("_mdrn_pl_kyru07", 1, 10.9f, 10.9f, maxPerArea: 2, minSpacing: 20f)
+                .FrontageBuilding("_mdrn_pl_kyru06", 1, 21.8f, 21.8f, maxPerArea: 1)
+                .FrontageBuilding("_mdrn_pl_fac13d", 1, 33.7f, 33.4f, maxPerArea: 2, minSpacing: 20f)
+                .FrontageBuilding("_mdrn_pl_buildg2", 1, 42.2f, 42.2f, maxPerArea: 3, minSpacing: 25f,
+                    family: "jsfsky", familyMaxPerArea: 5)
+                .FrontageBuilding("_mdrn_pl_buildg4", 1, 61.0f, 36.8f, maxPerArea: 2, minSpacing: 25f,
+                    family: "jsfsky", familyMaxPerArea: 5)
+                .FrontageBuilding("swd_impmed01", 1, 14.5f, 10.6f, maxPerArea: 3, minSpacing: 15f)
+                .FrontageBuilding("_mdrn_pl_pillr06", 1, 19.6f, 13.8f, maxPerArea: 4, minSpacing: 15f)
+                .FrontageBuilding("_mdrn_pl_colony1", 1, 24.5f, 21.9f, maxPerArea: 2, minSpacing: 17f)
+                .FrontageBuilding("_mdrn_pl_mechtwb", 1, 24.8f, 16.4f, maxPerArea: 2, minSpacing: 25f)
                 // Subtle per-instance scale jitter on the frontage walls (round-14; see
                 // DungeonTilesetProfile.FrontageScaleJitter -- documented judgment call, applied
                 // to the fit-checked footprint, persisted as .git VisualTransform offline and

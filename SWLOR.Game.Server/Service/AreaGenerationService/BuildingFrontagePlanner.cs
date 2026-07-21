@@ -65,9 +65,16 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         private const float OccupiedCoverage = 3.0f;
 
         /// <summary>Chance each further slot of a frontage run repeats the run's dominant model
-        /// rather than re-rolling the weighted mix -- hand-built wall lines are dominant-model runs
-        /// (build007 x4-5 consecutive) with occasional accents.</summary>
-        internal const double DominantShare = 0.7;
+        /// rather than drawing from the accent deck -- hand-built wall lines are dominant-model
+        /// runs (build007 x4-5 consecutive) with occasional accents. Retuned 0.7 -> 0.6 in the
+        /// round-15 salience pass: with dominants restricted to the three workhorse models
+        /// (round-14 rotated the election across the whole pool, so 0.7 spread across many
+        /// models), 0.7 concentrated small areas on one workhorse past the hand-built texture --
+        /// packed-12 seeds measured model entropy under the mined 2.11-4.15 canyon band and
+        /// top-model share past the narpromena flagship's 0.462; at 0.6 the sweep measures
+        /// H 2.4-3.7 and top share 0.30-0.62 with the non-workhorse share inside the hand-built
+        /// 0.34-0.57 band, keeping the dominant-run wall texture.</summary>
+        internal const double DominantShare = 0.6;
 
         /// <summary>Hard ceiling on CONSECUTIVE same-model placements along one frontage run --
         /// the round-14 variety pass. Mined (_scratch_decor/r14_mine_variety.py over the 24
@@ -85,8 +92,33 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// build007 anchors one area's lines but pillr03 the shipyard's and kyru12 the commercial
         /// district's -- while the highest-weight workhorse still leads overall. Tuned against the
         /// mined per-area dominant share (build007 carries 37-46%% of hand-built canyon walls) and
-        /// the mined distinct-model band (12-17 models on comparable-mass hand-built areas).</summary>
+        /// the mined distinct-model band (12-17 models on comparable-mass hand-built areas).
+        /// Round 15: only <see cref="BuildingFrontageEntry.DominantEligible"/> workhorse models
+        /// enter the election at all -- round-14's rotation could legally elect the neon-clad
+        /// build003 as a street dominant and repeat it across the plaza, statistically in band but
+        /// visually the reported clone city.</summary>
         internal const double DominantRotationDamping = 3.0;
+
+        /// <summary>Frontage budget ceiling: buildings erected per open floor tile, the round-15
+        /// count calibration. Mined (_scratch_decor/r15_mine_salience.py + promenade_benchmark.py
+        /// handbuilt over the placeable-canyon fcx01 areas): hand-built per-OPEN-TILE building
+        /// density follows the layout's edge/open shape -- plaza-like areas run 0.15-0.39
+        /// (narpromena 0.275, nsshipyard 0.392, narscorpd 0.293) while the edge-heaviest
+        /// hand-built layout, pw_ar_narcatwalk (edge/open 0.82), runs 0.589 -- and what stays
+        /// nearly constant across ALL of them is buildings per open-boundary EDGE (0.70-0.89:
+        /// narpromena 0.696, narcatwalk 0.718, nsshipyard 0.750, narscorpd 0.891). Generated
+        /// city layouts are edge-heavier than any hand-built city (edge/open 1.2-1.6), so their
+        /// fit-limited fill measures 0.23-0.50 per edge -- UNDER the hand rim-coverage band --
+        /// while per-open density lands at the narcatwalk pole (the reviewed halls-20 showcase:
+        /// 0.590 vs narcatwalk 0.589). Verdict: the erected COUNT was already inside hand-built
+        /// practice for edge-heavy layouts; the clone-city perception came from salience
+        /// clustering, fixed by the histogram/spacing mechanisms. This ceiling pins the densest
+        /// hand-built precedent (+5%% jitter headroom) so no pathological layout can exceed it --
+        /// the round-14 12x12 packed showcase measured 0.726, ABOVE every hand-built area, and is
+        /// pulled back to the narcatwalk pole. Runs fill longest-first so when the ceiling binds,
+        /// plaza rims and main streets keep their full canyon walls and the pruning lands on
+        /// short alley stubs.</summary>
+        internal const float MaxBuildingsPerOpenTile = 0.62f;
 
         /// <summary>Frontage scale-jitter band (see
         /// <see cref="DungeonTilesetProfile.FrontageScaleJitter"/>): subtle enough that footprint
@@ -212,26 +244,83 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             }
 
             // Deterministic run grouping: for a horizontal outward normal the run advances along Y
-            // (a vertical face line), and vice versa. Runs sort by (direction, face line, slot).
+            // (a vertical face line), and vice versa. Runs fill LONGEST-FIRST (round-15 budget
+            // pass): plaza rims and main streets keep their full canyon walls while the budget
+            // pruning lands on short alley stubs; ties keep the (direction, face line) order.
             var runs = candidates
                 .GroupBy(c => (c.Dir, Line: c.Dir.Dx != 0 ? c.Cell.X : c.Cell.Y))
-                .OrderBy(g => g.Key.Dir.Dx).ThenBy(g => g.Key.Dir.Dy).ThenBy(g => g.Key.Line)
+                .OrderByDescending(g => g.Count())
+                .ThenBy(g => g.Key.Dir.Dx).ThenBy(g => g.Key.Dir.Dy).ThenBy(g => g.Key.Line)
                 .Select(g => g.OrderBy(c => c.Dir.Dx != 0 ? c.Cell.Y : c.Cell.X).ToList())
                 .ToList();
 
+            // Round-15 building budget (see MaxBuildingsPerOpenTile): hand-built dense plaza
+            // areas erect at most ~0.39 buildings per open floor tile; the ungated fill-every-slot
+            // pass ran up to 0.73.
+            var budget = Math.Max(1, (int)Math.Round(frontableCells.Count * MaxBuildingsPerOpenTile));
+
             var rng = new System.Random(layout.Seed ^ FrontageSeedSalt);
             var usage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var familyUsage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var dominantUses = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var placedCenters = new Dictionary<string, List<Vector2>>(StringComparer.OrdinalIgnoreCase);
 
+            // Round-15 deal-without-replacement accent deck: non-dominant slots draw the first
+            // FITTING entry of a weighted-shuffled deck of the ACCENT pool (non-workhorse
+            // entries; workhorse mass comes from the dominant channel), so accents cycle through
+            // the pool before any model repeats -- weighted-with-replacement rolls clumped the
+            // same accent on nearby slots even under caps. Falls back to the whole pool when no
+            // accent fits.
+            var accentPool = entries.Where(e => !e.DominantEligible).ToList();
+            if (accentPool.Count == 0)
+                accentPool = entries;
+            var deck = new List<BuildingFrontageEntry>();
+
+            void RefillDeck()
+            {
+                var remaining = accentPool.ToList();
+                while (remaining.Count > 0)
+                {
+                    var pick = PickWeighted(remaining, rng);
+                    remaining.Remove(pick);
+                    deck.Add(pick);
+                }
+            }
+
+            BuildingFrontageEntry DrawFromDeck(List<BuildingFrontageEntry> fitting)
+            {
+                for (var pass = 0; pass < 2; pass++)
+                {
+                    for (var i = 0; i < deck.Count; i++)
+                    {
+                        if (!fitting.Contains(deck[i]))
+                            continue;
+                        var picked = deck[i];
+                        deck.RemoveAt(i);
+                        return picked;
+                    }
+
+                    if (pass == 0)
+                        RefillDeck();
+                }
+
+                return PickWeighted(fitting, rng);
+            }
+
             foreach (var run in runs)
             {
+                if (result.Placements.Count >= budget)
+                    break;
+
                 BuildingFrontageEntry dominant = null;
                 string lastResref = null;
                 var consecutive = 0;
 
                 foreach (var (cell, dir) in run)
                 {
+                    if (result.Placements.Count >= budget)
+                        break;
+
                     if (result.OccupiedCells.Contains(cell))
                     {
                         // A hole in the wall line breaks the visual row -- the same-model run
@@ -250,6 +339,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                     var fitting = entries
                         .Where(e => e.MaxPerArea <= 0 || usage.GetValueOrDefault(e.Resref) < e.MaxPerArea)
+                        .Where(e => e.FamilyMaxPerArea <= 0 || string.IsNullOrEmpty(e.FamilyKey) ||
+                                    familyUsage.GetValueOrDefault(e.FamilyKey) < e.FamilyMaxPerArea)
                         .Where(e => HasSameModelClearance(e, cell, dir, scale, placedCenters))
                         .Where(e => Fits(e, cell, dir, scale, layout, openCells, stamped, excluded))
                         .ToList();
@@ -262,16 +353,22 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
 
                     if (dominant == null)
                     {
-                        // Damped dominant pick (see DominantRotationDamping): different streets
-                        // rotate toward different dominant models, the hand-built per-line
-                        // dominant texture.
-                        dominant = PickDominant(fitting, rng, dominantUses);
-                        dominantUses[dominant.Resref] = dominantUses.GetValueOrDefault(dominant.Resref) + 1;
+                        // Damped dominant pick (see DominantRotationDamping) among the WORKHORSE
+                        // models only (see BuildingFrontageEntry.DominantEligible): different
+                        // streets rotate toward different dominants, but a distinctive accent
+                        // tower can never anchor a run. A run whose slots never fit a workhorse
+                        // stays dominant-less and draws pure accent-deck interleave.
+                        var eligible = fitting.Where(e => e.DominantEligible).ToList();
+                        if (eligible.Count > 0)
+                        {
+                            dominant = PickDominant(eligible, rng, dominantUses);
+                            dominantUses[dominant.Resref] = dominantUses.GetValueOrDefault(dominant.Resref) + 1;
+                        }
                     }
 
-                    var entry = fitting.Contains(dominant) && rng.NextDouble() < DominantShare
+                    var entry = dominant != null && fitting.Contains(dominant) && rng.NextDouble() < DominantShare
                         ? dominant
-                        : PickWeighted(fitting, rng);
+                        : DrawFromDeck(fitting);
 
                     // Same-model run cap (see MaxSameModelRun): at the mined ceiling the slot
                     // re-rolls among the other fitting models -- the hand-built accent interleave.
@@ -282,11 +379,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                             .Where(e => !e.Resref.Equals(lastResref, StringComparison.OrdinalIgnoreCase))
                             .ToList();
                         if (alternatives.Count > 0)
-                            entry = PickWeighted(alternatives, rng);
+                            entry = DrawFromDeck(alternatives);
                     }
 
                     Place(entry, cell, dir, scale, result);
                     usage[entry.Resref] = usage.GetValueOrDefault(entry.Resref) + 1;
+                    if (!string.IsNullOrEmpty(entry.FamilyKey))
+                        familyUsage[entry.FamilyKey] = familyUsage.GetValueOrDefault(entry.FamilyKey) + 1;
                     if (!placedCenters.TryGetValue(entry.Resref, out var centers))
                         placedCenters[entry.Resref] = centers = new List<Vector2>();
                     centers.Add(Center(entry, cell, dir, scale));

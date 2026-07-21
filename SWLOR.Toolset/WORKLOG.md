@@ -385,7 +385,33 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
     the Geometry polygon (PointX/Y/Z); appearance-model resolution deferred to WP4.5 by design.
   - Encounter path is defensive/unverified — zero Encounter List entries in the corpus (re-
     confirmed). Missing/zero area Width degrades to single-column layout rather than div-by-0.
-## WP4.5 — pending — Area view
+## WP4.5 — code done, human visual gate pending — 2026-07-21 — Area view
+- Tier: Mid (Sonnet subagent, post-limit-reset); controller-verified (build clean, 258/259
+  green incl. corpus gate, launch-and-kill smoke OK, scope matches report, Domain helpers
+  reference no Radoub).
+- Files: app `Viewport\GlAreaControl.cs` (OpenGlControlBase + Silk.NET, own minimal GLSL pair
+  — Radoub's shader lacks the alphaCutoff/unlit uniforms and is unmodifiable),
+  `Editors\AreaEditorViewModel.cs` (+AreaScene/EnsureSceneBuilt/RebuildSceneCommand,
+  background Task.Run build), `Editors\Views\AreaEditorView.axaml(.cs)` ("3D View" tab,
+  lazy build on first activation, Rebuild button), `EditorService.cs` (+3 optional ctor
+  params threading TilesetCatalog/TileModelCache/ResourceIndex — flagged deviation, necessary
+  plumbing), `App.axaml.cs` (TilesetCatalog+TileModelCache singletons inside the
+  ResourceIndex guard), csproj (Silk.NET.OpenGL 2.23.0 pin + AllowUnsafeBlocks, matching
+  Radoub.UI's own flag — flagged deviation, required for pointer-offset GL calls);
+  Domain `Render\{AreaCameraMath,AreaDrawBatcher}.cs` + 23 tests
+  (`AreaCameraMathTests` 16, `AreaDrawBatcherTests` 7).
+- **Decisions:** one GPU upload per distinct RenderModel (reference-keyed — TileModelCache
+  already dedupes), draw per placement×mesh with model uniform = mesh.Transform ×
+  placement.Transform; textures via MaterialResolver → TextureLoader, cached by resolved
+  name, TXI punchthrough as alpha-cutoff discard (no blending/sorting); fallback tiles render
+  as a 10×10×1.5m footprint box (a 1m cube would vanish at grid scale); camera math pure in
+  Domain (framing fits Width×10 × Height×10 bounds), control owns only mutable state +
+  pointer glue; scene build lazy on tab activation, manual Rebuild (DocumentChanged
+  auto-rebuild deliberately deferred to WP5.x).
+- **WP5.1 hooks noted by executor:** expose view/projection/camera state for unproject;
+  pick against TileBatch.Placements + AreaScene.Instances reusing draw matrices; shader
+  needs a selected/highlight uniform.
+- **Remaining: human visual gate** — all areas render; 10-area spot-check vs in-game.
 ## WP5.1 — pending — Picking + selection sync
 ## WP5.2 — pending — Gizmos + placement
 ## WP6.1 — pending — Walkmesh (WOK)

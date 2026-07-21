@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:viewport="using:SWLOR.Toolset.Viewport"
              x:Class="SWLOR.Toolset.Editors.AreaEditorView"
              x:DataType="editors:AreaEditorViewModel">
 
@@ -73,6 +74,8 @@
       <Button Content="Redo Props" Command="{Binding RedoAreCommand}" ToolTip.Tip="Redo area-property edit" />
     </StackPanel>
 
+    <TabControl x:Name="RootTabs" SelectionChanged="OnRootTabSelectionChanged">
+      <TabItem Header="Properties">
     <ScrollViewer>
       <StackPanel Margin="8" Spacing="6">
         <Expander Header="Area Properties" IsExpanded="False" HorizontalAlignment="Stretch">
@@ -201,5 +204,36 @@
         </ItemsControl>
       </StackPanel>
     </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="3D View" x:Name="ViewTab3D">
+        <Grid>
+          <viewport:GlAreaControl x:Name="AreaView" />
+
+          <Border Background="#B0202020" CornerRadius="4" Padding="10,6"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding IsBuildingScene}">
+            <TextBlock Text="{Binding SceneStatus}" Foreground="White" />
+          </Border>
+
+          <Border Background="#B0202020" CornerRadius="4" Padding="8,4"
+                  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8"
+                  IsVisible="{Binding !IsBuildingScene}">
+            <TextBlock Text="{Binding SceneStatus}" Foreground="White"
+                       TextTrimming="CharacterEllipsis" MaxWidth="480" />
+          </Border>
+
+          <Border x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
+                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
+            <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
+          </Border>
+
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                      Margin="8" Spacing="6">
+            <Button Content="Rebuild" Command="{Binding RebuildSceneCommand}" />
+          </StackPanel>
+        </Grid>
+      </TabItem>
+    </TabControl>
   </DockPanel>
 </UserControl>

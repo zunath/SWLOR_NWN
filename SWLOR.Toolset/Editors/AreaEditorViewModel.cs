@@ -1,10 +1,14 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -42,6 +46,9 @@ namespace SWLOR.Toolset.Editors
         private readonly DocumentSession _gitSession;
         private readonly OutputLogService _log;
         private readonly string _areResRef;
+        private readonly TilesetCatalog? _tilesetCatalog;
+        private readonly TileModelCache? _tileModelCache;
+        private bool _sceneBuildRequested;
 
         public ObservableCollection<EditorGroup> AreaPropertyGroups { get; } = new();
 
@@ -49,15 +56,61 @@ namespace SWLOR.Toolset.Editors
 
         public bool IsDirty => _areSession.UndoStack.IsDirty || _gitSession.UndoStack.IsDirty;
 
+        /// <summary>Resource index used by the 3D View tab to resolve mesh/tile textures; null when game data services aren't loaded.</summary>
+        public ResourceIndex? ResourceIndex { get; }
+
+        private AreaScene? _areaScene;
+
+        /// <summary>The most recently built 3D scene for this area, or null before the first build. Rebuilt only on tab activation or an explicit <see cref="RebuildSceneCommand"/>.</summary>
+        public AreaScene? AreaScene
+        {
+            get => _areaScene;
+            private set
+            {
+                _areaScene = value;
+                OnPropertyChanged(nameof(AreaScene));
+            }
+        }
+
+        private bool _isBuildingScene;
+
+        public bool IsBuildingScene
+        {
+            get => _isBuildingScene;
+            private set
+            {
+                _isBuildingScene = value;
+                OnPropertyChanged(nameof(IsBuildingScene));
+            }
+        }
+
+        private string _sceneStatus = "Switch to this tab to build the 3D view.";
+
+        public string SceneStatus
+        {
+            get => _sceneStatus;
+            private set
+            {
+                _sceneStatus = value;
+                OnPropertyChanged(nameof(SceneStatus));
+            }
+        }
+
         public AreaEditorViewModel(
             string areResRef,
             ModuleWorkspace workspace,
             LookupOptionProvider lookups,
             IGameCodeIndex? gameCodeIndex,
-            OutputLogService log)
+            OutputLogService log,
+            TilesetCatalog? tilesetCatalog = null,
+            TileModelCache? tileModelCache = null,
+            ResourceIndex? resourceIndex = null)
         {
             _log = log;
             _areResRef = areResRef;
+            _tilesetCatalog = tilesetCatalog;
+            _tileModelCache = tileModelCache;
+            ResourceIndex = resourceIndex;
             Id = $"area-editor:{areResRef}";
 
             var arePath = workspace.GetResourcePath(ResourceType.Area, areResRef);
@@ -81,6 +134,64 @@ namespace SWLOR.Toolset.Editors
             }
 
             UpdateTitle();
+        }
+
+        /// <summary>
+        /// Called by the view when the 3D View tab is first activated. Builds the scene once
+        /// (lazily) so opening the area editor itself stays fast - subsequent activations are a
+        /// no-op until <see cref="RebuildSceneCommand"/> is used explicitly. Safe to call multiple
+        /// times or before game-data services are available.
+        /// </summary>
+        public void EnsureSceneBuilt()
+        {
+            if (_sceneBuildRequested)
+                return;
+
+            _sceneBuildRequested = true;
+            _ = BuildSceneAsync();
+        }
+
+        /// <summary>Manual refresh for the 3D view after edits - there is no live auto-rebuild (WP5.x territory).</summary>
+        [RelayCommand]
+        private async Task RebuildScene()
+        {
+            await BuildSceneAsync();
+        }
+
+        private async Task BuildSceneAsync()
+        {
+            if (_tilesetCatalog == null || _tileModelCache == null)
+            {
+                SceneStatus = "3D view unavailable (game data services not loaded).";
+                return;
+            }
+
+            IsBuildingScene = true;
+            SceneStatus = "Building scene...";
+
+            var tilesetCatalog = _tilesetCatalog;
+            var tileModelCache = _tileModelCache;
+            var are = new AreDocument(_areSession.Document);
+            var git = new GitDocument(_gitSession.Document);
+
+            try
+            {
+                var scene = await Task.Run(() => AreaSceneBuilder.Build(are, git, tilesetCatalog, tileModelCache));
+
+                AreaScene = scene;
+                SceneStatus = scene.Diagnostics.MissingModels.Count == 0
+                    ? $"{scene.Tiles.Count} tiles, {scene.Instances.Count} instances."
+                    : $"{scene.Tiles.Count} tiles, {scene.Instances.Count} instances ({scene.Diagnostics.MissingModels.Count} fallback tiles).";
+            }
+            catch (Exception ex)
+            {
+                SceneStatus = $"Failed to build 3D scene: {ex.Message}";
+                _log.AppendLine($"Area 3D scene build failed for {_areResRef}: {ex.Message}");
+            }
+            finally
+            {
+                IsBuildingScene = false;
+            }
         }
 
         private static FieldViewModel CreateFieldViewModel(

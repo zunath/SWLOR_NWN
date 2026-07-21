@@ -69,7 +69,10 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<OutputLogService>(),
                 sp.GetRequiredService<ToolsetDockFactory>(),
                 sp.GetService<IGameCodeIndex>(),
-                sp.GetRequiredService<ModelPreviewViewModel>()));
+                sp.GetRequiredService<ModelPreviewViewModel>(),
+                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
+                sp.GetService<Domain.Render.TileModelCache>(),
+                sp.GetService<ResourceIndex>()));
 
             // The explorer needs to open editors, but EditorService depends on the dock factory,
             // which depends on the explorer — a Func breaks the construction cycle.
@@ -140,6 +143,12 @@ namespace SWLOR.Toolset
                 }
 
                 services.AddSingleton(ResourceIndex.FromHakBuilderConfig(hakBuilderConfigPath, swlorHaksRoot, baseLayer));
+
+                // The WP4.5 area 3D view needs both, and both need the ResourceIndex above -
+                // registered inside this same guard so resolving either never hits a missing
+                // ResourceIndex dependency when the repo layout wasn't found.
+                services.AddSingleton(sp => new Domain.GameData.Lookups.TilesetCatalog(sp.GetRequiredService<ResourceIndex>()));
+                services.AddSingleton(sp => new Domain.Render.TileModelCache(sp.GetRequiredService<ResourceIndex>()));
             }
 
             // AppearanceService/PortraitService are only registered when their 2DA/TLK

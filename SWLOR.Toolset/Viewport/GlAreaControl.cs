@@ -1,0 +1,1052 @@
+using System.Numerics;
+using Avalonia;
+using Avalonia.Input;
+using Avalonia.OpenGL;
+using Avalonia.OpenGL.Controls;
+using Avalonia.Threading;
+using Silk.NET.OpenGL;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Render;
+
+namespace SWLOR.Toolset.Viewport
+{
+    /// <summary>
+    /// Read-only 3D viewport for one area's <see cref="AreaScene"/> (WP4.5): renders tile-grid
+    /// placements (batched per distinct <see cref="RenderModel"/> via <see cref="AreaDrawBatcher"/>)
+    /// plus placed-instance markers, with an orbit/pan/zoom camera framed on the area's tile-grid
+    /// bounds (<see cref="AreaCameraMath"/>). Follows the same <see cref="OpenGlControlBase"/> +
+    /// Silk.NET.OpenGL skeleton as Radoub.UI's <c>ModelPreviewGLControl</c> (see
+    /// Viewport/README.md) but is a fresh implementation tailored to a scene of many placements
+    /// sharing a handful of distinct meshes, rather than one model per control. Picking/selection
+    /// is WP5.1 - this control never mutates the scene or the underlying documents.
+    /// </summary>
+    public sealed class GlAreaControl : OpenGlControlBase
+    {
+        static GlAreaControl()
+        {
+            FocusableProperty.OverrideDefaultValue<GlAreaControl>(true);
+        }
+
+        // ----- Tunables -----
+        private const float VerticalFovRadians = MathF.PI / 4f; // 45 degrees - comfortable for open outdoor areas
+        private const float NearPlane = 0.1f;
+        private const int FloatsPerVertex = 8; // position(3) + normal(3) + texcoord(2)
+        private const float PolygonHeightOffset = 0.05f; // lift trigger/encounter outlines slightly above the tile floor
+        private const float OrbitSensitivity = 0.01f; // radians per pixel
+        private const float FallbackCubeHeight = 1.5f;
+        private const float MarkerHalfWidth = 0.4f;
+        private const float MarkerHeight = 1.2f;
+        private const float MarkerGroundOffset = 0.05f;
+
+        private static readonly Vector3 LightDir = Vector3.Normalize(new Vector3(0.35f, -0.5f, 0.8f));
+        private static readonly Vector3 LightColor = new(0.55f, 0.55f, 0.55f);
+        private static readonly Vector3 AmbientColor = new(0.55f, 0.55f, 0.55f);
+        private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
+        private static readonly Vector3 FallbackTileColor = new(0.95f, 0.15f, 0.55f);
+        private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
+
+        // ----- GLSL source (kept inline per the WP4.5 brief; adapted from, not shared with,
+        // Radoub.UI's OpenGLShaderManager - this control needs an alpha-cutoff/unlit uniform that
+        // control doesn't expose, and Radoub's sources must never be modified). -----
+        private const string VersionEs = "#version 300 es\nprecision highp float;\n";
+        private const string VersionDesktop = "#version 330 core\n";
+
+        private const string VertexShaderBody = @"
+layout (location = 0) in vec3 aPosition;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoord;
+
+out vec3 Normal;
+out vec2 TexCoord;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    Normal = mat3(model) * aNormal;
+    TexCoord = aTexCoord;
+    gl_Position = projection * view * model * vec4(aPosition, 1.0);
+}
+";
+
+        private const string FragmentShaderBody = @"
+out vec4 FragColor;
+
+in vec3 Normal;
+in vec2 TexCoord;
+
+uniform sampler2D diffuseTexture;
+uniform bool hasTexture;
+uniform vec3 flatColor;
+uniform bool unlit;
+uniform float alphaCutoff;
+uniform vec3 lightDir;
+uniform vec3 lightColor;
+uniform vec3 ambientColor;
+
+void main()
+{
+    vec4 texColor = hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
+
+    if (alphaCutoff > 0.0 && texColor.a < alphaCutoff)
+        discard;
+
+    if (unlit)
+    {
+        FragColor = vec4(texColor.rgb, 1.0);
+        return;
+    }
+
+    vec3 norm = normalize(Normal);
+    // Two-sided lighting (abs, not max) - NWN tile/prop meshes have inconsistent winding.
+    float diff = abs(dot(norm, lightDir));
+    vec3 result = (ambientColor + diff * lightColor) * texColor.rgb;
+    FragColor = vec4(result, 1.0);
+}
+";
+
+        private sealed class MeshRange
+        {
+            public required int IndexOffset { get; init; }
+            public required int IndexCount { get; init; }
+            public required Matrix4x4 MeshTransform { get; init; }
+            public string? TextureName { get; init; }
+        }
+
+        private sealed class ModelBuffer
+        {
+            public required uint Vao { get; init; }
+            public required uint Vbo { get; init; }
+            public required uint Ebo { get; init; }
+            public required IReadOnlyList<MeshRange> MeshRanges { get; init; }
+        }
+
+        private readonly struct StaticMeshBuffer
+        {
+            public StaticMeshBuffer(uint vao, uint vbo, uint ebo, int indexCount)
+            {
+                Vao = vao;
+                Vbo = vbo;
+                Ebo = ebo;
+                IndexCount = indexCount;
+            }
+
+            public uint Vao { get; }
+            public uint Vbo { get; }
+            public uint Ebo { get; }
+            public int IndexCount { get; }
+        }
+
+        private GL? _gl;
+        private uint _shaderProgram;
+
+        private readonly Dictionary<RenderModel, ModelBuffer> _modelBuffers = new();
+        private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _textureCache =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        private StaticMeshBuffer? _fallbackCubeBuffer;
+        private StaticMeshBuffer? _markerMeshBuffer;
+
+        private uint _polygonVao;
+        private uint _polygonVbo;
+        private bool _hasPolygonBuffer;
+        private List<(int Start, int Count)> _polygonRanges = new();
+
+        private AreaScene? _scene;
+        private IReadOnlyList<AreaDrawBatcher.TileBatch>? _tileBatches;
+        private bool _sceneDirty;
+
+        private int _viewportWidth;
+        private int _viewportHeight;
+
+        // ----- Orbit camera state -----
+        private Vector3 _target;
+        private float _azimuth = MathF.PI * 1.25f;
+        private float _elevation = AreaCameraMath.DefaultElevationRadians;
+        private float _distance = 50f;
+        private float _initialDistance = 50f;
+
+        private enum DragMode { None, Orbit, Pan }
+        private DragMode _dragMode = DragMode.None;
+        private Point _lastPointerPos;
+
+        /// <summary>Layered resource index used to resolve tile/mesh textures and MTR materials. Null degrades every mesh to a flat gray fallback.</summary>
+        public ResourceIndex? ResourceIndex { get; set; }
+
+        /// <summary>The scene to render, or null to show an empty viewport. Setting this recomputes the initial camera framing and marks GPU state for rebuild on the next render.</summary>
+        public AreaScene? Scene
+        {
+            get => _scene;
+            set
+            {
+                _scene = value;
+                _sceneDirty = true;
+
+                if (value != null)
+                    ResetCameraForScene(value);
+
+                RequestNextFrameRendering();
+            }
+        }
+
+        /// <summary>
+        /// Raised on GL init (success or failure) and whenever a render-time error occurs. An
+        /// empty string means "no issue to report"; anything else is a human-readable status the
+        /// host view should surface (e.g. "3D view unavailable: ..."). Never throws past this
+        /// control's own boundary - GL problems degrade to a message instead of crashing the app.
+        /// </summary>
+        public event EventHandler<string>? RenderStatusChanged;
+
+        /// <summary>
+        /// Raises <see cref="RenderStatusChanged"/>, marshaling to the UI thread when called from
+        /// the GL render thread (OnOpenGlInit/OnOpenGlRender do not run on the UI thread - mirrors
+        /// how Radoub.UI's ModelPreviewGLControl posts its own state-changed events).
+        /// </summary>
+        private void RaiseStatus(string message)
+        {
+            if (Dispatcher.UIThread.CheckAccess())
+                RenderStatusChanged?.Invoke(this, message);
+            else
+                Dispatcher.UIThread.Post(() => RenderStatusChanged?.Invoke(this, message));
+        }
+
+        private void ResetCameraForScene(AreaScene scene)
+        {
+            var aspect = _viewportWidth > 0 && _viewportHeight > 0
+                ? (float)_viewportWidth / _viewportHeight
+                : 1.5f;
+
+            var (target, distance) = AreaCameraMath.ComputeInitialFraming(
+                scene.Width, scene.Height, AreaSceneBuilder.TileSize, VerticalFovRadians, aspect);
+
+            _target = target;
+            _distance = distance;
+            _initialDistance = distance;
+            _azimuth = MathF.PI * 1.25f;
+            _elevation = AreaCameraMath.DefaultElevationRadians;
+        }
+
+        // ----- Pointer input: left-drag orbit, middle/right/shift-left-drag pan, wheel zoom -----
+
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        {
+            base.OnPointerPressed(e);
+            var props = e.GetCurrentPoint(this).Properties;
+            var shift = (e.KeyModifiers & KeyModifiers.Shift) != 0;
+
+            if (props.IsMiddleButtonPressed || props.IsRightButtonPressed || (props.IsLeftButtonPressed && shift))
+                _dragMode = DragMode.Pan;
+            else if (props.IsLeftButtonPressed)
+                _dragMode = DragMode.Orbit;
+            else
+                return;
+
+            _lastPointerPos = e.GetPosition(this);
+            Focus();
+            e.Pointer.Capture(this);
+            e.Handled = true;
+        }
+
+        protected override void OnPointerMoved(PointerEventArgs e)
+        {
+            base.OnPointerMoved(e);
+            if (_dragMode == DragMode.None)
+                return;
+
+            var pos = e.GetPosition(this);
+            var dx = (float)(pos.X - _lastPointerPos.X);
+            var dy = (float)(pos.Y - _lastPointerPos.Y);
+            _lastPointerPos = pos;
+
+            if (_dragMode == DragMode.Orbit)
+            {
+                _azimuth += dx * OrbitSensitivity;
+                _elevation = AreaCameraMath.ClampElevation(_elevation - dy * OrbitSensitivity);
+            }
+            else
+            {
+                var worldPerPixel = AreaCameraMath.WorldUnitsPerPixel(_distance, VerticalFovRadians, _viewportHeight);
+                _target += AreaCameraMath.PanDelta(_azimuth, dx, dy, worldPerPixel);
+            }
+
+            RequestNextFrameRendering();
+        }
+
+        protected override void OnPointerReleased(PointerReleasedEventArgs e)
+        {
+            base.OnPointerReleased(e);
+            if (_dragMode == DragMode.None)
+                return;
+
+            _dragMode = DragMode.None;
+            e.Pointer.Capture(null);
+            e.Handled = true;
+        }
+
+        protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+        {
+            base.OnPointerWheelChanged(e);
+
+            var factor = (float)Math.Pow(1.1, e.Delta.Y);
+            _distance = AreaCameraMath.ClampDistance(_distance * factor, _initialDistance);
+
+            RequestNextFrameRendering();
+            e.Handled = true;
+        }
+
+        // ----- GL lifecycle -----
+
+        protected override void OnOpenGlInit(GlInterface gl)
+        {
+            base.OnOpenGlInit(gl);
+
+            try
+            {
+                _gl = GL.GetApi(gl.GetProcAddress);
+
+                var versionString = _gl.GetStringS(StringName.Version) ?? string.Empty;
+                var isOpenGLES = versionString.Contains("OpenGL ES", StringComparison.OrdinalIgnoreCase);
+                var renderer = _gl.GetStringS(StringName.Renderer) ?? "unknown";
+
+                if (!CreateShaderProgram(isOpenGLES))
+                {
+                    RaiseStatus("3D view unavailable: shader compilation failed.");
+                    _gl = null;
+                    return;
+                }
+
+                BuildStaticMeshes();
+
+                RaiseStatus(IsLikelySoftwareRenderer(renderer)
+                    ? $"3D view running on software rendering ({renderer}); performance may be degraded."
+                    : string.Empty);
+            }
+            catch (Exception ex)
+            {
+                RaiseStatus($"3D view unavailable: {ex.Message}");
+                _gl = null;
+            }
+        }
+
+        protected override void OnOpenGlDeinit(GlInterface gl)
+        {
+            try
+            {
+                if (_gl != null)
+                {
+                    foreach (var (texId, _) in _textureCache.Values)
+                        if (texId != 0)
+                            _gl.DeleteTexture(texId);
+                    _textureCache.Clear();
+
+                    foreach (var buffer in _modelBuffers.Values)
+                        DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
+                    _modelBuffers.Clear();
+
+                    if (_fallbackCubeBuffer is { } cube)
+                        DeleteBuffer(cube.Vao, cube.Vbo, cube.Ebo);
+                    if (_markerMeshBuffer is { } marker)
+                        DeleteBuffer(marker.Vao, marker.Vbo, marker.Ebo);
+
+                    DeletePolygonBuffer();
+
+                    if (_shaderProgram != 0)
+                        _gl.DeleteProgram(_shaderProgram);
+                    _shaderProgram = 0;
+                }
+            }
+            catch (Exception)
+            {
+                // GL cleanup must never crash the app on teardown - the context may already be
+                // partially invalid (e.g. window closing).
+            }
+            finally
+            {
+                _gl = null;
+            }
+
+            base.OnOpenGlDeinit(gl);
+        }
+
+        protected override void OnOpenGlRender(GlInterface gl, int fb)
+        {
+            if (_gl == null)
+                return;
+
+            var bounds = Bounds;
+            var width = (int)bounds.Width;
+            var height = (int)bounds.Height;
+            if (width <= 0 || height <= 0)
+                return;
+
+            _viewportWidth = width;
+            _viewportHeight = height;
+
+            _gl.ClearColor(0.12f, 0.14f, 0.18f, 1f);
+            _gl.Clear((uint)(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit));
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthFunc(DepthFunction.Less);
+            // NWN tile/prop meshes have inconsistent winding - culling would drop real faces.
+            _gl.Disable(EnableCap.CullFace);
+            _gl.Viewport(0, 0, (uint)width, (uint)height);
+
+            if (_scene == null)
+                return;
+
+            try
+            {
+                if (_sceneDirty)
+                {
+                    RebuildPolygonBuffer(_scene);
+                    _tileBatches = AreaDrawBatcher.GroupByModel(_scene.Tiles);
+                    _sceneDirty = false;
+                }
+
+                DrawScene(width, height);
+            }
+            catch (Exception ex)
+            {
+                RaiseStatus($"Area render error: {ex.Message}");
+            }
+        }
+
+        private static bool IsLikelySoftwareRenderer(string renderer) =>
+            renderer.Contains("llvmpipe", StringComparison.OrdinalIgnoreCase) ||
+            renderer.Contains("software", StringComparison.OrdinalIgnoreCase) ||
+            renderer.Contains("swiftshader", StringComparison.OrdinalIgnoreCase) ||
+            renderer.Contains("microsoft basic render", StringComparison.OrdinalIgnoreCase);
+
+        private void DeleteBuffer(uint vao, uint vbo, uint ebo)
+        {
+            _gl!.DeleteVertexArray(vao);
+            _gl.DeleteBuffer(vbo);
+            _gl.DeleteBuffer(ebo);
+        }
+
+        private void DeletePolygonBuffer()
+        {
+            if (!_hasPolygonBuffer || _gl == null)
+                return;
+
+            _gl.DeleteVertexArray(_polygonVao);
+            _gl.DeleteBuffer(_polygonVbo);
+            _hasPolygonBuffer = false;
+        }
+
+        // ----- Shader compilation -----
+
+        private bool CreateShaderProgram(bool isOpenGLES)
+        {
+            var preamble = isOpenGLES ? VersionEs : VersionDesktop;
+            var vertexShader = CompileShader(ShaderType.VertexShader, preamble + VertexShaderBody);
+            var fragmentShader = CompileShader(ShaderType.FragmentShader, preamble + FragmentShaderBody);
+
+            if (vertexShader == 0 || fragmentShader == 0)
+                return false;
+
+            _shaderProgram = _gl!.CreateProgram();
+            _gl.AttachShader(_shaderProgram, vertexShader);
+            _gl.AttachShader(_shaderProgram, fragmentShader);
+            _gl.LinkProgram(_shaderProgram);
+
+            _gl.GetProgram(_shaderProgram, ProgramPropertyARB.LinkStatus, out var status);
+
+            _gl.DeleteShader(vertexShader);
+            _gl.DeleteShader(fragmentShader);
+
+            return status != 0;
+        }
+
+        private uint CompileShader(ShaderType type, string source)
+        {
+            var shader = _gl!.CreateShader(type);
+            _gl.ShaderSource(shader, source);
+            _gl.CompileShader(shader);
+
+            _gl.GetShader(shader, ShaderParameterName.CompileStatus, out var status);
+            if (status == 0)
+            {
+                _gl.DeleteShader(shader);
+                return 0;
+            }
+
+            return shader;
+        }
+
+        // ----- Uniform helpers (locations are looked up per-call, matching Radoub.UI's own
+        // ModelPreviewGLControl approach - draw-call counts per area are modest enough that
+        // caching uniform locations is not worth the added bookkeeping). -----
+
+        private void SetUniformMatrix4(string name, Matrix4x4 matrix)
+        {
+            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            if (location < 0)
+                return;
+
+            // System.Numerics uses row-vector convention (v * M); GLSL uses column-vector (M * v).
+            // Transposing here lets GLSL's `model/view/projection * vec4` agree with how the
+            // matrices were composed on the C# side (see AreaSceneBuilder/MdlMeshBuilder).
+            ReadOnlySpan<float> values = stackalloc float[16]
+            {
+                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
+                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
+                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
+                matrix.M41, matrix.M42, matrix.M43, matrix.M44
+            };
+            _gl.UniformMatrix4(location, 1, false, values);
+        }
+
+        private void SetUniformVec3(string name, Vector3 value)
+        {
+            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            if (location >= 0)
+                _gl.Uniform3(location, value.X, value.Y, value.Z);
+        }
+
+        private void SetUniformBool(string name, bool value)
+        {
+            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            if (location >= 0)
+                _gl.Uniform1(location, value ? 1 : 0);
+        }
+
+        private void SetUniformFloat(string name, float value)
+        {
+            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            if (location >= 0)
+                _gl.Uniform1(location, value);
+        }
+
+        private void SetUniformInt(string name, int value)
+        {
+            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            if (location >= 0)
+                _gl.Uniform1(location, value);
+        }
+
+        private void SetVertexAttribPointers()
+        {
+            const uint stride = FloatsPerVertex * sizeof(float);
+            unsafe
+            {
+                _gl!.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, (void*)0);
+                _gl.EnableVertexAttribArray(0);
+                _gl.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, stride, (void*)(3 * sizeof(float)));
+                _gl.EnableVertexAttribArray(1);
+                _gl.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, stride, (void*)(6 * sizeof(float)));
+                _gl.EnableVertexAttribArray(2);
+            }
+        }
+
+        // ----- Frame drawing -----
+
+        private void DrawScene(int width, int height)
+        {
+            var farPlane = MathF.Max(_distance, _initialDistance) * 25f + 100f;
+            var aspect = (float)width / height;
+            var projection = Matrix4x4.CreatePerspectiveFieldOfView(VerticalFovRadians, aspect, NearPlane, farPlane);
+
+            var eye = _target + AreaCameraMath.OrbitEyeOffset(_azimuth, _elevation, _distance);
+            var view = Matrix4x4.CreateLookAt(eye, _target, Vector3.UnitZ);
+
+            _gl!.UseProgram(_shaderProgram);
+            SetUniformMatrix4("view", view);
+            SetUniformMatrix4("projection", projection);
+            SetUniformVec3("lightDir", LightDir);
+            SetUniformVec3("lightColor", LightColor);
+            SetUniformVec3("ambientColor", AmbientColor);
+            SetUniformInt("diffuseTexture", 0);
+
+            DrawTileBatches();
+            DrawInstanceMarkers();
+            DrawPolygonOverlays();
+
+            _gl.BindVertexArray(0);
+        }
+
+        private void DrawTileBatches()
+        {
+            if (_tileBatches == null)
+                return;
+
+            foreach (var batch in _tileBatches)
+            {
+                if (batch.Model == null)
+                {
+                    DrawFallbackBatch(batch.Placements);
+                    continue;
+                }
+
+                var buffer = GetOrBuildModelBuffer(batch.Model);
+                _gl!.BindVertexArray(buffer.Vao);
+
+                foreach (var placement in batch.Placements)
+                {
+                    foreach (var meshRange in buffer.MeshRanges)
+                    {
+                        var worldMatrix = meshRange.MeshTransform * placement.Transform;
+                        SetUniformMatrix4("model", worldMatrix);
+                        BindMeshTexture(meshRange.TextureName);
+
+                        unsafe
+                        {
+                            _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                                DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawFallbackBatch(IReadOnlyList<TilePlacement> placements)
+        {
+            if (_fallbackCubeBuffer is not { } cube)
+                return;
+
+            _gl!.BindVertexArray(cube.Vao);
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", false);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformVec3("flatColor", FallbackTileColor);
+
+            foreach (var placement in placements)
+            {
+                SetUniformMatrix4("model", placement.Transform);
+                unsafe
+                {
+                    _gl.DrawElements(PrimitiveType.Triangles, (uint)cube.IndexCount,
+                        DrawElementsType.UnsignedInt, (void*)0);
+                }
+            }
+        }
+
+        private void DrawInstanceMarkers()
+        {
+            if (_scene == null || _markerMeshBuffer is not { } marker)
+                return;
+
+            _gl!.BindVertexArray(marker.Vao);
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+
+            foreach (var instance in _scene.Instances)
+            {
+                var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
+                var model = Matrix4x4.CreateRotationZ(heading) * Matrix4x4.CreateTranslation(instance.Position);
+
+                SetUniformMatrix4("model", model);
+                SetUniformVec3("flatColor", MarkerColor(instance.Kind));
+
+                unsafe
+                {
+                    _gl.DrawElements(PrimitiveType.Triangles, (uint)marker.IndexCount,
+                        DrawElementsType.UnsignedInt, (void*)0);
+                }
+            }
+        }
+
+        private void DrawPolygonOverlays()
+        {
+            if (!_hasPolygonBuffer || _polygonRanges.Count == 0)
+                return;
+
+            _gl!.BindVertexArray(_polygonVao);
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformVec3("flatColor", PolygonOverlayColor);
+            SetUniformMatrix4("model", Matrix4x4.Identity);
+
+            foreach (var (start, count) in _polygonRanges)
+                _gl.DrawArrays(PrimitiveType.LineLoop, start, (uint)count);
+        }
+
+        private static Vector3 MarkerColor(InstanceMarkerKind kind) => kind switch
+        {
+            InstanceMarkerKind.Creature => new Vector3(0.85f, 0.15f, 0.15f),
+            InstanceMarkerKind.Door => new Vector3(0.55f, 0.35f, 0.15f),
+            InstanceMarkerKind.Encounter => new Vector3(0.6f, 0.2f, 0.8f),
+            InstanceMarkerKind.Item => new Vector3(0.9f, 0.85f, 0.2f),
+            InstanceMarkerKind.Placeable => new Vector3(0.2f, 0.45f, 0.9f),
+            InstanceMarkerKind.Sound => new Vector3(0.2f, 0.8f, 0.8f),
+            InstanceMarkerKind.Store => new Vector3(0.2f, 0.8f, 0.3f),
+            InstanceMarkerKind.Trigger => new Vector3(0.95f, 0.55f, 0.15f),
+            InstanceMarkerKind.Waypoint => new Vector3(0.9f, 0.9f, 0.9f),
+            _ => new Vector3(0.7f, 0.7f, 0.7f)
+        };
+
+        // ----- Per-RenderModel GPU buffer (uploaded once per distinct model per GL context) -----
+
+        private ModelBuffer GetOrBuildModelBuffer(RenderModel model)
+        {
+            if (_modelBuffers.TryGetValue(model, out var existing))
+                return existing;
+
+            var built = BuildModelBuffer(model);
+            _modelBuffers[model] = built;
+            return built;
+        }
+
+        private ModelBuffer BuildModelBuffer(RenderModel model)
+        {
+            var vertices = new List<float>();
+            var indices = new List<uint>();
+            var meshRanges = new List<MeshRange>();
+            uint baseVertex = 0;
+
+            foreach (var mesh in model.Meshes)
+            {
+                var vertexCount = mesh.VertexCount;
+                if (vertexCount == 0 || mesh.Indices.Length == 0)
+                    continue;
+
+                var hasNormals = mesh.Normals.Length == vertexCount * 3;
+                var hasUvs = mesh.TexCoords.Length == vertexCount * 2;
+
+                for (var i = 0; i < vertexCount; i++)
+                {
+                    vertices.Add(mesh.Positions[i * 3]);
+                    vertices.Add(mesh.Positions[i * 3 + 1]);
+                    vertices.Add(mesh.Positions[i * 3 + 2]);
+
+                    vertices.Add(hasNormals ? mesh.Normals[i * 3] : 0f);
+                    vertices.Add(hasNormals ? mesh.Normals[i * 3 + 1] : 0f);
+                    vertices.Add(hasNormals ? mesh.Normals[i * 3 + 2] : 1f);
+
+                    vertices.Add(hasUvs ? mesh.TexCoords[i * 2] : 0f);
+                    vertices.Add(hasUvs ? mesh.TexCoords[i * 2 + 1] : 0f);
+                }
+
+                var indexOffset = indices.Count * sizeof(uint);
+                foreach (var index in mesh.Indices)
+                    indices.Add(baseVertex + (uint)index);
+
+                meshRanges.Add(new MeshRange
+                {
+                    IndexOffset = indexOffset,
+                    IndexCount = mesh.Indices.Length,
+                    MeshTransform = mesh.Transform,
+                    TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName
+                });
+
+                baseVertex += (uint)vertexCount;
+            }
+
+            var vao = _gl!.GenVertexArray();
+            var vbo = _gl.GenBuffer();
+            var ebo = _gl.GenBuffer();
+
+            _gl.BindVertexArray(vao);
+
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
+            var vertexArray = vertices.ToArray();
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertexArray.Length * sizeof(float)),
+                new ReadOnlySpan<float>(vertexArray), BufferUsageARB.StaticDraw);
+
+            _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
+            var indexArray = indices.ToArray();
+            _gl.BufferData(BufferTargetARB.ElementArrayBuffer, (nuint)(indexArray.Length * sizeof(uint)),
+                new ReadOnlySpan<uint>(indexArray), BufferUsageARB.StaticDraw);
+
+            SetVertexAttribPointers();
+            _gl.BindVertexArray(0);
+
+            return new ModelBuffer { Vao = vao, Vbo = vbo, Ebo = ebo, MeshRanges = meshRanges };
+        }
+
+        // ----- Textures -----
+
+        private void BindMeshTexture(string? textureName)
+        {
+            var (texId, alphaCutoff) = string.IsNullOrWhiteSpace(textureName)
+                ? (0u, 0f)
+                : ResolveTexture(textureName);
+
+            SetUniformBool("unlit", false);
+
+            if (texId != 0)
+            {
+                SetUniformBool("hasTexture", true);
+                SetUniformFloat("alphaCutoff", alphaCutoff);
+                _gl!.ActiveTexture(TextureUnit.Texture0);
+                _gl.BindTexture(TextureTarget.Texture2D, texId);
+            }
+            else
+            {
+                SetUniformBool("hasTexture", false);
+                SetUniformFloat("alphaCutoff", 0f);
+                SetUniformVec3("flatColor", UntexturedTileColor);
+            }
+        }
+
+        private (uint TexId, float AlphaCutoff) ResolveTexture(string rawTextureName)
+        {
+            if (ResourceIndex == null)
+                return (0, 0f);
+
+            string resolvedName;
+            try
+            {
+                resolvedName = MaterialResolver.ResolveDiffuseTextureName(ResourceIndex, rawTextureName);
+            }
+            catch (Exception)
+            {
+                resolvedName = rawTextureName;
+            }
+
+            if (_textureCache.TryGetValue(resolvedName, out var cached))
+                return cached;
+
+            var result = LoadAndUploadTexture(resolvedName);
+            _textureCache[resolvedName] = result;
+            return result;
+        }
+
+        private (uint TexId, float AlphaCutoff) LoadAndUploadTexture(string resolvedName)
+        {
+            try
+            {
+                var image = TextureLoader.Load(ResourceIndex!, resolvedName);
+                if (image == null)
+                    return (0, 0f);
+
+                var texId = UploadTexture(image.Width, image.Height, image.Pixels);
+                return (texId, ResolveAlphaCutoff(resolvedName));
+            }
+            catch (Exception)
+            {
+                return (0, 0f);
+            }
+        }
+
+        /// <summary>
+        /// Cheap subset of TXI transparency honoring (per the WP4.5 brief): a punch-through
+        /// texture gets a hard alpha cutoff in the fragment shader; every other case (additive,
+        /// no hint, unparseable/missing TXI) draws fully opaque. Full alpha sorting/blending is
+        /// explicitly out of scope.
+        /// </summary>
+        private float ResolveAlphaCutoff(string resolvedTextureName)
+        {
+            if (ResourceIndex == null)
+                return 0f;
+
+            try
+            {
+                var identity = new ResourceIdentity(resolvedTextureName, ResourceIdentity.TypeFromExtension("txi"));
+                if (!ResourceIndex.TryLookup(identity, out var handle))
+                    return 0f;
+
+                var bytes = handle.GetBytes();
+                if (bytes.Length == 0)
+                    return 0f;
+
+                var txi = TxiInfo.Parse(System.Text.Encoding.ASCII.GetString(bytes));
+                return txi.Blending == TxiBlendMode.PunchThrough ? 0.5f : 0f;
+            }
+            catch (Exception)
+            {
+                return 0f;
+            }
+        }
+
+        private uint UploadTexture(int width, int height, byte[] rgba)
+        {
+            var texId = _gl!.GenTexture();
+            _gl.BindTexture(TextureTarget.Texture2D, texId);
+
+            _gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8, (uint)width, (uint)height, 0,
+                PixelFormat.Rgba, PixelType.UnsignedByte, new ReadOnlySpan<byte>(rgba));
+
+            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            _gl.GenerateMipmap(TextureTarget.Texture2D);
+
+            _gl.BindTexture(TextureTarget.Texture2D, 0);
+            return texId;
+        }
+
+        // ----- Static placeholder/marker geometry (scene-independent; built once at GL init) -----
+
+        private void BuildStaticMeshes()
+        {
+            var (cubeVertices, cubeIndices) = BuildFallbackCubeMesh();
+            _fallbackCubeBuffer = UploadStaticMesh(cubeVertices, cubeIndices);
+
+            var (markerVertices, markerIndices) = BuildMarkerPyramidMesh();
+            _markerMeshBuffer = UploadStaticMesh(markerVertices, markerIndices);
+        }
+
+        private StaticMeshBuffer UploadStaticMesh(float[] vertices, uint[] indices)
+        {
+            var vao = _gl!.GenVertexArray();
+            var vbo = _gl.GenBuffer();
+            var ebo = _gl.GenBuffer();
+
+            _gl.BindVertexArray(vao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertices.Length * sizeof(float)),
+                new ReadOnlySpan<float>(vertices), BufferUsageARB.StaticDraw);
+            _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
+            _gl.BufferData(BufferTargetARB.ElementArrayBuffer, (nuint)(indices.Length * sizeof(uint)),
+                new ReadOnlySpan<uint>(indices), BufferUsageARB.StaticDraw);
+            SetVertexAttribPointers();
+            _gl.BindVertexArray(0);
+
+            return new StaticMeshBuffer(vao, vbo, ebo, indices.Length);
+        }
+
+        /// <summary>
+        /// A box spanning local [0,TileSize] x [0,TileSize] x [0,FallbackCubeHeight] - matching the
+        /// same corner-origin convention real tile MDLs use (see <see cref="AreaSceneBuilder"/>'s
+        /// Transform doc: it recenters via translate(-TileSize/2,-TileSize/2,0) before rotating).
+        /// Applying a fallback placement's Transform to this box fills the same 10m footprint a
+        /// real tile model would, making a missing/unresolvable tile obvious at a glance rather
+        /// than a near-invisible 1m cube lost inside the grid.
+        /// </summary>
+        private static (float[] Vertices, uint[] Indices) BuildFallbackCubeMesh()
+        {
+            const float size = AreaSceneBuilder.TileSize;
+            const float h = FallbackCubeHeight;
+
+            var c = new[]
+            {
+                new Vector3(0, 0, 0), new Vector3(size, 0, 0), new Vector3(size, size, 0), new Vector3(0, size, 0),
+                new Vector3(0, 0, h), new Vector3(size, 0, h), new Vector3(size, size, h), new Vector3(0, size, h)
+            };
+
+            var builder = new BoxMeshBuilder();
+            builder.AddQuad(c[3], c[2], c[1], c[0], new Vector3(0, 0, -1)); // bottom
+            builder.AddQuad(c[4], c[5], c[6], c[7], new Vector3(0, 0, 1));  // top
+            builder.AddQuad(c[0], c[1], c[5], c[4], new Vector3(0, -1, 0)); // front (y=0)
+            builder.AddQuad(c[2], c[3], c[7], c[6], new Vector3(0, 1, 0));  // back (y=size)
+            builder.AddQuad(c[3], c[0], c[4], c[7], new Vector3(-1, 0, 0)); // left (x=0)
+            builder.AddQuad(c[1], c[2], c[6], c[5], new Vector3(1, 0, 0));  // right (x=size)
+
+            return builder.Build();
+        }
+
+        /// <summary>
+        /// A small square-based pyramid (base on the ground, apex pointing up) used as the shared
+        /// shape for every instance marker; per-instance color (by <see cref="InstanceMarkerKind"/>)
+        /// and placement/orientation are applied via uniforms at draw time.
+        /// </summary>
+        private static (float[] Vertices, uint[] Indices) BuildMarkerPyramidMesh()
+        {
+            const float half = MarkerHalfWidth;
+            const float baseZ = MarkerGroundOffset;
+            const float apexZ = MarkerGroundOffset + MarkerHeight;
+
+            var apex = new Vector3(0, 0, apexZ);
+            var b0 = new Vector3(-half, -half, baseZ);
+            var b1 = new Vector3(half, -half, baseZ);
+            var b2 = new Vector3(half, half, baseZ);
+            var b3 = new Vector3(-half, half, baseZ);
+
+            var builder = new BoxMeshBuilder();
+            builder.AddQuad(b3, b2, b1, b0, new Vector3(0, 0, -1)); // base
+            builder.AddTriangle(b0, b1, apex);
+            builder.AddTriangle(b1, b2, apex);
+            builder.AddTriangle(b2, b3, apex);
+            builder.AddTriangle(b3, b0, apex);
+
+            return builder.Build();
+        }
+
+        /// <summary>Small flat-shaded quad/triangle accumulator shared by the fallback cube and marker pyramid builders.</summary>
+        private sealed class BoxMeshBuilder
+        {
+            private readonly List<float> _vertices = new();
+            private readonly List<uint> _indices = new();
+
+            public void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 normal)
+            {
+                AddTriangle(a, b, c, normal);
+                AddTriangle(a, c, d, normal);
+            }
+
+            public void AddTriangle(Vector3 a, Vector3 b, Vector3 c)
+            {
+                var normal = Vector3.Normalize(Vector3.Cross(b - a, c - a));
+                AddTriangle(a, b, c, normal);
+            }
+
+            public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Vector3 normal)
+            {
+                var baseIndex = (uint)(_vertices.Count / FloatsPerVertex);
+                Span<Vector3> triangle = stackalloc Vector3[3] { a, b, c };
+
+                foreach (var p in triangle)
+                {
+                    _vertices.Add(p.X);
+                    _vertices.Add(p.Y);
+                    _vertices.Add(p.Z);
+                    _vertices.Add(normal.X);
+                    _vertices.Add(normal.Y);
+                    _vertices.Add(normal.Z);
+                    _vertices.Add(0f);
+                    _vertices.Add(0f);
+                }
+
+                _indices.Add(baseIndex);
+                _indices.Add(baseIndex + 1);
+                _indices.Add(baseIndex + 2);
+            }
+
+            public (float[] Vertices, uint[] Indices) Build() => (_vertices.ToArray(), _indices.ToArray());
+        }
+
+        // ----- Trigger/encounter polygon overlays (scene-specific; rebuilt whenever the scene changes) -----
+
+        private void RebuildPolygonBuffer(AreaScene scene)
+        {
+            DeletePolygonBuffer();
+
+            var vertexFloats = new List<float>();
+            var ranges = new List<(int Start, int Count)>();
+
+            foreach (var marker in scene.Instances)
+            {
+                if (marker.Geometry == null || marker.Geometry.Count < 2)
+                    continue;
+
+                var start = vertexFloats.Count / FloatsPerVertex;
+                foreach (var point in marker.Geometry)
+                {
+                    vertexFloats.Add(point.X);
+                    vertexFloats.Add(point.Y);
+                    vertexFloats.Add(point.Z + PolygonHeightOffset);
+                    vertexFloats.Add(0f);
+                    vertexFloats.Add(0f);
+                    vertexFloats.Add(1f);
+                    vertexFloats.Add(0f);
+                    vertexFloats.Add(0f);
+                }
+
+                ranges.Add((start, marker.Geometry.Count));
+            }
+
+            _polygonRanges = ranges;
+
+            if (vertexFloats.Count == 0)
+                return;
+
+            _polygonVao = _gl!.GenVertexArray();
+            _polygonVbo = _gl.GenBuffer();
+
+            _gl.BindVertexArray(_polygonVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _polygonVbo);
+            var data = vertexFloats.ToArray();
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(data.Length * sizeof(float)),
+                new ReadOnlySpan<float>(data), BufferUsageARB.StaticDraw);
+            SetVertexAttribPointers();
+            _gl.BindVertexArray(0);
+
+            _hasPolygonBuffer = true;
+        }
+    }
+}

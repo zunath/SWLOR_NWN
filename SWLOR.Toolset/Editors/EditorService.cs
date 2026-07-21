@@ -1,6 +1,9 @@
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell;
 using SWLOR.Toolset.Shell.Panels;
@@ -21,6 +24,9 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
         private readonly ModelPreviewViewModel? _modelPreview;
+        private readonly TilesetCatalog? _tilesetCatalog;
+        private readonly TileModelCache? _tileModelCache;
+        private readonly ResourceIndex? _resourceIndex;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
 
@@ -30,7 +36,10 @@ namespace SWLOR.Toolset.Editors
             OutputLogService log,
             ToolsetDockFactory factory,
             IGameCodeIndex? gameCodeIndex = null,
-            ModelPreviewViewModel? modelPreview = null)
+            ModelPreviewViewModel? modelPreview = null,
+            TilesetCatalog? tilesetCatalog = null,
+            TileModelCache? tileModelCache = null,
+            ResourceIndex? resourceIndex = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -38,6 +47,9 @@ namespace SWLOR.Toolset.Editors
             _factory = factory;
             _gameCodeIndex = gameCodeIndex;
             _modelPreview = modelPreview;
+            _tilesetCatalog = tilesetCatalog;
+            _tileModelCache = tileModelCache;
+            _resourceIndex = resourceIndex;
         }
 
         public void TryOpenEditor(ResourceType type, string resRef)
@@ -118,7 +130,9 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var editor = new AreaEditorViewModel(resRef, workspace, _lookups, _gameCodeIndex, _log);
+                var editor = new AreaEditorViewModel(
+                    resRef, workspace, _lookups, _gameCodeIndex, _log,
+                    _tilesetCatalog, _tileModelCache, _resourceIndex);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);

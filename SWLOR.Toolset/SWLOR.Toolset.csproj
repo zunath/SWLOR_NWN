@@ -9,6 +9,9 @@
     <RootNamespace>SWLOR.Toolset</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- GlAreaControl (WP4.5) uses pointer-offset DrawElements calls, matching Radoub.UI's
+         ModelPreviewGLControl (which also sets this flag). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +25,11 @@
     <PackageReference Include="Dock.Avalonia" Version="11.3.12.1" />
     <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="11.3.12.1" />
     <PackageReference Include="Dock.Model.Mvvm" Version="11.3.12.1" />
+    <!-- GlAreaControl (WP4.5) uses Silk.NET.OpenGL types directly, following Radoub.UI's
+         ModelPreviewGLControl skeleton. Radoub.UI already brings this in transitively, but this
+         project isn't under External/Radoub's Central Package Management scope, so pin the same
+         version explicitly here. -->
+    <PackageReference Include="Silk.NET.OpenGL" Version="2.23.0" />
   </ItemGroup>
 
   <ItemGroup>

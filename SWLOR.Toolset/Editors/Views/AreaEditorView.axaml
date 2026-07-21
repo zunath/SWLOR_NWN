@@ -210,6 +210,16 @@
         <Grid>
           <viewport:GlAreaControl x:Name="AreaView" />
 
+          <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it
+               (same Avalonia limitation Radoub's ModelPreviewGLControl documents). This transparent
+               overlay captures camera input and forwards it to the control; toolbar elements below
+               sit ABOVE it in z-order and keep receiving their own clicks. -->
+          <Border x:Name="ViewportInput" Background="Transparent"
+                  PointerPressed="OnViewportPointerPressed"
+                  PointerMoved="OnViewportPointerMoved"
+                  PointerReleased="OnViewportPointerReleased"
+                  PointerWheelChanged="OnViewportPointerWheel" />
+
           <Border Background="#B0202020" CornerRadius="4" Padding="10,6"
                   HorizontalAlignment="Center" VerticalAlignment="Center"
                   IsVisible="{Binding IsBuildingScene}">
@@ -229,7 +239,10 @@
           </Border>
 
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
-                      Margin="8" Spacing="6">
+                      Margin="8" Spacing="10">
+            <CheckBox Content="Hide ceilings" x:Name="HideCeilingsCheck"
+                      IsCheckedChanged="OnHideCeilingsChanged"
+                      Background="#B0202020" Padding="6,2" />
             <Button Content="Rebuild" Command="{Binding RebuildSceneCommand}" />
           </StackPanel>
         </Grid>

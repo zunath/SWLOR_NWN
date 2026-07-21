@@ -143,7 +143,7 @@ namespace SWLOR.Toolset.Shell.Panels
                         return;
                     }
 
-                    var parts = reference.Parts
+                    var parts = ApplyRobeCoverage(reference.Parts)
                         .Select(p => (p.PartType, p.ModelResRef))
                         .ToList();
                     _partOriginalBitmaps.Clear();
@@ -252,6 +252,27 @@ namespace SWLOR.Toolset.Shell.Panels
         {
             return _resourceIndex != null &&
                    _resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out _);
+        }
+
+        /// <summary>
+        /// Only a robe whose renderable geometry spans the whole body replaces the parts it
+        /// covers; SWLOR's partial robes (loincloths, tabards) render alongside the full body
+        /// exactly as the game does. Decided here — not in the resolver — because it requires
+        /// parsing the robe model.
+        /// </summary>
+        private IReadOnlyList<BlueprintModelPart> ApplyRobeCoverage(IReadOnlyList<BlueprintModelPart> parts)
+        {
+            var robe = parts.FirstOrDefault(p => p.PartType.Equals("robe", StringComparison.OrdinalIgnoreCase));
+            if (robe == default)
+                return parts;
+
+            var robeModel = LoadModel(robe.ModelResRef, withSupermodelAnims: false);
+            if (robeModel == null || !RobeCoverage.IsFullBodyRobe(robeModel))
+                return parts;
+
+            return parts
+                .Where(p => !BlueprintModelResolver.RobeCoveredParts.Contains(p.PartType))
+                .ToList();
         }
 
         private sealed class TupleBitmapKeyComparer : IEqualityComparer<(string PartResRef, string MeshName)>

@@ -34,6 +34,14 @@ namespace SWLOR.Toolset.Viewport
         private const float PolygonHeightOffset = 0.05f; // lift trigger/encounter outlines slightly above the tile floor
         private const float OrbitSensitivity = 0.01f; // radians per pixel
         private const float FallbackCubeHeight = 1.5f;
+
+        /// <summary>
+        /// With "hide ceilings" on, tile fragments higher than this above their own tile's base
+        /// height are discarded — removes interior ceilings (walls top out around 5m) while
+        /// staying correct per height level in multi-elevation areas.
+        /// </summary>
+        private const float CeilingClipHeight = 4.0f;
+        private const float CeilingClipDisabled = 1e9f;
         private const float MarkerHalfWidth = 0.4f;
         private const float MarkerHeight = 1.2f;
         private const float MarkerGroundOffset = 0.05f;
@@ -58,6 +66,7 @@ layout (location = 2) in vec2 aTexCoord;
 
 out vec3 Normal;
 out vec2 TexCoord;
+out vec3 WorldPos;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -67,7 +76,9 @@ void main()
 {
     Normal = mat3(model) * aNormal;
     TexCoord = aTexCoord;
-    gl_Position = projection * view * model * vec4(aPosition, 1.0);
+    vec4 world = model * vec4(aPosition, 1.0);
+    WorldPos = world.xyz;
+    gl_Position = projection * view * world;
 }
 ";
 
@@ -76,18 +87,25 @@ out vec4 FragColor;
 
 in vec3 Normal;
 in vec2 TexCoord;
+in vec3 WorldPos;
 
 uniform sampler2D diffuseTexture;
 uniform bool hasTexture;
 uniform vec3 flatColor;
 uniform bool unlit;
 uniform float alphaCutoff;
+uniform float ceilingClipZ;
 uniform vec3 lightDir;
 uniform vec3 lightColor;
 uniform vec3 ambientColor;
 
 void main()
 {
+    // Hide-ceilings support: fragments above the per-draw clip height are discarded
+    // (set to a huge value when the toggle is off).
+    if (WorldPos.z > ceilingClipZ)
+        discard;
+
     vec4 texColor = hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
 
     if (alphaCutoff > 0.0 && texColor.a < alphaCutoff)
@@ -172,6 +190,22 @@ void main()
         private DragMode _dragMode = DragMode.None;
         private Point _lastPointerPos;
 
+        private bool _hideCeilings;
+
+        /// <summary>Discards tile geometry above each tile's own base height + ~4m (interior ceilings).</summary>
+        public bool HideCeilings
+        {
+            get => _hideCeilings;
+            set
+            {
+                if (_hideCeilings == value)
+                    return;
+
+                _hideCeilings = value;
+                RequestNextFrameRendering();
+            }
+        }
+
         /// <summary>Layered resource index used to resolve tile/mesh textures and MTR materials. Null degrades every mesh to a flat gray fallback.</summary>
         public ResourceIndex? ResourceIndex { get; set; }
 
@@ -229,10 +263,15 @@ void main()
         }
 
         // ----- Pointer input: left-drag orbit, middle/right/shift-left-drag pan, wheel zoom -----
+        //
+        // OpenGlControlBase has no Background brush, so pointer events never hit-test to this
+        // control directly (same Avalonia limitation Radoub's ModelPreviewGLControl documents).
+        // The hosting view overlays a transparent input Border and forwards its events into the
+        // public Handle* methods below; the On* overrides remain as a fallback if the control is
+        // ever hosted without the overlay.
 
-        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        public void HandlePointerPressed(PointerPressedEventArgs e)
         {
-            base.OnPointerPressed(e);
             var props = e.GetCurrentPoint(this).Properties;
             var shift = (e.KeyModifiers & KeyModifiers.Shift) != 0;
 
@@ -249,9 +288,8 @@ void main()
             e.Handled = true;
         }
 
-        protected override void OnPointerMoved(PointerEventArgs e)
+        public void HandlePointerMoved(PointerEventArgs e)
         {
-            base.OnPointerMoved(e);
             if (_dragMode == DragMode.None)
                 return;
 
@@ -274,9 +312,8 @@ void main()
             RequestNextFrameRendering();
         }
 
-        protected override void OnPointerReleased(PointerReleasedEventArgs e)
+        public void HandlePointerReleased(PointerReleasedEventArgs e)
         {
-            base.OnPointerReleased(e);
             if (_dragMode == DragMode.None)
                 return;
 
@@ -285,15 +322,37 @@ void main()
             e.Handled = true;
         }
 
-        protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+        public void HandlePointerWheel(PointerWheelEventArgs e)
         {
-            base.OnPointerWheelChanged(e);
-
             var factor = (float)Math.Pow(1.1, e.Delta.Y);
             _distance = AreaCameraMath.ClampDistance(_distance * factor, _initialDistance);
 
             RequestNextFrameRendering();
             e.Handled = true;
+        }
+
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        {
+            base.OnPointerPressed(e);
+            HandlePointerPressed(e);
+        }
+
+        protected override void OnPointerMoved(PointerEventArgs e)
+        {
+            base.OnPointerMoved(e);
+            HandlePointerMoved(e);
+        }
+
+        protected override void OnPointerReleased(PointerReleasedEventArgs e)
+        {
+            base.OnPointerReleased(e);
+            HandlePointerReleased(e);
+        }
+
+        protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+        {
+            base.OnPointerWheelChanged(e);
+            HandlePointerWheel(e);
         }
 
         // ----- GL lifecycle -----
@@ -558,8 +617,12 @@ void main()
             SetUniformVec3("lightColor", LightColor);
             SetUniformVec3("ambientColor", AmbientColor);
             SetUniformInt("diffuseTexture", 0);
+            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 
             DrawTileBatches();
+
+            // Markers and trigger outlines are never ceiling-clipped — reset the sticky per-tile value.
+            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             DrawInstanceMarkers();
             DrawPolygonOverlays();
 
@@ -584,6 +647,9 @@ void main()
 
                 foreach (var placement in batch.Placements)
                 {
+                    SetUniformFloat("ceilingClipZ",
+                        _hideCeilings ? placement.HeightOffset + CeilingClipHeight : CeilingClipDisabled);
+
                     foreach (var meshRange in buffer.MeshRanges)
                     {
                         var worldMatrix = meshRange.MeshTransform * placement.Transform;
@@ -613,6 +679,8 @@ void main()
 
             foreach (var placement in placements)
             {
+                SetUniformFloat("ceilingClipZ",
+                    _hideCeilings ? placement.HeightOffset + CeilingClipHeight : CeilingClipDisabled);
                 SetUniformMatrix4("model", placement.Transform);
                 unsafe
                 {

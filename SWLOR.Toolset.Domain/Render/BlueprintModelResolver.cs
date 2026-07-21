@@ -89,11 +89,14 @@ namespace SWLOR.Toolset.Domain.Render
         };
 
         /// <summary>
-        /// Parts a robe replaces (same set as Quartermaster's RobePartSuppression): an NWN robe model
-        /// is a near-total body supplying its own torso/pelvis/limb/hand geometry — everything except
-        /// head, neck, feet, and belt. Rendering the covered parts alongside it duplicates geometry.
+        /// Parts a FULL-BODY robe replaces (same set as Quartermaster's RobePartSuppression):
+        /// everything except head, neck, feet, and belt. Whether a given robe is actually
+        /// full-body is a geometry question (<see cref="RobeCoverage.IsFullBodyRobe"/>) the
+        /// renderer answers after loading the robe model — SWLOR's partial robes (loincloths,
+        /// tabards) must NOT suppress anything. The resolver therefore always emits robe + all
+        /// body parts; consumers filter with this set only when the robe proves full-body.
         /// </summary>
-        private static readonly HashSet<string> RobeCoveredParts = new(StringComparer.OrdinalIgnoreCase)
+        public static readonly IReadOnlySet<string> RobeCoveredParts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "chest", "pelvis", "legl", "legr", "shol", "shor", "bicepl", "bicepr",
             "forel", "forer", "handl", "handr", "shinl", "shinr",
@@ -183,16 +186,15 @@ namespace SWLOR.Toolset.Domain.Render
             var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
             var parts = new List<BlueprintModelPart>();
 
-            // Robe first (armor-only; creatures have no robe body part). A robe replaces most of
-            // the body, so its covered parts are skipped below — but only when the robe model
-            // actually resolves, otherwise suppression would leave holes with nothing in them.
-            var robeActive = false;
+            // Robe first (armor-only; creatures have no robe body part), when its model resolves.
+            // ALL body parts are still emitted alongside it — whether the robe replaces the parts
+            // it covers depends on its geometry (RobeCoverage.IsFullBodyRobe), which the renderer
+            // decides after loading the model; partial robes (loincloths, tabards) cover nothing.
             var robeNumber = armor?.GetIntOrNull("ArmorPart_Robe") ?? 0;
             if (robeNumber > 0)
             {
                 var robeResRef = BuildPartName(prefix, "robe", robeNumber);
-                robeActive = partModelExists?.Invoke(robeResRef) ?? true;
-                if (robeActive)
+                if (partModelExists?.Invoke(robeResRef) ?? true)
                     parts.Add(new BlueprintModelPart("robe", robeResRef));
             }
 
@@ -202,9 +204,6 @@ namespace SWLOR.Toolset.Domain.Render
 
             foreach (var (creatureField, armorKey, partType) in BodyPartFields)
             {
-                if (robeActive && RobeCoveredParts.Contains(partType))
-                    continue;
-
                 var number = ResolvePartNumber(
                     root.GetIntOrNull(creatureField) ?? 0,
                     armor?.GetIntOrNull("ArmorPart_" + armorKey) ?? 0);

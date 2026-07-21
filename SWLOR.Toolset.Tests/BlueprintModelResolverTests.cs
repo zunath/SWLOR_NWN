@@ -144,10 +144,13 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void Resolve_SegmentedCreatureWithRobeArmor_SuppressesCoveredParts()
+        public void Resolve_SegmentedCreatureWithRobeArmor_EmitsRobeAlongsideAllBodyParts()
         {
-            // Synthetic armor with a robe: covered parts (chest/pelvis/limbs/hands) are suppressed;
-            // head, neck, feet, and belt survive. Robe only activates when its model exists.
+            // The resolver never suppresses parts for a robe — whether a robe replaces the body
+            // parts it covers is a geometry question (RobeCoverage.IsFullBodyRobe) the renderer
+            // answers after loading the robe model, because SWLOR's partial robes (loincloths,
+            // tabards) must render alongside the full body. The robe part itself is only emitted
+            // when its model resolves.
             var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
             var robeArmor = BlueprintRoot(ResourceType.Uti, "noble_gr");
             robeArmor.Get("ArmorPart_Robe").SetInteger(7);
@@ -157,18 +160,16 @@ namespace SWLOR.Toolset.Tests
 
             var parts = withRobe.Parts.ToDictionary(p => p.PartType, p => p.ModelResRef);
             parts.Should().ContainKey("robe").WhoseValue.Should().Be("pmh0_robe007");
-            parts.Should().ContainKey("head").And.ContainKey("neck")
-                .And.ContainKey("footl").And.ContainKey("footr");
-            parts.Should().NotContainKey("chest").And.NotContainKey("pelvis")
-                .And.NotContainKey("bicepl").And.NotContainKey("handr").And.NotContainKey("shinl");
+            parts.Should().ContainKey("chest").And.ContainKey("pelvis")
+                .And.ContainKey("bicepl").And.ContainKey("handr").And.ContainKey("shinl");
+            parts.Should().ContainKey("head").And.ContainKey("footr");
 
-            // Same armor but the robe model does not resolve -> no suppression, no robe part.
+            // Robe model does not resolve -> no robe part, body unchanged.
             var withoutRobeModel = BlueprintModelResolver.Resolve(
                 ResourceType.Utc, root, Appearances(), null, null, _ => robeArmor, _ => false);
 
-            var fallbackParts = withoutRobeModel.Parts.ToDictionary(p => p.PartType, p => p.ModelResRef);
-            fallbackParts.Should().NotContainKey("robe");
-            fallbackParts.Should().ContainKey("chest").And.ContainKey("handr");
+            withoutRobeModel.Parts.Should().NotContain(p => p.PartType == "robe");
+            withoutRobeModel.Parts.Should().Contain(p => p.PartType == "chest");
         }
 
         [Test]

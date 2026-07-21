@@ -251,6 +251,11 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   resolution). **The daily driver ships.**
 
 ## Backlog — nice-to-haves (not scheduled)
+- PLT color-layer rendering for body parts/armor (skin/hair/cloth/leather tints from utc +
+  armor per-part colors) — user-accepted follow-up from the WP4.3 gate (2026-07-21).
+  Candidate: WP6.2 polish pass.
+- Base-game/hak fallback when an equipped armor's uti resref isn't in the module (e.g.
+  atris_robes) — would need ResourceIndex bytes → GffJsonBridge. Low priority.
 - Output panel should auto-scroll to the latest line as entries arrive (user request,
   2026-07-20). Candidate: WP6.2 polish pass.
 - Shared resource dictionary for the field DataTemplates duplicated between
@@ -350,8 +355,40 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
     SelectionChanged during XamlIlPopulate before named fields are assigned; null-guarded.
   - Verified: build clean, 260/261 green (2 new armor/robe resolver tests; naked-body test
     updated for footr), smoke OK.
-- **Remaining: human visual RE-gate #2** (segmented + armor) and the full WP4.5 area-view
-  gate (blocked at first attempt by the B1 crash, now fixed).
+- **Re-gate #2 (human, 2026-07-21):** armor now renders; three findings:
+  robed NPCs amputated (crystal_refugee = head+skirt+feet), residual white/PLT-flat parts
+  (user accepted PLT color fidelity as a follow-up), area 3D view loads but no camera input
+  and needs a hide-ceilings toggle.
+- **Third fix round (controller, corpus-evidenced):**
+  - **Robes:** `sw_pt_robe\pfh0_robe033.mdl` is a LOINCLOTH — its only renderable meshes span
+    Z 0.38–1.24 (probe); everything else in it is render=false rigging. QM's fixed
+    RobePartSuppression list assumes every robe is a near-total body (true for CEP robes,
+    false for SWLOR's partial robes) and amputated the torso/limbs. Fix: suppression is now
+    GEOMETRY-DRIVEN — new `Domain\Render\RobeCoverage.IsFullBodyRobe` (renderable geometry
+    must span ankles-to-shoulders: minZ<0.5 && maxZ>1.35); the resolver always emits robe +
+    all body parts and exposes `RobeCoveredParts`; the preview VM filters covered parts only
+    when the loaded robe model proves full-body. QM's own docs flagged exactly this
+    ("half-robe variants would over-suppress… needs a data-driven signal").
+  - **Camera input (WP4.5):** OpenGlControlBase is not hit-testable (no Background brush) —
+    the exact limitation Radoub documents in ModelPreviewGLControl; the subagent copied the
+    fallback overrides but not the overlay workaround, so GlAreaControl never received
+    pointer events. Fix: transparent input Border overlay in AreaEditorView forwards
+    pressed/moved/released/wheel into new public Handle* methods (pointer capture then routes
+    drags to the control itself); toolbar sits above the overlay in z-order.
+  - **Hide ceilings (WP4.5, user request):** shader gained WorldPos + `ceilingClipZ` uniform;
+    fragments above each tile's own base height + 4m are discarded (per-tile-relative, so
+    multi-elevation interiors clip correctly); markers/trigger outlines never clipped;
+    "Hide ceilings" checkbox in the 3D View toolbar (default off).
+  - Notes: atris_jedi's equipped 'atris_robes' uti does not exist in the module (dangling
+    equip resref — loader degrades to naked body by design). Her white bracers/boots are the
+    PLT-default-color rendering, i.e. the accepted follow-up, not a bug.
+  - Verified: build clean, 264/265 green (4 new RobeCoverageTests incl. the corpus loincloth;
+    robe resolver test rewritten for no-resolver-suppression), smoke OK.
+- **Backlog added:** PLT color-layer rendering for body parts/armor tints (user-accepted
+  follow-up, target WP6.2); consider base-game/hak fallback for equipped-armor uti resrefs
+  missing from the module (e.g. via ResourceIndex + GffJsonBridge).
+- **Remaining: human visual RE-gate #3** (robed NPCs assemble; camera orbit/pan/zoom works;
+  ceiling toggle) and the 10-area WP4.5 spot-check.
 - Tier: Low (controller-executed inline; subagent dispatch avoided — the WP4.4 subagent
   died on the monthly spend limit, so remaining Phase 4 packages run inline).
 - Files: `Domain\Render\BlueprintModelResolver.cs` (headless, tested),

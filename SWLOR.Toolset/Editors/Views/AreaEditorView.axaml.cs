@@ -48,5 +48,28 @@ namespace SWLOR.Toolset.Editors
             GlStatusBorder.IsVisible = !string.IsNullOrEmpty(message);
             GlStatusText.Text = message;
         }
+
+        // Camera input arrives via the transparent ViewportInput overlay (OpenGlControlBase is not
+        // hit-testable itself) and is forwarded to the GL control. After a press the control
+        // captures the pointer, so moves/releases route to its own handlers; the overlay only has
+        // to deliver the initial press, uncaptured moves, and wheel events.
+
+        private void OnViewportPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e) =>
+            AreaView.HandlePointerPressed(e);
+
+        private void OnViewportPointerMoved(object? sender, Avalonia.Input.PointerEventArgs e) =>
+            AreaView.HandlePointerMoved(e);
+
+        private void OnViewportPointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e) =>
+            AreaView.HandlePointerReleased(e);
+
+        private void OnViewportPointerWheel(object? sender, Avalonia.Input.PointerWheelEventArgs e) =>
+            AreaView.HandlePointerWheel(e);
+
+        private void OnHideCeilingsChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (AreaView != null && HideCeilingsCheck != null)
+                AreaView.HideCeilings = HideCeilingsCheck.IsChecked == true;
+        }
     }
 }

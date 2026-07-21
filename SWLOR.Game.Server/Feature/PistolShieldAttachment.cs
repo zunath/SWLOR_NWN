@@ -14,24 +14,24 @@ namespace SWLOR.Game.Server.Feature
     /// </summary>
     public static class PistolShieldAttachment
     {
-        [NWNEventHandler(ScriptName.OnModuleEquip)]
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
         public static void OnEquip()
         {
-            var creature = GetPCItemLastEquippedBy();
+            var creature = OBJECT_SELF;
             if (!CanSynchronize(creature))
                 return;
 
             Synchronize(creature);
         }
 
-        [NWNEventHandler(ScriptName.OnModuleUnequip)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public static void OnUnequip()
         {
-            var creature = GetPCItemLastUnequippedBy();
+            var creature = OBJECT_SELF;
             if (!CanSynchronize(creature))
                 return;
 
-            var unequippedItem = GetPCItemLastUnequipped();
+            var unequippedItem = StringToObject(EventsPlugin.GetEventData("ITEM"));
             if (GetIsObjectValid(unequippedItem) &&
                 GetBaseItemType(unequippedItem) == BaseItem.PistolWithShield)
             {

@@ -611,7 +611,7 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   every edit commits a full scene rebuild that reassigns Scene. Fixed by framing the camera only on
   the first non-null scene (initial load) and preserving the user's camera on all later rebuilds.
   Build clean, 334/335 green, smoke OK.
-## WP6.2 — in progress — 2026-07-21 — Perf + fidelity pass
+## WP6.2 — code done, human gate pending — 2026-07-21 — Perf + fidelity pass
 - Tier: Mid. Lead-driven (GL/perf + small UI); the one remaining UI nice-to-have (shared
   DataTemplates) is queued for a Sonnet subagent.
 - **Per-area lighting (fidelity):** AreaScene now carries a decoded `AreaLighting` (Domain:
@@ -628,10 +628,17 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   the 256-tile largest area (pw_ar_czarmrange). Visual output unchanged.
 - **Output panel auto-scroll:** OutputView scrolls to the newest line as entries arrive.
 - Verified: build clean, 338/339 green (334 prior + 4 lighting; 1 pre-existing skip), smoke OK.
-- **Remaining:** shared field DataTemplates (dedupe the 7 identical templates between
-  BlueprintEditorView/AreaEditorView); refresh committed tools CLI binary + drop PackService's
-  --no-prompt fallback. Then human gate: night area reads moody-but-editable; largest area
-  (pw_ar_czarmrange) stays interactive when orbiting.
+- **Shared field DataTemplates (done):** the 7 identical field templates (LocString/Check/Integer/
+  Float/Dropdown/Script/Text) moved out of both editor views into App.axaml's
+  Application.DataTemplates (listed before the ViewLocator catch-all; ViewLocator only matches
+  IDockable, so it never intercepts field VMs). Build clean, 338/339 green, smoke OK.
+- **CLI binary refresh — deferred (stays in Backlog):** refreshing the committed tools\SWLOR.CLI
+  binary to a --no-prompt build so PackService's fallback can be dropped means committing binaries
+  (repo bloat + runtime-dep risk) to replace a path that already works; better done deliberately by
+  the maintainer.
+- **Remaining: human gate** — (1) a night area reads moody-but-editable (cool tint, not too dark);
+  (2) the largest area (pw_ar_czarmrange) stays interactive when orbiting; (3) the blueprint and
+  area editors still render their fields (the field templates are now app-wide).
 ## WP7.1 — pending — Tile adjacency corpus
 ## WP7.2 — pending — Tile rule matcher
 ## WP7.3 — pending — Paint tools + new-area wizard

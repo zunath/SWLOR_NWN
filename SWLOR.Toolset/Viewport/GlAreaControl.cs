@@ -310,6 +310,27 @@ void main()
         /// <summary>Raised when an active placement is cancelled (Esc, or a right-click while placement is active). Clears <see cref="IsPlacementActive"/> before raising.</summary>
         public event Action? PlacementCancelled;
 
+        private bool _isPaintActive;
+
+        /// <summary>
+        /// Whether a viewport click should paint terrain instead of picking an instance (WP7.3).
+        /// Unlike <see cref="IsPlacementActive"/>, this is a sticky brush: it stays armed across
+        /// dabs so a user can keep painting, and is cleared by the host view (or Esc) rather than by
+        /// the first click. Camera navigation is unaffected - a left DRAG still pans and
+        /// right/middle still orbit; only a click (under the drag threshold) paints.
+        /// </summary>
+        public bool IsPaintActive
+        {
+            get => _isPaintActive;
+            set => _isPaintActive = value;
+        }
+
+        /// <summary>Raised for each paint dab while <see cref="IsPaintActive"/>: the world-space ground point clicked (walkmesh floor when resolvable, else the Z=0 plane). Stays armed afterwards.</summary>
+        public event Action<Vector3>? PaintPointPicked;
+
+        /// <summary>Raised when paint mode is dismissed from inside the viewport (Esc), so the host view can untoggle its brush UI.</summary>
+        public event Action? PaintCancelled;
+
         private bool _hideCeilings;
 
         /// <summary>Discards tile geometry above each tile's own base height + ~4m (interior ceilings).</summary>
@@ -463,7 +484,9 @@ void main()
             // modern editors where you left-drag an object to move it (Alt to rotate). Hit-test the
             // press against the selection first; any other press (empty space, shift, or another
             // button) falls through to the camera navigation below.
-            if (!_isPlacementActive && props.IsLeftButtonPressed && !shift
+            // Paint mode owns the plain-left click, so the move/rotate gizmo must not intercept a
+            // dab that happens to land on the current selection.
+            if (!_isPlacementActive && !_isPaintActive && props.IsLeftButtonPressed && !shift
                 && _selectedInstance != null && TryHitSelectedInstance(pos))
             {
                 BeginManipulation(_selectedInstance, alt ? DragMode.Rotate : DragMode.Move);
@@ -564,6 +587,8 @@ void main()
 
             if (_isPlacementActive)
                 RaisePlacementPointPicked(releasePos);
+            else if (_isPaintActive)
+                RaisePaintPointPicked(releasePos);
             else
                 RaiseInstancePicked(releasePos);
         }
@@ -721,6 +746,26 @@ void main()
             PlacementPointPicked?.Invoke(hit);
         }
 
+        /// <summary>
+        /// Resolves a paint dab to a ground point and raises <see cref="PaintPointPicked"/>, using
+        /// the same walkmesh-then-flat-plane chain placement uses so a click on an elevated tile
+        /// reports that tile rather than the point directly below it. Deliberately does NOT clear
+        /// <see cref="IsPaintActive"/> - the brush stays armed for the next dab.
+        /// </summary>
+        private void RaisePaintPointPicked(Point screenPos)
+        {
+            var ray = TryBuildRay(screenPos);
+            if (ray == null)
+                return;
+
+            var point = (_scene != null ? AreaWalkmesh.RaycastGround(ray.Value, _scene) : null)
+                        ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
+            if (point is not { } hit)
+                return;
+
+            PaintPointPicked?.Invoke(hit);
+        }
+
         public void HandlePointerWheel(PointerWheelEventArgs e)
         {
             // Wheel up (positive delta) zooms IN (shrinks distance) per common convention.
@@ -775,6 +820,14 @@ void main()
             if (_isPlacementActive)
             {
                 CancelPlacement();
+                e.Handled = true;
+                return;
+            }
+
+            if (_isPaintActive)
+            {
+                _isPaintActive = false;
+                PaintCancelled?.Invoke();
                 e.Handled = true;
             }
         }

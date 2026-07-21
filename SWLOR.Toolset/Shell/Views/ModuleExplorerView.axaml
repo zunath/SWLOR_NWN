@@ -6,7 +6,43 @@
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
              x:Class="SWLOR.Toolset.Shell.Views.ModuleExplorerView"
              x:DataType="panels:ModuleExplorerViewModel">
-  <Grid ColumnDefinitions="160,*">
+  <Grid RowDefinitions="Auto,*">
+  <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="6,4" Spacing="6">
+    <Button Content="New Area..." Command="{Binding NewAreaCommand}"
+            ToolTip.Tip="Create a new area from the module's area template" />
+  </StackPanel>
+
+  <!-- WP7.3 new-area wizard, shown inline (same overlay pattern as the palette browser). -->
+  <Border Grid.Row="1" ZIndex="1"
+          IsVisible="{Binding ActiveNewArea, Converter={x:Static ObjectConverters.IsNotNull}}"
+          Background="#E0202020" BorderBrush="Gray" BorderThickness="1"
+          Padding="10" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Top"
+          Margin="8" MaxWidth="360">
+    <StackPanel Spacing="6" DataContext="{Binding ActiveNewArea}"
+                x:DataType="panels:NewAreaViewModel">
+      <TextBlock Text="New Area" FontWeight="Bold" Foreground="White" />
+      <TextBox Text="{Binding ResRef, Mode=TwoWay}" Watermark="Resref (lowercase, max 16)" />
+      <TextBox Text="{Binding DisplayName, Mode=TwoWay}" Watermark="Display name" />
+      <ComboBox ItemsSource="{Binding Tilesets}" SelectedItem="{Binding SelectedTileset, Mode=TwoWay}"
+                HorizontalAlignment="Stretch" />
+      <ComboBox ItemsSource="{Binding Terrains}" SelectedItem="{Binding SelectedTerrain, Mode=TwoWay}"
+                HorizontalAlignment="Stretch" />
+      <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="6">
+        <TextBlock Grid.Column="0" Text="Width" VerticalAlignment="Center" Foreground="White" />
+        <NumericUpDown Grid.Column="1" Value="{Binding Width, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" />
+        <TextBlock Grid.Column="2" Text="Height" VerticalAlignment="Center" Foreground="White" />
+        <NumericUpDown Grid.Column="3" Value="{Binding Height, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" />
+      </Grid>
+      <StackPanel Orientation="Horizontal" Spacing="6">
+        <Button Content="Create" Command="{Binding CreateCommand}" />
+        <Button Content="Cancel" Command="{Binding CancelCommand}" />
+      </StackPanel>
+      <TextBlock Text="{Binding StatusMessage}" Foreground="Orange" TextWrapping="Wrap"
+                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
+  </Border>
+
+  <Grid Grid.Row="1" ColumnDefinitions="160,*">
     <ListBox Grid.Column="0"
              ItemsSource="{Binding Categories}"
              SelectedItem="{Binding SelectedCategory}">
@@ -37,5 +73,6 @@
         </Style>
       </ListBox.Styles>
     </ListBox>
+  </Grid>
   </Grid>
 </UserControl>

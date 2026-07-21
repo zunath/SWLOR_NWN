@@ -693,7 +693,7 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   returns many candidates, pick the corpus-preferred tile. That selection policy belongs where
   selection happens (the paint tool), so it ships with WP7.3 alongside affected-cell enumeration on a
   corner paint and transactional Tile_List regeneration.
-## WP7.3 — in progress (engine done, UI next) — 2026-07-21 — Paint tools + new-area wizard
+## WP7.3 — awaiting human gate — 2026-07-21 — Paint tools + new-area wizard
 - Tier: Mid. Split into an independently verifiable **Domain engine** (this checkpoint) and the
   **app UI** (next), because the UI half ends in a human gate (walk the painted area in game) while
   the engine half is fully testable headlessly. Kept inline as Lead: paint idempotency is exactly the
@@ -735,5 +735,42 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   identity/grid rewrite with template passthrough, serialization round-trip, idempotent ifo entry.
 - Verified: solution builds clean (0 errors), full suite 373/374 green (353 prior + 20; 1 pre-existing
   skip), 2m01s. Engine is Domain + tests only — no app behavior yet, so no smoke needed.
-- Next: app UI — paint/rotate/raise-lower brush in the 3D view driving these, and the new-area wizard
-  dialog. Ends in the human gate: create a small area, paint terrain, pack, walk it in game.
+- **UI half (same day):**
+  - `Domain\Workspace\NewAreaWriter.cs` — the wizard's write path. Started in the app layer, then
+    MOVED to Domain: it is pure file/document work with no Avalonia dependency, and the test project
+    only references Domain, so leaving it app-side would have made the one genuinely risky part of
+    the wizard (writing real files) untestable. The app now contributes only UI. Clones the template
+    triplet under a new resref, reshapes the .are to a solid fill, registers it in module.ifo.
+    Validates everything BEFORE the first write, and writes the area triplet before the module index
+    so a failure leaves harmless orphans rather than an index entry pointing at a missing area.
+  - `Viewport\GlAreaControl.cs` — `IsPaintActive` + `PaintPointPicked`/`PaintCancelled`. Unlike
+    placement (one-shot), the brush is STICKY: it survives each dab so the user can keep painting,
+    and Esc disarms it. Camera navigation is untouched — only a click (under the drag threshold)
+    paints, so left-drag still pans and right/middle still orbit. The move/rotate gizmo is suppressed
+    while painting so a dab landing on the selection is not swallowed.
+  - `Editors\AreaEditorViewModel.cs` — brush state (tool + terrain palette from the area's own
+    tileset), and `CommitPaint` mapping the clicked ground point to a grid cell and applying the tool
+    as ONE .are transaction. A dab that changes nothing commits nothing, so it costs no undo step.
+    Also made .are undo/redo refresh the 3D view — the .are history now carries tile paints, so
+    without it undoing a paint left the viewport showing the painted tiles.
+  - Corpus tile-frequency ranking is built lazily on a background thread the first time the brush is
+    armed (it reads every .are in the module) and memoized per (module, tileset); until it lands,
+    tie-breaks fall back to lowest tile id.
+  - New-area wizard shown inline in the Module Explorer (the same overlay pattern the palette browser
+    uses) rather than as a Window, so it needs no window-lifetime plumbing.
+- Tests: NewAreaWriterTests (8) against a THROWAWAY temp module fixture (real template files copied
+  to temp — the repo module is never written to): the created triplet loads back as a real area with
+  the right dimensions/tileset/identity, every cell carries the SAME fill tile and that tile is
+  verified uniform terrain (a plain walkable floor, not just a legal tile), the area is registered in
+  module.ifo, a duplicate resref is rejected without touching the existing file, mixed-case resrefs
+  are normalized rather than rejected, and invalid resrefs/dimensions are refused.
+- Verified: solution builds clean, full suite 381/382 green (373 prior + 8; 1 pre-existing skip),
+  2m09s. Launch-and-kill smoke: window came up ("SWLOR Toolset"), ran 12s stably, exited on kill with
+  no leftover process.
+- **PENDING HUMAN GATE** — needs a person in the app + game:
+  1. Module Explorer → "New Area...", create a small area (e.g. 4x4), confirm it opens.
+  2. In its 3D View, toggle **Paint**, pick a terrain, click tiles — the clicked tile should fill and
+     its neighbours should blend. Try Rotate/Raise/Lower. Esc disarms.
+  3. Save, then reopen the area and paint the same terrain on the same tile again — it should be a
+     no-op (nothing marked dirty).
+  4. Pack the module and **walk the new area in game** — the floor should be solid and walkable.

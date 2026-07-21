@@ -18,6 +18,8 @@ namespace SWLOR.Toolset.Editors
             AreaView.InstanceRotated += OnInstanceRotated;
             AreaView.PlacementPointPicked += OnPlacementPointPicked;
             AreaView.PlacementCancelled += OnPlacementCancelled;
+            AreaView.PaintPointPicked += OnPaintPointPicked;
+            AreaView.PaintCancelled += OnPaintCancelled;
             DataContextChanged += (_, _) => AttachViewModel();
         }
 
@@ -34,6 +36,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.Scene = _viewModel.AreaScene;
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
+            AreaView.IsPaintActive = _viewModel.IsPaintMode;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         }
 
@@ -48,6 +51,8 @@ namespace SWLOR.Toolset.Editors
                 AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsPlacementPending))
                 AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.IsPaintMode))
+                AreaView.IsPaintActive = _viewModel.IsPaintMode;
         }
 
         /// <summary>
@@ -71,6 +76,12 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>WP5.2: a pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();
+
+        /// <summary>WP7.3: a paint dab landed on a tile - apply the active brush tool there.</summary>
+        private void OnPaintPointPicked(Vector3 position) => _viewModel?.CommitPaint(position);
+
+        /// <summary>WP7.3: the brush was disarmed from inside the viewport (Esc) - untoggle the UI.</summary>
+        private void OnPaintCancelled() => _viewModel?.CancelPaint();
 
         /// <summary>Builds the 3D scene lazily the first time the "3D View" tab is activated - never on area-editor open.</summary>
         private void OnRootTabSelectionChanged(object? sender, SelectionChangedEventArgs e)

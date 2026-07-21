@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Numerics;
 using CommunityToolkit.Mvvm.Input;
@@ -9,6 +10,7 @@ using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
@@ -46,6 +48,7 @@ namespace SWLOR.Toolset.Editors
         private readonly DocumentSession _areSession;
         private readonly DocumentSession _gitSession;
         private readonly OutputLogService _log;
+        private readonly ModuleWorkspace _workspace;
         private readonly string _areResRef;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly TileModelCache? _tileModelCache;
@@ -371,6 +374,243 @@ namespace SWLOR.Toolset.Editors
             _ = BuildSceneAsync((instance.Kind, index));
         }
 
+        // ----- WP7.3: terrain paint / rotate / raise-lower tools -----
+
+        /// <summary>
+        /// Memo of the corpus tile-frequency ranking per (module, tileset). The scan reads every
+        /// .are in the module, so without this every area editor opened would repeat it for the same
+        /// tileset. Shared across editors because the answer depends only on what is on disk.
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, Func<int, int>> TileRankCache = new();
+
+        private TilesetDefinition? _paintTileset;
+        private Func<int, int>? _tileRank;
+        private bool _tileRankRequested;
+
+        /// <summary>The terrains of this area's tileset that can fill a whole tile - the paint palette.</summary>
+        public ObservableCollection<string> TerrainBrushes { get; } = new();
+
+        private string? _selectedTerrain;
+
+        /// <summary>The terrain the Terrain tool paints. Defaults to the tileset's floor terrain.</summary>
+        public string? SelectedTerrain
+        {
+            get => _selectedTerrain;
+            set
+            {
+                if (_selectedTerrain == value)
+                    return;
+
+                _selectedTerrain = value;
+                OnPropertyChanged(nameof(SelectedTerrain));
+                OnPropertyChanged(nameof(PaintStatus));
+            }
+        }
+
+        /// <summary>The available brush tools, for the 3D view's tool picker.</summary>
+        public IReadOnlyList<AreaPaintTool> PaintTools { get; } =
+            new[] { AreaPaintTool.Terrain, AreaPaintTool.Rotate, AreaPaintTool.Raise, AreaPaintTool.Lower };
+
+        private AreaPaintTool _selectedPaintTool = AreaPaintTool.Terrain;
+
+        public AreaPaintTool SelectedPaintTool
+        {
+            get => _selectedPaintTool;
+            set
+            {
+                if (_selectedPaintTool == value)
+                    return;
+
+                _selectedPaintTool = value;
+                OnPropertyChanged(nameof(SelectedPaintTool));
+                OnPropertyChanged(nameof(PaintStatus));
+            }
+        }
+
+        private bool _isPaintMode;
+
+        /// <summary>
+        /// True while the brush is armed: a viewport CLICK edits the tile under the cursor. Camera
+        /// navigation is untouched (a left drag still pans, right/middle still orbit), so this can
+        /// stay on while the user moves around. Sticky, unlike the one-shot placement mode.
+        /// </summary>
+        public bool IsPaintMode
+        {
+            get => _isPaintMode;
+            set
+            {
+                if (_isPaintMode == value)
+                    return;
+
+                _isPaintMode = value;
+                if (value)
+                    EnsurePaintDataLoaded();
+
+                OnPropertyChanged(nameof(IsPaintMode));
+                OnPropertyChanged(nameof(PaintStatus));
+            }
+        }
+
+        /// <summary>3D-view status line while the brush is armed, or empty otherwise.</summary>
+        public string PaintStatus
+        {
+            get
+            {
+                if (!IsPaintMode)
+                    return string.Empty;
+
+                if (_paintTileset == null)
+                    return "Paint unavailable: this area's tileset could not be resolved.";
+
+                return SelectedPaintTool switch
+                {
+                    AreaPaintTool.Terrain => string.IsNullOrWhiteSpace(SelectedTerrain)
+                        ? "Choose a terrain to paint."
+                        : $"Painting \"{SelectedTerrain}\" - click a tile to fill it (Esc to stop).",
+                    AreaPaintTool.Rotate => "Click a tile to rotate it a quarter turn (Esc to stop).",
+                    AreaPaintTool.Raise => "Click a tile to raise it one height step (Esc to stop).",
+                    _ => "Click a tile to lower it one height step (Esc to stop)."
+                };
+            }
+        }
+
+        [RelayCommand]
+        private void TogglePaintMode() => IsPaintMode = !IsPaintMode;
+
+        /// <summary>Called by the view when paint mode is dismissed from inside the viewport (Esc).</summary>
+        public void CancelPaint() => IsPaintMode = false;
+
+        /// <summary>
+        /// Resolves this area's tileset once, fills the terrain palette from the terrains it can
+        /// actually fill a tile with, and kicks off the corpus tile-frequency scan in the background
+        /// (the scan reads every area in the module, so it must never block the click that armed the
+        /// brush; until it lands, tie-breaks fall back to lowest tile id).
+        /// </summary>
+        private void EnsurePaintDataLoaded()
+        {
+            if (_paintTileset == null && _tilesetCatalog != null)
+            {
+                var are = new AreDocument(_areSession.Document);
+                var tilesetResRef = are.Tileset ?? string.Empty;
+                if (_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
+                {
+                    _paintTileset = tileset;
+
+                    TerrainBrushes.Clear();
+                    foreach (var terrain in TilePainter.FillableTerrains(tileset))
+                        TerrainBrushes.Add(terrain);
+
+                    SelectedTerrain ??= TilePainter.DefaultFillTerrain(tileset) ?? TerrainBrushes.FirstOrDefault();
+                }
+                else
+                {
+                    _log.AppendLine($"Paint unavailable for {_areResRef}: tileset '{tilesetResRef}' could not be resolved.");
+                }
+            }
+
+            if (_tileRankRequested || _paintTileset == null)
+                return;
+
+            _tileRankRequested = true;
+            var resRef = new AreDocument(_areSession.Document).Tileset ?? string.Empty;
+            var workspace = _workspace;
+            var cacheKey = workspace.ModuleRoot + "|" + resRef;
+
+            if (TileRankCache.TryGetValue(cacheKey, out var cached))
+            {
+                _tileRank = cached;
+                return;
+            }
+
+            _ = Task.Run(() =>
+            {
+                try
+                {
+                    var counts = TileUsageStatistics.CountTiles(workspace, resRef);
+                    if (counts.Count == 0)
+                        return;
+
+                    var rank = TileUsageStatistics.RankByUsage(counts);
+                    TileRankCache[cacheKey] = rank;
+                    _tileRank = rank;
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine($"Tile usage scan failed for tileset '{resRef}': {ex.Message}");
+                }
+            });
+        }
+
+        /// <summary>
+        /// Called by the view for each paint dab (GlAreaControl.PaintPointPicked): maps the clicked
+        /// ground point to a grid cell and applies the active tool as ONE .are transaction, then
+        /// refreshes the 3D view. A dab that would change nothing (e.g. repainting a tile that
+        /// already carries the terrain) commits nothing, so it costs no undo step.
+        /// </summary>
+        public void CommitPaint(Vector3 point)
+        {
+            if (!IsPaintMode)
+                return;
+
+            var are = new AreDocument(_areSession.Document);
+            var width = AreaTiles.Width(are);
+            var height = AreaTiles.Height(are);
+
+            var col = (int)Math.Floor(point.X / AreaSceneBuilder.TileSize);
+            var row = (int)Math.Floor(point.Y / AreaSceneBuilder.TileSize);
+            if (col < 0 || row < 0 || col >= width || row >= height)
+                return;
+
+            var applied = SelectedPaintTool switch
+            {
+                AreaPaintTool.Terrain => PaintTerrainAt(are, width, height, col, row),
+                AreaPaintTool.Rotate => RotateTileAt(are, col, row),
+                AreaPaintTool.Raise => ChangeHeightAt(are, col, row, +1),
+                _ => ChangeHeightAt(are, col, row, -1)
+            };
+
+            if (applied)
+                _ = BuildSceneAsync(CaptureReselectKey());
+        }
+
+        private bool PaintTerrainAt(AreDocument are, int width, int height, int col, int row)
+        {
+            if (_paintTileset is not { } tileset || SelectedTerrain is not { } terrain || string.IsNullOrWhiteSpace(terrain))
+                return false;
+
+            var changes = TilePainter.PaintTerrain(
+                tileset, width, height, AreaTiles.Reader(are), col, row, terrain, _tileRank);
+
+            if (changes.Count == 0)
+                return false;
+
+            return RunAreEdit($"Paint {terrain} at ({col},{row})", () =>
+            {
+                foreach (var change in changes)
+                    AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);
+            });
+        }
+
+        private bool RotateTileAt(AreDocument are, int col, int row)
+        {
+            if (AreaTiles.At(are, col, row) is not { } placed)
+                return false;
+
+            var orientation = (placed.Orientation + 1) % 4;
+            return RunAreEdit($"Rotate tile ({col},{row})", () => AreaTiles.SetOrientation(are, col, row, orientation));
+        }
+
+        private bool ChangeHeightAt(AreDocument are, int col, int row, int delta)
+        {
+            var current = AreaTiles.HeightLevelOf(are, col, row);
+            var updated = Math.Max(0, current + delta);
+            if (updated == current)
+                return false;
+
+            var label = delta > 0 ? "Raise" : "Lower";
+            return RunAreEdit($"{label} tile ({col},{row})", () => AreaTiles.SetHeightLevel(are, col, row, updated));
+        }
+
         public AreaEditorViewModel(
             string areResRef,
             ModuleWorkspace workspace,
@@ -385,6 +625,7 @@ namespace SWLOR.Toolset.Editors
             TileWalkmeshCache? tileWalkmeshCache = null)
         {
             _log = log;
+            _workspace = workspace;
             _areResRef = areResRef;
             _tilesetCatalog = tilesetCatalog;
             _tileModelCache = tileModelCache;
@@ -570,12 +811,22 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        /// <summary>Undo/redo for the area-properties (.are) group's own small history.</summary>
+        /// <summary>
+        /// Undo/redo for the area-properties (.are) group's own small history. Since WP7.3 the .are
+        /// history also carries tile paints, so this refreshes the 3D view too (when it has ever been
+        /// built) - otherwise undoing a paint would leave the viewport showing the painted tiles.
+        /// </summary>
         [RelayCommand(CanExecute = nameof(CanUndoAre))]
         private void UndoAre()
         {
+            var reselect = CaptureReselectKey();
+
             _areSession.UndoStack.Undo();
             RefreshAreaPropertyFields();
+
+            if (_sceneBuildRequested)
+                _ = BuildSceneAsync(reselect);
+
             AfterHistoryChange();
         }
 
@@ -584,8 +835,14 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand(CanExecute = nameof(CanRedoAre))]
         private void RedoAre()
         {
+            var reselect = CaptureReselectKey();
+
             _areSession.UndoStack.Redo();
             RefreshAreaPropertyFields();
+
+            if (_sceneBuildRequested)
+                _ = BuildSceneAsync(reselect);
+
             AfterHistoryChange();
         }
 

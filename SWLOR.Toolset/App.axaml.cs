@@ -94,7 +94,14 @@ namespace SWLOR.Toolset
                 sp.GetService<PlaceableAppearanceService>(),
                 sp.GetService<DoorTypeService>()));
             services.AddSingleton<PropertiesViewModel>();
-            services.AddSingleton<ModuleExplorerViewModel>();
+            services.AddSingleton(sp => new ModuleExplorerViewModel(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetRequiredService<PropertiesViewModel>(),
+                sp.GetRequiredService<Func<Editors.EditorService>>(),
+                sp.GetRequiredService<ModelPreviewViewModel>(),
+                // Optional: only registered when the repo layout resolved, and the new-area wizard
+                // degrades to "no tilesets available" without it.
+                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>()));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(

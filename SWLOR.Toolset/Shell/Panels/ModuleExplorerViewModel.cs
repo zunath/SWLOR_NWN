@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -20,6 +22,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly PropertiesViewModel _properties;
         private readonly Func<Editors.EditorService>? _editorService;
         private readonly ModelPreviewViewModel? _modelPreview;
+        private readonly TilesetCatalog? _tilesetCatalog;
 
         private Dictionary<ResourceType, List<CatalogEntry>>? _catalogByType;
 
@@ -32,18 +35,48 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private ExplorerItem? _selectedItem;
 
+        /// <summary>The new-area wizard while it is open, or null - the view shows it as an overlay (WP7.3).</summary>
+        [ObservableProperty]
+        private NewAreaViewModel? _activeNewArea;
+
         public ModuleExplorerViewModel(
             WorkspaceContext workspaceContext,
             PropertiesViewModel properties,
             Func<Editors.EditorService>? editorService = null,
-            ModelPreviewViewModel? modelPreview = null)
+            ModelPreviewViewModel? modelPreview = null,
+            TilesetCatalog? tilesetCatalog = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
             _editorService = editorService;
             _modelPreview = modelPreview;
+            _tilesetCatalog = tilesetCatalog;
             Id = "ModuleExplorer";
             Title = "Module Explorer";
+        }
+
+        /// <summary>
+        /// Opens the new-area wizard (WP7.3). On success the explorer re-enumerates (so the new area
+        /// shows up in the Areas category) and the area opens in its editor, ready to paint.
+        /// </summary>
+        [RelayCommand]
+        private void NewArea()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
+
+            ActiveNewArea = new NewAreaViewModel(
+                workspace,
+                _tilesetCatalog,
+                resRef =>
+                {
+                    ActiveNewArea = null;
+                    Initialize();
+                    SelectedCategory = Categories.FirstOrDefault(c => c.Type == ResourceType.Area);
+                    _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);
+                },
+                () => ActiveNewArea = null);
         }
 
         /// <summary>Opens the selected item in its blueprint editor (double-click).</summary>

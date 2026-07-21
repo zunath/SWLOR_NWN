@@ -183,6 +183,9 @@
               <TextBlock Text="{Binding PlacementStatus}" Foreground="#88CCFF"
                          TextTrimming="CharacterEllipsis" MaxWidth="480"
                          IsVisible="{Binding PlacementStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              <TextBlock Text="{Binding PaintStatus}" Foreground="#AAFFAA"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480"
+                         IsVisible="{Binding PaintStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
           </Border>
 
@@ -219,6 +222,20 @@
               </StackPanel>
             </StackPanel>
           </Border>
+
+          <!-- WP7.3 tile brush. Toggling "Paint" arms a sticky brush: a viewport CLICK edits the
+               tile under the cursor while drags/orbit still drive the camera. Esc (handled in the
+               viewport) disarms it. -->
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="8" Spacing="6" Background="#B0202020">
+            <ToggleButton Content="Paint" IsChecked="{Binding IsPaintMode, Mode=TwoWay}"
+                          ToolTip.Tip="Arm the tile brush: click a tile to edit it. Esc to stop." />
+            <ComboBox ItemsSource="{Binding PaintTools}" SelectedItem="{Binding SelectedPaintTool, Mode=TwoWay}"
+                      MinWidth="90" ToolTip.Tip="Which edit a click applies" />
+            <ComboBox ItemsSource="{Binding TerrainBrushes}" SelectedItem="{Binding SelectedTerrain, Mode=TwoWay}"
+                      MinWidth="120" ToolTip.Tip="Terrain painted by the Terrain tool"
+                      IsEnabled="{Binding IsPaintMode}" />
+          </StackPanel>
 
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
                       Margin="8" Spacing="10">

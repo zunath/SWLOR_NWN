@@ -244,7 +244,20 @@ done | blocked`.
   `Module\config.json` ModuleFileName (fallback to the known default).
 - Verified: 203/204 green, app builds clean, launch smoke OK. Real pack + in-game load is the
   WP3.6 human gate.
-## WP3.6 — pending — End-to-end daily-driver gate (human verify)
+## WP3.6 — done — 2026-07-20 — End-to-end daily-driver gate (PHASE 3 COMPLETE)
+- Tier: Lead + human. **Human-verified in game:** quest NPC placed entirely in-tool
+  (palette add → position/Tag/VarTable → Save All), packed via Pack Module, deployed, and
+  the creature spawned in game. Two issues found and fixed during the gate: file-watcher
+  pack-noise flood (filtered) and stale config.json module filename (corrected + hardened
+  resolution). **The daily driver ships.**
+
+## Backlog — nice-to-haves (not scheduled)
+- Output panel should auto-scroll to the latest line as entries arrive (user request,
+  2026-07-20). Candidate: WP6.2 polish pass.
+- Shared resource dictionary for the field DataTemplates duplicated between
+  BlueprintEditorView and AreaEditorView (noted in WP3.3).
+- Refresh committed tools\SWLOR.CLI\SWLOR.CLI.exe with the --no-prompt build, then drop
+  PackService's fallback path (noted in WP3.5).
 ## WP4.1 — pending — GL spike
 ## WP4.2 — pending — Mesh/texture pipeline
 ## WP4.3 — pending — Model preview panes

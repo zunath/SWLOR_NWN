@@ -1146,7 +1146,11 @@ static string BuildPlaceableEntries(List<PlannedDecoration> plan, Dictionary<str
         var tag = $"PG_DEC_{index}";
         var bearingRadians = planned.Facing * Math.PI / 180.0;
         var appearance = decorationAppearances.GetValueOrDefault(planned.Resref, 0);
-        entries.Add(PlaceableEntry(tag, planned.Resref, planned.Position.X, planned.Position.Y, planned.Position.Z, bearingRadians, appearance, planned.VisualScale));
+        // GroundZ is the plan-time absolute ground height at the placement's support anchor
+        // (nonzero only for anchored frontage buildings on height-painted layouts -- see
+        // PlannedDecoration.GroundZ); Position.Z stays the height OFFSET above ground, exactly
+        // mirroring the live path's GetGroundHeight(anchor) + offset composition.
+        entries.Add(PlaceableEntry(tag, planned.Resref, planned.Position.X, planned.Position.Y, planned.GroundZ + planned.Position.Z, bearingRadians, appearance, planned.VisualScale));
     }
 
     return string.Join(",\n", entries);

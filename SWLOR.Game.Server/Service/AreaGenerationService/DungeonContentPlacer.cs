@@ -319,12 +319,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             for (var i = startIndex; i < end; i++)
             {
                 var planned = plan[i];
-                var position = GroundedPosition(area, planned.Position.X, planned.Position.Y);
+                // Ground at the plan's SUPPORT ANCHOR when one is declared (frontage buildings on
+                // chasm-bearing tilesets -- see PlannedDecoration.GroundAnchor): the sample lands
+                // on the platform surface the building's face stands flush with. A naive sample at
+                // the placement's own XY would hit the chasm floor far below a deep tower's
+                // overhanging center and sink the whole building. Anchor-less decorations keep the
+                // exact previous own-XY grounding.
+                var groundSample = planned.GroundAnchor ?? new Vector2(planned.Position.X, planned.Position.Y);
+                var grounded = GroundedPosition(area, groundSample.X, groundSample.Y);
+                if (planned.GroundAnchor.HasValue)
+                {
+                    result.GroundAnchorsPlanned++;
+                    if (System.Math.Abs(grounded.Z - planned.GroundZ) <= 0.5f)
+                        result.GroundAnchorsVerified++;
+                }
+
                 // The planned Z is a HEIGHT OFFSET above ground (0 for every ground placement;
                 // the mined mounting height for wall-mounted facade dressing -- see
                 // BuildingFrontagePlanner.PlanFacadeMounts), layered on top of the live ground
                 // height so mounts hang on building faces at their evidence-derived band.
-                position.Z += planned.Position.Z;
+                var position = new Vector3(planned.Position.X, planned.Position.Y,
+                    grounded.Z + planned.Position.Z);
                 var location = Location(area, position, planned.Facing);
 
                 var placeable = CreateObject(ObjectType.Placeable, planned.Resref, location);

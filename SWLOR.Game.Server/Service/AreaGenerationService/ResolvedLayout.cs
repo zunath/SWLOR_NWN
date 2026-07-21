@@ -71,6 +71,27 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public Dictionary<(int X, int Y), string> FeatureTileCells { get; set; } = new();
 
+        /// <summary>
+        /// The macro layout's corner-terrain plan, carried through unchanged by
+        /// TileResolver.TryResolve (the same carry-through convention as <see cref="Crossers"/>) --
+        /// the resolved tiles were selected to MATCH this plan corner-for-corner, so it is the
+        /// authoritative per-corner terrain semantics of the finished grid without re-deriving them
+        /// from tile IDs. BuildingFrontagePlanner reads this (with
+        /// <see cref="DungeonTilesetProfile.ChasmTerrains"/>) to keep building footprints supported
+        /// by real platform surface instead of hanging over a chasm -- see FrontageSupportRule.
+        /// Null only for layouts constructed without the resolver (legacy tests); consumers must
+        /// treat null as "no corner semantics available".
+        /// </summary>
+        public CornerTerrainGrid CornerTerrains { get; set; }
+
+        /// <summary>
+        /// The tileset's height-transition unit in meters ([GENERAL] Transition), carried through
+        /// by TileResolver.TryResolve so plan-time consumers can convert a ResolvedTile.Height
+        /// index into a world-space surface height (surface Z = Height * HeightTransition for a
+        /// flat-cornered tile) without re-parsing the .set. 0 when unset (legacy layouts).
+        /// </summary>
+        public float HeightTransition { get; set; }
+
         public ResolvedTile GetTile(int x, int y)
         {
             return Tiles[y * Width + x];

@@ -272,7 +272,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
                 StampedStructureTiles = layout.StampedOpenSetPieceFootprints
                     .SelectMany(f => f)
                     .ToHashSet(),
-                FeatureTileCells = placedFeatureCells
+                FeatureTileCells = placedFeatureCells,
+                CornerTerrains = layout.Corners,
+                HeightTransition = tileset.HasHeightTransition ? tileset.HeightTransition : 0f
             };
             failureReason = null;
             return true;

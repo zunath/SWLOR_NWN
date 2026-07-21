@@ -239,6 +239,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // rest) to the street network with a short spur lane. See LayoutRoadCarver.CarveSpurs.
             LayoutRoadCarver.CarveSpurs(layout, parameters, tileset, random);
 
+            // Runs LAST among the terrain passes (no RNG): needs the pinned tiles and transitions
+            // settled so it never repaints a corner a stamped group or door slot owns. See
+            // LayoutPlatformApronPainter -- inert unless the composition declared PlatformApron
+            // (chasm-margin city tilesets with structural frontage).
+            LayoutPlatformApronPainter.Paint(layout, parameters);
+
             ValidateInvariants(layout, parameters);
 
             return layout;

@@ -33,6 +33,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// </summary>
         public double SecondaryRoomFraction { get; set; } = 0.35;
 
+        /// <summary>
+        /// When true, margin cells that front an open room cell get their remaining solid corners
+        /// repainted to the fronted open terrain -- a paved PLATFORM APRON one cell deep around
+        /// the walkable grid, so structural frontage buildings erected on those margins stand on
+        /// real platform surface (see LayoutPlatformApronPainter and FrontageSupportRule). Mined
+        /// hand-built evidence: fcx01 city areas are platform-dominant (median "holes" chasm
+        /// corner share ~0.17, several flagship areas 0.00) with towers standing ON the paving and
+        /// the drop beyond them, while ungated generated chasm-margin layouts ran 0.72 -- deep
+        /// towers had nothing to stand on. Set by DungeonComposition.BuildLayoutParameters for
+        /// tilesets declaring BOTH frontage buildings and chasm terrains; default false leaves
+        /// every other composition's corner plan untouched.
+        /// </summary>
+        public bool PlatformApron { get; set; }
+
         public DungeonLayoutStyle Style { get; set; } = DungeonLayoutStyle.RoomsAndCorridors;
 
         public int MinRooms { get; set; } = 4;

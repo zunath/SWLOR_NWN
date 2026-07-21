@@ -28,6 +28,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
     ///    footprint may penetrate any walkable cell by at most <see cref="MaxOpenIntrusion"/>
     ///    (min-dimension of the overlap rectangle), so no street lane or room interior is ever
     ///    blocked,
+    ///  - on a chasm-bearing tileset (<see cref="DungeonTilesetProfile.ChasmTerrains"/>), the
+    ///    footprint must satisfy the mined support envelope against the resolved corner-terrain
+    ///    plan (see <see cref="FrontageSupportRule"/>) -- a deep model that would hang over the
+    ///    visible abyss is rejected for that slot and a shallower fitting model takes it,
+    ///  - every placement carries a SUPPORT ANCHOR just inside its fronted open cell
+    ///    (<see cref="Decoration.PlannedDecoration.GroundAnchor"/>), so live grounding samples the
+    ///    platform surface rather than the chasm floor under the footprint center,
     ///  - bearing = the fronted face's outward normal, cardinal-quantized.
     ///
     /// Composition: occupied margin cells are published as
@@ -120,6 +127,20 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
         /// plaza rims and main streets keep their full canyon walls and the pruning lands on
         /// short alley stubs.</summary>
         internal const float MaxBuildingsPerOpenTile = 0.62f;
+
+        /// <summary>
+        /// Ceiling on the AREA-WIDE non-workhorse (accent) share of placed frontage buildings --
+        /// the mined hand-built comparable-mass maximum (r15 salience evidence: hand areas top out
+        /// at 0.571 non-workhorse; the perceived clone-city/accent-soup poles both live outside
+        /// that band). When an accent draw would push the running share past this ceiling and a
+        /// workhorse fits the slot, the highest-weight fitting workhorse takes it instead
+        /// (deterministic, no extra RNG draw). Small areas are where this binds: at ~26 buildings
+        /// a handful of unlucky accent draws breached 0.65 while the 30-seed sweep's own
+        /// distribution sits at 0.42-0.59 -- the guard trims exactly that tail. The same-model
+        /// run cap below still applies to the substituted workhorse, so the anti-clone rule wins
+        /// when the two conflict.
+        /// </summary>
+        internal const double MaxNonWorkhorseShare = 0.571;
 
         /// <summary>Frontage scale-jitter band (see
         /// <see cref="DungeonTilesetProfile.FrontageScaleJitter"/>): subtle enough that footprint
@@ -261,6 +282,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
             var budget = Math.Max(1, (int)Math.Round(frontableCells.Count * MaxBuildingsPerOpenTile));
 
             var rng = new System.Random(layout.Seed ^ FrontageSeedSalt);
+            var workhorsePlaced = 0;
             var usage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var familyUsage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var dominantUses = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -344,6 +366,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
                                     familyUsage.GetValueOrDefault(e.FamilyKey) < e.FamilyMaxPerArea)
                         .Where(e => HasSameModelClearance(e, cell, dir, scale, placedCenters))
                         .Where(e => Fits(e, cell, dir, scale, layout, openCells, stamped, excluded))
+                        .Where(e => FrontageSupportRule.IsSupported(
+                            Footprint(e, cell, dir, scale), layout, tileset.ChasmTerrains))
                         .ToList();
                     if (fitting.Count == 0)
                     {
@@ -371,6 +395,30 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
                         ? dominant
                         : DrawFromDeck(fitting);
 
+                    // Area-wide salience floor (see MaxNonWorkhorseShare): if this accent draw
+                    // would push the placed non-workhorse share past the mined hand-built maximum
+                    // and a workhorse fits the slot, the highest-weight fitting workhorse takes it
+                    // -- hand-builders keep plain towers in the majority on every comparable-mass
+                    // area. Deterministic (no extra RNG); the run cap below still applies.
+                    if (!entry.DominantEligible)
+                    {
+                        var placed = result.Placements.Count;
+                        var nonWorkhorsePlaced = placed - workhorsePlaced;
+                        if ((nonWorkhorsePlaced + 1) / (double)(placed + 1) > MaxNonWorkhorseShare)
+                        {
+                            BuildingFrontageEntry bestWorkhorse = null;
+                            foreach (var candidate in fitting)
+                            {
+                                if (candidate.DominantEligible &&
+                                    (bestWorkhorse == null || candidate.Weight > bestWorkhorse.Weight))
+                                    bestWorkhorse = candidate;
+                            }
+
+                            if (bestWorkhorse != null)
+                                entry = bestWorkhorse;
+                        }
+                    }
+
                     // Same-model run cap (see MaxSameModelRun): at the mined ceiling the slot
                     // re-rolls among the other fitting models -- the hand-built accent interleave.
                     if (entry.Resref.Equals(lastResref, StringComparison.OrdinalIgnoreCase) &&
@@ -383,7 +431,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
                             entry = DrawFromDeck(alternatives);
                     }
 
-                    Place(entry, cell, dir, scale, result);
+                    Place(entry, cell, dir, scale, layout, result);
+                    if (entry.DominantEligible)
+                        workhorsePlaced++;
                     usage[entry.Resref] = usage.GetValueOrDefault(entry.Resref) + 1;
                     if (!string.IsNullOrEmpty(entry.FamilyKey))
                         familyUsage[entry.FamilyKey] = familyUsage.GetValueOrDefault(entry.FamilyKey) + 1;
@@ -510,10 +560,24 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
 
         private static void Place(
             BuildingFrontageEntry entry, (int X, int Y) cell, (int Dx, int Dy) dir, float scale,
-            FrontageResult result)
+            ResolvedLayout layout, FrontageResult result)
         {
             var face = FaceCenter(cell, dir);
             var center = Center(entry, cell, dir, scale);
+
+            // SUPPORT ANCHOR (see PlannedDecoration.GroundAnchor): grounding must sample the
+            // platform the face stands flush with, not the footprint center -- a deep tower's
+            // center hangs over the margin, and on a chasm-bearing tileset the ground there is the
+            // chasm floor far below. 1m inside the fronted open cell is always real platform
+            // walkmesh (past the 0.6m face intrusion, well short of any opposite boundary).
+            var anchor = new Vector2(face.X + dir.Dx * 1f, face.Y + dir.Dy * 1f);
+            var fronted = (X: cell.X + dir.Dx, Y: cell.Y + dir.Dy);
+            var groundZ = 0f;
+            if (layout != null &&
+                fronted.X >= 0 && fronted.X < layout.Width && fronted.Y >= 0 && fronted.Y < layout.Height)
+            {
+                groundZ = layout.GetTile(fronted.X, fronted.Y).Height * layout.HeightTransition;
+            }
 
             result.Placements.Add(new FrontagePlacement
             {
@@ -523,7 +587,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
                     Position = new Vector3(center.X, center.Y, 0f),
                     Facing = DungeonDecorationPlanner.CardinalFacing(dir.Dx, dir.Dy),
                     Context = DecorationContext.BuildingFrontage,
-                    VisualScale = scale
+                    VisualScale = scale,
+                    GroundAnchor = anchor,
+                    GroundZ = groundZ
                 },
                 FaceCenter = face,
                 Outward = dir,

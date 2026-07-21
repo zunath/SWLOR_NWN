@@ -19,7 +19,9 @@ namespace SWLOR.Game.Server.Tests.AreaGeneration;
 /// Hand-built bands (promenade_bench harness over pw_ar_narpromena / pw_ar_velundr /
 /// ns_comrcial_ka / pw_ar_nsshipyard / pw_ar_narscorpd / narshadaar_promi -- the DRESSED family,
 /// excluding the undressed vrotrnsslums):
-///   decoratives per open tile   2.845 - 4.873   (open = road + plain-cobble tiles)
+///   decoratives per open tile   2.845 - 4.873   (open = road cells + plain-cobble ROOM cells;
+///                               the round-16 platform apron's paved margin ring is structural
+///                               building ground, excluded from the dressable denominator)
 ///   lit-model share             &lt;= 0.3243   (lamp/holo/sign-family fraction of decoratives)
 ///   elevated share (Z &gt; 0.5m) 0.0272 - 0.23  (facade mounts + stacked cargo)
 ///   distinct resrefs            &gt;= 50 at 24-32 (curated-palette breadth actually drawn)
@@ -173,8 +175,21 @@ public class PromenadeBandReliabilityTests
             (int X, int Y) TileOf(PlannedDecoration p) =>
                 ((int)MathF.Floor(p.Position.X / 10f), (int)MathF.Floor(p.Position.Y / 10f));
 
+            // Dressable streetscape (round-16 platform-apron recalibration, mirroring
+            // promenade_benchmark.area_metrics): the platform apron paves the frontage anchor
+            // ring, so those margin cells classify as plain-open tiles -- but they are structural
+            // building ground (the frontage walls stand on them), not dressable streetscape. The
+            // density denominator is open tiles restricted to the room region plus road-edge
+            // cells (street lanes across the margin ARE dressed streetscape), which reproduces
+            // the exact pre-apron basis the hand-built band was calibrated against.
+            var roomCells = layout.Rooms.Where(r => !r.IsSetPiece).SelectMany(r => r.Tiles).ToHashSet();
+            var dressableOpen = openTiles.Count(t =>
+                roomCells.Contains(t) ||
+                DungeonDecorationPlanner.TileCarriesRoadEdge(t, layout, c.Tileset.RoadCrosser));
+            dressableOpen.Should().BeGreaterThan(0);
+
             var dressed = plan.Count(p => !buildingTiles.Contains(TileOf(p)));
-            var density = dressed / (double)openTiles.Count;
+            var density = dressed / (double)dressableOpen;
             if (density < DensityFloor || density > DensityCeiling)
                 failures.Add($"seed {seed}: density {density:F3} outside [{DensityFloor}, {DensityCeiling}]");
 

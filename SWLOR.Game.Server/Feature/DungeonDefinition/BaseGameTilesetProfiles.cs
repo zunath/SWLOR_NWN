@@ -4250,6 +4250,14 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 })
                 .SolidTerrainOverride("holes")
                 .PrimaryOpenTerrain("Cobble")
+                // "holes" renders as a bottomless chasm drop, so frontage buildings obey the mined
+                // footprint-support envelope against the resolved corner plan (round-16 floating-
+                // building pass, _scratch_decor/r16_mine_support.py over the 19 hand-built fcx01
+                // city areas: platform-level towers keep in-grid chasm footprint share <= 0.36 and
+                // in-grid chasm overhang <= 9m, while off-grid rim overhang is free) -- see
+                // FrontageSupportRule. Inherited by the Cobble2 plaza variant like the frontage
+                // pool itself.
+                .ChasmTerrain("holes")
                 // PathNodeOpeningWidthAudit (fresh against fcx01's real pathnode data, Solid=holes/
                 // Open=Cobble) computes 2, not the default 1 -- locked in by OnboardedTilesetPipelineTests.
                 // MinimumOpeningWidth_MatchesFreshPathNodeAudit.

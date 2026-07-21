@@ -507,6 +507,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
+        /// Declares a terrain label that renders as a bottomless drop in this family (see
+        /// <see cref="DungeonTilesetProfile.ChasmTerrains"/>) -- activates the frontage
+        /// footprint-support rule (FrontageSupportRule) against the resolved corner plan.
+        /// </summary>
+        public DungeonTilesetProfileBuilder ChasmTerrain(string terrain)
+        {
+            _active.ChasmTerrains.Add(terrain);
+            return this;
+        }
+
+        /// <summary>
         /// Adds a weighted wall-mounted sign/holo placeable to this tileset family's facade-mount
         /// pass (see <see cref="DungeonTilesetProfile.FacadeMounts"/>). The height band is the
         /// mined per-resref Z band of the hand-built elevated placements.

@@ -112,6 +112,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
                         !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref && p.FrontageScaleJitter);
                 }
 
+                // Chasm semantics are a physical property of the shared tileset art, not of the
+                // palette: a variant district of a chasm-bearing family (fcx01's Cobble2 plaza)
+                // renders the same bottomless "holes" drop, so its frontage walls obey the same
+                // footprint-support rule as the family basis unless it declared its own list.
+                if (profile.ChasmTerrains.Count == 0)
+                {
+                    var chasmBasis = profiles.Values.FirstOrDefault(p =>
+                        !p.IsPaletteVariant && p.TilesetResref == profile.TilesetResref &&
+                        p.ChasmTerrains.Count > 0);
+                    if (chasmBasis != null)
+                        profile.ChasmTerrains = chasmBasis.ChasmTerrains;
+                }
+
                 // The family AREA atmosphere inherits like the palette above: a variant that
                 // declared no atmosphere of its own carries its family basis's mined values
                 // (fcx01's Cobble2/Plaza district shares the Cobble district's night-city .are

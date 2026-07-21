@@ -25,6 +25,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // defaulting to the tileset's GENERAL Default terrain. Empty for every interior profile --
             // Solve's own empty-means-Default stamp is unchanged there.
             parameters.SolidTerrain = Tileset.SolidTerrainOverride ?? string.Empty;
+            // Platform apron (see LayoutPlatformApronPainter): a chasm-margin city composition
+            // paves the frontage anchor ring so its towers stand on real platform surface -- the
+            // hand-built composition. Needs BOTH declarations: frontage walls to stand on it and
+            // chasm semantics to need it; every other composition's corner plan stays untouched.
+            parameters.PlatformApron =
+                Tileset.FrontageBuildings.Count > 0 && Tileset.ChasmTerrains.Count > 0;
             parameters.AccentTerrain =
                 parameters.AccentDensity > 0 && !string.IsNullOrEmpty(Tileset.AccentTerrain)
                     ? Tileset.AccentTerrain

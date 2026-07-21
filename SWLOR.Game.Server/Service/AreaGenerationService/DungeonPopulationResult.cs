@@ -47,5 +47,13 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// via GetObjectVisualTransform after SetObjectVisualTransform). The self-test asserts
         /// this converges 1:1 with <see cref="ScaleTransformsPlanned"/>.</summary>
         public int ScaleTransformsApplied { get; set; }
+
+        /// <summary>How many spawned decorations carried a support anchor in the plan (frontage
+        /// buildings on chasm-bearing tilesets -- see PlannedDecoration.GroundAnchor).</summary>
+        public int GroundAnchorsPlanned { get; set; }
+        /// <summary>How many of those anchors' live GetGroundHeight samples agreed with the plan's
+        /// own GroundZ (within 0.5m) -- the live/offline grounding-parity check. The self-test
+        /// asserts this converges 1:1 with <see cref="GroundAnchorsPlanned"/>.</summary>
+        public int GroundAnchorsVerified { get; set; }
     }
 }

@@ -402,6 +402,21 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public bool FrontageScaleJitter { get; set; }
 
         /// <summary>
+        /// Terrain labels that render as a bottomless drop (no supporting surface at open-platform
+        /// level) in this tileset family -- fcx01's "holes" chasm. When non-empty,
+        /// BuildingFrontagePlanner enforces the mined footprint-support envelope against the
+        /// resolved corner-terrain plan (see FrontageSupportRule): a candidate building whose
+        /// footprint hangs too far over in-grid chasm is rejected for that slot, so towers stand on
+        /// platform lips the way every hand-built platform-level tower does instead of floating
+        /// over the abyss. Distinct from <see cref="SolidTerrainOverride"/> because most families'
+        /// solid terrain is WALL MASS (a raised surface, perfectly valid support), not a drop.
+        /// Empty = no chasm semantics; the support rule never runs (every non-city tileset --
+        /// plans stay byte-identical). Inherited by palette variants like
+        /// <see cref="Decorations"/>.
+        /// </summary>
+        public List<string> ChasmTerrains { get; set; } = new();
+
+        /// <summary>
         /// Wall-mounted sign/holo placeables this tileset family hangs on building faces (see
         /// <see cref="FacadeMountEntry"/> and BuildingFrontagePlanner.PlanFacadeMounts). Empty =
         /// no facade-mount pass. Only meaningful alongside <see cref="UrbanDressing"/>.

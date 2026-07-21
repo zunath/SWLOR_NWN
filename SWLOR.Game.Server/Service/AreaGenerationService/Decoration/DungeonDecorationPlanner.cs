@@ -1238,7 +1238,45 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
             if (urban && tileset?.FacadeMounts is { Count: > 0 })
                 plan.AddRange(BuildingFrontagePlanner.PlanFacadeMounts(layout, tileset, frontage, plan.Count));
 
+            // CHASM GROUND FILTER (footprint-support pass): on a chasm-bearing tileset (see
+            // DungeonTilesetProfile.ChasmTerrains), a GROUND-standing dressing placement whose
+            // point lands on a chasm corner-quadrant would render floating over the abyss -- the
+            // main sources are street plates and lane-edge cargo rows dressed along a road lane
+            // that crosses the unpaved margin (the lane's own cells are paved by the resolver's
+            // Routes vocabulary; the cells BESIDE it are not). Every hand-built ground prop stands
+            // on platform; dropping these few marginal placements (~0.25% of a city plan) is the
+            // hand-accurate outcome. Frontage buildings have their own support envelope
+            // (FrontageSupportRule); facade mounts and stacked tiers hang elevated on faces/stacks.
+            // Pure point checks, no RNG -- removal cannot shift any mechanism's sequence. Inert
+            // for every tileset without chasm semantics.
+            if (tileset?.ChasmTerrains is { Count: > 0 } && layout.CornerTerrains != null)
+            {
+                plan.RemoveAll(p =>
+                    p.Context != DecorationContext.BuildingFrontage &&
+                    p.Context != DecorationContext.FacadeMount &&
+                    p.Position.Z <= 0.5f &&
+                    IsOverChasm(p.Position.X, p.Position.Y, layout, tileset.ChasmTerrains));
+            }
+
             return plan;
+        }
+
+        /// <summary>True when world point (x, y) lies in a chasm corner-quadrant (the 5x5m square
+        /// owned by its nearest grid corner -- the same platform model FrontageSupportRule uses).</summary>
+        private static bool IsOverChasm(float x, float y, ResolvedLayout layout, List<string> chasmTerrains)
+        {
+            var cx = Math.Clamp((int)MathF.Round(x / 10f), 0, layout.Width);
+            var cy = Math.Clamp((int)MathF.Round(y / 10f), 0, layout.Height);
+            var label = layout.CornerTerrains.Labels[cx, cy];
+            if (label == null)
+                return true;
+            foreach (var chasm in chasmTerrains)
+            {
+                if (string.Equals(label, chasm, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>

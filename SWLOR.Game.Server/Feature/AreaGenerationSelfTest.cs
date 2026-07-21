@@ -185,8 +185,25 @@ namespace SWLOR.Game.Server.Feature
                                     $"city frontage pass: only {population.ScaleTransformsApplied}/" +
                                     $"{population.ScaleTransformsPlanned} live scale transforms verified.");
 
+                            // Support-anchor grounding parity (see PlannedDecoration.GroundAnchor):
+                            // every frontage building's live GetGroundHeight sample at its anchor
+                            // must agree with the plan's own GroundZ, so the live path grounds
+                            // buildings on the platform exactly where the offline review module
+                            // puts them -- a divergence here means a building would sink to the
+                            // chasm floor (or float) live while looking correct in the toolset.
+                            if (population.GroundAnchorsPlanned == 0)
+                                throw new InvalidOperationException(
+                                    "city frontage pass: the plan carried zero support anchors — " +
+                                    "frontage grounding anchors did not reach the live plan.");
+                            if (population.GroundAnchorsVerified != population.GroundAnchorsPlanned)
+                                throw new InvalidOperationException(
+                                    $"city frontage pass: only {population.GroundAnchorsVerified}/" +
+                                    $"{population.GroundAnchorsPlanned} support-anchor ground heights matched the plan.");
+
                             Report($"city frontage pass: {population.ScaleTransformsApplied}/" +
-                                   $"{population.ScaleTransformsPlanned} per-instance scale transforms verified live.");
+                                   $"{population.ScaleTransformsPlanned} per-instance scale transforms verified live; " +
+                                   $"{population.GroundAnchorsVerified}/{population.GroundAnchorsPlanned} " +
+                                   "support-anchor ground heights verified against the plan.");
 
                             if (!AreaGeneration.DestroyGeneratedArea(result.InstanceId, out var destroyFailure))
                                 throw new InvalidOperationException($"city frontage pass: teardown failed: {destroyFailure}");

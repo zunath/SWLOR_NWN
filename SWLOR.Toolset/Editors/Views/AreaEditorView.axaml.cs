@@ -37,7 +37,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Builds the 3D scene lazily the first time the "3D View" tab is activated - never on area-editor open.</summary>
         private void OnRootTabSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            if (ViewTab3D.IsSelected)
+            // The TabControl raises SelectionChanged while the XAML is still populating
+            // (during InitializeComponent), before named fields are assigned - guard both.
+            if (ViewTab3D?.IsSelected == true)
                 _viewModel?.EnsureSceneBuilt();
         }
 

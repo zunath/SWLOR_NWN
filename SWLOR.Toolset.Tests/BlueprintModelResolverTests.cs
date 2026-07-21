@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
@@ -85,7 +86,9 @@ namespace SWLOR.Toolset.Tests
         {
             // agr_guildmaster.utc: Appearance_Type 10096 -> MODELTYPE P, RACE H; Gender 0 (male),
             // Phenotype 0 -> skeleton prefix "pmh0". Part numbers read from the utc's BodyPart_*
-            // fields; 0-valued/absent parts are omitted.
+            // fields; 0-valued/absent parts are omitted. No item loader -> naked body (no armor
+            // overrides). Right foot comes from the Aurora-quirk field ArmorPart_RFoot (=1 here);
+            // BodyPart_RFoot does not exist anywhere in the corpus.
             var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
 
             var result = BlueprintModelResolver.Resolve(ResourceType.Utc, root, Appearances(), null, null);
@@ -94,7 +97,7 @@ namespace SWLOR.Toolset.Tests
             result.SkeletonResRef.Should().Be("pmh0");
 
             var parts = result.Parts.ToDictionary(p => p.PartType, p => p.ModelResRef);
-            parts.Should().HaveCount(15, "belt(0), both shoulders(0), and the absent right foot are omitted");
+            parts.Should().HaveCount(16, "belt(0) and both shoulders(0) are omitted; both feet resolve");
             parts["head"].Should().Be("pmh0_head220");
             parts["neck"].Should().Be("pmh0_neck001");
             parts["chest"].Should().Be("pmh0_chest001", "BodyPart_Torso maps to the 'chest' bone part");
@@ -104,8 +107,68 @@ namespace SWLOR.Toolset.Tests
             parts["forel"].Should().Be("pmh0_forel248", "BodyPart_LFArm maps to the 'forel' forearm part");
             parts["handr"].Should().Be("pmh0_handr246");
             parts["footl"].Should().Be("pmh0_footl001");
+            parts["footr"].Should().Be("pmh0_footr001", "right foot is read from ArmorPart_RFoot on the utc root");
             parts.Should().NotContainKey("belt");
-            parts.Should().NotContainKey("footr");
+        }
+
+        [Test]
+        public void Resolve_SegmentedCreatureWithEquippedArmor_AppliesArmorPartOverrides()
+        {
+            // agr_guildmaster has 'noble_gr' equipped in the chest slot (Equip_ItemList struct id 2).
+            // noble_gr.uti's ArmorPart_* values must override the creature's naked body parts
+            // (Torso 27, Pelvis 50, thighs 87, shins 85, feet 52, hands 3, forearms 4, biceps 4,
+            // Neck 4) — except parts the creature sets to 0 (belt 0, shoulders 0 stay invisible,
+            // Quartermaster precedence) and the head, which armor never overrides.
+            var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
+            JsonGffStruct? LoadItem(string resRef) => BlueprintRoot(ResourceType.Uti, resRef);
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc, root, Appearances(), null, null, LoadItem, _ => true);
+
+            result.Kind.Should().Be(BlueprintModelKind.Segmented);
+            var parts = result.Parts.ToDictionary(p => p.PartType, p => p.ModelResRef);
+            parts.Should().HaveCount(16, "noble_gr has no robe; belt and shoulders stay 0");
+            parts["head"].Should().Be("pmh0_head220", "armor never overrides the head");
+            parts["chest"].Should().Be("pmh0_chest027");
+            parts["pelvis"].Should().Be("pmh0_pelvis050");
+            parts["neck"].Should().Be("pmh0_neck004");
+            parts["bicepl"].Should().Be("pmh0_bicepl004", "armor part 4 overrides the creature's 249");
+            parts["forer"].Should().Be("pmh0_forer004");
+            parts["handl"].Should().Be("pmh0_handl003");
+            parts["legl"].Should().Be("pmh0_legl087");
+            parts["shinr"].Should().Be("pmh0_shinr085");
+            parts["footl"].Should().Be("pmh0_footl052");
+            parts["footr"].Should().Be("pmh0_footr052");
+            parts.Should().NotContainKey("belt", "creature belt 0 wins over armor belt 25");
+            parts.Should().NotContainKey("shol");
+        }
+
+        [Test]
+        public void Resolve_SegmentedCreatureWithRobeArmor_SuppressesCoveredParts()
+        {
+            // Synthetic armor with a robe: covered parts (chest/pelvis/limbs/hands) are suppressed;
+            // head, neck, feet, and belt survive. Robe only activates when its model exists.
+            var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
+            var robeArmor = BlueprintRoot(ResourceType.Uti, "noble_gr");
+            robeArmor.Get("ArmorPart_Robe").SetInteger(7);
+
+            var withRobe = BlueprintModelResolver.Resolve(
+                ResourceType.Utc, root, Appearances(), null, null, _ => robeArmor, _ => true);
+
+            var parts = withRobe.Parts.ToDictionary(p => p.PartType, p => p.ModelResRef);
+            parts.Should().ContainKey("robe").WhoseValue.Should().Be("pmh0_robe007");
+            parts.Should().ContainKey("head").And.ContainKey("neck")
+                .And.ContainKey("footl").And.ContainKey("footr");
+            parts.Should().NotContainKey("chest").And.NotContainKey("pelvis")
+                .And.NotContainKey("bicepl").And.NotContainKey("handr").And.NotContainKey("shinl");
+
+            // Same armor but the robe model does not resolve -> no suppression, no robe part.
+            var withoutRobeModel = BlueprintModelResolver.Resolve(
+                ResourceType.Utc, root, Appearances(), null, null, _ => robeArmor, _ => false);
+
+            var fallbackParts = withoutRobeModel.Parts.ToDictionary(p => p.PartType, p => p.ModelResRef);
+            fallbackParts.Should().NotContainKey("robe");
+            fallbackParts.Should().ContainKey("chest").And.ContainKey("handr");
         }
 
         [Test]

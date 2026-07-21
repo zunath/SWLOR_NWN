@@ -327,7 +327,31 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   (its node transforms are the bones), nor are directly-rendered simple models (the control
   applies node transforms itself — baking would double-transform).
 - Verified: build clean, 235/236 green (round-trip gate intact), launch-and-kill smoke OK.
-- **Remaining: human visual RE-gate** — segmented humanoids should now assemble correctly.
+- **Re-gate #1 (human, 2026-07-21):** bodies now assemble (flattener works) — but right foot
+  missing on most segmented models, and worn armor renders inconsistently (some parts white).
+- **Second fix round (controller, corpus-evidenced):**
+  - **Right foot:** the creature's right-foot part number lives in `ArmorPart_RFoot` on the
+    utc root — an Aurora format quirk. Corpus proof: 447 utcs carry ArmorPart_RFoot, ZERO
+    carry BodyPart_RFoot (which my resolver had been reading). Fixed in BlueprintModelResolver.
+  - **Armor:** segmented creatures were rendered naked — worn chest armor (Equip_ItemList
+    struct id 2 → uti ArmorPart_*) now overrides body parts with Quartermaster's precedence
+    (creature 0 always wins; armor >0 beats creature; head never overridden), including robe
+    handling (ArmorPart_Robe>0 + model-exists check → robe part added, covered parts
+    suppressed per QM's RobePartSuppression set: everything except head/neck/feet/belt;
+    120 corpus armors have Robe>0). Resolver gained optional itemBlueprintLoader +
+    partModelExists delegates; preview VM supplies both.
+  - **White parts:** MdlPartComposer overwrites each attached mesh's Bitmap with the part
+    resref (its BioWare stale-bitmap workaround) — but SWLOR custom parts name their real
+    textures differently (pmh0_bicepl249's meshes use 'N_RepSold01'), so the override pointed
+    at nothing → white. Preview VM now records authored bitmaps during part load and restores
+    them post-Compose wherever the authored name resolves to a real plt/tga/dds; the
+    composer's override is kept when it doesn't (the genuine stale-bitmap case).
+  - **B1 crash fixed:** AreaEditorView.OnRootTabSelectionChanged NRE — TabControl raises
+    SelectionChanged during XamlIlPopulate before named fields are assigned; null-guarded.
+  - Verified: build clean, 260/261 green (2 new armor/robe resolver tests; naked-body test
+    updated for footr), smoke OK.
+- **Remaining: human visual RE-gate #2** (segmented + armor) and the full WP4.5 area-view
+  gate (blocked at first attempt by the B1 crash, now fixed).
 - Tier: Low (controller-executed inline; subagent dispatch avoided — the WP4.4 subagent
   died on the monthly spend limit, so remaining Phase 4 packages run inline).
 - Files: `Domain\Render\BlueprintModelResolver.cs` (headless, tested),

@@ -60,55 +60,87 @@ namespace SWLOR.Toolset.Domain.Render
     public static class BlueprintModelResolver
     {
         /// <summary>
-        /// utc BodyPart_* field name → the MdlPartComposer / MdlPartBoneMap part-type key. Head is handled
-        /// separately (its utc field is Appearance_Head, not a BodyPart_* field).
+        /// Creature field → armor-override key → MdlPartComposer / MdlPartBoneMap part type. Head is
+        /// handled separately (utc field Appearance_Head; armor never overrides it). Note the Aurora
+        /// format quirk on the right foot: the CREATURE's right-foot part number is stored under
+        /// "ArmorPart_RFoot" on the utc root — "BodyPart_RFoot" does not exist anywhere in the format
+        /// (corpus-verified: 447 utcs carry ArmorPart_RFoot, zero carry BodyPart_RFoot).
         /// </summary>
-        private static readonly (string Field, string PartType)[] BodyPartFields =
+        private static readonly (string CreatureField, string ArmorKey, string PartType)[] BodyPartFields =
         {
-            ("BodyPart_Neck", "neck"),
-            ("BodyPart_Torso", "chest"),
-            ("BodyPart_Belt", "belt"),
-            ("BodyPart_Pelvis", "pelvis"),
-            ("BodyPart_LShoul", "shol"),
-            ("BodyPart_RShoul", "shor"),
-            ("BodyPart_LBicep", "bicepl"),
-            ("BodyPart_RBicep", "bicepr"),
-            ("BodyPart_LFArm", "forel"),
-            ("BodyPart_RFArm", "forer"),
-            ("BodyPart_LHand", "handl"),
-            ("BodyPart_RHand", "handr"),
-            ("BodyPart_LThigh", "legl"),
-            ("BodyPart_RThigh", "legr"),
-            ("BodyPart_LShin", "shinl"),
-            ("BodyPart_RShin", "shinr"),
-            ("BodyPart_LFoot", "footl"),
-            ("BodyPart_RFoot", "footr"),
+            ("BodyPart_Neck", "Neck", "neck"),
+            ("BodyPart_Torso", "Torso", "chest"),
+            ("BodyPart_Belt", "Belt", "belt"),
+            ("BodyPart_Pelvis", "Pelvis", "pelvis"),
+            ("BodyPart_LShoul", "LShoul", "shol"),
+            ("BodyPart_RShoul", "RShoul", "shor"),
+            ("BodyPart_LBicep", "LBicep", "bicepl"),
+            ("BodyPart_RBicep", "RBicep", "bicepr"),
+            ("BodyPart_LFArm", "LFArm", "forel"),
+            ("BodyPart_RFArm", "RFArm", "forer"),
+            ("BodyPart_LHand", "LHand", "handl"),
+            ("BodyPart_RHand", "RHand", "handr"),
+            ("BodyPart_LThigh", "LThigh", "legl"),
+            ("BodyPart_RThigh", "RThigh", "legr"),
+            ("BodyPart_LShin", "LShin", "shinl"),
+            ("BodyPart_RShin", "RShin", "shinr"),
+            ("BodyPart_LFoot", "LFoot", "footl"),
+            ("ArmorPart_RFoot", "RFoot", "footr"),
         };
+
+        /// <summary>
+        /// Parts a robe replaces (same set as Quartermaster's RobePartSuppression): an NWN robe model
+        /// is a near-total body supplying its own torso/pelvis/limb/hand geometry — everything except
+        /// head, neck, feet, and belt. Rendering the covered parts alongside it duplicates geometry.
+        /// </summary>
+        private static readonly HashSet<string> RobeCoveredParts = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "chest", "pelvis", "legl", "legr", "shol", "shor", "bicepl", "bicepr",
+            "forel", "forer", "handl", "handr", "shinl", "shinr",
+        };
+
+        /// <summary>Equip_ItemList struct id for the chest slot (bit flags per the Aurora UTC format).</summary>
+        private const int ChestSlotStructId = 2;
 
         /// <summary>
         /// Resolves the preview model for a blueprint. Returns a <see cref="BlueprintModelKind.None"/>
         /// reference (never throws, never null) when the type is not previewable, a needed service is
         /// absent, or the appearance cannot be resolved.
         /// </summary>
+        /// <param name="itemBlueprintLoader">
+        /// Loads an item blueprint's root struct by resref (null / not found tolerated). Used to apply
+        /// the equipped chest armor's ArmorPart_* overrides to segmented creatures — without it they
+        /// resolve as their naked body.
+        /// </param>
+        /// <param name="partModelExists">
+        /// Tests whether a body-part MDL resref exists. Only consulted for robe activation (a robe that
+        /// doesn't resolve must not suppress the body parts it would have covered). Null = assume exists.
+        /// </param>
         public static BlueprintModelReference Resolve(
             ResourceType type,
             JsonGffStruct root,
             AppearanceService? appearances,
             PlaceableAppearanceService? placeables,
-            DoorTypeService? doors)
+            DoorTypeService? doors,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader = null,
+            Func<string, bool>? partModelExists = null)
         {
             ArgumentNullException.ThrowIfNull(root);
 
             return type switch
             {
-                ResourceType.Utc => ResolveCreature(root, appearances),
+                ResourceType.Utc => ResolveCreature(root, appearances, itemBlueprintLoader, partModelExists),
                 ResourceType.Utp => ResolvePlaceable(root, placeables),
                 ResourceType.Utd => ResolveDoor(root, doors),
                 _ => BlueprintModelReference.NoneWith("No model preview for this blueprint type.")
             };
         }
 
-        private static BlueprintModelReference ResolveCreature(JsonGffStruct root, AppearanceService? appearances)
+        private static BlueprintModelReference ResolveCreature(
+            JsonGffStruct root,
+            AppearanceService? appearances,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader,
+            Func<string, bool>? partModelExists)
         {
             if (appearances == null)
                 return BlueprintModelReference.NoneWith("Creature preview unavailable (appearance data not loaded).");
@@ -119,7 +151,7 @@ namespace SWLOR.Toolset.Domain.Render
                 return BlueprintModelReference.NoneWith($"Unknown appearance id {appearanceId}.");
 
             if (string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase))
-                return ResolveSegmentedCreature(root, row);
+                return ResolveSegmentedCreature(root, row, itemBlueprintLoader, partModelExists);
 
             var modelResRef = row.Race;
             if (string.IsNullOrWhiteSpace(modelResRef))
@@ -133,7 +165,11 @@ namespace SWLOR.Toolset.Domain.Render
             };
         }
 
-        private static BlueprintModelReference ResolveSegmentedCreature(JsonGffStruct root, AppearanceRow row)
+        private static BlueprintModelReference ResolveSegmentedCreature(
+            JsonGffStruct root,
+            AppearanceRow row,
+            Func<string, JsonGffStruct?>? itemBlueprintLoader,
+            Func<string, bool>? partModelExists)
         {
             var raceLetter = row.Race;
             if (string.IsNullOrWhiteSpace(raceLetter))
@@ -144,17 +180,36 @@ namespace SWLOR.Toolset.Domain.Render
             var phenotype = root.GetIntOrNull("Phenotype") ?? 0;
             var prefix = $"p{gender}{char.ToLowerInvariant(raceLetter[0])}{phenotype}";
 
+            var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
             var parts = new List<BlueprintModelPart>();
+
+            // Robe first (armor-only; creatures have no robe body part). A robe replaces most of
+            // the body, so its covered parts are skipped below — but only when the robe model
+            // actually resolves, otherwise suppression would leave holes with nothing in them.
+            var robeActive = false;
+            var robeNumber = armor?.GetIntOrNull("ArmorPart_Robe") ?? 0;
+            if (robeNumber > 0)
+            {
+                var robeResRef = BuildPartName(prefix, "robe", robeNumber);
+                robeActive = partModelExists?.Invoke(robeResRef) ?? true;
+                if (robeActive)
+                    parts.Add(new BlueprintModelPart("robe", robeResRef));
+            }
 
             var head = root.GetIntOrNull("Appearance_Head");
             if (head is > 0)
                 parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", head.Value)));
 
-            foreach (var (field, partType) in BodyPartFields)
+            foreach (var (creatureField, armorKey, partType) in BodyPartFields)
             {
-                var number = root.GetIntOrNull(field);
-                if (number is > 0)
-                    parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number.Value)));
+                if (robeActive && RobeCoveredParts.Contains(partType))
+                    continue;
+
+                var number = ResolvePartNumber(
+                    root.GetIntOrNull(creatureField) ?? 0,
+                    armor?.GetIntOrNull("ArmorPart_" + armorKey) ?? 0);
+                if (number > 0)
+                    parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
             }
 
             if (parts.Count == 0)
@@ -167,6 +222,43 @@ namespace SWLOR.Toolset.Domain.Render
                 SkeletonResRef = prefix,
                 Parts = parts
             };
+        }
+
+        /// <summary>
+        /// Part-number precedence, matching Quartermaster's creature renderer: a creature value of 0
+        /// (none/invisible) always wins; otherwise the equipped armor's part overrides the creature's
+        /// naked body part; otherwise the creature value stands.
+        /// </summary>
+        private static int ResolvePartNumber(int creatureValue, int armorValue)
+        {
+            if (creatureValue == 0)
+                return 0;
+
+            return armorValue > 0 ? armorValue : creatureValue;
+        }
+
+        /// <summary>Loads the equipped chest-slot armor's root struct from Equip_ItemList, if any.</summary>
+        private static JsonGffStruct? LoadEquippedChestArmor(
+            JsonGffStruct root, Func<string, JsonGffStruct?>? itemBlueprintLoader)
+        {
+            if (itemBlueprintLoader == null)
+                return null;
+
+            var chest = root.GetListOrEmpty("Equip_ItemList")
+                .FirstOrDefault(item => ParseStructId(item.RawStructId) == ChestSlotStructId);
+            var resRef = chest?.GetStringOrNull("EquippedRes");
+
+            return string.IsNullOrWhiteSpace(resRef) ? null : itemBlueprintLoader(resRef);
+        }
+
+        private static int ParseStructId(byte[]? raw)
+        {
+            return raw != null &&
+                   int.TryParse(System.Text.Encoding.ASCII.GetString(raw),
+                       System.Globalization.NumberStyles.Integer,
+                       System.Globalization.CultureInfo.InvariantCulture, out var id)
+                ? id
+                : -1;
         }
 
         private static BlueprintModelReference ResolvePlaceable(JsonGffStruct root, PlaceableAppearanceService? placeables)

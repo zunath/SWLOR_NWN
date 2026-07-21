@@ -111,7 +111,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
             try
             {
-                var reference = BlueprintModelResolver.Resolve(type, root, _appearances, _placeables, _doors);
+                var reference = BlueprintModelResolver.Resolve(
+                    type, root, _appearances, _placeables, _doors,
+                    LoadItemBlueprintRoot, PartModelExists);
                 RenderReference(reference);
             }
             catch (Exception ex)
@@ -144,7 +146,10 @@ namespace SWLOR.Toolset.Shell.Panels
                     var parts = reference.Parts
                         .Select(p => (p.PartType, p.ModelResRef))
                         .ToList();
+                    _partOriginalBitmaps.Clear();
                     var composed = _partComposer.Compose(reference.SkeletonResRef!, parts, adjustSeams: true);
+                    if (composed != null)
+                        RestorePartBitmaps(composed);
                     SetModel(
                         composed,
                         composed == null
@@ -158,20 +163,109 @@ namespace SWLOR.Toolset.Shell.Panels
             }
         }
 
+        /// <summary>(part resref, mesh name) → the mesh's authored Bitmap, recorded per Compose run.</summary>
+        private readonly Dictionary<(string PartResRef, string MeshName), string> _partOriginalBitmaps =
+            new(TupleBitmapKeyComparer.Instance);
+
         /// <summary>
         /// Model loader for MdlPartComposer. The composer passes withSupermodelAnims=true for the
         /// skeleton and false for body parts. Part models are flattened (node transforms baked
         /// into vertices) because the composer attaches part meshes assuming geometry at the part
         /// origin — several SWLOR hak parts violate that with in-file node offsets. The skeleton
-        /// must NEVER be flattened: its node transforms are the bone positions.
+        /// must NEVER be flattened: its node transforms are the bone positions. Each part mesh's
+        /// authored Bitmap is recorded so <see cref="RestorePartBitmaps"/> can undo the composer's
+        /// resref-derived texture override where the authored texture actually exists.
         /// </summary>
         private MdlModel? LoadComposerModel(string resRef, bool withSupermodelAnims)
         {
             var model = LoadModel(resRef, withSupermodelAnims);
             if (model != null && !withSupermodelAnims)
+            {
                 MdlGeometryFlattener.FlattenNodeTransforms(model);
+                foreach (var mesh in model.GetMeshNodes())
+                {
+                    if (!string.IsNullOrWhiteSpace(mesh.Bitmap))
+                        _partOriginalBitmaps[(resRef, mesh.Name)] = mesh.Bitmap;
+                }
+            }
 
             return model;
+        }
+
+        /// <summary>
+        /// The composer overwrites every attached part mesh's Bitmap with the part resref (its
+        /// workaround for stale bitmap fields in BioWare's reused part files). That is correct for
+        /// BioWare parts, whose textures are named like the part — but many SWLOR custom parts
+        /// reference their real texture by a different name (e.g. pmh0_bicepl249's meshes use
+        /// 'N_RepSold01'), so the override points at a texture that doesn't exist and the part
+        /// renders white. Restore the authored Bitmap wherever it resolves to a real texture;
+        /// keep the composer's override otherwise (the BioWare stale-bitmap case).
+        /// </summary>
+        private void RestorePartBitmaps(MdlModel composed)
+        {
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (string.IsNullOrWhiteSpace(mesh.Bitmap))
+                    continue;
+
+                if (_partOriginalBitmaps.TryGetValue((mesh.Bitmap, mesh.Name), out var original) &&
+                    !string.Equals(original, mesh.Bitmap, StringComparison.OrdinalIgnoreCase) &&
+                    TextureExists(original))
+                {
+                    mesh.Bitmap = original;
+                }
+            }
+        }
+
+        private bool TextureExists(string name)
+        {
+            if (_resourceIndex == null)
+                return false;
+
+            foreach (var extension in new[] { ".plt", ".tga", ".dds" })
+            {
+                if (_resourceIndex.TryLookup(ResourceIdentity.FromFileName(name + extension), out _))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Loads an item blueprint's root for armor-part resolution; null when unavailable.</summary>
+        private JsonGffStruct? LoadItemBlueprintRoot(string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return null;
+
+            try
+            {
+                return workspace.LoadBlueprint(ResourceType.Uti, resRef).Document.Root;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private bool PartModelExists(string resRef)
+        {
+            return _resourceIndex != null &&
+                   _resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out _);
+        }
+
+        private sealed class TupleBitmapKeyComparer : IEqualityComparer<(string PartResRef, string MeshName)>
+        {
+            public static readonly TupleBitmapKeyComparer Instance = new();
+
+            public bool Equals((string PartResRef, string MeshName) x, (string PartResRef, string MeshName) y) =>
+                string.Equals(x.PartResRef, y.PartResRef, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(x.MeshName, y.MeshName, StringComparison.OrdinalIgnoreCase);
+
+            public int GetHashCode((string PartResRef, string MeshName) obj) =>
+                HashCode.Combine(
+                    StringComparer.OrdinalIgnoreCase.GetHashCode(obj.PartResRef),
+                    StringComparer.OrdinalIgnoreCase.GetHashCode(obj.MeshName));
         }
 
         /// <summary>Loads and parses an MDL by resref through the layered index; null when missing/unparseable.</summary>

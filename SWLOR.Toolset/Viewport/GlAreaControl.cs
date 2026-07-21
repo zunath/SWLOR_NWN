@@ -17,8 +17,13 @@ namespace SWLOR.Toolset.Viewport
     /// bounds (<see cref="AreaCameraMath"/>). Follows the same <see cref="OpenGlControlBase"/> +
     /// Silk.NET.OpenGL skeleton as Radoub.UI's <c>ModelPreviewGLControl</c> (see
     /// Viewport/README.md) but is a fresh implementation tailored to a scene of many placements
-    /// sharing a handful of distinct meshes, rather than one model per control. Picking/selection
-    /// is WP5.1 - this control never mutates the scene or the underlying documents.
+    /// sharing a handful of distinct meshes, rather than one model per control.
+    /// WP5.1 adds read-only picking: a plain left-click (press+release with &lt;4px of movement)
+    /// raises <see cref="InstancePicked"/> with the hit instance (or null for empty space), using
+    /// the same view/projection the last frame rendered with (<see cref="AreaCameraMath.ScreenPointToRay"/>
+    /// + <see cref="AreaPicking"/>). <see cref="SelectedInstance"/> draws a wireframe highlight box
+    /// around the current selection. This control still never mutates the scene or the underlying
+    /// documents - editing/gizmos are WP5.2.
     /// </summary>
     public sealed class GlAreaControl : OpenGlControlBase
     {
@@ -46,12 +51,16 @@ namespace SWLOR.Toolset.Viewport
         private const float MarkerHeight = 1.2f;
         private const float MarkerGroundOffset = 0.05f;
 
+        /// <summary>Net press-to-release pointer movement (logical px) below which a left button press+release is treated as a pick click rather than a (degenerate/aborted) orbit drag.</summary>
+        private const float ClickDragThresholdPixels = 4f;
+
         private static readonly Vector3 LightDir = Vector3.Normalize(new Vector3(0.35f, -0.5f, 0.8f));
         private static readonly Vector3 LightColor = new(0.55f, 0.55f, 0.55f);
         private static readonly Vector3 AmbientColor = new(0.55f, 0.55f, 0.55f);
         private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
         private static readonly Vector3 FallbackTileColor = new(0.95f, 0.15f, 0.55f);
         private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
+        private static readonly Vector3 SelectionHighlightColor = new(1f, 0.95f, 0.2f);
 
         // ----- GLSL source (kept inline per the WP4.5 brief; adapted from, not shared with,
         // Radoub.UI's OpenGLShaderManager - this control needs an alpha-cutoff/unlit uniform that
@@ -172,12 +181,20 @@ void main()
         private bool _hasPolygonBuffer;
         private List<(int Start, int Count)> _polygonRanges = new();
 
+        private uint _highlightVao;
+        private uint _highlightVbo;
+        private bool _hasHighlightBuffer;
+
         private AreaScene? _scene;
         private IReadOnlyList<AreaDrawBatcher.TileBatch>? _tileBatches;
         private bool _sceneDirty;
 
         private int _viewportWidth;
         private int _viewportHeight;
+
+        /// <summary>View/projection from the most recently rendered frame - kept for picking (<see cref="RaiseInstancePicked"/>), which runs on a click rather than every frame.</summary>
+        private Matrix4x4 _lastView = Matrix4x4.Identity;
+        private Matrix4x4 _lastProjection = Matrix4x4.Identity;
 
         // ----- Orbit camera state -----
         private Vector3 _target;
@@ -189,6 +206,39 @@ void main()
         private enum DragMode { None, Orbit, Pan }
         private DragMode _dragMode = DragMode.None;
         private Point _lastPointerPos;
+
+        // ----- Picking (WP5.1) -----
+        private Point _pressStartPos;
+        private bool _isClickCandidate;
+        private InstanceMarker? _selectedInstance;
+
+        /// <summary>
+        /// The instance to draw a highlight box around, or null for no highlight. Set by the host
+        /// view when list-driven selection changes (or after a 3D-view pick, for symmetry); this
+        /// control itself never changes this property - see <see cref="InstancePicked"/>.
+        /// </summary>
+        public InstanceMarker? SelectedInstance
+        {
+            get => _selectedInstance;
+            set
+            {
+                if (ReferenceEquals(_selectedInstance, value))
+                    return;
+
+                _selectedInstance = value;
+                RequestNextFrameRendering();
+            }
+        }
+
+        /// <summary>
+        /// Raised when a plain left-click (press+release with under <see cref="ClickDragThresholdPixels"/>
+        /// of net movement - a drag stays camera orbit) lands on the viewport: the hit instance, or
+        /// null when the click landed on empty space. This control does not select/highlight the hit
+        /// itself - the host view is expected to set <see cref="SelectedInstance"/> (usually after
+        /// also syncing the corresponding instance-list row) so 3D-view and list-view selection stay
+        /// driven from one place.
+        /// </summary>
+        public event Action<InstanceMarker?>? InstancePicked;
 
         private bool _hideCeilings;
 
@@ -309,6 +359,11 @@ void main()
                 return;
 
             _lastPointerPos = e.GetPosition(this);
+            _pressStartPos = _lastPointerPos;
+            // Only a plain left press (no modifiers, no other buttons - i.e. what became an orbit
+            // drag) is eligible to resolve into a pick click on release; a pan-triggering press
+            // never picks.
+            _isClickCandidate = _dragMode == DragMode.Orbit;
             Focus();
             e.Pointer.Capture(this);
             e.Handled = true;
@@ -343,9 +398,45 @@ void main()
             if (_dragMode == DragMode.None)
                 return;
 
+            var releasePos = e.GetPosition(this);
+            var wasClickCandidate = _isClickCandidate;
+
             _dragMode = DragMode.None;
+            _isClickCandidate = false;
             e.Pointer.Capture(null);
             e.Handled = true;
+
+            if (!wasClickCandidate)
+                return;
+
+            var dx = releasePos.X - _pressStartPos.X;
+            var dy = releasePos.Y - _pressStartPos.Y;
+            var dragDistance = Math.Sqrt(dx * dx + dy * dy);
+
+            if (dragDistance < ClickDragThresholdPixels)
+                RaiseInstancePicked(releasePos);
+        }
+
+        /// <summary>
+        /// Resolves a click's screen position to a hit instance (or null for empty space) using the
+        /// view/projection from the most recently rendered frame, and raises
+        /// <see cref="InstancePicked"/>. A no-op (raises with null) before the first frame has ever
+        /// rendered a scene, since there is nothing to hit yet.
+        /// </summary>
+        private void RaiseInstancePicked(Point screenPos)
+        {
+            if (_scene == null || _viewportWidth <= 0 || _viewportHeight <= 0)
+            {
+                InstancePicked?.Invoke(null);
+                return;
+            }
+
+            var ray = AreaCameraMath.ScreenPointToRay(
+                new Vector2((float)screenPos.X, (float)screenPos.Y),
+                _viewportWidth, _viewportHeight, _lastView, _lastProjection);
+
+            var hit = AreaPicking.PickClosestInstance(ray, _scene, _showPlaceableModels);
+            InstancePicked?.Invoke(hit);
         }
 
         public void HandlePointerWheel(PointerWheelEventArgs e)
@@ -436,6 +527,13 @@ void main()
                         DeleteBuffer(marker.Vao, marker.Vbo, marker.Ebo);
 
                     DeletePolygonBuffer();
+
+                    if (_hasHighlightBuffer)
+                    {
+                        _gl.DeleteVertexArray(_highlightVao);
+                        _gl.DeleteBuffer(_highlightVbo);
+                        _hasHighlightBuffer = false;
+                    }
 
                     if (_shaderProgram != 0)
                         _gl.DeleteProgram(_shaderProgram);
@@ -644,6 +742,11 @@ void main()
             var eye = _target + AreaCameraMath.OrbitEyeOffset(_azimuth, _elevation, _distance);
             var view = Matrix4x4.CreateLookAt(eye, _target, Vector3.UnitZ);
 
+            // Kept for picking (RaiseInstancePicked runs on a click, not every frame, so it needs
+            // the matrices from whatever frame last actually rendered).
+            _lastView = view;
+            _lastProjection = projection;
+
             _gl!.UseProgram(_shaderProgram);
             SetUniformMatrix4("view", view);
             SetUniformMatrix4("projection", projection);
@@ -659,6 +762,7 @@ void main()
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             DrawInstanceMarkers();
             DrawPolygonOverlays();
+            DrawSelectionHighlight();
 
             _gl.BindVertexArray(0);
         }
@@ -799,6 +903,89 @@ void main()
 
             foreach (var (start, count) in _polygonRanges)
                 _gl.DrawArrays(PrimitiveType.LineLoop, start, (uint)count);
+        }
+
+        /// <summary>
+        /// Draws a bright wireframe box around <see cref="_selectedInstance"/>'s current world
+        /// bounds (<see cref="AreaPicking.ComputeInstanceWorldBounds"/> - the same model/marker
+        /// bounds picking itself uses, via the same <see cref="DrawsAsModel"/> rule) as a
+        /// GL_LINES box rather than a GL_LINE polygon-mode overlay: OpenGL ES has no wireframe
+        /// polygon mode, and this control already renders trigger/encounter outlines the same way
+        /// (see <see cref="DrawPolygonOverlays"/>), so this stays portable to the same GL profiles.
+        /// A no-op when nothing is selected or the GL context isn't ready.
+        /// </summary>
+        private void DrawSelectionHighlight()
+        {
+            if (_scene == null || _selectedInstance is not { } instance || _gl == null)
+                return;
+
+            var (min, max) = AreaPicking.ComputeInstanceWorldBounds(instance, DrawsAsModel(instance));
+            var vertices = BuildWireframeBoxVertices(min, max);
+
+            EnsureHighlightBuffer();
+            if (!_hasHighlightBuffer)
+                return;
+
+            _gl.BindVertexArray(_highlightVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _highlightVbo);
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertices.Length * sizeof(float)),
+                new ReadOnlySpan<float>(vertices), BufferUsageARB.DynamicDraw);
+            SetVertexAttribPointers();
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
+            SetUniformVec3("flatColor", SelectionHighlightColor);
+            SetUniformMatrix4("model", Matrix4x4.Identity); // bounds are already world-space
+
+            _gl.DrawArrays(PrimitiveType.Lines, 0, 24);
+        }
+
+        private void EnsureHighlightBuffer()
+        {
+            if (_hasHighlightBuffer || _gl == null)
+                return;
+
+            _highlightVao = _gl.GenVertexArray();
+            _highlightVbo = _gl.GenBuffer();
+            _hasHighlightBuffer = true;
+        }
+
+        /// <summary>12 edges (24 line vertices, position-only - normal/texcoord slots zeroed to match the shared vertex layout) tracing an axis-aligned box's wireframe.</summary>
+        private static float[] BuildWireframeBoxVertices(Vector3 min, Vector3 max)
+        {
+            var corners = new[]
+            {
+                new Vector3(min.X, min.Y, min.Z), new Vector3(max.X, min.Y, min.Z),
+                new Vector3(max.X, max.Y, min.Z), new Vector3(min.X, max.Y, min.Z),
+                new Vector3(min.X, min.Y, max.Z), new Vector3(max.X, min.Y, max.Z),
+                new Vector3(max.X, max.Y, max.Z), new Vector3(min.X, max.Y, max.Z)
+            };
+
+            Span<int> edges = stackalloc int[]
+            {
+                0, 1, 1, 2, 2, 3, 3, 0, // bottom face
+                4, 5, 5, 6, 6, 7, 7, 4, // top face
+                0, 4, 1, 5, 2, 6, 3, 7  // verticals
+            };
+
+            var data = new float[edges.Length * FloatsPerVertex];
+            var offset = 0;
+            foreach (var cornerIndex in edges)
+            {
+                var p = corners[cornerIndex];
+                data[offset++] = p.X;
+                data[offset++] = p.Y;
+                data[offset++] = p.Z;
+                data[offset++] = 0f;
+                data[offset++] = 0f;
+                data[offset++] = 1f;
+                data[offset++] = 0f;
+                data[offset++] = 0f;
+            }
+
+            return data;
         }
 
         private static Vector3 MarkerColor(InstanceMarkerKind kind) => kind switch

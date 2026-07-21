@@ -98,6 +98,137 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
+        // ----- WP5.1: 3D-view <-> instance-list selection sync -----
+
+        private bool _syncingSelection;
+
+        private InstanceMarker? _selectedSceneInstance;
+
+        /// <summary>
+        /// The instance currently selected (from either the 3D view or an instance-list row) - the
+        /// view mirrors this onto <c>GlAreaControl.SelectedInstance</c> for the 3D highlight. Always
+        /// an object from the current <see cref="AreaScene"/>'s <c>Instances</c> list (or null);
+        /// changes flow through <see cref="ApplySelection"/> only, so it and every section's
+        /// SelectedRow never drift out of sync.
+        /// </summary>
+        public InstanceMarker? SelectedSceneInstance
+        {
+            get => _selectedSceneInstance;
+            private set
+            {
+                if (ReferenceEquals(_selectedSceneInstance, value))
+                    return;
+
+                _selectedSceneInstance = value;
+                OnPropertyChanged(nameof(SelectedSceneInstance));
+                OnPropertyChanged(nameof(SelectionStatus));
+            }
+        }
+
+        /// <summary>Human-readable readout of the current selection for the 3D-view status border, or empty when nothing is selected.</summary>
+        public string SelectionStatus => SelectedSceneInstance is { } instance
+            ? $"Selected: {instance.Kind} \"{instance.Tag}\"" +
+              (string.IsNullOrEmpty(instance.TemplateResRef) ? string.Empty : $" ({instance.TemplateResRef})")
+            : string.Empty;
+
+        /// <summary>
+        /// Maps a 3D-view instance's kind to the blueprint type of the section that lists it, or
+        /// null when this editor has no section for that kind (Item and Encounter lists have no
+        /// InstanceListSectionViewModel - see InstanceListConfigs above).
+        /// </summary>
+        private static ResourceType? MapKindToSectionType(InstanceMarkerKind kind) => kind switch
+        {
+            InstanceMarkerKind.Creature => ResourceType.Utc,
+            InstanceMarkerKind.Placeable => ResourceType.Utp,
+            InstanceMarkerKind.Door => ResourceType.Utd,
+            InstanceMarkerKind.Waypoint => ResourceType.Utw,
+            InstanceMarkerKind.Store => ResourceType.Utm,
+            InstanceMarkerKind.Sound => ResourceType.Uts,
+            InstanceMarkerKind.Trigger => ResourceType.Utt,
+            _ => null
+        };
+
+        private static InstanceMarkerKind? MapSectionTypeToKind(ResourceType type) => type switch
+        {
+            ResourceType.Utc => InstanceMarkerKind.Creature,
+            ResourceType.Utp => InstanceMarkerKind.Placeable,
+            ResourceType.Utd => InstanceMarkerKind.Door,
+            ResourceType.Utw => InstanceMarkerKind.Waypoint,
+            ResourceType.Utm => InstanceMarkerKind.Store,
+            ResourceType.Uts => InstanceMarkerKind.Sound,
+            ResourceType.Utt => InstanceMarkerKind.Trigger,
+            _ => null
+        };
+
+        /// <summary>
+        /// Single funnel for every selection change (3D-view pick or instance-list row click):
+        /// updates <see cref="SelectedSceneInstance"/> and syncs every section's SelectedRow to
+        /// match (clearing the ones that don't correspond to <paramref name="instance"/>). Both
+        /// entry points (<see cref="SelectSceneInstance"/> and the sections' own SelectedRow
+        /// PropertyChanged) route through here, guarded by <see cref="_syncingSelection"/> so
+        /// setting a section's SelectedRow from in here doesn't re-enter and recompute again.
+        /// </summary>
+        private void ApplySelection(InstanceMarker? instance)
+        {
+            if (_syncingSelection)
+                return;
+
+            _syncingSelection = true;
+            try
+            {
+                SelectedSceneInstance = instance;
+
+                var targetType = instance != null ? MapKindToSectionType(instance.Kind) : null;
+
+                // Index-within-kind mapping (WORKLOG/WP4.4): both the scene's Instances (built by
+                // AreaSceneBuilder.BuildInstances, one AddMarkers call per kind, each iterating its
+                // .git list in order) and a section's Rows (InstanceListSectionViewModel.RefreshFromDocument,
+                // iterating that same .git list field in order) enumerate the identical underlying
+                // list in the identical order - so instance N of a given kind in the scene is always
+                // list-row N in that kind's section.
+                var indexWithinKind = instance != null && AreaScene != null
+                    ? AreaScene.Instances.Where(i => i.Kind == instance.Kind).ToList().IndexOf(instance)
+                    : -1;
+
+                foreach (var section in Sections)
+                {
+                    section.SelectedRow = targetType != null && section.BlueprintType == targetType
+                        && indexWithinKind >= 0 && indexWithinKind < section.Rows.Count
+                        ? section.Rows[indexWithinKind]
+                        : null;
+                }
+            }
+            finally
+            {
+                _syncingSelection = false;
+            }
+        }
+
+        /// <summary>Called by the view when a 3D-view click lands on an instance (or empty space - instance is null).</summary>
+        public void SelectSceneInstance(InstanceMarker? instance) => ApplySelection(instance);
+
+        /// <summary>Called (via each section's PropertyChanged subscription set up in the constructor) whenever a section's own SelectedRow changes, e.g. from a user clicking a DataGrid row.</summary>
+        private void OnSectionSelectionChanged(InstanceListSectionViewModel section)
+        {
+            if (_syncingSelection)
+                return;
+
+            var row = section.SelectedRow;
+            if (row == null)
+            {
+                ApplySelection(null);
+                return;
+            }
+
+            var kind = MapSectionTypeToKind(section.BlueprintType);
+            var kindInstances = kind != null && AreaScene != null
+                ? AreaScene.Instances.Where(i => i.Kind == kind).ToList()
+                : new List<InstanceMarker>();
+
+            var instance = row.Index >= 0 && row.Index < kindInstances.Count ? kindInstances[row.Index] : null;
+            ApplySelection(instance);
+        }
+
         public AreaEditorViewModel(
             string areResRef,
             ModuleWorkspace workspace,
@@ -137,6 +268,17 @@ namespace SWLOR.Toolset.Editors
                 Sections.Add(new InstanceListSectionViewModel(
                     config.Title, config.ListFieldName, config.BlueprintType,
                     _gitSession, workspace, RunGitEdit, gameCodeIndex, log));
+            }
+
+            // WP5.1 selection sync: a row click in any section should update the 3D-view highlight
+            // (and clear every other section's own selection) via ApplySelection.
+            foreach (var section in Sections)
+            {
+                section.PropertyChanged += (_, e) =>
+                {
+                    if (e.PropertyName == nameof(InstanceListSectionViewModel.SelectedRow))
+                        OnSectionSelectionChanged(section);
+                };
             }
 
             UpdateTitle();
@@ -186,6 +328,10 @@ namespace SWLOR.Toolset.Editors
                     are, git, tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes));
 
                 AreaScene = scene;
+                // Every previous scene's InstanceMarker objects are gone now (Build returns a fresh
+                // list each time) - any stale selection referencing them must be dropped rather than
+                // left pointing at objects no longer in this scene.
+                ApplySelection(null);
                 SceneStatus = scene.Diagnostics.MissingModels.Count == 0
                     ? $"{scene.Tiles.Count} tiles, {scene.Instances.Count} instances."
                     : $"{scene.Tiles.Count} tiles, {scene.Instances.Count} instances ({scene.Diagnostics.MissingModels.Count} fallback tiles).";

@@ -3,6 +3,24 @@ using System.Numerics;
 namespace SWLOR.Toolset.Domain.Render
 {
     /// <summary>
+    /// A world-space ray (origin + normalized direction) produced by unprojecting a screen point,
+    /// consumed by <see cref="AreaPicking"/> for instance hit-testing (WP5.1).
+    /// </summary>
+    public readonly struct PickRay
+    {
+        public PickRay(Vector3 origin, Vector3 direction)
+        {
+            Origin = origin;
+            Direction = direction;
+        }
+
+        public Vector3 Origin { get; }
+
+        /// <summary>Normalized (unit-length) ray direction, except in the degenerate near==far case, where it falls back to +X.</summary>
+        public Vector3 Direction { get; }
+    }
+
+    /// <summary>
     /// Pure orbit-camera math for the WP4.5 area viewport: initial framing from an area's tile-grid
     /// bounds, orbit/pan/zoom invariants, and the resulting eye offset. No GL/UI dependency - the
     /// GL control (<c>SWLOR.Toolset\Viewport\GlAreaControl.cs</c>) owns the mutable camera state
@@ -117,6 +135,50 @@ namespace SWLOR.Toolset.Domain.Render
 
             var halfFovTan = MathF.Tan(verticalFovRadians / 2f);
             return 2f * distance * halfFovTan / viewportHeightPixels;
+        }
+
+        /// <summary>
+        /// Unprojects a logical-pixel screen point (Y-down, origin top-left - matching Avalonia
+        /// pointer coordinates) into a world-space <see cref="PickRay"/>, using the exact same
+        /// <paramref name="view"/>/<paramref name="projection"/> matrices <c>GlAreaControl.DrawScene</c>
+        /// uploaded for that frame. Unprojects the near and far NDC points (Z=0 and Z=1 - the
+        /// System.Numerics/D3D-style depth range <see cref="Matrix4x4.CreatePerspectiveFieldOfView"/>
+        /// targets) through the inverse of <c>view * projection</c> (row-vector convention, matching
+        /// how <see cref="Vector4.Transform(Vector4,Matrix4x4)"/> and every other matrix composition
+        /// in this codebase already works) and builds a ray from the two unprojected points. Returns
+        /// a degenerate ray at the origin, pointing along +X, for a not-yet-laid-out viewport
+        /// (width/height &lt;= 0) or a singular view*projection (should not occur for any real
+        /// camera state, but must never throw here).
+        /// </summary>
+        public static PickRay ScreenPointToRay(
+            Vector2 screenPoint, int viewportWidth, int viewportHeight, Matrix4x4 view, Matrix4x4 projection)
+        {
+            if (viewportWidth <= 0 || viewportHeight <= 0)
+                return new PickRay(Vector3.Zero, Vector3.UnitX);
+
+            var ndcX = screenPoint.X / viewportWidth * 2f - 1f;
+            var ndcY = 1f - screenPoint.Y / viewportHeight * 2f; // screen Y-down -> NDC Y-up
+
+            var viewProjection = view * projection;
+            if (!Matrix4x4.Invert(viewProjection, out var inverseViewProjection))
+                return new PickRay(Vector3.Zero, Vector3.UnitX);
+
+            var nearWorld = UnprojectNdcPoint(new Vector4(ndcX, ndcY, 0f, 1f), inverseViewProjection);
+            var farWorld = UnprojectNdcPoint(new Vector4(ndcX, ndcY, 1f, 1f), inverseViewProjection);
+
+            var direction = farWorld - nearWorld;
+            var length = direction.Length();
+            return length < 1e-6f
+                ? new PickRay(nearWorld, Vector3.UnitX)
+                : new PickRay(nearWorld, direction / length);
+        }
+
+        private static Vector3 UnprojectNdcPoint(Vector4 ndcPoint, Matrix4x4 inverseViewProjection)
+        {
+            var world = Vector4.Transform(ndcPoint, inverseViewProjection);
+            return MathF.Abs(world.W) < 1e-8f
+                ? new Vector3(world.X, world.Y, world.Z)
+                : new Vector3(world.X / world.W, world.Y / world.W, world.Z / world.W);
         }
     }
 }

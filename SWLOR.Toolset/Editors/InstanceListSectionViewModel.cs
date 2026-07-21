@@ -34,6 +34,10 @@ namespace SWLOR.Toolset.Editors
         private bool _isLoadingDetail;
 
         public string Title { get; }
+
+        /// <summary>The blueprint type this section's list holds (e.g. Utc for Creatures) - used by AreaEditorViewModel (WP5.1) to map a 3D-view <see cref="Domain.Render.InstanceMarkerKind"/> to the matching section for selection sync.</summary>
+        public ResourceType BlueprintType => _blueprintType;
+
         public ObservableCollection<InstanceRow> Rows { get; } = new();
 
         [ObservableProperty]

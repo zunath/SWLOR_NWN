@@ -151,5 +151,84 @@ namespace SWLOR.Toolset.Tests
 
             far.Should().BeGreaterThan(near);
         }
+
+        // ----- WP5.1: ScreenPointToRay (picking) -----
+
+        private static (Matrix4x4 View, Matrix4x4 Projection) BuildTestCamera()
+        {
+            var eye = new Vector3(20f, -10f, 15f);
+            var target = new Vector3(20f, 20f, 0f);
+            var view = Matrix4x4.CreateLookAt(eye, target, Vector3.UnitZ);
+            var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathF.PI / 4f, 16f / 9f, 0.1f, 500f);
+            return (view, projection);
+        }
+
+        /// <summary>Projects a world point to a logical screen coordinate the same way the GL pipeline (and any mouse pointer) would, for round-tripping through ScreenPointToRay.</summary>
+        private static Vector2 ProjectToScreen(Vector3 worldPoint, Matrix4x4 view, Matrix4x4 projection, int width, int height)
+        {
+            var clip = Vector4.Transform(new Vector4(worldPoint, 1f), view * projection);
+            clip /= clip.W;
+
+            var screenX = (clip.X + 1f) / 2f * width;
+            var screenY = (1f - clip.Y) / 2f * height;
+            return new Vector2(screenX, screenY);
+        }
+
+        private static float DistanceFromRay(PickRay ray, Vector3 point)
+        {
+            var toPoint = point - ray.Origin;
+            var alongRay = Vector3.Dot(toPoint, ray.Direction);
+            var closestOnRay = ray.Origin + ray.Direction * alongRay;
+            return Vector3.Distance(closestOnRay, point);
+        }
+
+        [Test]
+        public void ScreenPointToRay_ProjectedWorldPoint_LiesOnResultingRay()
+        {
+            var (view, projection) = BuildTestCamera();
+            var worldPoint = new Vector3(22f, 18f, 3f);
+            const int width = 1280;
+            const int height = 720;
+
+            var screenPoint = ProjectToScreen(worldPoint, view, projection, width, height);
+            var ray = AreaCameraMath.ScreenPointToRay(screenPoint, width, height, view, projection);
+
+            DistanceFromRay(ray, worldPoint).Should().BeLessThan(0.01f);
+        }
+
+        [Test]
+        public void ScreenPointToRay_ScreenCenter_ProducesRayPassingThroughOrbitTarget()
+        {
+            var (view, projection) = BuildTestCamera();
+            const int width = 1000;
+            const int height = 800;
+
+            // The orbit target used to build the view matrix always projects to the screen center.
+            var target = new Vector3(20f, 20f, 0f);
+            var ray = AreaCameraMath.ScreenPointToRay(new Vector2(width / 2f, height / 2f), width, height, view, projection);
+
+            DistanceFromRay(ray, target).Should().BeLessThan(0.01f);
+        }
+
+        [Test]
+        public void ScreenPointToRay_DirectionIsNormalized()
+        {
+            var (view, projection) = BuildTestCamera();
+            var ray = AreaCameraMath.ScreenPointToRay(new Vector2(640f, 200f), 1280, 720, view, projection);
+
+            ray.Direction.Length().Should().BeApproximately(1f, 0.0001f);
+        }
+
+        [Test]
+        public void ScreenPointToRay_ZeroSizedViewport_ReturnsDegenerateRayWithoutThrowing()
+        {
+            var (view, projection) = BuildTestCamera();
+
+            Action act = () => AreaCameraMath.ScreenPointToRay(new Vector2(10f, 10f), 0, 0, view, projection);
+
+            act.Should().NotThrow();
+            var ray = AreaCameraMath.ScreenPointToRay(new Vector2(10f, 10f), 0, 0, view, projection);
+            float.IsNaN(ray.Direction.X).Should().BeFalse();
+        }
     }
 }

@@ -229,8 +229,13 @@
           <Border Background="#B0202020" CornerRadius="4" Padding="8,4"
                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8"
                   IsVisible="{Binding !IsBuildingScene}">
-            <TextBlock Text="{Binding SceneStatus}" Foreground="White"
-                       TextTrimming="CharacterEllipsis" MaxWidth="480" />
+            <StackPanel Spacing="2">
+              <TextBlock Text="{Binding SceneStatus}" Foreground="White"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480" />
+              <TextBlock Text="{Binding SelectionStatus}" Foreground="#FFDD88"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480"
+                         IsVisible="{Binding SelectionStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
           </Border>
 
           <Border x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"

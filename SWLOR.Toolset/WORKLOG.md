@@ -492,7 +492,27 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   pick against TileBatch.Placements + AreaScene.Instances reusing draw matrices; shader
   needs a selected/highlight uniform.
 - **Remaining: human visual gate** — all areas render; 10-area spot-check vs in-game.
-## WP5.1 — pending — Picking + selection sync
+## WP5.1 — done — 2026-07-21 — Picking + selection sync
+- Tier: Mid (Sonnet subagent); controller-verified (build clean, 290/291 green incl. corpus
+  gate — 25 new tests; scope exact; AreaPicking references no Radoub; launch smoke OK).
+- Files: Domain `Render\AreaPicking.cs` (new: ray/AABB slab + Möller–Trumbore triangle,
+  ConditionalWeakTable-cached per-mesh local AABBs, PickClosestInstance honoring the
+  marker-vs-model display rule) + `AreaCameraMath.ScreenPointToRay` (PickRay via
+  Invert(view×projection) NDC near/far unproject, row-vector convention); app:
+  GlAreaControl (click-vs-drag <4px, InstancePicked event, SelectedInstance + GL_LINES
+  wireframe highlight box — chosen over glPolygonMode for GLES portability),
+  AreaEditorViewModel (SelectedSceneInstance/SelectionStatus, kind↔section maps, single
+  re-entrancy-guarded ApplySelection funnel both directions route through),
+  InstanceListSectionViewModel (+public BlueprintType), AreaEditorView wiring + status line.
+- **Decisions recorded:** index-mapping verified — scene instances are built per kind in git
+  list order and sections iterate the same lists, so index-within-kind == section row index.
+  Item/Encounter kinds have no section (highlight-only pick). Selection clears on scene
+  rebuild (fresh InstanceMarker identities). ComputeInstanceTransform/DrawsAsModel
+  deliberately duplicated Domain-vs-control (Domain can't see the app control); WP5.2 may
+  have the control delegate to AreaPicking.
+- **WP5.2 notes from executor:** consider rebinding selection across rebuilds (Tag+kind
+  match); highlight box is axis-aligned (not heading-oriented) — gizmos may want tighter
+  bounds; shader has no selected-tint uniform (highlight is a separate wireframe pass).
 ## WP5.2 — pending — Gizmos + placement
 ## WP6.1 — pending — Walkmesh (WOK)
 ## WP6.2 — pending — Perf + fidelity pass

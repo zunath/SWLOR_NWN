@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Avalonia.Controls;
+using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Editors
 {
@@ -11,6 +12,7 @@ namespace SWLOR.Toolset.Editors
         {
             InitializeComponent();
             AreaView.RenderStatusChanged += OnGlRenderStatusChanged;
+            AreaView.InstancePicked += OnInstancePicked;
             DataContextChanged += (_, _) => AttachViewModel();
         }
 
@@ -25,14 +27,28 @@ namespace SWLOR.Toolset.Editors
 
             AreaView.ResourceIndex = _viewModel.ResourceIndex;
             AreaView.Scene = _viewModel.AreaScene;
+            AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         }
 
         private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(AreaEditorViewModel.AreaScene) && _viewModel != null)
+            if (_viewModel == null)
+                return;
+
+            if (e.PropertyName == nameof(AreaEditorViewModel.AreaScene))
                 AreaView.Scene = _viewModel.AreaScene;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstance))
+                AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
         }
+
+        /// <summary>
+        /// WP5.1: a click in the 3D view selects the corresponding instance-list row (and vice
+        /// versa - see AreaEditorViewModel.ApplySelection/OnSectionSelectionChanged). Routed through
+        /// the view model rather than setting AreaView.SelectedInstance directly here, so both
+        /// selection directions funnel through the same re-entrancy-guarded code path.
+        /// </summary>
+        private void OnInstancePicked(InstanceMarker? instance) => _viewModel?.SelectSceneInstance(instance);
 
         /// <summary>Builds the 3D scene lazily the first time the "3D View" tab is activated - never on area-editor open.</summary>
         private void OnRootTabSelectionChanged(object? sender, SelectionChangedEventArgs e)

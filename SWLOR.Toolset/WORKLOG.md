@@ -263,6 +263,11 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   BlueprintEditorView and AreaEditorView (noted in WP3.3).
 - Refresh committed tools\SWLOR.CLI\SWLOR.CLI.exe with the --no-prompt build, then drop
   PackService's fallback path (noted in WP3.5).
+- Input-convention audit: sweep every mouse binding and keybind in the toolset for anything
+  still following the legacy Aurora/BioWare paradigm rather than modern-application
+  convention, and fix each (user-requested 2026-07-21 alongside the camera orbit/pan swap).
+  Known starting points beyond the viewport camera: verify gizmo/manipulation modifiers,
+  placement-mode cancel, and any shell/panel shortcuts. Candidate: WP6.2 polish pass.
 ## WP4.1 — done — 2026-07-20 — GL spike
 - Tier: Lead (controller-executed).
 - **Spike findings (full record in `SWLOR.Toolset\Viewport\README.md`):** Radoub renders via
@@ -514,7 +519,7 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
 - **WP5.2 notes from executor:** consider rebinding selection across rebuilds (Tag+kind
   match); highlight box is axis-aligned (not heading-oriented) — gizmos may want tighter
   bounds; shader has no selected-tint uniform (highlight is a separate wireframe pass).
-## WP5.2 — code done, human gate pending — 2026-07-21 — Gizmos + placement
+## WP5.2 — done (gate passed) — 2026-07-21 — Gizmos + placement
 - Tier: Mid (Sonnet subagent); controller-verified (build clean, 311/312 green incl. corpus
   gate + the two mandated byte-exactness tests; scope exact; AreaManipulation Radoub-free;
   launch smoke OK).
@@ -550,7 +555,17 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   pack (with a hint when the directory doesn't exist). Root cause of the user's confusion:
   the CLI's pack (-p) never deployed — only its full deploy (-o, DeployBuild) copies the
   module (plus binaries/haks); WP3.6's gate must have run that separately.
-- **Remaining: the Phase 5 human gate** — WP3.6's quest-NPC task done fully in 3D.
+- **Gate feedback round 2 (2026-07-21, "Everything passes"):** camera mouse buttons swapped
+  to modern-application convention. Was the legacy Aurora paradigm (primary/left button
+  orbits); now left-drag PANS the view (grab-and-drag like a map) and right/middle-drag
+  ORBITS. Shift+left also orbits, preserving an orbit path for laptop/trackpad users without
+  a second mouse button. Left-drag-on-selected-object still runs the move/rotate gizmo
+  (Alt=rotate), and a non-drag left click still picks/places — the pick-candidate gate moved
+  from Orbit to Pan mode accordingly. GlAreaControl.HandlePointerPressed only; no test change
+  (input mapping is UI-layer). Follow-up input-convention audit added to backlog.
+- **PHASE 5 human gate: PASSED** (2026-07-21) — WP3.6's quest-NPC task completed fully in 3D
+  (place creature, drag/rotate, Tag/VarTable, spawn waypoint, Save All → Pack Module
+  auto-deploy → verified in game). WP5.1 + WP5.2 accepted. **PHASE 5 COMPLETE.**
 ## WP6.1 — pending — Walkmesh (WOK)
 ## WP6.2 — pending — Perf + fidelity pass
 ## WP7.1 — pending — Tile adjacency corpus

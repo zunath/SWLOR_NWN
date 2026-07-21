@@ -400,9 +400,10 @@ void main()
             }
 
             // Move/rotate gizmo (WP5.2): a plain left press landing ON the current selection
-            // starts a manipulation drag instead of camera orbit - hit-test the press against the
-            // selection first; any other press (elsewhere, or with shift/other buttons) falls
-            // through to the normal orbit/pan handling below, so the drag stays camera orbit.
+            // starts an object-manipulation drag - the left button is the primary "grab", matching
+            // modern editors where you left-drag an object to move it (Alt to rotate). Hit-test the
+            // press against the selection first; any other press (empty space, shift, or another
+            // button) falls through to the camera navigation below.
             if (!_isPlacementActive && props.IsLeftButtonPressed && !shift
                 && _selectedInstance != null && TryHitSelectedInstance(pos))
             {
@@ -416,19 +417,22 @@ void main()
                 return;
             }
 
-            if (props.IsMiddleButtonPressed || props.IsRightButtonPressed || (props.IsLeftButtonPressed && shift))
-                _dragMode = DragMode.Pan;
-            else if (props.IsLeftButtonPressed)
+            // Modern-app camera convention: left-drag pans (grab-and-drag the view, like dragging a
+            // map), while the right/middle buttons orbit. Shift+left also orbits, keeping an orbit
+            // path for laptop/trackpad users without a second mouse button. This reverses the legacy
+            // Aurora toolset, where the primary button orbited.
+            if (props.IsRightButtonPressed || props.IsMiddleButtonPressed || (props.IsLeftButtonPressed && shift))
                 _dragMode = DragMode.Orbit;
+            else if (props.IsLeftButtonPressed)
+                _dragMode = DragMode.Pan;
             else
                 return;
 
             _lastPointerPos = pos;
             _pressStartPos = pos;
-            // Only a plain left press (no modifiers, no other buttons - i.e. what became an orbit
-            // drag) is eligible to resolve into a pick click on release; a pan-triggering press
-            // never picks.
-            _isClickCandidate = _dragMode == DragMode.Orbit;
+            // Only a plain left press (which became a pan drag) is eligible to resolve into a pick
+            // click on release; an orbit-triggering press never picks.
+            _isClickCandidate = _dragMode == DragMode.Pan;
             Focus();
             e.Pointer.Capture(this);
             e.Handled = true;

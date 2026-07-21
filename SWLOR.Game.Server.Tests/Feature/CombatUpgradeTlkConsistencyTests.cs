@@ -44,8 +44,10 @@ public class CombatUpgradeTlkConsistencyTests
 
         AttributeDescription.MightDetails.Should().Contain("Increases maximum STM.");
         AttributeDescription.PerceptionDetails.Should().Contain("Improves critical hit chance.");
+        AttributeDescription.PerceptionDetails.Should().NotContain("First Aid");
         AttributeDescription.VitalityDetails.Should().Contain("Reduces enemy critical hit chance against you.");
         AttributeDescription.WillpowerDetails.Should().Contain("Improves detection.");
+        AttributeDescription.WillpowerDetails.Should().Contain("First Aid");
         AttributeDescription.AgilityDetails.Should().Contain("Improves Stealth.");
 
         var allDescriptions = string.Join('\n',

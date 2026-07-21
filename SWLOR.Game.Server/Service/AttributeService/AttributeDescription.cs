@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service.AttributeService
             "Other Notes:\n\n" +
             "Improves accuracy of melee weapons.\n" +
             "Improves damage dealt by ranged weapons, including throwing weapons.\n" +
-            "Improves physical ability damage for pistols, rifles, throwing, Devices, and First Aid.\n" +
+            "Improves physical ability damage for pistols, rifles, throwing, and Devices.\n" +
             "Improves critical hit chance.\n" +
             "Improves detection.";
 

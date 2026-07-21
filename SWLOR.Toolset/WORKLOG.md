@@ -636,9 +636,16 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   binary to a --no-prompt build so PackService's fallback can be dropped means committing binaries
   (repo bloat + runtime-dep risk) to replace a path that already works; better done deliberately by
   the maintainer.
-- **Remaining: human gate** — (1) a night area reads moody-but-editable (cool tint, not too dark);
-  (2) the largest area (pw_ar_czarmrange) stays interactive when orbiting; (3) the blueprint and
-  area editors still render their fields (the field templates are now app-wide).
+- **Gate feedback round 1 (2026-07-21):** (3) field rendering PASSED. (1) night lighting worked
+  but a touch bright — lowered floors AmbientLightFloor 0.30→0.25, DiffuseLightFloor 0.25→0.20.
+  (2) largest area orbited but was a touch laggy — added two safe perf wins: **per-tile frustum
+  culling** (conservative per-tile AABB vs the 8 clip-space corners of view*projection; skips tiles
+  fully off-screen, big help when zoomed/panned into a region) and a **raw-texture-name memo**
+  (BindMeshTexture no longer re-runs MaterialResolver string resolution on every one of ~2500
+  per-frame draws). Build clean, 338/339 green, smoke OK.
+- **Remaining: human re-gate** — (1) night area brightness now feels right; (2) largest area
+  (pw_ar_czarmrange) is smooth on orbit/zoom/pan. If full-area orbit is still laggy, the next lever
+  is instanced tile rendering (deferred — larger shader/render change).
 ## WP7.1 — pending — Tile adjacency corpus
 ## WP7.2 — pending — Tile rule matcher
 ## WP7.3 — pending — Paint tools + new-area wizard

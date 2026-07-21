@@ -60,8 +60,8 @@ namespace SWLOR.Toolset.Viewport
         // but authored night colors are near-black - too dark to edit in - so each channel is
         // lifted from a floor toward its true value (raw 0 -> floor, raw 1 -> unchanged). Tunable;
         // the human gate calibrates the feel.
-        private const float AmbientLightFloor = 0.30f;
-        private const float DiffuseLightFloor = 0.25f;
+        private const float AmbientLightFloor = 0.25f;
+        private const float DiffuseLightFloor = 0.20f;
         private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
         private static readonly Vector3 FallbackTileColor = new(0.95f, 0.15f, 0.55f);
         private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
@@ -188,6 +188,12 @@ void main()
         private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _textureCache =
             new(StringComparer.OrdinalIgnoreCase);
 
+        // WP6.2 perf: memoize the raw-mesh-texture-name -> resolved result so the per-draw path
+        // (thousands of BindMeshTexture calls per frame) skips MaterialResolver's string resolution.
+        // Points at the same GL texture ids as _textureCache; cleared alongside it on GL teardown.
+        private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _rawTextureCache =
+            new(StringComparer.OrdinalIgnoreCase);
+
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
 
@@ -218,6 +224,9 @@ void main()
         /// <summary>View/projection from the most recently rendered frame - kept for picking (<see cref="RaiseInstancePicked"/>), which runs on a click rather than every frame.</summary>
         private Matrix4x4 _lastView = Matrix4x4.Identity;
         private Matrix4x4 _lastProjection = Matrix4x4.Identity;
+
+        /// <summary>Combined view*projection from the current frame, used for per-tile frustum culling (WP6.2 perf).</summary>
+        private Matrix4x4 _viewProjection = Matrix4x4.Identity;
 
         // ----- Orbit camera state -----
         private Vector3 _target;
@@ -815,6 +824,7 @@ void main()
                         if (texId != 0)
                             _gl.DeleteTexture(texId);
                     _textureCache.Clear();
+                    _rawTextureCache.Clear();
 
                     foreach (var buffer in _modelBuffers.Values)
                         DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
@@ -1078,6 +1088,7 @@ void main()
             // the matrices from whatever frame last actually rendered).
             _lastView = view;
             _lastProjection = projection;
+            _viewProjection = view * projection;
 
             _gl!.UseProgram(_shaderProgram);
             SetUniformMatrix4("view", view);
@@ -1119,6 +1130,9 @@ void main()
 
                 foreach (var placement in batch.Placements)
                 {
+                    if (!IsPlacementVisible(placement))
+                        continue;
+
                     SetUniformFloat("ceilingClipZ",
                         _hideCeilings ? placement.HeightOffset + CeilingClipHeight : CeilingClipDisabled);
 
@@ -1151,6 +1165,9 @@ void main()
 
             foreach (var placement in placements)
             {
+                if (!IsPlacementVisible(placement))
+                    continue;
+
                 SetUniformFloat("ceilingClipZ",
                     _hideCeilings ? placement.HeightOffset + CeilingClipHeight : CeilingClipDisabled);
                 SetUniformMatrix4("model", placement.Transform);
@@ -1160,6 +1177,59 @@ void main()
                         DrawElementsType.UnsignedInt, (void*)0);
                 }
             }
+        }
+
+        // Frustum culling (WP6.2 perf): the largest area (pw_ar_czarmrange, 256 tiles) issues
+        // thousands of draw calls per frame; skipping tiles fully outside the view frustum cuts
+        // that sharply when the camera is zoomed/panned into a region. The per-tile box is a
+        // deliberately generous superset of the tile's cell footprint (tile geometry can overhang
+        // its 10m cell and rise well above the floor), so a partially-visible tile is never culled.
+        private const float TileCullFootprintHalf = AreaSceneBuilder.TileSize / 2f + 2f; // 10m cell half-width + 2m overhang margin
+        private const float TileCullFloorMargin = 5f;
+        private const float TileCullCeilingMargin = 20f;
+
+        private bool IsPlacementVisible(TilePlacement placement)
+        {
+            var min = new Vector3(
+                placement.CenterX - TileCullFootprintHalf,
+                placement.CenterY - TileCullFootprintHalf,
+                placement.HeightOffset - TileCullFloorMargin);
+            var max = new Vector3(
+                placement.CenterX + TileCullFootprintHalf,
+                placement.CenterY + TileCullFootprintHalf,
+                placement.HeightOffset + TileCullCeilingMargin);
+
+            return IsAabbInFrustum(min, max, _viewProjection);
+        }
+
+        /// <summary>
+        /// True unless the axis-aligned box is entirely outside one clip plane of <paramref name="vp"/>
+        /// (view*projection). Transforms the 8 corners to clip space and culls only when all 8 fall
+        /// beyond the same plane - conservative (never culls a box that straddles the frustum), and
+        /// matches the row-vector convention the rest of this control uses (see SetUniformMatrix4).
+        /// System.Numerics' perspective matrix maps depth to [0, w], so the near test is z &lt; 0.
+        /// </summary>
+        private static bool IsAabbInFrustum(Vector3 min, Vector3 max, Matrix4x4 vp)
+        {
+            int outLeft = 0, outRight = 0, outBottom = 0, outTop = 0, outNear = 0, outFar = 0;
+
+            for (var corner = 0; corner < 8; corner++)
+            {
+                var point = new Vector3(
+                    (corner & 1) == 0 ? min.X : max.X,
+                    (corner & 2) == 0 ? min.Y : max.Y,
+                    (corner & 4) == 0 ? min.Z : max.Z);
+                var clip = Vector4.Transform(point, vp);
+
+                if (clip.X < -clip.W) outLeft++;
+                if (clip.X > clip.W) outRight++;
+                if (clip.Y < -clip.W) outBottom++;
+                if (clip.Y > clip.W) outTop++;
+                if (clip.Z < 0f) outNear++;
+                if (clip.Z > clip.W) outFar++;
+            }
+
+            return !(outLeft == 8 || outRight == 8 || outBottom == 8 || outTop == 8 || outNear == 8 || outFar == 8);
         }
 
         private void DrawInstanceMarkers()
@@ -1490,6 +1560,9 @@ void main()
             if (ResourceIndex == null)
                 return (0, 0f);
 
+            if (_rawTextureCache.TryGetValue(rawTextureName, out var memo))
+                return memo;
+
             string resolvedName;
             try
             {
@@ -1500,12 +1573,14 @@ void main()
                 resolvedName = rawTextureName;
             }
 
-            if (_textureCache.TryGetValue(resolvedName, out var cached))
-                return cached;
+            if (!_textureCache.TryGetValue(resolvedName, out var cached))
+            {
+                cached = LoadAndUploadTexture(resolvedName);
+                _textureCache[resolvedName] = cached;
+            }
 
-            var result = LoadAndUploadTexture(resolvedName);
-            _textureCache[resolvedName] = result;
-            return result;
+            _rawTextureCache[rawTextureName] = cached;
+            return cached;
         }
 
         private (uint TexId, float AlphaCutoff) LoadAndUploadTexture(string resolvedName)

@@ -300,7 +300,34 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
     grayscale fallback; palette-accurate PLT coverage deferred to a base-game-backed consumer.
   - MaterialResolver/TxiInfo deliberately not yet chained into TextureLoader — WP4.4/4.5
     decide composition.
-## WP4.3 — code done, human visual gate pending — 2026-07-20 — Model preview panes
+## WP4.3 — code done, visual RE-gate pending — 2026-07-21 — Model preview panes
+- **First gate result (human, 2026-07-20):** simple creatures, placeables, doors, and
+  live-update all render correctly. Segmented (P-type) creatures broken: parts detached/
+  floating, some apparently missing.
+- **Root cause (found via headless probes, 2026-07-21):** several SWLOR hak body-part MDLs
+  author their mesh vertices OFFSET from the part origin and correct them with node
+  Positions inside the part file — e.g. `sw_pt_lthigh\pfh0_legl001.mdl` mesh node
+  pos=(0.026, 0.013, -0.459) with vertices spanning Z=[-0.01..+0.53] (pointing UP), and
+  `sw_pt_lshin\pfh0_shinl001.mdl` 'Shin' node pos=(-0.458, -1.033, -0.562). Radoub's
+  MdlPartComposer discards those transforms when attaching parts to bones (sets attached
+  mesh Position=Zero; documented assumption "body part MDLs have geometry at local origin"
+  — true for BioWare parts, false for these SWLOR ones). Right-side counterparts are
+  authored at origin, hence the asymmetric floating. Composition/bones/renderer math were
+  all verified correct along the way (composite walk matched the renderer's
+  GetWorldTransform for all 22 meshes; all 19 bones present; no skin meshes; nothing hit
+  the skip heuristic). "Missing" parts in the screenshot are data-true: that utc has
+  BodyPart 0/absent for both shoulders, belt, and right foot (Aurora renders part 0 as
+  invisible — same in game).
+- **Fix:** `Domain\Render\MdlGeometryFlattener.cs` — bakes each node's composed model-root
+  transform into vertices/normals and resets node transforms to identity;
+  `MdlGeometryFlattenerTests.cs` (4 tests: both real corpus offenders, an at-origin control
+  part asserting no-op, synthetic nested-dummy+rotation asserting the transform order matches
+  Radoub's GetWorldTransform). ModelPreviewViewModel now feeds the composer through
+  `LoadComposerModel`: parts (withSupermodelAnims=false) get flattened; the skeleton NEVER is
+  (its node transforms are the bones), nor are directly-rendered simple models (the control
+  applies node transforms itself — baking would double-transform).
+- Verified: build clean, 235/236 green (round-trip gate intact), launch-and-kill smoke OK.
+- **Remaining: human visual RE-gate** — segmented humanoids should now assemble correctly.
 - Tier: Low (controller-executed inline; subagent dispatch avoided — the WP4.4 subagent
   died on the monthly spend limit, so remaining Phase 4 packages run inline).
 - Files: `Domain\Render\BlueprintModelResolver.cs` (headless, tested),

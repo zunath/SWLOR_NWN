@@ -64,7 +64,7 @@ namespace SWLOR.Toolset.Shell.Panels
             {
                 var gameData = new SwlorGameDataService(resourceIndex, twoDaService, tlkService);
                 TextureService = new TextureService(gameData);
-                _partComposer = new MdlPartComposer(gameData, LoadModel);
+                _partComposer = new MdlPartComposer(gameData, LoadComposerModel);
             }
         }
 
@@ -156,6 +156,22 @@ namespace SWLOR.Toolset.Shell.Panels
                     SetModel(null, reference.Status);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Model loader for MdlPartComposer. The composer passes withSupermodelAnims=true for the
+        /// skeleton and false for body parts. Part models are flattened (node transforms baked
+        /// into vertices) because the composer attaches part meshes assuming geometry at the part
+        /// origin — several SWLOR hak parts violate that with in-file node offsets. The skeleton
+        /// must NEVER be flattened: its node transforms are the bone positions.
+        /// </summary>
+        private MdlModel? LoadComposerModel(string resRef, bool withSupermodelAnims)
+        {
+            var model = LoadModel(resRef, withSupermodelAnims);
+            if (model != null && !withSupermodelAnims)
+                MdlGeometryFlattener.FlattenNodeTransforms(model);
+
+            return model;
         }
 
         /// <summary>Loads and parses an MDL by resref through the layered index; null when missing/unparseable.</summary>

@@ -1,10 +1,9 @@
 # SWLOR Toolset — Work Log
 
-Single source of truth for work-package progress. Plan:
-`C:\Users\benco\.claude\plans\i-love-it-see-recursive-owl.md` (controller keeps a copy of the
-approved plan; phases/packages are summarized there). One entry per work package; update the
-status line in place and append details as work happens. Statuses: `pending | in-progress |
-done | blocked`.
+Single source of truth for work-package progress. The approved plan (phases, work packages,
+orchestration protocol, ground rules, corrected format specs) lives in-repo at
+`SWLOR.Toolset\PLAN.md`. One entry per work package; update the status line in place and
+append details as work happens. Statuses: `pending | in-progress | done | blocked`.
 
 ## WP0.1 — done — 2026-07-19
 - Tier: Mid (controller-executed).

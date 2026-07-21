@@ -34,6 +34,7 @@ Perk-only adjustments such as flat Stealth rating, stealthed movement speed, ste
 
 - Baseline stealth requires Stealth I-IV and can only be entered out of combat. Ghost Protocol is the sole in-combat entry window.
 - Spot detection replaces the vanilla roll with one opposed check: `d20 + Detection` versus `d20 + Stealth`. The verdict is cached per observer/target pair for 30 seconds. Ties favor the stealthed target.
+- A successful Spot check against a player exits that player's stealth and reveals them globally. NPC stealth retains the engine's observer-specific visibility behavior.
 - Listen detection is suppressed so there is one detection model rather than separate Spot and Listen rolls.
 - Cache entries for a stealthed target are cleared on stealth exit; expired entries are pruned as the cache grows.
 - Stealth drains 2 STM every 6 seconds. Silent Stride reduces the drain rate by 20%, producing 2 STM every 7.5 seconds, and grants +30% Movement Speed while stealthed without removing stealth's running restriction.

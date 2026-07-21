@@ -67,6 +67,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool DisplayCommsOutOfRangeWarnings
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsGeneralSelected
         {
             get => Get<bool>();
@@ -158,6 +164,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.ShowDescriptorsForNamedPlayers);
             WatchOnClient(model => model.ShowOwnDescriptor);
             WatchOnClient(model => model.ScrambleAccountName);
+            WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);
             WatchOnClient(model => model.SelectedColor);
         }
 
@@ -190,6 +197,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             var colorSettings = dbPlayer.Settings.LanguageChatColors;
             var languages = Skill.GetActiveSkillsByCategory(SkillCategoryType.Languages);
+
+            DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
 
             _languages = new List<SkillType>();
             var chatColorNames = new GuiBindingList<string>();
@@ -312,6 +321,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
             dbPlayer.Settings.PortraitVitals = PortraitVitals;
+            dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
                 dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;

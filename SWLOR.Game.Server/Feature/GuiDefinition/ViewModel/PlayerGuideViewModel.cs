@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new ArticleBlock("Talk, Whisper, and Comms",
-                            "Normal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Comms: it reaches party members in the same ship, space region, supported event area, or planet, and nearby non-party listeners within 20 meters can overhear it when they share that scope. You receive a warning when party members are out of range."),
+                            "Normal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Comms: it reaches party members in the same ship, space region, supported event area, or planet, and nearby non-party listeners within 20 meters can overhear it when they share that scope. By default, you receive a warning when party members are out of range; this warning can be disabled in Chat Settings."),
                         new ArticleBlock("Disabled Shout Channel",
                             "The Shout chat channel is disabled for players. DMs can still use Shout for server-wide messages."),
                         new ArticleBlock("HoloNet Broadcast Window",

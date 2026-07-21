@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.AreaGenerationService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
+using SWLOR.Game.Server.Service.AreaGenerationService.Decoration;
 
 namespace SWLOR.Game.Server.Feature
 {

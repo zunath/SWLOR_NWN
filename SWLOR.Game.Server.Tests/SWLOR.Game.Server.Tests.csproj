@@ -34,6 +34,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="..\SWLOR.ContentBuilder\Models\ContentBuilderProjectFile.cs" Link="ContentBuilder\ContentBuilderProjectFile.cs" />
+    <Compile Include="..\SWLOR.ContentBuilder\Models\AreaSettingsFile.cs" Link="ContentBuilder\AreaSettingsFile.cs" />
     <Compile Include="..\SWLOR.ContentBuilder\Services\ProjectFileService.cs" Link="ContentBuilder\ProjectFileService.cs" />
     <Compile Include="..\SWLOR.ContentBuilder\Services\AreaSettingsBounds.cs" Link="ContentBuilder\AreaSettingsBounds.cs" />
     <Compile Include="..\SWLOR.ContentBuilder\Services\DefinitionCatalog.cs" Link="ContentBuilder\DefinitionCatalog.cs" />

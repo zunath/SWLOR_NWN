@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AreaGenerationService;
+using SWLOR.Game.Server.Service.AreaGenerationService.Decoration;
 
 namespace SWLOR.Game.Server.Feature.DungeonDefinition
 {

@@ -3,23 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
 using SWLOR.Game.Server.Service.AreaGenerationService;
+using SWLOR.Game.Server.Service.AreaGenerationService.Tileset;
 
 namespace SWLOR.ContentBuilder.Services
 {
-    /// <summary>Where a decoded minimap texture was found (or that it wasn't).</summary>
-    internal enum MinimapImageSource
-    {
-        Loose,
-        BaseGameArchive,
-        Missing
-    }
-
-    internal sealed class MinimapCacheEntry
-    {
-        public BitmapSource Image { get; init; }
-        public MinimapImageSource Source { get; init; }
-    }
-
     /// <summary>
     /// Resolves a tile's ImageMap2D resref to a decoded minimap BitmapSource and caches the result
     /// per (tileset, tileId) so regenerating a preview stays fast. Search order: loose .tga files

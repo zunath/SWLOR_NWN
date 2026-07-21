@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
+using SWLOR.Game.Server.Service.AreaGenerationService.Decoration;
 
 namespace SWLOR.ContentBuilder.Services
 {

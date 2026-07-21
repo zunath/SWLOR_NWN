@@ -6,6 +6,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.AreaGenerationService;
+using SWLOR.Game.Server.Service.AreaGenerationService.Tileset;
 
 namespace SWLOR.Game.Server.Tests.AreaGeneration;
 

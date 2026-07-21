@@ -3,6 +3,10 @@ using System.Text.Json.Nodes;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 using SWLOR.ProcgenReview;
+using SWLOR.Game.Server.Service.AreaGenerationService.Atmosphere;
+using SWLOR.Game.Server.Service.AreaGenerationService.Decoration;
+using SWLOR.Game.Server.Service.AreaGenerationService.Frontage;
+using SWLOR.Game.Server.Service.AreaGenerationService.Tileset;
 
 // Builds a standalone review module ("SWLOR Procgen Review.mod") containing offline-generated
 // areas, using the production solver and the real content-theme / tileset-profile / layout-profile
@@ -1523,12 +1527,3 @@ static void ConvertJsonToGff(string stage, string gffTool)
         File.Delete(jsonFile);
     }
 }
-
-/// <summary>
-/// OverrideParameters is non-null only for --areas-file entries: the full effective
-/// MacroLayoutParameters snapshot, used verbatim instead of Composition.BuildLayoutParameters() +
-/// Entrances/Exits/DoorTransitions (see the main generation loop). Entrances/Exits/DoorTransitions
-/// stay meaningful even for those entries (mirrored from the snapshot) for logging/display symmetry
-/// with the string-spec kinds.
-/// </summary>
-record AreaSpec(string Resref, string DisplayName, DungeonComposition Composition, int Seed, int Size, int Entrances = 1, int Exits = 1, bool DoorTransitions = true, MacroLayoutParameters OverrideParameters = null, bool EnableDecorations = true, int DecorationDensityPercent = 100, string DecorationProfile = "");

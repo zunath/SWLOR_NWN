@@ -1,7 +1,7 @@
 using System.IO;
 using System.Linq;
 
-namespace SWLOR.Game.Server.Service.AreaGenerationService
+namespace SWLOR.Game.Server.Service.AreaGenerationService.Tileset
 {
     /// <summary>
     /// Shared offline (repo-relative) resolution for a tileset's .set file, used by every OFFLINE tool

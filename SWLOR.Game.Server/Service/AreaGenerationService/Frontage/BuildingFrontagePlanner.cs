@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using SWLOR.Game.Server.Service.AreaGenerationService.Decoration;
 
-namespace SWLOR.Game.Server.Service.AreaGenerationService
+namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
 {
     /// <summary>
     /// Plans the structural BUILDING-PLACEABLE FRONTAGE pass for urban tilesets that declare
@@ -717,4 +718,3 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
     }
 }
-

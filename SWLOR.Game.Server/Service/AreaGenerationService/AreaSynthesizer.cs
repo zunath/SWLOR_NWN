@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using TilesetPlugin = SWLOR.NWN.API.NWNX.TilesetPlugin;
 using AreaPlugin = SWLOR.NWN.API.NWNX.AreaPlugin;
+using SWLOR.Game.Server.Service.AreaGenerationService.Atmosphere;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
 {

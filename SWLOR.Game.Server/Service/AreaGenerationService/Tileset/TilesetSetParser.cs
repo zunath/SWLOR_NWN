@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace SWLOR.Game.Server.Service.AreaGenerationService
+namespace SWLOR.Game.Server.Service.AreaGenerationService.Tileset
 {
     /// <summary>
     /// Parses NWN tileset .set files (INI format) into a <see cref="TilesetModel"/>.

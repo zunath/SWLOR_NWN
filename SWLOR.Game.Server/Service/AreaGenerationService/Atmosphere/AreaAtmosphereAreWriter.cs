@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace SWLOR.Game.Server.Service.AreaGenerationService
+namespace SWLOR.Game.Server.Service.AreaGenerationService.Atmosphere
 {
     /// <summary>
     /// Patches a resolved <see cref="DungeonAreaAtmosphere"/> into GFF-JSON .are text -- the

@@ -6,18 +6,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using SWLOR.Game.Server.Service.AreaGenerationService;
 using SWLOR.ContentBuilder.Services;
+using SWLOR.Game.Server.Service.AreaGenerationService.Tileset;
 
 namespace SWLOR.ContentBuilder.Rendering
 {
-    /// <summary>Tally of where each tile's minimap art came from, for the status bar.</summary>
-    internal sealed class MapRenderStats
-    {
-        public int LooseHits { get; set; }
-        public int ArchiveHits { get; set; }
-        public int Misses { get; set; }
-        public string BaseGameArchiveStatus { get; set; }
-    }
-
     /// <summary>
     /// Draws a resolved tile grid as an in-game-style minimap composite: each cell's actual tile
     /// texture (TileRecord.ImageMap2D), rotated per its resolved orientation, scaled with crisp

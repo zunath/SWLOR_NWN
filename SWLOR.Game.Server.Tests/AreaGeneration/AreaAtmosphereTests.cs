@@ -6,6 +6,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.DungeonDefinition;
 using SWLOR.Game.Server.Service.AreaGenerationService;
+using SWLOR.Game.Server.Service.AreaGenerationService.Atmosphere;
+using SWLOR.Game.Server.Service.AreaGenerationService.Decoration;
 
 namespace SWLOR.Game.Server.Tests.AreaGeneration;
 

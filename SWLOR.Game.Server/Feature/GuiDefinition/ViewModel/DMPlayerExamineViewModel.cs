@@ -885,6 +885,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var masteryId = row.MasteryId;
+            var targetTier = row.TargetTier;
+
+            // Re-resolve the active entry immediately before mutation rather than trusting
+            // the stale row snapshot - Mastery.ReduceTrainingTime always targets whichever
+            // entry is currently at TrainingQueue[0], and the queue can change between
+            // selection and click (e.g. completion advancing it), matching the
+            // abandon/reorder handlers' re-resolution pattern above.
+            var profile = Mastery.GetOrCreateProfile(_playerId);
+            if (profile.TrainingQueue.Count == 0 ||
+                profile.TrainingQueue[0].MasteryId != masteryId ||
+                profile.TrainingQueue[0].TargetTier != targetTier)
+            {
+                MasteryActionStatusText = "This mastery is no longer the active training entry.";
+                LoadTargetMasteries();
+                return;
+            }
+
             Mastery.ReduceTrainingTime(_playerId, days, GetName(Player), GetPCPublicCDKey(Player), MasteryActionReason, DateTime.UtcNow);
 
             MasteryActionStatusText = $"Reduced active training by {days} day(s).";

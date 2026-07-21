@@ -31,15 +31,22 @@ namespace SWLOR.Game.Server.Feature
             var utcNow = DateTime.UtcNow;
 
             // Evaluating the queue is what may append completion notices (including ones
-            // completing right now); draining is the single delivery path for those
+            // completing right now); peek+acknowledge is the delivery path for those
             // notices, whether they were queued just now or earlier (e.g. by a DM
-            // evaluating this profile via the examine window while offline).
+            // evaluating this profile via the examine window while offline). Notices are
+            // only acknowledged (cleared) after they've actually been sent to the player,
+            // so an exception between the two can never silently lose them.
             Mastery.EvaluateTrainingQueue(playerId, utcNow);
-            var notices = Mastery.DrainPendingCompletionNotices(playerId);
+            var notices = Mastery.PeekPendingCompletionNotices(playerId);
 
             foreach (var notice in notices)
             {
                 SendMessageToPC(player, ColorToken.Green(notice));
+            }
+
+            if (notices.Count > 0)
+            {
+                Mastery.AcknowledgeCompletionNotices(playerId);
             }
 
             var reviewedCount = Mastery.CountUnnotifiedReviewedRequests(playerId);

@@ -151,6 +151,15 @@ namespace SWLOR.Game.Server.Service
             int targetTier,
             string justification)
         {
+            // Defense-in-depth against a double submission racing past the Masteries
+            // window's own in-flight guard (MasteriesViewModel.OnClickSubmitRequest) - if
+            // an identical request is already in flight, hand that one back instead of
+            // persisting a second Pending row.
+            var duplicate = MasteryRules.FindDuplicatePendingRequest(
+                GetPlayerRequests(playerId), type, masteryId, customName, targetTier);
+            if (duplicate != null)
+                return duplicate;
+
             var request = new MasteryRequest
             {
                 PlayerId = playerId,
@@ -207,6 +216,18 @@ namespace SWLOR.Game.Server.Service
             // transient stand-in ValidateRequest/BuildEligibilityChecks use elsewhere so
             // the rules re-check below applies identically to catalog and unlisted requests.
             var existingMastery = string.IsNullOrWhiteSpace(request.MasteryId) ? null : GetMastery(request.MasteryId);
+
+            // A non-Custom request must always resolve to a real catalog row. Falling
+            // through to the Custom stand-in here would let a MasteryId whose row was
+            // deleted (or was simply blank due to a data bug) get treated as an unlisted
+            // request and queued/persisted under a nonexistent id. A retired-but-still-
+            // present row (IsActive false) is intentionally still allowed through - it
+            // only blocks NEW catalog selection (see MasteriesViewModel's catalog filter),
+            // not approval of a request against a mastery the character may already be
+            // part-way trained in.
+            if (request.Type != MasteryRequestType.Custom && existingMastery == null)
+                return false;
+
             var checkMastery = existingMastery ?? new Entity.Mastery
             {
                 Name = request.CustomName,
@@ -233,6 +254,14 @@ namespace SWLOR.Game.Server.Service
 
             var profile = GetOrCreateProfile(request.PlayerId);
             var actor = new MasteryActor(actorName, actorCDKey);
+
+            // Reject a Quick Slot approval with none available BEFORE a Custom request's
+            // catalog row is ever created below. CreateMastery persists immediately
+            // (there is no single transaction spanning it and the EnqueueTraining
+            // rejection further down), so checking only after would leave an orphaned
+            // catalog row behind on every retry of a doomed zero-slot approval.
+            if (!MasteryRules.CanUseQuickSlot(profile, useQuickSlot, isInstant))
+                return false;
 
             // Approving a Custom (unlisted) request for the first time materializes its
             // catalog entry. This only ever runs once, because it happens after the fresh
@@ -422,8 +451,9 @@ namespace SWLOR.Game.Server.Service
         /// <see cref="PlayerMasteryProfile.PendingCompletionNotices"/> entry regardless of
         /// whether the character is online right now (e.g. a DM evaluating the queue
         /// while the character is offline) - this is the single place completion notices
-        /// are produced, so <see cref="DrainPendingCompletionNotices"/> is the single
-        /// place they're delivered from.
+        /// are produced, so <see cref="PeekPendingCompletionNotices"/> and
+        /// <see cref="AcknowledgeCompletionNotices"/> are the single place they're
+        /// delivered from.
         /// </summary>
         public static List<MasteryTrainingEntry> EvaluateTrainingQueue(string playerId, DateTime utcNow)
         {
@@ -448,23 +478,34 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Drains and returns every pending completion-toast notice queued for a
-        /// character, clearing and persisting the list so each notice is delivered
-        /// exactly once. Call at login and at Masteries window open - the two points
-        /// where a character can actually receive an in-game toast.
+        /// Reads (without clearing) every pending completion-toast notice queued for a
+        /// character. Call at login and at Masteries window open - the two points where a
+        /// character can actually receive an in-game toast - and only clear them via
+        /// <see cref="AcknowledgeCompletionNotices"/> once they have actually been
+        /// delivered. Splitting peek from acknowledge means a UI exception between reading
+        /// and displaying the notices can never permanently lose them - clearing first
+        /// would make delivery at-most-once instead of exactly-once.
         /// </summary>
-        public static List<string> DrainPendingCompletionNotices(string playerId)
+        public static List<string> PeekPendingCompletionNotices(string playerId)
+        {
+            var profile = GetOrCreateProfile(playerId);
+            return new List<string>(profile.PendingCompletionNotices);
+        }
+
+        /// <summary>
+        /// Clears and persists every pending completion-toast notice for a character.
+        /// Call only after the notices returned by <see cref="PeekPendingCompletionNotices"/>
+        /// have actually been delivered (e.g. the toast messages were sent to the player).
+        /// </summary>
+        public static void AcknowledgeCompletionNotices(string playerId)
         {
             var profile = GetOrCreateProfile(playerId);
 
             if (profile.PendingCompletionNotices.Count == 0)
-                return new List<string>();
+                return;
 
-            var notices = new List<string>(profile.PendingCompletionNotices);
             profile.PendingCompletionNotices.Clear();
             DB.Set(profile);
-
-            return notices;
         }
 
         /// <summary>

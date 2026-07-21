@@ -63,6 +63,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _selectedRequestMasteryId;
         private int _requestTargetTier;
 
+        // In-flight guard for OnClickSubmitRequest - blocks a second click landing while
+        // the handler is still awaiting the Discord enqueue after the request has already
+        // been persisted (which would otherwise create a duplicate Pending request).
+        private bool _isSubmittingRequest;
+
         private List<MasteryRequest> _myRequests = new();
         private int _selectedRequestIndex = -1;
 
@@ -299,14 +304,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // (plus the login hook in MasteryNotifications) is what completes tiers.
             Mastery.EvaluateTrainingQueue(playerId, DateTime.UtcNow);
 
-            // Drain any completion notices queued since this character was last
+            // Deliver any completion notices queued since this character was last
             // notified - including ones added by a DM evaluating this profile from the
             // examine window while the character was already online in this session but
             // hadn't yet reopened Masteries. EvaluateTrainingQueue is the only place a
-            // notice is ever appended, so this is the single delivery path for it here.
-            foreach (var notice in Mastery.DrainPendingCompletionNotices(playerId))
+            // notice is ever appended. Notices are only acknowledged (cleared) once
+            // they've actually been sent below, so a UI exception in between can never
+            // silently lose them.
+            var pendingNotices = Mastery.PeekPendingCompletionNotices(playerId);
+            foreach (var notice in pendingNotices)
             {
                 SendMessageToPC(Player, ColorToken.Green(notice));
+            }
+
+            if (pendingNotices.Count > 0)
+            {
+                Mastery.AcknowledgeCompletionNotices(playerId);
             }
 
             SearchText = string.Empty;
@@ -660,6 +673,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSubmitRequest() => async () =>
         {
+            // Guard against a second click landing while this async handler is still
+            // awaiting the Discord enqueue below - Mastery.SubmitRequest persists a
+            // request immediately, so without this a double-click before the first call
+            // returns could create a second Pending request (Mastery.SubmitRequest itself
+            // also rejects an exact duplicate as defense-in-depth for this same race).
+            if (_isSubmittingRequest)
+                return;
+
             var playerId = GetObjectUUID(Player);
             var characterName = GetName(Player);
 
@@ -690,49 +711,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            var profile = Mastery.GetOrCreateProfile(playerId);
-            var currentTier = !_isCustomRequest && profile.Masteries.TryGetValue(mastery.Id, out var level) ? level.Tier : 0;
-            var requestType = _isCustomRequest
-                ? MasteryRequestType.Custom
-                : currentTier == 0 ? MasteryRequestType.NewMastery : MasteryRequestType.RankUp;
+            _isSubmittingRequest = true;
+            IsSubmitEnabled = false;
 
-            var request = Mastery.SubmitRequest(
-                playerId,
-                characterName,
-                requestType,
-                _isCustomRequest ? null : mastery.Id,
-                _isCustomRequest ? CustomName : null,
-                _isCustomRequest ? CustomDescription : null,
-                _requestTargetTier,
-                Justification);
-
-            bool discordEnqueued;
             try
             {
-                discordEnqueued = await SendMasteryDiscordNotification(request, mastery, playerId, characterName);
-            }
-            catch (Exception ex)
-            {
-                Log.Write(LogGroup.Mastery, $"Failed to enqueue Discord notification for mastery request '{request.Id}'. {ex}");
-                discordEnqueued = false;
-            }
+                var profile = Mastery.GetOrCreateProfile(playerId);
+                var currentTier = !_isCustomRequest && profile.Masteries.TryGetValue(mastery.Id, out var level) ? level.Tier : 0;
+                var requestType = _isCustomRequest
+                    ? MasteryRequestType.Custom
+                    : currentTier == 0 ? MasteryRequestType.NewMastery : MasteryRequestType.RankUp;
 
-            // The request itself is already persisted at this point, so a failed Discord
-            // notification must never be treated as a failed submission - staff can still
-            // review the request in-game via /masteryreview. Just surface a heads-up so
-            // the player knows staff may not have been pinged immediately.
-            if (!discordEnqueued)
-            {
-                Log.Write(LogGroup.Mastery, $"Discord notification failed to enqueue for mastery request '{request.Id}' (player '{playerId}').");
-                SendMessageToPC(Player, ColorToken.Green("Mastery request submitted! Staff will review it soon."));
-                SendMessageToPC(Player, ColorToken.Orange("(Staff Discord notification could not be sent - staff will still see this in /masteryreview.)"));
-            }
-            else
-            {
-                SendMessageToPC(Player, ColorToken.Green("Mastery request submitted! Staff will review it soon."));
-            }
+                var request = Mastery.SubmitRequest(
+                    playerId,
+                    characterName,
+                    requestType,
+                    _isCustomRequest ? null : mastery.Id,
+                    _isCustomRequest ? CustomName : null,
+                    _isCustomRequest ? CustomDescription : null,
+                    _requestTargetTier,
+                    Justification);
 
-            ShowMyRequests();
+                bool discordEnqueued;
+                try
+                {
+                    discordEnqueued = await SendMasteryDiscordNotification(request, mastery, playerId, characterName);
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(LogGroup.Mastery, $"Failed to enqueue Discord notification for mastery request '{request.Id}'. {ex}");
+                    discordEnqueued = false;
+                }
+
+                // The request itself is already persisted at this point, so a failed Discord
+                // notification must never be treated as a failed submission - staff can still
+                // review the request in-game via /masteryreview. Just surface a heads-up so
+                // the player knows staff may not have been pinged immediately.
+                if (!discordEnqueued)
+                {
+                    Log.Write(LogGroup.Mastery, $"Discord notification failed to enqueue for mastery request '{request.Id}' (player '{playerId}').");
+                    SendMessageToPC(Player, ColorToken.Green("Mastery request submitted! Staff will review it soon."));
+                    SendMessageToPC(Player, ColorToken.Orange("(Staff Discord notification could not be sent - staff will still see this in /masteryreview.)"));
+                }
+                else
+                {
+                    SendMessageToPC(Player, ColorToken.Green("Mastery request submitted! Staff will review it soon."));
+                }
+
+                ShowMyRequests();
+            }
+            finally
+            {
+                _isSubmittingRequest = false;
+            }
         };
 
         private Task<bool> SendMasteryDiscordNotification(MasteryRequest request, Entity.Mastery mastery, string playerId, string characterName)

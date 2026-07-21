@@ -82,12 +82,37 @@ namespace SWLOR.Game.Server.Service.MasteryService
             if (useQuickSlot)
                 return (MasteryTrainingSource.QuickSlot, QuickSlotDurationDays);
 
-            return profile.LifetimeLevelsTrained switch
+            // LifetimeLevelsTrained only increments on completion (EvaluateTrainingQueue)
+            // or an instant grant - a level that is merely queued/active never bumps it.
+            // Counting only LifetimeLevelsTrained would let several approvals made back
+            // to back, before any of them complete, all land in the same bracket (e.g.
+            // three approvals for a brand-new character would all resolve to 14 days
+            // instead of 14/21/28). Folding in the current queue length accounts for
+            // those in-flight levels too. A queued entry that is later cancelled never
+            // incremented LifetimeLevelsTrained, so simply leaving the queue frees its
+            // bracket slot again with no extra bookkeeping.
+            var effectivePriorLevels = profile.LifetimeLevelsTrained + profile.TrainingQueue.Count;
+            return effectivePriorLevels switch
             {
                 0 => (MasteryTrainingSource.Standard14, Standard14DurationDays),
                 1 => (MasteryTrainingSource.Standard21, Standard21DurationDays),
                 _ => (MasteryTrainingSource.Standard28, Standard28DurationDays)
             };
+        }
+
+        /// <summary>
+        /// Whether a Quick Slot request has an actual Quick Slot available to spend.
+        /// Always true for an instant grant, since an instant grant never spends a Quick
+        /// Slot regardless of a stale <paramref name="useQuickSlot"/> flag (see
+        /// <see cref="ResolveTraining"/>). Shared by <see cref="EnqueueTraining"/>'s own
+        /// rejection and <see cref="Mastery.ApproveRequest"/>'s pre-check - the latter
+        /// must know this BEFORE it materializes a Custom request's catalog row, so a
+        /// doomed-to-fail Quick Slot approval never leaves an orphaned catalog entry
+        /// behind.
+        /// </summary>
+        public static bool CanUseQuickSlot(PlayerMasteryProfile profile, bool useQuickSlot, bool isInstant)
+        {
+            return isInstant || !useQuickSlot || profile.QuickSlotsAvailable > 0;
         }
 
         /// <summary>
@@ -148,6 +173,34 @@ namespace SWLOR.Game.Server.Service.MasteryService
         public static bool CanReviewRequest(MasteryRequestStatus status)
         {
             return status == MasteryRequestStatus.Pending || status == MasteryRequestStatus.InReview;
+        }
+
+        /// <summary>
+        /// Finds an already-in-flight (Pending or InReview) request among
+        /// <paramref name="existingRequests"/> that would duplicate a new submission for
+        /// the same mastery (or, for a Custom request, the same custom name) and target
+        /// tier. Used by <see cref="Mastery.SubmitRequest"/> as defense-in-depth against a
+        /// double submission racing past the Masteries window's own in-flight guard (see
+        /// MasteriesViewModel.OnClickSubmitRequest) - the service must reject the
+        /// duplicate regardless of what the client's UI state looked like.
+        /// </summary>
+        public static MasteryRequest FindDuplicatePendingRequest(
+            IEnumerable<MasteryRequest> existingRequests,
+            MasteryRequestType type,
+            string masteryId,
+            string customName,
+            int targetTier)
+        {
+            if (existingRequests == null)
+                return null;
+
+            return existingRequests.FirstOrDefault(r =>
+                CanReviewRequest(r.Status) &&
+                r.Type == type &&
+                r.TargetTier == targetTier &&
+                (type == MasteryRequestType.Custom
+                    ? string.Equals(r.CustomName, customName ?? string.Empty, StringComparison.OrdinalIgnoreCase)
+                    : r.MasteryId == (masteryId ?? string.Empty)));
         }
 
         /// <summary>
@@ -535,7 +588,7 @@ namespace SWLOR.Game.Server.Service.MasteryService
             string requestId,
             DateTime utcNow)
         {
-            if (!isInstant && useQuickSlot && profile.QuickSlotsAvailable <= 0)
+            if (!CanUseQuickSlot(profile, useQuickSlot, isInstant))
                 return null;
 
             var (source, duration) = ResolveTraining(profile, targetTier, useQuickSlot, useRetrainCredit, isInstant);
@@ -671,6 +724,13 @@ namespace SWLOR.Game.Server.Service.MasteryService
         /// <returns>True if the move was legal and applied; false otherwise.</returns>
         public static bool ReorderQueueEntry(PlayerMasteryProfile profile, int index, int direction, MasteryActor actor, DateTime utcNow)
         {
+            // Only an adjacent-slot swap is a legal move. Without this, direction 0 would
+            // pass both index checks below unchanged (newIndex == index) and swap the
+            // entry with itself - returning true and appending a false "Reorder" audit
+            // entry despite nothing actually moving.
+            if (direction != -1 && direction != 1)
+                return false;
+
             if (index <= 0 || index >= profile.TrainingQueue.Count)
                 return false;
 

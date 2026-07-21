@@ -143,6 +143,147 @@ public class MasteryRulesTests
 
     #endregion
 
+    #region CanUseQuickSlot (gate shared by EnqueueTraining and Mastery.ApproveRequest)
+
+    [Test]
+    public void CanUseQuickSlot_ZeroAvailableAndRequested_ReturnsFalse()
+    {
+        var profile = CreateProfile();
+        profile.QuickSlotsAvailable = 0;
+
+        MasteryRules.CanUseQuickSlot(profile, useQuickSlot: true, isInstant: false).Should().BeFalse();
+    }
+
+    [Test]
+    public void CanUseQuickSlot_OneAvailableAndRequested_ReturnsTrue()
+    {
+        var profile = CreateProfile();
+        profile.QuickSlotsAvailable = 1;
+
+        MasteryRules.CanUseQuickSlot(profile, useQuickSlot: true, isInstant: false).Should().BeTrue();
+    }
+
+    [Test]
+    public void CanUseQuickSlot_NotRequested_ReturnsTrueRegardlessOfAvailability()
+    {
+        var profile = CreateProfile();
+        profile.QuickSlotsAvailable = 0;
+
+        MasteryRules.CanUseQuickSlot(profile, useQuickSlot: false, isInstant: false).Should().BeTrue();
+    }
+
+    [Test]
+    public void CanUseQuickSlot_InstantGrantWithStaleQuickSlotFlagAndZeroAvailable_ReturnsTrue()
+    {
+        // An instant grant never actually spends a Quick Slot (see ResolveTraining), so a
+        // stale useQuickSlot:true flag alongside it must not trip the zero-slot rejection.
+        var profile = CreateProfile();
+        profile.QuickSlotsAvailable = 0;
+
+        MasteryRules.CanUseQuickSlot(profile, useQuickSlot: true, isInstant: true).Should().BeTrue();
+    }
+
+    #endregion
+
+    #region FindDuplicatePendingRequest (Mastery.SubmitRequest service-level dedup)
+
+    private static MasteryRequest CreateRequest(
+        MasteryRequestStatus status,
+        MasteryRequestType type,
+        int targetTier,
+        string masteryId = "mastery-a",
+        string customName = "")
+    {
+        return new MasteryRequest
+        {
+            Status = status,
+            Type = type,
+            TargetTier = targetTier,
+            MasteryId = masteryId,
+            CustomName = customName
+        };
+    }
+
+    [Test]
+    public void FindDuplicatePendingRequest_IdenticalPendingRequestExists_ReturnsIt()
+    {
+        var existing = CreateRequest(MasteryRequestStatus.Pending, MasteryRequestType.NewMastery, 1);
+
+        var duplicate = MasteryRules.FindDuplicatePendingRequest(
+            new List<MasteryRequest> { existing }, MasteryRequestType.NewMastery, "mastery-a", null, 1);
+
+        duplicate.Should().BeSameAs(existing);
+    }
+
+    [Test]
+    public void FindDuplicatePendingRequest_IdenticalInReviewRequestExists_ReturnsIt()
+    {
+        var existing = CreateRequest(MasteryRequestStatus.InReview, MasteryRequestType.NewMastery, 1);
+
+        var duplicate = MasteryRules.FindDuplicatePendingRequest(
+            new List<MasteryRequest> { existing }, MasteryRequestType.NewMastery, "mastery-a", null, 1);
+
+        duplicate.Should().BeSameAs(existing);
+    }
+
+    [Test]
+    public void FindDuplicatePendingRequest_OnlyDecidedRequestExists_ReturnsNull()
+    {
+        var approved = CreateRequest(MasteryRequestStatus.Approved, MasteryRequestType.NewMastery, 1);
+        var denied = CreateRequest(MasteryRequestStatus.Denied, MasteryRequestType.NewMastery, 1);
+        var cancelled = CreateRequest(MasteryRequestStatus.Cancelled, MasteryRequestType.NewMastery, 1);
+
+        var duplicate = MasteryRules.FindDuplicatePendingRequest(
+            new List<MasteryRequest> { approved, denied, cancelled }, MasteryRequestType.NewMastery, "mastery-a", null, 1);
+
+        duplicate.Should().BeNull();
+    }
+
+    [Test]
+    public void FindDuplicatePendingRequest_DifferentTargetTier_ReturnsNull()
+    {
+        var existing = CreateRequest(MasteryRequestStatus.Pending, MasteryRequestType.RankUp, 2);
+
+        var duplicate = MasteryRules.FindDuplicatePendingRequest(
+            new List<MasteryRequest> { existing }, MasteryRequestType.RankUp, "mastery-a", null, 3);
+
+        duplicate.Should().BeNull();
+    }
+
+    [Test]
+    public void FindDuplicatePendingRequest_DifferentMasteryId_ReturnsNull()
+    {
+        var existing = CreateRequest(MasteryRequestStatus.Pending, MasteryRequestType.NewMastery, 1, masteryId: "mastery-a");
+
+        var duplicate = MasteryRules.FindDuplicatePendingRequest(
+            new List<MasteryRequest> { existing }, MasteryRequestType.NewMastery, "mastery-b", null, 1);
+
+        duplicate.Should().BeNull();
+    }
+
+    [Test]
+    public void FindDuplicatePendingRequest_IdenticalCustomRequestMatchedByNameCaseInsensitive_ReturnsIt()
+    {
+        var existing = CreateRequest(MasteryRequestStatus.Pending, MasteryRequestType.Custom, 1, masteryId: "", customName: "Sabacc Sharking");
+
+        var duplicate = MasteryRules.FindDuplicatePendingRequest(
+            new List<MasteryRequest> { existing }, MasteryRequestType.Custom, null, "SABACC SHARKING", 1);
+
+        duplicate.Should().BeSameAs(existing);
+    }
+
+    [Test]
+    public void FindDuplicatePendingRequest_NoExistingRequests_ReturnsNull()
+    {
+        MasteryRules.FindDuplicatePendingRequest(new List<MasteryRequest>(), MasteryRequestType.NewMastery, "mastery-a", null, 1)
+            .Should().BeNull();
+
+        MasteryRules.FindDuplicatePendingRequest(null, MasteryRequestType.NewMastery, "mastery-a", null, 1)
+            .Should().BeNull();
+    }
+
+    #endregion
+
     #region ShouldUseRetrainCredit (Fix 1 - automatic retrain-credit consumption)
 
     [Test]
@@ -1133,6 +1274,51 @@ public class MasteryRulesTests
     }
 
     [Test]
+    public void EnqueueTraining_ThreeBackToBackApprovals_UseSequential14_21_28DayBrackets()
+    {
+        // Fix: LifetimeLevelsTrained only increments on completion, so a fresh character
+        // approved for three masteries before any of them complete used to get 14/14/14
+        // instead of 14/21/28 - the bracket must also count levels still queued.
+        var profile = CreateProfile(lifetimeLevelsTrained: 0);
+        var actor = new MasteryActor("Staffer", "cdkey1");
+
+        var first = MasteryRules.EnqueueTraining(profile, "mastery-a", 1, false, false, false, actor, "reason", "request-1", UtcNow);
+        var second = MasteryRules.EnqueueTraining(profile, "mastery-b", 1, false, false, false, actor, "reason", "request-2", UtcNow);
+        var third = MasteryRules.EnqueueTraining(profile, "mastery-c", 1, false, false, false, actor, "reason", "request-3", UtcNow);
+
+        first.Source.Should().Be(MasteryTrainingSource.Standard14);
+        first.DurationDays.Should().Be(14);
+        second.Source.Should().Be(MasteryTrainingSource.Standard21);
+        second.DurationDays.Should().Be(21);
+        third.Source.Should().Be(MasteryTrainingSource.Standard28);
+        third.DurationDays.Should().Be(28);
+    }
+
+    [Test]
+    public void EnqueueTraining_CancellingASecondQueuedEntry_FreesItsBracketSlotForTheNextApproval()
+    {
+        // The cancelled entry never incremented LifetimeLevelsTrained (it was still
+        // queued, never completed), so simply leaving the queue must free its bracket
+        // slot naturally - a subsequent third approval should land in the 21d bracket
+        // the cancelled entry vacated, not fall through to 28d.
+        var profile = CreateProfile(lifetimeLevelsTrained: 0);
+        var actor = new MasteryActor("Staffer", "cdkey1");
+
+        var first = MasteryRules.EnqueueTraining(profile, "mastery-a", 1, false, false, false, actor, "reason", "request-1", UtcNow);
+        var second = MasteryRules.EnqueueTraining(profile, "mastery-b", 1, false, false, false, actor, "reason", "request-2", UtcNow);
+        first.DurationDays.Should().Be(14);
+        second.DurationDays.Should().Be(21);
+
+        MasteryRules.AbandonTrainingEntry(profile, 1, actor, "No longer wanted", UtcNow);
+        profile.LifetimeLevelsTrained.Should().Be(0);
+
+        var third = MasteryRules.EnqueueTraining(profile, "mastery-c", 1, false, false, false, actor, "reason", "request-3", UtcNow);
+
+        third.Source.Should().Be(MasteryTrainingSource.Standard21);
+        third.DurationDays.Should().Be(21);
+    }
+
+    [Test]
     public void EnqueueTraining_InstantWithNonEmptyQueue_GrantsTierNowAndLeavesQueueUntouched()
     {
         // Fix 2: an instant grant must bypass the queue entirely rather than sit behind
@@ -1415,6 +1601,28 @@ public class MasteryRulesTests
             e.Action == "Reorder" &&
             e.ActorName == "Staffer Name" &&
             e.ActorCDKey == "STAFF_CDKEY");
+    }
+
+    [TestCase(0)]
+    [TestCase(2)]
+    [TestCase(-2)]
+    public void ReorderQueueEntry_DirectionOtherThanPlusOrMinusOne_ReturnsFalseWithNoMutationOrAudit(int direction)
+    {
+        // Direction 0 in particular used to pass both bounds checks unchanged (newIndex
+        // == index) and swap the queued entry with itself - returning true and appending
+        // a false "Reorder" audit entry despite nothing actually moving.
+        var profile = CreateProfile();
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "active" });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "first-queued" });
+        profile.TrainingQueue.Add(new MasteryTrainingEntry { MasteryId = "second-queued" });
+
+        var result = MasteryRules.ReorderQueueEntry(profile, 1, direction, new MasteryActor("Staffer", "cdkey1"), UtcNow);
+
+        result.Should().BeFalse();
+        profile.TrainingQueue[0].MasteryId.Should().Be("active");
+        profile.TrainingQueue[1].MasteryId.Should().Be("first-queued");
+        profile.TrainingQueue[2].MasteryId.Should().Be("second-queued");
+        profile.AuditLog.Should().BeEmpty();
     }
 
     #endregion

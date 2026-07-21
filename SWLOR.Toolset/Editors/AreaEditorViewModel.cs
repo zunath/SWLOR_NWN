@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Numerics;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Documents;
@@ -186,9 +187,7 @@ namespace SWLOR.Toolset.Editors
                 // iterating that same .git list field in order) enumerate the identical underlying
                 // list in the identical order - so instance N of a given kind in the scene is always
                 // list-row N in that kind's section.
-                var indexWithinKind = instance != null && AreaScene != null
-                    ? AreaScene.Instances.Where(i => i.Kind == instance.Kind).ToList().IndexOf(instance)
-                    : -1;
+                var indexWithinKind = instance != null ? IndexWithinKind(instance) : -1;
 
                 foreach (var section in Sections)
                 {
@@ -227,6 +226,148 @@ namespace SWLOR.Toolset.Editors
 
             var instance = row.Index >= 0 && row.Index < kindInstances.Count ? kindInstances[row.Index] : null;
             ApplySelection(instance);
+        }
+
+        /// <summary>The current scene's index of <paramref name="instance"/> within its own kind's instance list - the same convention <see cref="ApplySelection"/> and every WP5.2 gizmo/placement path below uses to rebind a selection across a scene rebuild.</summary>
+        private int IndexWithinKind(InstanceMarker instance) =>
+            AreaScene != null ? AreaScene.Instances.Where(i => i.Kind == instance.Kind).ToList().IndexOf(instance) : -1;
+
+        /// <summary>The instance-list section covering <paramref name="kind"/>, or null when this editor has no section for it (Item/Encounter).</summary>
+        private InstanceListSectionViewModel? SectionForKind(InstanceMarkerKind kind)
+        {
+            var type = MapKindToSectionType(kind);
+            return type != null ? Sections.FirstOrDefault(s => s.BlueprintType == type) : null;
+        }
+
+        // ----- WP5.2: 3D-view move/rotate gizmo and place-from-palette -----
+
+        private InstanceListSectionViewModel? _placementSection;
+
+        /// <summary>Which instance-list section (blueprint type/palette) the 3D-view "Place..." button pulls from - bound to a picker in the 3D View tab; defaults to the first section the first time "Place..." is used.</summary>
+        public InstanceListSectionViewModel? PlacementSection
+        {
+            get => _placementSection;
+            set
+            {
+                if (ReferenceEquals(_placementSection, value))
+                    return;
+
+                _placementSection = value;
+                OnPropertyChanged(nameof(PlacementSection));
+            }
+        }
+
+        private InstanceListSectionViewModel? _pendingPlacementSection;
+        private string? _pendingPlacementResRef;
+
+        /// <summary>True from the moment a palette blueprint is chosen for placement until the next viewport click (or Esc/right-click cancel) resolves it - drives GlAreaControl.IsPlacementActive.</summary>
+        public bool IsPlacementPending => _pendingPlacementResRef != null;
+
+        /// <summary>3D-view status line while a placement is pending, or empty otherwise.</summary>
+        public string PlacementStatus => IsPlacementPending
+            ? $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
+            : string.Empty;
+
+        /// <summary>
+        /// Opens <see cref="PlacementSection"/>'s palette browser (falling back to the first
+        /// section) - the same InstanceListSectionViewModel.OpenPaletteBrowser flow that section's
+        /// own "Add..." button uses. Choosing a blueprint arms placement mode; the next viewport
+        /// click (routed here via <see cref="CommitPlacement"/>) creates the instance there.
+        /// </summary>
+        [RelayCommand]
+        private void BeginPlace()
+        {
+            var section = PlacementSection ?? Sections.FirstOrDefault();
+            if (section == null)
+            {
+                _log.AppendLine("No instance-list section available to place from.");
+                return;
+            }
+
+            PlacementSection = section;
+
+            section.OpenPaletteBrowser(
+                resRef =>
+                {
+                    _pendingPlacementSection = section;
+                    _pendingPlacementResRef = resRef;
+                    OnPropertyChanged(nameof(IsPlacementPending));
+                    OnPropertyChanged(nameof(PlacementStatus));
+                },
+                () => { });
+        }
+
+        /// <summary>
+        /// Called by the view when a viewport click resolves a pending placement
+        /// (GlAreaControl.PlacementPointPicked): creates the instance at the clicked ground
+        /// position through the pending section's InstanceFieldMap-based Add path (one RunGitEdit
+        /// transaction), then rebuilds the scene and selects the new instance.
+        /// </summary>
+        public void CommitPlacement(Vector3 position)
+        {
+            var section = _pendingPlacementSection;
+            var resRef = _pendingPlacementResRef;
+            _pendingPlacementSection = null;
+            _pendingPlacementResRef = null;
+            OnPropertyChanged(nameof(IsPlacementPending));
+            OnPropertyChanged(nameof(PlacementStatus));
+
+            if (section == null || resRef == null)
+                return;
+
+            if (!section.AddInstanceAt(resRef, position.X, position.Y, position.Z))
+                return;
+
+            var kind = MapSectionTypeToKind(section.BlueprintType);
+            var reselect = kind != null ? (kind.Value, section.Rows.Count - 1) : ((InstanceMarkerKind, int)?)null;
+            _ = BuildSceneAsync(reselect);
+        }
+
+        /// <summary>Called by the view when a pending placement is cancelled (Esc or right-click in the viewport, GlAreaControl.PlacementCancelled).</summary>
+        public void CancelPlacement()
+        {
+            if (_pendingPlacementResRef == null)
+                return;
+
+            _pendingPlacementSection = null;
+            _pendingPlacementResRef = null;
+            OnPropertyChanged(nameof(IsPlacementPending));
+            OnPropertyChanged(nameof(PlacementStatus));
+        }
+
+        /// <summary>
+        /// Called by the view when the 3D-view move gizmo releases (GlAreaControl.InstanceMoved):
+        /// commits the final X/Y (Z unchanged) through the matching section's
+        /// InstanceFieldMap.SetPosition path as one RunGitEdit transaction, then refreshes the
+        /// scene keeping the same instance selected (rebind by kind+index).
+        /// </summary>
+        public void MoveSelectedInstance(InstanceMarker instance, Vector3 newPosition)
+        {
+            var section = SectionForKind(instance.Kind);
+            var index = IndexWithinKind(instance);
+            if (section == null || index < 0)
+                return;
+
+            if (!section.SetInstancePosition(index, newPosition.X, newPosition.Y, newPosition.Z,
+                    $"Move {instance.Kind} \"{instance.Tag}\""))
+                return;
+
+            _ = BuildSceneAsync((instance.Kind, index));
+        }
+
+        /// <summary>Called by the view when the 3D-view rotate gizmo releases (GlAreaControl.InstanceRotated): mirrors <see cref="MoveSelectedInstance"/> for heading.</summary>
+        public void RotateSelectedInstance(InstanceMarker instance, Vector2 newOrientation)
+        {
+            var section = SectionForKind(instance.Kind);
+            var index = IndexWithinKind(instance);
+            if (section == null || index < 0)
+                return;
+
+            if (!section.SetInstanceOrientation(index, newOrientation.X, newOrientation.Y,
+                    $"Rotate {instance.Kind} \"{instance.Tag}\""))
+                return;
+
+            _ = BuildSceneAsync((instance.Kind, index));
         }
 
         public AreaEditorViewModel(
@@ -306,7 +447,14 @@ namespace SWLOR.Toolset.Editors
             await BuildSceneAsync();
         }
 
-        private async Task BuildSceneAsync()
+        /// <summary>
+        /// Rebuilds the scene. When <paramref name="reselect"/> is supplied (a WP5.2 gizmo edit,
+        /// placement, or an undo/redo of one), the instance at that kind+index in the freshly
+        /// built scene is reselected (rebind by kind+index - the fresh scene's InstanceMarker
+        /// objects never equal the old ones by reference); otherwise any stale selection is
+        /// dropped, matching the pre-WP5.2 behavior.
+        /// </summary>
+        private async Task BuildSceneAsync((InstanceMarkerKind Kind, int Index)? reselect = null)
         {
             if (_tilesetCatalog == null || _tileModelCache == null)
             {
@@ -328,10 +476,20 @@ namespace SWLOR.Toolset.Editors
                     are, git, tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes));
 
                 AreaScene = scene;
+
+                InstanceMarker? toSelect = null;
+                if (reselect is { } key)
+                {
+                    var kindInstances = scene.Instances.Where(i => i.Kind == key.Kind).ToList();
+                    if (key.Index >= 0 && key.Index < kindInstances.Count)
+                        toSelect = kindInstances[key.Index];
+                }
+
                 // Every previous scene's InstanceMarker objects are gone now (Build returns a fresh
-                // list each time) - any stale selection referencing them must be dropped rather than
-                // left pointing at objects no longer in this scene.
-                ApplySelection(null);
+                // list each time) - a selection with no reselect key (or whose key no longer
+                // resolves) must be dropped rather than left pointing at objects no longer in this
+                // scene.
+                ApplySelection(toSelect);
                 SceneStatus = scene.Diagnostics.MissingModels.Count == 0
                     ? $"{scene.Tiles.Count} tiles, {scene.Instances.Count} instances."
                     : $"{scene.Tiles.Count} tiles, {scene.Instances.Count} instances ({scene.Diagnostics.MissingModels.Count} fallback tiles).";
@@ -431,12 +589,20 @@ namespace SWLOR.Toolset.Editors
         public bool CanRedoAre => _areSession.UndoStack.CanRedo;
 
         /// <summary>Undo/redo for the instance lists (.git) - the toolbar's primary pair, since
-        /// placing/moving/removing instances is the bulk of this screen's editing.</summary>
+        /// placing/moving/removing instances is the bulk of this screen's editing. Also refreshes
+        /// the 3D view (WP5.2) when it has ever been built, rebinding the current selection by
+        /// kind+index so undoing/redoing a 3D-view gizmo edit is visible without pressing Rebuild.</summary>
         [RelayCommand(CanExecute = nameof(CanUndoInstances))]
         private void UndoInstances()
         {
+            var reselect = CaptureReselectKey();
+
             _gitSession.UndoStack.Undo();
             RefreshInstanceSections();
+
+            if (_sceneBuildRequested)
+                _ = BuildSceneAsync(reselect);
+
             AfterHistoryChange();
         }
 
@@ -445,9 +611,27 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand(CanExecute = nameof(CanRedoInstances))]
         private void RedoInstances()
         {
+            var reselect = CaptureReselectKey();
+
             _gitSession.UndoStack.Redo();
             RefreshInstanceSections();
+
+            if (_sceneBuildRequested)
+                _ = BuildSceneAsync(reselect);
+
             AfterHistoryChange();
+        }
+
+        /// <summary>The current selection's kind+index, captured before an undo/redo mutates the
+        /// document (the selected InstanceMarker itself remains valid to read until the scene is
+        /// actually rebuilt) - used to rebind selection across the post-undo/redo scene refresh.</summary>
+        private (InstanceMarkerKind Kind, int Index)? CaptureReselectKey()
+        {
+            if (SelectedSceneInstance is not { } instance)
+                return null;
+
+            var index = IndexWithinKind(instance);
+            return index >= 0 ? (instance.Kind, index) : null;
         }
 
         public bool CanRedoInstances => _gitSession.UndoStack.CanRedo;

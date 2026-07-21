@@ -235,6 +235,11 @@
               <TextBlock Text="{Binding SelectionStatus}" Foreground="#FFDD88"
                          TextTrimming="CharacterEllipsis" MaxWidth="480"
                          IsVisible="{Binding SelectionStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              <TextBlock Text="Drag: move | Alt+drag: rotate | Ctrl: snap 0.5m" Foreground="#AAAAAA" FontSize="11"
+                         IsVisible="{Binding SelectionStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              <TextBlock Text="{Binding PlacementStatus}" Foreground="#88CCFF"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480"
+                         IsVisible="{Binding PlacementStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
           </Border>
 
@@ -243,8 +248,43 @@
             <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
           </Border>
 
+          <!-- WP5.2: place-from-palette. Choosing a blueprint here arms placement mode; the next
+               viewport click (or Esc/right-click to cancel) resolves it via
+               AreaEditorViewModel.CommitPlacement/CancelPlacement. -->
+          <Border IsVisible="{Binding PlacementSection.ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}}"
+                  Background="#E0202020" BorderBrush="{DynamicResource DockThemeBorderMidBrush}" BorderThickness="1"
+                  Padding="10" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420">
+            <StackPanel Spacing="6" DataContext="{Binding PlacementSection.ActivePaletteBrowser}"
+                        x:DataType="editors:PaletteBrowserViewModel">
+              <TextBlock Text="{Binding Title, StringFormat='Choose {0} blueprint to place'}" FontWeight="Bold" Foreground="White" />
+              <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode, Mode=TwoWay}" MaxHeight="320">
+                <TreeView.ItemTemplate>
+                  <TreeDataTemplate DataType="editors:PaletteNodeViewModel" ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <TextBlock Text="{Binding DisplayName}" />
+                      <TextBlock Text="{Binding ResRef}" Opacity="0.6" />
+                    </StackPanel>
+                  </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+              </TreeView>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Content="Place" Command="{Binding ChooseCommand}" />
+                <Button Content="Cancel" Command="{Binding CancelCommand}" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
                       Margin="8" Spacing="10">
+            <ComboBox ItemsSource="{Binding Sections}" SelectedItem="{Binding PlacementSection, Mode=TwoWay}"
+                      MinWidth="120" ToolTip.Tip="Instance kind to place from">
+              <ComboBox.ItemTemplate>
+                <DataTemplate DataType="editors:InstanceListSectionViewModel">
+                  <TextBlock Text="{Binding Title}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Content="Place..." Command="{Binding BeginPlaceCommand}" />
             <CheckBox Content="Placeable models" x:Name="PlaceableModelsCheck" IsChecked="True"
                       IsCheckedChanged="OnPlaceableModelsChanged"
                       ToolTip.Tip="Unchecked: placeables show their blue pyramid marker instead of their 3D model"

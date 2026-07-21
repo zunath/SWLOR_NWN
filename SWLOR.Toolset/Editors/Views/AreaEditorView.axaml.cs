@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Numerics;
 using Avalonia.Controls;
 using SWLOR.Toolset.Domain.Render;
 
@@ -13,6 +14,10 @@ namespace SWLOR.Toolset.Editors
             InitializeComponent();
             AreaView.RenderStatusChanged += OnGlRenderStatusChanged;
             AreaView.InstancePicked += OnInstancePicked;
+            AreaView.InstanceMoved += OnInstanceMoved;
+            AreaView.InstanceRotated += OnInstanceRotated;
+            AreaView.PlacementPointPicked += OnPlacementPointPicked;
+            AreaView.PlacementCancelled += OnPlacementCancelled;
             DataContextChanged += (_, _) => AttachViewModel();
         }
 
@@ -28,6 +33,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.ResourceIndex = _viewModel.ResourceIndex;
             AreaView.Scene = _viewModel.AreaScene;
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
+            AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         }
 
@@ -40,6 +46,8 @@ namespace SWLOR.Toolset.Editors
                 AreaView.Scene = _viewModel.AreaScene;
             else if (e.PropertyName == nameof(AreaEditorViewModel.SelectedSceneInstance))
                 AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.IsPlacementPending))
+                AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
         }
 
         /// <summary>
@@ -49,6 +57,20 @@ namespace SWLOR.Toolset.Editors
         /// selection directions funnel through the same re-entrancy-guarded code path.
         /// </summary>
         private void OnInstancePicked(InstanceMarker? instance) => _viewModel?.SelectSceneInstance(instance);
+
+        /// <summary>WP5.2: the move gizmo released with a net change - commit it through the view model's InstanceFieldMap-based path.</summary>
+        private void OnInstanceMoved(InstanceMarker instance, Vector3 newPosition) =>
+            _viewModel?.MoveSelectedInstance(instance, newPosition);
+
+        /// <summary>WP5.2: the rotate gizmo released with a net change.</summary>
+        private void OnInstanceRotated(InstanceMarker instance, Vector2 newOrientation) =>
+            _viewModel?.RotateSelectedInstance(instance, newOrientation);
+
+        /// <summary>WP5.2: a pending placement resolved to a viewport click.</summary>
+        private void OnPlacementPointPicked(Vector3 position) => _viewModel?.CommitPlacement(position);
+
+        /// <summary>WP5.2: a pending placement was cancelled (Esc or right-click in the viewport).</summary>
+        private void OnPlacementCancelled() => _viewModel?.CancelPlacement();
 
         /// <summary>Builds the 3D scene lazily the first time the "3D View" tab is activated - never on area-editor open.</summary>
         private void OnRootTabSelectionChanged(object? sender, SelectionChangedEventArgs e)

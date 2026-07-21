@@ -203,7 +203,7 @@ void main()
         private float _distance = 50f;
         private float _initialDistance = 50f;
 
-        private enum DragMode { None, Orbit, Pan }
+        private enum DragMode { None, Orbit, Pan, Move, Rotate }
         private DragMode _dragMode = DragMode.None;
         private Point _lastPointerPos;
 
@@ -211,6 +211,15 @@ void main()
         private Point _pressStartPos;
         private bool _isClickCandidate;
         private InstanceMarker? _selectedInstance;
+
+        // ----- Move/rotate gizmo (WP5.2) -----
+        private InstanceMarker? _manipulationOriginal;
+        private InstanceMarker? _manipulationPreview;
+        private float _manipulationHeadingRadians;
+        private bool _manipulationCancelled;
+
+        // ----- Place-from-palette (WP5.2) -----
+        private bool _isPlacementActive;
 
         /// <summary>
         /// The instance to draw a highlight box around, or null for no highlight. Set by the host
@@ -239,6 +248,35 @@ void main()
         /// driven from one place.
         /// </summary>
         public event Action<InstanceMarker?>? InstancePicked;
+
+        /// <summary>
+        /// Raised once a move-gizmo drag releases (WP5.2): the instance that was selected when the
+        /// drag started, and its final world position (Z unchanged - the move gizmo only edits X/Y).
+        /// Not raised when the drag ended with no net change (e.g. a press+release with no motion).
+        /// The host view is expected to commit this through the matching instance-list section's
+        /// InstanceFieldMap.SetPosition path as one transaction, then refresh the scene.
+        /// </summary>
+        public event Action<InstanceMarker, Vector3>? InstanceMoved;
+
+        /// <summary>Mirrors <see cref="InstanceMoved"/> for the rotate gizmo: the instance and its final (cos,sin) heading.</summary>
+        public event Action<InstanceMarker, Vector2>? InstanceRotated;
+
+        /// <summary>
+        /// Whether a viewport click should place a new instance instead of picking/orbiting (WP5.2
+        /// "Place..." flow). The host view sets this once a palette blueprint has been chosen;
+        /// this control clears it itself once a placement point is picked or cancelled.
+        /// </summary>
+        public bool IsPlacementActive
+        {
+            get => _isPlacementActive;
+            set => _isPlacementActive = value;
+        }
+
+        /// <summary>Raised when placement mode is active and a plain click (not a camera drag) lands in the viewport: the world-space ground point (ray intersected with the Z=0 plane). Clears <see cref="IsPlacementActive"/> before raising.</summary>
+        public event Action<Vector3>? PlacementPointPicked;
+
+        /// <summary>Raised when an active placement is cancelled (Esc, or a right-click while placement is active). Clears <see cref="IsPlacementActive"/> before raising.</summary>
+        public event Action? PlacementCancelled;
 
         private bool _hideCeilings;
 
@@ -350,6 +388,33 @@ void main()
         {
             var props = e.GetCurrentPoint(this).Properties;
             var shift = (e.KeyModifiers & KeyModifiers.Shift) != 0;
+            var alt = (e.KeyModifiers & KeyModifiers.Alt) != 0;
+            var pos = e.GetPosition(this);
+
+            // Placement mode (WP5.2): a right-click cancels rather than panning the camera.
+            if (_isPlacementActive && props.IsRightButtonPressed)
+            {
+                CancelPlacement();
+                e.Handled = true;
+                return;
+            }
+
+            // Move/rotate gizmo (WP5.2): a plain left press landing ON the current selection
+            // starts a manipulation drag instead of camera orbit - hit-test the press against the
+            // selection first; any other press (elsewhere, or with shift/other buttons) falls
+            // through to the normal orbit/pan handling below, so the drag stays camera orbit.
+            if (!_isPlacementActive && props.IsLeftButtonPressed && !shift
+                && _selectedInstance != null && TryHitSelectedInstance(pos))
+            {
+                BeginManipulation(_selectedInstance, alt ? DragMode.Rotate : DragMode.Move);
+                _lastPointerPos = pos;
+                _pressStartPos = pos;
+                _isClickCandidate = false;
+                Focus();
+                e.Pointer.Capture(this);
+                e.Handled = true;
+                return;
+            }
 
             if (props.IsMiddleButtonPressed || props.IsRightButtonPressed || (props.IsLeftButtonPressed && shift))
                 _dragMode = DragMode.Pan;
@@ -358,8 +423,8 @@ void main()
             else
                 return;
 
-            _lastPointerPos = e.GetPosition(this);
-            _pressStartPos = _lastPointerPos;
+            _lastPointerPos = pos;
+            _pressStartPos = pos;
             // Only a plain left press (no modifiers, no other buttons - i.e. what became an orbit
             // drag) is eligible to resolve into a pick click on release; a pan-triggering press
             // never picks.
@@ -379,15 +444,25 @@ void main()
             var dy = (float)(pos.Y - _lastPointerPos.Y);
             _lastPointerPos = pos;
 
-            if (_dragMode == DragMode.Orbit)
+            switch (_dragMode)
             {
-                _azimuth += dx * OrbitSensitivity;
-                _elevation = AreaCameraMath.ClampElevation(_elevation - dy * OrbitSensitivity);
-            }
-            else
-            {
-                var worldPerPixel = AreaCameraMath.WorldUnitsPerPixel(_distance, VerticalFovRadians, _viewportHeight);
-                _target += AreaCameraMath.PanDelta(_azimuth, dx, dy, worldPerPixel);
+                case DragMode.Orbit:
+                    _azimuth += dx * OrbitSensitivity;
+                    _elevation = AreaCameraMath.ClampElevation(_elevation - dy * OrbitSensitivity);
+                    break;
+
+                case DragMode.Pan:
+                    var worldPerPixel = AreaCameraMath.WorldUnitsPerPixel(_distance, VerticalFovRadians, _viewportHeight);
+                    _target += AreaCameraMath.PanDelta(_azimuth, dx, dy, worldPerPixel);
+                    break;
+
+                case DragMode.Move:
+                    UpdateMovePreview(pos, (e.KeyModifiers & KeyModifiers.Control) != 0);
+                    break;
+
+                case DragMode.Rotate:
+                    UpdateRotatePreview(dx);
+                    break;
             }
 
             RequestNextFrameRendering();
@@ -395,6 +470,14 @@ void main()
 
         public void HandlePointerReleased(PointerReleasedEventArgs e)
         {
+            if (_dragMode == DragMode.Move || _dragMode == DragMode.Rotate)
+            {
+                CommitManipulation();
+                e.Pointer.Capture(null);
+                e.Handled = true;
+                return;
+            }
+
             if (_dragMode == DragMode.None)
                 return;
 
@@ -413,7 +496,12 @@ void main()
             var dy = releasePos.Y - _pressStartPos.Y;
             var dragDistance = Math.Sqrt(dx * dx + dy * dy);
 
-            if (dragDistance < ClickDragThresholdPixels)
+            if (dragDistance >= ClickDragThresholdPixels)
+                return;
+
+            if (_isPlacementActive)
+                RaisePlacementPointPicked(releasePos);
+            else
                 RaiseInstancePicked(releasePos);
         }
 
@@ -437,6 +525,132 @@ void main()
 
             var hit = AreaPicking.PickClosestInstance(ray, _scene, _showPlaceableModels);
             InstancePicked?.Invoke(hit);
+        }
+
+        // ----- Move/rotate gizmo (WP5.2) -----
+
+        /// <summary>Builds a ray from the last rendered frame's view/projection for the given screen point, or null before anything has ever rendered.</summary>
+        private PickRay? TryBuildRay(Point screenPos)
+        {
+            if (_viewportWidth <= 0 || _viewportHeight <= 0)
+                return null;
+
+            return AreaCameraMath.ScreenPointToRay(
+                new Vector2((float)screenPos.X, (float)screenPos.Y), _viewportWidth, _viewportHeight, _lastView, _lastProjection);
+        }
+
+        /// <summary>Whether a press at <paramref name="screenPos"/> lands on <see cref="_selectedInstance"/> specifically (not the whole scene), using the same marker-vs-model rule everything else here uses.</summary>
+        private bool TryHitSelectedInstance(Point screenPos)
+        {
+            if (_scene == null || _selectedInstance is not { } selected)
+                return false;
+
+            var ray = TryBuildRay(screenPos);
+            if (ray == null)
+                return false;
+
+            return AreaPicking.PickInstance(ray.Value, selected, DrawsAsModel(selected)) != null;
+        }
+
+        private void BeginManipulation(InstanceMarker selected, DragMode mode)
+        {
+            _dragMode = mode;
+            _manipulationOriginal = selected;
+            _manipulationPreview = ClonePreview(selected, selected.Position, selected.Orientation);
+            _manipulationHeadingRadians = MathF.Atan2(selected.Orientation.Y, selected.Orientation.X);
+            _manipulationCancelled = false;
+        }
+
+        private static InstanceMarker ClonePreview(InstanceMarker source, Vector3 position, Vector2 orientation) => new()
+        {
+            Kind = source.Kind,
+            TemplateResRef = source.TemplateResRef,
+            Tag = source.Tag,
+            Position = position,
+            Orientation = orientation,
+            Geometry = source.Geometry,
+            Model = source.Model
+        };
+
+        /// <summary>Live move preview: reprojects the current screen position onto the horizontal plane at the instance's original Z (Z never changes during a move), optionally grid-snapping X/Y while Ctrl is held.</summary>
+        private void UpdateMovePreview(Point screenPos, bool snap)
+        {
+            // Esc already cancelled this drag (_manipulationPreview cleared) - a mouse move that
+            // arrives before the button is actually released must not revive the preview.
+            if (_manipulationCancelled || _manipulationOriginal is not { } original)
+                return;
+
+            var ray = TryBuildRay(screenPos);
+            if (ray == null)
+                return;
+
+            if (AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, original.Position.Z) is not { } hit)
+                return; // Ray parallel to the plane this frame - keep the previous preview rather than snapping to a bogus point.
+
+            var position = snap ? AreaManipulation.SnapToGridXy(hit, AreaManipulation.DefaultGridSnapMeters) : hit;
+            _manipulationPreview = ClonePreview(original, new Vector3(position.X, position.Y, original.Position.Z), original.Orientation);
+        }
+
+        /// <summary>Live rotate preview: accumulates heading from horizontal drag movement, matching the orbit camera's own pixel-to-radians feel.</summary>
+        private void UpdateRotatePreview(float dxPixels)
+        {
+            if (_manipulationCancelled || _manipulationOriginal is not { } original)
+                return;
+
+            _manipulationHeadingRadians += dxPixels * AreaManipulation.RotateRadiansPerPixel;
+            var orientation = AreaManipulation.HeadingToOrientation(_manipulationHeadingRadians);
+            _manipulationPreview = ClonePreview(original, original.Position, orientation);
+        }
+
+        /// <summary>Ends the active manipulation drag, raising <see cref="InstanceMoved"/>/<see cref="InstanceRotated"/> once for the net change - or nothing if the drag was cancelled (Esc) or ended with no actual change (e.g. a press+release with no motion on an already-selected instance).</summary>
+        private void CommitManipulation()
+        {
+            var mode = _dragMode;
+            var original = _manipulationOriginal;
+            var preview = _manipulationPreview;
+            var cancelled = _manipulationCancelled;
+
+            _dragMode = DragMode.None;
+            _manipulationOriginal = null;
+            _manipulationPreview = null;
+            _manipulationCancelled = false;
+            RequestNextFrameRendering();
+
+            if (cancelled || original == null || preview == null)
+                return;
+
+            if (mode == DragMode.Move && Vector3.Distance(preview.Position, original.Position) > 1e-5f)
+                InstanceMoved?.Invoke(original, preview.Position);
+            else if (mode == DragMode.Rotate && Vector2.Distance(preview.Orientation, original.Orientation) > 1e-5f)
+                InstanceRotated?.Invoke(original, preview.Orientation);
+        }
+
+        /// <summary>The instance actually rendered/highlighted for <paramref name="instance"/> right now - its live manipulation preview while a drag is in progress on it, otherwise itself.</summary>
+        private InstanceMarker Displayed(InstanceMarker instance) =>
+            _manipulationPreview != null && ReferenceEquals(instance, _manipulationOriginal) ? _manipulationPreview : instance;
+
+        // ----- Place-from-palette (WP5.2) -----
+
+        private void CancelPlacement()
+        {
+            if (!_isPlacementActive)
+                return;
+
+            _isPlacementActive = false;
+            PlacementCancelled?.Invoke();
+        }
+
+        private void RaisePlacementPointPicked(Point screenPos)
+        {
+            var ray = TryBuildRay(screenPos);
+            if (ray == null)
+                return;
+
+            if (AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f) is not { } point)
+                return;
+
+            _isPlacementActive = false;
+            PlacementPointPicked?.Invoke(point);
         }
 
         public void HandlePointerWheel(PointerWheelEventArgs e)
@@ -470,6 +684,30 @@ void main()
         {
             base.OnPointerWheelChanged(e);
             HandlePointerWheel(e);
+        }
+
+        /// <summary>Esc cancels an in-progress manipulation drag (reverting to the instance's real position/heading) or an active placement (WP5.2).</summary>
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            if (e.Key != Key.Escape)
+                return;
+
+            if (_dragMode == DragMode.Move || _dragMode == DragMode.Rotate)
+            {
+                _manipulationCancelled = true;
+                _manipulationPreview = null;
+                RequestNextFrameRendering();
+                e.Handled = true;
+                return;
+            }
+
+            if (_isPlacementActive)
+            {
+                CancelPlacement();
+                e.Handled = true;
+            }
         }
 
         // ----- GL lifecycle -----
@@ -834,17 +1072,19 @@ void main()
                 return;
 
             // Pass 1: instances with resolved render geometry (placeables, doors) draw their
-            // actual model, textured and lit, at the instance's position/heading.
-            foreach (var instance in _scene.Instances)
+            // actual model, textured and lit, at the instance's position/heading (or its live
+            // WP5.2 manipulation preview, while a move/rotate drag is in progress on it).
+            foreach (var raw in _scene.Instances)
             {
-                if (!DrawsAsModel(instance))
+                if (!DrawsAsModel(raw))
                     continue;
 
+                var instance = Displayed(raw);
                 var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
                 var instanceTransform =
                     Matrix4x4.CreateRotationZ(heading) * Matrix4x4.CreateTranslation(instance.Position);
 
-                var buffer = GetOrBuildModelBuffer(instance.Model);
+                var buffer = GetOrBuildModelBuffer(raw.Model!);
                 _gl!.BindVertexArray(buffer.Vao);
                 SetUniformBool("unlit", false);
 
@@ -870,11 +1110,12 @@ void main()
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
 
-            foreach (var instance in _scene.Instances)
+            foreach (var raw in _scene.Instances)
             {
-                if (DrawsAsModel(instance))
+                if (DrawsAsModel(raw))
                     continue;
 
+                var instance = Displayed(raw);
                 var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
                 var model = Matrix4x4.CreateRotationZ(heading) * Matrix4x4.CreateTranslation(instance.Position);
 
@@ -919,7 +1160,7 @@ void main()
             if (_scene == null || _selectedInstance is not { } instance || _gl == null)
                 return;
 
-            var (min, max) = AreaPicking.ComputeInstanceWorldBounds(instance, DrawsAsModel(instance));
+            var (min, max) = AreaPicking.ComputeInstanceWorldBounds(Displayed(instance), DrawsAsModel(instance));
             var vertices = BuildWireframeBoxVertices(min, max);
 
             EnsureHighlightBuffer();

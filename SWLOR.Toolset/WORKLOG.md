@@ -513,7 +513,34 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
 - **WP5.2 notes from executor:** consider rebinding selection across rebuilds (Tag+kind
   match); highlight box is axis-aligned (not heading-oriented) — gizmos may want tighter
   bounds; shader has no selected-tint uniform (highlight is a separate wireframe pass).
-## WP5.2 — pending — Gizmos + placement
+## WP5.2 — code done, human gate pending — 2026-07-21 — Gizmos + placement
+- Tier: Mid (Sonnet subagent); controller-verified (build clean, 311/312 green incl. corpus
+  gate + the two mandated byte-exactness tests; scope exact; AreaManipulation Radoub-free;
+  launch smoke OK).
+- Files: Domain `Render\AreaManipulation.cs` (ray∩horizontal-plane, 0.5m grid snap,
+  heading↔orientation; 17 tests) + `AreaPicking.PickInstance` single-instance test (3 tests);
+  app: GlAreaControl (drag gizmo: press must hit the SELECTED instance else falls through to
+  orbit; live preview via local marker copy — document untouched until release; Alt+drag
+  rotate at 0.01 rad/px; placement mode with Esc/right-click cancel; 4 new events),
+  InstanceListSectionViewModel (OpenPaletteBrowser factored from Add; AddInstanceAt/
+  SetInstancePosition/SetInstanceOrientation — one transaction each via existing _runEdit),
+  AreaEditorViewModel (Place... flow, Move/RotateSelectedInstance, BuildSceneAsync reselect
+  key by kind+index, Undo/Redo now refresh the 3D scene when built), AreaEditorView (event
+  wiring, Place combo+button, palette popup, status hint "Drag: move | Alt+drag: rotate |
+  Ctrl: snap 0.5m").
+- **Acceptance core verified by test:** programmatic move/rotate through the gizmo path
+  changes only the intended value lines and UNDO RESTORES BYTE-IDENTICAL content
+  (InstanceEditingTests, against a real corpus .git).
+- **Decisions:** move drags on the instance's current-Z plane; snap off-by-default (Ctrl
+  enables); one transaction per drag committed on release, none for no-op clicks; scene
+  refresh after each commit is a full rebuild with selection rebound by kind+index (lazy-
+  build contract preserved). InstanceFieldMap untouched (setters already existed).
+- **Deviations (flagged):** placement click projects onto Z=0, not the clicked tile's height
+  plane (per-tile ray-hit deferred; elevated-tile placements need manual Z via detail form —
+  WP6.x candidate). Trigger/Encounter Geometry polygons don't follow a Move (pre-existing
+  list-editor behavior too).
+- **WP6.x notes:** height-aware placement drop; rotate angle snapping; multi-select move.
+- **Remaining: the Phase 5 human gate** — WP3.6's quest-NPC task done fully in 3D.
 ## WP6.1 — pending — Walkmesh (WOK)
 ## WP6.2 — pending — Perf + fidelity pass
 ## WP7.1 — pending — Tile adjacency corpus

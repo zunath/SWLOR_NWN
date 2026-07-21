@@ -277,6 +277,37 @@ namespace SWLOR.Toolset.Tests
             (max.X - min.X).Should().BeApproximately(0.8f, 0.0001f);
         }
 
+        // ----- PickInstance (WP5.2: single-instance hit-test for the move/rotate gizmo's press check) -----
+
+        [Test]
+        public void PickInstance_DrawsAsModelFalse_UsesMarkerBounds()
+        {
+            var instance = MakeMarkerInstance(InstanceMarkerKind.Placeable, Vector3.Zero, "prop", MakeFlatQuadModel());
+
+            AreaPicking.PickInstance(DownwardRayAt(2f, 0f), instance, drawsAsModel: false).Should().BeNull(
+                "with drawsAsModel=false the gizmo's press check must use the marker box, not the model mesh");
+            AreaPicking.PickInstance(DownwardRayAt(0f, 0f), instance, drawsAsModel: false).Should().NotBeNull();
+        }
+
+        [Test]
+        public void PickInstance_DrawsAsModelTrue_UsesModelTriangles()
+        {
+            var instance = MakeMarkerInstance(InstanceMarkerKind.Placeable, Vector3.Zero, "prop", MakeRightTriangleModel());
+
+            AreaPicking.PickInstance(DownwardRayAt(2f, 2f), instance, drawsAsModel: true).Should().NotBeNull(
+                "(2,2) is inside both the triangle's AABB and the triangle itself");
+            AreaPicking.PickInstance(DownwardRayAt(9f, 9f), instance, drawsAsModel: true).Should().BeNull(
+                "(9,9) is inside the triangle's AABB but outside the triangle itself");
+        }
+
+        [Test]
+        public void PickInstance_RayMisses_ReturnsNull()
+        {
+            var instance = MakeMarkerInstance(InstanceMarkerKind.Creature, Vector3.Zero, "npc");
+
+            AreaPicking.PickInstance(DownwardRayAt(100f, 100f), instance, drawsAsModel: false).Should().BeNull();
+        }
+
         // ----- DrawsAsModel rule itself -----
 
         [TestCase(InstanceMarkerKind.Placeable, false, false)]

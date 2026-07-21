@@ -123,6 +123,96 @@ namespace SWLOR.Toolset.Tests
             Encoding.ASCII.GetString(xPosition.RawValue!).Should().Be("12.5");
         }
 
+        /// <summary>
+        /// WP5.2 acceptance test: the 3D-view move gizmo commits through
+        /// InstanceListSectionViewModel.SetInstancePosition, which is exactly
+        /// InstanceFieldMap.SetPosition wrapped in one DocumentSession transaction - the same
+        /// setter (and therefore the same diff shape) the instance-list detail form's X/Y editors
+        /// already use. Proves that programmatic path directly against a real area's .git
+        /// document: moving an instance changes exactly its X/Y value lines (Z untouched, matching
+        /// the gizmo's contract of "final X/Y, Z unchanged"), and undoing the transaction restores
+        /// the exact original bytes.
+        /// </summary>
+        [Test]
+        public void SetPosition_ProgrammaticGizmoMovePath_ChangesOnlyXyValueLines_AndUndoRestoresBytesExactly()
+        {
+            var original = File.ReadAllBytes(GitPath);
+            var gitDocument = JsonGffDocument.Parse(original);
+            using var session = new DocumentSession(GitPath, gitDocument);
+
+            var git = new GitDocument(gitDocument);
+            var creature = git.Creatures.Single(c => c.GetOrNull("TemplateResRef")?.GetString() == "vnpcsofficer");
+            var (startX, startY, startZ) = InstanceFieldMap.GetPosition(ResourceType.Utc, creature);
+
+            using (session.Begin("Move Creature \"vnpcsofficer\""))
+                InstanceFieldMap.SetPosition(ResourceType.Utc, creature, startX + 5f, startY - 2f, startZ);
+
+            var moved = gitDocument.ToBytes();
+            moved.AsSpan().SequenceEqual(original).Should().BeFalse();
+
+            var originalLines = Encoding.UTF8.GetString(original).Split('\n');
+            var movedLines = Encoding.UTF8.GetString(moved).Split('\n');
+
+            movedLines.Length.Should().Be(originalLines.Length, "an in-place move must not add or remove lines");
+
+            var changedLines = Enumerable.Range(0, originalLines.Length)
+                .Where(i => originalLines[i] != movedLines[i])
+                .ToList();
+
+            changedLines.Should().HaveCount(2,
+                "moving an instance must change exactly its X and Y value lines - Z is left untouched - the " +
+                "same diff shape the instance-list detail form's X/Y editors produce. Changed lines: " +
+                string.Join(", ", changedLines.Select(i => $"{i}: '{originalLines[i]}' -> '{movedLines[i]}'")));
+
+            foreach (var line in changedLines)
+                movedLines[line].Should().Contain("\"value\":");
+
+            session.UndoStack.Undo();
+
+            gitDocument.ToBytes().AsSpan().SequenceEqual(original).Should().BeTrue(
+                "undoing the gizmo move transaction must restore the exact original bytes, the same guarantee the instance-list detail form's Undo provides");
+        }
+
+        /// <summary>Mirrors <see cref="SetPosition_ProgrammaticGizmoMovePath_ChangesOnlyXyValueLines_AndUndoRestoresBytesExactly"/> for the rotate gizmo's InstanceFieldMap.SetOrientation path.</summary>
+        [Test]
+        public void SetOrientation_ProgrammaticGizmoRotatePath_ChangesOnlyOrientationValueLines_AndUndoRestoresBytesExactly()
+        {
+            var original = File.ReadAllBytes(GitPath);
+            var gitDocument = JsonGffDocument.Parse(original);
+            using var session = new DocumentSession(GitPath, gitDocument);
+
+            var git = new GitDocument(gitDocument);
+            var creature = git.Creatures.Single(c => c.GetOrNull("TemplateResRef")?.GetString() == "vnpcsofficer");
+            var (startXOrientation, startYOrientation) = InstanceFieldMap.GetOrientation(ResourceType.Utc, creature);
+
+            using (session.Begin("Rotate Creature \"vnpcsofficer\""))
+                InstanceFieldMap.SetOrientation(ResourceType.Utc, creature, -startYOrientation, startXOrientation);
+
+            var rotated = gitDocument.ToBytes();
+            rotated.AsSpan().SequenceEqual(original).Should().BeFalse();
+
+            var originalLines = Encoding.UTF8.GetString(original).Split('\n');
+            var rotatedLines = Encoding.UTF8.GetString(rotated).Split('\n');
+
+            rotatedLines.Length.Should().Be(originalLines.Length, "an in-place rotate must not add or remove lines");
+
+            var changedLines = Enumerable.Range(0, originalLines.Length)
+                .Where(i => originalLines[i] != rotatedLines[i])
+                .ToList();
+
+            changedLines.Should().HaveCount(2,
+                "rotating an instance must change exactly its XOrientation and YOrientation value lines. Changed lines: " +
+                string.Join(", ", changedLines.Select(i => $"{i}: '{originalLines[i]}' -> '{rotatedLines[i]}'")));
+
+            foreach (var line in changedLines)
+                rotatedLines[line].Should().Contain("\"value\":");
+
+            session.UndoStack.Undo();
+
+            gitDocument.ToBytes().AsSpan().SequenceEqual(original).Should().BeTrue(
+                "undoing the gizmo rotate transaction must restore the exact original bytes");
+        }
+
         [Test]
         public void GetInstanceTemplateField_UsesResRefForStores_TemplateResRefOtherwise()
         {

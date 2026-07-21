@@ -83,6 +83,17 @@ namespace SWLOR.Toolset.Domain.Render
             return closest;
         }
 
+        /// <summary>
+        /// Hit-tests <paramref name="ray"/> against a single <paramref name="instance"/> (rather
+        /// than scanning a whole scene), using the same marker-vs-model rule
+        /// (<paramref name="drawsAsModel"/>) <see cref="PickClosestInstance"/> and drawing already
+        /// use. Used by WP5.2's move/rotate gizmo (GlAreaControl) to check whether a press landed
+        /// specifically on the current selection before starting a manipulation drag, without
+        /// re-scanning every instance in the scene.
+        /// </summary>
+        public static float? PickInstance(PickRay ray, InstanceMarker instance, bool drawsAsModel) =>
+            drawsAsModel ? PickModelInstance(ray, instance) : PickMarkerInstance(ray, instance);
+
         /// <summary>World-space AABB of one instance's marker pyramid (independent of heading - an axis-aligned box around the pyramid's square base/apex is sufficient for hit-testing, per the WP5.1 brief).</summary>
         public static (Vector3 Min, Vector3 Max) ComputeMarkerWorldBounds(InstanceMarker instance)
         {

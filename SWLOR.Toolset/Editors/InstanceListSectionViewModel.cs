@@ -198,7 +198,16 @@ namespace SWLOR.Toolset.Editors
         }
 
         [RelayCommand]
-        private void Add()
+        private void Add() => OpenPaletteBrowser(AddFromPalette, () => { });
+
+        /// <summary>
+        /// Opens this section's palette browser - the same flow this section's own "Add..." uses
+        /// below - and invokes <paramref name="onResRefChosen"/> once a blueprint is picked, or
+        /// <paramref name="onCancelled"/> if the browser is dismissed instead. Also used by the
+        /// WP5.2 3D-view "Place..." flow (AreaEditorViewModel.BeginPlace), which reuses this exact
+        /// path rather than a parallel one, so both entry points browse identically.
+        /// </summary>
+        public void OpenPaletteBrowser(Action<string> onResRefChosen, Action onCancelled)
         {
             var itpPath = Path.Combine(_workspace.ModuleRoot, "itp", PaletteFileName(_blueprintType));
             if (!File.Exists(itpPath))
@@ -213,18 +222,31 @@ namespace SWLOR.Toolset.Editors
                 resRef =>
                 {
                     ActivePaletteBrowser = null;
-                    AddFromPalette(resRef);
+                    onResRefChosen(resRef);
                 },
-                () => ActivePaletteBrowser = null,
+                () =>
+                {
+                    ActivePaletteBrowser = null;
+                    onCancelled();
+                },
                 _log);
         }
 
-        private void AddFromPalette(string resRef)
+        private void AddFromPalette(string resRef) => AddInstanceAt(resRef, 0f, 0f, 0f);
+
+        /// <summary>
+        /// Creates a new instance from <paramref name="resRef"/>'s blueprint at the given
+        /// placement (via <see cref="InstanceFieldMap.CreateInstance"/>) and inserts it as one
+        /// RunGitEdit transaction - the exact path this section's own "Add..." (at the origin) and
+        /// the WP5.2 3D-view "Place..." flow (at the clicked ground position) both use.
+        /// </summary>
+        public bool AddInstanceAt(
+            string resRef, float x, float y, float z, float xOrientation = 1f, float yOrientation = 0f)
         {
             try
             {
                 var blueprint = _workspace.LoadBlueprint(_blueprintType, resRef);
-                _runEdit($"Add {Title} instance", () =>
+                var ok = _runEdit($"Add {Title} instance", () =>
                 {
                     var listField = _gitSession.Document.Root.GetOrNull(_listFieldName);
                     if (listField == null)
@@ -233,16 +255,59 @@ namespace SWLOR.Toolset.Editors
                         _gitSession.Document.Root.Add(_listFieldName, listField);
                     }
 
-                    var instance = InstanceFieldMap.CreateInstance(_blueprintType, blueprint.Document, 0, 0, 0);
+                    var instance = InstanceFieldMap.CreateInstance(
+                        _blueprintType, blueprint.Document, x, y, z, xOrientation, yOrientation);
                     listField.InsertElement(listField.Elements!.Count, instance);
                 });
 
-                RefreshFromDocument();
+                if (ok)
+                    RefreshFromDocument();
+
+                return ok;
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Failed to add {Title} instance '{resRef}': {ex.Message}");
+                return false;
             }
+        }
+
+        /// <summary>
+        /// Sets the position of the instance at <paramref name="index"/> through
+        /// <see cref="InstanceFieldMap.SetPosition"/> - the exact setter the detail form's X/Y/Z
+        /// editors use - as one RunGitEdit transaction. Used by the WP5.2 3D-view move gizmo
+        /// (AreaEditorViewModel.MoveSelectedInstance) so a 3D-view drag produces the identical diff
+        /// shape a detail-form edit would.
+        /// </summary>
+        public bool SetInstancePosition(int index, float x, float y, float z, string? description = null)
+        {
+            var element = GetElement(index);
+            if (element == null)
+                return false;
+
+            var ok = _runEdit(description ?? $"Move {Title} instance",
+                () => InstanceFieldMap.SetPosition(_blueprintType, element, x, y, z));
+
+            if (ok)
+                RefreshFromDocument();
+
+            return ok;
+        }
+
+        /// <summary>Mirrors <see cref="SetInstancePosition"/> for heading, via <see cref="InstanceFieldMap.SetOrientation"/> - used by the WP5.2 3D-view rotate gizmo.</summary>
+        public bool SetInstanceOrientation(int index, float xOrientation, float yOrientation, string? description = null)
+        {
+            var element = GetElement(index);
+            if (element == null)
+                return false;
+
+            var ok = _runEdit(description ?? $"Rotate {Title} instance",
+                () => InstanceFieldMap.SetOrientation(_blueprintType, element, xOrientation, yOrientation));
+
+            if (ok)
+                RefreshFromDocument();
+
+            return ok;
         }
 
         [RelayCommand]

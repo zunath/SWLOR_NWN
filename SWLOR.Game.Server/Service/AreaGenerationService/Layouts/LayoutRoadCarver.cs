@@ -149,7 +149,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                 var a = anchors[i];
                 var b = anchors[j];
 
-                if (!TryBuildPath(corners, layout, width, height, open, a, b, out var path)) continue;
+                if (!TryBuildPath(corners, layout, width, height, open, a, b,
+                        parameters.StraightStreetRouting, out var path)) continue;
                 if (!IsPathClear(layout, crossers, road, path)) continue;
 
                 CommitPath(crossers, road, path);
@@ -315,26 +316,41 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         }
 
         /// <summary>
-        /// Neighbor step order for the BFS below: Right, Left, Top, Bottom -- fixed so the search is
-        /// fully deterministic given the same grid state and anchor pair (the only randomness in this
-        /// pass is CarveRoads' anchor-pair draw).
+        /// Neighbor step order for the searches below: Right, Left, Top, Bottom -- fixed so the search
+        /// is fully deterministic given the same grid state and anchor pair (the only randomness in
+        /// this pass is CarveRoads' anchor-pair draw).
         /// </summary>
         private static readonly (int Dx, int Dy)[] StepOrder = { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
         /// <summary>
-        /// Builds a shortest connected chain of cells from <paramref name="a"/> to <paramref name="b"/>
-        /// via breadth-first search over cells that are in-bounds, fully open (a road never repaints
+        /// Builds a SHORTEST, then FEWEST-TURNS connected chain of cells from <paramref name="a"/> to
+        /// <paramref name="b"/> over cells that are in-bounds, fully open (a road never repaints
         /// terrain -- see the class doc comment), and unpinned -- so a lane threads BETWEEN stamped
         /// building footprints the way hand-built fcx01 streets do, instead of demanding one clear
         /// right-angle Manhattan run. (The original Manhattan-only construction starved once
         /// SetPieceRoomCornerFloor-sized rooms began hosting stamped towers: measured on fcx01/Complex
         /// at size 20 with buildings stamping, road-edge share fell to 0.020 against the hand-built
         /// fcx01 reference's 0.102, because most straight anchor-pair runs crossed a pinned footprint
-        /// and failed validation.) BFS with the fixed <see cref="StepOrder"/> is deterministic for a
-        /// given grid + anchor pair, and a shortest path never revisits a cell, so the committed chain
-        /// is simple -- each cell carries at most 2 of this lane's own edges; junction shapes still
-        /// only arise where two DIFFERENT lanes legitimately meet, exactly as before. Fails when either
-        /// anchor is out of bounds, not fully open/unpinned, or no connected open route exists.
+        /// and failed validation.)
+        ///
+        /// FEWEST TURNS among the shortest paths (street-coherence pass, gated on
+        /// <see cref="MacroLayoutParameters.StraightStreetRouting"/>): the legacy plain BFS commits
+        /// whichever shortest path its expansion order happens to reach first, which on an
+        /// open plaza is a diagonal STAIRCASE of one-cell zigzags -- measured turn-tile share on the
+        /// user-reviewed delivered city areas ran 16-29% of road cells against the hand-built city
+        /// band's 0-15% (r17_road_audit.py), and every staircase corner renders a bent road tile, the
+        /// reviewed "no coherent street network readable from above". Minimizing direction changes as
+        /// a secondary cost (path LENGTH stays primary, so lane cell counts -- and every road-share
+        /// band mined on them -- are unchanged) commits the straight avenue + single L-corner shape
+        /// hand-built streets use. Deterministic: states expand in a fixed heap order keyed
+        /// (distance, turns, insertion sequence) with neighbors offered in <see cref="StepOrder"/>,
+        /// and a shortest path never revisits a cell, so the committed chain is simple -- each cell
+        /// carries at most 2 of this lane's own edges; junction shapes still only arise where two
+        /// DIFFERENT lanes legitimately meet, exactly as before. Compositions that never declare
+        /// StraightStreetRouting keep the legacy BFS geometry byte-for-byte (non-city road
+        /// tilesets -- forest/desert trails -- are deliberately untouched by the city
+        /// street-coherence pass). Fails when either anchor is out of bounds, not fully
+        /// open/unpinned, or no connected open route exists.
         ///
         /// Not room-scoped (see CarveRoads' own note on a room-membership restriction tried and
         /// reverted here): protecting building-candidate rooms from road through-traffic is handled
@@ -346,7 +362,7 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         /// </summary>
         private static bool TryBuildPath(
             CornerTerrainGrid corners, MacroLayout layout, int width, int height, string open,
-            (int X, int Y) a, (int X, int Y) b, out List<(int X, int Y)> path)
+            (int X, int Y) a, (int X, int Y) b, bool straightRouting, out List<(int X, int Y)> path)
         {
             path = null;
             if (a == b) return false;
@@ -359,6 +375,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             if (!IsTraversable(a) || !IsTraversable(b)) return false;
 
+            if (straightRouting)
+                return TryMinTurnSearch(IsTraversable, new List<(int X, int Y)> { a },
+                    cell => cell == b, out path) && path.Count >= 2;
+
+            // Legacy first-found BFS (kept verbatim for every composition that never declares
+            // StraightStreetRouting -- their lane geometry stays byte-identical).
             var cameFrom = new Dictionary<(int X, int Y), (int X, int Y)> { [a] = a };
             var queue = new Queue<(int X, int Y)>();
             queue.Enqueue(a);
@@ -389,6 +411,79 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
 
             path = chain;
             return true;
+        }
+
+        /// <summary>
+        /// Shared shortest-then-fewest-turns search core for <see cref="TryBuildPath"/> (single
+        /// start, fixed goal cell) and <see cref="TryBuildNearestRoadPath"/> (multi-source, first
+        /// goal-predicate hit). State space is (cell, incoming direction); cost is lexicographic
+        /// (steps, direction changes) with a monotonically increasing insertion sequence as the
+        /// final tie-break, so expansion order -- and therefore the committed chain -- is fully
+        /// deterministic for a given grid state and start list. Start cells enter with no incoming
+        /// direction (the first step costs no turn).
+        /// </summary>
+        private static bool TryMinTurnSearch(
+            System.Func<(int X, int Y), bool> isTraversable, List<(int X, int Y)> starts,
+            System.Func<(int X, int Y), bool> isGoal, out List<(int X, int Y)> path)
+        {
+            path = null;
+
+            // State key: (cell, dirIndex); dirIndex 4 = "no incoming direction" (a start state).
+            var best = new Dictionary<((int X, int Y) Cell, int Dir), (int Dist, int Turns)>();
+            var parent = new Dictionary<((int X, int Y) Cell, int Dir), ((int X, int Y) Cell, int Dir)>();
+            var heap = new SortedSet<(int Dist, int Turns, long Seq, (int X, int Y) Cell, int Dir)>();
+            long seq = 0;
+
+            foreach (var s in starts)
+            {
+                var key = (s, 4);
+                if (best.ContainsKey(key)) continue;
+                best[key] = (0, 0);
+                heap.Add((0, 0, seq++, s, 4));
+            }
+
+            while (heap.Count > 0)
+            {
+                var state = heap.Min;
+                heap.Remove(state);
+                var (dist, turns, _, cell, dir) = state;
+                if (best[(cell, dir)] != (dist, turns)) continue; // stale entry
+
+                if (isGoal(cell))
+                {
+                    var chain = new List<(int X, int Y)>();
+                    var cursor = (Cell: cell, Dir: dir);
+                    while (true)
+                    {
+                        chain.Add(cursor.Cell);
+                        if (!parent.TryGetValue(cursor, out var up)) break;
+                        cursor = up;
+                    }
+
+                    chain.Reverse();
+                    path = chain;
+                    return true;
+                }
+
+                for (var i = 0; i < StepOrder.Length; i++)
+                {
+                    var (dx, dy) = StepOrder[i];
+                    var next = (X: cell.X + dx, Y: cell.Y + dy);
+                    if (!isTraversable(next)) continue;
+
+                    var nextTurns = turns + (dir != 4 && dir != i ? 1 : 0);
+                    var nextKey = (next, i);
+                    if (best.TryGetValue(nextKey, out var seen) &&
+                        (seen.Dist < dist + 1 || (seen.Dist == dist + 1 && seen.Turns <= nextTurns)))
+                        continue;
+
+                    best[nextKey] = (dist + 1, nextTurns);
+                    parent[nextKey] = (cell, dir);
+                    heap.Add((dist + 1, nextTurns, seq++, next, i));
+                }
+            }
+
+            return false;
         }
 
         private static bool InBounds((int X, int Y) cell, int width, int height) =>
@@ -488,7 +583,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     .ToList();
                 if (starts.Count == 0) continue;
 
-                if (!TryBuildNearestRoadPath(corners, layout, crossers, width, height, open, road, starts, out var path))
+                if (!TryBuildNearestRoadPath(corners, layout, crossers, width, height, open, road, starts,
+                        parameters.StraightStreetRouting, out var path))
                     continue;
 
                 CommitPath(crossers, road, path);
@@ -533,15 +629,34 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
         }
 
         /// <summary>
-        /// Multi-source BFS (mirrors TryBuildPath's single-pair shape, same fixed StepOrder) from any
-        /// of <paramref name="starts"/> to the nearest traversable cell already carrying a Road edge.
-        /// Deterministic given the grid state: <paramref name="starts"/> is pre-sorted by the caller so
-        /// the queue seed order never depends on HashSet enumeration order.
+        /// Multi-source search from any of <paramref name="starts"/> to the nearest traversable
+        /// cell already carrying a Road edge. Under
+        /// <see cref="MacroLayoutParameters.StraightStreetRouting"/> it is the same
+        /// shortest-then-fewest-turns core TryBuildPath uses (a spur is a short straight driveway,
+        /// never a staircase); otherwise the legacy multi-source BFS, kept verbatim so
+        /// non-declaring compositions stay byte-identical. Deterministic given the grid state:
+        /// <paramref name="starts"/> is pre-sorted by the caller so the seed order never depends
+        /// on HashSet enumeration order.
         /// </summary>
         private static bool TryBuildNearestRoadPath(
             CornerTerrainGrid corners, MacroLayout layout, EdgeCrosserGrid crossers, int width, int height,
-            string open, string road, List<(int X, int Y)> starts, out List<(int X, int Y)> path)
+            string open, string road, List<(int X, int Y)> starts, bool straightRouting,
+            out List<(int X, int Y)> path)
         {
+            if (straightRouting)
+            {
+                if (!TryMinTurnSearch(
+                        cell => IsSpurTraversable(layout, corners, open, cell, width, height),
+                        starts,
+                        cell => HasRoadEdge(crossers, cell, road),
+                        out path))
+                    return false;
+
+                // Defensive: a start cell is never a road cell itself (guarded by the ring check
+                // in CarveSpurs), so a real spur always has at least 2 cells.
+                return path.Count >= 2;
+            }
+
             path = null;
 
             var cameFrom = new Dictionary<(int X, int Y), (int X, int Y)>();

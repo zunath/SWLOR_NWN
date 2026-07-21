@@ -414,23 +414,28 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
         private const int LargeMaxPerPile = 1;
 
         /// <summary>
-        /// Per-street-cell chance of laying a flat road-marking plate on the lane surface (see
-        /// PlanStreetDressing). Hand-built dressed promenade streets pave near one plate per road
-        /// tile in three of the five dressed reference areas (narpromena 23/26, nsshipyard 44/38,
-        /// narscorpd 37/35) and few in the other two (comrcial 3/63) -- 0.8 sits just under the
-        /// paving areas' own rate, with the closed-loop fill ceiling bounding the top end.
+        /// Center-to-center pitch (m) of road-marking plates along a dressed lane run (see
+        /// PlanStreetDressing). Hand-built dressed streets lay their plates as CONTINUOUS painted
+        /// rows at one constant pitch, dead-centered on the lane: every full row on the three
+        /// paved reference areas (narpromena y=24.9/x=65.0, nsshipyard y=75.0/x=105.0/x=115.0,
+        /// narscorpd x=45.3/y=85.0/y=125.0) steps 8.5-8.6m between consecutive plates with the
+        /// cross-lane coordinate pinned to the tile centerline (x/y mod 10 = 5.0 +/- 0.4). The
+        /// earlier per-cell chance + jitter model scattered plates off-pitch and off-center --
+        /// the user-reviewed "disconnected patches ... no coherent street network" read.
         /// </summary>
-        private const double RoadMarkingChance = 0.8;
+        private const float RoadMarkingPitch = 8.5f;
 
         /// <summary>
         /// Per-street-cell chance of standing a margin accent (trash can/barrier/console/holo) at
-        /// the lane edge (see PlanStreetDressing). Hand-built rates: narpromena 22 trash on 26 road
-        /// tiles (0.85), comrcial 43 barrier/trash on 63 (0.68), promi ~1.05, shipyard/narscorpd
-        /// ~0.5 -- 0.65 sits at the evidence mean (accents additionally require a real margin
-        /// side, which not every street cell has, and the closed-loop fill ceiling bounds the
-        /// total).
+        /// the lane edge (see PlanStreetDressing). Hand-built REALIZED rates: narpromena 22 trash
+        /// on 26 road tiles (0.85), comrcial 43 barrier/trash on 63 (0.68), promi ~1.05,
+        /// shipyard/narscorpd ~0.5. The roll only realizes when the cell has a real margin side
+        /// (StreetMarginDirection) and the drawn entry is under its cap, so realized accents per
+        /// road tile land well below the roll rate -- at 0.65 the packed-20 sweep realized only
+        /// ~0.3-0.5 per road cell, under the hand mean; 0.8 realizes ~0.5-0.7, inside the
+        /// hand-built band, with the closed-loop fill ceiling still bounding the total.
         /// </summary>
-        private const double StreetAccentChance = 0.65;
+        private const double StreetAccentChance = 0.8;
 
         /// <summary>
         /// GROUND-dressing fill ceiling (decoratives per open-ish tile, pre-facade-mounts) the
@@ -444,16 +449,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
         /// </summary>
         private const double StreetFillCeilingDensity = 4.5;
 
-        /// <summary>Chance a marked lane cell lays a SECOND plate at its opposite along-axis
-        /// half -- the heaviest-paved hand-built streets exceed one plate per road tile
-        /// (nsshipyard 1.16, narscorpd 1.06).</summary>
-        private const double RoadMarkingSecondChance = 0.25;
-
-        /// <summary>Road-marking plates jitter this far along the lane axis off the cell center
-        /// (and a smaller amount across it), so a paved stretch reads as builder-laid plates
-        /// rather than one machine-perfect strip.</summary>
-        private const float RoadMarkingAlongJitter = 2.0f;
-        private const float RoadMarkingCrossJitter = 0.8f;
+        /// <summary>Minimum straight lane-run length (cells) that receives a plate row -- a 1-cell
+        /// straight stretch between two bends gets no plate (hand rows live on real avenues; a
+        /// lone plate on a short kink reads as an isolated fragment).</summary>
+        private const int RoadMarkingMinRunCells = 2;
 
         /// <summary>Margin accents keep at least the minimum along-axis offset from the cell's
         /// face-center point -- the municipal lamp line places its fixture exactly there (no
@@ -3344,10 +3343,17 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
         /// plazas that no room-anchored mechanism can reach -- with the two hand-built street
         /// layers the municipal lamp line doesn't cover:
         ///
-        ///  1. ROAD-MARKING plates laid flat ON the lane surface, jittered along the lane axis and
-        ///     cardinal-aligned with it (hand-built: swd_florrd01 at 23/26 road tiles on
-        ///     pw_ar_narpromena, 44/38 on pw_ar_nsshipyard, 37/35 on pw_ar_narscorpd, 100%
-        ///     cardinal). Flat paint -- the ribbon stays a clear walkway.
+        ///  1. ROAD-MARKING plate ROWS laid flat ON the lane surface as continuous painted lanes:
+        ///     STRAIGHT lane cells only, grouped into contiguous same-line runs, one plate every
+        ///     <see cref="RoadMarkingPitch"/> along the run, dead-centered on the lane, with the
+        ///     plate's long axis ALONG the lane (hand convention, mined from every full row on the
+        ///     paved reference areas: E-W lanes carry bearing 90, N-S lanes bearing 0/180, cross
+        ///     coordinate pinned to tile centerline, constant 8.5-8.6m pitch -- narpromena 23/26
+        ///     road tiles, nsshipyard 44/38, narscorpd 37/35). Turn/junction/stub cells get no
+        ///     plate: their lane direction is ambiguous, and the earlier per-cell jittered-chance
+        ///     model (plates at both 0 and 90 off-center on bent cells) is what read as
+        ///     "disconnected patches ... short stubs at odd angles" in user review. Flat paint --
+        ///     the ribbon stays a clear walkway.
         ///  2. MARGIN ACCENTS (trash cans/barriers/consoles/holo signs) standing at the lane
         ///     cell's margin edge (a perpendicular side whose neighbor is neither open room nor
         ///     lane -- building faces and rim walls), offset like the lamp line but jittered
@@ -3383,10 +3389,12 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
             // frontage-occupied structure cells, dressed feature cells, and cells an earlier
             // mechanism already consumed.
             var streetCells = new List<(int X, int Y)>();
-            // Near-doorway lane cells host the LAMP LINE only (hand-built streets run their lamp
-            // rows right up to the gates; a 1-2-cell lamp gap at every transition fragmented the
-            // line into 20-30m NN outliers at promenade scale) -- markings/accents still keep the
-            // doorway approach clear.
+            // Near-doorway lane cells host the LAMP LINE and the flat plate ROWS (hand-built
+            // streets run both right up to the gates -- narpromena's x=65 row plates y=0.0 at the
+            // gate itself, nsshipyard's x=105/115 rows start at y=0.2; a 1-2-cell lamp gap at
+            // every transition likewise fragmented the line into 20-30m NN outliers at promenade
+            // scale). Standing margin ACCENTS still keep the doorway approach clear -- flat lane
+            // paint obstructs nothing, furniture would.
             var lampOnlyCells = new List<(int X, int Y)>();
             for (var y = 0; y < layout.Height; y++)
             for (var x = 0; x < layout.Width; x++)
@@ -3531,6 +3539,79 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
                 }
             }
 
+            // ROAD-MARKING PLATE ROWS (see the pass doc comment): straight lane cells only,
+            // grouped into contiguous same-line runs, one plate per RoadMarkingPitch, centered on
+            // the lane, long axis along it -- the hand-built continuous painted-lane read. Rows lay
+            // longest-lane-first so when the fill ceiling binds, main avenues keep their full rows
+            // and the pruning lands on short side lanes. Deterministic geometry; the only RNG here
+            // is the plate-variant draw (florrd01 vs the rarer florrt02), on the pass's own stream.
+            if (markings.Count > 0 && placedCount < ceiling)
+            {
+                var laneGroups = streetCells.Concat(lampOnlyCells)
+                    .Select(c => (Cell: c, Axis: RoadStraightAxis(c, layout, roadCrosser)))
+                    .Where(t => t.Axis >= 0)
+                    .GroupBy(t => (t.Axis, Line: t.Axis == 0 ? t.Cell.Y : t.Cell.X))
+                    .OrderByDescending(g => g.Count())
+                    .ThenBy(g => g.Key.Axis).ThenBy(g => g.Key.Line)
+                    .ToList();
+
+                foreach (var lane in laneGroups)
+                {
+                    if (placedCount >= ceiling)
+                        break;
+
+                    var axisIsX = lane.Key.Axis == 0;
+                    var cross = lane.Key.Line * TileSize + TileHalf;
+                    var coords = lane
+                        .Select(t => axisIsX ? t.Cell.X : t.Cell.Y)
+                        .OrderBy(v => v)
+                        .ToList();
+
+                    // Contiguous runs along the lane axis.
+                    var runStartIdx = 0;
+                    for (var i = 1; i <= coords.Count; i++)
+                    {
+                        if (i < coords.Count && coords[i] == coords[i - 1] + 1)
+                            continue;
+
+                        var runCells = i - runStartIdx;
+                        var runStart = coords[runStartIdx] * TileSize;
+                        var runEnd = (coords[i - 1] + 1) * TileSize;
+                        runStartIdx = i;
+                        if (runCells < RoadMarkingMinRunCells)
+                            continue;
+
+                        for (var pos = runStart + RoadMarkingPitch / 2f;
+                             pos <= runEnd - RoadMarkingPitch / 2f + 0.01f;
+                             pos += RoadMarkingPitch)
+                        {
+                            if (placedCount >= ceiling)
+                                break;
+
+                            var pool = UnderStreetCap(markings, areaUsage);
+                            if (pool.Count == 0)
+                                break;
+
+                            var entry = PickWeightedStreet(pool, rng);
+                            plan.Add(new PlannedDecoration
+                            {
+                                Resref = entry.Resref,
+                                Position = axisIsX
+                                    ? new Vector3(pos, cross, 0f)
+                                    : new Vector3(cross, pos, 0f),
+                                // Hand bearing convention (mined, see RoadMarkingPitch): the
+                                // plate's long axis runs ALONG the lane -- E-W rows carry 90,
+                                // N-S rows 0.
+                                Facing = axisIsX ? 90f : 0f,
+                                Context = DecorationContext.RoadMarking
+                            });
+                            RecordUse(areaUsage, entry.Resref);
+                            placedCount++;
+                        }
+                    }
+                }
+            }
+
             foreach (var cell in streetCells)
             {
                 if (placedCount >= ceiling)
@@ -3538,58 +3619,6 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
 
                 var alongX = RoadAxisIsX(cell, layout, roadCrosser);
                 var center = TileCenter(cell.X, cell.Y);
-
-                if (markings.Count > 0 && rng.NextDouble() < RoadMarkingChance)
-                {
-                    var pool = UnderStreetCap(markings, areaUsage);
-                    if (pool.Count > 0)
-                    {
-                        var entry = PickWeightedStreet(pool, rng);
-                        var along = (float)(rng.NextDouble() * 2.0 - 1.0) * RoadMarkingAlongJitter;
-                        var cross = (float)(rng.NextDouble() * 2.0 - 1.0) * RoadMarkingCrossJitter;
-                        plan.Add(new PlannedDecoration
-                        {
-                            Resref = entry.Resref,
-                            Position = alongX
-                                ? new Vector3(center.X + along, center.Y + cross, 0f)
-                                : new Vector3(center.X + cross, center.Y + along, 0f),
-                            Facing = alongX ? 0f : 90f,
-                            Context = DecorationContext.RoadMarking
-                        });
-                        RecordUse(areaUsage, entry.Resref);
-                        placedCount++;
-
-                        // The heaviest-paved hand-built streets exceed one plate per road tile
-                        // (nsshipyard 44/38, narscorpd 37/35) -- a second plate rolls at the
-                        // OPPOSITE along-axis half of the cell so the pair reads as lane paving,
-                        // never a z-fighting overlap.
-                        if (placedCount < ceiling && rng.NextDouble() < RoadMarkingSecondChance)
-                        {
-                            var pool2 = UnderStreetCap(markings, areaUsage);
-                            if (pool2.Count > 0)
-                            {
-                                var entry2 = PickWeightedStreet(pool2, rng);
-                                var along2 = (RoadMarkingAlongJitter + 0.6f +
-                                              (float)rng.NextDouble() * 1.2f) * (along >= 0f ? -1f : 1f);
-                                var cross2 = (float)(rng.NextDouble() * 2.0 - 1.0) * RoadMarkingCrossJitter;
-                                plan.Add(new PlannedDecoration
-                                {
-                                    Resref = entry2.Resref,
-                                    Position = alongX
-                                        ? new Vector3(center.X + along2, center.Y + cross2, 0f)
-                                        : new Vector3(center.X + cross2, center.Y + along2, 0f),
-                                    Facing = alongX ? 0f : 90f,
-                                    Context = DecorationContext.RoadMarking
-                                });
-                                RecordUse(areaUsage, entry2.Resref);
-                                placedCount++;
-                            }
-                        }
-                    }
-                }
-
-                if (placedCount >= ceiling)
-                    break;
 
                 if (accents.Count > 0 && rng.NextDouble() < StreetAccentChance)
                 {
@@ -3683,6 +3712,29 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Decoration
             }
 
             return openProxy;
+        }
+
+        /// <summary>
+        /// STRAIGHT-lane classification for the road-marking plate rows (see PlanStreetDressing):
+        /// 0 when the cell carries the road crosser on BOTH Left and Right edges and neither
+        /// Top/Bottom (a straight east-west lane cell), 1 for the straight north-south case, -1
+        /// for everything else (turn, junction, stub) -- the cells whose lane direction is
+        /// ambiguous and which therefore never host a plate.
+        /// </summary>
+        private static int RoadStraightAxis((int X, int Y) cell, ResolvedLayout layout, string roadCrosser)
+        {
+            bool Has(int slot) => string.Equals(
+                layout.Crossers.GetEdge(cell.X, cell.Y, slot), roadCrosser,
+                System.StringComparison.OrdinalIgnoreCase);
+
+            var left = Has(EdgeSlot.Left);
+            var right = Has(EdgeSlot.Right);
+            var top = Has(EdgeSlot.Top);
+            var bottom = Has(EdgeSlot.Bottom);
+
+            if (left && right && !top && !bottom) return 0;
+            if (top && bottom && !left && !right) return 1;
+            return -1;
         }
 
         /// <summary>

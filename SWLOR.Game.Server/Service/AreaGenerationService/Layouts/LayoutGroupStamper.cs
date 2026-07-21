@@ -308,10 +308,31 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Layouts
                     .ToList();
             }
 
+            // Hand-derived building-mass ceiling for contiguous-block city compositions above the
+            // tuning baseline: hand-built promenade-family building-tile share tops out at 0.284
+            // of area tiles (_scratch_decor/measure_fcx01_frontage.py band 0.170-0.284, the
+            // CityBlockContiguityTests gate). The attempt budget above is deliberately an
+            // over-request bounded by real site supply -- but site supply itself moves with the
+            // street network's geometry (the fewest-turns road carver freed interior stamp sites
+            // one 32x32 seed used to lose to staircase lanes, measuring 0.335), so the mass share
+            // needs its own explicit hand-band governor. Checked with the candidate group's own
+            // footprint area so the ceiling is never overshot mid-group. Inert at or below the
+            // 20x20 baseline and for every non-contiguity composition (same guard as the other
+            // city-only scaling knobs -- their outputs stay byte-identical).
+            var areaTiles = parameters.Width * parameters.Height;
+            var massCapTiles = parameters.BuildingBlockContiguity &&
+                               areaTiles > LayoutParameterConstraints.RoomSupplyBaselineTiles
+                ? (int)(0.284 * areaTiles)
+                : int.MaxValue;
+
             foreach (var (_, maxCount, classified) in stampOrder)
             {
                 for (var i = 0; i < maxCount; i++)
                 {
+                    if (classified.Kind == GroupKind.OpenSetPiece && massCapTiles != int.MaxValue &&
+                        layout.PinnedTiles.Count + classified.Group.Rows * classified.Group.Columns > massCapTiles)
+                        break;
+
                     var placed = classified.Kind switch
                     {
                         GroupKind.WallRoom => TryPlaceWallRoom(layout, parameters, classified, random, ref nextRoomId, openLaneWallRoomSupported),

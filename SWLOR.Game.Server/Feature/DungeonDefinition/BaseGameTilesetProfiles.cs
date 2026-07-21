@@ -4340,6 +4340,11 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // Cobble-district tower group's perimeter is uniformly Cobble-cornered and crosser-
                 // free (probe_handbuilt_seams.py), so seam-verified adjacency is always available.
                 .BuildingBlockContiguity()
+                // Straight-avenue lane routing (street-coherence pass): hand-built fcx01 streets
+                // are straight boulevards with single L-corners (turn-tile share 0-15% of road
+                // cells across the 19 hand-built city areas, r17_road_audit.py); the legacy
+                // first-found BFS lane geometry zigzagged staircases across plazas (16-29%).
+                .StraightStreetRouting()
                 .SetPiece("Tower00", 3)
                 .SetPiece("Tower01")
                 .SetPiece("Tower02")
@@ -4719,21 +4724,25 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 .Decoration("_mdrn_pl_flrhch2", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Industrial, 1))
                 // GROUND DECALS -- SIGNAGE/MARKINGS ONLY (round-6 destruction split): swd_floorm01
-                // (top structured floor piece, 360 mined placements at 100% cardinal), the hex/road
-                // floor plates (flormh01/florrd01, both 100% cardinal). Hand-built areas use decals
-                // as LAYERING UNDER arrangements, never lone patches, so GroundDecal-role entries
-                // are only ever emitted underneath a committed clutter pile or as a courtyard
-                // center that receives clutter on top. The dirt-stain decals (_mdrn_pl_dirtyg*)
-                // moved to the "ruined" profile -- dirt is destruction dressing, not clean-city
-                // signage. flormh01 (metal hex) is the CIVIC floor signature (82 of its 92 mined
-                // placements sit in civic areas). Size Large (8.5-9.6m PLATES, measured from the
-                // decompiled models -- round-9 decal size discipline): a whole-tile plate may base
-                // a composed ensemble/courtyard with verified clearance, but never pads a 2m junk
-                // pile -- the reported "same square gray decal under every cluster" motif.
+                // (top structured floor piece, 360 mined placements at 100% cardinal) and the hex
+                // floor plate (flormh01, 100% cardinal). Hand-built areas use decals as LAYERING
+                // UNDER arrangements, never lone patches, so GroundDecal-role entries are only
+                // ever emitted underneath a committed clutter pile or as a courtyard center that
+                // receives clutter on top. The dirt-stain decals (_mdrn_pl_dirtyg*) moved to the
+                // "ruined" profile -- dirt is destruction dressing, not clean-city signage.
+                // flormh01 (metal hex) is the CIVIC floor signature (82 of its 92 mined placements
+                // sit in civic areas). Size Large (8.5-9.6m PLATES, measured from the decompiled
+                // models -- round-9 decal size discipline): a whole-tile plate may base a composed
+                // ensemble/courtyard with verified clearance, but never pads a 2m junk pile -- the
+                // reported "same square gray decal under every cluster" motif. swd_florrd01 (the
+                // dark ROAD-marking plate) was removed from this pool in the street-coherence
+                // pass: its art is lane paint, and its courtyard-base/wall-adjacent placements on
+                // plaza and apron floor were exactly the user-reviewed "isolated plates with no
+                // road context" -- it now lays ONLY via the street channel's plate rows (see
+                // StreetDressing below), never off the carved road ribbon.
                 .Decoration("swd_floorm01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Large)
                 .Decoration("swd_flormh01", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1))
-                .Decoration("swd_florrd01", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Large)
                 // StructureAdjacent (building-frontage) bucket -- the items hand-built fcx01 actually
                 // anchors against stamped tower/building footprints (Chebyshev<=1 building adjacency):
                 // _mdrn_pl_lamp4 52% building-adjacent AND 100% road-adjacent (all 89 mined
@@ -5095,6 +5104,9 @@ namespace SWLOR.Game.Server.Feature.DungeonDefinition
                 // hand-built Cobble2-district areas (narshadaar_promi's 48-tile block) show the same
                 // adjoined-block assembly.
                 .BuildingBlockContiguity()
+                // Straight-avenue lane routing -- same street-coherence declaration as the base
+                // FutCity profile (see its own comment).
+                .StraightStreetRouting()
                 .SetPiece("Tower04", 4)
                 .SetPiece("Tower06", 2)
                 .SetPiece("d_build", 2)

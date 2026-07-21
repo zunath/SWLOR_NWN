@@ -110,6 +110,18 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         public bool BuildingBlockContiguity { get; set; }
 
         /// <summary>
+        /// When true, LayoutRoadCarver routes street lanes and connector spurs as SHORTEST, then
+        /// FEWEST-TURNS paths -- straight avenues with single L-corners, the hand-built city
+        /// street shape -- instead of the legacy first-found breadth-first path, whose expansion
+        /// order produced diagonal staircase zigzags across open plazas (measured turn-tile share
+        /// 16-29% of road cells on delivered city areas vs the hand-built city band's 0-15%,
+        /// r17_road_audit.py). Path lengths (and therefore road-share bands) are identical; only
+        /// lane geometry changes. Default false -- every composition that never declares it keeps
+        /// byte-identical lane geometry.
+        /// </summary>
+        public bool StraightStreetRouting { get; set; }
+
+        /// <summary>
         /// Edge-crosser name this tileset's road/route-marking tile family carves (e.g. fcx01's
         /// "Routes") -- see LayoutRoadCarver/RoadVocabularyCheck. Unlike ChannelTerrain/AccentTerrain,
         /// a road never repaints corner terrain: every road cell stays this composition's own

@@ -18,46 +18,46 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
     /// area edge freely (off-grid footprint shares up to 0.58 on the flagship family) because
     /// there is no visible drop past the edge, only skyline.
     ///
-    /// MINED ENVELOPE (476 building placeables across the 19 hand-built fcx01 city areas;
+    /// ENVELOPE (USER OVERRIDE, street-coherence review round): buildings must be EFFECTIVELY
+    /// FULLY platform-supported -- total in-grid chasm share (interior abyss AND the map-edge
+    /// moat, i.e. chasm quadrants owned by grid-border corners) at most
+    /// <see cref="MaxChasmShare"/> = 0.05, overhang at most <see cref="MaxChasmOverhang"/> = 2m,
+    /// and NO free map-edge moat allowance. Only space fully beyond the grid stays exempt (there
+    /// is nothing rendered past the area edge, only skyline).
+    ///
+    /// FOR THE RECORD -- the previously mined hand-built envelope this override replaces
+    /// (r16_mine_support.py, 476 building placeables across the 19 hand-built fcx01 city areas,
     /// platform-level frontage-pool population n=280):
-    ///  - in-grid chasm footprint share: median 0, p90 0.050, p95 0.125, p98 0.253, p99 0.458.
-    ///    <see cref="MaxChasmShare"/> = 0.36 admits every regular hand placement including the
-    ///    narcatwalk chasm-lip build003 (0.356) and rejects only the three shipyard rim-corner
-    ///    build004 outliers (0.46-0.49, half off-grid) and one true floater outlier.
-    ///  - in-grid chasm overhang (max distance from a footprint point to the nearest platform
-    ///    quadrant): median 0, p90 0.9m, p95 5.0m, p98 8.7m. <see cref="MaxChasmOverhang"/> = 9.0m
-    ///    admits the narcatwalk build007 chasm-lip rows (6.2-7.2m) and rejects the 15-30m rim
-    ///    build004 outliers.
-    /// The user-reviewed floating showcase measured median support 0.386 with in-grid overhangs to
-    /// 37m -- entirely outside this envelope; hand-built areas conform at 98.6%.
+    ///  - in-grid chasm footprint share: median 0, p90 0.050, p95 0.125, p98 0.253, p99 0.458;
+    ///    interior ceiling was 0.36 (admitting the narcatwalk chasm-lip build003 at 0.356), with
+    ///    a separate 0.50 TOTAL ceiling exempting the map-edge moat (pw_ar_nsshipyard's rim
+    ///    towers at 0.458-0.493).
+    ///  - in-grid chasm overhang: median 0, p90 0.9m, p95 5.0m, p98 8.7m; ceiling was 9.0m
+    ///    (admitting the narcatwalk build007 chasm-lip rows at 6.2-7.2m).
+    /// Those tolerances were statistically hand-faithful but the DELIVERED result still read as
+    /// "buildings hanging off the side" in user review (rim tanks and a wedge tower over the
+    /// moat) -- design authority overrode the mined numbers with the near-zero envelope above.
+    /// Note the new 0.05/2m gates sit at the mined distribution's p90, so the overwhelming
+    /// majority of hand placements still conform; what is dropped is the hand-built rim-overhang
+    /// PRACTICE, deliberately. Enclosure is preserved instead by
+    /// LayoutPlatformApronPainter.ApronDepth paving real platform under the frontage band.
     /// </summary>
     public static class FrontageSupportRule
     {
         private const float TileSize = 10f;
         private const float QuadrantHalf = 5f;
 
-        /// <summary>Maximum fraction of a building footprint over INTERIOR in-grid chasm quadrants
-        /// (chasm not owned by a grid-border corner) -- the visible mid-area abyss.</summary>
-        public const float MaxChasmShare = 0.36f;
-
-        /// <summary>
-        /// Ceiling on the TOTAL in-grid chasm share (interior chasm plus the map-edge moat --
-        /// chasm quadrants owned by grid-BORDER corners, the outer half of the outermost cell
-        /// ring). The mined hand-built RIM evidence: pw_ar_nsshipyard's rim towers stand half over
-        /// the map-edge drop at in-grid chasm shares 0.458-0.493 with the rest hanging past the
-        /// edge (the skyline composition), so moat overhang up to this ceiling is established
-        /// practice while interior chasm keeps the stricter <see cref="MaxChasmShare"/>. The
-        /// overhang ceiling below applies to both: the 15-30m rim overhangs those same shipyard
-        /// outliers carry are deliberately not reproduced.
-        /// </summary>
-        public const float MaxTotalChasmShare = 0.50f;
+        /// <summary>Maximum fraction of a building footprint over ANY in-grid chasm quadrant --
+        /// interior abyss and map-edge moat alike (user override; see the class doc
+        /// comment).</summary>
+        public const float MaxChasmShare = 0.05f;
 
         /// <summary>Maximum distance (m) any in-grid footprint point may sit from the nearest
-        /// platform quadrant.</summary>
-        public const float MaxChasmOverhang = 9.0f;
+        /// platform quadrant (user override; see the class doc comment).</summary>
+        public const float MaxChasmOverhang = 2.0f;
 
         /// <summary>
-        /// True when the footprint satisfies the mined support envelope, or when the layout carries
+        /// True when the footprint satisfies the support envelope, or when the layout carries
         /// no corner semantics / the tileset declares no chasm terrain (rule inactive -- every
         /// non-chasm family keeps its exact previous behavior).
         /// </summary>
@@ -69,9 +69,8 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
             if (layout?.CornerTerrains == null || chasmTerrains == null || chasmTerrains.Count == 0)
                 return true;
 
-            var (interiorShare, totalShare, overhang) = Evaluate(box, layout, chasmTerrains);
-            return interiorShare <= MaxChasmShare &&
-                   totalShare <= MaxTotalChasmShare &&
+            var (_, totalShare, overhang) = Evaluate(box, layout, chasmTerrains);
+            return totalShare <= MaxChasmShare &&
                    overhang <= MaxChasmOverhang;
         }
 
@@ -95,8 +94,9 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService.Frontage
 
             // Corner-owned quadrants are pairwise disjoint (they are the corner-ownership Voronoi
             // cells of the grid), so summing per-quadrant overlaps is exact. Chasm quadrants owned
-            // by grid-BORDER corners are the map-edge moat (tracked separately -- see
-            // MaxTotalChasmShare); every other chasm quadrant is interior abyss.
+            // by grid-BORDER corners are the map-edge moat -- still reported separately in the
+            // interior share for the audit record, but the GATE reads the total (the moat
+            // exemption was removed by user override; see the class doc comment).
             var minCx = Math.Max(0, (int)MathF.Floor((box.MinX - QuadrantHalf) / TileSize));
             var maxCx = Math.Min(layout.Width, (int)MathF.Ceiling((box.MaxX + QuadrantHalf) / TileSize));
             var minCy = Math.Max(0, (int)MathF.Floor((box.MinY - QuadrantHalf) / TileSize));

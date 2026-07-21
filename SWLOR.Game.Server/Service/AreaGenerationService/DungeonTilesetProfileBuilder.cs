@@ -124,6 +124,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         }
 
         /// <summary>
+        /// Declares that this tileset's street lanes route as straight avenues (shortest, then
+        /// fewest-turns paths) instead of the legacy first-found breadth-first geometry -- see
+        /// DungeonTilesetProfile.StraightStreetRouting for the measured evidence. Declare on
+        /// road-declaring city tilesets whose hand-built reference streets are straight
+        /// boulevards; every non-declaring tileset keeps byte-identical lane geometry.
+        /// </summary>
+        public DungeonTilesetProfileBuilder StraightStreetRouting()
+        {
+            _active.StraightStreetRouting = true;
+            return this;
+        }
+
+        /// <summary>
         /// Declares the largest MacroLayoutParameters.ElevationRegions request this tileset's real tile
         /// inventory has verified rim vocabulary for. Only set after verifying with
         /// LayoutElevationPainter's shape probe (TileResolver.HasHeightAwareCandidate) against the

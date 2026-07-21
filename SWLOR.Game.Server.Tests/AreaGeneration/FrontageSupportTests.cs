@@ -12,17 +12,19 @@ using SWLOR.Game.Server.Service.AreaGenerationService.Tileset;
 namespace SWLOR.Game.Server.Tests.AreaGeneration;
 
 /// <summary>
-/// Footprint-support acceptance suite for frontage buildings on chasm-bearing tilesets (the
-/// round-16 floating-building pass -- see FrontageSupportRule and
-/// DungeonTilesetProfile.ChasmTerrains).
+/// Footprint-support acceptance suite for frontage buildings on chasm-bearing tilesets (see
+/// FrontageSupportRule and DungeonTilesetProfile.ChasmTerrains).
 ///
-/// Evidence baseline (_scratch_decor/r16_mine_support.py over the 19 hand-built fcx01 city areas,
-/// 476 building placeables): every hand-built PLATFORM-LEVEL tower keeps its in-grid chasm
-/// footprint share at or under 0.36 and its in-grid chasm overhang at or under 9m (98.6%
-/// conformance; the only exceptions are three rim-corner build004 outliers and one floater),
-/// while off-grid rim overhang past the area edge is free (shares up to 0.58 -- the skyline
-/// look). The user-reviewed pre-fix showcase (halls 20, seed 1091305452) measured median support
-/// 0.386 with in-grid overhangs to 37m -- towers floating over the visible abyss.
+/// ENVELOPE (USER OVERRIDE, street-coherence review round): total in-grid chasm share (interior
+/// abyss AND map-edge moat) at most 0.05 and in-grid overhang at most 2m -- buildings are
+/// effectively fully platform-supported, with only fully-off-grid space exempt. The previously
+/// mined hand-built envelope (r16_mine_support.py, 476 building placeables over 19 hand-built
+/// fcx01 areas: interior share <= 0.36, overhang <= 9m, map-edge moat free to a 0.50 total)
+/// was statistically hand-faithful, but the delivered rim towers it admitted still read as
+/// "buildings hanging off the side" in user review -- design authority replaced the mined
+/// tolerances; the mined numbers stay recorded in FrontageSupportRule's doc comment. Enclosure
+/// is preserved by LayoutPlatformApronPainter's ApronDepth-deep paved band (platform under the
+/// frontage footprints by construction).
 ///
 /// Also pins the SUPPORT-ANCHOR grounding contract: every frontage placement carries a ground
 /// anchor just inside its fronted open (platform) cell with a plan-time GroundZ matching that
@@ -110,14 +112,16 @@ public class FrontageSupportTests
     private static IEnumerable<int> SweepSeeds => Enumerable.Range(0, SeedCount).Select(i => SeedBase + i);
 
     // ============================================================
-    // The mined support envelope holds on every placement.
+    // The zero-overhang support envelope (user override) holds on every placement:
+    // TOTAL in-grid chasm share -- interior abyss and map-edge moat alike, no moat
+    // exemption -- and the near-zero overhang ceiling.
     // ============================================================
 
     [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 12)]
     [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 20)]
     [TestCase(MineCaveDungeonDefinition.ThemeKey, StandardLayoutProfiles.Packed, 24)]
     [TestCase(AlienRuinDungeonDefinition.ThemeKey, StandardLayoutProfiles.Halls, 20)]
-    public void FrontageBuildings_SatisfyMinedSupportEnvelope(string themeKey, string layoutKey, int size)
+    public void FrontageBuildings_SatisfySupportEnvelope(string themeKey, string layoutKey, int size)
     {
         var violations = new List<string>();
         var checkedCount = 0;
@@ -129,14 +133,11 @@ public class FrontageSupportTests
             foreach (var p in frontage)
             {
                 checkedCount++;
-                var (interiorShare, totalShare, overhang) = FrontageSupportRule.Evaluate(
+                var (_, totalShare, overhang) = FrontageSupportRule.Evaluate(
                     FootprintOf(p, entries), layout, new[] { "holes" });
-                if (interiorShare > FrontageSupportRule.MaxChasmShare + 0.001f)
+                if (totalShare > FrontageSupportRule.MaxChasmShare + 0.001f)
                     violations.Add($"seed {seed}: '{p.Resref}' at ({p.Position.X:F0},{p.Position.Y:F0}) " +
-                                   $"interior chasm share {interiorShare:F3} > {FrontageSupportRule.MaxChasmShare}");
-                if (totalShare > FrontageSupportRule.MaxTotalChasmShare + 0.001f)
-                    violations.Add($"seed {seed}: '{p.Resref}' at ({p.Position.X:F0},{p.Position.Y:F0}) " +
-                                   $"total chasm share {totalShare:F3} > {FrontageSupportRule.MaxTotalChasmShare}");
+                                   $"total chasm share {totalShare:F3} > {FrontageSupportRule.MaxChasmShare}");
                 if (overhang > FrontageSupportRule.MaxChasmOverhang + 0.1f)
                     violations.Add($"seed {seed}: '{p.Resref}' at ({p.Position.X:F0},{p.Position.Y:F0}) " +
                                    $"chasm overhang {overhang:F1}m > {FrontageSupportRule.MaxChasmOverhang}m");

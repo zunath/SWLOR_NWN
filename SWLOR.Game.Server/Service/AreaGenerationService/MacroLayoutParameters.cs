@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.AreaGenerationService
@@ -75,6 +75,19 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
         /// DungeonComposition.BuildLayoutParameters.
         /// </summary>
         public bool BuildingBlockContiguity { get; set; }
+
+        /// <summary>
+        /// When true, LayoutRoadCarver routes every street lane and connector spur as a SHORTEST,
+        /// then FEWEST-TURNS path (straight avenues with single L-corners -- the hand-built city
+        /// street shape) instead of the legacy first-found breadth-first shortest path, whose
+        /// expansion order produced diagonal staircase zigzags across open plazas. Path LENGTHS
+        /// are identical either way (turn count is a secondary cost), so road-share bands are
+        /// unaffected; only the lane geometry changes. Default false (fully back-compat: every
+        /// composition that never declares it keeps its exact legacy lane geometry) -- stamped
+        /// from DungeonTilesetProfile.StraightStreetRouting by
+        /// DungeonComposition.BuildLayoutParameters.
+        /// </summary>
+        public bool StraightStreetRouting { get; set; }
         /// <summary>Room rectangle bounds in corners (RoomsAndCorridors/Warren chambers/PackedRooms leaves).</summary>
         public int MinRoomCornerSize { get; set; } = 3;
         public int MaxRoomCornerSize { get; set; } = 7;

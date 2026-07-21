@@ -125,6 +125,10 @@ namespace SWLOR.Game.Server.Service.AreaGenerationService
             // (LayoutGroupStamper's OpenSetPiece path is the only consumer).
             if (Tileset.SetPieces.Count > 0)
                 parameters.BuildingBlockContiguity = Tileset.BuildingBlockContiguity;
+            // Straight-avenue street routing (see LayoutRoadCarver): the tileset declares its
+            // hand-built streets are straight boulevards; non-declaring compositions keep the
+            // legacy lane geometry byte-for-byte.
+            parameters.StraightStreetRouting = Tileset.StraightStreetRouting;
             parameters.ExitGroups = Tileset.ExitGroups;
             parameters.DoorSlotCrossers = Tileset.DoorSlotCrossers;
             parameters.ExcludedTiles = Tileset.ExcludedTiles;

@@ -71,10 +71,126 @@ public class SlicingTests
         Slicing.GetDestructionChance(failures).Should().Be(expected);
     }
 
+    [Test]
+    public void SwapAdjacent_MovesRevealMetadataWithTheTile()
+    {
+        var board = Slicing.BuildBoard(2, 982451653);
+        var swap = board.SolutionSwaps.Single();
+        board.Tiles[swap.FirstIndex].IsRouteRevealed = true;
+        board.Tiles[swap.FirstIndex].IsOrientationRevealed = true;
+
+        Slicing.SwapAdjacent(board, swap.FirstIndex, swap.SecondIndex).Should().BeTrue();
+
+        board.Tiles[swap.FirstIndex].IsRouteRevealed.Should().BeFalse();
+        board.Tiles[swap.FirstIndex].IsOrientationRevealed.Should().BeFalse();
+        board.Tiles[swap.SecondIndex].IsRouteRevealed.Should().BeTrue();
+        board.Tiles[swap.SecondIndex].IsOrientationRevealed.Should().BeTrue();
+        board.Clone().Tiles[swap.SecondIndex].IsRouteRevealed.Should().BeTrue("rewind snapshots clone tile reveal state");
+    }
+
+    [Test]
+    public void RevealOrientation_RejectsDecoysAndMarksRouteTiles()
+    {
+        var board = Slicing.BuildBoard(2, 982451653);
+        var session = new SlicingSession.ActiveSlicingSession { Board = board };
+        var decoyIndex = board.Tiles.FindIndex(tile => tile.SolutionIndex < 0);
+        var routeIndex = board.Tiles.FindIndex(tile => tile.SolutionIndex >= 0);
+
+        InvokeSessionMethod<bool>("RevealOrientation", session, decoyIndex).Should().BeFalse();
+        board.Tiles[decoyIndex].IsOrientationRevealed.Should().BeFalse();
+        InvokeSessionMethod<bool>("RevealOrientation", session, routeIndex).Should().BeTrue();
+        board.Tiles[routeIndex].IsOrientationRevealed.Should().BeTrue();
+    }
+
+    [Test]
+    public void SessionToolGuard_RemainsClosedAfterThePrimedEffectClears()
+    {
+        var session = new SlicingSession.ActiveSlicingSession
+        {
+            HasUsedTool = true,
+            PrimedTool = SlicingToolType.Invalid
+        };
+
+        InvokeSessionMethod<bool>("CanActivateTool", session).Should().BeFalse();
+    }
+
+    [Test]
+    public void ActionCost_DoesNotMutateFreeActionsUntilTheActionSucceeds()
+    {
+        var session = new SlicingSession.ActiveSlicingSession
+        {
+            PrimedTool = SlicingToolType.NullSignatureLattice
+        };
+        var arguments = new object[] { session, SlicingToolType.PhaseShuntFork, 2, false };
+
+        InvokeSessionMethod<int>("GetActionCost", arguments).Should().Be(0);
+        arguments[3].Should().Be(true);
+        session.FreeActionsRemaining.Should().Be(0);
+
+        InvokeSessionMethod<object>("ApplyFreeActionState", session, true);
+        session.FreeActionsRemaining.Should().Be(2);
+    }
+
+    [TestCase("player-id", "player-id", true)]
+    [TestCase("player-id", "different-player", false)]
+    [TestCase("", "", false)]
+    public void ClaimOwnership_RequiresTheCurrentPlayerId(string playerId, string owner, bool expected)
+    {
+        InvokeSessionMethod<bool>("IsClaimOwner", playerId, owner).Should().Be(expected);
+    }
+
+    [Test]
+    public void SessionSource_ValidatesClaimsAndProtectedSwapsBeforeMutation()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "SlicingService",
+            "SlicingSession.cs"));
+        var validateAction = Between(source, "private static string ValidateAction", "private static bool TryClaim");
+        var swap = Between(source, "public static bool SwapSelectedWith", "public static bool ActivateTool");
+
+        validateAction.IndexOf("IsClaimOwner", StringComparison.Ordinal)
+            .Should().BeLessThan(validateAction.IndexOf("Touch(session)", StringComparison.Ordinal));
+        validateAction.Should().Contain("RemoveSession(session);");
+        swap.IndexOf("Entry and core sockets cannot be displaced.", StringComparison.Ordinal)
+            .Should().BeLessThan(swap.IndexOf("GetActionCost", StringComparison.Ordinal));
+    }
+
     private static IEnumerable<TestCaseData> TiersAndSeeds()
     {
         for (var tier = 1; tier <= 5; tier++)
         for (var seed = 1; seed <= 20; seed++)
             yield return new TestCaseData(tier, seed);
+    }
+
+    private static T InvokeSessionMethod<T>(string name, params object[] arguments)
+    {
+        var method = typeof(SlicingSession).GetMethod(
+            name,
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!;
+        return (T)method.Invoke(null, arguments)!;
+    }
+
+    private static string Between(string source, string start, string end)
+    {
+        var startIndex = source.IndexOf(start, StringComparison.Ordinal);
+        var endIndex = source.IndexOf(end, startIndex, StringComparison.Ordinal);
+        return source[startIndex..endIndex];
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+                return directory.FullName;
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the repository root.");
     }
 }

@@ -41,11 +41,10 @@ namespace SWLOR.Game.Server.Service.SlicingService
             public int TraceRemaining { get; set; }
             public int SelectedIndex { get; set; } = -1;
             public bool HasCommitted { get; set; }
+            public bool HasUsedTool { get; set; }
             public SlicingToolType PrimedTool { get; set; }
             public uint PrimedToolItem { get; set; }
             public int FreeActionsRemaining { get; set; }
-            public HashSet<int> RevealedRouteTiles { get; } = new();
-            public HashSet<int> RevealedOrientations { get; } = new();
             public List<SessionSnapshot> History { get; } = new();
         }
 
@@ -169,6 +168,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 return false;
 
             Slicing.RotateClockwise(session.Board, session.SelectedIndex);
+            ApplyFreeActionState(session, consumedTool);
             Commit(session);
             if (consumedTool)
                 ConsumePrimedTool(session);
@@ -193,18 +193,19 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 return true;
             }
 
-            var cost = GetActionCost(session, SlicingToolType.PhaseShuntFork, 2, out var consumedTool);
-            if (!PrepareAction(session, cost, out message))
-                return false;
             if (session.Board.Tiles[session.SelectedIndex].Type is SlicingTileType.Entry or SlicingTileType.Core ||
                 session.Board.Tiles[secondIndex].Type is SlicingTileType.Entry or SlicingTileType.Core)
             {
-                session.History.RemoveAt(session.History.Count - 1);
                 message = "Entry and core sockets cannot be displaced.";
                 return false;
             }
 
+            var cost = GetActionCost(session, SlicingToolType.PhaseShuntFork, 2, out var consumedTool);
+            if (!PrepareAction(session, cost, out message))
+                return false;
+
             Slicing.SwapAdjacent(session.Board, session.SelectedIndex, secondIndex);
+            ApplyFreeActionState(session, consumedTool);
             Commit(session);
             if (consumedTool)
                 ConsumePrimedTool(session);
@@ -223,7 +224,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 message = "That tool must be in your inventory.";
                 return false;
             }
-            if (session.PrimedTool != SlicingToolType.Invalid)
+            if (!CanActivateTool(session))
             {
                 message = "Only one slicing tool may be used per attempt.";
                 return false;
@@ -257,6 +258,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
 
             session.PrimedTool = toolType;
             session.PrimedToolItem = item;
+            session.HasUsedTool = true;
 
             if (toolType is SlicingToolType.RatchetBypassPin or
                 SlicingToolType.PhaseShuntFork or
@@ -286,15 +288,12 @@ namespace SWLOR.Game.Server.Service.SlicingService
                     message = "The splice rewinds the last two circuit actions and restores their trace.";
                     break;
                 case SlicingToolType.ContinuitySampler:
-                    RevealMembership(session, session.SelectedIndex);
-                    message = IsRouteTile(session, session.SelectedIndex)
+                    message = RevealMembership(session, session.SelectedIndex)
                         ? "Continuity detected: this tile belongs to the route."
                         : "No continuity: this tile is a decoy.";
                     break;
                 case SlicingToolType.JunctionSpectrograph:
-                    RevealMembership(session, session.SelectedIndex);
-                    session.RevealedOrientations.Add(session.SelectedIndex);
-                    message = IsRouteTile(session, session.SelectedIndex)
+                    message = RevealOrientation(session, session.SelectedIndex)
                         ? "Route tile identified; its correct orientation is now marked."
                         : "The selected tile is a decoy.";
                     break;
@@ -315,7 +314,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                                  .Take(3)
                                  .Select(x => x.index))
                     {
-                        session.RevealedOrientations.Add(index);
+                        session.Board.Tiles[index].IsOrientationRevealed = true;
                     }
                     message = "The route and three correct orientations are revealed.";
                     break;
@@ -333,7 +332,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
         public static IReadOnlyList<EligibleSlicingTool> GetEligibleTools(uint player)
         {
             var session = Get(player);
-            if (session == null)
+            if (session == null || !CanActivateTool(session))
                 return Array.Empty<EligibleSlicingTool>();
 
             var tools = new List<EligibleSlicingTool>();
@@ -404,6 +403,13 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 Release(session);
                 return "The slicing target is no longer available.";
             }
+            var playerId = GetObjectUUID(player);
+            var owner = GetLocalString(session.Target, OwnerVariable);
+            if (!IsClaimOwner(playerId, owner))
+            {
+                RemoveSession(session);
+                return "Your slicing claim is no longer active.";
+            }
             if (session.Source == SlicingSourceType.Lockbox && GetItemPossessor(session.Target) != player)
                 return "The lockbox must remain in your inventory.";
             if (session.Source == SlicingSourceType.Terminal && GetDistanceBetween(player, session.Target) > 5f)
@@ -434,6 +440,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                     return false;
                 }
 
+                _sessions.Remove(owner);
                 if (GetLocalInt(target, CommittedVariable) == 1 && ResolveAbandonedFailure(target, source, tier))
                 {
                     error = "The abandoned intrusion destabilizes and destroys the target.";
@@ -475,14 +482,10 @@ namespace SWLOR.Game.Server.Service.SlicingService
         {
             consumesTool = false;
             if (session.FreeActionsRemaining > 0)
-            {
-                session.FreeActionsRemaining--;
                 return 0;
-            }
 
             if (session.PrimedTool == SlicingToolType.NullSignatureLattice)
             {
-                session.FreeActionsRemaining = 2;
                 consumesTool = true;
                 return 0;
             }
@@ -494,6 +497,14 @@ namespace SWLOR.Game.Server.Service.SlicingService
             }
 
             return normalCost;
+        }
+
+        private static void ApplyFreeActionState(ActiveSlicingSession session, bool consumesTool)
+        {
+            if (session.FreeActionsRemaining > 0)
+                session.FreeActionsRemaining--;
+            else if (consumesTool && session.PrimedTool == SlicingToolType.NullSignatureLattice)
+                session.FreeActionsRemaining = 2;
         }
 
         private static bool ResolveAfterAction(ActiveSlicingSession session, int cost, out string message)
@@ -603,15 +614,32 @@ namespace SWLOR.Game.Server.Service.SlicingService
         private static void Release(ActiveSlicingSession session)
         {
             var playerId = GetObjectUUID(session.Player);
-            if (!string.IsNullOrWhiteSpace(playerId))
-                _sessions.Remove(playerId);
+            RemoveSession(session);
 
-            if (GetIsObjectValid(session.Target))
+            if (GetIsObjectValid(session.Target) &&
+                IsClaimOwner(playerId, GetLocalString(session.Target, OwnerVariable)))
             {
                 DeleteLocalString(session.Target, OwnerVariable);
                 DeleteLocalInt(session.Target, OwnerTimestampVariable);
                 DeleteLocalInt(session.Target, CommittedVariable);
             }
+        }
+
+        private static void RemoveSession(ActiveSlicingSession session)
+        {
+            var playerId = GetObjectUUID(session.Player);
+            if (!string.IsNullOrWhiteSpace(playerId))
+                _sessions.Remove(playerId);
+        }
+
+        private static bool IsClaimOwner(string playerId, string owner)
+        {
+            return !string.IsNullOrWhiteSpace(playerId) && playerId == owner;
+        }
+
+        private static bool CanActivateTool(ActiveSlicingSession session)
+        {
+            return !session.HasUsedTool;
         }
 
         private static void AddHistory(ActiveSlicingSession session)
@@ -643,10 +671,22 @@ namespace SWLOR.Game.Server.Service.SlicingService
             Commit(session);
         }
 
-        private static void RevealMembership(ActiveSlicingSession session, int index)
+        private static bool RevealMembership(ActiveSlicingSession session, int index)
         {
-            if (IsRouteTile(session, index))
-                session.RevealedRouteTiles.Add(index);
+            if (!IsRouteTile(session, index))
+                return false;
+
+            session.Board.Tiles[index].IsRouteRevealed = true;
+            return true;
+        }
+
+        private static bool RevealOrientation(ActiveSlicingSession session, int index)
+        {
+            if (!RevealMembership(session, index))
+                return false;
+
+            session.Board.Tiles[index].IsOrientationRevealed = true;
+            return true;
         }
 
         private static bool IsRouteTile(ActiveSlicingSession session, int index)
@@ -667,7 +707,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 .ToList();
             var selectedRouteIndex = ordered.FindIndex(x => x.index == selectedIndex);
             for (var offset = 1; offset <= count && selectedRouteIndex + offset < ordered.Count; offset++)
-                session.RevealedRouteTiles.Add(ordered[selectedRouteIndex + offset].index);
+                ordered[selectedRouteIndex + offset].tile.IsRouteRevealed = true;
         }
 
         private static void RevealAllRouteTiles(ActiveSlicingSession session)
@@ -675,7 +715,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             for (var index = 0; index < session.Board.Tiles.Count; index++)
             {
                 if (IsRouteTile(session, index))
-                    session.RevealedRouteTiles.Add(index);
+                    session.Board.Tiles[index].IsRouteRevealed = true;
             }
         }
 

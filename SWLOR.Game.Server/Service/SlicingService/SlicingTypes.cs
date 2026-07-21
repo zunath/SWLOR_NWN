@@ -62,6 +62,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
         public int SolutionIndex { get; set; } = -1;
         public int RouteOrder { get; set; } = -1;
         public int SolutionOrientation { get; set; }
+        public bool IsRouteRevealed { get; set; }
+        public bool IsOrientationRevealed { get; set; }
 
         public SlicingTile Clone()
         {
@@ -71,7 +73,9 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 Orientation = Orientation,
                 SolutionIndex = SolutionIndex,
                 RouteOrder = RouteOrder,
-                SolutionOrientation = SolutionOrientation
+                SolutionOrientation = SolutionOrientation,
+                IsRouteRevealed = IsRouteRevealed,
+                IsOrientationRevealed = IsOrientationRevealed
             };
         }
     }

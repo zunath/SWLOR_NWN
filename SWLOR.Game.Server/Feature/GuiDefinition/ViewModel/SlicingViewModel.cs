@@ -200,9 +200,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (session == null)
                 return;
 
-            if (session.PrimedTool != SlicingToolType.Invalid)
+            if (session.HasUsedTool)
             {
-                ToolName = $"Used/primed: {FormatToolName(session.PrimedTool)}";
+                ToolName = session.PrimedTool == SlicingToolType.Invalid
+                    ? "Slicing tool already used"
+                    : $"Used/primed: {FormatToolName(session.PrimedTool)}";
                 IsToolSelectionEnabled = false;
                 IsToolActivationEnabled = false;
                 return;
@@ -253,11 +255,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static string GetTileTooltip(SlicingSession.ActiveSlicingSession session, int index)
         {
             var parts = new List<string> { $"Tile {index + 1}" };
-            if (session.RevealedRouteTiles.Contains(index))
+            var tile = session.Board.Tiles[index];
+            if (tile.IsRouteRevealed)
                 parts.Add("Verified route tile");
-            if (session.RevealedOrientations.Contains(index))
+            if (tile.IsOrientationRevealed)
             {
-                var tile = session.Board.Tiles[index];
                 var clockwise = (tile.SolutionOrientation - tile.Orientation + 4) % 4;
                 parts.Add($"Correct orientation: {clockwise} clockwise turn(s)");
             }

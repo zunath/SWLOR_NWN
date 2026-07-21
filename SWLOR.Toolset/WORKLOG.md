@@ -693,4 +693,47 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   returns many candidates, pick the corpus-preferred tile. That selection policy belongs where
   selection happens (the paint tool), so it ships with WP7.3 alongside affected-cell enumeration on a
   corner paint and transactional Tile_List regeneration.
-## WP7.3 — pending — Paint tools + new-area wizard
+## WP7.3 — in progress (engine done, UI next) — 2026-07-21 — Paint tools + new-area wizard
+- Tier: Mid. Split into an independently verifiable **Domain engine** (this checkpoint) and the
+  **app UI** (next), because the UI half ends in a human gate (walk the painted area in game) while
+  the engine half is fully testable headlessly. Kept inline as Lead: paint idempotency is exactly the
+  subtle-correctness work a cold subagent would be tempted to weaken a test around, and the whole
+  GFF/tileset model was already in context.
+- Domain:
+  - `GameData\Tilesets\AreaTiles.cs` — (col,row) addressing over the .are Tile_List (row-major,
+    index = row*width+col, matching AreaSceneBuilder) plus in-place SetTile/SetOrientation/
+    SetHeightLevel that write ONLY the changed field, so a paint is a minimal diff and undoes clean.
+  - `GameData\Tilesets\TilePainter.cs` — the paint engine. `PaintTerrain` fills the clicked cell with
+    a terrain (preferring a crosser-free solid tile so a dab never drops a wall into the fill) and
+    re-blends the 8-neighbour ring, returning the change set (pure — the caller applies it in one
+    transaction). Plus FindSolidTile / DefaultFillTerrain / FillableTerrains for the wizard + palette.
+  - `GameData\Tilesets\TileUsageStatistics.cs` — the WP7.2 leftover: corpus tile-frequency per
+    tileset, and RankByUsage → the tie-break the painter uses when a solved cell is underspecified,
+    so auto-solved fills look hand-authored instead of picking an arbitrary legal tile.
+  - `Documents\AreaTemplateFactory.cs` — new-area core: CreateTileStruct (corpus shape, __struct_id 1,
+    AnimLoop 1/1/1 + zeroed light slots = the toolset default), PopulateNewArea (rewrites identity /
+    tileset / dimensions and regenerates Tile_List as a solid fill; every other template field flows
+    through untouched), AddAreaToModule (idempotent Mod_Area_list entry, __struct_id 6).
+- **Bug found by probing, not by reasoning:** the first blend test failed with east/west neighbours
+  blending correctly and north/south not blending at all. A throwaway grid dump made the asymmetry
+  obvious in one run. Root cause: `SetRuleMatcher.ConstraintFromNeighbours` resolves a corner as
+  `horizontal ?? vertical`, so a cell always believes its horizontal neighbour first. That is right
+  over consistent corpus data (all four cells at a vertex agree, which is what the WP7.2 gate proves)
+  but wrong *mid-paint*, where the grid is deliberately inconsistent for a moment: the north neighbour
+  consulted its stale west neighbour and never saw the cell just painted. Fixed in TilePainter (NOT in
+  SetRuleMatcher, whose `??` is validated by the WP7.2 corpus gate) with `ConstraintFromVertices`:
+  a corner vertex is shared by up to four cells, so consult all of them and let a cell already decided
+  **this pass** win. Because each cell solved later matches whatever was decided before it, the pass
+  ends corner-consistent — which is precisely what makes a repeat paint a fixed point.
+- Tests (20 new): TilePainterTests (10) — centre fills solid, orthogonal AND diagonal vertices blend
+  (the diagonal assertions lock in the bug above), idempotency, repaint-existing-terrain is a no-op,
+  out-of-bounds/blank/unpaintable → empty, rank tie-break, crosser-free solid preference, plus a
+  **corpus fixed-point gate**: for every real SWLOR tileset, painting terrain B over a terrain-A field
+  and painting again rewrites nothing (10+ tilesets exercised). AreaTilesTests (7) — row-major
+  addressing, out-of-range null/no-op, minimal diff (unchanged write produces byte-identical output,
+  other tile fields preserved), round-trip. AreaTemplateFactoryTests (4) — tile struct shape,
+  identity/grid rewrite with template passthrough, serialization round-trip, idempotent ifo entry.
+- Verified: solution builds clean (0 errors), full suite 373/374 green (353 prior + 20; 1 pre-existing
+  skip), 2m01s. Engine is Domain + tests only — no app behavior yet, so no smoke needed.
+- Next: app UI — paint/rotate/raise-lower brush in the 3D view driving these, and the new-area wizard
+  dialog. Ends in the human gate: create a small area, paint terrain, pack, walk it in game.

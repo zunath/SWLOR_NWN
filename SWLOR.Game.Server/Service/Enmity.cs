@@ -415,6 +415,32 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Returns true when an enemy has any enmity that did not come solely from its aggro aura.
+        /// Attack, damage, and ability enmity make the enemy an active combatant and therefore an
+        /// invalid source for a new Espionage infiltration attempt.
+        /// </summary>
+        public static bool HasNonProximityEnmity(uint enemy)
+        {
+            if (!_enemyEnmityTables.TryGetValue(enemy, out var table))
+                return false;
+
+            return table.Any(entry => !HasOnlyProximityEnmity(entry.Key, enemy));
+        }
+
+        /// <summary>
+        /// Returns true when a creature appears on any enemy table for more than aggro proximity.
+        /// This distinguishes real combat from the proximity-only entries created as multiple
+        /// stealthed players cross overlapping aggro auras.
+        /// </summary>
+        public static bool HasNonProximityEnmityForCreature(uint creature)
+        {
+            if (!_creatureToEnemies.TryGetValue(creature, out var enemies))
+                return false;
+
+            return enemies.Any(enemy => !HasOnlyProximityEnmity(creature, enemy));
+        }
+
+        /// <summary>
         /// Clears every creature from an enemy's enmity table.
         /// </summary>
         /// <param name="enemy">The enemy whose enmity table will be cleared.</param>

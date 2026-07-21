@@ -100,6 +100,45 @@ public class EquipmentRestrictionsTests
     }
 
     [Test]
+    public void PistolShieldVisualForm_RemainsAPistolForEquipmentRestrictions()
+    {
+        SWLOR.Game.Server.Service.Item.PistolBaseItemTypes
+            .Should()
+            .Contain(BaseItem.PistolWithShield);
+
+        var offHandError = EquipmentRestrictions.GetPistolEquipmentError(
+            BaseItem.PistolWithShield,
+            InventorySlot.LeftHand,
+            null,
+            null);
+        var pairedWithWeaponError = EquipmentRestrictions.GetPistolEquipmentError(
+            BaseItem.PistolWithShield,
+            InventorySlot.RightHand,
+            null,
+            BaseItem.Longsword);
+
+        offHandError.Should().Be("Pistols may only be equipped in the right hand.");
+        pairedWithWeaponError.Should().Be("Pistols may only be paired with a shield in the left hand.");
+    }
+
+    [TestCase(BaseItem.Pistol, true, BaseItem.PistolWithShield)]
+    [TestCase(BaseItem.Pistol, false, BaseItem.Pistol)]
+    [TestCase(BaseItem.PistolWithShield, true, BaseItem.PistolWithShield)]
+    [TestCase(BaseItem.PistolWithShield, false, BaseItem.Pistol)]
+    [TestCase(BaseItem.Sling, true, BaseItem.Sling)]
+    public void PistolShieldVisualForm_OnlyChangesForTheShieldCombination(
+        BaseItem currentBaseItem,
+        bool hasShield,
+        BaseItem expectedBaseItem)
+    {
+        var result = PistolShieldAttachment.GetDesiredBaseItem(
+            currentBaseItem,
+            hasShield);
+
+        result.Should().Be(expectedBaseItem);
+    }
+
+    [Test]
     public void PistolBaseItems_UseOneHandedWieldingAndRightHandOnlySlots()
     {
         var root = FindRepositoryRoot();
@@ -113,6 +152,15 @@ public class EquipmentRestrictionsTests
         rows[11]["EquipableSlots"].Should().Be("0x00010");
         rows[61]["WeaponWield"].Should().Be("10");
         rows[61]["EquipableSlots"].Should().Be("0x00010");
+        foreach (var (column, value) in rows[11])
+        {
+            if (column == "label")
+                continue;
+
+            rows[514][column].Should().Be(
+                value,
+                $"the shield attachment form must preserve the pistol's {column} behavior");
+        }
     }
 
     private static Dictionary<int, Dictionary<string, string>> Read2daRows(string path)

@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Rifle,
             BaseItem.Longbow,
             BaseItem.Pistol,
+            BaseItem.PistolWithShield,
             BaseItem.Arrow,
             BaseItem.Bolt,
             BaseItem.Bullet,
@@ -595,6 +596,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Pistol,
+            BaseItem.PistolWithShield,
             BaseItem.Sling,
             BaseItem.ThrowingAxe,
             BaseItem.Shuriken,
@@ -754,6 +756,7 @@ namespace SWLOR.Game.Server.Service
         public static List<BaseItem> PistolBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.Pistol,
+            BaseItem.PistolWithShield,
             BaseItem.Sling
         };
 

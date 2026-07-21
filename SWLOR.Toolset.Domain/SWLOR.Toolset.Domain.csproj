@@ -13,4 +13,10 @@
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- BioWare's proprietary DDS variant needs conversion to standard DDS before Pfim can
+         decode it (see Render/TextureLoader.cs). Version pinned to match Radoub.UI's own pin. -->
+    <PackageReference Include="Pfim" Version="0.11.4" />
+  </ItemGroup>
+
 </Project>

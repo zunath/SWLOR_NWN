@@ -273,7 +273,33 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
 - Verified: build clean, 203/204 tests green, 12s launch smoke with the GL panel docked.
   Visual confirmation of an actual rendered model = human spot-check (select a beast/simple
   creature in the explorer and look at the Model Preview tab).
-## WP4.2 — pending — Mesh/texture pipeline
+## WP4.2 — done — 2026-07-20 — Mesh/texture pipeline
+- Tier: Mid (Sonnet subagent); controller-verified (build clean, 217/218 green incl.
+  corpus gate; scope exact: Render\*, Domain csproj Pfim line, RenderPipelineTests).
+- Files: `Domain\Render\{MdlMeshBuilder,TextureLoader,TxiInfo,MaterialResolver}.cs`,
+  Domain csproj (+Pfim 0.11.4, matching Radoub.UI's pin), `Tests\RenderPipelineTests.cs`
+  (14 tests; mesh build over 30 tile models → 552 meshes, 0 empty).
+- **Decisions/findings recorded:**
+  - Geometry filter = `node is MdlTrimeshNode` (covers Skin/Dangly/Anim/Aabb subclasses)
+    gated on `Render == true`; `ComposeNodeTransform` mirrors Radoub.UI
+    `ModelViewController.GetWorldTransform` (Scale × Rotation × Translation, node→root) so
+    preview and area renderer place nodes identically. Faces index shared per-vertex
+    Normals/TextureCoords[0] directly — corpus is binary MDL where `TvertIndex` is always -1
+    (only MdlAsciiReader populates it).
+  - Radoub.Formats has NO DDS/MTR/TXI parsers (plan overstated). DDS: Pfim + BioWare-header
+    conversion adapted line-for-line from Radoub.UI TextureService into Domain (Domain must
+    not reference Radoub.UI); includes BGR 5:6:5 endpoint swap. TXI/MTR: fresh minimal text
+    parsers.
+  - **Tile `Model=` resrefs are mostly BASE-GAME resources** — SWLOR tileset haks only
+    add/override a subset; KeyBifCatalog (113,472 resources) supplies the rest. Mesh-sample
+    test builds ResourceIndex with the KEY/BIF base layer and Assert.Ignores without an
+    install (runs for real here via the GOG install).
+  - Corpus: 14,828 .dds in SWLOR_Haks (BioWare variant confirmed); 2,426 .mtr (mostly
+    sw_cr_creature) — parser tested against real `c_huttbomb1.mtr`; TXI keys verified against
+    real files. NO `pal_*.tga` in haks (base-game only) — PLT test rides PltReader's
+    grayscale fallback; palette-accurate PLT coverage deferred to a base-game-backed consumer.
+  - MaterialResolver/TxiInfo deliberately not yet chained into TextureLoader — WP4.4/4.5
+    decide composition.
 ## WP4.3 — pending — Model preview panes
 ## WP4.4 — pending — Area scene assembly
 ## WP4.5 — pending — Area view

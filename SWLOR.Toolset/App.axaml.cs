@@ -68,7 +68,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Editors.LookupOptionProvider>(),
                 sp.GetRequiredService<OutputLogService>(),
                 sp.GetRequiredService<ToolsetDockFactory>(),
-                sp.GetService<IGameCodeIndex>()));
+                sp.GetService<IGameCodeIndex>(),
+                sp.GetRequiredService<ModelPreviewViewModel>()));
 
             // The explorer needs to open editors, but EditorService depends on the dock factory,
             // which depends on the explorer — a Func breaks the construction cycle.
@@ -83,7 +84,9 @@ namespace SWLOR.Toolset
                 sp.GetService<AppearanceService>(),
                 sp.GetService<ResourceIndex>(),
                 sp.GetService<TwoDaService>(),
-                sp.GetService<TlkService>()));
+                sp.GetService<TlkService>(),
+                sp.GetService<PlaceableAppearanceService>(),
+                sp.GetService<DoorTypeService>()));
             services.AddSingleton<PropertiesViewModel>();
             services.AddSingleton<ModuleExplorerViewModel>();
             services.AddSingleton<SearchViewModel>();
@@ -147,6 +150,10 @@ namespace SWLOR.Toolset
             {
                 services.AddSingleton(sp =>
                     new AppearanceService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
+                services.AddSingleton(sp =>
+                    new PlaceableAppearanceService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
+                services.AddSingleton(sp =>
+                    new DoorTypeService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
             }
 
             if (hasTwoDa)

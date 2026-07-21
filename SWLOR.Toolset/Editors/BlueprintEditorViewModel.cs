@@ -5,6 +5,8 @@ using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
@@ -30,9 +32,19 @@ namespace SWLOR.Toolset.Editors
 
         public bool IsDirty => _session.UndoStack.IsDirty;
 
+        /// <summary>This blueprint's resource type — lets the model preview resolve its appearance.</summary>
+        public ResourceType BlueprintType { get; }
+
+        /// <summary>The live (possibly unsaved) document root, for appearance-driven model preview.</summary>
+        public JsonGffStruct DocumentRoot => _session.Document.Root;
+
+        /// <summary>Raised after every edit/undo/redo/save so the preview can re-resolve the model.</summary>
+        public event Action? DocumentChanged;
+
         public BlueprintEditorViewModel(
             string filePath,
             string resRef,
+            ResourceType type,
             EditorSchema schema,
             LookupOptionProvider lookups,
             IGameCodeIndex? gameCodeIndex,
@@ -40,6 +52,7 @@ namespace SWLOR.Toolset.Editors
         {
             _log = log;
             _resRef = resRef;
+            BlueprintType = type;
             Id = $"editor:{filePath}";
             _session = DocumentSession.Open(filePath);
             _context = new EditorFieldContext(_session.Document, RunEdit);
@@ -154,6 +167,7 @@ namespace SWLOR.Toolset.Editors
             UndoCommand.NotifyCanExecuteChanged();
             RedoCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(IsDirty));
+            DocumentChanged?.Invoke();
         }
 
         private void UpdateTitle()

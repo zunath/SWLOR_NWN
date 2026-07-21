@@ -2,11 +2,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Dock.Model.Mvvm.Controls;
 using Radoub.Formats.Mdl;
 using Radoub.UI.Services;
-using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
-using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Viewport;
 using SWLOR.Toolset.Workspace;
@@ -14,18 +14,23 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
-    /// The Model Preview panel (WP4.1 spike proof): renders the selected creature's model via
-    /// Radoub's ModelPreviewGLControl, resolving appearance → model resref through
-    /// appearance.2da and loading bytes through the layered ResourceIndex. Simple (MODELTYPE
-    /// S/L) models render now; segmented part-based models arrive with WP4.3.
+    /// The Model Preview panel: renders the appearance-driven model for the selected/edited creature,
+    /// placeable, or door via Radoub's ModelPreviewGLControl. Model resolution runs through the
+    /// headless <see cref="BlueprintModelResolver"/>; simple models parse directly, segmented
+    /// (MODELTYPE=P) creatures compose from body-part MDLs via Radoub's <see cref="MdlPartComposer"/>.
+    /// Driven two ways: explorer selection previews the on-disk blueprint; an open utc/utp/utd editor
+    /// previews its live in-memory document and refreshes as the appearance changes (WP4.3).
     /// </summary>
     public partial class ModelPreviewViewModel : Tool
     {
         private readonly WorkspaceContext _workspaceContext;
         private readonly AppearanceService? _appearances;
+        private readonly PlaceableAppearanceService? _placeables;
+        private readonly DoorTypeService? _doors;
         private readonly ResourceIndex? _resourceIndex;
         private readonly OutputLogService _log;
         private readonly MdlReader _mdlReader = new();
+        private readonly MdlPartComposer? _partComposer;
 
         /// <summary>Shared texture resolver for the GL control; null when no ResourceIndex.</summary>
         public TextureService? TextureService { get; }
@@ -34,7 +39,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private MdlModel? _currentModel;
 
         [ObservableProperty]
-        private string _statusText = "Select a creature to preview its model.";
+        private string _statusText = "Select a creature, placeable, or door to preview its model.";
 
         public ModelPreviewViewModel(
             WorkspaceContext workspaceContext,
@@ -42,30 +47,36 @@ namespace SWLOR.Toolset.Shell.Panels
             AppearanceService? appearances = null,
             ResourceIndex? resourceIndex = null,
             TwoDaService? twoDaService = null,
-            Domain.GameData.Tlk.TlkService? tlkService = null)
+            Domain.GameData.Tlk.TlkService? tlkService = null,
+            PlaceableAppearanceService? placeables = null,
+            DoorTypeService? doors = null)
         {
             _workspaceContext = workspaceContext;
             _log = log;
             _appearances = appearances;
+            _placeables = placeables;
+            _doors = doors;
             _resourceIndex = resourceIndex;
             Id = "ModelPreview";
             Title = "Model Preview";
 
             if (resourceIndex != null)
-                TextureService = new TextureService(new SwlorGameDataService(resourceIndex, twoDaService, tlkService));
+            {
+                var gameData = new SwlorGameDataService(resourceIndex, twoDaService, tlkService);
+                TextureService = new TextureService(gameData);
+                _partComposer = new MdlPartComposer(gameData, LoadModel);
+            }
         }
 
-        /// <summary>Called by the explorer on selection; only creature selections preview.</summary>
+        /// <summary>
+        /// Previews an on-disk blueprint chosen in the explorer. Loads the blueprint from disk (so it
+        /// reflects the last saved state); an open editor's unsaved edits arrive via
+        /// <see cref="ShowForDocument"/> instead.
+        /// </summary>
         public void ShowFor(ResourceType type, string resRef)
         {
-            if (type != ResourceType.Utc)
+            if (!IsPreviewable(type))
                 return;
-
-            if (_appearances == null || _resourceIndex == null)
-            {
-                StatusText = "Model preview unavailable (game data services not loaded).";
-                return;
-            }
 
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
@@ -73,36 +84,8 @@ namespace SWLOR.Toolset.Shell.Panels
 
             try
             {
-                var utc = (UtcDocument)workspace.LoadBlueprint(ResourceType.Utc, resRef);
-                var appearanceId = (int)(utc.Document.Root.GetOrNull("Appearance_Type")?.GetInteger() ?? -1);
-                var row = _appearances.GetAll().FirstOrDefault(r => r.Id == appearanceId);
-                if (row == null)
-                {
-                    SetModel(null, $"Unknown appearance id {appearanceId}.");
-                    return;
-                }
-
-                if (string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase))
-                {
-                    SetModel(null, $"{row.Label}: segmented (parts) model — preview arrives with WP4.3.");
-                    return;
-                }
-
-                var modelResRef = row.Race;
-                if (string.IsNullOrWhiteSpace(modelResRef))
-                {
-                    SetModel(null, $"{row.Label}: no model resref in appearance.2da.");
-                    return;
-                }
-
-                var identity = ResourceIdentity.FromFileName(modelResRef + ".mdl");
-                if (!_resourceIndex.TryLookup(identity, out var handle))
-                {
-                    SetModel(null, $"Model '{modelResRef}.mdl' not found in haks or base game.");
-                    return;
-                }
-
-                SetModel(_mdlReader.Parse(handle.GetBytes()), $"{row.Label} ({modelResRef}.mdl)");
+                var root = workspace.LoadBlueprint(type, resRef).Document.Root;
+                ShowForDocument(type, root, resRef);
             }
             catch (Exception ex)
             {
@@ -110,6 +93,93 @@ namespace SWLOR.Toolset.Shell.Panels
                 _log.AppendLine($"Model preview failed for {resRef}: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Previews a live in-memory blueprint document (an open editor's current, possibly unsaved,
+        /// state). Called on editor open and after each appearance-affecting edit.
+        /// </summary>
+        public void ShowForDocument(ResourceType type, JsonGffStruct root, string resRef)
+        {
+            if (!IsPreviewable(type))
+                return;
+
+            if (_resourceIndex == null)
+            {
+                SetModel(null, "Model preview unavailable (game data services not loaded).");
+                return;
+            }
+
+            try
+            {
+                var reference = BlueprintModelResolver.Resolve(type, root, _appearances, _placeables, _doors);
+                RenderReference(reference);
+            }
+            catch (Exception ex)
+            {
+                SetModel(null, $"Preview failed: {ex.Message}");
+                _log.AppendLine($"Model preview failed for {resRef}: {ex.Message}");
+            }
+        }
+
+        private void RenderReference(BlueprintModelReference reference)
+        {
+            switch (reference.Kind)
+            {
+                case BlueprintModelKind.Simple:
+                    var model = LoadModel(reference.ModelResRef!, withSupermodelAnims: false);
+                    SetModel(
+                        model,
+                        model == null
+                            ? $"Model '{reference.ModelResRef}.mdl' not found in haks or base game."
+                            : reference.Status);
+                    break;
+
+                case BlueprintModelKind.Segmented:
+                    if (_partComposer == null)
+                    {
+                        SetModel(null, "Segmented preview unavailable (composer not initialized).");
+                        return;
+                    }
+
+                    var parts = reference.Parts
+                        .Select(p => (p.PartType, p.ModelResRef))
+                        .ToList();
+                    var composed = _partComposer.Compose(reference.SkeletonResRef!, parts, adjustSeams: true);
+                    SetModel(
+                        composed,
+                        composed == null
+                            ? $"{reference.Status}: no body-part models resolved."
+                            : reference.Status);
+                    break;
+
+                default:
+                    SetModel(null, reference.Status);
+                    break;
+            }
+        }
+
+        /// <summary>Loads and parses an MDL by resref through the layered index; null when missing/unparseable.</summary>
+        private MdlModel? LoadModel(string resRef, bool withSupermodelAnims)
+        {
+            if (_resourceIndex == null || string.IsNullOrWhiteSpace(resRef))
+                return null;
+
+            var identity = ResourceIdentity.FromFileName(resRef + ".mdl");
+            if (!_resourceIndex.TryLookup(identity, out var handle))
+                return null;
+
+            try
+            {
+                return _mdlReader.Parse(handle.GetBytes());
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static bool IsPreviewable(ResourceType type) =>
+            type is ResourceType.Utc or ResourceType.Utp or ResourceType.Utd;
 
         private void SetModel(MdlModel? model, string status)
         {

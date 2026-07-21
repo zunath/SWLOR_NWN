@@ -300,7 +300,37 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
     grayscale fallback; palette-accurate PLT coverage deferred to a base-game-backed consumer.
   - MaterialResolver/TxiInfo deliberately not yet chained into TextureLoader — WP4.4/4.5
     decide composition.
-## WP4.3 — pending — Model preview panes
+## WP4.3 — code done, human visual gate pending — 2026-07-20 — Model preview panes
+- Tier: Low (controller-executed inline; subagent dispatch avoided — the WP4.4 subagent
+  died on the monthly spend limit, so remaining Phase 4 packages run inline).
+- Files: `Domain\Render\BlueprintModelResolver.cs` (headless, tested),
+  `Tests\BlueprintModelResolverTests.cs` (6 tests), app: `Shell\Panels\ModelPreviewViewModel.cs`
+  (rewired), `Editors\BlueprintEditorViewModel.cs` (+BlueprintType/DocumentRoot/DocumentChanged),
+  `Editors\EditorService.cs` (binds preview to live editor), `App.axaml.cs` (DI:
+  Placeable/DoorType services + preview injected into EditorService).
+- Verified so far: build clean, full suite 231 passed / 1 benign skip (round-trip gate green),
+  app launch-and-kill smoke OK (DI chain EditorService→ModelPreviewViewModel resolves, catalog
+  builds, killed cleanly). **Remaining: the human 20-item visual spot-check vs in-game.**
+- **Design:** the standalone Model Preview dock panel now serves creatures (simple + segmented),
+  placeables, and doors, driven two ways: explorer selection previews the on-disk blueprint;
+  an open utc/utp/utd editor previews its LIVE in-memory document and refreshes on every edit
+  (BlueprintEditorViewModel.DocumentChanged → EditorService.PreviewEditorModel →
+  ModelPreviewViewModel.ShowForDocument). Chose panel-follows-editor over one embedded GL
+  control per editor tab to avoid N concurrent GL contexts and keep the WP4.1 wiring intact.
+- **BlueprintModelResolver (headless):** maps a blueprint doc → BlueprintModelReference:
+  UTC MODELTYPE S/F/W/L → Simple(RACE resref); UTC MODELTYPE P → Segmented(skeleton
+  `p{gender}{race}{phenotype}` + body parts from utc BodyPart_* fields, head from
+  Appearance_Head); UTP Appearance → placeables.2da ModelName; UTD GenericType_New →
+  doortypes.2da Model. Field paths verified against corpus + the WP3.2 schemas. Simple path is
+  fully unit-tested against real corpus blueprints (ashwing→c_anurog, _mdrn_chair→PLC_X02,
+  _mdrn_dt_bars→TCN_UDoor_10). Segmented spec is unit-tested (agr_guildmaster → pmh0 + 15
+  parts, exact resrefs); the app composes it via Radoub's MdlPartComposer.
+- **Known limitations for the visual gate to confirm/correct:** (1) segmented HEAD model naming
+  (`{prefix}_head{NNN}`) is the least-certain part of the convention — MdlPartComposer silently
+  skips any part whose model doesn't resolve, so a wrong head naming omits the head rather than
+  crashing; the body still composes. (2) Part indices of 0 are treated as "none" and omitted.
+  (3) Phenotype>0 parts that don't exist fall back to nothing (no phenotype-0 fallback). These
+  are the primary things to check in the 20-item spot-check; fixes are targeted if needed.
 ## WP4.4 — done — 2026-07-20 — Area scene assembly
 - Tier: Mid. Split execution: Sonnet subagent produced all four files then died on the
   monthly spend limit before running any build/test; controller verified inline (build

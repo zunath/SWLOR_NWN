@@ -2,12 +2,16 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class BankViewModel: GuiViewModelBase<BankViewModel, GuiPayloadBase>
     {
+        private static readonly GuiColor _storageFreeColor = new(90, 150, 95);
+        private static readonly GuiColor _storageFullColor = new(200, 100, 70);
+
         /// <summary>
         /// When a bank placeable is used, display this UI view.
         /// </summary>
@@ -38,6 +42,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string ItemCountText
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiColor StorageColor
+        {
+            get => Get<GuiColor>();
             set => Set(value);
         }
 
@@ -74,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemCountText = Bank.GetItemCountText(itemCount);
             StoragePercentage = Bank.GetStoragePercentage(itemCount);
             IsDepositEnabled = !Bank.IsFull(itemCount);
+            StorageColor = Bank.IsFull(itemCount) ? _storageFullColor : _storageFreeColor;
         }
 
         private void Search()

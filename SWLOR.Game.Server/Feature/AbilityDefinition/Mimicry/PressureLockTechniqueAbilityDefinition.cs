@@ -34,12 +34,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Head_Electricity,
                 VisualEffect.Dur_Web,
-                maxRange: 5f,
-                damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(ImmobilizedStatusEffect)))
+                maxRange: 5f)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
-                .MimicryTechnique(FeatType.PressureLock, 4, 3)
+                .MimicryTechnique(FeatType.PressureLock, 44, 3)
                 .HasTargetingCone(
                     Spell.PressureLockTechnique,
                     5f,

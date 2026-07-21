@@ -512,6 +512,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SetLocalBool(item, Item.PlayerProducedItemVariable, true);
 
+            // Hand the weapon to the player BEFORE its properties are edited. Merging two
+            // enhancements of the same stat removes the pre-merge property, and that
+            // removal is not committed to the item's underlying property list right away:
+            // GetFirstItemProperty already skips it, but a CopyItem taken later in the same
+            // execution still snapshots it, resurrecting the pre-merge value alongside the
+            // merged one. That is what put a stray "Accuracy Bonus: +5" next to the merged
+            // "+10" when two accuracy kits were socketed - one kit never removed anything,
+            // so it copied clean, which is why only the two-kit case was affected.
+            //
+            // The appearance work above still has to happen inside the storage placeable,
+            // because CopyItemAndModify returns OBJECT_INVALID for items held in a
+            // creature's inventory. The ordering rule is only that nothing may copy the
+            // weapon after its item properties have been edited.
+            var finishedItem = CopyItem(item, Player, true);
+            DestroyObject(item);
+            item = finishedItem;
+
+            if (!GetIsObjectValid(item))
+            {
+                StatusText = "Something went wrong constructing that weapon. Your Kyber Token was not consumed.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
             foreach (var property in _enhancementProperties.SelectMany(x => x))
             {
                 Craft.ApplyCraftedItemProperty(item, property);
@@ -524,8 +548,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             // Transfer the Weapon Submission Token's crafted stats onto the saber. The
-            // saber's damage profile stays fixed at tier 5, so DMG, weapon damage type,
-            // and attack delay are skipped, as is the token blueprint's own skill
+            // saber's damage profile is owned by its tier - it is built at tier 1 and
+            // advanced by the saber upgrade kits - so DMG, weapon damage type, and
+            // attack delay are skipped, as is the token blueprint's own skill
             // requirement scaffolding and its anti-equip Use Limitation: Perk lock
             // (the token is meant to be unusable on its own, not the finished saber).
             if (!string.IsNullOrWhiteSpace(_submissionSerialized))
@@ -550,19 +575,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 _submissionSerialized = string.Empty;
-            }
-
-            // Copy the finished weapon into the player's inventory, then destroy the
-            // original left behind in the storage placeable.
-            var finishedItem = CopyItem(item, Player, true);
-            DestroyObject(item);
-            item = finishedItem;
-
-            if (!GetIsObjectValid(item))
-            {
-                StatusText = "Something went wrong constructing that weapon. Your Kyber Token was not consumed.";
-                StatusColor = GuiColor.Red;
-                return;
             }
 
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);

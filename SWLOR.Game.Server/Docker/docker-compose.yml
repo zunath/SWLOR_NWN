@@ -1,4 +1,3 @@
-version: "3.7"
 services:
     redis:
         hostname: redis
@@ -22,7 +21,10 @@ services:
     swlor-server:
         hostname: nwnx-server
         stop_signal: SIGINT
-        image: zunath/nwn-dotnet:8193.37.15-1
+        build:
+          context: .
+          dockerfile: Dockerfile
+        image: zunath/nwn-dotnet:8193.37.15-2
         env_file: ${PWD-.}/swlor.env
         links:
             - "redis:redis"

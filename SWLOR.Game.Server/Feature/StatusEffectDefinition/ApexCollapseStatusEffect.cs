@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ApexCollapseStatusEffect : StatusEffectBase
     {
         public override string Name => "Apex Collapse";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.ApexCollapseStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
         public override IStatusEffect Clone()

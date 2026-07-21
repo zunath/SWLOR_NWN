@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private const int EnmityTowardSourcePercent = 25;
 
         public override string Name => "Last Bastion";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.LastBastionStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override bool PersistsOnLogout => false;
 

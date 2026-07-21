@@ -10,7 +10,7 @@ Use 6 as the normal ceiling, 5 as acceptable for tighter trees, and 4 only for n
 
 This 4-6 target is binding for weapon skills only. Devices and Force are explicit exceptions because their tabs are broader utility/power catalogs rather than two-style weapon progressions. Support and companion tabs can still use the count as a review signal, but they should not be failed against the weapon-style button ceiling unless the design intent says those rows are ordinary player weapon buttons.
 
-Armor is not a combat-upgrade perk tree and should stay out of this budget. Espionage remains out of current combat-upgrade implementation scope.
+Armor is not a combat-upgrade perk tree and should stay out of this button budget. Espionage and Mimicry remain fully included in the implementation review, but the weapon-style 4-6-button ceiling is not their governing structure: Espionage is a utility system, while Mimicry is limited by the documented 10-slot loadout cap and 1-3 slot costs.
 
 ## Conversion Principles
 

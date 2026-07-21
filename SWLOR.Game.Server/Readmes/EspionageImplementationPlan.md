@@ -1,156 +1,78 @@
-# Espionage Implementation Plan
+# Espionage Implementation and Review Status
 
-Implements the Espionage skill from the Design Bible Espionage tab (Infiltrator + Saboteur trees, 50 max rank, 110 SP, AGI primary / PER secondary, Utility category), plus the supporting systems: custom stealth/detection, back attack, slicing/lockboxes, weapon poisons, traps, and six new item stats. Espionage is currently excluded from the combat-upgrade audit scope (`CombatUpgradeImplementationStatus.md` item 5); bringing it into scope is an explicit step in Phase 0.
+Espionage is fully included in the Design Bible review and combat-upgrade audit. It must never be filtered out as optional, deferred, or intentionally unimplemented. The authoritative design is the `Espionage` tab in `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`; the generated manifest and `CombatUpgradeBibleSyncTests` verify it against code, feat/spell data, and TLK text.
 
-## Design Inputs
+## Reviewed scope
 
-- Bible Espionage tab: Infiltrator tree (Stealth I–IV, Back Attack I–III, Slicing I–V, Tactical Escape I–II, Shadow Step I–II, Ghost Protocol) and Saboteur tree (Poisoncraft I–V, Trapcraft I–IV, Venom Expertise I–II, Razor Trap I–II, Shock Trap, Trap Management I–II, Master Saboteur).
-- Design doc: Detection attribute replaces Listen/Spot; Stealth attribute replaces Hide/MS; detection checks every 30 seconds; stamina drains while stealthed; new item stats (Detection, Stealth, Trap Bonus, Disarm, Poison Bonus, Lockpicking).
-- Contributor feedback (7/2024 thread): vanilla stealth is all-or-nothing and rolls far too often — full custom replacement; single opposed check (not separate spot+listen); poisons craftable-by-Espionage but usable/sellable by anyone, and not usable on lightsabers; traps must not stack and must have a per-player active cap; Detection counter lives in the General perk category but must not be a cheap hard-counter to an 8+ SP stealth investment; Vibroknife's Backstab active coexists with the Back Attack trait; no changes to Stealth Field Generator (invisibility path is untouched).
+The tab contains 41 implemented rows totaling 135 SP:
 
-## Core Architecture Decisions
+| Section | Rows | SP | Content |
+|---|---:|---:|---|
+| Tradecraft | 5 | 15 | False Identities I-III and Cover Story I-II |
+| Infiltrator | 18 | 60 | Stealth, Back Attack, Slicing, Silent Stride, Tactical Escape, Shadow Step, and Ghost Protocol |
+| Saboteur | 18 | 60 | Poisoncraft, Trapcraft, traps, Venom Expertise, Lasting Coatings, Trap Management, and Master Saboteur |
+| **Total** | **41** | **135** | **All rows are required audit scope** |
 
-### 1. New skill: Espionage
+Espionage is a Standard-only Utility skill with a maximum rank of 50. Poison use remains universal; the skill, crafting access, and perks are Standard-only. Espionage actives are player-only and do not grant droid instruction slots.
 
-- Add `SkillType.Espionage` (next free enum value) in `Service/SkillService/SkillType.cs` with `[Skill(...)]` metadata: Utility category, max rank 50, contributes to skill cap, description from the Bible tab, and `CharacterType.Standard` restriction — Espionage is Standard-only, mirroring Devices (Bible Char. Type column is `Standard` on every Espionage row).
-- Add the matching row to `SWLOR_Haks/sw_2da/iprp_skill.2da` (required per the SkillType file header).
-- XP sources: crafting poisons/traps (recipe path grants this automatically), successful lockbox/lock/terminal slicing, trap triggers on hostile NPCs, and time-in-stealth near hostiles (guardrail: only ticks XP when a hostile NPC is within detection range, to prevent AFK farming).
+## Stat-driven architecture
 
-### 2. New stats (stat-driven rule compliant)
+Six player-facing equipment stats are documented on the Bible `Character Stats` tab and supported end to end by item properties, equipment aggregation, player persistence, NPC skins, and `Stat` accessors:
 
-Six new `StatType` entries with `[StatType(StatTypeCategory.BeneficialWhenPositive)]`:
+| Stat | Purpose |
+|---|---|
+| Stealth | Opposed-check strength while stealthed |
+| Detection | Opposed-check strength against stealthed creatures |
+| Trap Bonus | Trap effect strength |
+| Disarm | Hostile-trap disarm checks |
+| Poison Bonus | Venom damage potency, snapshotted from the applier |
+| Lockpicking | Lockbox success checks |
 
-| StatType | Item stat name | Purpose |
-|---|---|---|
-| `Stealth` | Stealth | Opposed-check bonus while stealthed |
-| `Detection` | Detection | Opposed-check bonus to detect stealthed creatures |
-| `TrapBonus` | Trap Bonus | Increases trap effect strength |
-| `TrapDisarm` | Disarm | Improves trap disarm success |
-| `PoisonBonus` | Poison Bonus | Increases poison potency/duration |
-| `Lockpicking` | Lockpicking | Improves slicing/lockbox success |
+Perk-only adjustments such as flat Stealth rating, stealthed movement speed, stealth drain reduction, Back Attack damage/critical rate, trap capacity, trap arming speed, trap detection range, coating charges, and disguise capacity/cooldown are also represented by `StatType` values. Shared stealth, movement, damage, poison, trap, and disguise systems consume those stats; they do not special-case perk ownership.
 
-Item side mirrors the Evasion chain end to end: new `ItemPropertyType` entries in `SWLOR.NWN.API/NWScript/Enum/Item/ItemPropertyType.cs`, rows in `SWLOR_Haks/sw_2da/itempropdef.2da` (+ cost table), registration in `Feature/EquipmentStats.cs` (`RegisterStatActions` → `Apply*`/`Remove*` → `Stat.Adjust*` on the `Player` entity), and NPC support through the skin-item-property path (`ReapplyNPCStat`). Single accessors on `Stat` (e.g. `Stat.GetDetection(creature)`) combine: attribute scaling (PER for Detection, AGI for Stealth) + persistent equipment stat + `GetStatAdjustment(StatType.X)` (perks/status effects/temporary modifiers).
+## Stealth and detection
 
-Perks grant bonuses only through `PerkBuilder.IncreasesStat(...)` — no perk-type checks inside shared combat/stealth systems (AGENTS.md stat-driven rule).
+- Baseline stealth requires Stealth I-IV and can only be entered out of combat. Ghost Protocol is the sole in-combat entry window.
+- Spot detection replaces the vanilla roll with one opposed check: `d20 + Detection` versus `d20 + Stealth`. The verdict is cached per observer/target pair for 30 seconds. Ties favor the stealthed target.
+- A successful Spot check against a player exits that player's stealth and reveals them globally. NPC stealth retains the engine's observer-specific visibility behavior.
+- Listen detection is suppressed so there is one detection model rather than separate Spot and Listen rolls.
+- Cache entries for a stealthed target are cleared on stealth exit; expired entries are pruned as the cache grows.
+- Stealth drains 2 STM every 6 seconds. Silent Stride reduces the drain rate by 20%, producing 2 STM every 7.5 seconds, and grants +30% Movement Speed while stealthed without removing stealth's running restriction.
+- Reaching zero STM exits stealth. Activating a hostile ability or landing a damaging hit also exits stealth.
+- Stealth is calculated as `(AGI x 2) + equipment + perk/status bonuses`; Stealth I-IV grant +5/+10/+15/+20 Stealth while active.
+- Detection is calculated as `PER + WIL + equipment + perk/status bonuses`; Detect mode adds +5.
+- Alertness I-III remains on the General tab as the universal Detection counter and grants +10/+15/+20 Detection.
+- Stealth and Detection equipment already exists and contributes directly to the opposed ratings.
 
-### 3. Stealth/detection replacement (NWNX)
+## Infiltrator behavior
 
-All required NWNX events are **already subscribed** in `Feature/EventRegistration.cs` with `ScriptName` constants in place: `NWNX_ON_STEALTH_ENTER/EXIT_BEFORE/AFTER` and `NWNX_ON_DO_SPOT_DETECTION_BEFORE/AFTER`, `NWNX_ON_DO_LISTEN_DETECTION_BEFORE/AFTER`. Verified against the NWNX Events plugin source (`Plugins/Events/Events/StealthEvents.cpp`):
+- Back Attack applies only to melee weapon attacks made from behind: +3/+5/+8% damage, with +3/+5% Critical Rate at ranks II/III.
+- For the first iteration, Slicing applies only to lockboxes. Slicing I-V unlock tier 1-5 lockboxes; Slicing III-V shorten the lockbox interaction by 20/30/40%, reducing its 2-second base delay to 1.6/1.4/1.2 seconds. It does not claim support for world locks or terminals.
+- Lockbox success uses the Lockpicking stat and a tier-scaled roll. Failed attempts impose a 30-second retry lockout; the box is not destroyed.
+- Tactical Escape I/II reduce enmity by 35/60% and grant +8/+12% Evasion for 30 seconds; rank II also removes negative movement-speed effects.
+- Shadow Step I/II moves the user behind one hostile target within 5m and grants +10/+15% Evasion for 30 seconds; rank II also removes negative movement-speed effects. It does not grant invisibility.
+- Ghost Protocol reduces enmity by 80%, permits up to 30 seconds of stealth, and primes the next back attack within 30 seconds to critically hit and apply Exposed (-20% Defense for 30 seconds).
 
-- `DoSpotDetection`/`DoListenDetection` are hooked per observer→target pair. The BEFORE event fires **only when the target is actually stealthed** (invisibility short-circuits before the event, so Stealth Field Generator behavior is untouched). Skipping the BEFORE event bypasses the entire vanilla opposed skill roll; the event result string decides the outcome: `"1"` = detected, anything else = not detected.
-- `NWNX_ON_STEALTH_ENTER_BEFORE` is skippable to deny entering stealth (existing precedent: `Space.PreventSpaceStealth`). Result `"0"` forces entry without HIPS, `"1"` forces HIPS-style entry, other = cancel.
+## Saboteur behavior
 
-New service `Service/Stealth.cs`:
+- Poisoncraft I-V unlock the five Venom Coating recipes at the Espionage Workbench. Anyone may apply a crafted coating to an eligible melee or thrown weapon; energy blades are rejected.
+- A coating has 20 charges. Lasting Coatings increases this by 50%, to 30 charges.
+- Venom duration is tier-based: 12/18/24/30/36 seconds. Venom Expertise I/II increases direct Venom damage by 10/20%; Master Saboteur adds another 10%. These bonuses do not extend duration or charges.
+- Razor Trap I/II and Shock Trap are visible zoning abilities. They arm after 3 seconds and affect enemies in a 3m blast.
+- Crafted Snare Kits place concealed traps. Trapcraft controls crafting, placement, detection, and disarming by tier.
+- Trapcraft III/IV reduce the 3-second arming delay by 20/30%, to 2.4/2.1 seconds.
+- Base concurrent-trap capacity is 1. Trap Management I/II raise it to 2/3; placing over the cap removes the oldest trap. Traps also require 3m spacing and expire after 5 minutes.
+- Base concealed-trap detection range is 6m. Trap Management II adds 5m, for 11m total.
+- Master Saboteur unlocks tier 5 traps and increases trap damage and weapon-poison Venom damage by 10%.
 
-- **Entry gating** (`OnStealthEnterBefore`): players without any Stealth perk rank are denied with a message, and entry is denied while in combat — baseline stealth is out-of-combat only; Ghost Protocol's capstone stealth window is the only in-combat entry (NPCs pass through — spawn tables may still use stealthy NPCs). Stealth actives (Stealth I–IV feats) toggle stealth mode via `SetActionMode`; the native stealth toggle button routes through the same gate, so both paths are consistent.
-- **Detection verdict** (`OnDoSpotDetectionBefore`): always skip the vanilla roll. Look up a cached verdict for (observer, target); if missing or older than 30 seconds, roll once — `d20 + Stat.GetDetection(observer)` vs `d20 + Stat.GetStealth(target)` — cache it with a 30-second expiry, and answer from cache until expiry. The engine re-queries this up to 5x/second on modifier changes, so the handler must be dictionary-lookup cheap; the roll itself happens at most once per pair per 30 seconds. This single check **is** the detection model — no environmental modifiers, no day/night, no separate listen channel.
-- **Listen suppression** (`OnDoListenDetectionBefore`): always skip with result `"0"`. One stat pair, one check, per the design discussion.
-- **Cache hygiene**: evict entries on stealth exit, death, area transition, and logout. Keyed dictionary `(observerObjectId, targetObjectId)` → `(detected, expiryTime)`.
-- **Detect mode** (optional, cheap): while a creature has Detect mode active, grant a flat Detection bonus in `Stat.GetDetection`, making the vanilla toggle meaningful at its native movement-speed cost.
+## Tradecraft behavior
 
-**Stealth effectiveness from perks**: Stealth I–IV grant +15/25/35/45% stealth effectiveness while active. Modeled as a status effect applied on stealth entry whose magnitude feeds `StatType.Stealth` (percentage applied inside `Stat.GetStealth`), not as a perk check in the stealth service.
+- False Identities I-III increase stored disguise capacity to 2/3/4.
+- Cover Story I/II reduce the delay between disguise activations by 40/70%.
+- Tradecraft is part of the same mandatory Espionage review surface even though its rows are passive utility perks.
 
-### 4. Stamina drain while stealthed
+## Verification and release work
 
-`EspionageStealthStatusEffect : StatusEffectBase` applied on `OnStealthEnterAfter`, removed on `OnStealthExitAfter`:
+The static implementation review currently covers all 41 rows: exact price, requirements, type, resource/cast/recast values, description text, perk/feat wiring, active definitions, spell links, TLK entries, scaling declarations, and targeting metadata. Focused tests also cover disguise progression, stealth drain timing, Slicing delay, coating charges, Venom duration/damage, trap ranges, and category totals.
 
-- `Frequency => 6f`; each tick calls `Stat.ReduceStamina(creature, drainPerTick)`. Starting number: 2 STM per 6 seconds (must outpace the 30-second natural STM regen tick in `Feature/NaturalRegeneration.cs` for net drain; tune in playtest).
-- When stamina reaches 0, force `SetActionMode(creature, ActionMode.Stealth, false)` — the exit event removes the effect.
-- Carries the Stealth-perk effectiveness bonus (decision 3) so one status effect owns the whole "while stealthed" package.
-- **Breaks on hostile action**: on ability activation against a hostile and on damage dealt, exit stealth mode. Hooked in the existing ability-activation and damage pipelines, not per-ability.
-
-NPCs in stealth are exempt from the drain (no meaningful NPC stamina economy).
-
-### 5. Detection counter for everyone else
-
-New General-category perk line **Alertness I–III** (2/3/4 SP, Armor 5/25/40 requirements, `PerkCategoryType.General`) granting flat `StatType.Detection` (+5/+10/+15). Balance stance from the thread: the counter must exist (8 SP stealth investment needs an answer) but must not be a cheap hard-counter — at equal investment the dedicated stealther beats the casual detector; the detector closes the gap with Detection gear (the item stat) and Detect mode. The Bible **General** tab rows 13–15 now carry these perks with Dev Status `Design`.
-
-### 6. Back Attack
-
-- Trait perks grant `StatType.BackAttackDamagePercent` (+3/5/8%) and `StatType.BackAttackCriticalChance` (+3/+5% at ranks II/III) via `IncreasesStat`.
-- Consumed in the shared damage pipeline (native `GetDamageRoll` hook / `Combat.cs`), melee weapons only, when the attacker is behind the defender. Add `Combat.IsAttackerBehindTarget` beside the existing `IsAttackerBesideTarget` facing math (`Combat.cs:1876`) using angle > 135°.
-- Coexists with Vibroknife's Backstab active: Backstab is an active ability with its own positional rider; Back Attack is a passive percentage on every melee hit from behind. They stack naturally because they occupy different layers (active bonus damage vs passive percent modifier); no rework of Backstab needed.
-- Ghost Protocol's "next back attack crits and inflicts Exposed" rides the same positional check plus a consume-on-trigger status effect; Exposed already exists (`ExposedStatusEffect`).
-
-### 7. Poisons
-
-- **Crafting**: standard recipe system — `RecipeBuilder.Create(RecipeType.X, SkillType.Espionage)`, tiers 1–5 gated by Poisoncraft I–V via recipe level + perk requirement. Mark `SkillType.Espionage` as shown in the craft menu. *Open decision: which crafting device surfaces these (new "chemistry station" vs an existing bench).*
-- **Items**: poison vials, stackable (identical stats per tier — no per-item variance, unlike enzymes), sellable, **not** economy-restricted (player-tradable is the point — crafter niche per contributor feedback). New `uti` blueprints wired to a real player source (the recipes) so `EconomyObtainabilityCoverageTests` passes without flags.
-- **Application**: using a vial targets a melee/thrown weapon; **lightsabers and force-weapon types are rejected**. Stores locals on the weapon: poison type, tier, charge count, and a potency snapshot from the **applier** (Bible: Venom Expertise buffs "poisons applied by you") — so bought poison is fully effective for the buyer, and Saboteur ranks make *your own application* stronger. Anyone may apply/use.
-- **On-hit**: in the damage-dealt pipeline, an attack with a poisoned weapon consumes a charge and applies the tier's status effect (reuse `StatusEffect` system — Venom DoT, accuracy down, slow, etc. per poison type), scaled by the stored potency + target's `PoisonDefense`/Poison resistance. Internal cooldown per target (e.g. one application per 6 seconds) to keep dual-wield/fast weapons from multiplying output.
-
-### 8. Traps
-
-Custom implementation (placeable + scripted trigger), **not** native NWN traps — native traps can't consume our stats or cap logic.
-
-- **Crafted trap kits** (Trapcraft I–IV tiers, recipes as with poisons): using a kit places a trap at a target location — arming delay 3 seconds, then an invisible trigger placeable with a subtle VFX. Hidden from creatures whose `Detection` fails a passive check vs the placer's trap tier; Trapcraft ranks also unlock **detect and disarm** interactions (disarm = `TrapDisarm` stat check vs trap DC; success yields the kit back at lower tiers).
-- **Perk actives** (Razor Trap I–II, Shock Trap): `AbilityDefinition` per ability file rule, place a *visible* trap per Bible text — no detection game, pure zoning tool. Damage/status per Bible (Bleed / Shock), scaled by `TrapBonus` and PER.
-- **Trigger**: on-enter, hostile creatures only; applies damage via `AssignCommand(placer, () => ApplyEffectToObject(...))` (combat-log attribution rule) and the tier's status effect. Trap despawns after triggering or after a lifetime (e.g. 5 minutes).
-- **Anti-stacking**: per-player active-trap registry — cap 1 (base), 2 (Trap Management I), 3 (Trap Management II); placing over cap despawns the oldest. Minimum placement distance (e.g. 3m) from any existing trap, regardless of owner, kills the trap-pile exploit.
-- **NPC traps in areas** (design doc "in the cards"): later phase — spawn-table-driven trap spawns in dungeon areas so detect/disarm has PvE value; reuses the same trap objects with an NPC owner.
-
-### 9. Slicing and lockboxes
-
-- Slicing I–V unlock lock/terminal tiers 1–5; ranks III+ also speed up the interaction (progress-bar style delay reduced 20–40%).
-- **Lockboxes**: rare loot drops (existing Loot service/spawn table wiring) in five tiers. Opening: requires the tier's Slicing perk, then success roll — `d100 vs DC(tier) - (Lockpicking stat + AGI/PER scaling)`; success opens a loot table roll (mundane→exceptional by box tier), failure consumes the attempt with a short lockout (box is never destroyed — a specialist can always eventually open it, preserving the "take it to a slicer" economy loop).
-- **World surfaces**: existing locked doors/containers/terminals migrate to tiered locks opportunistically (per-area content work, not a blocker for the perk line).
-
-## Phases
-
-**Phase 0 — Bible + scope.** Alertness rows are in the General tab (done); resolve remaining open decisions below; flip Espionage rows from `Design Only` as they land; extend `tools/UpdateCombatUpgradeAudit.ps1` scope + `CombatUpgradeBibleSyncTests` to include Espionage (workbook edits per `DesignBibleWorkbookRules.md` — zip/XML surgical edits only, then `-RefreshLocalBible`).
-
-**Phase 1 — Foundation.** `SkillType.Espionage` + `iprp_skill.2da`; six StatTypes; six ItemPropertyTypes + `itempropdef.2da`/cost tables; `EquipmentStats` + `Stat` accessors + NPC skin path; `EspionagePerkDefinition` skeleton (both trees, trait ranks with `IncreasesStat` wiring); TLK entries (reuse empty slots); icons per `IconStandards.md` + cooldown-icon regen; recast groups (≤14-char short names).
-
-**Phase 2 — Stealth core.** `Service/Stealth.cs` (entry gate, spot verdict cache, listen suppression, cache eviction); `EspionageStealthStatusEffect` (drain + effectiveness + zero-STM exit + hostile-action break); Stealth I–IV actives (self-targeted toggles — `TARGETSELF=1`, no `RequiresTarget()`, no `HostileFeat`); Alertness perks; Detect-mode bonus. **This phase is independently shippable and playtestable.**
-
-**Phase 3 — Back Attack.** `IsAttackerBehindTarget`; damage-pipeline consumption of the two stats; Back Attack trait ranks; verify Vibroknife Backstab interaction.
-
-**Phase 4 — Infiltrator actives.** Tactical Escape I–II (enmity reduction — existing Enmity service — + Evasion status effect), Shadow Step I–II (position warp behind target + Evasion buff; no invisibility), Ghost Protocol (enmity drop + timed stealth + primed back-attack crit/Exposed).
-
-**Phase 5 — Poisons.** Recipes + vial blueprints; application targeting/validation (no lightsabers); weapon locals + potency snapshot; on-hit consumption in the damage pipeline; per-poison status effects; Venom Expertise/Master Saboteur `PoisonBonus` wiring.
-
-**Phase 6 — Traps.** Trap registry service (cap, spacing, ownership, lifetime); crafted kits + hidden-trap detect/disarm; Razor/Shock Trap actives; `TrapBonus`/`TrapDisarm` consumption.
-
-**Phase 7 — Slicing + lockboxes.** Lockbox blueprints + loot wiring; slicing interaction + success formula; loot tables per tier; Slicing perk gates.
-
-**Phase 8 — Ship.** NPC trap spawns in select dungeons; enemy Detection/Stealth presets for spawn tables (Bible Enemy Stat Presets); balance pass on drain/check numbers; fold any persistent-data needs into the in-flight combat-upgrade migrations (no new numbered migrations; character-build data relies on the full rebuild); hak rebuild + module repack; full test suite.
-
-## Decided (2026-07-16 review)
-
-- Baseline Stealth I–IV is **out-of-combat entry only**; Ghost Protocol is the sole in-combat stealth entry.
-- Back Attack damage progression is **+3/+5/+8%** (crit +3/+5% at ranks II/III).
-- Poisons **cannot be applied to lightsabers or saberstaffs**; only crafting is perk-gated — anyone may apply and use crafted poisons (noted on the Poisoncraft I Bible row).
-- Espionage actives are **player-only** — no droid instruction AI slots.
-- Both capstones follow the standard capstone convention: Type `Capstone`, 6 SP, and for Ghost Protocol the shared Capstone recast timer at 90 seconds / 15 STM.
-- Each tree totals the standard 60 SP / 18 rows. The missing Espionage 32 step is filled by two new 4 SP traits: **Silent Stride** (Infiltrator — no stealth movement penalty, 20% slower stealth STM drain) and **Lasting Coatings** (Saboteur — applied weapon poisons last 50% longer before wearing off).
-- The six new stats are documented on the Bible **Character Stats** tab (rows 60–65), including the opposed-check formula and the applier-snapshot rule for Poison Bonus.
-- Espionage is **Standard-only** (Devices precedent; Force-sensitives keep Force/Lightsaber/Saberstaff exclusives). Alertness stays `All` so every character can counter stealth, and poison *usage* stays universal — only the skill and its perks are restricted.
-
-## Open Decisions (resolve in Phase 0)
-
-1. **Poison/trap crafting surface** — new chemistry/saboteur bench placeable vs existing crafting device. Recommendation: new bench placed in seedy-district locations; flavor fits and avoids crowding existing menus.
-2. **Detection check symmetry for NPCs** — NPC Detection derived from enemy stat presets (recommended: level-scaled Detection so dungeon sneaking is viable at-level, hard above level) vs flat per-family values.
-3. **Stealth drain vs regen numbers** — proposed 2 STM/6s drain against the 30s regen tick; needs a target uptime (recommendation: ~2–3 minutes of continuous stealth at full STM for a dedicated build).
-4. **Trait vs stat naming for the crit rider** — whether Back Attack crit chance folds into the existing crit-stat plumbing or is a distinct positional stat (recommended: distinct `BackAttackCriticalChance`, read only in the behind-target branch).
-5. **Equipment stat budgets** — Alertness rows are on the General tab (2/3/4 SP, +5/+10/+15 Detection); still open whether the six new item stats need budget rows on the Equipment tabs.
-
-## Key References
-
-- NWNX event semantics: `C:\Projects\unified\Plugins\Events\Events\StealthEvents.cpp` (read-only reference)
-- Event subscriptions: `Feature/EventRegistration.cs:152-155, 386-389`; script names: `Core/ScriptName.cs:381-385, 556-560`
-- Stealth-deny precedent: `Service/Space.cs:2155` (`PreventSpaceStealth`)
-- Stamina API: `Service/Stat.cs` (`ReduceStamina`:414, `RestoreStamina`:370); regen tick: `Feature/NaturalRegeneration.cs`
-- Status-effect tick pattern: `Service/StatusEffectService/StatusEffectBase.cs` (`Frequency`), example `Feature/StatusEffectDefinition/VenomStatusEffect.cs`
-- Item-stat chain example (Evasion): `SWLOR.NWN.API/NWScript/Enum/Item/ItemPropertyType.cs`, `SWLOR_Haks/sw_2da/itempropdef.2da`, `Feature/EquipmentStats.cs`
-- Facing math: `Service/Combat.cs:1876` (`IsAttackerBesideTarget`)
-- Recipe-to-skill linkage: `Service/CraftService/RecipeBuilder.cs` (`Create(RecipeType, SkillType)`)
-
-## Implementation Status
-
-- **2026-07-16 — Phases 1-2 foundation slice** (branch `feature/espionage-skill`): `SkillType.Espionage` (49, Standard-only, Utility), nine StatTypes (919-927), six item-stat ItemPropertyTypes (136-141) with the full EquipmentStats/Player-entity/`Stat.Adjust*` chain, `Stat.GetDetection`/`Stat.GetStealth` accessors, `Service/Stealth.cs` (perk + out-of-combat entry gate, cached 30s opposed spot verdicts, listen suppression), `StealthStatusEffect` (6s STM drain, zero-STM stealth break, drain slowed by `StealthStaminaDrainReductionPercent`), and `EspionagePerkDefinition` with all 16 perks. Stealth effectiveness and Silent Stride/Venom Expertise/Lasting Coatings/Master Saboteur bonuses flow through `IncreasesStat` — no perk checks in shared systems.
-- **2026-07-16 — Phase 3**: Back Attack flows through the shared pipeline (`BackAttackDamagePercentAdjustment`/`BackAttackCriticalRatePercentAdjustment`, `IsAttackerBehindTarget` rear-arc check, native damage/attack-roll consumption).
-- **2026-07-16 — Feat/TLK/icon slice + Phase 4**: all 22 feats exist (traits in blank rows 1476-1500, actives 2889-2898 plus reclaimed 2216/2217), TLK entries and `iprp_skill.2da` row 49 added, 22 hand-illustrated icons with semantic frames and cooldown variants pass the icon audit, and all 15 Espionage perks are purchasable. Ability definitions live for Stealth I-IV (native stealth toggle), Tactical Escape I-II (enmity dump + Evasion window + rank-2 slow cleanse), Shadow Step I-II (behind-target jump + Evasion window), and Ghost Protocol (enmity dump, in-combat 30s stealth window via the entry-gate exception, primed 100% back-attack crit window).
-- **2026-07-16 — Phases 5-7**: Traps service (stat-driven capacity via `AdditionalTrapCapacity`, 3m spacing, 3s arming, proximity trigger, 5-minute lifetime, `TrapBonus` snapshot, Espionage XP on trigger) with Razor Trap I/II and Shock Trap actives; venom coatings (five craftable vial tiers on `SkillType.Espionage` recipes gated by the new `RecipePerkRequirement`, apply-to-melee/thrown-weapon item behavior that rejects energy blades, applier `PoisonBonus` potency snapshot, `PoisonCoatingDurationPercent` charge scaling, and on-hit consumption via the damage event with a 6s internal cooldown); lockboxes t1-t5 dropping rarely across five planets, opened through Slicing perk tiers with a `Lockpicking`-stat success roll, tier-scaled loot tables, delta-XP grants, and a 30s retry lockout; an Espionage Workbench (skill 49) placed in the Dantooine crafter base with its own blueprint; VenomCoating recipes documented in the Bible Cooking Recipes tab (worktree copy).
-- **2026-07-17 — Integration**: merged the latest `feature/combat-upgrade` (Techniques window, capstone rare elites, Bible equipment-tab rebuild); the workbook conflict was resolved by taking the target branch's workbook and re-applying the VenomCoating recipe rows, and the Alertness perk is now registered (PerkType 800, `AlertnessTrait` feat) with its three General-tab Bible rows flipped to Implemented.
-- **2026-07-17 — Lockbox uniques**: itempropdef.2da rows 136-141 register the six Espionage stats as item properties (flat NPCSTM cost table), and fifteen lockbox-exclusive accessories (ring/necklace/belt per tier, `espn_*` resrefs) carry them at +2/+4/+6/+8/+10 primary with smaller secondaries, weighted at 3 in the `ESPIONAGE_LOCKBOX_1-5` reward tables. Lockbox drop planets re-tiered to CZ-220/Viscara/Nar Shaddaa/Hutlar/Korriban. The Bible Equipment - Armor catalog does not yet list the fifteen accessories.
-- **Still deferred**: Espionage-tab Dev Status flips (rows stay Design until playtest numbers settle), Ghost Protocol's Exposed-on-back-attack rider, hostile-action stealth break polish, crafted trap kits + trap detect/disarm interactions (`TrapDisarm` consumption), NPC trap spawns, stealth-tick XP, the toolset placeable-palette entry for the workbench (palette file has a non-UTF8 byte), and module repack + hak rebuild on deploy.
+Remaining release work is live playtesting and deployment packaging, including NPC trap placement where desired, module repack, and hak rebuild. These are release tasks, not reasons to exclude Espionage rows from the Bible review or mark them unimplemented.

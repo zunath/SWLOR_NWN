@@ -166,6 +166,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+            if (Player == 0 || WindowToken <= 0)
+                return;
+
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
 

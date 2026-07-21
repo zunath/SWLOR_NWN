@@ -8,7 +8,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class VenomStatusEffect : StatusEffectBase
     {
-        private const int DamagePerTick = 8;
+        private const int BaseDamagePerTick = 8;
+        private readonly int _damageBonusPercent;
+
+        public VenomStatusEffect()
+            : this(0)
+        {
+        }
+
+        public VenomStatusEffect(int damageBonusPercent)
+        {
+            _damageBonusPercent = Math.Max(0, damageBonusPercent);
+        }
 
         public override string Name => "Venom";
         public override EffectIconType Icon => EffectIconType.VenomStatusEffect;
@@ -20,6 +31,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffectCleanseType.TreatmentKit2 |
             StatusEffectCleanseType.SoothePet;
         public override float Frequency => 6f;
+
+        public override IStatusEffect Clone()
+        {
+            return new VenomStatusEffect(_damageBonusPercent);
+        }
 
         protected override void Apply(uint creature, int durationTicks)
         {
@@ -39,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Tick(uint creature)
         {
             var source = GetIsObjectValid(Source) ? Source : creature;
-            var damageAmount = Combat.ApplyDamageTypeDealtModifiers(source, DamagePerTick, CombatDamageType.Poison);
+            var baseDamage = CalculateBaseDamagePerTick(_damageBonusPercent);
+            var damageAmount = Combat.ApplyDamageTypeDealtModifiers(source, baseDamage, CombatDamageType.Poison);
             damageAmount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damageAmount);
             damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Poison);
             damageAmount = Combat.ApplyDamageTakenModifiers(
@@ -57,6 +74,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     DurationType.Instant,
                     EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType()),
                     creature));
+        }
+
+        public static int CalculateBaseDamagePerTick(int damageBonusPercent)
+        {
+            return BaseDamagePerTick +
+                   (int)Math.Ceiling(BaseDamagePerTick * (Math.Max(0, damageBonusPercent) / 100f));
         }
     }
 }

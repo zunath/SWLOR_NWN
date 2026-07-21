@@ -3,12 +3,13 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -33,6 +34,13 @@ namespace SWLOR.Game.Server.Service
         // Source NPC feat -> the technique feat it teaches.
         private static readonly Dictionary<FeatType, FeatType> _techniqueByNpcFeat = new();
 
+        // Stat -> the trait feats that adjust it, and by how much. Inverted at cache time so the stat
+        // pipeline (a hot path) only walks traits that are relevant to the stat being queried.
+        private static readonly Dictionary<StatType, Dictionary<FeatType, int>> _traitStatsByStat = new();
+
+        // Resistance -> the trait feats that adjust it, and by how much.
+        private static readonly Dictionary<ResistanceType, Dictionary<FeatType, int>> _traitResistancesByResistance = new();
+
         // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
         private static readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
 
@@ -44,7 +52,6 @@ namespace SWLOR.Game.Server.Service
         private const int BaseSlotsWithAnalyzer = 2;
         private const int SlotsPerAnalyzerMemoryLevel = 2;
         private const int OverclockedAnalyzerSlotBonus = 2;
-        private const int SkillRanksPerTier = 15;
         private const int ResonancePotencyPerTechnique = 5;
         private const int ResonancePotencyCap = 20;
         private const int AnalysisCombatPointsPerWitness = 1;
@@ -72,6 +79,8 @@ namespace SWLOR.Game.Server.Service
             _techniques.Clear();
             _techniqueByNpcFeat.Clear();
             _techniqueIcons.Clear();
+            _traitStatsByStat.Clear();
+            _traitResistancesByResistance.Clear();
 
             if (!_witnessSweepScheduled)
             {
@@ -81,13 +90,38 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (feat, detail) in Ability.GetAllAbilityDetails())
             {
-                if (detail.MimicryTier <= 0)
+                if (!detail.IsMimicryTechnique)
                     continue;
 
                 _techniques[feat] = detail;
 
                 if (detail.MimicrySourceFeat != FeatType.Invalid)
                     _techniqueByNpcFeat[detail.MimicrySourceFeat] = feat;
+
+                if (!detail.IsMimicryTrait)
+                    continue;
+
+                foreach (var (stat, amount) in detail.MimicryTraitStats)
+                {
+                    if (!_traitStatsByStat.TryGetValue(stat, out var statContributors))
+                    {
+                        statContributors = new Dictionary<FeatType, int>();
+                        _traitStatsByStat[stat] = statContributors;
+                    }
+
+                    statContributors[feat] = amount;
+                }
+
+                foreach (var (resistance, amount) in detail.MimicryTraitResistances)
+                {
+                    if (!_traitResistancesByResistance.TryGetValue(resistance, out var resistContributors))
+                    {
+                        resistContributors = new Dictionary<FeatType, int>();
+                        _traitResistancesByResistance[resistance] = resistContributors;
+                    }
+
+                    resistContributors[feat] = amount;
+                }
             }
 
             // Resolve icon resrefs in a separate, guarded pass: Get2DAString requires a live engine,
@@ -103,6 +137,67 @@ namespace SWLOR.Game.Server.Service
             {
                 _techniqueIcons.Clear();
             }
+        }
+
+        /// <summary>
+        /// Sums the stat adjustments contributed by a creature's equipped Mimicry traits, plus the
+        /// elemental-resonance set bonus. Read directly by the stat pipeline: trait bonuses are static
+        /// for as long as the trait is slotted, so they are a property of the loadout rather than a
+        /// status effect that could be cleared on death or drift out of sync with the equipped set.
+        /// </summary>
+        public static int GetStatBonus(uint creature, StatType stat)
+        {
+            var hasStatContributors = _traitStatsByStat.TryGetValue(stat, out var contributors);
+
+            if (!hasStatContributors && stat != StatType.MimicryPotencyPercent)
+                return 0;
+
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return 0;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
+            if (dbPlayer == null)
+                return 0;
+
+            var bonus = stat == StatType.MimicryPotencyPercent
+                ? GetSetBonusPotency(dbPlayer)
+                : 0;
+
+            if (!hasStatContributors)
+                return bonus;
+
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                if (contributors.TryGetValue(feat, out var amount))
+                    bonus += amount;
+            }
+
+            return bonus;
+        }
+
+        /// <summary>
+        /// Sums the resistance adjustments contributed by a creature's equipped Mimicry traits.
+        /// </summary>
+        public static int GetResistanceBonus(uint creature, ResistanceType resistance)
+        {
+            if (!_traitResistancesByResistance.TryGetValue(resistance, out var contributors))
+                return 0;
+
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return 0;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
+            if (dbPlayer == null)
+                return 0;
+
+            var bonus = 0;
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                if (contributors.TryGetValue(feat, out var amount))
+                    bonus += amount;
+            }
+
+            return bonus;
         }
 
         /// <summary>
@@ -198,16 +293,16 @@ namespace SWLOR.Game.Server.Service
             if (!witnessedTechniques.Add(techniqueFeat))
                 return;
 
-            // Witnessing an above-tier technique is still recorded (the learn roll re-checks the
+            // Witnessing a technique above the player's current skill is still recorded (the learn roll re-checks the
             // gate at the creature's death, in case the player's rank crosses the floor first),
             // but the feedback makes clear it cannot be learned yet and what rank it needs.
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
-            var tierMinRank = GetTierMinRank(techniqueDetail.MimicryTier);
+            var requiredSkillRank = techniqueDetail.MimicrySkillRequirement;
 
-            if (skillRank < tierMinRank)
+            if (skillRank < requiredSkillRank)
             {
                 SendMessageToPC(player, ColorToken.Gray(
-                    $"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {tierMinRank})"));
+                    $"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})"));
                 return;
             }
 
@@ -297,11 +392,11 @@ namespace SWLOR.Game.Server.Service
                 if (!_techniques.TryGetValue(feat, out var detail))
                     continue;
 
-                var tierMinRank = GetTierMinRank(detail.MimicryTier);
-                if (skillRank < tierMinRank)
+                var requiredSkillRank = detail.MimicrySkillRequirement;
+                if (skillRank < requiredSkillRank)
                     continue;
 
-                var chance = CalculateLearnChance(skillRank, tierMinRank, patternRecognitionLevel, perception);
+                var chance = CalculateLearnChance(skillRank, requiredSkillRank, patternRecognitionLevel, perception);
 
                 if (Random.D100(1) > chance)
                 {
@@ -339,32 +434,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns the minimum Mimicry skill rank required to learn a technique of the given tier.
-        /// Tier 0 (not a technique) returns 0.
-        /// </summary>
-        public static int GetTierMinRank(int tier)
-        {
-            switch (tier)
-            {
-                case 1: return 0;
-                case 2: return 15;
-                case 3: return 30;
-                case 4: return 45;
-                default: return 0;
-            }
-        }
-
-        /// <summary>
         /// Computes the percent chance to learn a witnessed technique when the source creature dies.
-        /// Scales off Mimicry skill rank above the technique's tier floor, the Pattern Recognition
+        /// Scales off Mimicry skill rank above the technique's individual requirement, the Pattern Recognition
         /// perk, and the player's Perception attribute (each point above <see cref="PerceptionLearnChanceBaseline"/>
         /// adds <see cref="LearnChancePerPerceptionPoint"/> percent, rewarding perceptive characters).
         /// The result is clamped to <see cref="MaxLearnChancePercent"/>.
         /// </summary>
-        public static int CalculateLearnChance(int skillRank, int tierMinRank, int patternRecognitionLevel, int perception)
+        public static int CalculateLearnChance(int skillRank, int requiredSkillRank, int patternRecognitionLevel, int perception)
         {
             var chance = BaseLearnChancePercent +
-                         LearnChancePerRankDelta * (skillRank - tierMinRank) +
+                         LearnChancePerRankDelta * (skillRank - requiredSkillRank) +
                          LearnChancePerPatternRecognitionLevel * patternRecognitionLevel +
                          LearnChancePerPerceptionPoint * Math.Max(0, perception - PerceptionLearnChanceBaseline);
 
@@ -438,17 +517,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Mimicry skill rank required to equip (and therefore use) a technique of the given tier.
-        /// Tier usability is gated by Mimicry skill rank rather than Combat Analyzer perk rank, so a
-        /// technique stays usable as long as the player retains the skill (e.g. after a perk refund).
-        /// Tiers unlock at Mimicry 0/15/30/45, matching the Combat Analyzer rank skill milestones.
-        /// </summary>
-        public static int GetTierSkillRequirement(int tier)
-        {
-            return tier <= 1 ? 0 : (tier - 1) * SkillRanksPerTier;
-        }
-
-        /// <summary>
         /// Damage-type loadout set bonus ("elemental resonance"): equipping multiple active
         /// techniques sharing a damage type grants scaling technique potency. Each damage type with
         /// at least two equipped techniques contributes (count - 1) * <see cref="ResonancePotencyPerTechnique"/>
@@ -475,22 +543,6 @@ namespace SWLOR.Game.Server.Service
                 .Sum(count => (count - 1) * ResonancePotencyPerTechnique);
 
             return potency > ResonancePotencyCap ? ResonancePotencyCap : potency;
-        }
-
-        /// <summary>
-        /// Recomputes the elemental-resonance set bonus from the current loadout and re-applies it,
-        /// replacing any prior resonance effect. Called whenever the equipped set changes.
-        /// </summary>
-        private static void RecomputeSetBonus(uint player, Player dbPlayer)
-        {
-            if (!GetIsObjectValid(player))
-                return;
-
-            StatusEffect.RemoveStatusEffect(player, typeof(TechniqueResonanceStatusEffect), player, false);
-
-            var potency = GetSetBonusPotency(dbPlayer);
-            if (potency > 0)
-                StatusEffect.ApplyStatusEffect(player, player, new TechniqueResonanceStatusEffect(potency), 0f);
         }
 
         /// <summary>
@@ -556,10 +608,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
-            var requiredSkillRank = GetTierSkillRequirement(detail.MimicryTier);
+            var requiredSkillRank = detail.MimicrySkillRequirement;
             if (skillRank < requiredSkillRank)
             {
-                error = $"You need Mimicry skill rank {requiredSkillRank} to equip a tier {detail.MimicryTier} technique.";
+                error = $"You need Mimicry skill rank {requiredSkillRank} to equip that technique.";
                 return false;
             }
 
@@ -602,7 +654,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             GrantTechniqueFeat(player, feat);
-            RecomputeSetBonus(player, dbPlayer);
+            Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
         }
@@ -629,14 +681,15 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
             RevokeTechniqueFeat(player, feat);
-            RecomputeSetBonus(player, dbPlayer);
+            Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             return true;
         }
 
         /// <summary>
-        /// Unequips techniques, newest-equipped first, until the player's equipped list fits within
-        /// their current slot budget. Used after perk refunds/level changes shrink the budget.
+        /// Unequips techniques that exceed the player's current Mimicry rank, then removes the
+        /// newest-equipped techniques until the remaining loadout fits the current slot budget.
+        /// Used after progression changes and on login to keep persisted loadouts valid.
         /// </summary>
         public static void EnforceSlotBudget(uint player)
         {
@@ -648,8 +701,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Enforces the slot budget against an already-fetched player database record,
-        /// avoiding a duplicate round trip when the caller has one in hand.
+        /// Enforces Mimicry rank requirements and the slot budget against an already-fetched player
+        /// database record, avoiding a duplicate round trip when the caller has one in hand.
         /// </summary>
         public static void EnforceSlotBudget(uint player, Player dbPlayer)
         {
@@ -658,11 +711,29 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var maxSlots = GetMaxSlots(dbPlayer);
-
-            if (GetUsedSlots(dbPlayer) <= maxSlots)
-                return;
-
+            var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill)
+                ? mimicrySkill.Rank
+                : 0;
             var changed = false;
+
+            for (var i = dbPlayer.EquippedTechniques.Count - 1; i >= 0; i--)
+            {
+                var feat = dbPlayer.EquippedTechniques[i];
+                if (!_techniques.TryGetValue(feat, out var detail) ||
+                    skillRank >= detail.MimicrySkillRequirement)
+                    continue;
+
+                dbPlayer.EquippedTechniques.RemoveAt(i);
+                changed = true;
+
+                RevokeTechniqueFeat(player, feat);
+
+                Log.WriteStructured(
+                    LogGroup.Mimicry,
+                    "Technique unequipped by skill requirement enforcement: PlayerId={PlayerId} Technique={Technique} SkillRank={SkillRank} RequiredRank={RequiredRank}",
+                    playerId, feat, skillRank, detail.MimicrySkillRequirement);
+            }
+
             for (var i = dbPlayer.EquippedTechniques.Count - 1; i >= 0; i--)
             {
                 if (GetUsedSlots(dbPlayer) <= maxSlots)
@@ -683,8 +754,23 @@ namespace SWLOR.Game.Server.Service
             if (changed)
             {
                 DB.Set(dbPlayer);
-                RecomputeSetBonus(player, dbPlayer);
+                Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
             }
+        }
+
+        /// <summary>
+        /// Immediately removes equipped techniques whose rank requirement is no longer met when
+        /// Mimicry loses a rank. This must run for every Mimicry decay, including rank losses that
+        /// do not cross a perk requirement and therefore do not trigger a perk refund callback.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnSwlorLoseSkill)]
+        public static void OnMimicrySkillDecay()
+        {
+            var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));
+            if (skillType != SkillType.Mimicry)
+                return;
+
+            EnforceSlotBudget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -709,7 +795,7 @@ namespace SWLOR.Game.Server.Service
             var unequippedCount = dbPlayer.EquippedTechniques.Count;
             dbPlayer.EquippedTechniques.Clear();
             DB.Set(dbPlayer);
-            RecomputeSetBonus(player, dbPlayer);
+            Gui.PublishRefreshEvent(player, new TechniqueChangedRefreshEvent());
 
             Log.WriteStructured(
                 LogGroup.Mimicry,
@@ -719,7 +805,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// On login, re-grants every equipped technique's feat (in case it was lost, e.g. a fresh
-        /// character load) and enforces the slot budget in case perk levels changed since last logout.
+        /// character load) and enforces rank and slot limits in case progression changed since logout.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnPlayerLogin()
@@ -741,15 +827,15 @@ namespace SWLOR.Game.Server.Service
                 GrantTechniqueFeat(player, feat);
             }
 
-            RecomputeSetBonus(player, dbPlayer);
         }
 
         /// <summary>
         /// Applies an equipped technique to the player. Active techniques grant the underlying feat
         /// (if missing) and add it to the hotbar, mirroring the grant + hotbar logic used by the perk
         /// system's active ability feats. Trait techniques are passive and are never granted as a
-        /// usable feat: they only apply their status effect for as long as they stay equipped, and any
-        /// stale feat/hotbar entry is stripped so a trait can never end up castable or on the quickbar.
+        /// usable feat: their stats and resistances are derived straight from the equipped loadout, so
+        /// there is no grant or revoke step for them here, and any stale feat/hotbar entry is stripped
+        /// so a trait can never end up castable or on the quickbar.
         /// </summary>
         private static void GrantTechniqueFeat(uint player, FeatType feat)
         {
@@ -761,13 +847,12 @@ namespace SWLOR.Game.Server.Service
             {
                 // Passive traits are never usable: they must not be granted as a castable feat nor
                 // placed on the hotbar. Strip any feat/hotbar entry an earlier grant (or a prior
-                // version that granted the feat unconditionally) left behind, then apply the trait's
-                // status effect for as long as it stays equipped.
+                // version that granted the feat unconditionally) left behind. The trait's stats need
+                // no grant step - the stat pipeline reads them from the equipped list directly.
                 if (GetHasFeat(feat, player))
                     CreaturePlugin.RemoveFeat(player, feat);
 
                 RemoveFeatFromHotBar(player, feat);
-                ApplyTraitStatusEffect(player, feat);
                 return;
             }
 
@@ -780,40 +865,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Removes the technique's feat and any hotbar slot referencing it, and clears the passive
-        /// status effect if the technique is a trait.
+        /// Removes the technique's feat and any hotbar slot referencing it. Trait stats need no
+        /// revoke step; they stop applying as soon as the feat leaves the equipped list.
         /// </summary>
         private static void RevokeTechniqueFeat(uint player, FeatType feat)
         {
             if (!GetIsObjectValid(player))
                 return;
 
-            RemoveTraitStatusEffect(player, feat);
             CreaturePlugin.RemoveFeat(player, feat);
             RemoveFeatFromHotBar(player, feat);
-        }
-
-        /// <summary>
-        /// Applies a trait technique's passive status effect to the wielder for as long as it stays
-        /// equipped (permanent duration; removed on unequip or slot-budget enforcement). No-ops for
-        /// active techniques, which are driven from the hotbar instead.
-        /// </summary>
-        private static void ApplyTraitStatusEffect(uint player, FeatType feat)
-        {
-            var detail = GetTechniqueDetail(feat);
-            if (detail == null || !detail.IsMimicryTrait || detail.MimicryTraitStatusEffect == null)
-                return;
-
-            StatusEffect.ApplyStatusEffect(player, player, detail.MimicryTraitStatusEffect, 0f);
-        }
-
-        private static void RemoveTraitStatusEffect(uint player, FeatType feat)
-        {
-            var detail = GetTechniqueDetail(feat);
-            if (detail == null || !detail.IsMimicryTrait || detail.MimicryTraitStatusEffect == null)
-                return;
-
-            StatusEffect.RemoveStatusEffect(player, detail.MimicryTraitStatusEffect, player, false);
         }
 
         private static bool IsFeatOnHotBar(uint player, FeatType feat)

@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool NearbyPartyStatusIncludesSelf { get; init; }
             public int SelfKnockdownDazedImmunityDurationSeconds { get; init; }
             public int TemporaryCostlyAbilityStatusSkillType { get; init; }
-            public int TemporaryCostlyAbilityHitMinimumStaminaCost { get; init; }
+            public int TemporaryCostlyAbilityStatusMinimumStaminaCost { get; init; }
             public int TemporaryCostlyAbilityExposedDurationSeconds { get; init; }
             public bool ApplySuppressionStackOnHit { get; init; }
             public int SuppressionStackEvasionPenaltyPercent { get; init; }
@@ -214,6 +214,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                      Combat.IsTargetNotFacingAttacker(activator, target)))
                 {
                     bonus += ExtraDamageIfBesideOrBehind;
+                    if (GetIsPC(activator))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"Flanking +{ExtraDamageIfBesideOrBehind} DMG"),
+                            activator,
+                            false);
+                    }
                 }
 
                 if (ExtraDamageIfIdle != 0 && IsIdle(activator))
@@ -699,8 +706,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.CostlyAbilityHitMinimumStaminaCost,
-                    TemporaryCostlyAbilityHitMinimumStaminaCost,
+                    StatType.CostlyAbilityStatusMinimumStaminaCost,
+                    TemporaryCostlyAbilityStatusMinimumStaminaCost,
                     duration);
                 ReplaceTemporary(
                     activator,

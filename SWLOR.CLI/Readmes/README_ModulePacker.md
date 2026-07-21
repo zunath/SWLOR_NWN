@@ -63,6 +63,7 @@ The tool processes the following module folder types:
 ## Performance
 - **Bounded Parallel Processing**: Uses a limited worker pool for resource conversion so packing and unpacking do not saturate the machine. By default it reserves two processors for system responsiveness and caps conversion workers at 12.
 - **Worker Count Override**: Set `SWLOR_RESOURCE_CONVERSION_WORKERS` to control the maximum number of concurrent `nwn_gff` conversions
+- **Transient Failure Recovery**: Retries an individual `nwn_gff` conversion up to three times before failing the full pack or unpack operation
 - **Progress Reporting**: Displays periodic progress information during operations
 - **Timing**: Reports completion time for both pack and unpack operations
 
@@ -107,4 +108,4 @@ This tool is used during development to:
 - Handles both source and compiled scripts
 - Maintains file extensions in lowercase for compatibility
 - Provides detailed progress and timing information
-- Waits for user input before completing operations 
+- Waits for user input before completing operations when launched interactively

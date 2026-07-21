@@ -39,6 +39,12 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 
         public string GetRequirementDescription()
         {
+            var parts = GetEnzymeDescriptions();
+            return parts.Count == 0 ? string.Empty : string.Join(", ", parts);
+        }
+
+        public IReadOnlyList<string> GetEnzymeDescriptions()
+        {
             var parts = new List<string>();
 
             foreach (var (color, count) in LyaseEnzymeColors)
@@ -48,7 +54,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             foreach (var (color, count) in HydrolaseEnzymeColors)
                 parts.Add($"{count}x {color} Hydrolase");
 
-            return parts.Count == 0 ? string.Empty : string.Join(", ", parts);
+            return parts;
         }
     }
 }

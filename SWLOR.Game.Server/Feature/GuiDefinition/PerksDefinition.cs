@@ -230,27 +230,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     });
 
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddButton()
-                            .SetText("<")
-                            .SetWidth(32f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickPreviousPage());
-
-                        row.AddComboBox()
-                            .BindOptions(model => model.PageNumbers)
-                            .BindSelectedIndex(model => model.SelectedPage);
-
-                        row.AddButton()
-                            .SetText(">")
-                            .SetWidth(32f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickNextPage());
-
-                        row.AddSpacer();
-                    });
+                    col.AddPagination(
+                        model => model.PageNumbers,
+                        model => model.SelectedPage,
+                        model => model.OnClickPreviousPage(),
+                        model => model.OnClickNextPage());
 
                     col.AddRow(row =>
                     {

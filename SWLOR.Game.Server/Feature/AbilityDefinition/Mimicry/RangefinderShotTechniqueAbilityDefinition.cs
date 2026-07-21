@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Rangefinder Shot")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.RangefinderShot, 3, 2, typeof(RangefinderFocusStatusEffect));
+                .MimicryTrait(FeatType.RangefinderShot, 41, 2)
+                .MimicryTraitStat(StatType.AccuracyPercentAdjustment, 8);
 
             return _builder.Build();
         }

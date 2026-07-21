@@ -20,7 +20,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Enhancements socketed at the workbench are validated against this
-        /// crafting level, matching the tier 5 saber recipes.
+        /// crafting level, matching the tier 5 saber upgrade kit recipes. This
+        /// only bounds which enhancements may be socketed; the saber itself is
+        /// built at tier 1 and is raised a tier at a time by the upgrade kits.
         /// </summary>
         public const int EnhancementRecipeLevel = 48;
 

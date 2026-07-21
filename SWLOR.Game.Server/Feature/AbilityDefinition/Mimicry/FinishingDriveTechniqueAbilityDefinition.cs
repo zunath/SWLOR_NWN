@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.FinishingDrive, 30f)
-                .MimicryTechnique(FeatType.FinishingDrive, 4, 3)
+                .MimicryTechnique(FeatType.FinishingDrive, 48, 3)
                 .MimicryUtility()
                 .HasActivationDelay(0f)
                 .RequirementStamina(10)
@@ -35,13 +35,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 {
                     // Stacking momentum: each cast adds a stack (up to the cap) and refreshes the
                     // duration. The status effect's magnitude is stacks * potency-per-stack.
-                    var existing = StatusEffect.GetStatusEffect(activator, typeof(CruelMomentumStatusEffect)) as CruelMomentumStatusEffect;
-                    var stacks = Math.Min(CruelMomentumStatusEffect.MaxStacks, (existing?.Stacks ?? 0) + 1);
+                    var existing = StatusEffect.GetStatusEffect(activator, typeof(FinishingDriveMomentumStatusEffect)) as FinishingDriveMomentumStatusEffect;
+                    var stacks = Math.Min(FinishingDriveMomentumStatusEffect.MaxStacks, (existing?.Stacks ?? 0) + 1);
 
                     if (existing != null)
-                        StatusEffect.RemoveStatusEffect(activator, typeof(CruelMomentumStatusEffect), activator, false);
+                        StatusEffect.RemoveStatusEffect(activator, typeof(FinishingDriveMomentumStatusEffect), activator, false);
 
-                    StatusEffect.ApplyStatusEffect(activator, activator, new CruelMomentumStatusEffect(stacks), MomentumDurationSeconds);
+                    StatusEffect.ApplyStatusEffect(activator, activator, new FinishingDriveMomentumStatusEffect(stacks), MomentumDurationSeconds);
                 });
 
             return _builder.Build();

@@ -22,6 +22,8 @@ public class LightsaberPerkBehaviorTests
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackPercent, "3");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackPercent, "10");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackPercent, "15");
+        AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackMaxPercent, "9");
+        AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackMaxPercent, "10");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackMaxPercent, "15");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackMinFPCost, "5");
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackDurationSeconds, "30");
@@ -130,6 +132,19 @@ public class LightsaberPerkBehaviorTests
     }
 
     [Test]
+    public void Epicenter_IsSelfCenteredForceAreaWithPreExistingSunderBonus()
+    {
+        var source = AbilitySource("EpicenterAbilityDefinition.cs");
+        source.Should().Contain("Spell.Epicenter1");
+        source.Should().Contain("AbilityTargetingShapeType.Sphere");
+        source.Should().Contain("6.0f");
+        source.Should().Contain("AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf");
+        source.Should().Contain("DamageType = CombatDamageType.Force");
+        source.Should().Contain("ExtraDamageTargetStatusEffect = typeof(SunderStatusEffect)");
+        source.Should().Contain("ExtraDamageIfTargetStatusEffect = 15");
+    }
+
+    [Test]
     public void SaberWardStatusEffect_ConvertsPhysicalAndGrantsDefenses()
     {
         var rankOne = new SaberWardStatusEffect(15, 3, 4);
@@ -151,8 +166,8 @@ public class LightsaberPerkBehaviorTests
         aegis.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(18);
         aegis.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(22);
         aegis.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
-        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionPercent].Should().Be(24);
-        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapPercent].Should().Be(75);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionOverridePercent].Should().Be(24);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapOverridePercent].Should().Be(75);
     }
 
     [Test]
@@ -222,6 +237,21 @@ public class LightsaberPerkBehaviorTests
         Combat.GetRangedDeflectionReflectionAmount(0, 8, 60, 25).Should().Be(0);
         // No cap applied when the cap percent is 0.
         Combat.GetRangedDeflectionReflectionAmount(100, 16, 20, 0).Should().Be(16);
+    }
+
+    [Test]
+    public void DeflectingReturn_UsesEmbattledBonusAndPerfectAegisFinalOverrides()
+    {
+        Combat.GetRangedDeflectionReflectionRates(16, 50, 2, 3, 4, 0, 0)
+            .Should().Be((16, 50));
+        Combat.GetRangedDeflectionReflectionRates(16, 50, 3, 3, 4, 0, 0)
+            .Should().Be((20, 50));
+
+        // Stat totals remain additive globally, so Perfect Aegis uses separate final-override stats.
+        // This prevents its documented 24% / 75% ceiling from becoming 40% / 125% when the
+        // permanent Deflecting Return III values are also present.
+        Combat.GetRangedDeflectionReflectionRates(16, 50, 5, 3, 4, 24, 75)
+            .Should().Be((24, 75));
     }
 
     [Test]

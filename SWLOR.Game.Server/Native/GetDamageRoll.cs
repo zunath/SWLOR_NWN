@@ -133,16 +133,21 @@ namespace SWLOR.Game.Server.Native
                     out totalDamage,
                     out var effectiveCritical);
 
-                if (totalDamage > 0 && defender.m_nObjectType == (int)ObjectType.Creature)
+                if (totalDamage > 0)
                 {
-                    Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
-                    Combat.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
-                }
+                    using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf);
 
-                if (totalDamage > 0 && defender.m_bPlotObject == 0)
-                {
-                    var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
-                    PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
+                    if (defender.m_nObjectType == (int)ObjectType.Creature)
+                    {
+                        Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
+                        Combat.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
+                    }
+
+                    if (defender.m_bPlotObject == 0)
+                    {
+                        var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
+                        PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
+                    }
                 }
 
                 ProfilerPlugin.PopPerfScope();
@@ -514,9 +519,11 @@ namespace SWLOR.Game.Server.Native
                     target.m_idSelf,
                     Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
+            var guardedHitBonuses = Combat.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf);
             var attackDamage = damageProfile.Damage +
                                Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
-                               Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType);
+                               Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType) +
+                               guardedHitBonuses.DMGBonus;
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
@@ -585,12 +592,17 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
 
-            return Combat.ApplyDamageTakenModifiers(
+            damage = Combat.ApplyDamageTakenModifiers(
                 target.m_idSelf,
                 damage,
                 attacker.m_idSelf,
                 damageType,
                 preTargetStatusStageDamage: damageBeforeTargetStatusStage);
+            Combat.ApplyNextAttackGuardedHitEnmityBonus(
+                attacker.m_idSelf,
+                target.m_idSelf,
+                guardedHitBonuses.EnmityBonus);
+            return damage;
         }
 
         private readonly struct WeaponDamageProfile

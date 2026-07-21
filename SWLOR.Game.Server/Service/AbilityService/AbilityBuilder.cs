@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder IsWeaponAbility()
         {
             _activeAbility.ActivationType = AbilityActivationType.Weapon;
+            _activeAbility.RequiresTarget = false;
 
             return this;
         }
@@ -477,6 +478,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder HasMaxRange(float maxRange)
         {
             _activeAbility.MaxRange = maxRange;
+            _activeAbility.HasExplicitMaxRange = true;
             return this;
         }
 
@@ -539,6 +541,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder BreaksStealth()
         {
             _activeAbility.BreaksStealth = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Prevents the activation wind-up from clearing stealth before the ability's impact runs.
+        /// Intended for abilities whose impact must inspect or toggle the current stealth state.
+        /// </summary>
+        public AbilityBuilder PreservesStealthDuringActivation()
+        {
+            _activeAbility.PreservesStealthDuringActivation = true;
 
             return this;
         }
@@ -772,44 +785,83 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// Marks the active ability as a Mimicry technique learned from an enemy creature's ability.
         /// </summary>
         /// <param name="sourceCreatureFeat">The NPC feat this technique is copied from.</param>
-        /// <param name="tier">The Mimicry tier of this technique, used to gate learning by skill rank.</param>
+        /// <param name="skillRequirement">The Mimicry rank required to learn and equip this technique.</param>
         /// <param name="slotCost">The number of technique slots this ability consumes when equipped.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public AbilityBuilder MimicryTechnique(FeatType sourceCreatureFeat, int tier, int slotCost)
+        public AbilityBuilder MimicryTechnique(FeatType sourceCreatureFeat, int skillRequirement, int slotCost)
         {
             if (sourceCreatureFeat == FeatType.Invalid)
                 throw new ArgumentException($"{nameof(sourceCreatureFeat)} must be a real creature ability feat.");
-            if (tier < 1)
-                throw new ArgumentException($"{nameof(tier)} must be at least 1.");
+            if (skillRequirement < 0 || skillRequirement > 50)
+                throw new ArgumentException($"{nameof(skillRequirement)} must be between 0 and 50.");
             if (slotCost < 1)
                 throw new ArgumentException($"{nameof(slotCost)} must be at least 1.");
 
+            _activeAbility.IsMimicryTechnique = true;
             _activeAbility.MimicrySourceFeat = sourceCreatureFeat;
-            _activeAbility.MimicryTier = tier;
+            _activeAbility.MimicrySkillRequirement = skillRequirement;
             _activeAbility.MimicrySlotCost = slotCost;
 
             return this;
         }
 
         /// <summary>
-        /// Marks the active ability as a Mimicry trait: a passive technique learned from an enemy
-        /// that, while equipped, applies <paramref name="traitStatusEffect"/> instead of granting a
-        /// hotbar action. Otherwise identical to a technique for learning, slot budgeting, and tier gating.
+        /// Marks the active ability as a Mimicry trait: a passive technique learned from an enemy that
+        /// contributes static stats for as long as it is equipped, instead of granting a hotbar action.
+        /// Otherwise identical to a technique for learning, slot budgeting, and skill gating.
+        ///
+        /// Declare the trait's bonuses with <see cref="MimicryTraitStat"/> and
+        /// <see cref="MimicryTraitResistance"/>. Equipping a trait deliberately applies no persistent
+        /// status effect to the wearer: the bonus is static for the whole time it is slotted, so there
+        /// is no state to show on the status icon bar and nothing to keep in sync across death or
+        /// relog. That covers the trait's own lifecycle only — an on-hit proc trait still inflicts an
+        /// ordinary status effect on its target when it fires.
         /// </summary>
         /// <param name="sourceCreatureFeat">The NPC feat this trait is copied from.</param>
-        /// <param name="tier">The Mimicry tier of this trait, used to gate learning by skill rank.</param>
+        /// <param name="skillRequirement">The Mimicry rank required to learn and equip this trait.</param>
         /// <param name="slotCost">The number of technique slots this trait consumes when equipped.</param>
-        /// <param name="traitStatusEffect">The status effect applied to the wielder while this trait is equipped.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public AbilityBuilder MimicryTrait(FeatType sourceCreatureFeat, int tier, int slotCost, Type traitStatusEffect)
+        public AbilityBuilder MimicryTrait(FeatType sourceCreatureFeat, int skillRequirement, int slotCost)
         {
-            MimicryTechnique(sourceCreatureFeat, tier, slotCost);
-
-            if (traitStatusEffect == null)
-                throw new ArgumentException($"{nameof(traitStatusEffect)} must be a real status effect type.");
+            MimicryTechnique(sourceCreatureFeat, skillRequirement, slotCost);
 
             _activeAbility.IsMimicryTrait = true;
-            _activeAbility.MimicryTraitStatusEffect = traitStatusEffect;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a flat stat adjustment granted while this Mimicry trait is equipped.
+        /// </summary>
+        /// <param name="stat">The stat to adjust.</param>
+        /// <param name="amount">The amount to adjust it by.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTraitStat(StatType stat, int amount)
+        {
+            if (!_activeAbility.IsMimicryTrait)
+                throw new ArgumentException($"{nameof(MimicryTraitStat)} requires {nameof(MimicryTrait)} to be called first.");
+            if (stat == StatType.Invalid)
+                throw new ArgumentException($"{nameof(stat)} must be a real stat.");
+
+            _activeAbility.MimicryTraitStats[stat] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a resistance adjustment granted while this Mimicry trait is equipped.
+        /// </summary>
+        /// <param name="resistance">The resistance to adjust.</param>
+        /// <param name="amount">The amount to adjust it by.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTraitResistance(ResistanceType resistance, int amount)
+        {
+            if (!_activeAbility.IsMimicryTrait)
+                throw new ArgumentException($"{nameof(MimicryTraitResistance)} requires {nameof(MimicryTrait)} to be called first.");
+            if (resistance == ResistanceType.Invalid)
+                throw new ArgumentException($"{nameof(resistance)} must be a real resistance.");
+
+            _activeAbility.MimicryTraitResistances[resistance] = amount;
 
             return this;
         }
@@ -819,9 +871,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// effect rather than casting a hostile ability, so the contract tests exempt it from the
         /// hostility / damage-element / combat-scaling assertions.
         /// </summary>
-        public AbilityBuilder MimicryStance(FeatType sourceCreatureFeat, int tier, int slotCost)
+        public AbilityBuilder MimicryStance(FeatType sourceCreatureFeat, int skillRequirement, int slotCost)
         {
-            MimicryTechnique(sourceCreatureFeat, tier, slotCost);
+            MimicryTechnique(sourceCreatureFeat, skillRequirement, slotCost);
             _activeAbility.IsMimicryStance = true;
             return this;
         }

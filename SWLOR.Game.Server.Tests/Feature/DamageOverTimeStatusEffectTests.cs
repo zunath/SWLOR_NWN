@@ -1,10 +1,33 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class DamageOverTimeStatusEffectTests
 {
+    [Test]
+    public void TickingStatusEffects_KeepNativeLifetimeLongEnoughForTheirFinalTick()
+    {
+        var durationMethod = typeof(StatusEffect).GetMethod(
+            "GetStatusEffectDurationSeconds",
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        var burnDuration = (float)durationMethod.Invoke(
+            null,
+            new object[] { new BurnStatusEffect(), 2 })!;
+        var passiveDuration = (float)durationMethod.Invoke(
+            null,
+            new object[] { new KoltoMistHealingStatusEffect(), 2 })!;
+
+        burnDuration.Should().Be(13f,
+            "two 6-second ticks need the 1-second NWN scheduler grace at the 12-second boundary");
+        passiveDuration.Should().Be(2f,
+            "passive effects have no interval callback and must retain their exact duration");
+    }
+
     [Test]
     public void BurnStatusEffect_FloorsTickDamageAndAttributesFireDamageToSource()
     {

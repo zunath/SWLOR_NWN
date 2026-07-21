@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Level(1)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.SnapRush, 30f)
-                .MimicryTechnique(FeatType.SnapRush, 4, 3)
+                .RequirementStamina(10)
+                .MimicryTechnique(FeatType.SnapRush, 46, 3)
                 .MimicryUtility();
 
             ConfigureSelfStatus(ability, typeof(Hasten1StatusEffect), 15f, 0, additionalAction: a => Stat.RestoreStamina(a, 6));

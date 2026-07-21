@@ -375,14 +375,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MaelstromArc1)
-                .Description("Deals weapon DMG + 16 in a cone. If you deflected an attack in the last 30 seconds, restores 4 FP.")
+                .Description("Deals weapon DMG + 16 in a 5m x 5m cone. If you deflected an attack in the last 30 seconds, restore 4 FP.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MaelstromArc2)
-                .Description("Deals weapon DMG + 30 in a cone. If you deflected an attack in the last 30 seconds, restores 8 FP.")
+                .Description("Deals weapon DMG + 30 in a 5m x 5m cone. If you deflected an attack in the last 30 seconds, restore 8 FP.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

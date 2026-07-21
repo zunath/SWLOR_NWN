@@ -81,9 +81,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverpowerTrait)
-                .Description("Spending at least 5 FP on a hostile combat ability increases your Force Attack by 3% for 30 seconds, stacking up to 15%.")
+                .Description("Spending at least 5 FP on a hostile combat ability increases your Force Attack by 3% for 30 seconds, stacking up to 9%.")
                 .IncreasesStat(StatType.HostileAbilityFPSpendForceAttackPercent, 3)
-                .IncreasesStat(StatType.HostileAbilityFPSpendForceAttackMaxPercent, 15)
+                .IncreasesStat(StatType.HostileAbilityFPSpendForceAttackMaxPercent, 9)
                 .IncreasesStat(StatType.HostileAbilityFPSpendForceAttackMinFPCost, 5)
                 .IncreasesStat(StatType.HostileAbilityFPSpendForceAttackDurationSeconds, 30)
                 .Price(2)
@@ -154,21 +154,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SunderingSweep1)
-                .Description("Deals weapon DMG + 8 to all enemies within 3m. If at least one enemy is inflicted with Sunder, spread Sunder to one other enemy in melee range.")
+                .Description("Deals weapon DMG + 8 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to one other enemy in melee range for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SunderingSweep2)
-                .Description("Deals weapon DMG + 12 to all enemies within 3m. If at least one enemy is inflicted with Sunder, spread Sunder to one other enemy in melee range.")
+                .Description("Deals weapon DMG + 12 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to one other enemy in melee range for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SunderingSweep3)
-                .Description("Deals weapon DMG + 16 to all enemies within 3m. If at least one enemy is inflicted with Sunder, spread Sunder to one other enemy in melee range.")
+                .Description("Deals weapon DMG + 16 to enemies within 3m of you. If at least one struck enemy already has Sunder, spreads Sunder from that enemy to one other enemy in melee range for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Epicenter1)
-                .Description("Inflicts Knockdown on all targets within 6m for 6 seconds, dealing 25 Force DMG and inflicting Sunder. Targets already inflicted with Sunder take an additional 15 Force DMG.")
+                .Description("Inflicts Knockdown on enemies within 6m of you for 6 seconds, dealing 25 Force DMG and inflicting Sunder. Enemies that already had Sunder when struck take an additional 15 Force DMG.")
                 .Price(6)
                 .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -337,14 +337,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansChallenge1)
-                .Description("Deals weapon DMG + 12 to enemies in a line. For each struck enemy that damaged you within the last 30 seconds, gain + 20% Enmity toward it for 30 seconds.")
+                .Description("Deals weapon DMG + 12 to enemies in an 8m x 3m line. For each struck enemy that damaged you within the last 30 seconds, gain +20% Enmity toward it for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansChallenge2)
-                .Description("Deals weapon DMG + 24 to enemies in a line. For each struck enemy that damaged you within the last 30 seconds, gain + 30% Enmity toward it for 30 seconds.")
+                .Description("Deals weapon DMG + 24 to enemies in an 8m x 3m line. For each struck enemy that damaged you within the last 30 seconds, gain +30% Enmity toward it for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

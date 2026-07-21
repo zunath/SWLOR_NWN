@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
+                    IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 8,
                     RecentGuardedHitWindowSeconds = 30
                 });
@@ -73,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
+                    IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 12,
                     RecentGuardedHitWindowSeconds = 30
                 });
@@ -103,6 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
+                    IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 17,
                     RecentGuardedHitWindowSeconds = 30,
                     ProtectedTargetHitWindowSeconds = 30,

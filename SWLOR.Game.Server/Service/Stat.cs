@@ -1924,6 +1924,29 @@ namespace SWLOR.Game.Server.Service
             return statusAdjustment + perkAdjustment + mimicryTraitAdjustment;
         }
 
+        public static int ApplyOutgoingAbilityHealingAdjustment(uint source, int amount)
+        {
+            if (amount <= 0 || !GetIsObjectValid(source))
+                return amount;
+
+            var statSource = BeastMastery.IsPlayerBeast(source)
+                ? GetMaster(source)
+                : source;
+            var adjustment = GetStatAdjustment(
+                statSource,
+                StatType.OutgoingAbilityHealingPercentAdjustment);
+
+            return CalculateOutgoingAbilityHealingAmount(amount, adjustment);
+        }
+
+        public static int CalculateOutgoingAbilityHealingAmount(int amount, int adjustment)
+        {
+            if (amount <= 0 || adjustment <= 0)
+                return amount;
+
+            return amount + (int)Math.Ceiling(amount * (adjustment / 100f));
+        }
+
         public static int ApplyHealingReceivedAdjustment(uint creature, int amount)
         {
             if (amount <= 0)

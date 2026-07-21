@@ -1173,10 +1173,11 @@ namespace SWLOR.Game.Server.Service.StatService
         LightGuardianPowerAttackDeflectionDurationSeconds = 212,
 
         /// <summary>
-        /// Percent adjustment applied to Med Kit, Kolto Mist, Emergency Triage, and Infusion healing.
+        /// Percent adjustment applied to direct, area, and periodic healing caused by abilities.
+        /// Damage-derived healing and Resuscitation I's fixed one-HP restoration are excluded.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        FirstAidMedicalHealingPercentAdjustment = 213,
+        OutgoingAbilityHealingPercentAdjustment = 213,
 
         /// <summary>
         /// Percent adjustment applied to stim pack effect durations.

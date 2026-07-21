@@ -276,7 +276,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.DarkForceDamageHPPercentRestore,
         StatType.LowHPDamageDealtHPPercentRestore,
         StatType.HealingReceivedPercentAdjustment,
-        StatType.FirstAidMedicalHealingPercentAdjustment,
+        StatType.OutgoingAbilityHealingPercentAdjustment,
         StatType.HPRegen,
         StatType.FPRegen,
         StatType.StaminaRegen,

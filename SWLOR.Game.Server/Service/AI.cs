@@ -262,6 +262,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            EspionageInfiltration.TryBegin(entering, self);
             TryAcquireAggro(self, entering);
         }
 
@@ -276,6 +277,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsAIEnabled(self) || !GetIsObjectValid(exiting))
                 return;
 
+            EspionageInfiltration.Complete(exiting, self);
             RemoveProximityEnmity(exiting, self);
 
             if (!_creatureAllies.TryGetValue(self, out var allies))
@@ -835,6 +837,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             AssignCommand(enemy, () => ClearAllActions());
+        }
+
+        public static bool IsCreatureAIEnabled(uint creature)
+        {
+            return IsAIEnabled(creature);
         }
 
         private static bool IsAIEnabled(uint creature)

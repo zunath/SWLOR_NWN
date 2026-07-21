@@ -112,6 +112,7 @@ namespace SWLOR.Game.Server.Service
         {
             var creature = OBJECT_SELF;
 
+            EspionageInfiltration.CancelPlayer(creature);
             StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
             ClearVerdictsForTarget(creature);
         }
@@ -135,6 +136,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var detected = GetOrRollVerdict(observer, target);
+            EspionageInfiltration.RecordDetection(observer, target, detected);
             EventsPlugin.SetEventResult(detected ? "1" : "0");
 
             if (detected)

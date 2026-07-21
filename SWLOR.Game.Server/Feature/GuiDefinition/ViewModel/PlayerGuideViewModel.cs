@@ -687,7 +687,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Detecting and Disarming",
                             "Kit-built traps can be concealed. Characters with sufficient detection and trap tier can reveal or disarm them. A failed disarm triggers the trap; successful enemy triggers and successful disarms can grant Espionage XP."),
                         new ArticleBlock("Espionage XP",
-                            "Espionage XP comes from successful undetected stealth movement, slicing, crafting espionage items, enemy trap triggers, and successful trap disarms.")
+                            "Espionage XP comes from bypassing hostile NPCs while stealthed, slicing, crafting espionage items, enemy trap triggers, and successful trap disarms. A stealth bypass requires you to evade Detection, move through the NPC's nearby threat area, and leave it while still hidden. Each NPC grants XP only once per life; being detected grants a smaller amount.")
                     },
                     new[]
                     {

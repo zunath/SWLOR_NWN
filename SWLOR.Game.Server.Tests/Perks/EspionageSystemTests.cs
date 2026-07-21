@@ -149,6 +149,72 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void InfiltrationXp_UsesFullSuccessAndFifteenPercentDetectionFailureAwards()
+    {
+        EspionageInfiltration.RequiredTravelDistanceMeters.Should().Be(4f);
+        EspionageInfiltration.DetectionFailureXpPercent.Should().Be(0.15f);
+        EspionageInfiltration.HostileFactionId.Should().Be(1);
+
+        EspionageInfiltration.CalculateXp(20, 20, false).Should().Be(600);
+        EspionageInfiltration.CalculateXp(20, 20, true).Should().Be(90);
+        EspionageInfiltration.CalculateXp(16, 20, false).Should().Be(76);
+        EspionageInfiltration.CalculateXp(16, 20, true).Should().Be(11);
+        EspionageInfiltration.CalculateXp(15, 20, false).Should().Be(0);
+        EspionageInfiltration.CalculateXp(15, 20, true).Should().Be(0);
+    }
+
+    [Test]
+    public void InfiltrationSuccess_RequiresDetectionEvasionTravelStealthAndNoCombatEnmity()
+    {
+        EspionageInfiltration.MeetsSuccessRequirements(true, 4f, true, false).Should().BeTrue();
+
+        EspionageInfiltration.MeetsSuccessRequirements(false, 4f, true, false).Should().BeFalse();
+        EspionageInfiltration.MeetsSuccessRequirements(true, 3.99f, true, false).Should().BeFalse();
+        EspionageInfiltration.MeetsSuccessRequirements(true, 4f, false, false).Should().BeFalse();
+        EspionageInfiltration.MeetsSuccessRequirements(true, 4f, true, true).Should().BeFalse();
+    }
+
+    [Test]
+    public void InfiltrationXp_IsDrivenByAggroAndDetectionEventsRatherThanElapsedStealthTime()
+    {
+        var root = FindRepositoryRoot();
+        var stealthStatusSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "StealthStatusEffect.cs"));
+        var stealthSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "Stealth.cs"));
+        var aiSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs"));
+        var infiltrationSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "EspionageInfiltration.cs"));
+
+        stealthStatusSource.Should().NotContain("GrantTimeInStealthXP");
+        stealthStatusSource.Should().NotContain("HostileScanRadiusMeters");
+        stealthStatusSource.Should().Contain("EspionageInfiltration.UpdateMovement(creature);");
+        stealthSource.Should().Contain("EspionageInfiltration.RecordDetection(observer, target, detected);");
+        stealthSource.Should().Contain("EspionageInfiltration.CancelPlayer(creature);");
+        aiSource.Should().Contain("EspionageInfiltration.TryBegin(entering, self);");
+        aiSource.Should().Contain("EspionageInfiltration.Complete(exiting, self);");
+        infiltrationSource.Should().Contain("private const float MovementSampleIntervalSeconds = 1f;");
+        infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
+        infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
+        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(npc)");
+        infiltrationSource.Should().Contain("var master = GetMaster(npc);");
+    }
+
+    [Test]
     public void LastingCoatingsRaisesChargesFromTwentyToThirty()
     {
         VenomCoatingItemDefinition.CalculateCharges(0).Should().Be(20);

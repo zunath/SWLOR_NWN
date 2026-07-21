@@ -10,9 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, GuiPayloadBase>
     {
-        public const string NotesTabPartial = "NOTES_TAB_VIEW";
         public const string CategoriesTabPartial = "NOTES_CATEGORIES_TAB_VIEW";
         private const string MainWindowElement = "_window_";
+        private const string MainWindowPartial = "%%WINDOW_MAIN%%";
 
         private const string UntitledNoteName = "Untitled Note";
 
@@ -265,8 +265,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadCategories();
             LoadNotesList();
 
-            // The base window layout is just a placeholder; swap the notes tab partial in over it.
-            ShowNotesTab();
+            // The notes tab is the base window layout, already shown and free to reflow. Just set
+            // the tab state - do not swap, or the freshly-built layout loses its ability to resize.
+            IsNotesTabToggled = true;
+            IsCategoriesTabToggled = false;
 
             WatchOnClient(model => model.ActiveNoteName);
             WatchOnClient(model => model.ActiveNoteText);
@@ -616,14 +618,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Swaps the active tab's partial into the window root. Both tabs are partial views so they
-        /// render through the same wrapper-free path; the base window layout is only a placeholder.
+        /// Swaps the active tab into the window root. The notes tab is the base window layout
+        /// (MainWindowPartial), which reflows on resize; the categories tab is a separate partial.
         /// </summary>
         private void RestoreSelectedTabPartial()
         {
             ChangePartialView(
                 MainWindowElement,
-                IsCategoriesTabToggled ? CategoriesTabPartial : NotesTabPartial);
+                IsCategoriesTabToggled ? CategoriesTabPartial : MainWindowPartial);
 
             // Re-rendering rebuilds that tab's lists and combos, which come back empty until their
             // bound values are pushed again.

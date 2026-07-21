@@ -54,11 +54,11 @@ public class NotesWindowTests
     }
 
     [Test]
-    public void NotesLayout_IsResponsiveAndUsesTheSharedControls()
+    public void NotesLayout_UsesTheSharedControls()
     {
         var definition = ReadDefinition();
 
-        definition.Should().Contain("browser.AddPagination(");
+        definition.Should().Contain("col.AddPagination(");
         definition.Should().Contain("model => model.PageNumbers");
         definition.Should().Contain("model => model.SelectedPageIndex");
 
@@ -77,21 +77,22 @@ public class NotesWindowTests
     }
 
     [Test]
-    public void NotesLayout_SwapsTabsViaPartialViewsRatherThanVisibilityToggles()
+    public void NotesLayout_ReflowsAsTheBaseLayoutWithAGreedyList()
     {
         var definition = ReadDefinition();
 
-        // Both tabs are partial views swapped into the window root. Rendering the notes tab as the
-        // base window layout instead left its two panes unable to fill the window, because the
-        // builder wraps the base layout in an extra row the swapped partials do not get.
-        definition.Should().Contain($"DefinePartialView(NotesViewModel.{nameof(NotesViewModel.NotesTabPartial)}");
+        // The notes tab is the base window layout, which reflows on resize. Only the categories tab
+        // is a swapped partial. A row fills only when a direct child is greedy, so the content row
+        // is [note list | fixed-width editor], not two plain columns.
         definition.Should().Contain($"DefinePartialView(NotesViewModel.{nameof(NotesViewModel.CategoriesTabPartial)}");
+        Regex.Matches(definition, @"DefinePartialView\(").Count.Should().Be(1, "only the categories tab is a partial");
 
-        // The tab selector is repeated in both layouts so it survives a swap.
+        definition.Should().Contain("editor.SetWidth(EditorWidth)");
+        // The note list must be a direct child of the content row (greedy), not nested in a column.
+        definition.Should().MatchRegex(@"col\.AddRow\(content =>\s*\{\s*(//[^\n]*\n\s*)*content\.AddList\(");
+
+        // The tab selector is in both tab layouts so it survives a swap.
         Regex.Matches(definition, @"AddTabRow\(col\);").Count.Should().Be(2);
-
-        definition.Should().Contain("model => model.IsNotesTabToggled");
-        definition.Should().Contain("model => model.IsCategoriesTabToggled");
 
         // A hidden row still reserves its flex space, so tab panes must never be visibility-toggled.
         definition.Should().NotContain("IsNotesTabVisible");
@@ -104,17 +105,16 @@ public class NotesWindowTests
         var definition = ReadDefinition();
         var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
 
-        // Both tabs swap into the window root, never into a nested placeholder group - a group sizes
-        // itself to its content and would pin the panes to a fixed width.
+        // Nothing is swapped into a nested placeholder group - a group sizes itself to its content.
         Regex.Matches(definition, @"AddPartialView\(").Count
             .Should()
-            .Be(0, "tab content is swapped at the window root, not into a nested group");
+            .Be(0, "the notes tab is the base layout and the categories tab swaps at the window root");
 
         // Layout is declared once and left to NUI. Regenerating it per window width forces every
         // clickable element to carry a hand written id, which is a maintenance and performance trap.
         viewModel.Should().NotContain("SetGroupLayout(");
         definition.Should().NotContain(".SetId(");
-        definition.Should().Contain("browser.AddPagination(", "the shared control is usable without regeneration");
+        definition.Should().Contain("col.AddPagination(", "the shared control is usable without regeneration");
     }
 
     [Test]

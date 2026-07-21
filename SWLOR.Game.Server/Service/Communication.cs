@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
-            PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);
+            PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, ColorToken.Orange(CommsChannelName));
             PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
         }
 

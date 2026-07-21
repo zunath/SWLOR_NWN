@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(10303, "[Comms] ");
             SetTlkOverride(66751, "Disabled");
-            SetTlkOverride(66755, "Comms");
+            SetTlkOverride(66755, ColorToken.Orange("Comms"));
 
             SetTlkOverride(83393, "Poison"); // Acid
         }

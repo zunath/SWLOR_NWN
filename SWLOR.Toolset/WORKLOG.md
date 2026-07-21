@@ -611,8 +611,27 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   every edit commits a full scene rebuild that reassigns Scene. Fixed by framing the camera only on
   the first non-null scene (initial load) and preserving the user's camera on all later rebuilds.
   Build clean, 334/335 green, smoke OK.
-## WP6.2 — pending — Perf + fidelity pass
-## WP6.2 — pending — Perf + fidelity pass
+## WP6.2 — in progress — 2026-07-21 — Perf + fidelity pass
+- Tier: Mid. Lead-driven (GL/perf + small UI); the one remaining UI nice-to-have (shared
+  DataTemplates) is queued for a Sonnet subagent.
+- **Per-area lighting (fidelity):** AreaScene now carries a decoded `AreaLighting` (Domain:
+  `AreaLighting` type + `AreaLighting.DecodeColor` for NWN 0x00BBGGRR packing; `AreaSceneBuilder`
+  `ComputeLighting` picks moon colors at night / sun colors by day from the .are). GlAreaControl
+  feeds the shader's ambient + diffuse from it, brightened from a floor (AmbientLightFloor 0.30 /
+  DiffuseLightFloor 0.25) toward the authored value so night areas keep their cool hue but stay
+  editable — replaces the old flat gray constants. Tests: AreaLightingTests (4 — decode byte order,
+  night moon selection, day sun selection, neutral default). NOTE: per-tile point/main lights are
+  deferred — the area-level sun/moon scheme is the dominant mood effect and enough for an editor
+  preview; per-tile point lighting would be a much larger fidelity add for marginal editor value.
+- **Perf — uniform-location caching:** SetUniform* now cache glGetUniformLocation per shader program
+  (cleared on program (re)create/teardown), removing thousands of per-frame driver string lookups on
+  the 256-tile largest area (pw_ar_czarmrange). Visual output unchanged.
+- **Output panel auto-scroll:** OutputView scrolls to the newest line as entries arrive.
+- Verified: build clean, 338/339 green (334 prior + 4 lighting; 1 pre-existing skip), smoke OK.
+- **Remaining:** shared field DataTemplates (dedupe the 7 identical templates between
+  BlueprintEditorView/AreaEditorView); refresh committed tools CLI binary + drop PackService's
+  --no-prompt fallback. Then human gate: night area reads moody-but-editable; largest area
+  (pw_ar_czarmrange) stays interactive when orbiting.
 ## WP7.1 — pending — Tile adjacency corpus
 ## WP7.2 — pending — Tile rule matcher
 ## WP7.3 — pending — Paint tools + new-area wizard

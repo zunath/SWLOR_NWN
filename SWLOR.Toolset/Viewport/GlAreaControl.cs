@@ -55,8 +55,13 @@ namespace SWLOR.Toolset.Viewport
         private const float ClickDragThresholdPixels = 4f;
 
         private static readonly Vector3 LightDir = Vector3.Normalize(new Vector3(0.35f, -0.5f, 0.8f));
-        private static readonly Vector3 LightColor = new(0.55f, 0.55f, 0.55f);
-        private static readonly Vector3 AmbientColor = new(0.55f, 0.55f, 0.55f);
+
+        // Editor lighting (WP6.2): the area's authored ambient/diffuse colors drive hue and mood,
+        // but authored night colors are near-black - too dark to edit in - so each channel is
+        // lifted from a floor toward its true value (raw 0 -> floor, raw 1 -> unchanged). Tunable;
+        // the human gate calibrates the feel.
+        private const float AmbientLightFloor = 0.30f;
+        private const float DiffuseLightFloor = 0.25f;
         private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
         private static readonly Vector3 FallbackTileColor = new(0.95f, 0.15f, 0.55f);
         private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
@@ -786,6 +791,7 @@ void main()
                     return;
                 }
 
+                _uniformLocations.Clear(); // Locations are per-program; a fresh program invalidates any cached ones.
                 BuildStaticMeshes();
 
                 RaiseStatus(IsLikelySoftwareRenderer(renderer)
@@ -832,6 +838,7 @@ void main()
                     if (_shaderProgram != 0)
                         _gl.DeleteProgram(_shaderProgram);
                     _shaderProgram = 0;
+                    _uniformLocations.Clear();
                 }
             }
             catch (Exception)
@@ -961,13 +968,26 @@ void main()
             return shader;
         }
 
-        // ----- Uniform helpers (locations are looked up per-call, matching Radoub.UI's own
-        // ModelPreviewGLControl approach - draw-call counts per area are modest enough that
-        // caching uniform locations is not worth the added bookkeeping). -----
+        // ----- Uniform helpers. Locations are cached per shader program (WP6.2 perf): the large
+        // area (pw_ar_czarmrange, 256 tiles) issues thousands of uniform sets per frame, and an
+        // uncached glGetUniformLocation is a driver string lookup each time. The cache is cleared
+        // whenever the program is (re)created (OnOpenGlInit) or torn down (OnOpenGlDeinit). -----
+
+        private readonly Dictionary<string, int> _uniformLocations = new();
+
+        private int GetUniformLocationCached(string name)
+        {
+            if (_uniformLocations.TryGetValue(name, out var location))
+                return location;
+
+            location = _gl!.GetUniformLocation(_shaderProgram, name);
+            _uniformLocations[name] = location;
+            return location;
+        }
 
         private void SetUniformMatrix4(string name, Matrix4x4 matrix)
         {
-            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            var location = GetUniformLocationCached(name);
             if (location < 0)
                 return;
 
@@ -986,28 +1006,28 @@ void main()
 
         private void SetUniformVec3(string name, Vector3 value)
         {
-            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            var location = GetUniformLocationCached(name);
             if (location >= 0)
                 _gl.Uniform3(location, value.X, value.Y, value.Z);
         }
 
         private void SetUniformBool(string name, bool value)
         {
-            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            var location = GetUniformLocationCached(name);
             if (location >= 0)
                 _gl.Uniform1(location, value ? 1 : 0);
         }
 
         private void SetUniformFloat(string name, float value)
         {
-            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            var location = GetUniformLocationCached(name);
             if (location >= 0)
                 _gl.Uniform1(location, value);
         }
 
         private void SetUniformInt(string name, int value)
         {
-            var location = _gl!.GetUniformLocation(_shaderProgram, name);
+            var location = GetUniformLocationCached(name);
             if (location >= 0)
                 _gl.Uniform1(location, value);
         }
@@ -1028,6 +1048,23 @@ void main()
 
         // ----- Frame drawing -----
 
+        /// <summary>
+        /// The area's decoded lighting brightened for editor visibility: each channel of the
+        /// ambient and diffuse colors is lifted from a floor toward its authored value, so night
+        /// areas keep their cool hue but never go too dark to edit. Falls back to the neutral
+        /// default when no scene/lighting is set.
+        /// </summary>
+        private (Vector3 Ambient, Vector3 Diffuse) EditorSceneLighting()
+        {
+            var lighting = _scene?.Lighting ?? AreaLighting.Default;
+            return (
+                LiftFromFloor(lighting.AmbientColor, AmbientLightFloor),
+                LiftFromFloor(lighting.DiffuseColor, DiffuseLightFloor));
+        }
+
+        private static Vector3 LiftFromFloor(Vector3 color, float floor) =>
+            new Vector3(floor) + color * (1f - floor);
+
         private void DrawScene(int width, int height)
         {
             var farPlane = MathF.Max(_distance, _initialDistance) * 25f + 100f;
@@ -1045,9 +1082,10 @@ void main()
             _gl!.UseProgram(_shaderProgram);
             SetUniformMatrix4("view", view);
             SetUniformMatrix4("projection", projection);
+            var (ambient, diffuse) = EditorSceneLighting();
             SetUniformVec3("lightDir", LightDir);
-            SetUniformVec3("lightColor", LightColor);
-            SetUniformVec3("ambientColor", AmbientColor);
+            SetUniformVec3("lightColor", diffuse);
+            SetUniformVec3("ambientColor", ambient);
             SetUniformInt("diffuseTexture", 0);
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 

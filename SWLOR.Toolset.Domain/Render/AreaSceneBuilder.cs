@@ -66,7 +66,27 @@ namespace SWLOR.Toolset.Domain.Render
                 Height = height,
                 Tiles = tiles,
                 Instances = instances,
-                Diagnostics = diagnostics
+                Diagnostics = diagnostics,
+                Lighting = ComputeLighting(are)
+            };
+        }
+
+        /// <summary>
+        /// Decodes the area's ambient/diffuse lighting (WP6.2) from the .are: moon colors when the
+        /// area is flagged night, sun colors otherwise. A missing color field falls back to the
+        /// neutral default's component so a partially-authored area still lights sanely.
+        /// </summary>
+        private static AreaLighting ComputeLighting(AreDocument are)
+        {
+            var isNight = are.IsNight ?? false;
+            var ambientPacked = isNight ? are.MoonAmbientColor : are.SunAmbientColor;
+            var diffusePacked = isNight ? are.MoonDiffuseColor : are.SunDiffuseColor;
+
+            return new AreaLighting
+            {
+                AmbientColor = ambientPacked is { } a ? AreaLighting.DecodeColor(a) : AreaLighting.Default.AmbientColor,
+                DiffuseColor = diffusePacked is { } d ? AreaLighting.DecodeColor(d) : AreaLighting.Default.DiffuseColor,
+                IsNight = isNight
             };
         }
 

@@ -75,6 +75,12 @@ namespace SWLOR.Game.Server.Service
 
             UpdateMaximumTravelDistance(target, attempt);
 
+            if (HasCombatEnmity(target, observer))
+            {
+                _activeAttempts.Remove(key);
+                return;
+            }
+
             if (!detected)
             {
                 attempt.EvadedDetection = true;
@@ -109,12 +115,12 @@ namespace SWLOR.Game.Server.Service
 
             UpdateMaximumTravelDistance(player, attempt);
             var isStealthed = GetActionMode(player, ActionMode.Stealth);
-            var npcHasCombatEnmity = Enmity.HasNonProximityEnmity(npc);
+            var hasCombatEnmity = HasCombatEnmity(player, npc);
             if (!MeetsSuccessRequirements(
                     attempt.EvadedDetection,
                     attempt.MaximumTravelDistance,
                     isStealthed,
-                    npcHasCombatEnmity) ||
+                    hasCombatEnmity) ||
                 !TryMarkResolved(player, npc))
             {
                 return;
@@ -151,12 +157,12 @@ namespace SWLOR.Game.Server.Service
             bool evadedDetection,
             float maximumTravelDistance,
             bool isStealthed,
-            bool npcHasCombatEnmity)
+            bool hasCombatEnmity)
         {
             return evadedDetection &&
                    maximumTravelDistance >= RequiredTravelDistanceMeters &&
                    isStealthed &&
-                   !npcHasCombatEnmity;
+                   !hasCombatEnmity;
         }
 
         public static int CalculateXp(int npcLevel, int espionageRank, bool wasDetected)
@@ -266,6 +272,12 @@ namespace SWLOR.Game.Server.Service
             var samplerId = ++_nextMovementSamplerId;
             _movementSamplerIdsByPlayer[player] = samplerId;
             DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));
+        }
+
+        private static bool HasCombatEnmity(uint player, uint npc)
+        {
+            return Enmity.HasNonProximityEnmityForCreature(player) ||
+                   Enmity.HasNonProximityEnmity(npc);
         }
 
         private static void SampleMovement(uint player, long samplerId)

@@ -211,6 +211,8 @@ public class EspionageSystemTests
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(npc)");
+        infiltrationSource.Should().Contain("if (HasCombatEnmity(target, observer))");
+        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityForCreature(player) ||");
         infiltrationSource.Should().Contain("var master = GetMaster(npc);");
     }
 

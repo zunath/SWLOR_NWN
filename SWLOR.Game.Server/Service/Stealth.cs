@@ -136,6 +136,9 @@ namespace SWLOR.Game.Server.Service
 
             var detected = GetOrRollVerdict(observer, target);
             EventsPlugin.SetEventResult(detected ? "1" : "0");
+
+            if (detected)
+                ExitDetectedPlayerStealth(target);
         }
 
         [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]
@@ -162,6 +165,25 @@ namespace SWLOR.Game.Server.Service
 
             _verdicts[key] = (detected, now.AddSeconds(DetectionCheckIntervalSeconds));
             return detected;
+        }
+
+        /// <summary>
+        /// A successful detection reveals a player to everyone by ending their stealth mode. NPC
+        /// stealth keeps the engine's observer-specific behavior so creature encounters are not
+        /// globally revealed when a single observer succeeds.
+        /// </summary>
+        private static void ExitDetectedPlayerStealth(uint target)
+        {
+            if (!GetIsPC(target) ||
+                GetIsDM(target) ||
+                !GetActionMode(target, ActionMode.Stealth))
+                return;
+
+            AssignCommand(target, () =>
+            {
+                SetActionMode(target, ActionMode.Stealth, false);
+            });
+            SendMessageToPC(target, ColorToken.Red("You have been detected and are forced out of stealth."));
         }
 
         private static void ClearVerdictsForTarget(uint target)

@@ -114,6 +114,23 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void SuccessfulSpotDetection_ExitsPlayerStealth()
+    {
+        var stealthSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "Stealth.cs"));
+
+        stealthSource.Should().MatchRegex(@"if \(detected\)\s+ExitDetectedPlayerStealth\(target\);");
+        stealthSource.Should().Contain("private static void ExitDetectedPlayerStealth(uint target)");
+        stealthSource.Should().Contain("!GetIsPC(target) ||");
+        stealthSource.Should().Contain("GetIsDM(target) ||");
+        stealthSource.Should().Contain("!GetActionMode(target, ActionMode.Stealth)");
+        stealthSource.Should().Contain("SetActionMode(target, ActionMode.Stealth, false);");
+    }
+
+    [Test]
     public void SlicingRanksReduceLockboxUseDelayAtTheDocumentedBands()
     {
         LockboxItemDefinition.CalculateUseDelaySeconds(0).Should().BeApproximately(2f, 0.001f);

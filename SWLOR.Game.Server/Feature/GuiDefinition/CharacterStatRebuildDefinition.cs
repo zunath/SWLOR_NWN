@@ -1,4 +1,6 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AttributeService;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -33,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Might)
-                            .SetTooltip("Might - Improves damage dealt by melee weapons and increases carrying capacity.")
+                            .SetTooltip("Might - " + AttributeDescription.MightSummary)
                             .SetHeight(32f);
 
                         row.AddButton()
@@ -53,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Perception)
-                            .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons and increases physical accuracy.")
+                            .SetTooltip("Perception - " + AttributeDescription.PerceptionSummary)
                             .SetHeight(32f);
 
                         row.AddButton()
@@ -73,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Vitality)
-                            .SetTooltip("Vitality - Improves your max hit points and reduces damage received.")
+                            .SetTooltip("Vitality - " + AttributeDescription.VitalitySummary)
                             .SetHeight(32f);
 
                         row.AddButton()
@@ -93,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Willpower)
-                            .SetTooltip("Willpower - Improves your force attack, force defense, and max force points.")
+                            .SetTooltip("Willpower - " + AttributeDescription.WillpowerSummary)
                             .SetHeight(32f);
 
                         row.AddButton()
@@ -113,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Agility)
-                            .SetTooltip("Agility - Improves ranged accuracy, evasion, and max stamina.")
+                            .SetTooltip("Agility - " + AttributeDescription.AgilitySummary)
                             .SetHeight(32f);
 
                         row.AddButton()
@@ -133,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddLabel()
                             .BindText(model => model.Social)
-                            .SetTooltip("Social - Improves your XP gain and leadership capabilities.")
+                            .SetTooltip("Social - " + AttributeDescription.SocialSummary)
                             .SetHeight(32f);
 
                         row.AddButton()

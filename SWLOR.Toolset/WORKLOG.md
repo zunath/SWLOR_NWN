@@ -671,5 +671,26 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   (100-130). Base-layer install-gated (16 areas use base-game tilesets); skips without an install.
 - Verified: build clean, 345/346 green (338 prior + 7 new; 1 pre-existing skip). Domain + tests only
   (no app change), so no smoke needed. No human gate — the corpus itself is the validation.
-## WP7.2 — pending — Tile rule matcher
+## WP7.2 — done (engine; candidate-preference folds into WP7.3) — 2026-07-21 — Tile rule matcher
+- Tier: Lead. Built on WP7.1's TileAdjacency; every rule validated against the corpus.
+- Domain: `GameData\Tilesets\SetRuleMatcher.cs` (+ `TileConstraint`, `TileCandidate`):
+  - `FindMatchingTiles(tileset, constraint)` — every (tileId, orientation) whose world corner
+    terrains (exact, case-insensitive) and edge crossers (blank-tolerant) satisfy a
+    per-corner/per-edge constraint (null = unconstrained). The irreducible solve.
+  - `ConstraintFromNeighbours(tileset, col, row, placedAt)` — the corner constraint a cell inherits
+    from its placed orthogonal neighbours (the grid is abstracted as a `Func<int,int,TileCandidate?>`
+    so the Domain stays free of AreDocument).
+  - `SolveCell(tileset, col, row, placedAt, paintedCorners?)` — neighbours + optional paint override
+    → legal candidates. The method the WP7.3 paint tools will drive.
+- Tests (SetRuleMatcherTests, 8): hermetic filtering (unconstrained → all×4, corner filter,
+  impossible → empty, neighbour gathering, paint override) PLUS a corpus SOUNDNESS GATE — for every
+  cell of every non-fcx01 corpus area, the candidate set SolveCell derives purely from placed
+  neighbours always includes the tile actually there (60k+ cells; fcx01 skipped per the documented
+  holes exception). Proves the matcher never excludes the correct answer given real context.
+- Verified: build clean, 353/354 green (345 prior + 8; 1 pre-existing skip). Domain + tests only, no
+  smoke needed. No human gate — corpus + unit tests are the validation.
+- **Remaining (folds into WP7.3):** "corpus as fallback for underspecified sets" — when SolveCell
+  returns many candidates, pick the corpus-preferred tile. That selection policy belongs where
+  selection happens (the paint tool), so it ships with WP7.3 alongside affected-cell enumeration on a
+  corner paint and transactional Tile_List regeneration.
 ## WP7.3 — pending — Paint tools + new-area wizard

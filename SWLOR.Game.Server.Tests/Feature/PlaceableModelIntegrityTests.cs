@@ -86,6 +86,42 @@ public class PlaceableModelIntegrityTests
         failures.Should().BeEmpty(FormatFailures(failures));
     }
 
+    [Test]
+    public void GateblockReferences_HaveBlueprintFiles()
+    {
+        var root = FindRepositoryRoot();
+        var moduleDirectory = Path.Combine(root.FullName, "Module");
+        var blueprintDirectory = Path.Combine(moduleDirectory, "utp");
+        var failures = new List<string>();
+
+        foreach (var (directory, pattern) in new[]
+                 {
+                     (Path.Combine(moduleDirectory, "utp"), "*.utp.json"),
+                     (Path.Combine(moduleDirectory, "git"), "*.git.json")
+                 })
+        {
+            foreach (var path in Directory.EnumerateFiles(directory, pattern))
+            {
+                var json = File.ReadAllText(path);
+                if (!json.Contains("\"CEP_L_GATEBLOCK\"", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                using var document = JsonDocument.Parse(json);
+                foreach (var resref in EnumerateLocalStringValues(document.RootElement, "CEP_L_GATEBLOCK"))
+                {
+                    if (!File.Exists(Path.Combine(blueprintDirectory, $"{resref}.utp.json")))
+                    {
+                        failures.Add($"{Path.GetFileName(path)} references missing gateblock blueprint {resref}.");
+                    }
+                }
+            }
+        }
+
+        failures.Should().BeEmpty(FormatFailures(failures));
+    }
+
     private static Dictionary<int, PlaceableRow> LoadPlaceableRows(DirectoryInfo root)
     {
         var path = Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "placeables.2da");
@@ -135,6 +171,48 @@ public class PlaceableModelIntegrityTests
             }
         }
     }
+
+    private static IEnumerable<string> EnumerateLocalStringValues(JsonElement element, string variableName)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            if (element.TryGetProperty("Name", out var name) &&
+                GetWrappedString(name).Equals(variableName, StringComparison.OrdinalIgnoreCase) &&
+                element.TryGetProperty("Value", out var value))
+            {
+                var localValue = GetWrappedString(value);
+                if (!string.IsNullOrWhiteSpace(localValue))
+                {
+                    yield return localValue;
+                }
+            }
+
+            foreach (var property in element.EnumerateObject())
+            {
+                foreach (var nested in EnumerateLocalStringValues(property.Value, variableName))
+                {
+                    yield return nested;
+                }
+            }
+        }
+        else if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var item in element.EnumerateArray())
+            {
+                foreach (var nested in EnumerateLocalStringValues(item, variableName))
+                {
+                    yield return nested;
+                }
+            }
+        }
+    }
+
+    private static string GetWrappedString(JsonElement element) =>
+        element.ValueKind == JsonValueKind.Object &&
+        element.TryGetProperty("value", out var value) &&
+        value.ValueKind == JsonValueKind.String
+            ? value.GetString() ?? string.Empty
+            : string.Empty;
 
     private static int GetInt(JsonElement element, string propertyName) =>
         element.GetProperty(propertyName).GetProperty("value").GetInt32();

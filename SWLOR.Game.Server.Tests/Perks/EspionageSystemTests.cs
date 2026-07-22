@@ -175,6 +175,15 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void InfiltrationDetectionFailure_AllowsCombatEnmityCreatedByDetection()
+    {
+        EspionageInfiltration.ShouldRejectDetectionOutcome(true, true).Should().BeFalse();
+        EspionageInfiltration.ShouldRejectDetectionOutcome(true, false).Should().BeFalse();
+        EspionageInfiltration.ShouldRejectDetectionOutcome(false, true).Should().BeTrue();
+        EspionageInfiltration.ShouldRejectDetectionOutcome(false, false).Should().BeFalse();
+    }
+
+    [Test]
     public void InfiltrationXp_IsDrivenByAggroAndDetectionEventsRatherThanElapsedStealthTime()
     {
         var root = FindRepositoryRoot();
@@ -211,7 +220,7 @@ public class EspionageSystemTests
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(npc)");
-        infiltrationSource.Should().Contain("if (HasCombatEnmity(target, observer))");
+        infiltrationSource.Should().Contain("ShouldRejectDetectionOutcome(detected, HasCombatEnmity(target, observer))");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityForCreature(player) ||");
         infiltrationSource.Should().Contain("var master = GetMaster(npc);");
     }

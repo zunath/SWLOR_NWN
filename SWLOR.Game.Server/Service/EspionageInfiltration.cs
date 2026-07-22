@@ -75,7 +75,10 @@ namespace SWLOR.Game.Server.Service
 
             UpdateMaximumTravelDistance(target, attempt);
 
-            if (HasCombatEnmity(target, observer))
+            // A successful Detection result can establish combat enmity before this callback
+            // finishes. That is the expected failure outcome and still earns the reduced award.
+            // Only an undetected attempt with real combat enmity is invalid.
+            if (ShouldRejectDetectionOutcome(detected, HasCombatEnmity(target, observer)))
             {
                 _activeAttempts.Remove(key);
                 return;
@@ -171,6 +174,11 @@ namespace SWLOR.Game.Server.Service
             return wasDetected
                 ? (int)(baseXp * DetectionFailureXpPercent)
                 : baseXp;
+        }
+
+        public static bool ShouldRejectDetectionOutcome(bool detected, bool hasCombatEnmity)
+        {
+            return !detected && hasCombatEnmity;
         }
 
         public static void CancelPlayer(uint player)

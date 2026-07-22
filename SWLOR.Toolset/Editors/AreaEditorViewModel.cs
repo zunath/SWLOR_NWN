@@ -444,23 +444,28 @@ namespace SWLOR.Toolset.Editors
 
                 _isPaintMode = value;
                 if (value)
-                    EnsurePaintDataLoaded();
+                    EnsureTileRankRequested();
 
                 OnPropertyChanged(nameof(IsPaintMode));
                 OnPropertyChanged(nameof(PaintStatus));
             }
         }
 
-        /// <summary>3D-view status line while the brush is armed, or empty otherwise.</summary>
+        /// <summary>
+        /// 3D-view status line: what the armed brush will do, or - even before arming - why painting
+        /// is not possible here, so an empty palette is explained rather than just looking broken.
+        /// </summary>
         public string PaintStatus
         {
             get
             {
+                // Reported regardless of arm state: with no tileset there is nothing to paint with,
+                // and the user should not have to click Paint to discover that.
+                if (_paintTileset == null && _sceneBuildRequested)
+                    return "Paint unavailable: this area's tileset could not be resolved.";
+
                 if (!IsPaintMode)
                     return string.Empty;
-
-                if (_paintTileset == null)
-                    return "Paint unavailable: this area's tileset could not be resolved.";
 
                 return SelectedPaintTool switch
                 {
@@ -481,32 +486,44 @@ namespace SWLOR.Toolset.Editors
         public void CancelPaint() => IsPaintMode = false;
 
         /// <summary>
-        /// Resolves this area's tileset once, fills the terrain palette from the terrains it can
-        /// actually fill a tile with, and kicks off the corpus tile-frequency scan in the background
-        /// (the scan reads every area in the module, so it must never block the click that armed the
-        /// brush; until it lands, tie-breaks fall back to lowest tile id).
+        /// Resolves this area's tileset and fills the terrain palette from the terrains it can
+        /// actually fill a tile with. Cheap (the tileset is already parsed and cached by the scene
+        /// build), and deliberately NOT gated on the brush being armed: a palette that only appears
+        /// after arming reads as a broken, greyed-out control, so the terrain can be chosen first
+        /// and the brush armed second - in either order.
         /// </summary>
-        private void EnsurePaintDataLoaded()
+        private void EnsurePaintPaletteLoaded()
         {
-            if (_paintTileset == null && _tilesetCatalog != null)
+            if (_paintTileset != null || _tilesetCatalog == null)
+                return;
+
+            var tilesetResRef = new AreDocument(_areSession.Document).Tileset ?? string.Empty;
+            if (!_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
             {
-                var are = new AreDocument(_areSession.Document);
-                var tilesetResRef = are.Tileset ?? string.Empty;
-                if (_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
-                {
-                    _paintTileset = tileset;
-
-                    TerrainBrushes.Clear();
-                    foreach (var terrain in TilePainter.FillableTerrains(tileset))
-                        TerrainBrushes.Add(terrain);
-
-                    SelectedTerrain ??= TilePainter.DefaultFillTerrain(tileset) ?? TerrainBrushes.FirstOrDefault();
-                }
-                else
-                {
-                    _log.AppendLine($"Paint unavailable for {_areResRef}: tileset '{tilesetResRef}' could not be resolved.");
-                }
+                _log.AppendLine($"Paint unavailable for {_areResRef}: tileset '{tilesetResRef}' could not be resolved.");
+                OnPropertyChanged(nameof(PaintStatus));
+                return;
             }
+
+            _paintTileset = tileset;
+
+            TerrainBrushes.Clear();
+            foreach (var terrain in TilePainter.FillableTerrains(tileset))
+                TerrainBrushes.Add(terrain);
+
+            SelectedTerrain ??= TilePainter.DefaultFillTerrain(tileset) ?? TerrainBrushes.FirstOrDefault();
+            OnPropertyChanged(nameof(PaintStatus));
+        }
+
+        /// <summary>
+        /// Kicks off the corpus tile-frequency scan in the background. Deferred until the brush is
+        /// actually armed, because it reads every area in the module - too much work to spend on
+        /// merely opening a 3D view. Until it lands, candidate tie-breaks fall back to lowest tile
+        /// id, so painting works immediately either way.
+        /// </summary>
+        private void EnsureTileRankRequested()
+        {
+            EnsurePaintPaletteLoaded();
 
             if (_tileRankRequested || _paintTileset == null)
                 return;
@@ -720,6 +737,10 @@ namespace SWLOR.Toolset.Editors
                     are, git, tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache));
 
                 AreaScene = scene;
+
+                // The scene build has just resolved (and cached) this area's tileset, so the terrain
+                // palette can be filled now - before the user reaches for the brush.
+                EnsurePaintPaletteLoaded();
 
                 InstanceMarker? toSelect = null;
                 if (reselect is { } key)

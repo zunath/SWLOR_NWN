@@ -233,8 +233,7 @@
             <ComboBox ItemsSource="{Binding PaintTools}" SelectedItem="{Binding SelectedPaintTool, Mode=TwoWay}"
                       MinWidth="90" ToolTip.Tip="Which edit a click applies" />
             <ComboBox ItemsSource="{Binding TerrainBrushes}" SelectedItem="{Binding SelectedTerrain, Mode=TwoWay}"
-                      MinWidth="120" ToolTip.Tip="Terrain painted by the Terrain tool"
-                      IsEnabled="{Binding IsPaintMode}" />
+                      MinWidth="120" ToolTip.Tip="Terrain painted by the Terrain tool" />
           </StackPanel>
 
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"

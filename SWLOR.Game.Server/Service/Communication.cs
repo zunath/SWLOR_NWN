@@ -58,7 +58,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
-            PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, ColorToken.Orange(CommsChannelName));
+            // The chat-channel selector treats angle-bracket color markup as TLK substitution tokens.
+            PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);
             PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
         }
 

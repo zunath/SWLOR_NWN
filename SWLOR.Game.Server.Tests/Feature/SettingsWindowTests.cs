@@ -64,7 +64,7 @@ public class SettingsWindowTests
     }
 
     [Test]
-    public void CommsRangeWarnings_AreEnabledByDefaultAndPersistedFromChatSettings()
+    public void CommsRangeWarnings_AreEnabledByDefaultAndPersistedFromGeneralSettings()
     {
         var root = FindRepositoryRoot();
         var playerSource = File.ReadAllText(Path.Combine(
@@ -73,16 +73,38 @@ public class SettingsWindowTests
             "Entity",
             "Player.cs"));
         var (definitionSource, viewModelSource) = LoadSettingsSources();
+        var generalPartial = ExtractSection(
+            definitionSource,
+            ".DefinePartialView(SettingsViewModel.GeneralPartial",
+            ".DefinePartialView(SettingsViewModel.IdentityPartial");
+        var chatPartial = ExtractSection(
+            definitionSource,
+            ".DefinePartialView(SettingsViewModel.ChatPartial",
+            "\n                .AddColumn(col =>");
 
         playerSource.Should().Contain("public bool? DisplayCommsOutOfRangeWarnings { get; set; }");
         playerSource.Should().Contain("DisplayCommsOutOfRangeWarnings = true;");
-        definitionSource.Should().Contain(".SetText(\"Comms Range Warnings\")");
-        definitionSource.Should().Contain(".BindIsChecked(model => model.DisplayCommsOutOfRangeWarnings)");
+        generalPartial.Should().Contain(".SetText(\"Comms Range Warnings\")");
+        generalPartial.Should().Contain(".BindIsChecked(model => model.DisplayCommsOutOfRangeWarnings)");
+        chatPartial.Should().NotContain("DisplayCommsOutOfRangeWarnings");
         viewModelSource.Should().Contain("WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);");
-        viewModelSource.Should().Contain(
+        var loadGeneralView = ExtractMethod(viewModelSource, "private void LoadGeneralView", "private void LoadIdentityView");
+        var loadChatView = ExtractMethod(viewModelSource, "private void LoadChatView", "private void ChangeSettingsView");
+        loadGeneralView.Should().Contain(
             "DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;");
+        loadChatView.Should().NotContain("DisplayCommsOutOfRangeWarnings");
         viewModelSource.Should().Contain(
             "dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;");
+    }
+
+    private static string ExtractSection(string source, string startMarker, string endMarker)
+    {
+        var start = source.IndexOf(startMarker, StringComparison.Ordinal);
+        var end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
+
+        start.Should().BeGreaterThanOrEqualTo(0);
+        end.Should().BeGreaterThan(start);
+        return source[start..end];
     }
 
     private static string ExtractMethod(string source, string startMarker, string endMarker)

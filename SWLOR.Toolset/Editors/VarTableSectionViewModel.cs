@@ -88,8 +88,8 @@ namespace SWLOR.Toolset.Editors
 
             var applied = NewType switch
             {
-                "int" when long.TryParse(NewValue, out var intValue) =>
-                    _context.RunEdit($"Set local {name}", () => _varTable.SetInt(name, (int)intValue)),
+                "int" when int.TryParse(NewValue, out var intValue) =>
+                    _context.RunEdit($"Set local {name}", () => _varTable.SetInt(name, intValue)),
                 "float" when float.TryParse(NewValue, out var floatValue) =>
                     _context.RunEdit($"Set local {name}", () => _varTable.SetFloat(name, floatValue)),
                 "string" =>

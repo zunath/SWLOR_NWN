@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
@@ -127,6 +128,45 @@ namespace SWLOR.Toolset.Tests
             // And the module now lists it.
             IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain("wp73_new");
+        }
+
+        [Test]
+        public void TryCreate_WithAnotherDocumentSessionOpen_UsesItsOwnTransactions()
+        {
+            var templatePath = Path.Combine(_moduleRoot, "are", "area_template.are.json");
+            using var unrelatedEditorSession = DocumentSession.Open(templatePath);
+
+            var tileset = new TilesetDefinition
+            {
+                Floor = "Grass",
+                Terrains = new[] { new TerrainDefinition("Grass", null, null) },
+                Tiles = new[]
+                {
+                    new TileDefinition
+                    {
+                        TopLeft = "Grass",
+                        TopRight = "Grass",
+                        BottomLeft = "Grass",
+                        BottomRight = "Grass",
+                        PathNode = "A"
+                    }
+                }
+            };
+            NewAreaWriter.TilesetResolver resolver =
+                (string _, out TilesetDefinition resolved) =>
+                {
+                    resolved = tileset;
+                    return true;
+                };
+
+            var workspace = new ModuleWorkspace(_moduleRoot);
+            NewAreaWriter.TryCreate(
+                    workspace, resolver, "guarded_new", "Guarded New", "synthetic", 2, 2, out var error)
+                .Should().BeTrue(error);
+
+            workspace.LoadArea("guarded_new").Are.Name.Text.Should().Be("Guarded New");
+            IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().Contain("guarded_new");
         }
 
         /// <summary>

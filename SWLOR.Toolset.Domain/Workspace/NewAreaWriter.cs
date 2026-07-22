@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 
 namespace SWLOR.Toolset.Domain.Workspace
@@ -120,11 +121,21 @@ namespace SWLOR.Toolset.Domain.Workspace
             try
             {
                 var are = AreDocument.Load(templateAre);
-                AreaTemplateFactory.PopulateNewArea(
-                    are, resRef, displayName, tilesetResRef, width, height, fill.TileId, fill.Orientation);
+                // These are standalone documents loaded specifically for this write, but another
+                // editor's DocumentSession may still have the ambient mutation guard enabled on
+                // the UI context. Give each document its own short-lived session/transaction so
+                // its mutations are explicit and cannot be captured by an unrelated editor.
+                using (var areSession = new DocumentSession(arePath, are.Document))
+                using (areSession.Begin($"Create area '{resRef}'"))
+                {
+                    AreaTemplateFactory.PopulateNewArea(
+                        are, resRef, displayName, tilesetResRef, width, height, fill.TileId, fill.Orientation);
+                }
 
                 var ifo = IfoDocument.Load(ifoPath);
-                AreaTemplateFactory.AddAreaToModule(ifo, resRef);
+                using (var ifoSession = new DocumentSession(ifoPath, ifo.Document))
+                using (ifoSession.Begin($"Register area '{resRef}'"))
+                    AreaTemplateFactory.AddAreaToModule(ifo, resRef);
 
                 // Write the area triplet first, then the module index: an orphaned area file is
                 // harmless and the create is re-runnable, whereas an index entry pointing at a

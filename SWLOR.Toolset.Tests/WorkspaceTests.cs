@@ -155,6 +155,30 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BlueprintCatalog_PublishesSearchableEntriesBeforeBuildCompletes()
+        {
+            using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);
+            var workspace = new ModuleWorkspace(synthetic.Path);
+            using var catalogAssigned = new ManualResetEventSlim();
+            BlueprintCatalog? catalog = null;
+            var entriesSeenFromProgress = 0;
+
+            catalog = new BlueprintCatalog(workspace, (processed, _) =>
+            {
+                if (processed == 0)
+                    return;
+
+                catalogAssigned.Wait();
+                Interlocked.CompareExchange(ref entriesSeenFromProgress, catalog!.Entries.Count, 0);
+            });
+            catalogAssigned.Set();
+            catalog.BuildTask.GetAwaiter().GetResult();
+
+            entriesSeenFromProgress.Should().BeGreaterThan(0,
+                "a progress callback should observe the partial snapshot published for that entry");
+        }
+
+        [Test]
         public void BlueprintCatalog_RefreshEntry_PublishesNewAreaToEntriesAndSearch()
         {
             using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);

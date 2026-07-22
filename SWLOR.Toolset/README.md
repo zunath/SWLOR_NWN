@@ -28,7 +28,7 @@ git submodule update --init --recursive
 Always run `dotnet` from the **repository root**:
 
 ```bash
-dotnet build SWLOR.Game.Server.sln
+dotnet build SWLOR.Game.Server.sln -p:RunPostBuildEvent=Never
 ```
 
 ```bash
@@ -41,14 +41,15 @@ dotnet run --project SWLOR.Toolset
 ## Tests
 
 ```bash
-dotnet test SWLOR.Toolset.Tests
+dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:RunPostBuildEvent=Never
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build
 ```
 
 ~410 tests, about two minutes. A handful of corpus gates need a local NWN:EE install for base-game
 data and call `Assert.Ignore` without one, so a skip is expected rather than a failure.
 
 ```bash
-dotnet test SWLOR.Toolset.Tests --filter "FullyQualifiedName~TilePainterTests"
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build --filter "FullyQualifiedName~TilePainterTests"
 ```
 
 ---

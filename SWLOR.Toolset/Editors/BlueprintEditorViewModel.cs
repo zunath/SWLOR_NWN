@@ -186,6 +186,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Raised after an async close prompt approves closing this tab.</summary>
         public event Action<BlueprintEditorViewModel>? CloseRequested;
 
+        /// <summary>Suppresses a second tab-level prompt after the window-level discard decision.</summary>
+        internal void ApproveApplicationClose() => _closeApproved = true;
+
         public override bool OnClose()
         {
             if (!_closeApproved && IsDirty)

@@ -140,6 +140,32 @@ namespace SWLOR.Toolset.Editors
             return true;
         }
 
+        /// <summary>
+        /// Prompts before application shutdown when any editor is dirty. The caller may close the
+        /// window only when this returns true; saving still honors each document's external-change
+        /// check and cancels shutdown if any save is declined or fails.
+        /// </summary>
+        public async Task<bool> TryPrepareApplicationCloseAsync()
+        {
+            if (!_openEditors.Values.Any(editor => editor.IsDirty) &&
+                !_openAreaEditors.Values.Any(editor => editor.IsDirty))
+                return true;
+
+            var choice = await _prompts.ConfirmCloseAsync("all open editors").ConfigureAwait(true);
+            if (choice == UnsavedChangesChoice.Save)
+                return await SaveAllAsync().ConfigureAwait(true);
+
+            if (choice != UnsavedChangesChoice.Discard)
+                return false;
+
+            foreach (var editor in _openEditors.Values)
+                editor.ApproveApplicationClose();
+            foreach (var editor in _openAreaEditors.Values)
+                editor.ApproveApplicationClose();
+
+            return true;
+        }
+
         /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>
         private void OpenAreaEditor(Domain.Workspace.ModuleWorkspace workspace, string resRef)
         {

@@ -677,7 +677,7 @@ namespace SWLOR.Toolset.Editors
             {
                 Sections.Add(new InstanceListSectionViewModel(
                     config.Title, config.ListFieldName, config.BlueprintType,
-                    _gitSession, workspace, RunGitEdit, gameCodeIndex, log));
+                    _gitSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts));
             }
 
             // WP5.1 selection sync: a row click in any section should update the 3D-view highlight
@@ -978,6 +978,9 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Raised after an async close prompt approves closing this tab.</summary>
         public event Action<AreaEditorViewModel>? CloseRequested;
+
+        /// <summary>Suppresses a second tab-level prompt after the window-level discard decision.</summary>
+        internal void ApproveApplicationClose() => _closeApproved = true;
 
         public override bool OnClose()
         {

@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Shell
         private readonly OutputLogService _log;
         private readonly ModuleFileWatcher _fileWatcher;
         private readonly ModuleExplorerViewModel _explorer;
+        private readonly SearchViewModel _search;
         private DispatcherTimer? _progressTimer;
 
         [ObservableProperty]
@@ -39,6 +40,7 @@ namespace SWLOR.Toolset.Shell
             OutputLogService log,
             ModuleFileWatcher fileWatcher,
             ModuleExplorerViewModel explorer,
+            SearchViewModel search,
             ToolsetDockFactory factory,
             Editors.EditorService editorService,
             PackService packService)
@@ -48,6 +50,7 @@ namespace SWLOR.Toolset.Shell
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _fileWatcher = fileWatcher ?? throw new ArgumentNullException(nameof(fileWatcher));
             _explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
+            _search = search ?? throw new ArgumentNullException(nameof(search));
             _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
             _packService = packService ?? throw new ArgumentNullException(nameof(packService));
 
@@ -64,6 +67,9 @@ namespace SWLOR.Toolset.Shell
             var saved = await _editorService.SaveAllAsync().ConfigureAwait(true);
             StatusText = saved ? "All open editors saved." : "Save cancelled or failed - see Output.";
         }
+
+        /// <summary>Returns true when the main window may close after handling unsaved editors.</summary>
+        public Task<bool> TryCloseAsync() => _editorService.TryPrepareApplicationCloseAsync();
 
         [RelayCommand]
         private async Task PackModuleAsync()
@@ -151,6 +157,7 @@ namespace SWLOR.Toolset.Shell
                     _progressTimer?.Stop();
                     _progressTimer = null;
                     _explorer.RefreshFromCatalog(catalog);
+                    _search.Refresh();
                     StatusText = $"Catalog ready: {catalog.Entries.Count} entries indexed.";
                 });
             });

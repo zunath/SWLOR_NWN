@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
@@ -59,6 +60,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Action<string> _onResRefChosen;
         private readonly Action _onCancelled;
         private readonly OutputLogService _log;
+        private readonly IEditorPromptService _prompts;
         private DocumentSession? _session;
 
         public string Title { get; }
@@ -77,13 +79,19 @@ namespace SWLOR.Toolset.Editors
         public bool CanRedo => _session?.UndoStack.CanRedo ?? false;
 
         public PaletteBrowserViewModel(
-            string title, string itpPath, Action<string> onResRefChosen, Action onCancelled, OutputLogService log)
+            string title,
+            string itpPath,
+            Action<string> onResRefChosen,
+            Action onCancelled,
+            OutputLogService log,
+            IEditorPromptService prompts)
         {
             Title = title;
             _itpPath = itpPath;
             _onResRefChosen = onResRefChosen;
             _onCancelled = onCancelled;
             _log = log;
+            _prompts = prompts;
 
             _session = DocumentSession.Open(_itpPath);
             RebuildTree();
@@ -201,15 +209,38 @@ namespace SWLOR.Toolset.Editors
         }
 
         [RelayCommand]
-        private void SavePalette()
+        private async Task SavePalette()
         {
             if (_session == null)
                 return;
 
             try
             {
+                if (_session.HasExternalChange())
+                {
+                    var choice = await _prompts
+                        .ConfirmExternalChangeAsync(_session.FilePath)
+                        .ConfigureAwait(true);
+                    if (choice == ExternalChangeChoice.Cancel)
+                    {
+                        StatusMessage = "Save cancelled.";
+                        return;
+                    }
+
+                    if (choice == ExternalChangeChoice.Reload)
+                    {
+                        _session.ReloadFromDisk();
+                        SelectedNode = null;
+                        RebuildTree();
+                        NotifyHistoryChanged();
+                        StatusMessage = $"Reloaded {_session.FilePath}.";
+                        return;
+                    }
+                }
+
                 Services.SaveService.WriteAtomic(_session.FilePath, _session.Document.ToBytes());
                 _session.UndoStack.MarkSaved();
+                _session.RecordCurrentFileState();
                 StatusMessage = $"Saved {_session.FilePath}.";
                 NotifyHistoryChanged();
             }

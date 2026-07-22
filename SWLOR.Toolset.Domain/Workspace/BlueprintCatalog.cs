@@ -34,7 +34,8 @@ namespace SWLOR.Toolset.Domain.Workspace
     {
         private readonly ModuleWorkspace _workspace;
         private readonly object _snapshotLock = new();
-        private readonly Dictionary<string, CatalogEntry> _refreshedEntries = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, CatalogEntry> _indexedEntries =
+            new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<CatalogEntry> _entries = Array.Empty<CatalogEntry>();
         private int _processedCount;
 
@@ -82,27 +83,22 @@ namespace SWLOR.Toolset.Domain.Workspace
             TotalCount = work.Count;
             onProgress?.Invoke(0, TotalCount);
 
-            var results = new ConcurrentBag<CatalogEntry>();
+            // Small modules publish each entry immediately; the production corpus publishes in
+            // batches so searches become useful during the build without repeatedly sorting all
+            // ~17,900 entries for every parsed file.
+            var publishInterval = TotalCount <= 256 ? 1 : 128;
 
             Parallel.ForEach(work, item =>
             {
-                results.Add(BuildEntry(item.Type, item.ResRef));
+                var entry = BuildEntry(item.Type, item.ResRef);
+                _indexedEntries.TryAdd(IdentityKey(item.Type, item.ResRef), entry);
                 var processed = Interlocked.Increment(ref _processedCount);
+                if (processed % publishInterval == 0)
+                    PublishSnapshot();
                 onProgress?.Invoke(processed, TotalCount);
             });
 
-            var ordered = results
-                .OrderBy(entry => entry.ResourceType)
-                .ThenBy(entry => entry.ResRef, StringComparer.OrdinalIgnoreCase)
-                .ToList();
-
-            lock (_snapshotLock)
-            {
-                foreach (var refreshed in _refreshedEntries.Values)
-                    ReplaceEntry(ordered, refreshed);
-
-                _entries = ordered;
-            }
+            PublishSnapshot();
         }
 
         /// <summary>
@@ -113,30 +109,23 @@ namespace SWLOR.Toolset.Domain.Workspace
         public CatalogEntry RefreshEntry(ResourceType type, string resRef)
         {
             var entry = BuildEntry(type, resRef);
-            lock (_snapshotLock)
-            {
-                _refreshedEntries[IdentityKey(type, resRef)] = entry;
-                var updated = _entries.ToList();
-                ReplaceEntry(updated, entry);
-                _entries = updated;
-            }
+            _indexedEntries[IdentityKey(type, resRef)] = entry;
+            PublishSnapshot();
 
             return entry;
         }
 
-        private static void ReplaceEntry(List<CatalogEntry> entries, CatalogEntry replacement)
+        private void PublishSnapshot()
         {
-            entries.RemoveAll(entry =>
-                entry.ResourceType == replacement.ResourceType &&
-                entry.ResRef.Equals(replacement.ResRef, StringComparison.OrdinalIgnoreCase));
-            entries.Add(replacement);
-            entries.Sort((left, right) =>
+            // Serialize snapshot publication so a slower, older publication can never replace a
+            // newer snapshot with fewer entries.
+            lock (_snapshotLock)
             {
-                var typeComparison = left.ResourceType.CompareTo(right.ResourceType);
-                return typeComparison != 0
-                    ? typeComparison
-                    : StringComparer.OrdinalIgnoreCase.Compare(left.ResRef, right.ResRef);
-            });
+                _entries = _indexedEntries.Values
+                    .OrderBy(entry => entry.ResourceType)
+                    .ThenBy(entry => entry.ResRef, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+            }
         }
 
         private static string IdentityKey(ResourceType type, string resRef) => $"{(int)type}:{resRef}";

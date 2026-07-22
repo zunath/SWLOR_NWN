@@ -45,6 +45,9 @@ namespace SWLOR.Toolset.Shell.Panels
                 Results.Add(result);
         }
 
+        /// <summary>Re-runs the current query after the background catalog publishes more entries.</summary>
+        public void Refresh() => OnQueryChanged(Query);
+
         partial void OnSelectedResultChanged(CatalogSearchResult? value)
         {
             if (value != null)

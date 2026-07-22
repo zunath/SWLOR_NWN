@@ -6,6 +6,7 @@ using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
@@ -31,6 +32,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Func<string, Action, bool> _runEdit;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
+        private readonly IEditorPromptService _prompts;
         private bool _isLoadingDetail;
 
         public string Title { get; }
@@ -78,7 +80,8 @@ namespace SWLOR.Toolset.Editors
             ModuleWorkspace workspace,
             Func<string, Action, bool> runEdit,
             IGameCodeIndex? gameCodeIndex,
-            OutputLogService log)
+            OutputLogService log,
+            IEditorPromptService prompts)
         {
             Title = title;
             _listFieldName = listFieldName;
@@ -88,6 +91,7 @@ namespace SWLOR.Toolset.Editors
             _runEdit = runEdit;
             _gameCodeIndex = gameCodeIndex;
             _log = log;
+            _prompts = prompts;
 
             RefreshFromDocument();
         }
@@ -229,7 +233,8 @@ namespace SWLOR.Toolset.Editors
                     ActivePaletteBrowser = null;
                     onCancelled();
                 },
-                _log);
+                _log,
+                _prompts);
         }
 
         private void AddFromPalette(string resRef) => AddInstanceAt(resRef, 0f, 0f, 0f);

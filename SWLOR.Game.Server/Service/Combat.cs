@@ -3045,13 +3045,20 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), attacker);
         }
 
-        public static int ApplyGuardedHitModifiers(uint defender, uint attacker, int damage, CombatDamageType damageType)
+        public static int ApplyGuardedHitModifiers(
+            uint defender,
+            uint attacker,
+            int damage,
+            CombatDamageType damageType,
+            bool isLandedAttack)
         {
-            if (!GetIsObjectValid(defender) ||
+            if (!isLandedAttack ||
+                !GetIsObjectValid(defender) ||
                 !GetIsObjectValid(attacker) ||
                 defender == attacker ||
                 damage <= 0 ||
-                !damageType.IsPhysicalDamageType())
+                !damageType.IsPhysicalDamageType() ||
+                !IsGuardableAttackSource(defender, attacker))
                 return damage;
 
             var guardChance = Stat.GetGuardChance(defender);
@@ -3070,6 +3077,16 @@ namespace SWLOR.Game.Server.Service
             SendGuardedHitFeedback(defender, attacker, preventedDamage);
 
             return adjustedDamage;
+        }
+
+        private static bool IsGuardableAttackSource(uint defender, uint attacker)
+        {
+            // Preserve PvP and DM-driven testing while rejecting clearly non-hostile NPC swings.
+            if (GetIsPC(attacker) || GetIsDM(attacker) || GetIsDMPossessed(attacker))
+                return true;
+
+            return GetIsReactionTypeHostile(attacker, defender) ||
+                   GetIsEnemy(attacker, defender);
         }
 
         private static void SendGuardedHitFeedback(uint defender, uint attacker, int preventedDamage)

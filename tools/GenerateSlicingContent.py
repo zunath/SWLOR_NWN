@@ -18,6 +18,14 @@ UTI = ROOT / "Module" / "uti"
 UTP = ROOT / "Module" / "utp"
 GIT = ROOT / "Module" / "git"
 
+LOCKBOX_ICON_BY_TIER = {
+    1: 153,  # Green security case.
+    2: 156,  # Blue security case.
+    3: 152,  # Yellow security case.
+    4: 154,  # Orange security case.
+    5: 155,  # Red security case.
+}
+
 
 def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -533,6 +541,9 @@ def update_legacy_accessories_and_lockboxes() -> None:
         )
         data["BaseItem"]["value"] = 24  # MiscSmall: portable item, not an inventory container.
         data["PropertiesList"]["value"] = [prop(15, 3, 13, 335)]  # Activate Item (self).
+        icon = LOCKBOX_ICON_BY_TIER[tier]
+        data["ModelPart1"]["value"] = icon
+        data["xModelPart1"]["value"] = icon
         set_loc(data["Description"], description)
         set_loc(data["DescIdentified"], description)
         save(path, data)

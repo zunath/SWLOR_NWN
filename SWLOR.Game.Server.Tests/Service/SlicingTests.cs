@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SlicingService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -69,6 +70,18 @@ public class SlicingTests
     public void DestructionChance_FirstFailureIsFreeAndPressureEscalates(int failures, int expected)
     {
         Slicing.GetDestructionChance(failures).Should().Be(expected);
+    }
+
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    [TestCase(5)]
+    public void RankRequirementError_IsRed(int tier)
+    {
+        var message = InvokeSessionMethod<string>("GetRankRequirementError", tier);
+
+        message.Should().Be(ColorToken.Red($"Slicing rank {tier} is required for this target."));
     }
 
     [Test]

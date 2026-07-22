@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             if (GetIsInCombat(player))
                 return "You cannot begin slicing while in combat.";
             if (Perk.GetPerkLevel(player, PerkType.Slicing) < tier)
-                return $"Slicing rank {tier} is required for this target.";
+                return GetRankRequirementError(tier);
             if (source == SlicingSourceType.Lockbox && GetItemPossessor(target) != player)
                 return "The lockbox must remain in your inventory.";
             if (source == SlicingSourceType.Terminal && GetDistanceBetween(player, target) > 5f)
@@ -135,6 +135,9 @@ namespace SWLOR.Game.Server.Service.SlicingService
 
             return string.Empty;
         }
+
+        private static string GetRankRequirementError(int tier) =>
+            ColorToken.Red($"Slicing rank {tier} is required for this target.");
 
         public static bool SelectTile(uint player, int index, out string error)
         {

@@ -87,6 +87,14 @@ public class SlicingContentTests
     public void Lockboxes_AreUsableMiscellaneousItemsRatherThanContainers()
     {
         var root = FindRepositoryRoot();
+        var expectedIcons = new Dictionary<int, int>
+        {
+            [1] = 153,
+            [2] = 156,
+            [3] = 152,
+            [4] = 154,
+            [5] = 155,
+        };
         for (var tier = 1; tier <= 5; tier++)
         {
             var path = Path.Combine(root, "Module", "uti", $"lockbox_t{tier}.uti.json");
@@ -94,6 +102,10 @@ public class SlicingContentTests
             var blueprint = document.RootElement;
 
             GetInt(blueprint, "BaseItem").Should().Be((int)BaseItem.MiscSmall);
+            GetInt(blueprint, "ModelPart1").Should().Be(expectedIcons[tier]);
+            GetInt(blueprint, "xModelPart1").Should().Be(expectedIcons[tier]);
+            File.Exists(Path.Combine(root, "SWLOR_Haks", "sw_item", $"iit_smlmisc_{expectedIcons[tier]:000}.tga"))
+                .Should().BeTrue($"tier {tier} uses a compatible icon from the pinned HAK");
 
             var properties = blueprint.GetProperty("PropertiesList").GetProperty("value").EnumerateArray().ToList();
             properties.Should().ContainSingle();

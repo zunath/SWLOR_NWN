@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         private readonly List<uint> _instancedAreas = new();
         private readonly Location _arenaSpawnLocation;
         private readonly CancellationTokenSource _cancellation = new();
+        private bool _seededRandom;
 
         public string TestName { get; }
 
@@ -136,6 +137,7 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         /// </summary>
         public void SeedRandom(int seed)
         {
+            _seededRandom = true;
             Service.Random.SetSeed(seed);
         }
 
@@ -200,6 +202,12 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         /// </summary>
         public void Cleanup()
         {
+            if (_seededRandom)
+            {
+                Service.Random.ResetSeed();
+                _seededRandom = false;
+            }
+
             foreach (var obj in _trackedObjects)
             {
                 if (GetIsObjectValid(obj))

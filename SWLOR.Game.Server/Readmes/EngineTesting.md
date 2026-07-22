@@ -45,21 +45,28 @@ The runner lives in `SWLOR.Game.Server/Service/EngineTest.cs`, with its supporti
 3. **Arena resolution** - `ResolveArena` takes the module's starting location/area, resolves an
    arena resref (the `SWLOR_ENGINE_TEST_ARENA_RESREF` override if set, otherwise the starting
    area's own resref), and calls `CreateArea` to instance a fresh copy of it. If instancing fails,
-   it logs a warning and falls back to running directly in the actual module starting area. A
-   spawn `Location` is built inside the arena at the same relative position as the module's
-   starting location; this is the anchor `EngineTestContext.GetArenaLocation` offsets from.
+   it logs a warning and falls back to running directly in the actual module starting area. The
+   spawn `Location` (the anchor `EngineTestContext.GetArenaLocation` offsets from) is the module's
+   starting position when the arena is a starting-area copy, or the area's geometric center when
+   an override resref is used - the module entry coordinates aren't meaningful in an unrelated
+   area, so pick a small, flat area when overriding. After arena creation the runner yields for
+   one second so the instanced area's initialization scripts (which only run once the creating
+   script finishes) settle before the first test acts inside it.
 
 4. **Per-test execution** - `RunSingleTestAsync` builds a fresh `EngineTestContext` for each test,
    validates the method signature, invokes it via reflection, and races it against a timeout task
    (`attribute.TimeoutSeconds`, default 60s) using `NwTask.WhenAny`. `EngineTestSkippedException`
    maps to `Skipped`, `EngineTestAssertionException` maps to `Failed`, any other exception is
    unwrapped from `TargetInvocationException` and also maps to `Failed` (and is logged to
-   `LogGroup.EngineTest`). A timed-out test is marked `Failed` with a "Timed out after Xs" message;
-   the abandoned task's eventual exception is still observed via `ContinueWith` so it never surfaces
-   as an unobserved task exception later. `context.Cleanup()` always runs in a `finally` block,
-   destroying every object/area the test tracked, and the runner waits one frame
-   (`NwTask.NextFrame()`) between tests so destroyed objects are fully gone before the next test
-   starts.
+   `LogGroup.EngineTest`). A timed-out test is marked `Failed` with a "Timed out after Xs" message
+   and is cooperatively cancelled via the context's `CancellationToken`; the runner grace-waits up
+   to 10s for it to unwind before cleanup. If the test still hasn't stopped after the grace
+   period, the **remainder of the suite is aborted** - every not-yet-run test is reported as
+   `Skipped` with an explanatory message - because a task still acting on the shared arena would
+   make later results untrustworthy. `context.Cleanup()` always runs in a `finally` block,
+   destroying every object/area the test tracked (and restoring the shared RNG if the test
+   seeded it), and the runner waits one frame (`NwTask.NextFrame()`) between tests so destroyed
+   objects are fully gone before the next test starts.
 
 5. **Report + console markers** - Every test line is echoed to the console prefixed
    `[ENGINE_TESTS]` as `PASS`/`FAIL`/`SKIP {Name} ({duration}ms) - {message}`, so CI log scraping
@@ -84,7 +91,7 @@ All values are read once into `ApplicationSettings` (`SWLOR.Game.Server/Applicat
 | `SWLOR_ENGINE_TEST_FILTER` | `EngineTestFilter` | `null` (no filter, all tests run) | Case-insensitive substring matched against a test's `Name` or `Category`. |
 | `SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS` | `EngineTestStartupDelaySeconds` | `15` (float) | Seconds after `OnModuleLoad` before the test run starts. |
 | `SWLOR_ENGINE_TEST_SHUTDOWN` | `EngineTestShutdownOnCompletion` | `true` | Whether the server shuts itself down ~3s after the run completes. Set to `false` to keep the server up for debugging. |
-| `SWLOR_ENGINE_TEST_ARENA_RESREF` | `EngineTestArenaResref` | `null`/empty (uses the module's starting area's own resref) | Overrides which area resref is instanced as the test arena. |
+| `SWLOR_ENGINE_TEST_ARENA_RESREF` | `EngineTestArenaResref` | `null`/empty (uses the module's starting area's own resref) | Overrides which area resref is instanced as the test arena. Override arenas anchor spawns at the area's geometric center, so pick a small, flat area. |
 | `SWLOR_ENVIRONMENT` | `ServerEnvironment` | `Development` (any unset/unrecognized value) | `"prod"`/`"production"` -> `Production` (engine tests refuse to run); `"test"`/`"testing"` -> `Test`; anything else -> `Development`. |
 
 Booleans accept `true`/`1`/`yes` (case-insensitive) as true, anything else (including unset) as
@@ -103,7 +110,10 @@ public static void MyTest(EngineTestContext ctx) { /* ... */ }
 - It must take exactly **one parameter of type `EngineTestContext`**.
 - It must return **`void` or `Task`** (an `async Task` method works; `Task<T>` does not - the
   runner's signature check (`EngineTest.IsValidTestMethod`) only accepts those two exact return
-  types).
+  types). `async void` is explicitly rejected: the runner would have no task to observe, so it
+  would report a pass and clean up while the test was still running.
+- A misplaced attribute (private or instance method, wrong parameters) is reported as a **failed**
+  test with an invalid-signature message rather than silently skipped.
 - `Name` (constructor argument) is required. `Category` defaults to `"General"`. `TimeoutSeconds`
   defaults to `60f`.
 - Tests failing the signature check are reported as `Failed` with a descriptive message rather than
@@ -124,7 +134,7 @@ Every `[EngineTest]` method receives one of these, scoped to that single test ru
 | `SetNPCPerkLevel(npc, PerkType, level)` | Caps an NPC's effective perk level via the `PERK_LEVEL_{id}` local int. NPCs default to a perk's max level when this is unset. |
 | `SetNPCResources(npc, fp, stamina)` | Sets an NPC's current FP/Stamina pools (stored as the `FP`/`STAMINA` local ints NPCs use). |
 | `MakeHostile(creature)` | Moves a creature to the standard `Hostile` faction so other spawned creatures treat it as an enemy. |
-| `SeedRandom(seed)` | Reseeds the shared combat RNG (`Service.Random.SetSeed`) so hit/crit/damage rolls are deterministic for this test. |
+| `SeedRandom(seed)` | Reseeds the shared combat RNG (`Service.Random.SetSeed`) so hit/crit/damage rolls are deterministic for this test. Cleanup restores a fresh time-seeded RNG afterward, so determinism never leaks into later tests or a server kept running for debugging. |
 | `Assert(condition, message)` | Throws `EngineTestAssertionException` (-> `Failed`) if `condition` is false. |
 | `AssertEqual<T>(expected, actual, label)` | Throws with a formatted `"{label}: expected 'X' but was 'Y'."` message if not equal. |
 | `Fail(message)` | Unconditionally throws `EngineTestAssertionException`. |

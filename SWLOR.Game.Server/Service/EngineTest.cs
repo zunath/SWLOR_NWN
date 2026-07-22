@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
@@ -12,6 +13,7 @@ using SWLOR.Game.Server.Service.EngineTestService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum.Area;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,6 +31,7 @@ namespace SWLOR.Game.Server.Service
         private const float TimeoutGraceSeconds = 10f;
 
         private static bool _hasRun;
+        private static bool _suiteAborted;
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleEngineTests()
@@ -62,13 +65,20 @@ namespace SWLOR.Game.Server.Service
 
             try
             {
+                _suiteAborted = false;
                 var tests = DiscoverTests(settings.EngineTestFilter);
                 Console.WriteLine($"{ConsolePrefix} Discovered {tests.Count} engine test(s).");
 
                 var (arena, spawnLocation) = ResolveArena(settings.EngineTestArenaResref);
 
-                foreach (var (method, attribute) in tests)
+                // CreateArea's initialization scripts (for the area and everything placed in it)
+                // only run after the creating script yields. Let the instanced arena settle
+                // before the first test acts inside it.
+                await NwTask.Delay(TimeSpan.FromSeconds(1));
+
+                for (var index = 0; index < tests.Count; index++)
                 {
+                    var (method, attribute) = tests[index];
                     var result = await RunSingleTestAsync(method, attribute, arena, spawnLocation);
                     report.Results.Add(result);
 
@@ -80,6 +90,31 @@ namespace SWLOR.Game.Server.Service
                     };
                     var suffix = string.IsNullOrWhiteSpace(result.Message) ? string.Empty : $" - {result.Message}";
                     Console.WriteLine($"{ConsolePrefix} {marker} {result.Name} ({result.DurationMilliseconds}ms){suffix}");
+
+                    if (_suiteAborted)
+                    {
+                        // A timed-out test never settled after cancellation. It may still be
+                        // running against the shared arena, so any further results would be
+                        // untrustworthy - skip the remainder instead of producing noise.
+                        var abortMessage = $"Suite aborted: '{attribute.Name}' did not stop after cancellation, so this test did not run.";
+                        Console.WriteLine($"{ConsolePrefix} ABORT - {abortMessage}");
+                        Log.Write(LogGroup.EngineTest, abortMessage, true);
+
+                        for (var remaining = index + 1; remaining < tests.Count; remaining++)
+                        {
+                            var (_, remainingAttribute) = tests[remaining];
+                            report.Results.Add(new EngineTestResult
+                            {
+                                Name = remainingAttribute.Name,
+                                Category = remainingAttribute.Category,
+                                Outcome = EngineTestOutcome.Skipped,
+                                Message = abortMessage
+                            });
+                            Console.WriteLine($"{ConsolePrefix} SKIP {remainingAttribute.Name} (0ms) - {abortMessage}");
+                        }
+
+                        break;
+                    }
 
                     // Give the engine a frame between tests so destroyed objects are fully removed.
                     await NwTask.NextFrame();
@@ -157,9 +192,10 @@ namespace SWLOR.Game.Server.Service
         {
             var startingLocation = GetStartingLocation();
             var startingArea = GetAreaFromLocation(startingLocation);
-            var arenaResref = string.IsNullOrWhiteSpace(arenaResrefOverride)
-                ? GetResRef(startingArea)
-                : arenaResrefOverride;
+            var hasOverride = !string.IsNullOrWhiteSpace(arenaResrefOverride);
+            var arenaResref = hasOverride
+                ? arenaResrefOverride
+                : GetResRef(startingArea);
 
             var arena = CreateArea(arenaResref);
             if (!GetIsObjectValid(arena))
@@ -167,9 +203,21 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine($"{ConsolePrefix} WARNING - Could not instance arena from resref '{arenaResref}'. Falling back to the module starting area.");
                 Log.Write(LogGroup.EngineTest, $"Could not instance arena from resref '{arenaResref}'. Falling back to the module starting area.", true);
                 arena = startingArea;
+                hasOverride = false;
             }
 
-            var spawnLocation = Location(arena, GetPositionFromLocation(startingLocation), 0f);
+            // The module entry position is only meaningful inside (a copy of) the starting area.
+            // An override arena anchors at its geometric center instead (tiles are 10m square;
+            // creatures are placed on the ground at that XY) - pick a small, flat area when
+            // overriding.
+            var spawnPosition = hasOverride
+                ? Vector3(
+                    GetAreaSize(Dimension.Width, arena) * 10f / 2f,
+                    GetAreaSize(Dimension.Height, arena) * 10f / 2f,
+                    0f)
+                : GetPositionFromLocation(startingLocation);
+
+            var spawnLocation = Location(arena, spawnPosition, 0f);
             return (arena, spawnLocation);
         }
 
@@ -195,7 +243,7 @@ namespace SWLOR.Game.Server.Service
                 if (!IsValidTestMethod(method))
                 {
                     result.Outcome = EngineTestOutcome.Failed;
-                    result.Message = $"Invalid signature on {method.DeclaringType?.Name}.{method.Name}: engine tests must be public static, take a single EngineTestContext parameter, and return void or Task.";
+                    result.Message = $"Invalid signature on {method.DeclaringType?.Name}.{method.Name}: engine tests must be public static, take a single EngineTestContext parameter, and return void or Task (async tests must return Task - async void is not observable).";
                     return result;
                 }
 
@@ -216,10 +264,14 @@ namespace SWLOR.Game.Server.Service
                     result.Outcome = EngineTestOutcome.Failed;
                     result.Message = testTask.IsCompleted
                         ? $"Timed out after {attribute.TimeoutSeconds} seconds (cancelled)."
-                        : $"Timed out after {attribute.TimeoutSeconds} seconds and did not stop within the {TimeoutGraceSeconds}s cancellation grace period - subsequent test results may be unreliable.";
+                        : $"Timed out after {attribute.TimeoutSeconds} seconds and did not stop within the {TimeoutGraceSeconds}s cancellation grace period - the suite will abort because later results could not be trusted.";
 
                     if (!testTask.IsCompleted)
                     {
+                        // The stuck task may still be acting on the shared arena; running more
+                        // tests beside it would produce untrustworthy results. Signal the outer
+                        // loop to abort the remainder of the suite.
+                        _suiteAborted = true;
                         Console.WriteLine($"{ConsolePrefix} WARNING - {result.Message}");
                         Log.Write(LogGroup.EngineTest, $"[{attribute.Name}] {result.Message}", true);
                     }
@@ -280,7 +332,13 @@ namespace SWLOR.Game.Server.Service
             if (parameters.Length != 1 || parameters[0].ParameterType != typeof(EngineTestContext))
                 return false;
 
-            return method.ReturnType == typeof(void) || method.ReturnType == typeof(Task);
+            // async void is rejected: reflection returns at the first incomplete await with no
+            // task to observe, so the runner would mark the test passed and clean up while it
+            // was still running. Async tests must return Task.
+            if (method.ReturnType == typeof(void))
+                return method.GetCustomAttribute<AsyncStateMachineAttribute>() == null;
+
+            return method.ReturnType == typeof(Task);
         }
 
         private static async Task InvokeTestAsync(MethodInfo method, EngineTestContext context)

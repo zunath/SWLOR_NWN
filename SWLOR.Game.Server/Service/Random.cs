@@ -15,6 +15,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Restores the shared RNG to a fresh, time-seeded instance. Called by the engine test
+        /// runner after a test that seeded the RNG, so determinism does not leak into later
+        /// tests or into a server kept running after the suite.
+        /// </summary>
+        public static void ResetSeed()
+        {
+            _random = new System.Random();
+        }
+
+        /// <summary>
         /// Retrieves the next random integer value.
         /// </summary>
         /// <returns>The next random integer value.</returns>

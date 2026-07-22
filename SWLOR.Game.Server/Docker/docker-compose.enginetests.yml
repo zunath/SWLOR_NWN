@@ -1,0 +1,49 @@
+# Headless compose file for running the in-engine integration test suite (see
+# SWLOR.Game.Server/Service/EngineTest.cs). Unlike docker-compose.yml this file:
+#   - only starts the two services actually needed to run tests (redis, swlor-server)
+#   - gives redis a tmpfs data dir so every run starts against a FRESH, empty database
+#     instead of reusing ${PWD-.}/redis from a normal dev environment
+#   - has no restart policies, so a container exit (pass or fail) is final and observable
+#   - overrides the swlor.env defaults needed to run non-interactively:
+#       SWLOR_ENGINE_TESTS_ENABLED / SWLOR_ENVIRONMENT to turn the suite on,
+#       NWNX_METRICS_INFLUXDB_SKIP because no influxdb service exists in this file
+#
+# Run from the Docker/ directory (so ${PWD-.} resolves to it, matching /nwn/home):
+#   docker compose -f docker-compose.enginetests.yml up --abort-on-container-exit --exit-code-from swlor-server
+#
+# Expects Docker/modules, Docker/hak, Docker/tlk, Docker/dotnet to already be populated
+# (see scripts/run-engine-tests.* and .github/workflows/engine-tests.yml).
+
+services:
+    redis:
+        hostname: redis
+        image: redislabs/redismod:latest
+        tmpfs:
+            - /data
+
+    swlor-server:
+        hostname: nwnx-server
+        stop_signal: SIGINT
+        build:
+          context: .
+          dockerfile: Dockerfile
+        image: zunath/nwn-dotnet:8193.37.15-2
+        env_file: ${PWD-.}/swlor.env
+        # These override the values loaded from swlor.env above (Compose gives
+        # `environment:` precedence over `env_file:`).
+        environment:
+            - SWLOR_ENGINE_TESTS_ENABLED=true
+            - SWLOR_ENVIRONMENT=test
+            - SWLOR_ENGINE_TEST_FILTER=${SWLOR_ENGINE_TEST_FILTER:-}
+            - SWLOR_ENGINE_TEST_ARENA_RESREF=${SWLOR_ENGINE_TEST_ARENA_RESREF:-}
+            - SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS=${SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS:-15}
+            - SWLOR_ENGINE_TEST_SHUTDOWN=${SWLOR_ENGINE_TEST_SHUTDOWN:-true}
+            # No influxdb service in this compose file; skip the NWNX metrics plugin
+            # so it doesn't fail trying to reach a host that doesn't exist.
+            - NWNX_METRICS_INFLUXDB_SKIP=y
+        links:
+            - "redis:redis"
+        volumes:
+            - ${PWD-.}/logs:/nwn/run/logs.0
+            - ${PWD-.}/:/nwn/home
+            - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0

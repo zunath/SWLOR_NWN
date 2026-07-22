@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Service
             public Location EntryLocation { get; init; }
             public float MaximumTravelDistance { get; set; }
             public bool EvadedDetection { get; set; }
+            public bool PlayerInitiatedCombat { get; set; }
         }
 
         private static readonly Dictionary<(uint Player, uint Npc), InfiltrationAttempt> _activeAttempts = new();
@@ -75,7 +76,16 @@ namespace SWLOR.Game.Server.Service
 
             UpdateMaximumTravelDistance(target, attempt);
 
-            if (HasCombatEnmity(target, observer))
+            // Detection can establish combat enmity between this player and observer before the
+            // callback finishes. That pair-specific enmity is the expected failure outcome only
+            // when the player did not initiate combat and neither participant is fighting elsewhere.
+            var hasPairCombatEnmity = Enmity.HasNonProximityEnmity(target, observer);
+            var hasUnrelatedCombatEnmity = Enmity.HasNonProximityEnmityOutsidePair(target, observer);
+            if (ShouldRejectDetectionOutcome(
+                    detected,
+                    attempt.PlayerInitiatedCombat,
+                    hasPairCombatEnmity,
+                    hasUnrelatedCombatEnmity))
             {
                 _activeAttempts.Remove(key);
                 return;
@@ -115,7 +125,7 @@ namespace SWLOR.Game.Server.Service
 
             UpdateMaximumTravelDistance(player, attempt);
             var isStealthed = GetActionMode(player, ActionMode.Stealth);
-            var hasCombatEnmity = HasCombatEnmity(player, npc);
+            var hasCombatEnmity = attempt.PlayerInitiatedCombat || HasCombatEnmity(player, npc);
             if (!MeetsSuccessRequirements(
                     attempt.EvadedDetection,
                     attempt.MaximumTravelDistance,
@@ -171,6 +181,30 @@ namespace SWLOR.Game.Server.Service
             return wasDetected
                 ? (int)(baseXp * DetectionFailureXpPercent)
                 : baseXp;
+        }
+
+        public static bool ShouldRejectDetectionOutcome(
+            bool detected,
+            bool playerInitiatedCombat,
+            bool hasPairCombatEnmity,
+            bool hasUnrelatedCombatEnmity)
+        {
+            return playerInitiatedCombat ||
+                   hasUnrelatedCombatEnmity ||
+                   (!detected && hasPairCombatEnmity);
+        }
+
+        /// <summary>
+        /// Marks every active attempt for a player before their attack can create pair enmity.
+        /// The later Spot callback can then distinguish that hostile action from detection aggro.
+        /// </summary>
+        public static void RecordPlayerCombatInitiation(uint player)
+        {
+            foreach (var (key, attempt) in _activeAttempts)
+            {
+                if (key.Player == player)
+                    attempt.PlayerInitiatedCombat = true;
+            }
         }
 
         public static void CancelPlayer(uint player)

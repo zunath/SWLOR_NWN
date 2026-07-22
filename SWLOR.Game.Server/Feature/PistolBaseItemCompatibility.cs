@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Feature
     /// NWN hardcodes weapon attachment behavior by native base-item ID. Base item 11 always
     /// uses the bow attachment, so its model suppresses a shield even when the 2DA row is made
     /// one-handed. Canonical player pistols use native sling ID 61 instead. Conversion is
-    /// permanent and independent of the off-hand item.
+    /// permanent and independent of the off-hand item. Native sling attacks also require
+    /// ammunition in the bullet slot, so legacy arrow-based blaster ammunition is normalized
+    /// to bullets at the same compatibility boundary.
     /// </summary>
     public static class PistolBaseItemCompatibility
     {
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
+            var equippedLegacyAmmo = GetItemInSlot(InventorySlot.Arrows, creature);
             var equippedItemChanged = false;
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
@@ -52,6 +55,14 @@ namespace SWLOR.Game.Server.Feature
 
             if (equippedItemChanged)
                 RefreshEquippedItemAppearance(creature);
+
+            if (GetIsObjectValid(equippedLegacyAmmo) &&
+                GetBaseItemType(equippedLegacyAmmo) == BaseItem.Bullet)
+            {
+                AssignCommand(
+                    creature,
+                    () => ActionEquipItem(equippedLegacyAmmo, InventorySlot.Bullets));
+            }
         }
 
         public static BaseItem GetCanonicalBaseItem(BaseItem currentBaseItem, string resref)
@@ -65,10 +76,23 @@ namespace SWLOR.Game.Server.Feature
                     : currentBaseItem;
             }
 
+            if (currentBaseItem == BaseItem.Arrow)
+                return BaseItem.Bullet;
+
             return currentBaseItem == BaseItem.Pistol ||
                    currentBaseItem == BaseItem.LegacyPistol
                 ? BaseItem.Sling
                 : currentBaseItem;
+        }
+
+        public static InventorySlot GetCanonicalInventorySlot(
+            BaseItem currentBaseItem,
+            InventorySlot requestedSlot)
+        {
+            return currentBaseItem == BaseItem.Arrow &&
+                   requestedSlot == InventorySlot.Arrows
+                ? InventorySlot.Bullets
+                : requestedSlot;
         }
 
         public static bool Normalize(uint item)

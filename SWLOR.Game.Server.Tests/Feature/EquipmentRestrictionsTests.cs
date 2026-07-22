@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Text.Json;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -124,6 +125,8 @@ public class EquipmentRestrictionsTests
     [TestCase(BaseItem.Pistol, "b_pistol", BaseItem.Sling)]
     [TestCase(BaseItem.LegacyPistol, "b_pistol", BaseItem.Sling)]
     [TestCase(BaseItem.Sling, "b_pistol", BaseItem.Sling)]
+    [TestCase(BaseItem.Arrow, "blaster_bullets", BaseItem.Bullet)]
+    [TestCase(BaseItem.Bullet, "blaster_bullets", BaseItem.Bullet)]
     [TestCase(BaseItem.Sling, "blast_jawa_d", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.Sling, "dualpistolmain", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.LegacyPistol, "blast_jawa_d", BaseItem.LegacyPistol)]
@@ -137,6 +140,21 @@ public class EquipmentRestrictionsTests
             resref);
 
         result.Should().Be(expectedBaseItem);
+    }
+
+    [TestCase(BaseItem.Arrow, InventorySlot.Arrows, InventorySlot.Bullets)]
+    [TestCase(BaseItem.Bullet, InventorySlot.Bullets, InventorySlot.Bullets)]
+    [TestCase(BaseItem.Pistol, InventorySlot.RightHand, InventorySlot.RightHand)]
+    public void PistolAmmunition_UsesTheNativeSlingBulletSlot(
+        BaseItem currentBaseItem,
+        InventorySlot requestedSlot,
+        InventorySlot expectedSlot)
+    {
+        var result = PistolBaseItemCompatibility.GetCanonicalInventorySlot(
+            currentBaseItem,
+            requestedSlot);
+
+        result.Should().Be(expectedSlot);
     }
 
     [Test]
@@ -155,7 +173,7 @@ public class EquipmentRestrictionsTests
         rows[61]["EquipableSlots"].Should().Be("0x00010");
         foreach (var (column, value) in rows[11])
         {
-            if (column == "label")
+            if (column is "label" or "AmmunitionType")
                 continue;
 
             rows[61][column].Should().Be(
@@ -163,11 +181,39 @@ public class EquipmentRestrictionsTests
                 $"the native sling form must preserve the pistol's {column} behavior");
         }
 
+        rows[11]["AmmunitionType"].Should().Be("1");
+        rows[61]["AmmunitionType"].Should().Be(
+            "3",
+            "native sling attacks only emit projectiles from bullet-slot ammunition");
+
+        var ammunitionRows = Read2daRows(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "ammunitiontypes.2da"));
+        ammunitionRows[2]["Model"].Should().Be("wambu_001");
+
         rows[514]["label"].Should().Be("legacy_smallarms");
         rows[514]["EquipableSlots"].Should().Be("0x00030");
         rows[514]["NumDice"].Should().Be("1");
         rows[514]["DieToRoll"].Should().Be("6");
         rows[514]["AmmunitionType"].Should().Be("3");
+    }
+
+    [TestCase("004.uti.json")]
+    [TestCase("blaster_bullets.uti.json")]
+    public void PistolAmmunitionBlueprints_UseTheBulletBaseItem(string fileName)
+    {
+        var root = FindRepositoryRoot();
+        var path = Path.Combine(root.FullName, "Module", "uti", fileName);
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+
+        document.RootElement
+            .GetProperty("BaseItem")
+            .GetProperty("value")
+            .GetInt32()
+            .Should()
+            .Be((int)BaseItem.Bullet);
     }
 
     private static Dictionary<int, Dictionary<string, string>> Read2daRows(string path)

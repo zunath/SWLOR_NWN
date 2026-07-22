@@ -19,7 +19,17 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
+            var originalBaseItem = GetBaseItemType(item);
             PistolBaseItemCompatibility.Normalize(item);
+            var canonicalSlot = PistolBaseItemCompatibility.GetCanonicalInventorySlot(
+                originalBaseItem,
+                slot);
+            if (canonicalSlot != slot)
+            {
+                EventsPlugin.SkipEvent();
+                AssignCommand(creature, () => ActionEquipItem(item, canonicalSlot));
+                return;
+            }
 
             var isSwapping = IsItemSwapping(creature, item, slot);
             var canUseItem = Item.CanEquip(creature, item);

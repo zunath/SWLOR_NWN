@@ -166,11 +166,15 @@ public static void OnPlayerEnter(uint player)
 
 ## Testing
 
-The project uses:
-- Unit tests for individual components
-- Integration tests for service interactions
-- Performance profiling for optimization
-- Docker-based testing environments
+Testing is split into two layers:
+
+- **`SWLOR.Game.Server.Tests`** - an NUnit suite for pure logic and data (calculations, builder
+  wiring, Bible/2DA consistency). It never touches the NWN engine.
+- **In-engine integration tests** - methods tagged `[EngineTest]` that run inside the live NWN
+  server via `scripts/run-engine-tests.ps1` / `.sh`, exercising real feat activation, status
+  effects, and native combat hooks against spawned NPCs. See
+  `SWLOR.Game.Server/Readmes/EngineTesting.md` for the full architecture, env var reference, and
+  how to write/run tests.
 
 ## Common Development Tasks
 

@@ -25,10 +25,16 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
 
             AssignCommand(attacker, () => ActionAttack(target));
 
+            // The default arena is an instanced copy of the module starting area, which contains
+            // placed creatures that may also engage a Hostile-faction target. Requiring the
+            // spawned attacker to be the last damager proves the damage came through our
+            // commanded attack rather than a bystander.
             await ctx.WaitUntilAsync(
-                () => !GetIsObjectValid(target) || GetCurrentHitPoints(target) < startingHP,
+                () => GetIsObjectValid(target) &&
+                      GetCurrentHitPoints(target) < startingHP &&
+                      GetLastDamager(target) == attacker,
                 90f,
-                "the attacker's damage to lower the target's hit points below its starting value");
+                "the commanded attacker's damage to lower the target's hit points below its starting value");
         }
     }
 }

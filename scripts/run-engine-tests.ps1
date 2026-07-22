@@ -82,8 +82,14 @@ else {
 }
 
 # Stale report from a previous run must not be mistaken for this run's result.
+# If deletion fails and the server then crashes before writing a fresh report,
+# we would otherwise parse the old report and report a bogus pass.
 if (Test-Path $ReportPath) {
     Remove-Item $ReportPath -Force
+}
+if (Test-Path $ReportPath) {
+    Write-Host "Could not remove stale report at $ReportPath - aborting so this run cannot be judged by a previous run's results." -ForegroundColor Red
+    exit 1
 }
 
 Write-Section "Running engine tests via docker compose"

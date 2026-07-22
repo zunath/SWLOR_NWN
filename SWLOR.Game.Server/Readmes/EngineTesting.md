@@ -129,8 +129,9 @@ Every `[EngineTest]` method receives one of these, scoped to that single test ru
 | `AssertEqual<T>(expected, actual, label)` | Throws with a formatted `"{label}: expected 'X' but was 'Y'."` message if not equal. |
 | `Fail(message)` | Unconditionally throws `EngineTestAssertionException`. |
 | `Skip(reason)` | Throws `EngineTestSkippedException` (-> `Skipped`). |
-| `WaitUntilAsync(Func<bool> condition, float timeoutSeconds, string description)` | Polls `condition` every 250ms; throws an assertion failure naming `description` if `timeoutSeconds` elapses first. |
-| `DelaySecondsAsync(seconds)` | Awaits a fixed real-time delay (`NwTask.Delay`). |
+| `WaitUntilAsync(Func<bool> condition, float timeoutSeconds, string description)` | Polls `condition` every 250ms; throws an assertion failure naming `description` if `timeoutSeconds` elapses first. Honors runner cancellation. |
+| `DelaySecondsAsync(seconds)` | Awaits a fixed real-time delay (`NwTask.Delay`). Honors runner cancellation. |
+| `CancellationToken` | Signaled by the runner when the test exceeds its `TimeoutSeconds`. The wait helpers above honor it automatically; pass it to any direct `NwTask.Delay`/`NwTask.WaitUntil` calls so a timed-out test stops promptly instead of running on underneath the next test. |
 | `Log(message)` | Writes to `LogGroup.EngineTest`, prefixed with `[TestName]`. |
 | `Cleanup()` | Destroys every tracked object/area. Called automatically by the runner after the test - you normally don't call this yourself. |
 
@@ -165,7 +166,9 @@ two, but still poll rather than assume synchronous application.
 
 This is `AbilityActivationEngineTests` (`SWLOR.Game.Server/Feature/EngineTestDefinition/AbilityActivationEngineTests.cs`)
 in full - it drives a real ability through `UsePerkFeat.TryUseAbility` and verifies both the FP
-spend and the resulting status effect:
+spend and the resulting status effect. Note that all NWScript functions (`GetLocation`,
+`GetIsObjectValid`, `AssignCommand`, ...) are available unqualified inside test methods - the
+project globally imports `SWLOR.NWN.API.NWScript.NWScript` (see `GlobalUsings.cs`):
 
 ```csharp
 public static class AbilityActivationEngineTests
@@ -217,6 +220,9 @@ identical and are kept in sync. Both:
 4. Parse the resulting JSON report, print a table of every test (category, name, outcome, duration,
    message), print the summary line, and exit non-zero unless at least one test ran and none
    failed.
+
+**Prerequisites**: the `dotnet` SDK (unless `--skip-build`), `docker compose`, and - for the bash
+script only - `jq` (used to parse the JSON report; the run fails at the reporting step without it).
 
 **This assumes `SWLOR.Game.Server/Docker/` already has `modules/`, `hak/`, `tlk/`, and (after step
 1) `dotnet/` populated with the current module and hak assets** - the normal deploy-machine flow

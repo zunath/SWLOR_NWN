@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const string ConsolePrefix = "[ENGINE_TESTS]";
         private const string ReportFileName = "engine-test-results.json";
+        private const float TimeoutGraceSeconds = 10f;
 
         private static bool _hasRun;
 
@@ -87,6 +88,7 @@ namespace SWLOR.Game.Server.Service
             catch (Exception ex)
             {
                 Console.WriteLine($"{ConsolePrefix} CRASH - The test runner itself failed: {ex}");
+                Log.Write(LogGroup.EngineTest, $"Test runner crashed: {ex}", true);
                 report.Results.Add(new EngineTestResult
                 {
                     Name = "EngineTestRunner",
@@ -127,7 +129,13 @@ namespace SWLOR.Game.Server.Service
                         return ex.Types.Where(t => t != null);
                     }
                 })
-                .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                // Deliberately wider than the supported (public static) surface: a misplaced
+                // [EngineTest] on a private or instance method must surface as a failed
+                // result from IsValidTestMethod, not silently vanish from the run.
+                .SelectMany(t => t.GetMethods(
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.Static | BindingFlags.Instance |
+                    BindingFlags.DeclaredOnly))
                 .Select(m => (Method: m, Attribute: m.GetCustomAttribute<EngineTestAttribute>()))
                 .Where(x => x.Attribute != null)
                 .OrderBy(x => x.Attribute.Category)
@@ -157,6 +165,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(arena))
             {
                 Console.WriteLine($"{ConsolePrefix} WARNING - Could not instance arena from resref '{arenaResref}'. Falling back to the module starting area.");
+                Log.Write(LogGroup.EngineTest, $"Could not instance arena from resref '{arenaResref}'. Falling back to the module starting area.", true);
                 arena = startingArea;
             }
 
@@ -196,10 +205,25 @@ namespace SWLOR.Game.Server.Service
 
                 if (!testTask.IsCompleted)
                 {
-                    // Observe the abandoned task's eventual exception so it never surfaces as unobserved.
-                    _ = testTask.ContinueWith(t => _ = t.Exception, TaskContinuationOptions.OnlyOnFaulted);
+                    // Cooperative cancellation: the context's wait helpers throw on their next
+                    // poll once cancelled. Give the test a grace window to unwind BEFORE cleanup
+                    // runs and the next test starts, so a timed-out test cannot keep acting on
+                    // the shared arena underneath its successor.
+                    context.CancelTest();
+                    var settled = testTask.ContinueWith(t => _ = t.Exception, TaskContinuationOptions.ExecuteSynchronously);
+                    await NwTask.WhenAny(settled, NwTask.Delay(TimeSpan.FromSeconds(TimeoutGraceSeconds)));
+
                     result.Outcome = EngineTestOutcome.Failed;
-                    result.Message = $"Timed out after {attribute.TimeoutSeconds} seconds.";
+                    result.Message = testTask.IsCompleted
+                        ? $"Timed out after {attribute.TimeoutSeconds} seconds (cancelled)."
+                        : $"Timed out after {attribute.TimeoutSeconds} seconds and did not stop within the {TimeoutGraceSeconds}s cancellation grace period - subsequent test results may be unreliable.";
+
+                    if (!testTask.IsCompleted)
+                    {
+                        Console.WriteLine($"{ConsolePrefix} WARNING - {result.Message}");
+                        Log.Write(LogGroup.EngineTest, $"[{attribute.Name}] {result.Message}", true);
+                    }
+
                     return result;
                 }
 
@@ -217,6 +241,10 @@ namespace SWLOR.Game.Server.Service
                     case EngineTestAssertionException assertion:
                         result.Outcome = EngineTestOutcome.Failed;
                         result.Message = assertion.Message;
+                        break;
+                    case OperationCanceledException:
+                        result.Outcome = EngineTestOutcome.Failed;
+                        result.Message = $"Timed out after {attribute.TimeoutSeconds} seconds (cancelled).";
                         break;
                     default:
                         result.Outcome = EngineTestOutcome.Failed;
@@ -245,6 +273,9 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsValidTestMethod(MethodInfo method)
         {
+            if (!method.IsStatic || !method.IsPublic)
+                return false;
+
             var parameters = method.GetParameters();
             if (parameters.Length != 1 || parameters[0].ParameterType != typeof(EngineTestContext))
                 return false;
@@ -287,6 +318,7 @@ namespace SWLOR.Game.Server.Service
             catch (Exception ex)
             {
                 Console.WriteLine($"{ConsolePrefix} WARNING - Failed to write report file: {ex.Message}");
+                Log.Write(LogGroup.EngineTest, $"Failed to write report file: {ex}", true);
             }
         }
     }

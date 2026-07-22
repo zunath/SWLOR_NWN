@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service.LogService;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         private readonly List<uint> _trackedObjects = new();
         private readonly List<uint> _instancedAreas = new();
         private readonly Location _arenaSpawnLocation;
+        private readonly CancellationTokenSource _cancellation = new();
 
         public string TestName { get; }
 
@@ -30,11 +32,32 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         /// </summary>
         public uint Arena { get; }
 
+        /// <summary>
+        /// Signaled by the runner when this test exceeds its timeout. The context's own wait
+        /// helpers honor it automatically; tests that await NwTask directly should pass it along
+        /// so a timed-out test stops promptly instead of running on into the next test.
+        /// </summary>
+        public CancellationToken CancellationToken => _cancellation.Token;
+
         public EngineTestContext(string testName, uint arena, Location arenaSpawnLocation)
         {
             TestName = testName;
             Arena = arena;
             _arenaSpawnLocation = arenaSpawnLocation;
+        }
+
+        /// <summary>
+        /// Requests cooperative cancellation of this test. Called by the runner on timeout.
+        /// </summary>
+        internal void CancelTest()
+        {
+            _cancellation.Cancel();
+        }
+
+        private void ThrowIfCancelled()
+        {
+            if (_cancellation.IsCancellationRequested)
+                throw new OperationCanceledException($"Engine test '{TestName}' was cancelled by the runner (timeout).");
         }
 
         /// <summary>
@@ -147,10 +170,14 @@ namespace SWLOR.Game.Server.Service.EngineTestService
             var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
             while (!condition())
             {
+                ThrowIfCancelled();
+
                 if (DateTime.UtcNow > deadline)
                     throw new EngineTestAssertionException($"Timed out after {timeoutSeconds}s waiting for: {description}");
 
-                await NwTask.Delay(TimeSpan.FromMilliseconds(250));
+                // NwTask completes silently when the token is cancelled; the next loop
+                // iteration's ThrowIfCancelled turns that into a prompt exit.
+                await NwTask.Delay(TimeSpan.FromMilliseconds(250), _cancellation.Token);
             }
         }
 
@@ -159,7 +186,8 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         /// </summary>
         public async Task DelaySecondsAsync(float seconds)
         {
-            await NwTask.Delay(TimeSpan.FromSeconds(seconds));
+            await NwTask.Delay(TimeSpan.FromSeconds(seconds), _cancellation.Token);
+            ThrowIfCancelled();
         }
 
         public void Log(string message)

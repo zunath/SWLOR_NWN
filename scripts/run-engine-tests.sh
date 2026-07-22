@@ -90,7 +90,14 @@ else
 fi
 
 # Stale report from a previous run must not be mistaken for this run's result.
+# If deletion silently fails (e.g. the directory is owned by another UID from a
+# prior Docker run) and the server then crashes before writing a fresh report,
+# we would otherwise parse the old report and report a bogus pass.
 rm -f "$REPORT_PATH"
+if [ -e "$REPORT_PATH" ]; then
+    echo "Could not remove stale report at $REPORT_PATH - aborting so this run cannot be judged by a previous run's results." >&2
+    exit 1
+fi
 
 section "Running engine tests via docker compose"
 export SWLOR_ENGINE_TEST_FILTER="$FILTER"

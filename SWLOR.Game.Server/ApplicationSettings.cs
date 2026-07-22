@@ -1,3 +1,4 @@
+using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server
@@ -74,7 +75,9 @@ namespace SWLOR.Game.Server
 
         private static float ParseFloat(string value, float defaultValue)
         {
-            return float.TryParse(value, out var parsed) ? parsed : defaultValue;
+            return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
+                ? parsed
+                : defaultValue;
         }
     }
 }

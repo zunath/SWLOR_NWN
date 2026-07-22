@@ -51,9 +51,21 @@ on:
       - "Module/**"
       - "SWLOR.Game.Server.sln"
       - ".github/workflows/engine-tests.yml"
+      - "scripts/run-engine-tests.sh"
+      - "Build/hakbuilder.json"
+      # The SWLOR_Haks gitlink: a submodule pointer bump changes the hak
+      # assets this job packs and deploys.
+      - "SWLOR_Haks"
+
+permissions:
+  contents: read
 
 env:
-  NEVERWINTER_NIM_RELEASE_URL: https://github.com/niv/neverwinter.nim/releases/latest/download/neverwinter-x86_64-linux-gnu.zip
+  # Pinned release + checksum: `releases/latest` would make the CI input
+  # mutable and untrusted. Recompute the checksum when bumping the version:
+  #   curl -sL --fail -o nw.zip <url> && sha256sum nw.zip
+  NEVERWINTER_NIM_RELEASE_URL: https://github.com/niv/neverwinter.nim/releases/download/2.1.2/neverwinter-x86_64-linux-gnu.zip
+  NEVERWINTER_NIM_SHA256: f9cc2e50fbe6f750954d11b824434a92b12913cc0a3442e95dcc5eefd4ddc387
   MOD_FILE_NAME: "Star Wars LOR v2.mod"
 
 jobs:
@@ -68,6 +80,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -93,7 +106,8 @@ jobs:
         # SWLOR.CLI.dll.
         run: |
           set -euo pipefail
-          curl -sL -o /tmp/neverwinter.zip "$NEVERWINTER_NIM_RELEASE_URL"
+          curl -sL --fail -o /tmp/neverwinter.zip "$NEVERWINTER_NIM_RELEASE_URL"
+          echo "$NEVERWINTER_NIM_SHA256  /tmp/neverwinter.zip" | sha256sum --check --strict
           mkdir -p /tmp/neverwinter
           unzip -q /tmp/neverwinter.zip -d /tmp/neverwinter
 
@@ -127,10 +141,13 @@ jobs:
           cp "./$MOD_FILE_NAME" "../SWLOR.Game.Server/Docker/modules/$MOD_FILE_NAME"
 
       - name: Run engine tests
+        # The dispatch input goes through env rather than direct ${{ }} shell
+        # interpolation so a crafted filter value cannot inject shell syntax.
+        env:
+          ENGINE_TEST_FILTER: ${{ inputs.filter }}
         run: |
           set -euo pipefail
-          chmod +x scripts/run-engine-tests.sh
-          scripts/run-engine-tests.sh --filter "${{ inputs.filter }}"
+          scripts/run-engine-tests.sh --filter "${ENGINE_TEST_FILTER:-}"
 
       - name: Upload engine test results
         uses: actions/upload-artifact@v4

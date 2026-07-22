@@ -19,16 +19,12 @@ namespace SWLOR.Game.Server.Tests.Feature
     public class AbilityBehaviorCoverageTests
     {
         /// <summary>
-        /// Trees whose behavior cases have not been written yet. NPC abilities are cast
-        /// through the AI context, Beastmaster needs an associated beast, and Mimicry has
-        /// its own technique system - each is a planned later batch.
+        /// Trees whose behavior cases have not been written yet. Currently empty - every
+        /// registered ability feat in the game has a behavior case. If a brand-new tree is
+        /// added and genuinely cannot be covered in the same change, add its namespace
+        /// fragment here temporarily; never grow this list for individual abilities.
         /// </summary>
-        private static readonly string[] NotYetCoveredNamespaceFragments =
-        {
-            ".AbilityDefinition.NPC",
-            ".AbilityDefinition.Mimicry",
-            ".AbilityDefinition.Beastmaster",
-        };
+        private static readonly string[] NotYetCoveredNamespaceFragments = Array.Empty<string>();
 
         private static Dictionary<FeatType, List<Type>> BuildFeatToDefinitionMap()
         {

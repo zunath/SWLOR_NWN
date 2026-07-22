@@ -241,7 +241,12 @@ Batch status:
 | Batch | Trees | Status |
 |---|---|---|
 | 1 | Force, FirstAid, Leadership, Espionage, Armor, CombatAnalyzer, top-level, Vibroblade, HeavyVibroblade, TwinBlade, Vibroknife, Katar, Spear, Staff, Lightsaber, Saberstaff, Rifle, Pistol, Throwing, Devices | Cases declared (pending first live-server run) |
-| 2 | NPC, Mimicry, Beastmaster | Not started - exempted in the ratchet's not-yet-covered list |
+| 2 | NPC, Mimicry, Beastmaster | Cases declared (pending first live-server run) |
+
+The ratchet's not-yet-covered list is now **empty**: every registered ability feat in the game has
+a behavior case. The remaining skips (17 total) are individual cases whose activation is gated on
+a real player client (beast taming/reviving/reward flows, non-self ally targets) - each carries a
+precise `SkipReason` and should be burned down if the harness ever gains a player/ally fixture.
 
 To cover a new ability: add one `AbilityBehaviorCase` to its tree's `*AbilityBehaviors.cs` (create
 the source class for a brand-new tree and remove the tree from the ratchet's exemption list). Run

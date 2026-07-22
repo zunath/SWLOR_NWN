@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Native
     public static unsafe class PistolProjectilePresentation
     {
         private const byte HighestWeaponProjectileType = 5;
+        private const byte DefaultProjectilePathType = 0;
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         private struct NativeVector
@@ -72,6 +73,7 @@ namespace SWLOR.Game.Server.Native
             byte projectilePathType)
         {
             var clientBaseItemId = GetClientBaseItemId(projectileType, baseItemId);
+            var clientProjectilePathType = GetClientProjectilePathType(projectileType, baseItemId, projectilePathType);
             return _callOriginal(
                 thisPtr,
                 player,
@@ -84,14 +86,29 @@ namespace SWLOR.Game.Server.Native
                 spellId,
                 clientBaseItemId,
                 attackResult,
-                projectilePathType);
+                clientProjectilePathType);
         }
 
         private static byte GetClientBaseItemId(byte projectileType, byte serverBaseItemId)
         {
-            return projectileType <= HighestWeaponProjectileType && serverBaseItemId == (byte)BaseItem.Sling
+            return ShouldUseStraightPistolPresentation(projectileType, serverBaseItemId)
                 ? (byte)BaseItem.Pistol
                 : serverBaseItemId;
+        }
+
+        private static byte GetClientProjectilePathType(
+            byte projectileType,
+            byte serverBaseItemId,
+            byte serverProjectilePathType)
+        {
+            return ShouldUseStraightPistolPresentation(projectileType, serverBaseItemId)
+                ? DefaultProjectilePathType
+                : serverProjectilePathType;
+        }
+
+        private static bool ShouldUseStraightPistolPresentation(byte projectileType, byte serverBaseItemId)
+        {
+            return projectileType <= HighestWeaponProjectileType && serverBaseItemId == (byte)BaseItem.Sling;
         }
     }
 }

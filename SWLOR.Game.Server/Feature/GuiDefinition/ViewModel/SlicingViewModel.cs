@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string StatusText { get => Get<string>(); set => Set(value); }
         public bool IsToolSelectionEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsToolActivationEnabled { get => Get<bool>(); set => Set(value); }
+        public bool IsColumn3Visible { get => Get<bool>(); set => Set(value); }
+        public bool IsColumn4Visible { get => Get<bool>(); set => Set(value); }
 
         public GuiBindingList<string> TileColumn0 { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> TileColumn1 { get => Get<GuiBindingList<string>>(); set => Set(value); }
@@ -158,6 +160,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IntegrityText = $"Integrity: {integrity}%";
             var failureNumber = SlicingSession.GetFailures(session.Target) + 1;
             FailureText = $"Failure {failureNumber}: {Slicing.GetDestructionChance(failureNumber)}% break risk";
+            IsColumn3Visible = session.Board.Width >= 4;
+            IsColumn4Visible = session.Board.Width >= 5;
 
             var powered = Slicing.GetPoweredIndices(session.Board);
             var images = CreateStringColumns();
@@ -166,16 +170,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             for (var row = 0; row < session.Board.Height; row++)
             {
-                for (var column = 0; column < 5; column++)
+                for (var column = 0; column < session.Board.Width; column++)
                 {
-                    if (column >= session.Board.Width)
-                    {
-                        images[column].Add("Blank");
-                        tooltips[column].Add(string.Empty);
-                        enabled[column].Add(false);
-                        continue;
-                    }
-
                     var index = row * session.Board.Width + column;
                     images[column].Add(GetTileImage(session, index, powered.Contains(index), integrity));
                     tooltips[column].Add(GetTileTooltip(session, index));

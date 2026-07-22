@@ -189,6 +189,29 @@ public class SlicingContentTests
         }
     }
 
+    [Test]
+    public void SlicingNuiLayout_UsesSquareNativeSizeAndHidesColumnsOutsideBoard()
+    {
+        var root = FindRepositoryRoot();
+        var definition = File.ReadAllText(Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "SlicingDefinition.cs"));
+        var viewModel = File.ReadAllText(Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "SlicingViewModel.cs"));
+
+        definition.Should().Contain("private const float TileSize = 72f;");
+        definition.Should().Contain(".SetRowHeight(TileSize)");
+        definition.Should().Contain("cell.SetWidth(TileSize);");
+        definition.Should().Contain("cell.SetIsVariable(false);");
+        definition.Should().Contain(".SetScrollbars(NuiScrollbars.None)");
+        definition.Should().Contain(".BindIsVisible(model => model.IsColumn3Visible)");
+        definition.Should().Contain(".BindIsVisible(model => model.IsColumn4Visible)");
+
+        viewModel.Should().Contain("IsColumn3Visible = session.Board.Width >= 4;");
+        viewModel.Should().Contain("IsColumn4Visible = session.Board.Width >= 5;");
+        viewModel.Should().Contain("for (var column = 0; column < session.Board.Width; column++)");
+        viewModel.Should().NotContain("images[column].Add(\"Blank\")");
+    }
+
     private static void AssertRecipeSet(
         Dictionary<RecipeType, RecipeDetail> recipes,
         SkillType skill,

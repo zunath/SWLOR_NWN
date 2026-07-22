@@ -1,10 +1,14 @@
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SlicingDefinition : IGuiWindowDefinition
     {
+        private const float TileSize = 72f;
+        private const float BoardHeight = TileSize * 5;
         private readonly GuiWindowBuilder<SlicingViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -41,16 +45,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     column.AddRow(row =>
                     {
-                        row.AddList(template =>
-                        {
-                            AddTileCell(template, 0);
-                            AddTileCell(template, 1);
-                            AddTileCell(template, 2);
-                            AddTileCell(template, 3);
-                            AddTileCell(template, 4);
-                        })
-                            .BindRowCount(model => model.TileColumn0)
-                            .SetHeight(390f);
+                        row.AddSpacer();
+                        AddTileColumn(row, 0);
+                        AddTileColumn(row, 1);
+                        AddTileColumn(row, 2);
+                        AddTileColumn(row, 3);
+                        AddTileColumn(row, 4);
+                        row.AddSpacer();
+                        row.SetHeight(BoardHeight);
                     });
 
                     column.AddRow(row =>
@@ -84,15 +86,50 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return _builder.Build();
         }
 
+        private static void AddTileColumn(GuiRow<SlicingViewModel> row, int column)
+        {
+            var list = row.AddList(template => AddTileCell(template, column))
+                .SetWidth(TileSize)
+                .SetHeight(BoardHeight)
+                .SetRowHeight(TileSize)
+                .SetShowBorders(false)
+                .SetScrollbars(NuiScrollbars.None);
+
+            switch (column)
+            {
+                case 0:
+                    list.BindRowCount(model => model.TileColumn0);
+                    break;
+                case 1:
+                    list.BindRowCount(model => model.TileColumn1);
+                    break;
+                case 2:
+                    list.BindRowCount(model => model.TileColumn2);
+                    break;
+                case 3:
+                    list.BindRowCount(model => model.TileColumn3)
+                        .BindIsVisible(model => model.IsColumn3Visible);
+                    break;
+                case 4:
+                    list.BindRowCount(model => model.TileColumn4)
+                        .BindIsVisible(model => model.IsColumn4Visible);
+                    break;
+            }
+        }
+
         private static void AddTileCell(
-            Service.GuiService.Component.GuiListTemplate<SlicingViewModel> template,
+            GuiListTemplate<SlicingViewModel> template,
             int column)
         {
             template.AddCell(cell =>
             {
+                cell.SetWidth(TileSize);
+                cell.SetIsVariable(false);
+
                 var button = cell.AddButtonImage()
-                    .SetHeight(72f)
-                    .SetWidth(72f);
+                    .SetHeight(TileSize)
+                    .SetWidth(TileSize)
+                    .SetMargin(0f);
 
                 switch (column)
                 {

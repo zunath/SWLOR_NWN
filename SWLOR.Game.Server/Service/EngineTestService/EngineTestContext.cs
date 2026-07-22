@@ -125,6 +125,25 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         }
 
         /// <summary>
+        /// Creates an item on a creature and equips it into the given slot, waiting for the
+        /// action queue to actually perform the equip. Fails the test if the item can't be
+        /// created or doesn't end up equipped. The item is destroyed with its owner at cleanup.
+        /// </summary>
+        public async Task<uint> EquipItemAsync(uint creature, string itemResref, InventorySlot slot, float timeoutSeconds = 10f)
+        {
+            var item = CreateItemOnObject(itemResref, creature);
+            Assert(GetIsObjectValid(item), $"Failed to create item with resref '{itemResref}'.");
+
+            AssignCommand(creature, () => ActionEquipItem(item, slot));
+            await WaitUntilAsync(
+                () => GetItemInSlot(slot, creature) == item,
+                timeoutSeconds,
+                $"item '{itemResref}' to be equipped in slot {slot}");
+
+            return item;
+        }
+
+        /// <summary>
         /// Moves a creature to the standard Hostile faction so other spawned creatures treat it as an enemy.
         /// </summary>
         public void MakeHostile(uint creature)

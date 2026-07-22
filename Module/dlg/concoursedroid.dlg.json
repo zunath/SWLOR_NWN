@@ -10,11 +10,11 @@
   },
   "EndConverAbort": {
     "type": "resref",
-    "value": ""
+    "value": "nw_walk_wp"
   },
   "EndConversation": {
     "type": "resref",
-    "value": ""
+    "value": "nw_walk_wp"
   },
   "EntryList": {
     "type": "list",
@@ -124,7 +124,19 @@
         "__struct_id": 0,
         "ActionParams": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-open-store"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "visc_smuggler"
+              }
+            }
+          ]
         },
         "Animation": {
           "type": "dword",
@@ -152,7 +164,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "concoursedroid"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

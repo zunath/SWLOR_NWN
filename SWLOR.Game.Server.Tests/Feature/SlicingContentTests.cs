@@ -212,6 +212,20 @@ public class SlicingContentTests
         viewModel.Should().NotContain("images[column].Add(\"Blank\")");
     }
 
+    [Test]
+    public void SlicingWindowLaunch_OnlyTethersPlacedTerminals()
+    {
+        var root = FindRepositoryRoot();
+        var lockboxSource = File.ReadAllText(Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "ItemDefinition", "LockboxItemDefinition.cs"));
+        var terminalSource = File.ReadAllText(Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "SlicingTerminal.cs"));
+
+        lockboxSource.Should().Contain("Gui.TogglePlayerWindow(user, GuiWindowType.Slicing, payload);");
+        lockboxSource.Should().NotContain("Gui.TogglePlayerWindow(user, GuiWindowType.Slicing, payload, item);");
+        terminalSource.Should().Contain("Gui.TogglePlayerWindow(player, GuiWindowType.Slicing, payload, terminal);");
+    }
+
     private static void AssertRecipeSet(
         Dictionary<RecipeType, RecipeDetail> recipes,
         SkillType skill,

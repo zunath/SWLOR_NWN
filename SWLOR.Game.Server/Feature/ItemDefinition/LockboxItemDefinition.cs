@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     var payload = new SlicingPayload(item, SlicingSourceType.Lockbox, tier);
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Slicing, payload, item);
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Slicing, payload);
                 });
         }
     }

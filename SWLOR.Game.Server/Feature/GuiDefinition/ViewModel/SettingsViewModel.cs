@@ -179,6 +179,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
             PortraitVitals = dbPlayer.Settings.PortraitVitals ?? true;
+            DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
         }
 
         private void LoadIdentityView()
@@ -197,8 +198,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             var colorSettings = dbPlayer.Settings.LanguageChatColors;
             var languages = Skill.GetActiveSkillsByCategory(SkillCategoryType.Languages);
-
-            DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
 
             _languages = new List<SkillType>();
             var chatColorNames = new GuiBindingList<string>();

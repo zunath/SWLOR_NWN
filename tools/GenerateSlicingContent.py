@@ -527,9 +527,12 @@ def update_legacy_accessories_and_lockboxes() -> None:
         path = UTI / f"lockbox_t{tier}.uti.json"
         data = load(path)
         description = (
-            f"A sealed tier {tier} lockbox. Requires Slicing rank {tier}. Its circuit seed, failures, and integrity "
+            "Right-click this item in your inventory and choose Activate Item to begin the Slicing minigame. "
+            f"Requires Slicing rank {tier}. Its circuit seed, failures, and integrity "
             "remain attached to the box when traded."
         )
+        data["BaseItem"]["value"] = 24  # MiscSmall: portable item, not an inventory container.
+        data["PropertiesList"]["value"] = [prop(15, 3, 13, 335)]  # Activate Item (self).
         set_loc(data["Description"], description)
         set_loc(data["DescIdentified"], description)
         save(path, data)

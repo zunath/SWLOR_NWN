@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -79,6 +80,31 @@ public class SlicingContentTests
             table.RespawnDelayMinutes.Should().Be(45);
             table.RespawnDelayMaximumMinutes.Should().Be(75);
             table.Spawns.Should().ContainSingle(spawn => spawn.Resref == $"slice_term_{tier}");
+        }
+    }
+
+    [Test]
+    public void Lockboxes_AreUsableMiscellaneousItemsRatherThanContainers()
+    {
+        var root = FindRepositoryRoot();
+        for (var tier = 1; tier <= 5; tier++)
+        {
+            var path = Path.Combine(root, "Module", "uti", $"lockbox_t{tier}.uti.json");
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            var blueprint = document.RootElement;
+
+            GetInt(blueprint, "BaseItem").Should().Be((int)BaseItem.MiscSmall);
+
+            var properties = blueprint.GetProperty("PropertiesList").GetProperty("value").EnumerateArray().ToList();
+            properties.Should().ContainSingle();
+            GetInt(properties[0], "PropertyName").Should().Be(15, "the item needs the Cast Spell property");
+            GetInt(properties[0], "CostTable").Should().Be(3);
+            GetInt(properties[0], "CostValue").Should().Be(13);
+            GetInt(properties[0], "Subtype").Should().Be(335, "this is Activate Item (self) in iprp_spells.2da");
+
+            var description = blueprint.GetProperty("Description").GetProperty("value").GetProperty("0").GetString();
+            description.Should().Contain("Right-click this item in your inventory");
+            description.Should().Contain("Activate Item");
         }
     }
 

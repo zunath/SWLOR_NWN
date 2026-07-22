@@ -128,6 +128,7 @@ public class EquipmentRestrictionsTests
     [TestCase(BaseItem.Arrow, "blaster_bullets", BaseItem.Bullet)]
     [TestCase(BaseItem.Bullet, "blaster_bullets", BaseItem.Bullet)]
     [TestCase(BaseItem.Sling, "blast_jawa_d", BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.Pistol, "blast_jawa_d", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.Sling, "dualpistolmain", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.Sling, "extjawa004_wp", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.Sling, "jawa_wp", BaseItem.LegacyPistol)]

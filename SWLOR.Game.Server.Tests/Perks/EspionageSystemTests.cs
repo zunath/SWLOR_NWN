@@ -174,6 +174,33 @@ public class EspionageSystemTests
         EspionageInfiltration.MeetsSuccessRequirements(true, 4f, true, true).Should().BeFalse();
     }
 
+    [TestCase(true, false, true, false, false)]
+    [TestCase(true, false, false, false, false)]
+    [TestCase(true, false, true, true, true)]
+    [TestCase(true, false, false, true, true)]
+    [TestCase(false, false, true, false, true)]
+    [TestCase(false, false, false, false, false)]
+    [TestCase(false, false, true, true, true)]
+    [TestCase(false, false, false, true, true)]
+    [TestCase(true, true, true, false, true)]
+    [TestCase(true, true, false, false, true)]
+    [TestCase(false, true, false, false, true)]
+    public void InfiltrationDetectionOutcome_RejectsPlayerInitiatedAndUnrelatedCombat(
+        bool detected,
+        bool playerInitiatedCombat,
+        bool hasPairCombatEnmity,
+        bool hasUnrelatedCombatEnmity,
+        bool expected)
+    {
+        EspionageInfiltration.ShouldRejectDetectionOutcome(
+                detected,
+                playerInitiatedCombat,
+                hasPairCombatEnmity,
+                hasUnrelatedCombatEnmity)
+            .Should()
+            .Be(expected);
+    }
+
     [Test]
     public void InfiltrationXp_IsDrivenByAggroAndDetectionEventsRatherThanElapsedStealthTime()
     {
@@ -204,6 +231,8 @@ public class EspionageSystemTests
         stealthStatusSource.Should().NotContain("HostileScanRadiusMeters");
         stealthStatusSource.Should().Contain("EspionageInfiltration.UpdateMovement(creature);");
         stealthSource.Should().Contain("EspionageInfiltration.RecordDetection(observer, target, detected);");
+        stealthSource.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureAttackBefore)]");
+        stealthSource.Should().Contain("EspionageInfiltration.RecordPlayerCombatInitiation(attacker);");
         stealthSource.Should().Contain("EspionageInfiltration.CancelPlayer(creature);");
         aiSource.Should().Contain("EspionageInfiltration.TryBegin(entering, self);");
         aiSource.Should().Contain("EspionageInfiltration.Complete(exiting, self);");
@@ -211,7 +240,8 @@ public class EspionageSystemTests
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(npc)");
-        infiltrationSource.Should().Contain("if (HasCombatEnmity(target, observer))");
+        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(target, observer)");
+        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityOutsidePair(target, observer)");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityForCreature(player) ||");
         infiltrationSource.Should().Contain("var master = GetMaster(npc);");
     }

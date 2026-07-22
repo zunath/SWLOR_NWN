@@ -415,6 +415,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Returns true when a specific creature/enemy pair has enmity beyond the amount created
+        /// solely by the enemy's aggro aura.
+        /// </summary>
+        public static bool HasNonProximityEnmity(uint creature, uint enemy)
+        {
+            return GetRawEnmityAmount(creature, enemy) > 0 &&
+                   !HasOnlyProximityEnmity(creature, enemy);
+        }
+
+        /// <summary>
         /// Returns true when an enemy has any enmity that did not come solely from its aggro aura.
         /// Attack, damage, and ability enmity make the enemy an active combatant and therefore an
         /// invalid source for a new Espionage infiltration attempt.
@@ -424,7 +434,7 @@ namespace SWLOR.Game.Server.Service
             if (!_enemyEnmityTables.TryGetValue(enemy, out var table))
                 return false;
 
-            return table.Any(entry => !HasOnlyProximityEnmity(entry.Key, enemy));
+            return table.Keys.Any(creature => HasNonProximityEnmity(creature, enemy));
         }
 
         /// <summary>
@@ -437,7 +447,26 @@ namespace SWLOR.Game.Server.Service
             if (!_creatureToEnemies.TryGetValue(creature, out var enemies))
                 return false;
 
-            return enemies.Any(enemy => !HasOnlyProximityEnmity(creature, enemy));
+            return enemies.Any(enemy => HasNonProximityEnmity(creature, enemy));
+        }
+
+        /// <summary>
+        /// Returns true when either member of a creature/enemy pair has combat enmity involving
+        /// someone outside that pair. Pair-specific checks use this to distinguish an expected
+        /// aggro transition from unrelated combat.
+        /// </summary>
+        public static bool HasNonProximityEnmityOutsidePair(uint creature, uint enemy)
+        {
+            var creatureHasOtherCombat =
+                _creatureToEnemies.TryGetValue(creature, out var enemies) &&
+                enemies.Any(otherEnemy =>
+                    otherEnemy != enemy && HasNonProximityEnmity(creature, otherEnemy));
+            var enemyHasOtherCombat =
+                _enemyEnmityTables.TryGetValue(enemy, out var table) &&
+                table.Keys.Any(otherCreature =>
+                    otherCreature != creature && HasNonProximityEnmity(otherCreature, enemy));
+
+            return creatureHasOtherCombat || enemyHasOtherCombat;
         }
 
         /// <summary>

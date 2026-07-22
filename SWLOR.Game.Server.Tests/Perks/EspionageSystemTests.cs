@@ -174,13 +174,26 @@ public class EspionageSystemTests
         EspionageInfiltration.MeetsSuccessRequirements(true, 4f, true, true).Should().BeFalse();
     }
 
-    [Test]
-    public void InfiltrationDetectionFailure_AllowsCombatEnmityCreatedByDetection()
+    [TestCase(true, true, false, false)]
+    [TestCase(true, false, false, false)]
+    [TestCase(true, true, true, true)]
+    [TestCase(true, false, true, true)]
+    [TestCase(false, true, false, true)]
+    [TestCase(false, false, false, false)]
+    [TestCase(false, true, true, true)]
+    [TestCase(false, false, true, true)]
+    public void InfiltrationDetectionOutcome_AllowsOnlyDetectionPairCombat(
+        bool detected,
+        bool hasPairCombatEnmity,
+        bool hasUnrelatedCombatEnmity,
+        bool expected)
     {
-        EspionageInfiltration.ShouldRejectDetectionOutcome(true, true).Should().BeFalse();
-        EspionageInfiltration.ShouldRejectDetectionOutcome(true, false).Should().BeFalse();
-        EspionageInfiltration.ShouldRejectDetectionOutcome(false, true).Should().BeTrue();
-        EspionageInfiltration.ShouldRejectDetectionOutcome(false, false).Should().BeFalse();
+        EspionageInfiltration.ShouldRejectDetectionOutcome(
+                detected,
+                hasPairCombatEnmity,
+                hasUnrelatedCombatEnmity)
+            .Should()
+            .Be(expected);
     }
 
     [Test]
@@ -220,7 +233,8 @@ public class EspionageSystemTests
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(npc)");
-        infiltrationSource.Should().Contain("ShouldRejectDetectionOutcome(detected, HasCombatEnmity(target, observer))");
+        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(target, observer)");
+        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityOutsidePair(target, observer)");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityForCreature(player) ||");
         infiltrationSource.Should().Contain("var master = GetMaster(npc);");
     }

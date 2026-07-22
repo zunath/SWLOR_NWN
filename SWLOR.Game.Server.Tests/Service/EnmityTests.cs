@@ -226,6 +226,45 @@ public class EnmityTests
     }
 
     [Test]
+    public void HasNonProximityEnmityOutsidePair_IgnoresPairCombatAndAuraTrafficButRejectsOtherCombat()
+    {
+        const uint player = 1;
+        const uint otherPlayer = 2;
+        const uint npc = 100;
+        const uint otherNpc = 200;
+
+        CreatureToEnemies()[player] = new List<uint> { npc, otherNpc };
+        EnemyEnmityTables()[npc] = new Dictionary<uint, int>
+        {
+            [player] = 5
+        };
+        EnemyEnmityTables()[otherNpc] = new Dictionary<uint, int>
+        {
+            [player] = 1
+        };
+        ProximityEnmityAmounts()[otherNpc] = new Dictionary<uint, int>
+        {
+            [player] = 1
+        };
+
+        Enmity.HasNonProximityEnmity(player, npc).Should().BeTrue();
+        Enmity.HasNonProximityEnmity(player, otherNpc).Should().BeFalse();
+        Enmity.HasNonProximityEnmityOutsidePair(player, npc).Should().BeFalse();
+
+        EnemyEnmityTables()[otherNpc][player] = 2;
+        Enmity.HasNonProximityEnmityOutsidePair(player, npc).Should().BeTrue();
+
+        EnemyEnmityTables()[otherNpc][player] = 1;
+        EnemyEnmityTables()[npc][otherPlayer] = 3;
+        ProximityEnmityAmounts()[npc] = new Dictionary<uint, int>
+        {
+            [otherPlayer] = 1
+        };
+
+        Enmity.HasNonProximityEnmityOutsidePair(player, npc).Should().BeTrue();
+    }
+
+    [Test]
     public void ShouldIssueAttackCommand_ReissuesWhenTargetIsStaleButNoAttackActionIsRunning()
     {
         ShouldIssueAttackCommand(1, 1, ActionType.Invalid, false, commandIssuedAt: DateTime.UtcNow.AddSeconds(-7))

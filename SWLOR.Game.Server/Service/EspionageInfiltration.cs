@@ -75,10 +75,15 @@ namespace SWLOR.Game.Server.Service
 
             UpdateMaximumTravelDistance(target, attempt);
 
-            // A successful Detection result can establish combat enmity before this callback
-            // finishes. That is the expected failure outcome and still earns the reduced award.
-            // Only an undetected attempt with real combat enmity is invalid.
-            if (ShouldRejectDetectionOutcome(detected, HasCombatEnmity(target, observer)))
+            // Detection can establish combat enmity between this player and observer before the
+            // callback finishes. That pair-specific enmity is the expected failure outcome, but
+            // combat involving either participant and someone else still invalidates the attempt.
+            var hasPairCombatEnmity = Enmity.HasNonProximityEnmity(target, observer);
+            var hasUnrelatedCombatEnmity = Enmity.HasNonProximityEnmityOutsidePair(target, observer);
+            if (ShouldRejectDetectionOutcome(
+                    detected,
+                    hasPairCombatEnmity,
+                    hasUnrelatedCombatEnmity))
             {
                 _activeAttempts.Remove(key);
                 return;
@@ -176,9 +181,12 @@ namespace SWLOR.Game.Server.Service
                 : baseXp;
         }
 
-        public static bool ShouldRejectDetectionOutcome(bool detected, bool hasCombatEnmity)
+        public static bool ShouldRejectDetectionOutcome(
+            bool detected,
+            bool hasPairCombatEnmity,
+            bool hasUnrelatedCombatEnmity)
         {
-            return !detected && hasCombatEnmity;
+            return hasUnrelatedCombatEnmity || (!detected && hasPairCombatEnmity);
         }
 
         public static void CancelPlayer(uint player)

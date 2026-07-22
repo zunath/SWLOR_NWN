@@ -45,7 +45,9 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("Mimicry", ServerEnvironmentType.All)]
         Mimicry,
         [LogGroup("QuestContract", ServerEnvironmentType.All)]
-        QuestContract
+        QuestContract,
+        [LogGroup("EngineTest", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
+        EngineTest
     }
 
     public class LogGroupAttribute : Attribute

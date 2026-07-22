@@ -12,6 +12,12 @@ namespace SWLOR.Game.Server
         public string PropertyBroadcastWebhookUrl { get; }
         public string ServerNotificationWebhookUrl { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
+        public bool EngineTestsEnabled { get; }
+        public string EngineTestResultsDirectory { get; }
+        public string EngineTestFilter { get; }
+        public float EngineTestStartupDelaySeconds { get; }
+        public bool EngineTestShutdownOnCompletion { get; }
+        public string EngineTestArenaResref { get; }
 
         private static ApplicationSettings _settings;
         public static ApplicationSettings Get()
@@ -32,6 +38,14 @@ namespace SWLOR.Game.Server
             PropertyBroadcastWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_PROPERTY_BROADCAST_WEBHOOK_URL");
             ServerNotificationWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_SERVER_NOTIFICATION_WEBHOOK_URL");
 
+            EngineTestsEnabled = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TESTS_ENABLED"), false);
+            EngineTestResultsDirectory = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_RESULTS_DIRECTORY")
+                                         ?? (string.IsNullOrWhiteSpace(LogDirectory) ? null : LogDirectory + "engine_tests/");
+            EngineTestFilter = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_FILTER");
+            EngineTestStartupDelaySeconds = ParseFloat(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS"), 15f);
+            EngineTestShutdownOnCompletion = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_SHUTDOWN"), true);
+            EngineTestArenaResref = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_ARENA_RESREF");
+
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
             if (!string.IsNullOrWhiteSpace(environment) &&
                 (environment.ToLower() == "prod" || environment.ToLower() == "production"))
@@ -49,5 +63,18 @@ namespace SWLOR.Game.Server
             }
         }
 
+        private static bool ParseBool(string value, bool defaultValue)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return defaultValue;
+
+            var normalized = value.Trim().ToLower();
+            return normalized == "true" || normalized == "1" || normalized == "yes";
+        }
+
+        private static float ParseFloat(string value, float defaultValue)
+        {
+            return float.TryParse(value, out var parsed) ? parsed : defaultValue;
+        }
     }
 }

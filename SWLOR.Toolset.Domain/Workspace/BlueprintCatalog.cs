@@ -34,6 +34,7 @@ namespace SWLOR.Toolset.Domain.Workspace
     {
         private readonly ModuleWorkspace _workspace;
         private readonly object _snapshotLock = new();
+        private readonly Dictionary<string, CatalogEntry> _refreshedEntries = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<CatalogEntry> _entries = Array.Empty<CatalogEntry>();
         private int _processedCount;
 
@@ -97,9 +98,48 @@ namespace SWLOR.Toolset.Domain.Workspace
 
             lock (_snapshotLock)
             {
+                foreach (var refreshed in _refreshedEntries.Values)
+                    ReplaceEntry(ordered, refreshed);
+
                 _entries = ordered;
             }
         }
+
+        /// <summary>
+        /// Re-reads one newly created or externally updated resource and publishes it into the
+        /// current catalog snapshot immediately. A concurrent initial build also merges the
+        /// refreshed entry before publishing its final snapshot, so the update cannot be lost.
+        /// </summary>
+        public CatalogEntry RefreshEntry(ResourceType type, string resRef)
+        {
+            var entry = BuildEntry(type, resRef);
+            lock (_snapshotLock)
+            {
+                _refreshedEntries[IdentityKey(type, resRef)] = entry;
+                var updated = _entries.ToList();
+                ReplaceEntry(updated, entry);
+                _entries = updated;
+            }
+
+            return entry;
+        }
+
+        private static void ReplaceEntry(List<CatalogEntry> entries, CatalogEntry replacement)
+        {
+            entries.RemoveAll(entry =>
+                entry.ResourceType == replacement.ResourceType &&
+                entry.ResRef.Equals(replacement.ResRef, StringComparison.OrdinalIgnoreCase));
+            entries.Add(replacement);
+            entries.Sort((left, right) =>
+            {
+                var typeComparison = left.ResourceType.CompareTo(right.ResourceType);
+                return typeComparison != 0
+                    ? typeComparison
+                    : StringComparer.OrdinalIgnoreCase.Compare(left.ResRef, right.ResRef);
+            });
+        }
+
+        private static string IdentityKey(ResourceType type, string resRef) => $"{(int)type}:{resRef}";
 
         private CatalogEntry BuildEntry(ResourceType type, string resRef)
         {

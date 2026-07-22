@@ -9,7 +9,7 @@ namespace SWLOR.Toolset.Domain.Gff
         /// <summary>The root "__data_type" value, including its trailing space (e.g. "ARE ").</summary>
         public string DataType { get; set; }
 
-        public JsonGffStruct Root { get; }
+        public JsonGffStruct Root { get; private set; }
 
         /// <summary>True when the file uses CRLF line endings (the working-tree norm on Windows).</summary>
         public bool UsesCrLf { get; set; }
@@ -38,6 +38,20 @@ namespace SWLOR.Toolset.Domain.Gff
         public byte[] ToBytes()
         {
             return GffJsonWriter.Write(this);
+        }
+
+        /// <summary>
+        /// Replaces this document's parsed state while preserving the document object itself.
+        /// Editor field contexts retain a reference to this object, so an external-change reload
+        /// can refresh every field against the new root without rebuilding the whole editor tab.
+        /// </summary>
+        public void ReplaceWith(JsonGffDocument replacement)
+        {
+            ArgumentNullException.ThrowIfNull(replacement);
+            DataType = replacement.DataType;
+            Root = replacement.Root;
+            UsesCrLf = replacement.UsesCrLf;
+            HasTrailingNewline = replacement.HasTrailingNewline;
         }
     }
 }

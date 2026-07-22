@@ -99,12 +99,18 @@ namespace SWLOR.Toolset.Domain.Documents
 
         public bool Remove(string name)
         {
-            var list = _owner.GetOrAddList(FieldName);
+            var listField = _owner.GetOrNull(FieldName);
+            if (listField == null)
+                return false;
+            if (listField.Type != GffFieldType.List || listField.Elements == null)
+                throw new InvalidOperationException($"Field '{FieldName}' is not a GFF list.");
+
+            var list = listField.Elements!;
             for (var i = 0; i < list.Count; i++)
             {
                 if (list[i].GetStringOrNull("Name") == name)
                 {
-                    list.RemoveAt(i);
+                    listField.RemoveElementAt(i);
                     return true;
                 }
             }
@@ -126,9 +132,12 @@ namespace SWLOR.Toolset.Domain.Documents
         private void SetValue(string name, int type, GffFieldType valueType,
             Func<byte[]> encodeInitial, Action<JsonGffField> updateExisting)
         {
-            var list = _owner.GetOrAddList(FieldName);
-            foreach (var entryStruct in list)
+            var listField = GetOrAddListField();
+            var list = listField.Elements!;
+            var insertAt = list.Count;
+            for (var index = 0; index < list.Count; index++)
             {
+                var entryStruct = list[index];
                 if (entryStruct.GetStringOrNull("Name") != name)
                     continue;
 
@@ -140,7 +149,8 @@ namespace SWLOR.Toolset.Domain.Documents
                 }
 
                 // Type changed: the Value field's GFF type must change too, so replace the entry.
-                list.Remove(entryStruct);
+                insertAt = index;
+                listField.RemoveElementAt(index);
                 break;
             }
 
@@ -149,7 +159,23 @@ namespace SWLOR.Toolset.Domain.Documents
             newEntry.Add("Type", JsonGffField.CreateScalar(GffFieldType.Dword,
                 Encoding.ASCII.GetBytes(type.ToString(CultureInfo.InvariantCulture))));
             newEntry.Add("Value", JsonGffField.CreateScalar(valueType, encodeInitial()));
-            list.Add(newEntry);
+            listField.InsertElement(insertAt, newEntry);
+        }
+
+        private JsonGffField GetOrAddListField()
+        {
+            var field = _owner.GetOrNull(FieldName);
+            if (field != null)
+            {
+                if (field.Type != GffFieldType.List || field.Elements == null)
+                    throw new InvalidOperationException($"Field '{FieldName}' is not a GFF list.");
+
+                return field;
+            }
+
+            field = JsonGffField.CreateList();
+            _owner.Add(FieldName, field);
+            return field;
         }
     }
 }

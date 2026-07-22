@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Radoub.Formats.Bif;
 using Radoub.Formats.Key;
 
@@ -15,7 +16,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         private readonly string _dataDirectory;
         private readonly KeyFile _keyFile;
         private readonly Dictionary<ResourceIdentity, KeyResourceEntry> _index;
-        private readonly Dictionary<int, BifFile> _bifCache = new();
+        private readonly ConcurrentDictionary<int, Lazy<BifFile?>> _bifCache = new();
 
         private KeyBifCatalog(string dataDirectory, KeyFile keyFile)
         {
@@ -76,16 +77,20 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
 
         private BifFile? GetOrLoadBif(int bifIndex, KeyBifEntry bifEntry)
         {
-            if (_bifCache.TryGetValue(bifIndex, out var cached))
-                return cached;
+            var lazyBif = _bifCache.GetOrAdd(
+                bifIndex,
+                _ => new Lazy<BifFile?>(
+                    () => LoadBif(bifEntry),
+                    LazyThreadSafetyMode.ExecutionAndPublication));
+            return lazyBif.Value;
+        }
 
+        private BifFile? LoadBif(KeyBifEntry bifEntry)
+        {
             var bifPath = ResolveBifPath(bifEntry.Filename);
-            if (bifPath == null || !File.Exists(bifPath))
-                return null;
-
-            var bif = BifReader.ReadMetadataOnly(bifPath);
-            _bifCache[bifIndex] = bif;
-            return bif;
+            return bifPath == null || !File.Exists(bifPath)
+                ? null
+                : BifReader.ReadMetadataOnly(bifPath);
         }
 
         private string? ResolveBifPath(string bifFilename)

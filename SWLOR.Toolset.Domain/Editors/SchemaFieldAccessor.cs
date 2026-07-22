@@ -50,6 +50,7 @@ namespace SWLOR.Toolset.Domain.Editors
                 return;
             }
 
+            JsonGffField.ValidateStringValue(descriptor.FieldType, value);
             var field = document.Root.GetOrNull(descriptor.FieldName);
             if (field == null)
             {
@@ -63,6 +64,7 @@ namespace SWLOR.Toolset.Domain.Editors
 
         public static void SetInteger(JsonGffDocument document, FieldDescriptor descriptor, long value)
         {
+            JsonGffField.ValidateIntegerValue(descriptor.FieldType, value);
             var field = document.Root.GetOrNull(descriptor.FieldName);
             if (field == null)
             {

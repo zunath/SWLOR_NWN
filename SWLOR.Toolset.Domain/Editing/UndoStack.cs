@@ -89,5 +89,13 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             _savedPosition = _position;
         }
+
+        /// <summary>Clears all history and establishes the current document as a clean baseline.</summary>
+        public void Reset()
+        {
+            _entries.Clear();
+            _position = 0;
+            _savedPosition = 0;
+        }
     }
 }

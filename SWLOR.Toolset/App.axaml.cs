@@ -52,6 +52,7 @@ namespace SWLOR.Toolset
             services.AddSingleton(settings);
 
             services.AddSingleton<OutputLogService>();
+            services.AddSingleton<Services.IEditorPromptService, Services.EditorPromptService>();
             services.AddSingleton<Func<string, ModuleWorkspace>>(_ => path => new ModuleWorkspace(path));
             services.AddSingleton<WorkspaceContext>();
             services.AddSingleton<ModuleFileWatcher>();
@@ -72,6 +73,7 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Editors.LookupOptionProvider>(),
                 sp.GetRequiredService<OutputLogService>(),
                 sp.GetRequiredService<ToolsetDockFactory>(),
+                sp.GetRequiredService<Services.IEditorPromptService>(),
                 sp.GetService<IGameCodeIndex>(),
                 sp.GetRequiredService<ModelPreviewViewModel>(),
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
@@ -111,6 +113,7 @@ namespace SWLOR.Toolset
             services.AddSingleton(sp => new ValidationViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),
+                sp.GetRequiredService<Func<Editors.EditorService>>(),
                 sp.GetService<IGameCodeIndex>(),
                 sp.GetService<ResourceIndex>()));
             services.AddSingleton<ToolsetDockFactory>();

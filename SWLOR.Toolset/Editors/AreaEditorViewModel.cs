@@ -13,6 +13,7 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
@@ -55,7 +56,12 @@ namespace SWLOR.Toolset.Editors
         private readonly PlaceableAppearanceService? _placeableAppearances;
         private readonly DoorTypeService? _doorTypes;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
+        private readonly IEditorPromptService _prompts;
         private bool _sceneBuildRequested;
+        private long _sceneBuildGeneration;
+        private bool _closeApproved;
+        private bool _closePromptOpen;
+        private bool _disposed;
 
         public ObservableCollection<EditorGroup> AreaPropertyGroups { get; } = new();
 
@@ -639,7 +645,8 @@ namespace SWLOR.Toolset.Editors
             ResourceIndex? resourceIndex = null,
             PlaceableAppearanceService? placeableAppearances = null,
             DoorTypeService? doorTypes = null,
-            TileWalkmeshCache? tileWalkmeshCache = null)
+            TileWalkmeshCache? tileWalkmeshCache = null,
+            IEditorPromptService? prompts = null)
         {
             _log = log;
             _workspace = workspace;
@@ -649,6 +656,7 @@ namespace SWLOR.Toolset.Editors
             _placeableAppearances = placeableAppearances;
             _doorTypes = doorTypes;
             _tileWalkmeshCache = tileWalkmeshCache;
+            _prompts = prompts ?? throw new ArgumentNullException(nameof(prompts));
             ResourceIndex = resourceIndex;
             Id = $"area-editor:{areResRef}";
 
@@ -723,18 +731,25 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            var generation = Interlocked.Increment(ref _sceneBuildGeneration);
             IsBuildingScene = true;
             SceneStatus = "Building scene...";
 
             var tilesetCatalog = _tilesetCatalog;
             var tileModelCache = _tileModelCache;
-            var are = new AreDocument(_areSession.Document);
-            var git = new GitDocument(_gitSession.Document);
 
             try
             {
+                // Build from a point-in-time copy. UI edits can start another build while this one
+                // is on the thread pool, but they cannot mutate the document graph being read here.
+                var areBytes = _areSession.Document.ToBytes();
+                var gitBytes = _gitSession.Document.ToBytes();
                 var scene = await Task.Run(() => AreaSceneBuilder.Build(
-                    are, git, tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache));
+                    AreDocument.Parse(areBytes), GitDocument.Parse(gitBytes),
+                    tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache));
+
+                if (generation != Volatile.Read(ref _sceneBuildGeneration))
+                    return;
 
                 AreaScene = scene;
 
@@ -761,12 +776,16 @@ namespace SWLOR.Toolset.Editors
             }
             catch (Exception ex)
             {
-                SceneStatus = $"Failed to build 3D scene: {ex.Message}";
-                _log.AppendLine($"Area 3D scene build failed for {_areResRef}: {ex.Message}");
+                if (generation == Volatile.Read(ref _sceneBuildGeneration))
+                {
+                    SceneStatus = $"Failed to build 3D scene: {ex.Message}";
+                    _log.AppendLine($"Area 3D scene build failed for {_areResRef}: {ex.Message}");
+                }
             }
             finally
             {
-                IsBuildingScene = false;
+                if (generation == Volatile.Read(ref _sceneBuildGeneration))
+                    IsBuildingScene = false;
             }
         }
 
@@ -808,27 +827,64 @@ namespace SWLOR.Toolset.Editors
         }
 
         [RelayCommand]
-        private void Save()
+        private async Task Save()
         {
-            SaveSession(_areSession);
-            SaveSession(_gitSession);
-            AfterHistoryChange();
+            await TrySaveAsync().ConfigureAwait(true);
         }
 
-        private void SaveSession(DocumentSession session)
+        /// <summary>Saves both area documents, returning false if any prompt is cancelled or write fails.</summary>
+        public async Task<bool> TrySaveAsync()
+        {
+            var areResult = await TrySaveSessionAsync(_areSession).ConfigureAwait(true);
+            if (!areResult.Success)
+                return false;
+
+            var gitResult = await TrySaveSessionAsync(_gitSession).ConfigureAwait(true);
+            if (!gitResult.Success)
+                return false;
+
+            if (areResult.Reloaded)
+                RefreshAreaPropertyFields();
+            if (gitResult.Reloaded)
+                RefreshInstanceSections();
+            if ((areResult.Reloaded || gitResult.Reloaded) && _sceneBuildRequested)
+                _ = BuildSceneAsync(CaptureReselectKey());
+
+            AfterHistoryChange();
+            return true;
+        }
+
+        private async Task<(bool Success, bool Reloaded)> TrySaveSessionAsync(DocumentSession session)
         {
             if (!session.UndoStack.IsDirty)
-                return;
+                return (true, false);
 
             try
             {
+                if (session.HasExternalChange())
+                {
+                    var choice = await _prompts.ConfirmExternalChangeAsync(session.FilePath).ConfigureAwait(true);
+                    if (choice == ExternalChangeChoice.Cancel)
+                        return (false, false);
+
+                    if (choice == ExternalChangeChoice.Reload)
+                    {
+                        session.ReloadFromDisk();
+                        _log.AppendLine($"Reloaded externally changed file {session.FilePath}.");
+                        return (true, true);
+                    }
+                }
+
                 Services.SaveService.WriteAtomic(session.FilePath, session.Document.ToBytes());
                 session.UndoStack.MarkSaved();
+                session.RecordCurrentFileState();
                 _log.AppendLine($"Saved {session.FilePath}.");
+                return (true, false);
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Save failed for {session.FilePath}: {ex.Message}");
+                return (false, false);
             }
         }
 
@@ -920,12 +976,49 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
         public event Action<AreaEditorViewModel>? Closed;
 
+        /// <summary>Raised after an async close prompt approves closing this tab.</summary>
+        public event Action<AreaEditorViewModel>? CloseRequested;
+
         public override bool OnClose()
         {
+            if (!_closeApproved && IsDirty)
+            {
+                if (!_closePromptOpen)
+                {
+                    _closePromptOpen = true;
+                    _ = ConfirmCloseAsync();
+                }
+
+                return false;
+            }
+
+            if (_disposed)
+                return base.OnClose();
+
+            _disposed = true;
             _areSession.Dispose();
             _gitSession.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();
+        }
+
+        private async Task ConfirmCloseAsync()
+        {
+            try
+            {
+                var choice = await _prompts.ConfirmCloseAsync(Title ?? _areResRef).ConfigureAwait(true);
+                var approved = choice == UnsavedChangesChoice.Discard ||
+                    choice == UnsavedChangesChoice.Save && await TrySaveAsync().ConfigureAwait(true);
+                if (!approved)
+                    return;
+
+                _closeApproved = true;
+                CloseRequested?.Invoke(this);
+            }
+            finally
+            {
+                _closePromptOpen = false;
+            }
         }
 
         private void RefreshAreaPropertyFields()

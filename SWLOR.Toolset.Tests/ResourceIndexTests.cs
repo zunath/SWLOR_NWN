@@ -174,6 +174,44 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void KeyBifCatalog_ConcurrentFirstLoadOfSameArchive_IsStable()
+        {
+            var installPath = NwnInstallLocator.Locate();
+            if (installPath == null)
+            {
+                Assert.Ignore("No local NWN:EE installation was found; skipping concurrent KEY/BIF test.");
+                return;
+            }
+
+            var catalog = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+            var modelType = ResourceIdentity.TypeFromExtension("mdl");
+            var identity = new[] { "c_bear", "c_badger", "nw_chicken", "plc_chest1" }
+                .Select(resRef => new ResourceIdentity(resRef, modelType))
+                .FirstOrDefault(catalog.Contains);
+            if (identity == default)
+            {
+                Assert.Ignore("No known base-game model candidate was present in this installation.");
+                return;
+            }
+
+            var failures = new System.Collections.Concurrent.ConcurrentBag<Exception>();
+            Parallel.For(0, 64, _ =>
+            {
+                try
+                {
+                    catalog.TryGetBytes(identity, out var bytes).Should().BeTrue();
+                    bytes.Should().NotBeEmpty();
+                }
+                catch (Exception ex)
+                {
+                    failures.Add(ex);
+                }
+            });
+
+            failures.Should().BeEmpty("concurrent cache initialization must publish one safe BIF instance");
+        }
+
+        [Test]
         public void ResourceIdentity_MtrExtension_MapsToNwnEeMaterialType()
         {
             // Radoub.Formats.Common.ResourceTypes does not define MTR; this is the local patch

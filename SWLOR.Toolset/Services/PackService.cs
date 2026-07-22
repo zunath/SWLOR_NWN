@@ -6,9 +6,9 @@ namespace SWLOR.Toolset.Services
 {
     /// <summary>
     /// Packs the module by invoking the existing SWLOR.CLI pipeline (which shells out to
-    /// nwn_gff/nwn_erf), streaming its output to the Output panel. Prefers the freshly built
-    /// CLI from the solution (which understands --no-prompt); falls back to the committed
-    /// tools\SWLOR.CLI binary with redirected stdin when no built copy exists.
+    /// nwn_gff/nwn_erf), streaming its output to the Output panel. Only a solution-built CLI that
+    /// supports --no-prompt is used; an older interactive tools binary can block or fail when
+    /// launched without a console, so it is deliberately not a fallback.
     /// </summary>
     public sealed class PackService
     {
@@ -41,17 +41,15 @@ namespace SWLOR.Toolset.Services
                     return -1;
                 }
 
-                var (cliPath, supportsNoPrompt) = ResolveCli(repoRoot);
+                var cliPath = ResolveCli(repoRoot);
                 if (cliPath == null)
                 {
-                    _log.AppendLine("SWLOR.CLI.exe not found (looked in SWLOR.CLI\\bin and tools\\SWLOR.CLI).");
+                    _log.AppendLine("A solution-built SWLOR.CLI.exe was not found. Build SWLOR.CLI before packing.");
                     return -1;
                 }
 
                 var moduleFileName = ReadModuleFileName(moduleRoot);
-                var arguments = supportsNoPrompt
-                    ? $"-p \"./{moduleFileName}\" --no-prompt"
-                    : $"-p \"./{moduleFileName}\"";
+                var arguments = $"-p \"./{moduleFileName}\" --no-prompt";
 
                 _log.AppendLine($"Packing '{moduleFileName}' via {cliPath}...");
                 var stopwatch = Stopwatch.StartNew();
@@ -62,7 +60,6 @@ namespace SWLOR.Toolset.Services
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    RedirectStandardInput = true,
                     CreateNoWindow = true
                 };
 
@@ -81,7 +78,6 @@ namespace SWLOR.Toolset.Services
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
-                process.StandardInput.Close();
                 await process.WaitForExitAsync().ConfigureAwait(false);
 
                 stopwatch.Stop();
@@ -133,19 +129,17 @@ namespace SWLOR.Toolset.Services
             }
         }
 
-        /// <summary>Prefers the solution-built CLI (has --no-prompt); falls back to the
-        /// committed tools binary, which predates the flag.</summary>
-        internal static (string? Path, bool SupportsNoPrompt) ResolveCli(string repoRoot)
+        /// <summary>Finds a solution-built CLI that supports the required --no-prompt option.</summary>
+        internal static string? ResolveCli(string repoRoot)
         {
             foreach (var configuration in new[] { "Debug", "Release" })
             {
-                var built = Path.Combine(repoRoot, "SWLOR.CLI", "bin", configuration, "net8.0", "SWLOR.CLI.exe");
+                var built = Path.Combine(repoRoot, "SWLOR.CLI", "bin", configuration, "net10.0", "SWLOR.CLI.exe");
                 if (File.Exists(built))
-                    return (built, true);
+                    return built;
             }
 
-            var tools = Path.Combine(repoRoot, "tools", "SWLOR.CLI", "SWLOR.CLI.exe");
-            return File.Exists(tools) ? (tools, false) : (null, false);
+            return null;
         }
 
         internal static string ReadModuleFileName(string moduleRoot)

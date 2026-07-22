@@ -184,6 +184,25 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TryCreate_PreflightsTheWholeTripletBeforeWritingAre()
+        {
+            var orphanGit = Path.Combine(_moduleRoot, "git", "orphaned.git.json");
+            File.Copy(
+                Path.Combine(_moduleRoot, "git", "area_template.git.json"),
+                orphanGit);
+            var workspace = new ModuleWorkspace(_moduleRoot);
+
+            NewAreaWriter.TryCreate(
+                    workspace, null, "orphaned", "Orphaned", "unused", 2, 2, out var error)
+                .Should().BeFalse();
+
+            error.Should().Contain("orphaned.git.json");
+            File.Exists(workspace.GetResourcePath(ResourceType.Area, "orphaned")).Should().BeFalse(
+                "an existing .git destination must be detected before the .are is written");
+            File.Exists(Path.Combine(_moduleRoot, "gic", "orphaned.gic.json")).Should().BeFalse();
+        }
+
+        [Test]
         public void TryCreate_NormalizesResRefCase()
         {
             var resolver = RealTilesets();

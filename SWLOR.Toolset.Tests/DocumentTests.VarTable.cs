@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Tests
@@ -93,6 +94,58 @@ namespace SWLOR.Toolset.Tests
             var reparsed = UtcDocument.Parse(document.ToBytes());
             reparsed.VarTable.GetString("LOOT_TABLE_2").Should().BeNull();
             reparsed.VarTable.GetInt("QUEST_NPC_GROUP_ID").Should().Be(69);
+        }
+
+        [Test]
+        public void AddMissingEntry_InSession_IsDirtyAndUndoable()
+        {
+            var document = UtcDocument.Parse(File.ReadAllBytes(BfButcherUtcPath));
+            using var session = new DocumentSession(BfButcherUtcPath, document.Document);
+
+            using (session.Begin("add local"))
+                document.VarTable.SetInt("UNDO_NEW_LOCAL", 7);
+
+            session.UndoStack.IsDirty.Should().BeTrue();
+            session.UndoStack.Entries.Should().ContainSingle();
+            document.VarTable.GetInt("UNDO_NEW_LOCAL").Should().Be(7);
+
+            session.UndoStack.Undo();
+            document.VarTable.GetInt("UNDO_NEW_LOCAL").Should().BeNull();
+            session.UndoStack.IsDirty.Should().BeFalse();
+        }
+
+        [Test]
+        public void RemoveEntry_InSession_IsDirtyAndUndoable()
+        {
+            var document = UtcDocument.Parse(File.ReadAllBytes(BfButcherUtcPath));
+            using var session = new DocumentSession(BfButcherUtcPath, document.Document);
+
+            using (session.Begin("remove local"))
+                document.VarTable.Remove("LOOT_TABLE_2").Should().BeTrue();
+
+            session.UndoStack.IsDirty.Should().BeTrue();
+            document.VarTable.GetString("LOOT_TABLE_2").Should().BeNull();
+
+            session.UndoStack.Undo();
+            document.VarTable.GetString("LOOT_TABLE_2").Should().Be("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES,5,1");
+            session.UndoStack.IsDirty.Should().BeFalse();
+        }
+
+        [Test]
+        public void ChangeEntryType_InSession_IsDirtyAndUndoable()
+        {
+            var document = UtcDocument.Parse(File.ReadAllBytes(BfButcherUtcPath));
+            using var session = new DocumentSession(BfButcherUtcPath, document.Document);
+
+            using (session.Begin("change local type"))
+                document.VarTable.SetString("QUEST_NPC_GROUP_ID", "replacement");
+
+            session.UndoStack.IsDirty.Should().BeTrue();
+            document.VarTable.GetString("QUEST_NPC_GROUP_ID").Should().Be("replacement");
+
+            session.UndoStack.Undo();
+            document.VarTable.GetInt("QUEST_NPC_GROUP_ID").Should().Be(69);
+            session.UndoStack.IsDirty.Should().BeFalse();
         }
     }
 }

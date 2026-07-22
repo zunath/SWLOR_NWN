@@ -144,6 +144,12 @@ namespace SWLOR.Toolset.Shell
             SetFocusedDockable(_documentDock, document);
         }
 
+        /// <summary>Requests that Dock close a document after the editor has approved any prompt.</summary>
+        public void CloseDocument(Document document)
+        {
+            CloseDockable(document);
+        }
+
         public override void InitLayout(IDockable layout)
         {
             ContextLocator = new Dictionary<string, Func<object?>>

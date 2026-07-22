@@ -59,9 +59,10 @@ namespace SWLOR.Toolset.Shell
         }
 
         [RelayCommand]
-        private void SaveAll()
+        private async Task SaveAll()
         {
-            _editorService.SaveAll();
+            var saved = await _editorService.SaveAllAsync().ConfigureAwait(true);
+            StatusText = saved ? "All open editors saved." : "Save cancelled or failed - see Output.";
         }
 
         [RelayCommand]
@@ -74,7 +75,13 @@ namespace SWLOR.Toolset.Shell
                 return;
             }
 
-            _editorService.SaveAll();
+            if (!await _editorService.SaveAllAsync().ConfigureAwait(true))
+            {
+                StatusText = "Pack cancelled because an open editor could not be saved.";
+                _log.AppendLine("Pack aborted: one or more open editors were not saved.");
+                return;
+            }
+
             StatusText = "Packing module...";
             var exitCode = await _packService.PackAsync(moduleRoot).ConfigureAwait(true);
             StatusText = exitCode == 0 ? "Pack completed." : $"Pack failed (exit code {exitCode}) — see Output.";

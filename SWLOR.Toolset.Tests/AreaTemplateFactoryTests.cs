@@ -83,7 +83,7 @@ namespace SWLOR.Toolset.Tests
             var ifo = IfoDocument.Load(ifoPath);
             var countBefore = ifo.AreaList.Count;
 
-            const string newResRef = "wp73_probe_area_zzz";
+            const string newResRef = "wp73_probe_area";
             AreaTemplateFactory.AddAreaToModule(ifo, newResRef).Should().BeTrue("a not-yet-listed area is appended");
             ifo.AreaResRefs.Should().Contain(newResRef);
             ifo.AreaList.Count.Should().Be(countBefore + 1);

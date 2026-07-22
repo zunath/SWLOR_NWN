@@ -11,7 +11,7 @@ namespace SWLOR.Toolset.Domain.Editing
     public sealed class DocumentSession : IDisposable
     {
         private readonly IDisposable _guard;
-        private readonly DateTime? _loadedMTimeUtc;
+        private DateTime? _loadedMTimeUtc;
         private bool _disposed;
 
         public string FilePath { get; }
@@ -52,6 +52,23 @@ namespace SWLOR.Toolset.Domain.Editing
                 return _loadedMTimeUtc != null;
 
             return File.GetLastWriteTimeUtc(FilePath) != _loadedMTimeUtc;
+        }
+
+        /// <summary>
+        /// Reloads the file into the existing document object, clears undo/redo history, and
+        /// records the reloaded file state as the new external-change baseline.
+        /// </summary>
+        public void ReloadFromDisk()
+        {
+            Document.ReplaceWith(JsonGffDocument.Load(FilePath));
+            UndoStack.Reset();
+            RecordCurrentFileState();
+        }
+
+        /// <summary>Records the current on-disk state after this session successfully saves.</summary>
+        public void RecordCurrentFileState()
+        {
+            _loadedMTimeUtc = File.Exists(FilePath) ? File.GetLastWriteTimeUtc(FilePath) : null;
         }
 
         /// <summary>Releases this session's guard on the ambient EditScope.</summary>

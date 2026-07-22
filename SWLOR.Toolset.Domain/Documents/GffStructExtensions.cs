@@ -19,6 +19,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
         public static void SetString(this JsonGffStruct target, string name, GffFieldType type, string value)
         {
+            JsonGffField.ValidateStringValue(type, value);
             if (target.TryGet(name, out var field))
             {
                 field.SetString(value);
@@ -35,6 +36,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
         public static void SetInt(this JsonGffStruct target, string name, GffFieldType type, int value)
         {
+            JsonGffField.ValidateIntegerValue(type, value);
             if (target.TryGet(name, out var field))
             {
                 field.SetInteger(value);
@@ -52,6 +54,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
         public static void SetUInt(this JsonGffStruct target, string name, GffFieldType type, uint value)
         {
+            JsonGffField.ValidateUnsignedIntegerValue(type, value);
             if (target.TryGet(name, out var field))
             {
                 field.SetUnsignedInteger(value);

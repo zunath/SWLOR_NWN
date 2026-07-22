@@ -73,6 +73,13 @@ namespace SWLOR.Toolset.Shell.Panels
                 {
                     ActiveNewArea = null;
                     Initialize();
+                    var catalog = _workspaceContext.Catalog;
+                    if (catalog != null)
+                    {
+                        catalog.RefreshEntry(ResourceType.Area, resRef);
+                        RefreshFromCatalog(catalog);
+                    }
+
                     SelectedCategory = Categories.FirstOrDefault(c => c.Type == ResourceType.Area);
                     _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);
                 },
@@ -91,6 +98,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>Populates the category list from the workspace's (unparsed) resref enumeration. Cheap - safe to call as soon as a workspace is open.</summary>
         public void Initialize()
         {
+            _catalogByType = null;
             Categories.Clear();
             Items.Clear();
 

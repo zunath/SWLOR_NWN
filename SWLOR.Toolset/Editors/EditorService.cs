@@ -8,6 +8,7 @@ using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell;
 using SWLOR.Toolset.Shell.Panels;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
@@ -24,6 +25,7 @@ namespace SWLOR.Toolset.Editors
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
+        private readonly IEditorPromptService _prompts;
         private readonly ModelPreviewViewModel? _modelPreview;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly TileModelCache? _tileModelCache;
@@ -39,6 +41,7 @@ namespace SWLOR.Toolset.Editors
             LookupOptionProvider lookups,
             OutputLogService log,
             ToolsetDockFactory factory,
+            IEditorPromptService prompts,
             IGameCodeIndex? gameCodeIndex = null,
             ModelPreviewViewModel? modelPreview = null,
             TilesetCatalog? tilesetCatalog = null,
@@ -52,6 +55,7 @@ namespace SWLOR.Toolset.Editors
             _lookups = lookups;
             _log = log;
             _factory = factory;
+            _prompts = prompts;
             _gameCodeIndex = gameCodeIndex;
             _modelPreview = modelPreview;
             _tilesetCatalog = tilesetCatalog;
@@ -101,8 +105,9 @@ namespace SWLOR.Toolset.Editors
                     return;
 
                 var editor = new BlueprintEditorViewModel(
-                    filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log);
+                    filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts);
                 editor.Closed += _ => _openEditors.Remove(filePath);
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.DocumentChanged += () => PreviewEditorModel(editor);
                 _openEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
@@ -114,14 +119,25 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        /// <summary>Saves every open editor (blueprint and area) that has unsaved changes.</summary>
-        public void SaveAll()
+        /// <summary>
+        /// Saves every open editor. Returns false as soon as a save fails or the user cancels an
+        /// external-change prompt, allowing validation and packing to abort safely.
+        /// </summary>
+        public async Task<bool> SaveAllAsync()
         {
             foreach (var editor in _openEditors.Values.ToList())
-                editor.SaveCommand.Execute(null);
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
 
             foreach (var editor in _openAreaEditors.Values.ToList())
-                editor.SaveCommand.Execute(null);
+            {
+                if (!await editor.TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>Areas open in the composite editor (.are properties + .git instance lists).</summary>
@@ -146,8 +162,9 @@ namespace SWLOR.Toolset.Editors
                 var editor = new AreaEditorViewModel(
                     resRef, workspace, _lookups, _gameCodeIndex, _log,
                     _tilesetCatalog, _tileModelCache, _resourceIndex,
-                    _placeableAppearances, _doorTypes, _tileWalkmeshCache);
+                    _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);
             }

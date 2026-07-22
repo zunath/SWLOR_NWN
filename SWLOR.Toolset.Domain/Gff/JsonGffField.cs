@@ -108,6 +108,7 @@ namespace SWLOR.Toolset.Domain.Gff
             if (!GffFieldTypeNames.IsString(Type))
                 throw new InvalidOperationException($"Field type {Type} does not hold a string value.");
 
+            ValidateStringValue(Type, value);
             EditScope.EnsureMutationAllowed();
             var oldValue = RawValue;
             var oldLocId = RawLocStringId;
@@ -133,6 +134,7 @@ namespace SWLOR.Toolset.Domain.Gff
             if (Type is GffFieldType.Float or GffFieldType.Double || !GffFieldTypeNames.IsNumeric(Type))
                 throw new InvalidOperationException($"Field type {Type} does not hold an integer value.");
 
+            ValidateIntegerValue(Type, value);
             EditScope.EnsureMutationAllowed();
             var oldValue = RawValue;
             var oldLocId = RawLocStringId;
@@ -146,11 +148,87 @@ namespace SWLOR.Toolset.Domain.Gff
             if (Type is GffFieldType.Float or GffFieldType.Double || !GffFieldTypeNames.IsNumeric(Type))
                 throw new InvalidOperationException($"Field type {Type} does not hold an integer value.");
 
+            ValidateUnsignedIntegerValue(Type, value);
             EditScope.EnsureMutationAllowed();
             var oldValue = RawValue;
             var oldLocId = RawLocStringId;
             RawValue = Encoding.ASCII.GetBytes(value.ToString(CultureInfo.InvariantCulture));
             EditScope.Capture(new FieldValueEdit(this, oldValue, oldLocId, RawValue, RawLocStringId));
+        }
+
+        /// <summary>
+        /// Validates an editable string value against the storage rules of its GFF field type.
+        /// ResRefs are ASCII resource identifiers capped at 16 characters; an empty ResRef is
+        /// valid for optional references such as unused script slots.
+        /// </summary>
+        public static void ValidateStringValue(GffFieldType type, string value)
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            if (type != GffFieldType.ResRef)
+                return;
+
+            if (value.Length > 16)
+                throw new ArgumentOutOfRangeException(nameof(value), value, "A ResRef cannot exceed 16 characters.");
+
+            foreach (var character in value)
+            {
+                var isValid = character is >= 'a' and <= 'z'
+                    or >= 'A' and <= 'Z'
+                    or >= '0' and <= '9'
+                    or '_';
+                if (!isValid)
+                {
+                    throw new ArgumentException(
+                        "A ResRef may contain only ASCII letters, digits, and underscores.",
+                        nameof(value));
+                }
+            }
+        }
+
+        /// <summary>Ensures a signed editor value fits the declared integral GFF storage type.</summary>
+        public static void ValidateIntegerValue(GffFieldType type, long value)
+        {
+            var isValid = type switch
+            {
+                GffFieldType.Byte => value is >= byte.MinValue and <= byte.MaxValue,
+                GffFieldType.Char => value is >= sbyte.MinValue and <= sbyte.MaxValue,
+                GffFieldType.Word => value is >= ushort.MinValue and <= ushort.MaxValue,
+                GffFieldType.Short => value is >= short.MinValue and <= short.MaxValue,
+                GffFieldType.Dword => value is >= uint.MinValue and <= uint.MaxValue,
+                GffFieldType.Int => value is >= int.MinValue and <= int.MaxValue,
+                GffFieldType.Dword64 => value >= 0,
+                GffFieldType.Int64 => true,
+                _ => throw new InvalidOperationException($"Field type {type} does not hold an integer value.")
+            };
+
+            if (!isValid)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(value), value, $"Value is outside the range of GFF field type {type}.");
+            }
+        }
+
+        /// <summary>Ensures an unsigned editor value fits the declared integral GFF storage type.</summary>
+        public static void ValidateUnsignedIntegerValue(GffFieldType type, ulong value)
+        {
+            var isValid = type switch
+            {
+                GffFieldType.Byte => value <= byte.MaxValue,
+                GffFieldType.Char => value <= (ulong)sbyte.MaxValue,
+                GffFieldType.Word => value <= ushort.MaxValue,
+                GffFieldType.Short => value <= (ulong)short.MaxValue,
+                GffFieldType.Dword => value <= uint.MaxValue,
+                GffFieldType.Int => value <= int.MaxValue,
+                GffFieldType.Dword64 => true,
+                GffFieldType.Int64 => value <= long.MaxValue,
+                _ => throw new InvalidOperationException($"Field type {type} does not hold an integer value.")
+            };
+
+            if (!isValid)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(value), value, $"Value is outside the range of GFF field type {type}.");
+            }
         }
 
         public double GetDouble()

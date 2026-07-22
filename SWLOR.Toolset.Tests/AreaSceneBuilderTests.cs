@@ -319,7 +319,7 @@ namespace SWLOR.Toolset.Tests
         public void Build_UnresolvableTileset_FallsBackForEveryTileWithoutThrowing()
         {
             var (are, git) = LoadArea("bank");
-            are.Tileset = "definitely_not_a_real_tileset_12345";
+            are.Tileset = "missing_tileset";
 
             var index = BuildHakOnlyIndex();
             var tilesetCatalog = new TilesetCatalog(index);

@@ -155,6 +155,27 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BlueprintCatalog_RefreshEntry_PublishesNewAreaToEntriesAndSearch()
+        {
+            using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);
+            var workspace = new ModuleWorkspace(synthetic.Path);
+            var catalog = new BlueprintCatalog(workspace);
+            catalog.BuildTask.GetAwaiter().GetResult();
+
+            const string newResRef = "catalog_new_area";
+            File.Copy(
+                workspace.GetResourcePath(ResourceType.Area, synthetic.AreaResRef),
+                workspace.GetResourcePath(ResourceType.Area, newResRef));
+
+            catalog.RefreshEntry(ResourceType.Area, newResRef);
+
+            catalog.Entries.Should().ContainSingle(entry =>
+                entry.ResourceType == ResourceType.Area && entry.ResRef == newResRef);
+            catalog.Search(newResRef).Should().ContainSingle()
+                .Which.MatchKind.Should().Be(CatalogMatchKind.ExactResRef);
+        }
+
+        [Test]
         public void Search_RanksExactMatchBeforePrefixBeforeContains()
         {
             using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);

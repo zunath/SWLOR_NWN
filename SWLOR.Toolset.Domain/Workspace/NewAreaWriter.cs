@@ -65,9 +65,12 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
 
             var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
-            if (File.Exists(arePath))
+            var gitPath = GitPath(workspace, resRef);
+            var gicPath = GicPath(workspace, resRef);
+            var existingDestination = new[] { arePath, gitPath, gicPath }.FirstOrDefault(File.Exists);
+            if (existingDestination != null)
             {
-                error = $"An area named '{resRef}' already exists.";
+                error = $"An area named '{resRef}' already exists ({Path.GetFileName(existingDestination)} is present).";
                 return false;
             }
 
@@ -113,6 +116,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                 return false;
             }
 
+            var createdPaths = new List<string>();
             try
             {
                 var are = AreDocument.Load(templateAre);
@@ -125,14 +129,31 @@ namespace SWLOR.Toolset.Domain.Workspace
                 // Write the area triplet first, then the module index: an orphaned area file is
                 // harmless and the create is re-runnable, whereas an index entry pointing at a
                 // missing area would break module load.
-                WriteAtomic(arePath, are.ToBytes());
-                File.Copy(templateGit, GitPath(workspace, resRef), overwrite: false);
-                File.Copy(templateGic, GicPath(workspace, resRef), overwrite: false);
-                WriteAtomic(ifoPath, ifo.ToBytes());
+                WriteAtomic(arePath, are.ToBytes(), overwrite: false);
+                createdPaths.Add(arePath);
+                File.Copy(templateGit, gitPath, overwrite: false);
+                createdPaths.Add(gitPath);
+                File.Copy(templateGic, gicPath, overwrite: false);
+                createdPaths.Add(gicPath);
+                WriteAtomic(ifoPath, ifo.ToBytes(), overwrite: true);
                 return true;
             }
             catch (Exception ex)
             {
+                for (var index = createdPaths.Count - 1; index >= 0; index--)
+                {
+                    try
+                    {
+                        File.Delete(createdPaths[index]);
+                    }
+                    catch
+                    {
+                        // Preserve the original failure. The error below still identifies the
+                        // create as failed, and a later retry's destination preflight will name
+                        // any path that could not be rolled back.
+                    }
+                }
+
                 error = $"Failed to create area '{resRef}': {ex.Message}";
                 return false;
             }
@@ -144,11 +165,19 @@ namespace SWLOR.Toolset.Domain.Workspace
         private static string GicPath(ModuleWorkspace workspace, string resRef) =>
             Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
 
-        private static void WriteAtomic(string path, byte[] bytes)
+        private static void WriteAtomic(string path, byte[] bytes, bool overwrite)
         {
-            var temporaryPath = path + ".tmp";
-            File.WriteAllBytes(temporaryPath, bytes);
-            File.Move(temporaryPath, path, overwrite: true);
+            var temporaryPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                File.WriteAllBytes(temporaryPath, bytes);
+                File.Move(temporaryPath, path, overwrite);
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath))
+                    File.Delete(temporaryPath);
+            }
         }
     }
 }

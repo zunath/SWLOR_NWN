@@ -7135,6 +7135,29 @@ namespace SWLOR.Game.Server.Service
             _abilityHitResolutionOverride = forcedOutcome;
         }
 
+        private static bool? _autoAttackHitResolutionOverride;
+
+        /// <summary>
+        /// Forces every native auto-attack roll (ResolveAttackRoll hook) to the given outcome
+        /// instead of rolling. Intended solely for the in-engine test harness: ability damage
+        /// assertions cannot distinguish ability damage from the activator's resumed
+        /// auto-attacks, so behavior sweeps force auto-attack misses. Pass null to restore
+        /// normal resolution. Always restore in a finally block.
+        /// </summary>
+        public static void SetAutoAttackHitResolutionOverride(bool? forcedOutcome)
+        {
+            _autoAttackHitResolutionOverride = forcedOutcome;
+        }
+
+        /// <summary>
+        /// The current auto-attack resolution override, if any. Read by the native
+        /// ResolveAttackRoll hook.
+        /// </summary>
+        public static bool? GetAutoAttackHitResolutionOverride()
+        {
+            return _autoAttackHitResolutionOverride;
+        }
+
         public static bool TryResolveAbilityHit(
             uint attacker,
             uint defender,

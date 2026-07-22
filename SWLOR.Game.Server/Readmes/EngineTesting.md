@@ -224,7 +224,13 @@ activation through `UsePerkFeat.TryUseAbility`:
   placed arena creature engaging the hostile target can't produce a false pass. During the sweep,
   `Combat.SetAbilityHitResolutionOverride(true)` forces ability hit resolution (restored in a
   `finally`) - cases assert what an ability does on a hit, and a legitimate 5% miss chance across
-  hundreds of cases would otherwise make every sweep red.
+  hundreds of cases would otherwise make every sweep red. Auto-attacks are simultaneously forced
+  to miss (`Combat.SetAutoAttackHitResolutionOverride(false)`) so the caster's resumed melee
+  swings can't satisfy a damage assertion on a broken ability's behalf. Hostile targets get a
+  large temporary-HP buffer so ability damage registers without killing them - deaths would
+  route through the corpse/loot pipeline and leave non-destroyable bodies between cases.
+  Case-level skips are surfaced in the tree test's result message (and therefore the JSON
+  report), not just the log.
 - **Weapon** (queued-on-hit) abilities assert queue state (`UsePerkFeat.IsWeaponAbilityQueued`),
   costs (applied at queue time), and recast - landing a hit is combat-timing dependent, so on-hit
   impact effects are documented in `Notes` rather than asserted.

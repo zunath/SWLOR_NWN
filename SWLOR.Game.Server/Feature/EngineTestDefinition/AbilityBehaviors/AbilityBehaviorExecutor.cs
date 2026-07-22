@@ -23,24 +23,35 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         private const float EffectWaitSeconds = 20f;
         private const float CostWaitSeconds = 15f;
 
+        /// <summary>
+        /// Temporary hit points applied to hostile targets so ability damage registers as an
+        /// HP drop without killing the target - deaths would route through the corpse/loot
+        /// pipeline and leave non-destroyable bodies between cases.
+        /// </summary>
+        private const int TargetTemporaryHP = 1000;
+
         public static async Task RunAsync(EngineTestContext ctx, List<AbilityBehaviorCase> cases)
         {
             var failures = new List<string>();
-            var skipped = 0;
+            var skippedFeats = new List<string>();
 
             // Ability impacts roll Combat.TryResolveAbilityHit, which legitimately misses up to
             // 5% of the time even at capped hit rates - across hundreds of cases a sweep would
             // almost always be red from ordinary misses. Behavior cases assert what an ability
-            // DOES on a hit, so hit resolution is forced for the duration of the sweep and
-            // always restored afterward.
+            // DOES on a hit, so ability hit resolution is forced for the duration of the sweep.
+            // Auto-attacks are forced to MISS at the same time: activation resumes the caster's
+            // attack 0.1s after casting, and an ordinary melee hit would satisfy a damage
+            // assertion (caster is the last damager) before the ability's own impact lands.
+            // Both overrides are always restored afterward.
             Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var behaviorCase in cases)
                 {
                     if (!string.IsNullOrWhiteSpace(behaviorCase.SkipReason))
                     {
-                        skipped++;
+                        skippedFeats.Add(behaviorCase.Feat.ToString());
                         ctx.Log($"SKIP {behaviorCase.Feat}: {behaviorCase.SkipReason}");
                         continue;
                     }
@@ -64,10 +75,22 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             finally
             {
                 Combat.SetAbilityHitResolutionOverride(null);
+                Combat.SetAutoAttackHitResolutionOverride(null);
             }
 
+            var skipped = skippedFeats.Count;
             var passed = cases.Count - skipped - failures.Count;
-            ctx.Log($"{cases.Count} case(s): {passed} passed, {failures.Count} failed, {skipped} skipped.");
+            var summary = $"{cases.Count} case(s): {passed} passed, {failures.Count} failed, {skipped} skipped.";
+            if (skipped > 0)
+            {
+                summary += $" Skipped: {string.Join(", ", skippedFeats)}.";
+            }
+
+            ctx.Log(summary);
+
+            // Surfaces case-level skips in the JSON report even when the tree passes -
+            // otherwise known coverage gaps would be invisible outside the log.
+            ctx.SetResultDetail(summary);
 
             if (failures.Count > 0)
             {
@@ -93,6 +116,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     target = ctx.SpawnCreature(TargetResref, 1.5f, 0f);
                     ctx.MakeHostile(target);
+                    ApplyEffectToObject(
+                        DurationType.Temporary,
+                        EffectTemporaryHitpoints(TargetTemporaryHP),
+                        target,
+                        3600f);
                 }
 
                 if (!string.IsNullOrWhiteSpace(behaviorCase.EquipMainHandResref))
@@ -191,11 +219,24 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             {
                 // Fresh actors per case: destroy immediately rather than letting hundreds
                 // accumulate until the tree test's cleanup.
-                if (target != caster && GetIsObjectValid(target))
-                    DestroyObject(target);
-                if (GetIsObjectValid(caster))
-                    DestroyObject(caster);
+                if (target != caster)
+                    DestroyCaseActor(target);
+                DestroyCaseActor(caster);
             }
+        }
+
+        /// <summary>
+        /// Destroys a per-case actor, restoring destroyability first: a creature killed
+        /// mid-case is marked non-destroyable by the death/loot pipeline and would otherwise
+        /// linger at the shared spawn point for the rest of the sweep.
+        /// </summary>
+        private static void DestroyCaseActor(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            AssignCommand(creature, () => SetIsDestroyable(true, false, false));
+            DestroyObject(creature);
         }
 
         private static void AssertCosts(

@@ -63,13 +63,17 @@ namespace SWLOR.Game.Server.Service
                 StartedUtc = DateTime.UtcNow
             };
 
+            var arena = OBJECT_INVALID;
+            Location spawnLocation = null;
+            var arenaIsInstanced = false;
+
             try
             {
                 _suiteAborted = false;
                 var tests = DiscoverTests(settings.EngineTestFilter);
                 Console.WriteLine($"{ConsolePrefix} Discovered {tests.Count} engine test(s).");
 
-                var (arena, spawnLocation) = ResolveArena(settings.EngineTestArenaResref);
+                (arena, spawnLocation, arenaIsInstanced) = ResolveArena(settings.EngineTestArenaResref);
 
                 // CreateArea's initialization scripts (for the area and everything placed in it)
                 // only run after the creating script yields. Let the instanced arena settle
@@ -133,6 +137,16 @@ namespace SWLOR.Game.Server.Service
                     Message = $"Test runner crashed: {ex.Message}"
                 });
             }
+            finally
+            {
+                // A server kept alive for debugging (SWLOR_ENGINE_TEST_SHUTDOWN=false) must not
+                // retain the hidden instanced arena and its contents indefinitely. The fallback
+                // case runs in the real starting area, which is never destroyed.
+                if (arenaIsInstanced && GetIsObjectValid(arena))
+                {
+                    DestroyArea(arena);
+                }
+            }
 
             report.FinishedUtc = DateTime.UtcNow;
             report.Total = report.Results.Count;
@@ -189,7 +203,7 @@ namespace SWLOR.Game.Server.Service
             return tests;
         }
 
-        private static (uint Arena, Location SpawnLocation) ResolveArena(string arenaResrefOverride)
+        private static (uint Arena, Location SpawnLocation, bool IsInstanced) ResolveArena(string arenaResrefOverride)
         {
             var startingLocation = GetStartingLocation();
             var startingArea = GetAreaFromLocation(startingLocation);
@@ -198,6 +212,7 @@ namespace SWLOR.Game.Server.Service
                 ? arenaResrefOverride
                 : GetResRef(startingArea);
 
+            var isInstanced = true;
             var arena = CreateArea(arenaResref);
             if (!GetIsObjectValid(arena))
             {
@@ -205,6 +220,7 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.EngineTest, $"Could not instance arena from resref '{arenaResref}'. Falling back to the module starting area.", true);
                 arena = startingArea;
                 hasOverride = false;
+                isInstanced = false;
             }
 
             // The module entry position is only meaningful inside (a copy of) the starting area.
@@ -219,7 +235,7 @@ namespace SWLOR.Game.Server.Service
                 : GetPositionFromLocation(startingLocation);
 
             var spawnLocation = Location(arena, spawnPosition, 0f);
-            return (arena, spawnLocation);
+            return (arena, spawnLocation, isInstanced);
         }
 
         private static async Task<EngineTestResult> RunSingleTestAsync(
@@ -281,6 +297,11 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 await testTask;
+
+                if (!string.IsNullOrWhiteSpace(context.ResultDetail))
+                {
+                    result.Message = context.ResultDetail;
+                }
             }
             catch (Exception ex)
             {

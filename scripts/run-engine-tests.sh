@@ -81,9 +81,20 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
     fi
 
     section "Deploying build output to Docker/dotnet"
-    rm -rf "$DOTNET_OUTPUT_DIR"
-    mkdir -p "$DOTNET_OUTPUT_DIR"
-    cp -r "$BUILD_OUTPUT_DIR"/. "$DOTNET_OUTPUT_DIR"/
+    # Every staging step is checked: silently running the test container against a stale
+    # or partially copied assembly would produce a passing report for the wrong build.
+    if ! rm -rf "$DOTNET_OUTPUT_DIR"; then
+        echo "Failed to remove previous staging directory $DOTNET_OUTPUT_DIR" >&2
+        exit 1
+    fi
+    if ! mkdir -p "$DOTNET_OUTPUT_DIR"; then
+        echo "Failed to create staging directory $DOTNET_OUTPUT_DIR" >&2
+        exit 1
+    fi
+    if ! cp -r "$BUILD_OUTPUT_DIR"/. "$DOTNET_OUTPUT_DIR"/; then
+        echo "Failed to stage build output into $DOTNET_OUTPUT_DIR" >&2
+        exit 1
+    fi
     echo "Copied $BUILD_OUTPUT_DIR -> $DOTNET_OUTPUT_DIR"
 else
     section "Skipping build (assuming Docker/dotnet is already current)"

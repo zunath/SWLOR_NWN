@@ -40,6 +40,18 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         /// </summary>
         public CancellationToken CancellationToken => _cancellation.Token;
 
+        /// <summary>
+        /// Optional detail recorded by the test; becomes the result's message when the test
+        /// passes, so information like per-case skip lists reaches the JSON report rather
+        /// than only the log.
+        /// </summary>
+        public string ResultDetail { get; private set; }
+
+        public void SetResultDetail(string detail)
+        {
+            ResultDetail = detail;
+        }
+
         public EngineTestContext(string testName, uint arena, Location arenaSpawnLocation)
         {
             TestName = testName;

@@ -834,7 +834,12 @@ def is_self_only_active(description):
     return (
         lowered.startswith("for ") and
         "deals weapon" not in lowered and
+        # Reject every recognized area marker (kept in sync with is_area) so an
+        # area description like "For 10 seconds, all enemies in ..." never
+        # classifies as a self-only buff and loses its area targeting.
         "enemies within" not in lowered and
+        "all enemies" not in lowered and
+        "enemies in" not in lowered and
         "target" not in lowered
     )
 

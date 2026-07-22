@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Native
                     attackerAccuracy + accuracyModifiers,
                     defenderEvasion,
                     hitChanceModifier);
-                var isHit = attackRoll <= hitRate;
+                var isHit = Combat.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
 
                 Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
                 Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.SlicingService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -20,8 +22,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string StatusText { get => Get<string>(); set => Set(value); }
         public bool IsToolSelectionEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsToolActivationEnabled { get => Get<bool>(); set => Set(value); }
-        public bool IsColumn3Visible { get => Get<bool>(); set => Set(value); }
-        public bool IsColumn4Visible { get => Get<bool>(); set => Set(value); }
 
         public GuiBindingList<string> TileColumn0 { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> TileColumn1 { get => Get<GuiBindingList<string>>(); set => Set(value); }
@@ -41,8 +41,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<bool> EnabledColumn3 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
         public GuiBindingList<bool> EnabledColumn4 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
+        public GuiBindingList<bool> VisibleColumn0 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> VisibleColumn1 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> VisibleColumn2 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> VisibleColumn3 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> VisibleColumn4 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+
         protected override void Initialize(SlicingPayload initialPayload)
         {
+            RestoreFixedWindowGeometry();
+            // The base view swap schedules its own zero-delay geometry redraw, so repair once more after it settles.
+            DelayCommand(0.0f, RestoreFixedWindowGeometry);
             _suppressCloseFailure = false;
             _toolIndex = 0;
             StatusText = string.Empty;
@@ -148,6 +157,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshToolDisplay();
         }
 
+        private void RestoreFixedWindowGeometry()
+        {
+            // Keep this recovery local to Slicing; do not generalize it into Gui.
+            // A forced close can leave this reused fixed window with narrow client geometry.
+            var currentGeometry = Geometry;
+            Geometry = new GuiRectangle(
+                currentGeometry?.X ?? 0f,
+                currentGeometry?.Y ?? 0f,
+                SlicingDefinition.WindowWidth,
+                SlicingDefinition.WindowHeight);
+        }
+
         private void Refresh()
         {
             var session = SlicingSession.Get(Player);
@@ -160,18 +181,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IntegrityText = $"Integrity: {integrity}%";
             var failureNumber = SlicingSession.GetFailures(session.Target) + 1;
             FailureText = $"Failure {failureNumber}: {Slicing.GetDestructionChance(failureNumber)}% break risk";
-            IsColumn3Visible = session.Board.Width >= 4;
-            IsColumn4Visible = session.Board.Width >= 5;
 
             var powered = Slicing.GetPoweredIndices(session.Board);
             var images = CreateStringColumns();
             var tooltips = CreateStringColumns();
             var enabled = CreateBoolColumns();
+            var visible = CreateBoolColumns();
 
             for (var row = 0; row < session.Board.Height; row++)
             {
-                for (var column = 0; column < session.Board.Width; column++)
+                for (var column = 0; column < 5; column++)
                 {
+                    var isVisible = column < session.Board.Width;
+                    visible[column].Add(isVisible);
+                    if (!isVisible)
+                    {
+                        images[column].Add("Blank");
+                        tooltips[column].Add(string.Empty);
+                        enabled[column].Add(false);
+                        continue;
+                    }
+
                     var index = row * session.Board.Width + column;
                     images[column].Add(GetTileImage(session, index, powered.Contains(index), integrity));
                     tooltips[column].Add(GetTileTooltip(session, index));
@@ -182,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TileColumn0 = images[0]; TileColumn1 = images[1]; TileColumn2 = images[2]; TileColumn3 = images[3]; TileColumn4 = images[4];
             TooltipColumn0 = tooltips[0]; TooltipColumn1 = tooltips[1]; TooltipColumn2 = tooltips[2]; TooltipColumn3 = tooltips[3]; TooltipColumn4 = tooltips[4];
             EnabledColumn0 = enabled[0]; EnabledColumn1 = enabled[1]; EnabledColumn2 = enabled[2]; EnabledColumn3 = enabled[3]; EnabledColumn4 = enabled[4];
+            VisibleColumn0 = visible[0]; VisibleColumn1 = visible[1]; VisibleColumn2 = visible[2]; VisibleColumn3 = visible[3]; VisibleColumn4 = visible[4];
 
             _tools.Clear();
             _tools.AddRange(SlicingSession.GetEligibleTools(Player));

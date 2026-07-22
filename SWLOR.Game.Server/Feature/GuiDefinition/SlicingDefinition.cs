@@ -7,6 +7,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SlicingDefinition : IGuiWindowDefinition
     {
+        // Slicing is a fixed-size window. Its view model restores these dimensions on every open
+        // so stale client geometry cannot leave the interface collapsed to a narrow title bar.
+        internal const float WindowWidth = 680f;
+        internal const float WindowHeight = 760f;
         private const float TileSize = 72f;
         private const float BoardHeight = TileSize * 5;
         private readonly GuiWindowBuilder<SlicingViewModel> _builder = new();
@@ -14,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Slicing)
-                .SetInitialGeometry(0, 0, 680f, 760f)
+                .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("Slicing Interface")
                 .SetIsResizable(false)
                 .SetIsCollapsible(false)
@@ -45,12 +49,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     column.AddRow(row =>
                     {
+                        // IMPORTANT: Keep the board as one GuiList. Multiple sibling lists in this
+                        // row caused NWN NUI to collapse this fixed window to its title controls.
                         row.AddSpacer();
-                        AddTileColumn(row, 0);
-                        AddTileColumn(row, 1);
-                        AddTileColumn(row, 2);
-                        AddTileColumn(row, 3);
-                        AddTileColumn(row, 4);
+                        row.AddList(template =>
+                        {
+                            AddTileCell(template, 0);
+                            AddTileCell(template, 1);
+                            AddTileCell(template, 2);
+                            AddTileCell(template, 3);
+                            AddTileCell(template, 4);
+                        })
+                            .BindRowCount(model => model.TileColumn0)
+                            .SetWidth(TileSize * 5)
+                            .SetHeight(BoardHeight)
+                            .SetRowHeight(TileSize)
+                            .SetShowBorders(false)
+                            .SetScrollbars(NuiScrollbars.None);
                         row.AddSpacer();
                         row.SetHeight(BoardHeight);
                     });
@@ -86,37 +101,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return _builder.Build();
         }
 
-        private static void AddTileColumn(GuiRow<SlicingViewModel> row, int column)
-        {
-            var list = row.AddList(template => AddTileCell(template, column))
-                .SetWidth(TileSize)
-                .SetHeight(BoardHeight)
-                .SetRowHeight(TileSize)
-                .SetShowBorders(false)
-                .SetScrollbars(NuiScrollbars.None);
-
-            switch (column)
-            {
-                case 0:
-                    list.BindRowCount(model => model.TileColumn0);
-                    break;
-                case 1:
-                    list.BindRowCount(model => model.TileColumn1);
-                    break;
-                case 2:
-                    list.BindRowCount(model => model.TileColumn2);
-                    break;
-                case 3:
-                    list.BindRowCount(model => model.TileColumn3)
-                        .BindIsVisible(model => model.IsColumn3Visible);
-                    break;
-                case 4:
-                    list.BindRowCount(model => model.TileColumn4)
-                        .BindIsVisible(model => model.IsColumn4Visible);
-                    break;
-            }
-        }
-
         private static void AddTileCell(
             GuiListTemplate<SlicingViewModel> template,
             int column)
@@ -126,44 +110,57 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 cell.SetWidth(TileSize);
                 cell.SetIsVariable(false);
 
-                var button = cell.AddButtonImage()
-                    .SetHeight(TileSize)
-                    .SetWidth(TileSize)
-                    .SetMargin(0f);
-
-                switch (column)
+                cell.AddGroup(group =>
                 {
-                    case 0:
-                        button.BindImageResref(model => model.TileColumn0)
-                            .BindTooltip(model => model.TooltipColumn0)
-                            .BindIsEnabled(model => model.EnabledColumn0)
-                            .BindOnClicked(model => model.OnTile0());
-                        break;
-                    case 1:
-                        button.BindImageResref(model => model.TileColumn1)
-                            .BindTooltip(model => model.TooltipColumn1)
-                            .BindIsEnabled(model => model.EnabledColumn1)
-                            .BindOnClicked(model => model.OnTile1());
-                        break;
-                    case 2:
-                        button.BindImageResref(model => model.TileColumn2)
-                            .BindTooltip(model => model.TooltipColumn2)
-                            .BindIsEnabled(model => model.EnabledColumn2)
-                            .BindOnClicked(model => model.OnTile2());
-                        break;
-                    case 3:
-                        button.BindImageResref(model => model.TileColumn3)
-                            .BindTooltip(model => model.TooltipColumn3)
-                            .BindIsEnabled(model => model.EnabledColumn3)
-                            .BindOnClicked(model => model.OnTile3());
-                        break;
-                    case 4:
-                        button.BindImageResref(model => model.TileColumn4)
-                            .BindTooltip(model => model.TooltipColumn4)
-                            .BindIsEnabled(model => model.EnabledColumn4)
-                            .BindOnClicked(model => model.OnTile4());
-                        break;
-                }
+                    group.SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None)
+                        .SetWidth(TileSize)
+                        .SetHeight(TileSize);
+
+                    var button = group.AddButtonImage()
+                        .SetHeight(TileSize)
+                        .SetWidth(TileSize)
+                        .SetMargin(0f);
+
+                    switch (column)
+                    {
+                        case 0:
+                            button.BindImageResref(model => model.TileColumn0)
+                                .BindTooltip(model => model.TooltipColumn0)
+                                .BindIsEnabled(model => model.EnabledColumn0)
+                                .BindIsVisible(model => model.VisibleColumn0)
+                                .BindOnClicked(model => model.OnTile0());
+                            break;
+                        case 1:
+                            button.BindImageResref(model => model.TileColumn1)
+                                .BindTooltip(model => model.TooltipColumn1)
+                                .BindIsEnabled(model => model.EnabledColumn1)
+                                .BindIsVisible(model => model.VisibleColumn1)
+                                .BindOnClicked(model => model.OnTile1());
+                            break;
+                        case 2:
+                            button.BindImageResref(model => model.TileColumn2)
+                                .BindTooltip(model => model.TooltipColumn2)
+                                .BindIsEnabled(model => model.EnabledColumn2)
+                                .BindIsVisible(model => model.VisibleColumn2)
+                                .BindOnClicked(model => model.OnTile2());
+                            break;
+                        case 3:
+                            button.BindImageResref(model => model.TileColumn3)
+                                .BindTooltip(model => model.TooltipColumn3)
+                                .BindIsEnabled(model => model.EnabledColumn3)
+                                .BindIsVisible(model => model.VisibleColumn3)
+                                .BindOnClicked(model => model.OnTile3());
+                            break;
+                        case 4:
+                            button.BindImageResref(model => model.TileColumn4)
+                                .BindTooltip(model => model.TooltipColumn4)
+                                .BindIsEnabled(model => model.EnabledColumn4)
+                                .BindIsVisible(model => model.VisibleColumn4)
+                                .BindOnClicked(model => model.OnTile4());
+                            break;
+                    }
+                });
             });
         }
     }

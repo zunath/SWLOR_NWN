@@ -190,7 +190,7 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingNuiLayout_UsesSquareNativeSizeAndHidesColumnsOutsideBoard()
+    public void SlicingNuiLayout_UsesOneSquareGridHidesUnusedCellsAndRestoresGeometry()
     {
         var root = FindRepositoryRoot();
         var definition = File.ReadAllText(Path.Combine(
@@ -203,13 +203,17 @@ public class SlicingContentTests
         definition.Should().Contain("cell.SetWidth(TileSize);");
         definition.Should().Contain("cell.SetIsVariable(false);");
         definition.Should().Contain(".SetScrollbars(NuiScrollbars.None)");
-        definition.Should().Contain(".BindIsVisible(model => model.IsColumn3Visible)");
-        definition.Should().Contain(".BindIsVisible(model => model.IsColumn4Visible)");
+        definition.Should().Contain("IMPORTANT: Keep the board as one GuiList.");
+        (definition.Split(".AddList(", StringSplitOptions.None).Length - 1).Should().Be(1);
+        definition.Should().NotContain("AddTileColumn");
+        definition.Should().Contain(".BindIsVisible(model => model.VisibleColumn3)");
+        definition.Should().Contain(".BindIsVisible(model => model.VisibleColumn4)");
 
-        viewModel.Should().Contain("IsColumn3Visible = session.Board.Width >= 4;");
-        viewModel.Should().Contain("IsColumn4Visible = session.Board.Width >= 5;");
-        viewModel.Should().Contain("for (var column = 0; column < session.Board.Width; column++)");
-        viewModel.Should().NotContain("images[column].Add(\"Blank\")");
+        viewModel.Should().Contain("RestoreFixedWindowGeometry();");
+        viewModel.Should().Contain("Keep this recovery local to Slicing; do not generalize it into Gui.");
+        viewModel.Should().Contain("for (var column = 0; column < 5; column++)");
+        viewModel.Should().Contain("var isVisible = column < session.Board.Width;");
+        viewModel.Should().Contain("images[column].Add(\"Blank\")");
     }
 
     [Test]

@@ -253,6 +253,16 @@ namespace SWLOR.Toolset.Tests
             var firstTrigger = triggers[0];
             firstTrigger.Geometry.Should().NotBeNull();
             firstTrigger.Geometry!.Should().NotBeEmpty("anchor_entreenor's first trigger has a real Geometry point list");
+
+            var rawPoint = git.Triggers[0].Get("Geometry").Elements![0];
+            var expectedWorldPoint = firstTrigger.Position + new Vector3(
+                rawPoint.Get("PointX").GetSingle(),
+                rawPoint.Get("PointY").GetSingle(),
+                rawPoint.Get("PointZ").GetSingle());
+            firstTrigger.Geometry[0].X.Should().BeApproximately(expectedWorldPoint.X, 0.0001f);
+            firstTrigger.Geometry[0].Y.Should().BeApproximately(expectedWorldPoint.Y, 0.0001f);
+            firstTrigger.Geometry[0].Z.Should().BeApproximately(expectedWorldPoint.Z, 0.0001f,
+                "trigger geometry is stored as local offsets and must be translated by its marker position");
         }
 
         [Test]

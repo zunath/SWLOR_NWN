@@ -38,6 +38,12 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         public int ResourceCount => _index.Count;
 
         /// <summary>
+        /// Resource identities declared by nwn_base.key. The index is immutable after loading,
+        /// so callers may enumerate this collection concurrently with lazy BIF extraction.
+        /// </summary>
+        public IEnumerable<ResourceIdentity> Resources => _index.Keys;
+
+        /// <summary>
         /// Load nwn_base.key from the given NWN install "data" directory.
         /// </summary>
         public static KeyBifCatalog Load(string dataDirectory)

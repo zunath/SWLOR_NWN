@@ -239,15 +239,23 @@ namespace SWLOR.Toolset.Domain.Render
                 var (xo, yo) = InstanceFieldMap.GetOrientation(type, instance);
                 var templateResRef = InstanceFieldMap.GetTemplateResRef(type, instance);
                 var tag = InstanceFieldMap.GetTag(instance);
+                var position = new Vector3(x, y, z);
+                var geometry = includeGeometry ? ReadGeometry(instance) : null;
+
+                // Trigger Geometry is stored as offsets from X/Y/ZPosition. Encounters are built
+                // separately below because their Geometry is already world-space and they carry
+                // no standalone position fields.
+                if (geometry != null)
+                    geometry = geometry.Select(point => point + position).ToArray();
 
                 markers.Add(new InstanceMarker
                 {
                     Kind = kind,
                     TemplateResRef = templateResRef,
                     Tag = tag,
-                    Position = new Vector3(x, y, z),
+                    Position = position,
                     Orientation = new Vector2(xo, yo),
-                    Geometry = includeGeometry ? ReadGeometry(instance) : null,
+                    Geometry = geometry,
                     Model = resolveModel?.Invoke(instance)
                 });
             }

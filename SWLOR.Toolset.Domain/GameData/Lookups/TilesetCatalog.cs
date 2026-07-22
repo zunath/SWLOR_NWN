@@ -7,11 +7,10 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
     /// <summary>
     /// Editor lookup over the full tileset (.set) corpus, resolved through a
     /// <see cref="Resources.ResourceIndex"/> rather than a fixed directory: tileset names are
-    /// discovered by scanning every hak layer's directory listing for "*.set" files (the
-    /// <see cref="ResourceIndex"/> itself only exposes lookup-by-identity, not enumeration, so this
-    /// walks <see cref="ResourceIndex.HakLayers"/> directly for discovery - resolution of a
-    /// specific tileset's bytes still goes through <see cref="ResourceIndex.TryLookup"/> so
-    /// hak-precedence "later wins" is honored the same way every other resource lookup gets it).
+    /// discovered through <see cref="ResourceIndex.EnumerateResources"/>, which merges base-game
+    /// KEY/BIF identities with every hak layer. Resolution of a specific tileset's bytes still
+    /// goes through <see cref="ResourceIndex.TryLookup"/> so hak-precedence "later wins" is
+    /// honored the same way every other resource lookup gets it.
     /// Each named tileset is parsed via <see cref="SetFileParser"/> at most once and cached for
     /// the lifetime of the catalog. An area document's Tileset field (e.g. "tde01") is the resref
     /// to pass to <see cref="TryGetTileset"/>.
@@ -34,9 +33,9 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         }
 
         /// <summary>
-        /// All tileset resrefs visible across every hak layer (deduplicated, case-insensitive),
-        /// sorted for stable/deterministic output. Discovery is a one-time directory scan, cached
-        /// for the lifetime of the catalog.
+        /// All tileset resrefs visible across the base game and every hak layer (deduplicated,
+        /// case-insensitive), sorted for stable/deterministic output. Discovery is cached for the
+        /// lifetime of the catalog.
         /// </summary>
         public IReadOnlyList<string> GetTilesetNames() => _names.Value;
 
@@ -119,19 +118,9 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
 
         private IReadOnlyList<string> DiscoverNames()
         {
-            _resourceIndex.EnsureInitialized();
-
-            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var layer in _resourceIndex.HakLayers)
-            {
-                if (!Directory.Exists(layer.DirectoryPath))
-                    continue;
-
-                foreach (var file in Directory.EnumerateFiles(layer.DirectoryPath, "*.set"))
-                    names.Add(Path.GetFileNameWithoutExtension(file));
-            }
-
-            return names.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
+            return _resourceIndex.EnumerateResources(SetResourceType)
+                .Select(identity => identity.ResRef)
+                .ToArray();
         }
     }
 }

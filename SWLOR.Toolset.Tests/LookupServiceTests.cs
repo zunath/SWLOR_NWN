@@ -205,6 +205,26 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TilesetCatalog_WithBaseGameLayer_DiscoversBaseGameTilesets()
+        {
+            var installPath = NwnInstallLocator.Locate();
+            if (installPath == null || !File.Exists(Path.Combine(installPath, "data", "nwn_base.key")))
+            {
+                Assert.Ignore("No local NWN:EE base-game KEY/BIF layer was found.");
+                return;
+            }
+
+            var baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+            var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory, baseLayer);
+            var catalog = new TilesetCatalog(index);
+
+            catalog.GetTilesetNames().Should().Contain("tcm02",
+                "tcm02 is used by the module but ships only in the base-game resource layer");
+            catalog.TryGetTileset("tcm02", out var tileset).Should().BeTrue();
+            tileset.TileCount.Should().BeGreaterThan(0);
+        }
+
+        [Test]
         public void TilesetCatalog_UnknownResref_ReturnsFalse()
         {
             var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);

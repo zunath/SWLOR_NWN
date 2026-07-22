@@ -90,7 +90,7 @@ namespace SWLOR.Toolset.Editors
             {
                 "int" when int.TryParse(NewValue, out var intValue) =>
                     _context.RunEdit($"Set local {name}", () => _varTable.SetInt(name, intValue)),
-                "float" when float.TryParse(NewValue, out var floatValue) =>
+                "float" when float.TryParse(NewValue, out var floatValue) && float.IsFinite(floatValue) =>
                     _context.RunEdit($"Set local {name}", () => _varTable.SetFloat(name, floatValue)),
                 "string" =>
                     _context.RunEdit($"Set local {name}", () => _varTable.SetString(name, NewValue)),

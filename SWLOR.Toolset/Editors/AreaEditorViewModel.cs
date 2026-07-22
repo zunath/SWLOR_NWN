@@ -67,7 +67,10 @@ namespace SWLOR.Toolset.Editors
 
         public ObservableCollection<InstanceListSectionViewModel> Sections { get; } = new();
 
-        public bool IsDirty => _areSession.UndoStack.IsDirty || _gitSession.UndoStack.IsDirty;
+        public bool IsDirty =>
+            _areSession.UndoStack.IsDirty ||
+            _gitSession.UndoStack.IsDirty ||
+            Sections.Any(section => section.ActivePaletteBrowser?.IsDirty == true);
 
         /// <summary>Resource index used by the 3D View tab to resolve mesh/tile textures; null when game data services aren't loaded.</summary>
         public ResourceIndex? ResourceIndex { get; }
@@ -688,6 +691,21 @@ namespace SWLOR.Toolset.Editors
                 {
                     if (e.PropertyName == nameof(InstanceListSectionViewModel.SelectedRow))
                         OnSectionSelectionChanged(section);
+
+                    if (e.PropertyName == nameof(InstanceListSectionViewModel.ActivePaletteBrowser))
+                    {
+                        var browser = section.ActivePaletteBrowser;
+                        if (browser != null)
+                        {
+                            browser.PropertyChanged += (_, browserEvent) =>
+                            {
+                                if (browserEvent.PropertyName == nameof(PaletteBrowserViewModel.IsDirty))
+                                    AfterHistoryChange();
+                            };
+                        }
+
+                        AfterHistoryChange();
+                    }
                 };
             }
 
@@ -835,6 +853,12 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Saves both area documents, returning false if any prompt is cancelled or write fails.</summary>
         public async Task<bool> TrySaveAsync()
         {
+            foreach (var section in Sections)
+            {
+                if (!await section.TrySavePaletteAsync().ConfigureAwait(true))
+                    return false;
+            }
+
             var areResult = await TrySaveSessionAsync(_areSession).ConfigureAwait(true);
             if (!areResult.Success)
                 return false;
@@ -999,6 +1023,8 @@ namespace SWLOR.Toolset.Editors
                 return base.OnClose();
 
             _disposed = true;
+            foreach (var section in Sections)
+                section.ClosePaletteForOwner();
             _areSession.Dispose();
             _gitSession.Dispose();
             Closed?.Invoke(this);

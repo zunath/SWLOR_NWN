@@ -237,6 +237,18 @@ namespace SWLOR.Toolset.Editors
                 _prompts);
         }
 
+        /// <summary>Saves the nested palette editor when one is open.</summary>
+        internal Task<bool> TrySavePaletteAsync() =>
+            ActivePaletteBrowser?.TrySaveAsync() ?? Task.FromResult(true);
+
+        /// <summary>Disposes the nested palette session after the area close was approved.</summary>
+        internal void ClosePaletteForOwner()
+        {
+            var browser = ActivePaletteBrowser;
+            ActivePaletteBrowser = null;
+            browser?.DiscardAndClose();
+        }
+
         private void AddFromPalette(string resRef) => AddInstanceAt(resRef, 0f, 0f, 0f);
 
         /// <summary>

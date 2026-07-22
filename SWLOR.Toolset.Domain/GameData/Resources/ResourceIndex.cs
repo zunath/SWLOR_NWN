@@ -151,6 +151,39 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         }
 
         /// <summary>
+        /// Enumerates every visible resource identity of one type across the base game and all hak
+        /// layers, deduplicated by resref/type. This exposes names without extracting resource
+        /// bytes and retains <see cref="TryLookup"/> as the authority for precedence and loading.
+        /// </summary>
+        public IReadOnlyList<ResourceIdentity> EnumerateResources(ushort resourceType)
+        {
+            EnsureInitialized();
+
+            var resources = new HashSet<ResourceIdentity>();
+            if (_baseLayer != null)
+            {
+                foreach (var identity in _baseLayer.Resources)
+                {
+                    if (identity.ResourceType == resourceType)
+                        resources.Add(identity);
+                }
+            }
+
+            foreach (var (_, catalog) in _hakLayers)
+            {
+                foreach (var identity in catalog.Resources)
+                {
+                    if (identity.ResourceType == resourceType)
+                        resources.Add(identity);
+                }
+            }
+
+            return resources
+                .OrderBy(identity => identity.ResRef, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+
+        /// <summary>
         /// Build a <see cref="ResourceIndex"/> from the master hak config (<c>Build\hakbuilder.json</c>),
         /// preserving its <c>HakList</c> order as the hak precedence order.
         /// </summary>

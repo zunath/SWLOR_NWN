@@ -77,6 +77,7 @@ namespace SWLOR.Toolset.Editors
 
         public bool CanUndo => _session?.UndoStack.CanUndo ?? false;
         public bool CanRedo => _session?.UndoStack.CanRedo ?? false;
+        public bool IsDirty => _session?.UndoStack.IsDirty ?? false;
 
         public PaletteBrowserViewModel(
             string title,
@@ -118,12 +119,12 @@ namespace SWLOR.Toolset.Editors
         }
 
         [RelayCommand]
-        private void Choose()
+        private async Task Choose()
         {
             if (SelectedNode is { IsLeaf: true, ResRef: { } resRef })
             {
-                CloseSession();
-                _onResRefChosen(resRef);
+                if (await TryCloseAsync().ConfigureAwait(true))
+                    _onResRefChosen(resRef);
             }
             else
             {
@@ -132,10 +133,10 @@ namespace SWLOR.Toolset.Editors
         }
 
         [RelayCommand]
-        private void Cancel()
+        private async Task Cancel()
         {
-            CloseSession();
-            _onCancelled();
+            if (await TryCloseAsync().ConfigureAwait(true))
+                _onCancelled();
         }
 
         [RelayCommand]
@@ -211,8 +212,14 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand]
         private async Task SavePalette()
         {
+            await TrySaveAsync().ConfigureAwait(true);
+        }
+
+        /// <summary>Saves this palette, returning false when a prompt is cancelled or the write fails.</summary>
+        public async Task<bool> TrySaveAsync()
+        {
             if (_session == null)
-                return;
+                return true;
 
             try
             {
@@ -224,7 +231,7 @@ namespace SWLOR.Toolset.Editors
                     if (choice == ExternalChangeChoice.Cancel)
                     {
                         StatusMessage = "Save cancelled.";
-                        return;
+                        return false;
                     }
 
                     if (choice == ExternalChangeChoice.Reload)
@@ -234,7 +241,7 @@ namespace SWLOR.Toolset.Editors
                         RebuildTree();
                         NotifyHistoryChanged();
                         StatusMessage = $"Reloaded {_session.FilePath}.";
-                        return;
+                        return true;
                     }
                 }
 
@@ -243,18 +250,40 @@ namespace SWLOR.Toolset.Editors
                 _session.RecordCurrentFileState();
                 StatusMessage = $"Saved {_session.FilePath}.";
                 NotifyHistoryChanged();
+                return true;
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Failed to save palette '{_itpPath}': {ex.Message}");
                 StatusMessage = $"Save failed: {ex.Message}";
+                return false;
             }
         }
+
+        private async Task<bool> TryCloseAsync()
+        {
+            if (IsDirty)
+            {
+                var choice = await _prompts.ConfirmCloseAsync(Title).ConfigureAwait(true);
+                if (choice == UnsavedChangesChoice.Cancel)
+                    return false;
+                if (choice == UnsavedChangesChoice.Save &&
+                    !await TrySaveAsync().ConfigureAwait(true))
+                    return false;
+            }
+
+            CloseSession();
+            return true;
+        }
+
+        /// <summary>Closes the nested session after its owning area has approved shutdown.</summary>
+        internal void DiscardAndClose() => CloseSession();
 
         private void NotifyHistoryChanged()
         {
             OnPropertyChanged(nameof(CanUndo));
             OnPropertyChanged(nameof(CanRedo));
+            OnPropertyChanged(nameof(IsDirty));
             UndoCommand.NotifyCanExecuteChanged();
             RedoCommand.NotifyCanExecuteChanged();
         }
@@ -263,6 +292,7 @@ namespace SWLOR.Toolset.Editors
         {
             _session?.Dispose();
             _session = null;
+            NotifyHistoryChanged();
         }
     }
 }

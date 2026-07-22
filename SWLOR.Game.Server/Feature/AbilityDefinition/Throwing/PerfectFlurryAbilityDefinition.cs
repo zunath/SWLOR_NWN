@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                Spell.PerfectFlurry1,
                 AbilityTargetingShapeType.Sphere,
                 5.0f,
                 0.0f,

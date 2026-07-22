@@ -263,7 +263,7 @@
         }
       },
       {
-        "__struct_id": 2,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 1822
@@ -345,7 +345,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 21
+    "value": 10
   },
   "NaturalAC": {
     "type": "byte",

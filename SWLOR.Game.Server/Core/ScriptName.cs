@@ -160,6 +160,7 @@ namespace SWLOR.Game.Server.Core
 
         // Space events
         public const string OnSpaceEnter = "space_enter";
+        public const string OnSpaceExit = "space_exit";
         public const string OnShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
 
@@ -206,9 +207,11 @@ namespace SWLOR.Game.Server.Core
 
         // Craft events
         public const string OnCraftUsed = "craft_on_used";
+        public const string OnEspionageTrapUsed = "espn_trap_used";
         public const string OnCraftSuccess = "craft_success";
         public const string OnRefineryUsed = "refinery_used";
         public const string OnResearchTerminal = "research_term";
+        public const string OnLightsaberWorkbenchUsed = "lsaber_bench";
 
         // Fishing events
         public const string OnFishPoint = "fish_point";
@@ -258,6 +261,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnQuestPlaceable = "quest_placeable";
         public const string OnQuestTrigger = "quest_trigger";
         public const string OnQuestEncounter = "quest_enc";
+        public const string OnQuestContractBoard = "qcontract_board";
 
         // Trash events
         public const string OnTrashOpened = "trash_opened";
@@ -308,9 +312,6 @@ namespace SWLOR.Game.Server.Core
 
         // Telegraph events
         public const string TelegraphEffect = "telegraph_effect";
-        public const string TelegraphApplied = "telegraph_applied";
-        public const string TelegraphTicked = "telegraph_ticked";
-        public const string TelegraphRemoved = "telegraph_removed";
 
         // Communication events
         public const string OnNWNXChat = "on_nwnx_chat";

@@ -25,7 +25,16 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             AncientWorm();
             AnchorheadCanyonRange();
 
+            AnchrangeRareElites();
             return _builder.Build();
+        }
+
+        private void AnchrangeRareElites()
+        {
+            _builder.Create("ANCHORHEAD_CANYON_RANGE_RARES", "Anchorhead Canyon Range - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "canyonbulwrk").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "dunedeadeye").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "deadhandzeph").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void Womprats()

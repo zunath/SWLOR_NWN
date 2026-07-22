@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 impactLocation,
                 SkillType.Devices,
                 baseDamage,
-                statusEffect == null ? 3 : 30,
+                statusEffect == null ? 3 : 6,
                 statusEffect,
                 CombatImpactAreaShape.Sphere,
                 3f,

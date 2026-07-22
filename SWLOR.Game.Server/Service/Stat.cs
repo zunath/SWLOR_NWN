@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Service
         private const int DefaultAttackDeflectionChanceCap = 50;
         private const int MaximumDeflectionChanceCap = 100;
         private const int MaximumShieldDeflectionChance = 75;
-        private const int InherentShieldDeflectionChance = 10;
         private const int MaximumGuardChance = 100;
         public const int MaximumCombatReadinessPercent = 15;
         private const float MinimumMovementSpeedMultiplier = 0f;
@@ -747,6 +746,72 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies a player's stealth by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustStealth(Player entity, int adjustBy)
+        {
+            entity.Stealth += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's detection by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustDetection(Player entity, int adjustBy)
+        {
+            entity.Detection += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's trap bonus by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustTrapBonus(Player entity, int adjustBy)
+        {
+            entity.TrapBonus += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's trap disarm by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustTrapDisarm(Player entity, int adjustBy)
+        {
+            entity.TrapDisarm += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's poison bonus by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustPoisonBonus(Player entity, int adjustBy)
+        {
+            entity.PoisonBonus += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's lockpicking by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustLockpicking(Player entity, int adjustBy)
+        {
+            entity.Lockpicking += adjustBy;
+        }
+
+        /// <summary>
         /// Modifies a player's attack by a certain amount. Attack affects damage output.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
@@ -876,7 +941,7 @@ namespace SWLOR.Game.Server.Service
             return ApplyPostAttackStatusModifiers(creature, attack, skillType);
         }
 
-        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid)
+        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid, bool useForceAttack = false)
         {
             var attackBonus = 0;
             var skillLevel = 0;
@@ -885,6 +950,11 @@ namespace SWLOR.Game.Server.Service
                 : Combat.GetWeaponDamageAbilityType(creature.m_idSelf, itemType);
             var stat = GetStatValueNative(creature, statType);
             var skillType = Skill.GetSkillTypeByBaseItem(itemType);
+
+            // Force-typed attacks (e.g. Imbuement Stance retyping a weapon swing to Force) use the
+            // wearer's Force Attack in place of physical Attack so the attack side matches the Force
+            // Defense the hit is mitigated against. The weapon's own skill rank still governs the roll.
+            var usesForceAttack = useForceAttack || skillType == SkillType.Force;
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -896,7 +966,7 @@ namespace SWLOR.Game.Server.Service
                     if(skillType != SkillType.Invalid)
                         skillLevel = dbPlayer.Skills[skillType].Rank;
 
-                    if (skillType == SkillType.Force)
+                    if (usesForceAttack)
                         attackBonus += dbPlayer.ForceAttack;
                     else
                         attackBonus += dbPlayer.Attack;
@@ -912,7 +982,7 @@ namespace SWLOR.Game.Server.Service
                     ? npcStats.Skills[skillType]
                     : npcStats.Level;
 
-                if (skillType == SkillType.Force)
+                if (usesForceAttack)
                     attackBonus += npcStats.ForceAttack;
                 else
                     attackBonus += npcStats.Attack;
@@ -921,7 +991,7 @@ namespace SWLOR.Game.Server.Service
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
 
             var attack = GetAttack(skillLevel, stat, attackBonus);
-            return ApplyPostAttackStatusModifiers(creature.m_idSelf, attack, skillType);
+            return ApplyPostAttackStatusModifiers(creature.m_idSelf, attack, usesForceAttack ? SkillType.Force : skillType);
         }
 
         /// <summary>
@@ -1089,6 +1159,7 @@ namespace SWLOR.Game.Server.Service
             adjustment += GetHighFPAndStaminaAttackAdjustment(creature);
             adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(creature);
             adjustment += Combat.GetLowHPAttackAdjustment(creature);
+            adjustment += Combat.GetLowFPAttackAdjustment(creature);
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
         }
 
@@ -1352,6 +1423,64 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves a creature's detection rating, used against Stealth in the opposed stealth detection check.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>The detection rating of a creature.</returns>
+        public static int GetDetection(uint creature)
+        {
+            var detection = GetAbilityScore(creature, AbilityType.Perception);
+
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                detection += dbPlayer.Detection;
+            }
+            else
+            {
+                detection += GetNPCSkinStat(creature, ItemPropertyType.Detection);
+            }
+
+            detection += GetStatAdjustment(creature, StatType.Detection);
+
+            if (GetActionMode(creature, ActionMode.Detect))
+            {
+                detection += 5;
+            }
+
+            return detection;
+        }
+
+        /// <summary>
+        /// Retrieves a creature's stealth rating, used against Detection in the opposed stealth detection check.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>The stealth rating of a creature.</returns>
+        public static int GetStealth(uint creature)
+        {
+            var stealth = GetAbilityScore(creature, AbilityType.Agility);
+
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                stealth += dbPlayer.Stealth;
+            }
+            else
+            {
+                stealth += GetNPCSkinStat(creature, ItemPropertyType.Stealth);
+            }
+
+            stealth += GetStatAdjustment(creature, StatType.Stealth);
+
+            var effectivenessPercent = GetStatAdjustment(creature, StatType.StealthEffectivenessPercent);
+            return (stealth * (100 + effectivenessPercent)) / 100;
+        }
+
+        /// <summary>
         /// Retrieves a creature's evasion rating from a native context.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
@@ -1426,8 +1555,7 @@ namespace SWLOR.Game.Server.Service
             if (shield == null)
                 return 0;
 
-            var chance = InherentShieldDeflectionChance +
-                         GetShieldDeflectionItemPropertyBonusNative(shield) +
+            var chance = GetShieldDeflectionItemPropertyBonusNative(shield) +
                          GetStatAdjustment(creature.m_idSelf, StatType.ShieldDeflection);
             return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
         }
@@ -1438,8 +1566,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(shield))
                 return 0;
 
-            var chance = InherentShieldDeflectionChance +
-                         GetShieldDeflectionItemPropertyBonus(shield) +
+            var chance = GetShieldDeflectionItemPropertyBonus(shield) +
                          GetStatAdjustment(creature, StatType.ShieldDeflection);
             return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
         }
@@ -1678,6 +1805,20 @@ namespace SWLOR.Game.Server.Service
             return bonus;
         }
 
+        private static int GetNPCSkinStat(uint creature, ItemPropertyType type)
+        {
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
+            var value = 0;
+
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == type)
+                    value += GetItemPropertyCostTableValue(ip);
+            }
+
+            return value;
+        }
+
         private static int ApplyPostAccuracyStatusModifiers(uint creature, int accuracy)
         {
             var adjustment = GetStatAdjustment(creature, StatType.AccuracyPercentAdjustment);
@@ -1713,7 +1854,15 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(1, ApplyPercentAdjustment(defense, adjustment));
         }
 
-        private static int GetDefensePercentAdjustment(uint creature, CombatDamageType type)
+        /// <summary>
+        /// Retrieves the total percentage adjustment applied to a creature's defense for a damage type.
+        /// This combines the general defense adjustment with the type-specific adjustment, including
+        /// the shield-only bonus when a shield is equipped.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="type">The damage type.</param>
+        /// <returns>The percentage adjustment applied to defense.</returns>
+        public static int GetDefensePercentAdjustment(uint creature, CombatDamageType type)
         {
             return GetStatAdjustment(creature, StatType.DefensePercentAdjustment) + (type switch
             {
@@ -1753,8 +1902,9 @@ namespace SWLOR.Game.Server.Service
         {
             var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat];
             var perkAdjustment = Perk.GetStatBonus(creature, stat);
+            var mimicryTraitAdjustment = Mimicry.GetStatBonus(creature, stat);
 
-            return statusAdjustment + perkAdjustment;
+            return statusAdjustment + perkAdjustment + mimicryTraitAdjustment;
         }
 
         public static int ApplyHealingReceivedAdjustment(uint creature, int amount)

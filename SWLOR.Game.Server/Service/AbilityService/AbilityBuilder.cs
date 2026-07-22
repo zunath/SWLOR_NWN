@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -61,6 +62,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder IsWeaponAbility()
         {
             _activeAbility.ActivationType = AbilityActivationType.Weapon;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the activation delay as a channel: the ability's impact, costs, and recast delay all
+        /// apply when the channel starts and the granted effects run for the channel itself.
+        /// Interrupting the channel runs the interrupt action so the granted effects end early;
+        /// the recast delay is not refunded.
+        /// </summary>
+        /// <param name="channelInterruptAction">Action run against the activator when the channel is interrupted.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder IsChanneledAbility(Action<uint> channelInterruptAction)
+        {
+            _activeAbility.IsChanneled = true;
+            _activeAbility.ChannelInterruptAction = channelInterruptAction;
 
             return this;
         }
@@ -748,6 +765,123 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             _activeAbility.TriggersDarkForceConversion = true;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the active ability as a Mimicry technique learned from an enemy creature's ability.
+        /// </summary>
+        /// <param name="sourceCreatureFeat">The NPC feat this technique is copied from.</param>
+        /// <param name="tier">The Mimicry tier of this technique, used to gate learning by skill rank.</param>
+        /// <param name="slotCost">The number of technique slots this ability consumes when equipped.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTechnique(FeatType sourceCreatureFeat, int tier, int slotCost)
+        {
+            if (sourceCreatureFeat == FeatType.Invalid)
+                throw new ArgumentException($"{nameof(sourceCreatureFeat)} must be a real creature ability feat.");
+            if (tier < 1)
+                throw new ArgumentException($"{nameof(tier)} must be at least 1.");
+            if (slotCost < 1)
+                throw new ArgumentException($"{nameof(slotCost)} must be at least 1.");
+
+            _activeAbility.MimicrySourceFeat = sourceCreatureFeat;
+            _activeAbility.MimicryTier = tier;
+            _activeAbility.MimicrySlotCost = slotCost;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the active ability as a Mimicry trait: a passive technique learned from an enemy that
+        /// contributes static stats for as long as it is equipped, instead of granting a hotbar action.
+        /// Otherwise identical to a technique for learning, slot budgeting, and tier gating.
+        ///
+        /// Declare the trait's bonuses with <see cref="MimicryTraitStat"/> and
+        /// <see cref="MimicryTraitResistance"/>. Equipping a trait deliberately applies no persistent
+        /// status effect to the wearer: the bonus is static for the whole time it is slotted, so there
+        /// is no state to show on the status icon bar and nothing to keep in sync across death or
+        /// relog. That covers the trait's own lifecycle only — an on-hit proc trait still inflicts an
+        /// ordinary status effect on its target when it fires.
+        /// </summary>
+        /// <param name="sourceCreatureFeat">The NPC feat this trait is copied from.</param>
+        /// <param name="tier">The Mimicry tier of this trait, used to gate learning by skill rank.</param>
+        /// <param name="slotCost">The number of technique slots this trait consumes when equipped.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTrait(FeatType sourceCreatureFeat, int tier, int slotCost)
+        {
+            MimicryTechnique(sourceCreatureFeat, tier, slotCost);
+
+            _activeAbility.IsMimicryTrait = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a flat stat adjustment granted while this Mimicry trait is equipped.
+        /// </summary>
+        /// <param name="stat">The stat to adjust.</param>
+        /// <param name="amount">The amount to adjust it by.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTraitStat(StatType stat, int amount)
+        {
+            if (!_activeAbility.IsMimicryTrait)
+                throw new ArgumentException($"{nameof(MimicryTraitStat)} requires {nameof(MimicryTrait)} to be called first.");
+            if (stat == StatType.Invalid)
+                throw new ArgumentException($"{nameof(stat)} must be a real stat.");
+
+            _activeAbility.MimicryTraitStats[stat] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a resistance adjustment granted while this Mimicry trait is equipped.
+        /// </summary>
+        /// <param name="resistance">The resistance to adjust.</param>
+        /// <param name="amount">The amount to adjust it by.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTraitResistance(ResistanceType resistance, int amount)
+        {
+            if (!_activeAbility.IsMimicryTrait)
+                throw new ArgumentException($"{nameof(MimicryTraitResistance)} requires {nameof(MimicryTrait)} to be called first.");
+            if (resistance == ResistanceType.Invalid)
+                throw new ArgumentException($"{nameof(resistance)} must be a real resistance.");
+
+            _activeAbility.MimicryTraitResistances[resistance] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks a mimicked technique as a self-toggle stance: it activates/deactivates a stance status
+        /// effect rather than casting a hostile ability, so the contract tests exempt it from the
+        /// hostility / damage-element / combat-scaling assertions.
+        /// </summary>
+        public AbilityBuilder MimicryStance(FeatType sourceCreatureFeat, int tier, int slotCost)
+        {
+            MimicryTechnique(sourceCreatureFeat, tier, slotCost);
+            _activeAbility.IsMimicryStance = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Marks a mimicked technique as a non-damaging utility active (control, debuff, support, or
+        /// zone) that declares no damage element or scaling attribute — for example an ally-targeting
+        /// support cast. Exempts it from the damage-element / scaling / hostility contract assertions.
+        /// </summary>
+        public AbilityBuilder MimicryUtility()
+        {
+            _activeAbility.IsMimicryUtility = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the damage type a mimicked technique deals, used for damage-type loadout set
+        /// bonuses (elemental resonance).
+        /// </summary>
+        public AbilityBuilder MimicryElement(CombatDamageType element)
+        {
+            _activeAbility.MimicryElement = element;
             return this;
         }
 

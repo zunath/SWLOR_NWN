@@ -68122,6 +68122,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Contract Board"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qcontract_board"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Corpse"
                     },
                     "RESREF": {
@@ -91501,11 +91512,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Espionage Workbench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "espionage_bench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fabrication Terminal"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "fabrication_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lightsaber Workbench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lightsaber_bench"
                     }
                   },
                   {

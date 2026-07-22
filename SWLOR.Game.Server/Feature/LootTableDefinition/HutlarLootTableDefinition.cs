@@ -14,7 +14,79 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             QionTigers();
             QionHiveLoot();
 
+            CapstoneHutlarDungeonRares();
+            HutqionRareElites();
             return _builder.Build();
+        }
+
+        private void HutqionRareElites()
+        {
+            _builder.Create("HUTQION_FLURRY_RARES").IsRare()
+                .AddItem("flurrychampda", 1, 1, true).AddItem("flurrychampdb", 1, 1, true).AddItem("bp_flurrychamp", 1, 1, true);
+            _builder.Create("HUTQION_THERMAL_RARES").IsRare()
+                .AddItem("thermlancerda", 1, 1, true).AddItem("thermlancerdb", 1, 1, true).AddItem("bp_thermlancer", 1, 1, true);
+            _builder.Create("HUTQION_BARRIER_RARES").IsRare()
+                .AddItem("barrieroverseda", 1, 1, true).AddItem("barrieroversedb", 1, 1, true).AddItem("bp_barrieroverse", 1, 1, true);
+            _builder.Create("HUTQION_FLURRY_COMP").AddItem("flurrychampcm", 1, 1);
+            _builder.Create("HUTQION_THERMAL_COMP").AddItem("thermlancercm", 1, 1);
+            _builder.Create("HUTQION_BARRIER_COMP").AddItem("barrieroversecm", 1, 1);
+        }
+
+        private void CapstoneHutlarDungeonRares()
+        {
+            _builder.Create("CAPSTONE_THERMDET_RARES")
+                .IsRare()
+                .AddItem("thermdet_l1", 1, 1, true)
+                .AddItem("thermdet_l2", 1, 1, true)
+                .AddItem("thermdet_l3", 1, 1, true)
+                .AddItem("thermdet_l4", 1, 1, true)
+                .AddItem("thermdet_l5", 1, 1, true)
+                .AddItem("thermdet_l6", 1, 1, true)
+                .AddItem("thermdet_l7", 1, 1, true)
+                .AddItem("thermdet_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_THERMDET_WD_RARES")
+                .IsRare()
+                .AddItem("thermdet_w1", 1, 1, true)
+                .AddItem("thermdet_w2", 1, 1, true)
+                .AddItem("thermdet_w3", 1, 1, true)
+                .AddItem("thermdet_w4", 1, 1, true)
+                .AddItem("thermdet_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_OVERBARR_RARES")
+                .IsRare()
+                .AddItem("overbarr_l1", 1, 1, true)
+                .AddItem("overbarr_l2", 1, 1, true)
+                .AddItem("overbarr_l3", 1, 1, true)
+                .AddItem("overbarr_l4", 1, 1, true)
+                .AddItem("overbarr_l5", 1, 1, true)
+                .AddItem("overbarr_l6", 1, 1, true)
+                .AddItem("overbarr_l7", 1, 1, true)
+                .AddItem("overbarr_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_OVERBARR_WD_RARES")
+                .IsRare()
+                .AddItem("overbarr_w1", 1, 1, true)
+                .AddItem("overbarr_w2", 1, 1, true)
+                .AddItem("overbarr_w3", 1, 1, true)
+                .AddItem("overbarr_w4", 1, 1, true)
+                .AddItem("overbarr_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_PERFLURRY_RARES")
+                .IsRare()
+                .AddItem("perflurry_l1", 1, 1, true)
+                .AddItem("perflurry_l2", 1, 1, true)
+                .AddItem("perflurry_l3", 1, 1, true)
+                .AddItem("perflurry_l4", 1, 1, true)
+                .AddItem("perflurry_l5", 1, 1, true)
+                .AddItem("perflurry_l6", 1, 1, true)
+                .AddItem("perflurry_l7", 1, 1, true)
+                .AddItem("perflurry_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_PERFLURRY_WD_RARES")
+                .IsRare()
+                .AddItem("perflurry_w1", 1, 1, true)
+                .AddItem("perflurry_w2", 1, 1, true)
+                .AddItem("perflurry_w3", 1, 1, true)
+                .AddItem("perflurry_w4", 1, 1, true)
+                .AddItem("perflurry_w5", 1, 1, true);
         }
 
         private void Byysk()
@@ -113,7 +185,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("map_025", 2, 1, true)
                 .AddItem("map_026", 2, 1, true)
-                .AddItem("citrine", 1, 1, true);
+                .AddItem("citrine", 1, 1, true)
+                .AddItem("lockbox_t4", 2, 1, true);
         }
 
         private void QionSlugs()
@@ -194,8 +267,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("qion_chieftainke", 1);
 
             _builder.Create("QIONHIVE_BROODMOTHER_RECIPE")
-                .AddItem("recipe_saberupg1", 10)
-                .AddItem("recipe_staffupg1", 10)
+                .AddItem("recipe_chlsupg", 10)
+                .AddItem("recipe_chssupg", 10)
                 .AddItem("recipe_chigswd", 10)
                 .AddItem("recipe_chispear", 10)
                 .AddItem("recipe_chiknife", 10)

@@ -115,6 +115,11 @@ namespace SWLOR.Game.Server.Service
             return _beasts[type];
         }
 
+        public static IEnumerable<BeastType> GetAllBeastTypes()
+        {
+            return _beasts.Keys.ToList();
+        }
+
         public static BeastRoleAttribute GetBeastRoleDetail(BeastRoleType type)
         {
             return _beastRoles[type];
@@ -222,11 +227,29 @@ namespace SWLOR.Game.Server.Service
             return _beastXPRequirements[level] + (int)(_beastXPRequirements[level] * (xpPenalty * 0.01f));
         }
 
-        public static void SpawnBeast(uint player, string beastId, int percentHeal)
+        /// <summary>
+        /// Determines whether a player is free to spawn a new companion (beast or droid).
+        /// The game engine only permits one henchman-type associate at a time, so beast and
+        /// droid activation must share this check to prevent an orphaned, master-less companion.
+        /// </summary>
+        /// <param name="player">The player attempting to spawn a companion.</param>
+        /// <returns>An error message if a companion is already active, otherwise an empty string.</returns>
+        public static string GetCompanionSlotValidationError(uint player)
         {
             if (GetIsObjectValid(GetAssociate(AssociateType.Henchman, player)))
             {
-                SendMessageToPC(player, "Only one companion may be active at a time.");
+                return "Only one companion may be active at a time.";
+            }
+
+            return string.Empty;
+        }
+
+        public static void SpawnBeast(uint player, string beastId, int percentHeal)
+        {
+            var companionSlotError = GetCompanionSlotValidationError(player);
+            if (!string.IsNullOrEmpty(companionSlotError))
+            {
+                SendMessageToPC(player, companionSlotError);
                 return;
             }
 
@@ -774,6 +797,13 @@ namespace SWLOR.Game.Server.Service
 
             var mutation = DetermineMutation(job.BeastDNAType, job);
             var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
+
+            // A successful mutation reveals the field note for the beast the player just produced,
+            // documenting every way to incubate it. No-op if already owned.
+            if (mutation != BeastType.Invalid)
+            {
+                IncubationFieldNote.GrantDiscoveredNote(player, mutation);
+            }
 
             var itemProperties = new List<ItemProperty>
             {

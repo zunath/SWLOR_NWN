@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void ForcebaneFoundation()
         {
-            _builder.Create(ForcebaneFoundationQuestId, "First Principle: Forcebane")
+            _builder.Create(ForcebaneFoundationQuestId, "Reach Ends Ritual")
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -62,20 +62,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane capstone line continues in Korriban Forge Caverns. Defeat Forcebane adepts and secure the Forcebane Forge Heat Ledger.")
+                    "Kill six Forcebane adepts at the outer forges of the Korriban Forge Caverns on Korriban and secure the Forcebane Forge Heat Ledger.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Forcebane Forge Heat Ledger from Korriban Forge Caverns. Return to Maar Veth for the next Forcebane lesson.")
+                    "The Forcebane Forge Heat Ledger is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void ForcebaneMeasure()
         {
-            _builder.Create(ForcebaneMeasureQuestId, "The Measure of Forcebane")
+            _builder.Create(ForcebaneMeasureQuestId, "Test the Iron, Not the Word")
                 .PrerequisiteQuest(ForcebaneFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneForcebaneSithTemperingMatrix)
@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane capstone line continues in Korriban Forge Caverns. Defeat Forcebane specialists and secure the Forcebane Sith Tempering Matrix.")
+                    "Kill five Forcebane specialists along the tempering line of the Korriban Forge Caverns on Korriban and secure the Forcebane Sith Tempering Matrix.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneSithTemperingMatrix)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Forcebane Sith Tempering Matrix from Korriban Forge Caverns. Return to Maar Veth for the next Forcebane lesson.")
+                    "The Forcebane Sith Tempering Matrix is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void ForcebaneBreach()
         {
-            _builder.Create(ForcebaneBreachQuestId, "Fault Line: Forcebane")
+            _builder.Create(ForcebaneBreachQuestId, "Never Duel a Warden Fairly")
                 .PrerequisiteQuest(ForcebaneMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneForcebaneCrackedAnvilSigil)
@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane capstone line continues in Korriban Forge Caverns. Defeat the Forcebane warden and secure the Forcebane Cracked Anvil Sigil.")
+                    "Kill the Forcebane warden in the deep forge of the Korriban Forge Caverns on Korriban and secure the Forcebane Cracked Anvil Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneCrackedAnvilSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Forcebane Cracked Anvil Sigil from Korriban Forge Caverns. Return to Maar Veth for the next Forcebane lesson.")
+                    "The Forcebane Cracked Anvil Sigil is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void ForcebaneCircle()
         {
-            _builder.Create(ForcebaneCircleQuestId, "Circle of Proof: Forcebane")
+            _builder.Create(ForcebaneCircleQuestId, "Leave No Circle Standing")
                 .PrerequisiteQuest(ForcebaneBreachQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneForcebaneOverseersClearanceToken)
@@ -125,31 +125,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane capstone line continues in Korriban Forge Caverns. Defeat the Forcebane inner circle and secure the Forcebane Overseer's Clearance Token.")
+                    "Kill the four Forcebane inner circle overseers in the Korriban Forge Caverns on Korriban and secure the Forcebane Overseer's Clearance Token.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneOverseersClearanceToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Forcebane Overseer's Clearance Token from Korriban Forge Caverns. Return to Maar Veth for the next Forcebane lesson.")
+                    "The Forcebane Overseer's Clearance Token is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void ForcebaneMastery()
         {
-            _builder.Create(ForcebaneMasteryQuestId, "Forcebane Mastery")
+            _builder.Create(ForcebaneMasteryQuestId, "Finish What You Teach")
                 .PrerequisiteQuest(ForcebaneCircleQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Forcebane master is waiting in Korriban Forge Caverns. Defeat the master and end the capstone trial.")
+                    "Defeat the Forcebane master at the heart of the Korriban Forge Caverns on Korriban. His defeat is the only proof required.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Forcebane master is defeated. Return to Maar Veth and claim the completed lesson.")
+                    "The Forcebane master is defeated. Return to Maar Veth at the Valley of the Dark Lords on Korriban to complete the lesson.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void CripplingDefenseFoundation()
         {
-            _builder.Create(CripplingDefenseFoundationQuestId, "First Principle: Crippling Defense")
+            _builder.Create(CripplingDefenseFoundationQuestId, "Open Trials, No Purse")
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -175,20 +175,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense capstone line continues in Smuggler's Moon Fight Club Backrooms. Defeat Crippling Defense adepts and secure the Crippling Defense Backroom Bout Ledger.")
+                    "Kill six Crippling Defense adepts in the sign-up rooms of the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Backroom Bout Ledger.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseBackroomBoutLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Crippling Defense Backroom Bout Ledger from Smuggler's Moon Fight Club Backrooms. Return to Dax Rell for the next Crippling Defense lesson.")
+                    "The Crippling Defense Backroom Bout Ledger is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void CripplingDefenseMeasure()
         {
-            _builder.Create(CripplingDefenseMeasureQuestId, "The Measure of Crippling Defense")
+            _builder.Create(CripplingDefenseMeasureQuestId, "Undercard, Live Steel")
                 .PrerequisiteQuest(CripplingDefenseFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneCripplingDefenseRingShockRegulator)
@@ -196,20 +196,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense capstone line continues in Smuggler's Moon Fight Club Backrooms. Defeat Crippling Defense specialists and secure the Crippling Defense Ring Shock Regulator.")
+                    "Kill five Crippling Defense specialists in the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Ring Shock Regulator from the main pit's control box.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseRingShockRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Crippling Defense Ring Shock Regulator from Smuggler's Moon Fight Club Backrooms. Return to Dax Rell for the next Crippling Defense lesson.")
+                    "The Crippling Defense Ring Shock Regulator is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void CripplingDefenseBreach()
         {
-            _builder.Create(CripplingDefenseBreachQuestId, "Fault Line: Crippling Defense")
+            _builder.Create(CripplingDefenseBreachQuestId, "Eliminator at the Cage Door")
                 .PrerequisiteQuest(CripplingDefenseMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneCripplingDefenseCrackedPitSigil)
@@ -217,20 +217,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense capstone line continues in Smuggler's Moon Fight Club Backrooms. Defeat the Crippling Defense warden and secure the Crippling Defense Cracked Pit Sigil.")
+                    "Kill the Crippling Defense warden at the champion pit gate in the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Cracked Pit Sigil.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseCrackedPitSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Crippling Defense Cracked Pit Sigil from Smuggler's Moon Fight Club Backrooms. Return to Dax Rell for the next Crippling Defense lesson.")
+                    "The Crippling Defense Cracked Pit Sigil is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void CripplingDefenseCircle()
         {
-            _builder.Create(CripplingDefenseCircleQuestId, "Circle of Proof: Crippling Defense")
+            _builder.Create(CripplingDefenseCircleQuestId, "The Promoters' Table")
                 .PrerequisiteQuest(CripplingDefenseBreachQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneCripplingDefensePromotersPayoutChit)
@@ -238,31 +238,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense capstone line continues in Smuggler's Moon Fight Club Backrooms. Defeat the Crippling Defense inner circle and secure the Crippling Defense Promoter's Payout Chit.")
+                    "Kill the four Crippling Defense inner circle promoters in the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Promoter's Payout Chit.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefensePromotersPayoutChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Crippling Defense Promoter's Payout Chit from Smuggler's Moon Fight Club Backrooms. Return to Dax Rell for the next Crippling Defense lesson.")
+                    "The Crippling Defense Promoter's Payout Chit is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void CripplingDefenseMastery()
         {
-            _builder.Create(CripplingDefenseMasteryQuestId, "Crippling Defense Mastery")
+            _builder.Create(CripplingDefenseMasteryQuestId, "Last Bout on the Book")
                 .PrerequisiteQuest(CripplingDefenseCircleQuestId)
                 .PrerequisiteSkill(SkillType.Spear, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Crippling Defense master is waiting in Smuggler's Moon Fight Club Backrooms. Defeat the master and end the capstone trial.")
+                    "Defeat the Crippling Defense master past the last gate of the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa. His defeat is the only proof required.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Crippling Defense master is defeated. Return to Dax Rell and claim the completed lesson.")
+                    "The Crippling Defense master is defeated. Return to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa to complete the lesson.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .HasRecastDelay(RecastGroup.GuardCounter, 24.0f),
                 SkillType.Katar,
                 28,
-                30,
+                15,
                 null,
                 null,
                 8,
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     ProtectedTargetHitWindowSeconds = 30,
                     RequireRecentGuardedHitForConditionalStatus = true,
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 30
+                    ConditionalTargetStatusDurationSeconds = 15
                 });
 
             return builder.Build();

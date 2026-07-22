@@ -23,6 +23,12 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
         private static readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
 
+        /// <summary>
+        /// How long the visual-only impact flash lingers on an instant area ability, in seconds.
+        /// Long enough to read the shape, short enough not to be mistaken for a pre-cast telegraph.
+        /// </summary>
+        public const float DefaultImpactFlashDuration = 0.3f;
+
         private const int MaxNumberOfAuras = 4;
         private const int HostileAbilityBaseEnmity = 100;
         private const int HostileAbilityMissEnmity = 1;
@@ -719,6 +725,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Deactivates every aura the player is currently projecting and strips any aura effects they are
+        /// receiving as a recipient. Used by flows that must return a player to a clean state, such as the
+        /// character rebuilder before a reset.
+        /// </summary>
+        public static void ClearAllPlayerAuras(uint player)
+        {
+            RemoveAllAuras(player);
+            RemoveCreatureFromAllAuraRanges(player);
+        }
+
+        /// <summary>
         /// Removes a creature from all active aura range lists and strips any aura effects they received
         /// as a recipient. Used when a creature leaves the game world in a way that bypasses the normal
         /// AOE exit event (e.g., entering space, being teleported).
@@ -1142,12 +1159,26 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool sendsNoTargetMessage = true,
             bool resolvesHit = true,
-            bool canCritical = true)
+            bool canCritical = true,
+            float impactFlashDuration = DefaultImpactFlashDuration)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
             if (telegraphDuration <= 0f)
             {
+                // Instant-cast area abilities cannot use a pre-cast telegraph without violating the
+                // Bible's "Instant" activation time, so they flash their shape at impact instead.
+                // The flash is purely visual: damage below is still applied immediately.
+                ShowAreaImpactFlash(
+                    activator,
+                    target,
+                    targetLocation,
+                    shape,
+                    lengthOrRadius,
+                    width,
+                    centerOnActivator,
+                    impactFlashDuration);
+
                 var totalDamage = ApplyCombatImpactInShape(
                     activator,
                     target,
@@ -1274,6 +1305,62 @@ namespace SWLOR.Game.Server.Service
                 PlayCombatImpactAnimation(activator, impactAnimation);
 
             return 0;
+        }
+
+        /// <summary>
+        /// Renders a short, purely visual telegraph showing the area an instant ability just struck.
+        /// Unlike a pre-cast telegraph this carries no action and does not gate damage, so it gives
+        /// positional feedback without changing an ability's Bible-mandated "Instant" activation time.
+        /// </summary>
+        private static void ShowAreaImpactFlash(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            bool centerOnActivator,
+            float flashDuration)
+        {
+            if (flashDuration <= 0f || lengthOrRadius <= 0f)
+                return;
+
+            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
+
+            switch (shape)
+            {
+                case CombatImpactAreaShape.Sphere:
+                    Telegraph.CreateSphereTelegraph(
+                        activator,
+                        GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator),
+                        lengthOrRadius,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+                case CombatImpactAreaShape.Cone:
+                    Telegraph.CreateConeTelegraph(
+                        activator,
+                        GetPosition(activator),
+                        rotation,
+                        lengthOrRadius,
+                        width > 0f ? width : lengthOrRadius,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+                case CombatImpactAreaShape.Line:
+                    Telegraph.CreateLineTelegraph(
+                        activator,
+                        GetPosition(activator),
+                        rotation,
+                        lengthOrRadius,
+                        width > 0f ? width : 2.0f,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+            }
         }
 
         private static int ApplyCombatImpactInShape(
@@ -1792,6 +1879,12 @@ namespace SWLOR.Game.Server.Service
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
 
+            // Register the combat point before applying damage. A lethal hit resolves the target's
+            // death (and its skill XP distribution) synchronously during EffectDamage below, so
+            // registering afterward would miss the payout entirely when an ability one-shots a target.
+            if (awardsCombatPoints)
+                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
+
             if (damage > 0)
             {
                 Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
@@ -1855,8 +1948,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             afterSuccessfulHit?.Invoke(target);
-            if (awardsCombatPoints)
-                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
             RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
         }
@@ -2169,7 +2260,7 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool canCritical = true)
         {
-            if (baseDamage <= 0)
+            if (baseDamage <= 0 && !Combat.IsWeaponSkillType(skillType))
                 return 0;
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
@@ -2194,6 +2285,14 @@ namespace SWLOR.Game.Server.Service
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+                target,
+                damageType,
+                defense,
+                () => Combat.ApplyStatusSourceDefenseModifiers(
+                    activator,
+                    target,
+                    Stat.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var defenseIgnorePercent =
                 Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
@@ -2262,6 +2361,9 @@ namespace SWLOR.Game.Server.Service
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
+            // instance (mitigated by Force resistance, shown as Force) before physical resistance.
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
 
@@ -2369,7 +2471,7 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool canCritical = true)
         {
-            if (baseDamage <= 0)
+            if (baseDamage <= 0 && !Combat.IsWeaponSkillType(skillType))
                 return 0;
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
@@ -2402,6 +2504,14 @@ namespace SWLOR.Game.Server.Service
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+                target,
+                damageType,
+                defense,
+                () => Combat.ApplyStatusSourceDefenseModifiers(
+                    activator,
+                    target,
+                    Stat.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var defenseIgnorePercent =
                 Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
@@ -2470,6 +2580,9 @@ namespace SWLOR.Game.Server.Service
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
+            // instance (mitigated by Force resistance, shown as Force) before physical resistance.
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
 
@@ -2650,14 +2763,43 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The hard-CC immunity types which, in addition to their own same-type immunity,
+        /// also grant and check immunity against every other type in this set. This lets a
+        /// target who was just knocked down (for example) resist being chained into a daze,
+        /// stun, immobilize, blind, sleep, or confusion for the same window.
+        /// </summary>
+        private static readonly HashSet<ImmunityType> HardCrowdControlImmunityTypes = new()
+        {
+            ImmunityType.Knockdown,
+            ImmunityType.Dazed,
+            ImmunityType.Stun,
+            ImmunityType.Immobilized,
+            ImmunityType.Blindness,
+            ImmunityType.Sleep,
+            ImmunityType.Confused
+        };
+
+        /// <summary>
         /// Applies a temporary immunity effect to a particular target.
         /// This will add 20 seconds on top of whatever the ability duration length is.
         /// It will NOT remove any existing effects.
+        /// If the immunity is one of the hard-CC types, this also grants temporary immunity
+        /// to every other hard-CC type for the same duration.
         /// </summary>
         /// <param name="target">The target receiving the immunity</param>
         /// <param name="abilityDuration">The length of the ability's duration. This will be added on top of the 20 seconds.</param>
         /// <param name="immunity">The type of immunity to apply.</param>
         public static void ApplyTemporaryImmunity(uint target, float abilityDuration, ImmunityType immunity)
+        {
+            ApplyTemporaryImmunitySingle(target, abilityDuration, immunity);
+
+            if (HardCrowdControlImmunityTypes.Contains(immunity))
+            {
+                ApplyTemporaryImmunitySingle(target, abilityDuration, ImmunityType.HardCrowdControl);
+            }
+        }
+
+        private static void ApplyTemporaryImmunitySingle(uint target, float abilityDuration, ImmunityType immunity)
         {
             const float BaseDuration = 20f;
             var duration = BaseDuration + abilityDuration;
@@ -2675,6 +2817,17 @@ namespace SWLOR.Game.Server.Service
         public static bool HasTemporaryImmunity(uint target, ImmunityType immunity)
         {
             return HasEffectByTag(target, GetTemporaryImmunityEffectTag(immunity));
+        }
+
+        /// <summary>
+        /// Checks whether the target is immune to a hard-CC type, either because it still has
+        /// immunity to that specific type or because it recently suffered a different hard-CC
+        /// type and is still within the shared hard-CC immunity window.
+        /// </summary>
+        public static bool HasHardCrowdControlImmunity(uint target, ImmunityType immunity)
+        {
+            return HasTemporaryImmunity(target, immunity) ||
+                   HasTemporaryImmunity(target, ImmunityType.HardCrowdControl);
         }
 
         private static string GetTemporaryImmunityEffectTag(ImmunityType immunity)

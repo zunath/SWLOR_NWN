@@ -23,7 +23,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public int HitCount { get; init; } = 1;
             public bool IsQueuedWeaponAbility { get; init; }
+            public CombatDamageType DamageType { get; init; } = CombatDamageType.Physical;
             public int MaximumAreaTargets { get; init; }
+
+            /// <summary>
+            /// How long the pre-cast telegraph is shown before an area impact lands, in seconds.
+            /// Leave at 0 for abilities the Bible marks "Instant" — they gate no damage and instead
+            /// get the visual-only impact flash from <see cref="Ability.ApplyTelegraphedCombatImpact"/>.
+            /// Only set this to match a Bible-granted casting time.
+            /// </summary>
+            public float TelegraphDuration { get; init; }
             public int ExtraDamageIfRecentTarget { get; init; }
             public float RecentTargetWindowSeconds { get; init; }
             public int ExtraDamageIfHighResources { get; init; }
@@ -141,6 +150,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SpreadBleedDurationSeconds { get; init; }
             public bool SpreadHemorrhageFromTarget { get; init; }
             public int SpreadHemorrhageDurationSeconds { get; init; }
+            public bool SpreadSunderFromTarget { get; init; }
+            public int SpreadSunderDurationSeconds { get; init; }
             public bool ClearTargetActionsOnHit { get; init; }
             public Type ConditionalStatusEffect { get; init; }
             public int ConditionalStatusDurationSeconds { get; init; }
@@ -162,6 +173,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TargetAbilityHitChancePercent { get; init; }
             public int TargetAbilityHitChanceDurationSeconds { get; init; }
             public Func<IStatusEffect> StatusEffectFactory { get; init; }
+            public Func<IStatusEffect> SelfStatusEffectFactory { get; init; }
+            public Type[] SelfStatusEffectsToReplace { get; init; }
+            public int SelfEnmityPercentIfTargetRecentlyDamagedActivator { get; init; }
+            public int SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator { get; init; }
+            public bool RequireTargetRecentlyDamagedActivatorForConditionalStatus { get; init; }
             public Func<IStatusEffect> FriendlyTargetStatusEffectFactory { get; init; }
             public bool FriendlyTargetStatusPersistsUntilBroken { get; init; }
             public bool RequiresGuardedTarget { get; init; }
@@ -400,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (consumed)
                 {
-                    SendMessageToPC(activator, "You consume your Shadow Toxin and Infection setup.");
+                    SendMessageToPC(activator, "You consume your Venom and Infection setup.");
                 }
             }
 
@@ -810,6 +826,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
                 }
 
+                if (RequireTargetRecentlyDamagedActivatorForConditionalStatus &&
+                    !Combat.HasRecentDamageTarget(target, activator, window))
+                {
+                    return;
+                }
+
                 StatusEffect.ApplyStatusEffect(
                     activator,
                     target,
@@ -837,6 +859,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     WardBondStatusEffect.HasRecentWardHit(activator, target, window))
                 {
                     ReplaceTemporary(activator, StatType.EnmityPercentAdjustment, SelfEnmityPercentIfRecentWardHit, SelfEnmityDurationSecondsIfRecentWardHit);
+                }
+
+                if (SelfEnmityPercentIfTargetRecentlyDamagedActivator != 0 &&
+                    Combat.HasRecentDamageTarget(target, activator, window))
+                {
+                    ReplaceTemporary(
+                        activator,
+                        StatType.EnmityPercentAdjustment,
+                        SelfEnmityPercentIfTargetRecentlyDamagedActivator,
+                        SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator);
                 }
             }
 
@@ -880,6 +912,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         target,
                         typeof(HemorrhageStatusEffect),
                         SpreadHemorrhageDurationSeconds > 0 ? SpreadHemorrhageDurationSeconds : 30f,
+                        damageType);
+                }
+
+                if (SpreadSunderFromTarget &&
+                    StatusEffect.HasStatusEffect(target, typeof(SunderStatusEffect)))
+                {
+                    SpreadStatusToNearbyHostile(
+                        activator,
+                        target,
+                        typeof(SunderStatusEffect),
+                        SpreadSunderDurationSeconds > 0 ? SpreadSunderDurationSeconds : 30f,
                         damageType);
                 }
             }
@@ -1043,6 +1086,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
             }
 
+            public bool HasSelfStatusEffect()
+            {
+                return SelfStatusEffectFactory != null;
+            }
+
+            public void ApplySelfStatusEffect(uint activator, int duration)
+            {
+                if (SelfStatusEffectFactory == null)
+                    return;
+
+                if (SelfStatusEffectsToReplace != null)
+                {
+                    foreach (var statusEffectType in SelfStatusEffectsToReplace)
+                    {
+                        if (statusEffectType != null)
+                            StatusEffect.RemoveStatusEffect(activator, statusEffectType, false);
+                    }
+                }
+
+                var selfStatus = SelfStatusEffectFactory();
+                StatusEffect.RemoveOtherStanceStatuses(activator, selfStatus.GetType());
+                StatusEffect.ApplyStatusEffect(activator, activator, selfStatus, duration > 0f ? duration : 0f);
+            }
+
             public void ApplySelfStatusToGuardedTarget(uint activator, Type statusEffect, int duration)
             {
                 if (!SelfStatusAlsoAppliesToGuardedTarget ||
@@ -1114,7 +1181,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             return;
                         }
 
-                        if (statusEffect != null)
+                        if (profile.HasSelfStatusEffect())
+                        {
+                            profile.ApplySelfStatusEffect(activator, duration);
+                        }
+                        else if (statusEffect != null)
                         {
                             StatusEffect.RemoveOtherStanceStatuses(activator, statusEffect);
                             StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f);
@@ -1139,12 +1210,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             duration,
                             statusEffect,
                             ToCombatImpactAreaShape(targetingShape),
-                            0f,
+                            profile.TelegraphDuration,
                             targetingSizeX > 0f ? targetingSizeX : 5.0f,
                             targetingSizeY,
                             additionalStatusEffects,
                             CenterAreaOnActivator(targetingFlags),
                             profile.StatusEffectFactory,
+                            damageType: profile.DamageType,
                             combatImpactDamageAbility: combatImpactDamageAbility,
                             baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
@@ -1156,7 +1228,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             maxTargets: profile.MaximumAreaTargets,
                             enmityBonus: profile.EnmityBonus,
                             beforeImpact: _ => profile.BeforeHit(activator, skill),
-                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType),
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target),
@@ -1182,11 +1254,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             isArea,
                             additionalStatusEffects,
                             profile.StatusEffectFactory,
+                            damageType: profile.DamageType,
                             combatImpactDamageAbility: combatImpactDamageAbility,
                             baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                             enmityBonus: profile.EnmityBonus,
-                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType),
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target));
@@ -1217,7 +1290,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
                 else
                 {
-                    ability.IsSingleTargetAbility().RequiresTarget();
+                    ability.IsSingleTargetAbility();
+
+                    // Queued weapon abilities fire on the wearer's next landed auto-attack, so they must
+                    // not force up-front target selection (the on-hit event supplies the target). Only
+                    // cast-style single-target abilities require picking a target object.
+                    if (!profile.IsQueuedWeaponAbility)
+                        ability.RequiresTarget();
+
                     if (maxRange > 0f)
                         ability.HasMaxRange(maxRange);
                 }
@@ -1482,51 +1562,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         combatImpactDamageAbility: combatImpactDamageAbility);
                 })
                 .IsWeaponAbility()
-                .IsHostileAbility()
-                .BreaksStealth();
-
-            if (stamina > 0)
-                ability.RequirementStamina(stamina);
-        }
-
-        protected static void ConfigureTelegraphedArea(
-            AbilityBuilder ability,
-            SkillType skill,
-            CombatImpactAreaShape shape,
-            int baseDamage,
-            int duration,
-            Type statusEffect,
-            float lengthOrRadius,
-            float width,
-            int stamina,
-            bool centerOnActivator = false,
-            int maxTargets = 0,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
-        {
-            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
-
-            ability.HasActivationDelay(0f)
-                .SkillType(skill)
-                .IsAreaAbility()
-                .HasImpactAction((activator, target, level, targetLocation) =>
-                {
-                    Ability.ApplyTelegraphedCombatImpact(
-                        activator,
-                        target,
-                        targetLocation,
-                        skill,
-                        baseDamage,
-                        duration,
-                        statusEffect,
-                        shape,
-                        0.4f,
-                        lengthOrRadius,
-                        width,
-                        centerOnActivator: centerOnActivator,
-                        maxTargets: maxTargets,
-                        combatImpactDamageAbility: combatImpactDamageAbility);
-                })
-                .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth();
 

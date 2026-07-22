@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("for 30 seconds, the beast deals 10% more damage and takes 10% less damage, and its master gains +8% physical and force ability hit chance.")
+                .Description("For 30 seconds, the beast deals 10% more damage and takes 10% less damage, and its master gains +8% physical and force ability hit chance.")
                 .Price(5)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Balanced)

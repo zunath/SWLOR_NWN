@@ -10,10 +10,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Press the Attack I";
         public override EffectIconType Icon => EffectIconType.PressTheAttack1StatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Command;
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = ScaleBySourceSocial(8, 10);
+            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = ScaleBySourceSocial(6, 8);
         }
     }
 }

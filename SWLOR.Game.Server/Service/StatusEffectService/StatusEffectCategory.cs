@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         Bleeding = 4,
         Buff = 8,
         Incapacitating = 16,
-        ShadowToxin = 32,
+        Venom = 32,
         Infection = 64,
         StaminaDrainTrigger = 128
     }

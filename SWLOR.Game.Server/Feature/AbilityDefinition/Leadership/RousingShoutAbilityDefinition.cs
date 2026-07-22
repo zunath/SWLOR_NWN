@@ -125,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             }
 
             LeadershipAbilityEffects.ApplyTriageProtocol(activator, target, durationSeconds);
+            LeadershipAbilityEffects.ApplyBolsterResolve(activator, durationSeconds);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Good_Help), target);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }

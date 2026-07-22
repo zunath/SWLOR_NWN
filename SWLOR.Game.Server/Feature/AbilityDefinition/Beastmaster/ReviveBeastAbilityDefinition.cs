@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -103,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     DB.Set(dbBeast);
 
-                    var hpPercentage = 10 + GetAbilityScore(activator, AbilityType.Social);
+                    var hpPercentage = Math.Min(100, 10 + GetAbilityScore(activator, AbilityType.Social));
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
@@ -132,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     DB.Set(dbBeast);
 
-                    var hpPercentage = 30 + GetAbilityScore(activator, AbilityType.Social) * 2;
+                    var hpPercentage = Math.Min(100, 45 + GetAbilityScore(activator, AbilityType.Social));
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);

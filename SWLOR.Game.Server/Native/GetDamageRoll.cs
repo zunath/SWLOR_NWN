@@ -1,4 +1,4 @@
-﻿using NWN.Native.API;
+using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
@@ -97,6 +97,10 @@ namespace SWLOR.Game.Server.Native
 
                 // Extract weapon damage properties and get ability stats
                 var damageProfile = ExtractAttackDamageProfile(attacker, weapon);
+
+                // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
+                damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile);
+
                 var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
                 var weaponDeltaCap = GetWeaponDeltaCap(weapon);
                 var weaponSkillType = weapon == null
@@ -118,7 +122,10 @@ namespace SWLOR.Game.Server.Native
                 var critical = bCritical == 1
                     ? Combat.StandardCriticalRating
                     : 0;
-                var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem, attackerStatType);
+                // Force-typed swings (e.g. Imbuement Stance) use Force Attack so the attack side lines up
+                // with the Force Defense the damage is mitigated against.
+                var useForceAttack = damageProfile.DamageType == CombatDamageType.Force;
+                var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem, attackerStatType, useForceAttack);
                 var totalDamage = 0;
 
                 var physicalDamage = ProcessDamage(pTarget, attacker, damageProfile, pAttackData,
@@ -134,7 +141,8 @@ namespace SWLOR.Game.Server.Native
 
                 if (totalDamage > 0 && defender.m_bPlotObject == 0)
                 {
-                    PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, totalDamage, weaponSkillType, damageProfile.DamageType);
+                    var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
+                    PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
                 }
 
                 ProfilerPlugin.PopPerfScope();
@@ -243,6 +251,40 @@ namespace SWLOR.Game.Server.Native
             }
 
             return ExtractWeaponDamageProfile(currentWeapon);
+        }
+
+        // While Imbuement Stance is active, the wearer's hostile weapon auto-attacks deal Force damage instead of
+        // their normal type and cost FP per swing. This only affects real auto-attacks against creatures; queued
+        // weapon abilities apply their own damage and are excluded so they are neither converted nor charged.
+        private static WeaponDamageProfile ApplyForceConversionStance(
+            CNWSCreature attacker, CNWSObject defender, WeaponDamageProfile damageProfile)
+        {
+            if (defender.m_nObjectType != (int)ObjectType.Creature)
+                return damageProfile;
+
+            // Only physical auto-attacks are converted; anything already non-physical is left untouched.
+            if (!damageProfile.DamageType.IsPhysicalDamageType())
+                return damageProfile;
+
+            var conversion = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackForceConversion);
+            if (conversion <= 0)
+                return damageProfile;
+
+            // Weapon abilities apply their own combat impact and suppress the auto-attack; do not convert/charge them.
+            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
+                return damageProfile;
+
+            var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);
+            if (fpCost > 0)
+            {
+                // Not enough FP to pay the upkeep: the swing stays its normal type and no FP is spent.
+                if (Stat.GetCurrentFP(attacker.m_idSelf) < fpCost)
+                    return damageProfile;
+
+                Stat.ReduceFP(attacker.m_idSelf, fpCost);
+            }
+
+            return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage);
         }
 
         private static WeaponDamageProfile ExtractWeaponDamageProfile(params CNWSItem[] weapons)
@@ -463,8 +505,18 @@ namespace SWLOR.Game.Server.Native
             var damagePower = attacker.CalculateDamagePower(target, bOffHand);
             var defense = Stat.GetDefenseNative(target, damageType, defenderAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
+            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+                target.m_idSelf,
+                damageType,
+                defense,
+                () => Combat.ApplyStatusSourceDefenseModifiers(
+                    attacker.m_idSelf,
+                    target.m_idSelf,
+                    Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
-            var attackDamage = damageProfile.Damage + Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType);
+            var attackDamage = damageProfile.Damage +
+                               Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
+                               Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType);
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
@@ -490,6 +542,7 @@ namespace SWLOR.Game.Server.Native
 
             damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
 
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
 
@@ -500,7 +553,12 @@ namespace SWLOR.Game.Server.Native
                 skillType,
                 damageType,
                 false,
-                canApplyRandomFlatBonusesThisDamage);
+                canApplyRandomFlatBonusesThisDamage,
+                out var damageBeforeTargetStatusStage);
+
+            // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force
+            // instance (mitigated by Force resistance, shown as Force) before physical resistance.
+            Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
 
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
@@ -527,7 +585,12 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
 
-            return Combat.ApplyDamageTakenModifiers(target.m_idSelf, damage, attacker.m_idSelf, damageType);
+            return Combat.ApplyDamageTakenModifiers(
+                target.m_idSelf,
+                damage,
+                attacker.m_idSelf,
+                damageType,
+                preTargetStatusStageDamage: damageBeforeTargetStatusStage);
         }
 
         private readonly struct WeaponDamageProfile
@@ -542,11 +605,12 @@ namespace SWLOR.Game.Server.Native
             }
         }
 
-        private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType)
+        private static void PublishDamageDealtEvent(uint attacker, uint defender, uint weapon, int damage, SkillType skillType, CombatDamageType damageType)
         {
             Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType);
 
             EventsPlugin.PushEventData("DEFENDER", ObjectToString(defender));
+            EventsPlugin.PushEventData("WEAPON", ObjectToString(weapon));
             EventsPlugin.PushEventData("DAMAGE", damage.ToString());
             EventsPlugin.PushEventData("DAMAGE_TYPE", ((int)damageType).ToString());
 

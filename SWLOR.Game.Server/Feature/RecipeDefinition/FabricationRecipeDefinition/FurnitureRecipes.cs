@@ -1195,7 +1195,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Wardrobe, Grey, Low
             _builder.Create(RecipeType.WardrobeGreyLow, SkillType.Fabrication)
-                .Category(RecipeCategoryType.Bed)
+                .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0297")
                 .Level(20)
                 .Quantity(1)

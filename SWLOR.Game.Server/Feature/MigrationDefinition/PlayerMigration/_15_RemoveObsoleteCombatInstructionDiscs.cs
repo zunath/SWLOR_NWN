@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         public override void Migrate(uint player)
         {
             ObsoleteItemMigration.RemoveObsoleteItemsFromObject(player);
+            LegacySaberMigration.MigratePlayer(player);
             PlayerInitialization.ResetFeatsToBaseline(player);
         }
     }

@@ -1686,17 +1686,6 @@
           "type": "byte",
           "value": 1
         }
-      },
-      {
-        "__struct_id": 6,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "PlayInToolset": {
-          "type": "byte",
-          "value": 1
-        }
       }
     ]
   },

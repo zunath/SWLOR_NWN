@@ -75,13 +75,23 @@ namespace SWLOR.Game.Server.Service.CombatService
             float durationSeconds,
             int maxTotal,
             string group,
-            int requestedStacks)
+            int requestedStacks,
+            bool refreshExistingStacks = false)
         {
             if (amount <= 0 || durationSeconds <= 0f || maxTotal <= 0 || requestedStacks <= 0)
                 return 0;
 
             var current = GetStatAdjustment(creature, statType, group);
             var remaining = maxTotal - current;
+
+            // Stacking buffs that refresh keep every stack on a single shared clock, so the
+            // visible duration and the real bonus expire together. Without this, older stacks
+            // drop off one at a time while the status effect still shows a full timer.
+            if (refreshExistingStacks)
+            {
+                Refresh(creature, statType, durationSeconds, group);
+            }
+
             if (remaining <= 0)
                 return 0;
 
@@ -101,7 +111,8 @@ namespace SWLOR.Game.Server.Service.CombatService
             float durationSeconds,
             int maxTotal,
             StatType groupStatType,
-            int requestedStacks)
+            int requestedStacks,
+            bool refreshExistingStacks = false)
         {
             return AddCapped(
                 creature,
@@ -110,7 +121,8 @@ namespace SWLOR.Game.Server.Service.CombatService
                 durationSeconds,
                 maxTotal,
                 GetGroup(groupStatType),
-                requestedStacks);
+                requestedStacks,
+                refreshExistingStacks);
         }
 
         public static int Consume(uint creature, StatType statType, string group = null)

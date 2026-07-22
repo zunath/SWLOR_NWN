@@ -662,6 +662,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         BloodFrenzyFlurry = 432,
         [RecastGroup("Concussive Challenge", "Conc. Chall.", true)]
         ConcussiveChallenge = 433,
+        [RecastGroup("Force Sheath", "Force Sheath", true)]
+        ForceSheath = 474,
+        [RecastGroup("Shattering Strike", "Shatter Str.", true)]
+        ShatteringStrike = 475,
+        [RecastGroup("Sundering Sweep", "Sunder Sweep", true)]
+        SunderingSweep = 482,
+        [RecastGroup("Imbuement Stance", "Imbue Stance", true)]
+        ImbuementStance = 477,
+        [RecastGroup("Saber Ward", "Saber Ward", true)]
+        SaberWard = 478,
+        [RecastGroup("Force Link", "Force Link", true)]
+        ForceLink = 479,
+        [RecastGroup("Immovable Stance", "Immov. Stance", true)]
+        ImmovableStance = 480,
+        [RecastGroup("Reprisal", "Reprisal", true)]
+        Reprisal = 481,
         [RecastGroup("Pathogen Strike", "Path. Strike", true)]
         PathogenStrike = 468,
         [RecastGroup("Virulent Blade", "Virulent Blade", true)]
@@ -742,6 +758,87 @@ namespace SWLOR.Game.Server.Service.AbilityService
         InterruptingSweep = 466,
         [RecastGroup("Field Tool", "Field Tool", true)]
         FieldTool = 467,
+        [RecastGroup("Overload", "Overload", true)]
+        Overload = 483,
+        [RecastGroup("Apex Collapse", "Apex Collapse", true)]
+        ApexCollapse = 484,
+        [RecastGroup("Brace Breaker", "Brace Breaker", true)]
+        BraceBreaker = 485,
+        [RecastGroup("Crossfire Drill", "Crossfire", true)]
+        CrossfireDrill = 486,
+        [RecastGroup("Final Eclipse", "Final Eclipse", true)]
+        FinalEclipse = 487,
+        [RecastGroup("Final Line", "Final Line", true)]
+        FinalLine = 488,
+        [RecastGroup("Final Mandate", "Final Mandate", true)]
+        FinalMandate = 489,
+        [RecastGroup("Final Suppression", "Suppression", true)]
+        FinalSuppression = 490,
+        [RecastGroup("Finishing Drive", "Finish Drive", true)]
+        FinishingDrive = 491,
+        [RecastGroup("Holdfast Slam", "Holdfast Slam", true)]
+        HoldfastSlam = 492,
+        [RecastGroup("Inner Circle Bind", "Circle Bind", true)]
+        InnerCircleBind = 493,
+        [RecastGroup("Inner Circle Pounce", "Circle Pounce", true)]
+        InnerCirclePounce = 494,
+        [RecastGroup("Inner Circle Surge", "Circle Surge", true)]
+        InnerCircleSurge = 495,
+        [RecastGroup("Inner Circle Volley", "Circle Volley", true)]
+        InnerCircleVolley = 496,
+        [RecastGroup("Inner Ring Flurry", "Ring Flurry", true)]
+        InnerRingFlurry = 497,
+        [RecastGroup("Inner Void", "Inner Void", true)]
+        InnerVoid = 498,
+        [RecastGroup("Last Bastion", "Last Bastion", true)]
+        LastBastion = 499,
+        [RecastGroup("Lockstep Crush", "Lockstep", true)]
+        LockstepCrush = 500,
+        [RecastGroup("Merciless Angle", "Merciless", true)]
+        MercilessAngle = 501,
+        [RecastGroup("Pack Harrier", "Pack Harrier", true)]
+        PackHarrier = 502,
+        [RecastGroup("Pressure Lock", "Pressure Lock", true)]
+        PressureLock = 503,
+        [RecastGroup("Rally Breaker", "Rally Breaker", true)]
+        RallyBreaker = 504,
+        [RecastGroup("Signal Snare", "Signal Snare", true)]
+        SignalSnare = 505,
+        [RecastGroup("Snap Rush", "Snap Rush", true)]
+        SnapRush = 506,
+        [RecastGroup("Sustain Burn", "Sustain Burn", true)]
+        SustainBurn = 507,
+        [RecastGroup("Warden Clamp", "Warden Clamp", true)]
+        WardenClamp = 508,
+        [RecastGroup("Warden Mark", "Warden Mark", true)]
+        WardenMark = 509,
+        [RecastGroup("Warden Maul", "Warden Maul", true)]
+        WardenMaul = 510,
+        [RecastGroup("Warden Order", "Warden Order", true)]
+        WardenOrder = 511,
+        [RecastGroup("Warden Rend", "Warden Rend", true)]
+        WardenRend = 512,
+        [RecastGroup("Warden Sweep", "Warden Sweep", true)]
+        WardenSweep = 513,
+        [RecastGroup("Warden Wall", "Warden Wall", true)]
+        WardenWall = 514,
+        [RecastGroup("Will Fracture", "Will Fracture", true)]
+        WillFracture = 515,
+
+        [RecastGroup("Stealth", "Stealth", true)]
+        Stealth = 516,
+
+        [RecastGroup("Tactical Escape", "Escape", true)]
+        TacticalEscape = 517,
+
+        [RecastGroup("Shadow Step", "Shadow Step", true)]
+        ShadowStep = 518,
+
+        [RecastGroup("Razor Trap", "Razor Trap", true)]
+        RazorTrap = 519,
+
+        [RecastGroup("Shock Trap", "Shock Trap", true)]
+        ShockTrap = 520,
     }
 
     public class RecastGroupAttribute : Attribute

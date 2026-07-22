@@ -22,6 +22,10 @@ EXPLICIT_RECAST_SHORT_NAMES = {
     "Debilitating Stance": "Debil. Stance",
     "Systemic Shutdown": "Sys. Shutdown",
     "Severing Strike": "Sever. Strike",
+    "Shattering Strike": "Shatter Str.",
+    "Imbuement Stance": "Imbue Stance",
+    "Immovable Stance": "Immov. Stance",
+    "Aegis Eternal": "Aegis Eternal",
     "Guardian's Challenge": "Guard. Chall.",
     "Punishing Guard": "Punis. Guard",
     "Impenetrable Guard": "Impen. Guard",
@@ -70,6 +74,11 @@ WEAPON_TABS = {
 BESPOKE_WEAPON_TABS = {
     "Vibroblade",
     "Heavy Vibroblade",
+    # Lightsaber is hand-authored: its abilities implement bespoke mechanics
+    # (physical->Force conversion, Soresu Pressure, bounded Deflecting Return
+    # reflection) that this description-driven generator cannot express. Do not
+    # regenerate it here or the hand-written mechanics are lost.
+    "Lightsaber",
 }
 
 GENERATED_WEAPON_TABS = WEAPON_TABS - BESPOKE_WEAPON_TABS
@@ -140,8 +149,8 @@ PERK_DEFINITION_BY_TAB = {
 CAPSTONE_QUEST_REQUIREMENTS = {
     ("Vibroknife", "Viral Cascade"): ("VibroknifeCapstoneQuestDefinition", "VitalRuptureMasteryQuestId"),
     ("Vibroknife", "Escape Artist"): ("VibroknifeCapstoneQuestDefinition", "SystemicShutdownMasteryQuestId"),
-    ("Lightsaber", "Saber Storm"): ("LightsaberCapstoneQuestDefinition", "SaberStormMasteryQuestId"),
-    ("Lightsaber", "Guardian Master"): ("LightsaberCapstoneQuestDefinition", "GuardianMasterMasteryQuestId"),
+    ("Lightsaber", "Epicenter"): ("LightsaberCapstoneQuestDefinition", "SaberStormMasteryQuestId"),
+    ("Lightsaber", "Aegis Eternal"): ("LightsaberCapstoneQuestDefinition", "GuardianMasterMasteryQuestId"),
     ("Spear", "Forcebane"): ("SpearCapstoneQuestDefinition", "ForcebaneMasteryQuestId"),
     ("Spear", "Crippling Defense"): ("SpearCapstoneQuestDefinition", "CripplingDefenseMasteryQuestId"),
     ("Twin Blade", "Tempest Bloom"): ("TwinBladeCapstoneQuestDefinition", "TempestBloomMasteryQuestId"),
@@ -176,7 +185,7 @@ ABILITY_FOLDER_BY_TAB = {
 }
 
 STATUS_KEYWORDS = [
-    ("Shadow Toxin", "ShadowToxinStatusEffect"),
+    ("Venom", "VenomStatusEffect"),
     ("Poison Resistance", "PoisonResistancePenaltyStatusEffect"),
     ("Force Disruption", "ForceDisruptionStatusEffect"),
     ("Foggy Mind", "FoggyMindStatusEffect"),
@@ -246,6 +255,7 @@ RANGED_COMBAT_IMPACT_SKILLS = {"Pistol", "Rifle", "Throwing"}
 PERK_BASE_ID_ALIASES = {
     ("Katar", "Steel Shoulder"): "TwinGuardStance",
     ("Katar", "Tag In"): "TwinIntercept",
+    ("Lightsaber", "Force Link"): "SaberForceLink",
 }
 
 IMPACT_ANIMATION_BY_SKILL = {
@@ -637,10 +647,7 @@ def parse_suppression_stack_evasion_penalty(description):
 
 def status_types(description):
     result = []
-    lowered = description.lower()
     for keyword, status_type in STATUS_KEYWORDS:
-        if keyword == "Toxin" and "shadow toxin" in lowered:
-            continue
         if re.search(rf"\b{re.escape(keyword)}\b", description, re.IGNORECASE) and status_type not in result:
             result.append(status_type)
     return result
@@ -786,13 +793,13 @@ def description_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Hypermetabolize":
-        add_stat(stats, "SourceStatusHealingReceivedRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusHealingReceivedRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusHealingReceivedPercentAdjustment", "-15")
     if base == "Debilitate":
-        add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonusCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonusCategory", status_category_expression("Venom"))
         add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonus", parse_count(r"\+(\d+) DMG", description))
     if base == "Infection":
-        add_stat(stats, "SourceStatusStackRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusStackRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusStackAppliedCategory", status_category_expression("Infection"))
         add_stat(stats, "SourceStatusStackMaximum", parse_count(r"max (\d+) stacks", description) or 5)
         add_stat(stats, "SourceStatusStackDurationSeconds", parse_count(r"Stacks last (\d+) seconds", description) or 18)
@@ -800,7 +807,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelaySkillType", skill_expr)
         add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelayDurationSeconds", parse_duration(description) or 30)
     if base == "Propagation":
-        add_stat(stats, "SourceStatusAutoAttackCycleRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusAutoAttackCycleRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusAutoAttackCycleSkillType", skill_expr)
         add_stat(stats, "SourceStatusAutoAttackCycleRequiredCount", first_int(r"Every (\d+) auto-attack", description) or 3)
         add_stat(stats, "SourceStatusAutoAttackCycleDamage", parse_count(r"additional \+(\d+)(?: Poison)? DMG", description))
@@ -811,7 +818,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "HostileAbilityUsedAttackPercentAdjustmentMaximum", parse_percent(r"up to (\d+)%", description) or 15)
     if base == "First Strike":
         add_stat(stats, "FirstHostileAbilityHitDamageBonus", parse_count(r"deal \+(\d+) DMG", description))
-        add_stat(stats, "FirstHostileAbilityHitMaximumCount", parse_count(r"first (\d+) Abilities", description) or 3)
+        add_stat(stats, "FirstHostileAbilityHitMaximumCount", parse_count(r"first (\d+) Abilities", description) or parse_count(r"grants (\d+) stacks", description) or 3)
+        add_stat(stats, "FirstHostileAbilityHitCooldownSeconds", parse_cooldown(description, 90))
     if base == "Venatic Recovery":
         add_stat(stats, "FirstCombatAttackStaminaRestore", parse_count(r"restores (\d+) STM", description))
         add_stat(stats, "FirstCombatAttackStaminaRestoreCooldownSeconds", parse_cooldown(description, 60))
@@ -1680,7 +1688,7 @@ def profile_property_lines(row, level, primary_status):
     if base == "Pathogen Strike":
         add_profile_property(
             "SourceStatusEffectsToExtend",
-            "new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) }")
+            "new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }")
         add_profile_property("SourceStatusExtensionSeconds", str(parse_count(r"by (\d+) seconds", description)))
 
     if base == "Veiled Strike":
@@ -1694,7 +1702,7 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("RequireBehindForConditionalStatus", "true")
 
     if base == "Viral Cascade":
-        add_profile_property("ExtraDamageSourceStatusEffect", "typeof(ShadowToxinStatusEffect)")
+        add_profile_property("ExtraDamageSourceStatusEffect", "typeof(VenomStatusEffect)")
         add_profile_property("ExtraDamageIfSourceStatusEffect", str(first_int(r"additional \+\s*(\d+) (?:Damage|DMG)", description)))
         add_profile_property("ExtraDamageSourceStackStatusEffect", "typeof(InfectionStatusEffect)")
         add_profile_property(
@@ -1761,6 +1769,11 @@ def profile_property_lines(row, level, primary_status):
     )
     if max_targets:
         add_profile_property("MaximumAreaTargets", str(max_targets))
+
+    # TelegraphDuration is deliberately not derived from CastingTime. The pre-cast telegraph is
+    # already drawn by UsePerkFeat from the activation delay; this one runs at impact, after the
+    # cast has finished, so setting it from CastingTime would delay damage twice and draw the shape
+    # twice. It stays 0 unless a definition hand-sets it for a genuinely delayed detonation.
 
     match = re.search(
         r"If you attacked this target in the last (\d+) seconds, .*?\+(\d+) DMG",
@@ -2218,7 +2231,28 @@ def is_area(description):
         "enemies in",
         "secondary targets",
     ]
-    return any(marker in lowered for marker in markers)
+    if any(marker in lowered for marker in markers):
+        return True
+
+    return hostile_radius_phrase(lowered) is not None
+
+
+def is_aimed_area(row):
+    """True when the area is directional and the player must aim it.
+
+    "in a line" / "in a cone" areas let the player choose a direction, so they present a
+    targeting cursor (feat.2da TARGETSELF blank, HostileFeat=1) exactly like Earthshatter.
+    Radius areas ("within Nm", "nearby enemies") always originate on the caster and must not
+    prompt. See the Ability Definitions section of AGENTS.md.
+    """
+    inferred = infer_targeting_from_description(row)
+    if not inferred:
+        return False
+
+    return inferred[0] in (
+        "AbilityTargetingShapeType.Rect",
+        "AbilityTargetingShapeType.Cone",
+    )
 
 
 def format_float_literal(value):
@@ -2248,36 +2282,106 @@ def targeting_flags_expression(flags):
     return expression
 
 
+HOSTILE_RADIUS_PATTERN = re.compile(
+    r'\b(?P<count>one|a|an|single)?\s*(?:all\s+|nearby\s+)?(?:hostile\s+)?'
+    r'(?:enemies|enemy|foes|hostiles|targets)\s+within\s+(?P<radius>\d+(?:\.\d+)?)\s*(?:m\b|meters?\b)')
+
+
+def hostile_radius_phrase(lowered):
+    """Radius of a hostile "<enemies> within Nm" area, or None when the phrase is not one.
+
+    A bare "within Nm" is not enough to call something an area: the Bible uses that wording for
+    ally buffs ("allies within 5m"), leash ranges ("while within 20m") and placement ranges
+    ("a field within 15m"). What makes it an area is the noun it applies to, so this keys off a
+    hostile plural and rejects the single-target form ("one enemy within 5m", "dash behind one
+    hostile target within 5m"), which is a reach check rather than a shape.
+    """
+    for match in HOSTILE_RADIUS_PATTERN.finditer(lowered):
+        if match.group("count"):
+            continue
+
+        return float(match.group("radius"))
+
+    return None
+
+
+def describes_shape(lowered, shape_word):
+    """True when the description names an aimed `line`/`cone` area.
+
+    Matching the bare word is not safe - "anchors a defensive line" is a radius buff, not a line
+    area - so the word has to appear either in the plain "in a line" form or immediately after a
+    stated dimension, as in "in an 8m x 2.5m line from you". That second phrasing is the common
+    one in the Bible and the old literal "in a line" check missed it entirely, silently inferring
+    a self-centered Sphere for an ability that should be an aimed line.
+    """
+    if re.search(rf'\bin an?\s+{shape_word}\b', lowered):
+        return True
+
+    return re.search(
+        rf'\d+(?:\.\d+)?\s*m(?:\s*(?:x|by)\s*\d+(?:\.\d+)?\s*m)?\s+{shape_word}\b',
+        lowered) is not None
+
+
+def extract_stated_dimensions(lowered):
+    """Pull an explicit size out of a Bible description, or None when it states none.
+
+    Recognises "5m x 5m cone" (length by width) and the single-radius forms "within 5m",
+    "within 5 meters" and "in a 5m sphere". The description is the spec, so a stated size must
+    win over the archetype default - otherwise an ability whose line reads "within 3m" is
+    generated with a 5m reach, which is both wrong and invisible.
+    """
+    pair = re.search(r'(\d+(?:\.\d+)?)\s*m\s*(?:x|by)\s*(\d+(?:\.\d+)?)\s*m', lowered)
+    if pair:
+        return float(pair.group(1)), float(pair.group(2))
+
+    single = re.search(r'(?:within|in a|in an)\s+(\d+(?:\.\d+)?)\s*(?:m\b|meters?\b)', lowered)
+    if single:
+        return float(single.group(1)), None
+
+    return None
+
+
 def infer_targeting_from_description(row):
     description = row["Description"]
     lowered = description.lower()
+    stated = extract_stated_dimensions(lowered)
 
-    if "in a line" in lowered:
-        length = 20.0 if row["Tab"] in {"Pistol", "Rifle", "Throwing"} else 8.0
+    if describes_shape(lowered, "line"):
+        default_length = 20.0 if row["Tab"] in {"Pistol", "Rifle", "Throwing"} else 8.0
+        length = stated[0] if stated else default_length
+        width = stated[1] if stated and stated[1] is not None else 3.0
         return (
             "AbilityTargetingShapeType.Rect",
             f"{length:.1f}f",
-            "3.0f",
+            f"{width:.1f}f",
             "AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf")
 
-    if "in a cone" in lowered:
+    if describes_shape(lowered, "cone"):
+        length = stated[0] if stated else 5.0
+        width = stated[1] if stated and stated[1] is not None else 5.0
         return (
             "AbilityTargetingShapeType.Cone",
-            "5.0f",
-            "5.0f",
+            f"{length:.1f}f",
+            f"{width:.1f}f",
             "AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf")
 
+    # Radius areas are gated on an explicit hostile-area marker rather than a bare "within Nm".
+    # Roughly forty Bible rows use "within Nm" for an ally buff, a passive proximity condition or
+    # a leash range; matching that phrasing alone would reclassify all of them as hostile spheres.
+    # The radius itself is still read from whatever the description states.
     if (
         "nearby enemies" in lowered or
         "in an area" in lowered or
         "in the area" in lowered or
         "enemies within" in lowered or
         "sphere" in lowered or
-        "all enemies" in lowered
+        "all enemies" in lowered or
+        hostile_radius_phrase(lowered) is not None
     ):
+        radius = hostile_radius_phrase(lowered) or (stated[0] if stated else 5.0)
         return (
             "AbilityTargetingShapeType.Sphere",
-            "5.0f",
+            f"{radius:.1f}f",
             "0.0f",
             "AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf")
 
@@ -2289,14 +2393,13 @@ def targeting_arguments_for_row(row, feat, spell_targeting):
     inferred = infer_targeting_from_description(row)
     if not targeting:
         if inferred:
-            shape, size_x, size_y, flags = inferred
-            return (
-                "Spell.Invalid",
-                shape,
-                size_x,
-                size_y,
-                flags,
-            )
+            # A real shape with Spell.Invalid is a silent failure: ApplyTargetingMetadata drops
+            # all client targeting, so the ability loses both its cursor and its ground area
+            # marker with no error anywhere. Every rank needs its own spells.2da row.
+            raise SystemExit(
+                f"{feat}: description implies {inferred[0]} but there is no spells.2da row for it. "
+                f"Add a '{feat}' row to SWLOR_Haks/sw_2da/spells.2da and a matching Spell enum "
+                f"value before regenerating. See AGENTS.md > Ability Definitions.")
         return (
             "Spell.Invalid",
             "AbilityTargetingShapeType.None",
@@ -2429,17 +2532,24 @@ def add_missing_feats(rows):
             base, _ = base_and_level(row["PerkName"])
             feat = active_feat_name(row, feat_values)
             target_self = is_self_targeting_active(row, base)
+            # Queued weapon actives fire on the wearer's next landed auto-attack, and self-centered
+            # area actives originate on the caster. Neither should present a manual target cursor
+            # (TARGETSELF=1 / HostileFeat cleared). Single-target hostile casts and *aimed* areas
+            # ("in a line" / "in a cone") do pick a target, because the player chooses the direction.
+            is_queued = row.get("CastingTime", "").strip().lower() == "queued"
+            is_self_origin_area = is_area(row["Description"]) and not is_aimed_area(row)
+            no_manual_target = target_self or is_queued or is_self_origin_area
             hostile = (
                 row["Type"] == "Combat" and
                 not is_friendly_target_active(row["Description"]) and
-                not target_self
+                not no_manual_target
             )
             active_metadata[feat] = {
                 "label": feat,
                 "name": row["PerkName"].strip(),
                 "description": row["Description"].strip(),
                 "hostile": "1" if hostile else "****",
-                "target_self": "1" if target_self else "****",
+                "target_self": "1" if no_manual_target else "****",
             }
             if feat not in feat_values:
                 existing_rows = feat_rows_by_label.get(feat)
@@ -2884,7 +2994,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
             if base in {"Pathogen Strike", "Viral Cascade"}:
                 statuses = [
                     status for status in statuses
-                    if status not in {"ShadowToxinStatusEffect", "InfectionStatusEffect", "ToxinStatusEffect"}
+                    if status not in {"VenomStatusEffect", "InfectionStatusEffect", "ToxinStatusEffect"}
                 ]
             if base == "Backstab":
                 statuses = [status for status in statuses if status != "KnockdownStatusEffect"]

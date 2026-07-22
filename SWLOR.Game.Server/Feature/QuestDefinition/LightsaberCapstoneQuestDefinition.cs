@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void SaberStormFoundation()
         {
-            _builder.Create(SaberStormFoundationQuestId, "First Principle: Saber Storm")
+            _builder.Create(SaberStormFoundationQuestId, "Footwork Before Fury")
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -62,20 +62,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm capstone line continues in Dantooine Jedi Enclave Trial Halls. Defeat Saber Storm adepts and secure the Saber Storm Enclave Trial Slate.")
+                    "Defeat 6 Saber Storm adepts in the outer ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Saber Storm Enclave Trial Slate from Dantooine Jedi Enclave Trial Halls. Return to Talan Rees for the next Saber Storm lesson.")
+                    "You secured the Saber Storm Enclave Trial Slate. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void SaberStormMeasure()
         {
-            _builder.Create(SaberStormMeasureQuestId, "The Measure of Saber Storm")
+            _builder.Create(SaberStormMeasureQuestId, "Tempo Against the Wall")
                 .PrerequisiteQuest(SaberStormFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSaberStormKyberFocusShard)
@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm capstone line continues in Dantooine Jedi Enclave Trial Halls. Defeat Saber Storm specialists and secure the Saber Storm Kyber Focus Shard.")
+                    "Defeat 5 Saber Storm specialists in the middle ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Kyber Focus Shard.")
                 .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormKyberFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Saber Storm Kyber Focus Shard from Dantooine Jedi Enclave Trial Halls. Return to Talan Rees for the next Saber Storm lesson.")
+                    "You secured the Saber Storm Kyber Focus Shard. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void SaberStormBreach()
         {
-            _builder.Create(SaberStormBreachQuestId, "Fault Line: Saber Storm")
+            _builder.Create(SaberStormBreachQuestId, "The Third Door Drill")
                 .PrerequisiteQuest(SaberStormMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSaberStormFracturedTrialSigil)
@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm capstone line continues in Dantooine Jedi Enclave Trial Halls. Defeat the Saber Storm warden and secure the Saber Storm Fractured Trial Sigil.")
+                    "Defeat the Saber Storm warden beyond the third door of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Fractured Trial Sigil. The warden is a match for several blades; bring two companions.")
                 .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormFracturedTrialSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Saber Storm Fractured Trial Sigil from Dantooine Jedi Enclave Trial Halls. Return to Talan Rees for the next Saber Storm lesson.")
+                    "You secured the Saber Storm Fractured Trial Sigil from the warden. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void SaberStormCircle()
         {
-            _builder.Create(SaberStormCircleQuestId, "Circle of Proof: Saber Storm")
+            _builder.Create(SaberStormCircleQuestId, "The High Ring Examination")
                 .PrerequisiteQuest(SaberStormBreachQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSaberStormCouncilTrialChit)
@@ -125,31 +125,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm capstone line continues in Dantooine Jedi Enclave Trial Halls. Defeat the Saber Storm inner circle and secure the Saber Storm Council Trial Chit.")
+                    "Defeat the 4 members of the Saber Storm inner circle in the high ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Council Trial Chit.")
                 .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormCouncilTrialChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Saber Storm Council Trial Chit from Dantooine Jedi Enclave Trial Halls. Return to Talan Rees for the next Saber Storm lesson.")
+                    "You secured the Saber Storm Council Trial Chit. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void SaberStormMastery()
         {
-            _builder.Create(SaberStormMasteryQuestId, "Saber Storm Mastery")
+            _builder.Create(SaberStormMasteryQuestId, "The Storm Without an Eye")
                 .PrerequisiteQuest(SaberStormCircleQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Saber Storm master is waiting in Dantooine Jedi Enclave Trial Halls. Defeat the master and end the capstone trial.")
+                    "Defeat the Saber Storm master behind the last door of the Dantooine Jedi Enclave Trial Halls on Dantooine. The master is beyond any lone blade; bring two companions. His defeat is the only proof required.")
                 .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Saber Storm master is defeated. Return to Talan Rees and claim the completed lesson.")
+                    "The Saber Storm master is defeated. Return to Talan Rees at the Dantooine Jedi Enclave.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void GuardianMasterFoundation()
         {
-            _builder.Create(GuardianMasterFoundationQuestId, "First Principle: Guardian Master")
+            _builder.Create(GuardianMasterFoundationQuestId, "While I Stand")
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -175,20 +175,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master capstone line continues in Dantooine Jedi Enclave Trial Halls. Defeat Guardian Master adepts and secure the Guardian Master Enclave Trial Slate.")
+                    "Defeat 6 Guardian Master adepts in the outer ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Guardian Master Enclave Trial Slate from Dantooine Jedi Enclave Trial Halls. Return to Miris Aven for the next Guardian Master lesson.")
+                    "You secured the Guardian Master Enclave Trial Slate. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void GuardianMasterMeasure()
         {
-            _builder.Create(GuardianMasterMeasureQuestId, "The Measure of Guardian Master")
+            _builder.Create(GuardianMasterMeasureQuestId, "Not for My Own Hand")
                 .PrerequisiteQuest(GuardianMasterFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneGuardianMasterKyberFocusShard)
@@ -196,20 +196,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master capstone line continues in Dantooine Jedi Enclave Trial Halls. Defeat Guardian Master specialists and secure the Guardian Master Kyber Focus Shard.")
+                    "Defeat 5 Guardian Master specialists in the middle ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Kyber Focus Shard.")
                 .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterKyberFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Guardian Master Kyber Focus Shard from Dantooine Jedi Enclave Trial Halls. Return to Miris Aven for the next Guardian Master lesson.")
+                    "You secured the Guardian Master Kyber Focus Shard. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void GuardianMasterBreach()
         {
-            _builder.Create(GuardianMasterBreachQuestId, "Fault Line: Guardian Master")
+            _builder.Create(GuardianMasterBreachQuestId, "Between Harm and the Helpless")
                 .PrerequisiteQuest(GuardianMasterMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneGuardianMasterFracturedTrialSigil)
@@ -217,20 +217,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master capstone line continues in Dantooine Jedi Enclave Trial Halls. Defeat the Guardian Master warden and secure the Guardian Master Fractured Trial Sigil.")
+                    "Defeat the Guardian Master warden in the third ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Fractured Trial Sigil. The warden is a trial for several blades; bring two companions.")
                 .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterFracturedTrialSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Guardian Master Fractured Trial Sigil from Dantooine Jedi Enclave Trial Halls. Return to Miris Aven for the next Guardian Master lesson.")
+                    "You secured the Guardian Master Fractured Trial Sigil from the warden. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void GuardianMasterCircle()
         {
-            _builder.Create(GuardianMasterCircleQuestId, "Circle of Proof: Guardian Master")
+            _builder.Create(GuardianMasterCircleQuestId, "Until the Last Is Safe")
                 .PrerequisiteQuest(GuardianMasterBreachQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneGuardianMasterCouncilTrialChit)
@@ -238,31 +238,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master capstone line continues in Dantooine Jedi Enclave Trial Halls. Defeat the Guardian Master inner circle and secure the Guardian Master Council Trial Chit.")
+                    "Defeat the 4 ward-captains of the Guardian Master inner circle in the deep ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Council Trial Chit.")
                 .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterCouncilTrialChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Guardian Master Council Trial Chit from Dantooine Jedi Enclave Trial Halls. Return to Miris Aven for the next Guardian Master lesson.")
+                    "You secured the Guardian Master Council Trial Chit. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void GuardianMasterMastery()
         {
-            _builder.Create(GuardianMasterMasteryQuestId, "Guardian Master Mastery")
+            _builder.Create(GuardianMasterMasteryQuestId, "Every Oath but One")
                 .PrerequisiteQuest(GuardianMasterCircleQuestId)
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Guardian Master master is waiting in Dantooine Jedi Enclave Trial Halls. Defeat the master and end the capstone trial.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Master, 1)
+                    "Defeat the Guardian Master Paragon behind the last seal of the Dantooine Jedi Enclave Trial Halls on Dantooine. The Paragon is beyond any lone blade; bring two companions. The Paragon's defeat is the only proof required.")
+                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Paragon, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Guardian Master master is defeated. Return to Miris Aven and claim the completed lesson.")
+                    "The Guardian Master Paragon is defeated. Return to Miris Aven at the Dantooine Jedi Library.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

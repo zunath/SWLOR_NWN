@@ -563,6 +563,288 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.QuestItems, "Force-Bonded Beast Den-Mother's Fang Token", true, "A den-mother's fang token recovered in the Dathomir Grotto Apex Den during the Force-Bonded Beast trial.")]
         CapstoneForceBondedBeastDenMothersFangToken = 275,
 
+        // Incubation field notes — one per mutation target beast. The declared Name is a
+        // readable fallback; IncubationFieldNote injects the canonical Name and the full
+        // requirement Description at boot from the live mutation configuration.
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Aardvark", true, "")]
+        IncubationFieldNoteAardvark = 2000,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Abyssweb Ravager", true, "")]
+        IncubationFieldNoteAbysswebRavager = 2001,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Allosaurus", true, "")]
+        IncubationFieldNoteAllosaurus = 2002,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Amberhide Nimbrel", true, "")]
+        IncubationFieldNoteAmberhideNimbrel = 2003,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Amethyst Selori", true, "")]
+        IncubationFieldNoteAmethystSelori = 2004,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Armourback Spineguard", true, "")]
+        IncubationFieldNoteArmourbackSpineguard = 2005,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Ashen Moonprowler", true, "")]
+        IncubationFieldNoteAshenMoonprowler = 2006,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Azurehorn Kargath", true, "")]
+        IncubationFieldNoteAzurehornKargath = 2007,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Balanoro Force Mite", true, "")]
+        IncubationFieldNoteBalanoroForceMite = 2008,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Basalt Gorgath", true, "")]
+        IncubationFieldNoteBasaltGorgath = 2009,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Bearbug", true, "")]
+        IncubationFieldNoteBearbug = 2010,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Bhalir", true, "")]
+        IncubationFieldNoteBhalir = 2011,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Binarian Sabercat", true, "")]
+        IncubationFieldNoteBinarianSabercat = 2012,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Blastail", true, "")]
+        IncubationFieldNoteBlastail = 2013,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Blinkstep Vekara", true, "")]
+        IncubationFieldNoteBlinkstepVekara = 2014,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Blistering Beetle", true, "")]
+        IncubationFieldNoteBlisteringBeetle = 2015,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Bloodtusk Ravor", true, "")]
+        IncubationFieldNoteBloodtuskRavor = 2016,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Boma Beast", true, "")]
+        IncubationFieldNoteBomaBeast = 2017,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Boma Beast Baby", true, "")]
+        IncubationFieldNoteBomaBeastBaby = 2018,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Bramble Lynx", true, "")]
+        IncubationFieldNoteBrambleLynx = 2019,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Brassjaw Pyralisk", true, "")]
+        IncubationFieldNoteBrassjawPyralisk = 2020,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Bronzecrest Thundros", true, "")]
+        IncubationFieldNoteBronzecrestThundros = 2021,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Burrowberry Bird", true, "")]
+        IncubationFieldNoteBurrowberryBird = 2022,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Burrowberry Pack", true, "")]
+        IncubationFieldNoteBurrowberryPack = 2023,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Cannok", true, "")]
+        IncubationFieldNoteCannok = 2024,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Char Hound", true, "")]
+        IncubationFieldNoteCharHound = 2025,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Cloudcall Aurelith", true, "")]
+        IncubationFieldNoteCloudcallAurelith = 2026,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Cobalt Hornwyrm", true, "")]
+        IncubationFieldNoteCobaltHornwyrm = 2027,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Coppercoil Mirelisk", true, "")]
+        IncubationFieldNoteCoppercoilMirelisk = 2028,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Cragmane Valshar", true, "")]
+        IncubationFieldNoteCragmaneValshar = 2029,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Cragscale", true, "")]
+        IncubationFieldNoteCragscale = 2030,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Crimson Skyrender", true, "")]
+        IncubationFieldNoteCrimsonSkyrender = 2031,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Crocodile", true, "")]
+        IncubationFieldNoteCrocodile = 2032,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Crystalflow Skimmer", true, "")]
+        IncubationFieldNoteCrystalflowSkimmer = 2033,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Dathomir Wyrmling", true, "")]
+        IncubationFieldNoteDathomirWyrmling = 2034,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Dawnfang Hound", true, "")]
+        IncubationFieldNoteDawnfangHound = 2035,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Deeprock Mauler", true, "")]
+        IncubationFieldNoteDeeprockMauler = 2036,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Deepstone Graxal", true, "")]
+        IncubationFieldNoteDeepstoneGraxal = 2037,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Deepwoods Rager", true, "")]
+        IncubationFieldNoteDeepwoodsRager = 2038,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Dewback", true, "")]
+        IncubationFieldNoteDewback = 2039,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Direfang Lupikar", true, "")]
+        IncubationFieldNoteDirefangLupikar = 2040,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Dreadmaw Barghest", true, "")]
+        IncubationFieldNoteDreadmawBarghest = 2041,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Dreamcap Myconite", true, "")]
+        IncubationFieldNoteDreamcapMyconite = 2042,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Dreamwalker", true, "")]
+        IncubationFieldNoteDreamwalker = 2043,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Drexclaw Marauder", true, "")]
+        IncubationFieldNoteDrexclawMarauder = 2044,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Duneshag Bantha", true, "")]
+        IncubationFieldNoteDuneshagBantha = 2045,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Duskfang Hound", true, "")]
+        IncubationFieldNoteDuskfangHound = 2046,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Duskmane Ursadon", true, "")]
+        IncubationFieldNoteDuskmaneUrsadon = 2047,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Elderspore Oraculum", true, "")]
+        IncubationFieldNoteEldersporeOraculum = 2048,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Emberback Bristal", true, "")]
+        IncubationFieldNoteEmberbackBristal = 2049,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Emeraldcrest Kalyth", true, "")]
+        IncubationFieldNoteEmeraldcrestKalyth = 2050,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Frog", true, "")]
+        IncubationFieldNoteFrog = 2051,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Frostback Spineguard", true, "")]
+        IncubationFieldNoteFrostbackSpineguard = 2052,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Frostmaw Glacieron", true, "")]
+        IncubationFieldNoteFrostmawGlacieron = 2053,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Fungal Shambler", true, "")]
+        IncubationFieldNoteFungalShambler = 2054,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Garral", true, "")]
+        IncubationFieldNoteGarral = 2055,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Garu Bear Ripper", true, "")]
+        IncubationFieldNoteGaruBearRipper = 2056,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Giant Garu Bear", true, "")]
+        IncubationFieldNoteGiantGaruBear = 2057,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Gilded Mirewyrm", true, "")]
+        IncubationFieldNoteGildedMirewyrm = 2058,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Glimmerwing Mykal", true, "")]
+        IncubationFieldNoteGlimmerwingMykal = 2059,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Gloomthread Skiver", true, "")]
+        IncubationFieldNoteGloomthreadSkiver = 2060,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Goldmane Sahrak", true, "")]
+        IncubationFieldNoteGoldmaneSahrak = 2061,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Graniteback Ursavar", true, "")]
+        IncubationFieldNoteGranitebackUrsavar = 2062,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Graymire Amalgam", true, "")]
+        IncubationFieldNoteGraymireAmalgam = 2063,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Greenbulk Wallow", true, "")]
+        IncubationFieldNoteGreenbulkWallow = 2064,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Grutchin", true, "")]
+        IncubationFieldNoteGrutchin = 2065,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Hanadak", true, "")]
+        IncubationFieldNoteHanadak = 2066,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Horned Kath Hound", true, "")]
+        IncubationFieldNoteHornedKathHound = 2067,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "House Cat", true, "")]
+        IncubationFieldNoteHouseCat = 2068,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Hssiss", true, "")]
+        IncubationFieldNoteHssiss = 2069,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Hutlar Penguin", true, "")]
+        IncubationFieldNoteHutlarPenguin = 2070,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Icewing Kestrelith", true, "")]
+        IncubationFieldNoteIcewingKestrelith = 2071,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Ironmaw Bastionback", true, "")]
+        IncubationFieldNoteIronmawBastionback = 2072,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Jadeclaw Vyrkol", true, "")]
+        IncubationFieldNoteJadeclawVyrkol = 2073,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Juvenile Chirodactyl", true, "")]
+        IncubationFieldNoteJuvenileChirodactyl = 2074,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Juvenile Rancor", true, "")]
+        IncubationFieldNoteJuvenileRancor = 2075,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Katarn", true, "")]
+        IncubationFieldNoteKatarn = 2076,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Moonthorn Veloria", true, "")]
+        IncubationFieldNoteMoonthornVeloria = 2077,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Mush Warrior", true, "")]
+        IncubationFieldNoteMushWarrior = 2078,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Mustardlash Slime", true, "")]
+        IncubationFieldNoteMustardlashSlime = 2079,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Mutated Boar", true, "")]
+        IncubationFieldNoteMutatedBoar = 2080,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Mutated Frog", true, "")]
+        IncubationFieldNoteMutatedFrog = 2081,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Nightspot Aralynx", true, "")]
+        IncubationFieldNoteNightspotAralynx = 2082,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Ochre Maw", true, "")]
+        IncubationFieldNoteOchreMaw = 2083,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Orbak Water Horse", true, "")]
+        IncubationFieldNoteOrbakWaterHorse = 2084,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Orray", true, "")]
+        IncubationFieldNoteOrray = 2085,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Phaseleg Silkstalker", true, "")]
+        IncubationFieldNotePhaselegSilkstalker = 2086,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Porg", true, "")]
+        IncubationFieldNotePorg = 2087,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Pyrestem Scarab", true, "")]
+        IncubationFieldNotePyrestemScarab = 2088,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Razorhide Hound", true, "")]
+        IncubationFieldNoteRazorhideHound = 2089,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Redcrest Tatterquill", true, "")]
+        IncubationFieldNoteRedcrestTatterquill = 2090,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Ronto", true, "")]
+        IncubationFieldNoteRonto = 2091,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Rootbound Colossus", true, "")]
+        IncubationFieldNoteRootboundColossus = 2092,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Royal Plumage", true, "")]
+        IncubationFieldNoteRoyalPlumage = 2093,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Rubyback Drakon", true, "")]
+        IncubationFieldNoteRubybackDrakon = 2094,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Ruinfang Mongrel", true, "")]
+        IncubationFieldNoteRuinfangMongrel = 2095,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Rustwhisker Gnawfiend", true, "")]
+        IncubationFieldNoteRustwhiskerGnawfiend = 2096,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Saberleg Kharaxis", true, "")]
+        IncubationFieldNoteSaberlegKharaxis = 2097,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Sapphire Veylori", true, "")]
+        IncubationFieldNoteSapphireVeylori = 2098,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Sapphireback Vorex", true, "")]
+        IncubationFieldNoteSapphirebackVorex = 2099,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Scrap Rat", true, "")]
+        IncubationFieldNoteScrapRat = 2100,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Serene Grovetreader", true, "")]
+        IncubationFieldNoteSereneGrovetreader = 2101,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Shatterpelt Lurax", true, "")]
+        IncubationFieldNoteShatterpeltLurax = 2102,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Silverveil Aerolith", true, "")]
+        IncubationFieldNoteSilverveilAerolith = 2103,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Sink Crab", true, "")]
+        IncubationFieldNoteSinkCrab = 2104,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Sootbelly Mirekit", true, "")]
+        IncubationFieldNoteSootbellyMirekit = 2105,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Speckled Seer", true, "")]
+        IncubationFieldNoteSpeckledSeer = 2106,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Spined Crawler", true, "")]
+        IncubationFieldNoteSpinedCrawler = 2107,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Spinosaurus", true, "")]
+        IncubationFieldNoteSpinosaurus = 2108,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Stegosaurus", true, "")]
+        IncubationFieldNoteStegosaurus = 2109,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Stinging Swarm", true, "")]
+        IncubationFieldNoteStingingSwarm = 2110,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Stoneclad Behemoth", true, "")]
+        IncubationFieldNoteStonecladBehemoth = 2111,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Strayfang Kavor", true, "")]
+        IncubationFieldNoteStrayfangKavor = 2112,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Sumpback Chitinmaw", true, "")]
+        IncubationFieldNoteSumpbackChitinmaw = 2113,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Swamp Rat", true, "")]
+        IncubationFieldNoteSwampRat = 2114,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Tach", true, "")]
+        IncubationFieldNoteTach = 2115,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Tempest Bulwark", true, "")]
+        IncubationFieldNoteTempestBulwark = 2116,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Terentatek", true, "")]
+        IncubationFieldNoteTerentatek = 2117,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Tideplume Striderel", true, "")]
+        IncubationFieldNoteTideplumeStriderel = 2118,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Torosaurus", true, "")]
+        IncubationFieldNoteTorosaurus = 2119,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Triceratops", true, "")]
+        IncubationFieldNoteTriceratops = 2120,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Tukata", true, "")]
+        IncubationFieldNoteTukata = 2121,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Tundra Ponderer", true, "")]
+        IncubationFieldNoteTundraPonderer = 2122,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Tyrannosaurus", true, "")]
+        IncubationFieldNoteTyrannosaurus = 2123,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Ubese Thorn", true, "")]
+        IncubationFieldNoteUbeseThorn = 2124,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Umberroot Arctara", true, "")]
+        IncubationFieldNoteUmberrootArctara = 2125,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Umbral Barghest", true, "")]
+        IncubationFieldNoteUmbralBarghest = 2126,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Umbratalon Corvax", true, "")]
+        IncubationFieldNoteUmbratalonCorvax = 2127,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Underbrush Scamp", true, "")]
+        IncubationFieldNoteUnderbrushScamp = 2128,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Undersea Carver", true, "")]
+        IncubationFieldNoteUnderseaCarver = 2129,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Veilphase Arachnyx", true, "")]
+        IncubationFieldNoteVeilphaseArachnyx = 2130,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Venomspike Laigrek", true, "")]
+        IncubationFieldNoteVenomspikeLaigrek = 2131,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Verdant Thornwold", true, "")]
+        IncubationFieldNoteVerdantThornwold = 2132,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Vermilion Ravager", true, "")]
+        IncubationFieldNoteVermilionRavager = 2133,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Viridian Platewyrm", true, "")]
+        IncubationFieldNoteViridianPlatewyrm = 2134,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Voidmire Echo", true, "")]
+        IncubationFieldNoteVoidmireEcho = 2135,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Weasel", true, "")]
+        IncubationFieldNoteWeasel = 2136,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Wraid", true, "")]
+        IncubationFieldNoteWraid = 2137,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Wraithweb Nythrax", true, "")]
+        IncubationFieldNoteWraithwebNythrax = 2138,
+
 	}
 
 	public class KeyItemAttribute : Attribute

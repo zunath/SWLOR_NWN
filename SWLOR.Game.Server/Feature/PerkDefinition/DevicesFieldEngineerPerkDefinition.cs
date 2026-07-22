@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Signal Jammer")
 
                 .AddPerkLevel()
-                .Description("Deploys a signal jammer for 30 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.")
+                .Description("Deploys a signal jammer for 45 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RemoteCharge1)
 
                 .AddPerkLevel()
-                .Description("Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 30 seconds.")
+                .Description("Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)

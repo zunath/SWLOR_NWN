@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ExtraDamageSourceStatusEffect = typeof(ShadowToxinStatusEffect),
+                    ExtraDamageSourceStatusEffect = typeof(VenomStatusEffect),
                     ExtraDamageIfSourceStatusEffect = 20,
                     ExtraDamageSourceStackStatusEffect = typeof(InfectionStatusEffect),
                     ExtraDamagePerSourceStack = 8,

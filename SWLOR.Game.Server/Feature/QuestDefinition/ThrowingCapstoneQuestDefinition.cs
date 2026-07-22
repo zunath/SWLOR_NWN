@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void RainOfSteelFoundation()
         {
-            _builder.Create(RainOfSteelFoundationQuestId, "First Principle: Rain of Steel")
+            _builder.Create(RainOfSteelFoundationQuestId, "Shortage on the Manifest")
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -62,20 +62,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Rain of Steel capstone line continues in Czerka Arms Test Range. Defeat Rain of Steel adepts and secure the Rain of Steel Czerka Test Docket.")
+                    "Enter the Czerka Arms Test Range on Smuggler's Moon and defeat 6 Rain of Steel adepts, then recover the Rain of Steel Czerka Test Docket from their trial.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelCzerkaTestDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Rain of Steel Czerka Test Docket from Czerka Arms Test Range. Return to Varik Dane for the next Rain of Steel lesson.")
+                    "You recovered the Rain of Steel Czerka Test Docket. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void RainOfSteelMeasure()
         {
-            _builder.Create(RainOfSteelMeasureQuestId, "The Measure of Rain of Steel")
+            _builder.Create(RainOfSteelMeasureQuestId, "Unreturned Issue")
                 .PrerequisiteQuest(RainOfSteelFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneRainOfSteelBlastCellRegulator)
@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Rain of Steel capstone line continues in Czerka Arms Test Range. Defeat Rain of Steel specialists and secure the Rain of Steel Blast-Cell Regulator.")
+                    "Defeat 5 Rain of Steel specialists in the calibration lanes of the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelBlastCellRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Rain of Steel Blast-Cell Regulator from Czerka Arms Test Range. Return to Varik Dane for the next Rain of Steel lesson.")
+                    "You recovered the Rain of Steel Blast-Cell Regulator. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void RainOfSteelBreach()
         {
-            _builder.Create(RainOfSteelBreachQuestId, "Fault Line: Rain of Steel")
+            _builder.Create(RainOfSteelBreachQuestId, "Write-Off: One Warden")
                 .PrerequisiteQuest(RainOfSteelMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneRainOfSteelScoredRangeCrest)
@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Rain of Steel capstone line continues in Czerka Arms Test Range. Defeat the Rain of Steel warden and secure the Rain of Steel Scored Range Crest.")
+                    "Defeat the Rain of Steel warden in the deep range of the Czerka Arms Test Range on Smuggler's Moon and take the Rain of Steel Scored Range Crest from him.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelScoredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Rain of Steel Scored Range Crest from Czerka Arms Test Range. Return to Varik Dane for the next Rain of Steel lesson.")
+                    "You took the Rain of Steel Scored Range Crest from the warden. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void RainOfSteelCircle()
         {
-            _builder.Create(RainOfSteelCircleQuestId, "Circle of Proof: Rain of Steel")
+            _builder.Create(RainOfSteelCircleQuestId, "Four Names in Red Ink")
                 .PrerequisiteQuest(RainOfSteelBreachQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneRainOfSteelCzerkaClearanceChit)
@@ -125,31 +125,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Rain of Steel capstone line continues in Czerka Arms Test Range. Defeat the Rain of Steel inner circle and secure the Rain of Steel Czerka Clearance Chit.")
+                    "Defeat the 4 members of the Rain of Steel inner circle in the stockrooms of the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Czerka Clearance Chit.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelCzerkaClearanceChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Rain of Steel Czerka Clearance Chit from Czerka Arms Test Range. Return to Varik Dane for the next Rain of Steel lesson.")
+                    "You recovered the Rain of Steel Czerka Clearance Chit. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void RainOfSteelMastery()
         {
-            _builder.Create(RainOfSteelMasteryQuestId, "Rain of Steel Mastery")
+            _builder.Create(RainOfSteelMasteryQuestId, "Paid in Full")
                 .PrerequisiteQuest(RainOfSteelCircleQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Rain of Steel master is waiting in Czerka Arms Test Range. Defeat the master and end the capstone trial.")
+                    "Defeat the Rain of Steel master on the proving floor at the back of the Czerka Arms Test Range on Smuggler's Moon.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Rain of Steel master is defeated. Return to Varik Dane and claim the completed lesson.")
+                    "The Rain of Steel master is defeated. Report to Varik Dane at the Nar Shaddaa fabrication facility.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void PerfectFlurryFoundation()
         {
-            _builder.Create(PerfectFlurryFoundationQuestId, "First Principle: Perfect Flurry")
+            _builder.Create(PerfectFlurryFoundationQuestId, "The Warm-Up Act")
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -175,20 +175,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Perfect Flurry capstone line continues in Hutlar Qion Test Site. Defeat Perfect Flurry adepts and secure the Perfect Flurry Qion Test Log.")
+                    "Enter the Hutlar Qion Test Site on Hutlar and defeat 6 Perfect Flurry adepts on the open range, then recover the Perfect Flurry Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryQionTestLog)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Perfect Flurry Qion Test Log from Hutlar Qion Test Site. Return to Selka Vorn for the next Perfect Flurry lesson.")
+                    "You recovered the Perfect Flurry Qion Test Log. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void PerfectFlurryMeasure()
         {
-            _builder.Create(PerfectFlurryMeasureQuestId, "The Measure of Perfect Flurry")
+            _builder.Create(PerfectFlurryMeasureQuestId, "The Five-Blade Wager")
                 .PrerequisiteQuest(PerfectFlurryFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstonePerfectFlurryCryoRangeRegulator)
@@ -196,20 +196,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Perfect Flurry capstone line continues in Hutlar Qion Test Site. Defeat Perfect Flurry specialists and secure the Perfect Flurry Cryo-Range Regulator.")
+                    "Defeat 5 Perfect Flurry specialists on the cryo range of the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryCryoRangeRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Perfect Flurry Cryo-Range Regulator from Hutlar Qion Test Site. Return to Selka Vorn for the next Perfect Flurry lesson.")
+                    "You recovered the Perfect Flurry Cryo-Range Regulator. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void PerfectFlurryBreach()
         {
-            _builder.Create(PerfectFlurryBreachQuestId, "Fault Line: Perfect Flurry")
+            _builder.Create(PerfectFlurryBreachQuestId, "The Warden Takes the Stage")
                 .PrerequisiteQuest(PerfectFlurryMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstonePerfectFlurryFrostburnedTestCrest)
@@ -217,20 +217,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Perfect Flurry capstone line continues in Hutlar Qion Test Site. Defeat the Perfect Flurry warden and secure the Perfect Flurry Frostburned Test Crest.")
+                    "Defeat the Perfect Flurry warden in the deep range of the Hutlar Qion Test Site on Hutlar and take the Perfect Flurry Frostburned Test Crest from him.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryFrostburnedTestCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Perfect Flurry Frostburned Test Crest from Hutlar Qion Test Site. Return to Selka Vorn for the next Perfect Flurry lesson.")
+                    "You took the Perfect Flurry Frostburned Test Crest from the warden. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void PerfectFlurryCircle()
         {
-            _builder.Create(PerfectFlurryCircleQuestId, "Circle of Proof: Perfect Flurry")
+            _builder.Create(PerfectFlurryCircleQuestId, "Four Rivals, One Spotlight")
                 .PrerequisiteQuest(PerfectFlurryBreachQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstonePerfectFlurrySiteChiefsOverrideChip)
@@ -238,31 +238,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Perfect Flurry capstone line continues in Hutlar Qion Test Site. Defeat the Perfect Flurry inner circle and secure the Perfect Flurry Site Chief's Override Chip.")
+                    "Defeat the 4 members of the Perfect Flurry inner circle in the control block of the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Site Chief's Override Chip.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurrySiteChiefsOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Perfect Flurry Site Chief's Override Chip from Hutlar Qion Test Site. Return to Selka Vorn for the next Perfect Flurry lesson.")
+                    "You recovered the Perfect Flurry Site Chief's Override Chip. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void PerfectFlurryMastery()
         {
-            _builder.Create(PerfectFlurryMasteryQuestId, "Perfect Flurry Mastery")
+            _builder.Create(PerfectFlurryMasteryQuestId, "The Final Bow")
                 .PrerequisiteQuest(PerfectFlurryCircleQuestId)
                 .PrerequisiteSkill(SkillType.Throwing, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Perfect Flurry master is waiting in Hutlar Qion Test Site. Defeat the master and end the capstone trial.")
+                    "Defeat the Perfect Flurry master on the far proving floor of the Hutlar Qion Test Site on Hutlar.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Perfect Flurry master is defeated. Return to Selka Vorn and claim the completed lesson.")
+                    "The Perfect Flurry master is defeated. Report to Selka Vorn at the Qion Box Canyon on Hutlar.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

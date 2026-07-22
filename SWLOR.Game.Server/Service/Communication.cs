@@ -290,6 +290,20 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));
             }
 
+            // The speaker and the language being spoken are the same for every recipient, so resolve
+            // them once before dispatching rather than recomputing (and re-writing language state)
+            // per receiver.
+            var speaker = GetEffectiveChatSpeaker(sender);
+            var language = Language.GetActiveLanguage(speaker);
+
+            // Wookiees cannot speak any other language (but they can understand them).
+            // Swap their language if they attempt to speak in any other language.
+            if (GetRacialType(speaker) == RacialType.Wookiee && language != SkillType.Shyriiwook)
+            {
+                Language.SetActiveLanguage(speaker, SkillType.Shyriiwook);
+                language = SkillType.Shyriiwook;
+            }
+
             // Now we have a list of who is going to actually receive a message, we need to modify
             // the message for each recipient then dispatch them.
             foreach (var receiver in recipients.Distinct())
@@ -338,22 +352,9 @@ namespace SWLOR.Game.Server.Service
                         finalMessage.Append(" } ");
                     }
                 }
-                var speaker = GetEffectiveChatSpeaker(sender);
-                var language = Language.GetActiveLanguage(speaker);
-
-                // Wookiees cannot speak any other language (but they can understand them).
-                // Swap their language if they attempt to speak in any other language.
-                var race = GetRacialType(speaker);
-                if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
-                {
-                    Language.SetActiveLanguage(speaker, SkillType.Shyriiwook);
-                    language = SkillType.Shyriiwook;
-                }
-
                 var (r, g, b) = Language.GetColor(language);
 
-                if (dbReceiver != null &&
-                    dbReceiver.Settings.LanguageChatColors != null &&
+                if (dbReceiver?.Settings?.LanguageChatColors != null &&
                     dbReceiver.Settings.LanguageChatColors.ContainsKey(language))
                 {
                     r = dbReceiver.Settings.LanguageChatColors[language].Red;
@@ -378,8 +379,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.IsOOC)
                     {
-                        if (dbReceiver != null &&
-                            dbReceiver.Settings.OOCChatColor != null)
+                        if (dbReceiver?.Settings?.OOCChatColor != null)
                         {
                             r = dbReceiver.Settings.OOCChatColor.Red;
                             g = dbReceiver.Settings.OOCChatColor.Green;
@@ -397,8 +397,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         byte emoteRed, emoteGreen, emoteBlue;
 
-                        if (dbReceiver != null &&
-                            dbReceiver.Settings.EmoteChatColor != null)
+                        if (dbReceiver?.Settings?.EmoteChatColor != null)
                         {
                             emoteRed = dbReceiver.Settings.EmoteChatColor.Red;
                             emoteGreen = dbReceiver.Settings.EmoteChatColor.Green;
@@ -437,15 +436,19 @@ namespace SWLOR.Game.Server.Service
             uint speaker,
             string message)
         {
-            // Comms uses DMTalk to cross area boundaries without adding the native party chat label.
-            var finalChannel = channel == ChatChannel.PlayerParty
-                ? ChatChannel.DMTalk
-                : channel;
-
+            // NWNX_Rename only patches the per-observer PC name override around three native chat
+            // functions - Party, Shout, and Tell (see the plugin's HOOK_CHAT registrations). Talk and
+            // Whisper are not among them; they render correctly today only because the speaker's
+            // object update is already visible/patched for a nearby observer. DM_Talk is not hooked at
+            // all, so routing cross-area Comms through it (as before) always rendered the speaker's
+            // true name regardless of the override. Route Comms through the native Party channel
+            // instead - Rename patches it, and an explicit per-receiver target dispatches directly
+            // rather than broadcasting to nearby party members, so it still crosses area/planet
+            // boundaries the same way DMTalk did.
             PlayerName.SendChatMessageWithChatNameOverride(
                 receiver,
                 speaker,
-                () => ChatPlugin.SendMessage(finalChannel, message, speaker, receiver));
+                () => ChatPlugin.SendMessage(channel, message, speaker, receiver));
         }
 
         private static bool IsChatCommandMessage(string message)
@@ -737,9 +740,13 @@ namespace SWLOR.Game.Server.Service
 
                 if (length != -1)
                 {
+                    // This block only runs when an emote delimiter has closed (bracket, asterisk, or
+                    // double-colon), so the captured segment is always an emote and must carry the
+                    // emote (custom) color. The previous bracket-specific condition left bracketed
+                    // emotes uncolored and untranslated, rendering them as plain language-colored text.
                     var component = new CommunicationComponent
                     {
-                        IsCustomColor = workingOn != WorkingOnEmoteStyle.Bracket || message[indexStart] == '[',
+                        IsCustomColor = true,
                         IsTranslatable = false,
                         Text = message.Substring(indexStart, length)
                     };
@@ -867,7 +874,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                return dbPlayer.EmoteStyle;
+                return dbPlayer?.EmoteStyle ?? EmoteStyle.Regular;
             }
 
             return EmoteStyle.Regular;
@@ -879,6 +886,9 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer == null)
+                    return;
+
                 dbPlayer.EmoteStyle = style;
                 DB.Set(dbPlayer);
             }

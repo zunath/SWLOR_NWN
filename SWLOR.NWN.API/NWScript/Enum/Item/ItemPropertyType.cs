@@ -134,5 +134,11 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         Resistance = 133,
         WeaponDamageType = 134,
         ShieldDeflection = 135,
+        Stealth = 136,
+        Detection = 137,
+        TrapBonus = 138,
+        Disarm = 139,
+        PoisonBonus = 140,
+        Lockpicking = 141,
     }
 }

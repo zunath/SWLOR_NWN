@@ -41,7 +41,11 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("Incubation", ServerEnvironmentType.All)]
         Incubation,
         [LogGroup("AI", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
-        AI
+        AI,
+        [LogGroup("Mimicry", ServerEnvironmentType.All)]
+        Mimicry,
+        [LogGroup("QuestContract", ServerEnvironmentType.All)]
+        QuestContract
     }
 
     public class LogGroupAttribute : Attribute

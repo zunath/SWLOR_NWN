@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void VitalRuptureFoundation()
         {
-            _builder.Create(VitalRuptureFoundationQuestId, "First Principle: Vital Rupture")
+            _builder.Create(VitalRuptureFoundationQuestId, "Shallow Incisions")
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -62,20 +62,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture capstone line continues in Veles Militia Annex. Defeat Vital Rupture adepts and secure the Vital Rupture Veles Drill Ledger.")
+                    "Defeat six Vital Rupture adepts in the Veles Militia Annex on Viscara and secure the Vital Rupture Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureVelesDrillLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Vital Rupture Veles Drill Ledger from Veles Militia Annex. Return to Mikka Varn for the next Vital Rupture lesson.")
+                    "The Vital Rupture Veles Drill Ledger is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void VitalRuptureMeasure()
         {
-            _builder.Create(VitalRuptureMeasureQuestId, "The Measure of Vital Rupture")
+            _builder.Create(VitalRuptureMeasureQuestId, "Arterial Mapping")
                 .PrerequisiteQuest(VitalRuptureFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneVitalRuptureMilitiaRangeRelay)
@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture capstone line continues in Veles Militia Annex. Defeat Vital Rupture specialists and secure the Vital Rupture Militia Range Relay.")
+                    "Defeat five Vital Rupture specialists in the Veles Militia Annex on Viscara and secure the Vital Rupture Militia Range Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureMilitiaRangeRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Vital Rupture Militia Range Relay from Veles Militia Annex. Return to Mikka Varn for the next Vital Rupture lesson.")
+                    "The Vital Rupture Militia Range Relay is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void VitalRuptureBreach()
         {
-            _builder.Create(VitalRuptureBreachQuestId, "Fault Line: Vital Rupture")
+            _builder.Create(VitalRuptureBreachQuestId, "Cardiac Access")
                 .PrerequisiteQuest(VitalRuptureMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneVitalRuptureScoredChallengeBadge)
@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture capstone line continues in Veles Militia Annex. Defeat the Vital Rupture warden and secure the Vital Rupture Scored Challenge Badge.")
+                    "Defeat the Vital Rupture warden in the Veles Militia Annex on Viscara and secure the Vital Rupture Scored Challenge Badge.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureScoredChallengeBadge)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Vital Rupture Scored Challenge Badge from Veles Militia Annex. Return to Mikka Varn for the next Vital Rupture lesson.")
+                    "The Vital Rupture warden is defeated and the Vital Rupture Scored Challenge Badge is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void VitalRuptureCircle()
         {
-            _builder.Create(VitalRuptureCircleQuestId, "Circle of Proof: Vital Rupture")
+            _builder.Create(VitalRuptureCircleQuestId, "Clean Margins")
                 .PrerequisiteQuest(VitalRuptureBreachQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneVitalRuptureCaptainsChallengeChit)
@@ -125,31 +125,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture capstone line continues in Veles Militia Annex. Defeat the Vital Rupture inner circle and secure the Vital Rupture Captain's Challenge Chit.")
+                    "Defeat four members of the Vital Rupture inner circle in the Veles Militia Annex on Viscara and secure the Vital Rupture Captain's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureCaptainsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Vital Rupture Captain's Challenge Chit from Veles Militia Annex. Return to Mikka Varn for the next Vital Rupture lesson.")
+                    "The Vital Rupture Captain's Challenge Chit is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void VitalRuptureMastery()
         {
-            _builder.Create(VitalRuptureMasteryQuestId, "Vital Rupture Mastery")
+            _builder.Create(VitalRuptureMasteryQuestId, "Terminal Bleed")
                 .PrerequisiteQuest(VitalRuptureCircleQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Vital Rupture master is waiting in Veles Militia Annex. Defeat the master and end the capstone trial.")
+                    "Defeat the Vital Rupture master in the Veles Militia Annex on Viscara.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Vital Rupture master is defeated. Return to Mikka Varn and claim the completed lesson.")
+                    "The Vital Rupture master is defeated. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void SystemicShutdownFoundation()
         {
-            _builder.Create(SystemicShutdownFoundationQuestId, "First Principle: Systemic Shutdown")
+            _builder.Create(SystemicShutdownFoundationQuestId, "Nothing on Record")
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -175,20 +175,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown capstone line continues in Veles Militia Annex. Defeat Systemic Shutdown adepts and secure the Systemic Shutdown Veles Drill Ledger.")
+                    "Bring down six Systemic Shutdown adepts in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownVelesDrillLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Systemic Shutdown Veles Drill Ledger from Veles Militia Annex. Return to Dalen Orso for the next Systemic Shutdown lesson.")
+                    "The Systemic Shutdown Veles Drill Ledger has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void SystemicShutdownMeasure()
         {
-            _builder.Create(SystemicShutdownMeasureQuestId, "The Measure of Systemic Shutdown")
+            _builder.Create(SystemicShutdownMeasureQuestId, "Lines of Inquiry")
                 .PrerequisiteQuest(SystemicShutdownFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSystemicShutdownMilitiaRangeRelay)
@@ -196,20 +196,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown capstone line continues in Veles Militia Annex. Defeat Systemic Shutdown specialists and secure the Systemic Shutdown Militia Range Relay.")
+                    "Bring down five Systemic Shutdown specialists in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Militia Range Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownMilitiaRangeRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Systemic Shutdown Militia Range Relay from Veles Militia Annex. Return to Dalen Orso for the next Systemic Shutdown lesson.")
+                    "The Systemic Shutdown Militia Range Relay has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void SystemicShutdownBreach()
         {
-            _builder.Create(SystemicShutdownBreachQuestId, "Fault Line: Systemic Shutdown")
+            _builder.Create(SystemicShutdownBreachQuestId, "Point of Failure")
                 .PrerequisiteQuest(SystemicShutdownMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSystemicShutdownScoredChallengeBadge)
@@ -217,20 +217,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown capstone line continues in Veles Militia Annex. Defeat the Systemic Shutdown warden and secure the Systemic Shutdown Scored Challenge Badge.")
+                    "Bring down the Systemic Shutdown warden in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Scored Challenge Badge.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownScoredChallengeBadge)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Systemic Shutdown Scored Challenge Badge from Veles Militia Annex. Return to Dalen Orso for the next Systemic Shutdown lesson.")
+                    "The Systemic Shutdown warden is down and the Systemic Shutdown Scored Challenge Badge has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void SystemicShutdownCircle()
         {
-            _builder.Create(SystemicShutdownCircleQuestId, "Circle of Proof: Systemic Shutdown")
+            _builder.Create(SystemicShutdownCircleQuestId, "Housecleaning")
                 .PrerequisiteQuest(SystemicShutdownBreachQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSystemicShutdownCaptainsChallengeChit)
@@ -238,31 +238,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown capstone line continues in Veles Militia Annex. Defeat the Systemic Shutdown inner circle and secure the Systemic Shutdown Captain's Challenge Chit.")
+                    "Bring down four members of the Systemic Shutdown inner circle in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Captain's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownCaptainsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Systemic Shutdown Captain's Challenge Chit from Veles Militia Annex. Return to Dalen Orso for the next Systemic Shutdown lesson.")
+                    "The Systemic Shutdown Captain's Challenge Chit has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void SystemicShutdownMastery()
         {
-            _builder.Create(SystemicShutdownMasteryQuestId, "Systemic Shutdown Mastery")
+            _builder.Create(SystemicShutdownMasteryQuestId, "End of Transmission")
                 .PrerequisiteQuest(SystemicShutdownCircleQuestId)
                 .PrerequisiteSkill(SkillType.Vibroknife, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Systemic Shutdown master is waiting in Veles Militia Annex. Defeat the master and end the capstone trial.")
+                    "Bring down the Systemic Shutdown master in the Veles Militia Annex on Viscara.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Systemic Shutdown master is defeated. Return to Dalen Orso and claim the completed lesson.")
+                    "The Systemic Shutdown master is down. Report back to Dalen Orso.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void EmergencyCocktailFoundation()
         {
-            _builder.Create(EmergencyCocktailFoundationQuestId, "First Principle: Emergency Cocktail")
+            _builder.Create(EmergencyCocktailFoundationQuestId, "Six Doses Under Fire")
                 .PrerequisiteSkill(SkillType.FirstAid, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -49,20 +49,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail capstone line continues in Dantooine Medical Sublevel. Defeat Emergency Cocktail adepts and secure the Emergency Cocktail Triage Ward Ledger.")
+                    "Use Kavi Dorn's key to enter the Dantooine Medical Sublevel on Dantooine. Defeat six Emergency Cocktail adepts and secure the Emergency Cocktail Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Emergency Cocktail Triage Ward Ledger from Dantooine Medical Sublevel. Return to Kavi Dorn for the next Emergency Cocktail lesson.")
+                    "The Emergency Cocktail Triage Ward Ledger is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void EmergencyCocktailMeasure()
         {
-            _builder.Create(EmergencyCocktailMeasureQuestId, "The Measure of Emergency Cocktail")
+            _builder.Create(EmergencyCocktailMeasureQuestId, "Five Bad Batches")
                 .PrerequisiteQuest(EmergencyCocktailFoundationQuestId)
                 .PrerequisiteSkill(SkillType.FirstAid, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyCocktailKoltoConduitCoupler)
@@ -70,20 +70,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail capstone line continues in Dantooine Medical Sublevel. Defeat Emergency Cocktail specialists and secure the Emergency Cocktail Kolto Conduit Coupler.")
+                    "Defeat five Emergency Cocktail specialists in the Dantooine Medical Sublevel on Dantooine and recover the Emergency Cocktail Kolto Conduit Coupler from their conduit splice.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailKoltoConduitCoupler)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Emergency Cocktail Kolto Conduit Coupler from Dantooine Medical Sublevel. Return to Kavi Dorn for the next Emergency Cocktail lesson.")
+                    "The Emergency Cocktail Kolto Conduit Coupler is recovered. Return it to Kavi Dorn at the Dantooine Republic medical center.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void EmergencyCocktailBreach()
         {
-            _builder.Create(EmergencyCocktailBreachQuestId, "Fault Line: Emergency Cocktail")
+            _builder.Create(EmergencyCocktailBreachQuestId, "One Dose Too Strong")
                 .PrerequisiteQuest(EmergencyCocktailMeasureQuestId)
                 .PrerequisiteSkill(SkillType.FirstAid, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyCocktailFracturedWardSigil)
@@ -91,20 +91,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail capstone line continues in Dantooine Medical Sublevel. Defeat the Emergency Cocktail warden and secure the Emergency Cocktail Fractured Ward Sigil.")
+                    "Defeat the Emergency Cocktail warden guarding the sealed clean room in the Dantooine Medical Sublevel on Dantooine and secure the Emergency Cocktail Fractured Ward Sigil. Kavi Dorn advises bringing two trusted companions.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailFracturedWardSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Emergency Cocktail Fractured Ward Sigil from Dantooine Medical Sublevel. Return to Kavi Dorn for the next Emergency Cocktail lesson.")
+                    "The warden is defeated and the Emergency Cocktail Fractured Ward Sigil is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void EmergencyCocktailCircle()
         {
-            _builder.Create(EmergencyCocktailCircleQuestId, "Circle of Proof: Emergency Cocktail")
+            _builder.Create(EmergencyCocktailCircleQuestId, "Four Minutes to Flatline")
                 .PrerequisiteQuest(EmergencyCocktailBreachQuestId)
                 .PrerequisiteSkill(SkillType.FirstAid, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyCocktailMatronsWardToken)
@@ -112,31 +112,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail capstone line continues in Dantooine Medical Sublevel. Defeat the Emergency Cocktail inner circle and secure the Emergency Cocktail Matron's Ward Token.")
+                    "Defeat the four members of the Emergency Cocktail inner circle in the matron's ward of the Dantooine Medical Sublevel on Dantooine and secure the Emergency Cocktail Matron's Ward Token.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailMatronsWardToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Emergency Cocktail Matron's Ward Token from Dantooine Medical Sublevel. Return to Kavi Dorn for the next Emergency Cocktail lesson.")
+                    "The inner circle is defeated and the Emergency Cocktail Matron's Ward Token is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void EmergencyCocktailMastery()
         {
-            _builder.Create(EmergencyCocktailMasteryQuestId, "Emergency Cocktail Mastery")
+            _builder.Create(EmergencyCocktailMasteryQuestId, "The Perfected Batch")
                 .PrerequisiteQuest(EmergencyCocktailCircleQuestId)
                 .PrerequisiteSkill(SkillType.FirstAid, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Emergency Cocktail master is waiting in Dantooine Medical Sublevel. Defeat the master and end the capstone trial.")
+                    "Defeat the Emergency Cocktail master in the deepest room of the Dantooine Medical Sublevel on Dantooine. His defeat is the only proof required. Kavi Dorn warns that this is not a fight for one person; bring companions.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Emergency Cocktail master is defeated. Return to Kavi Dorn and claim the completed lesson.")
+                    "The Emergency Cocktail master is defeated. Return to Kavi Dorn at the Dantooine Republic medical center for the final lesson.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

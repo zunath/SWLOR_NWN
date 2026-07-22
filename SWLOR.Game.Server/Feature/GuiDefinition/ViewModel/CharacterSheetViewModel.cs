@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -26,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
-        IGuiRefreshable<PerkRefundedRefreshEvent>
+        IGuiRefreshable<PerkRefundedRefreshEvent>,
+        IGuiRefreshable<TechniqueChangedRefreshEvent>
     {
         private const int MaxPurchasedAttributeScore = 26;
         private const int RacialAttributeBonus = 1;
@@ -221,6 +223,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int ForceAttack
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public int PhysicalDefense
         {
             get => Get<int>();
@@ -395,6 +403,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsTechniquesEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public Action OnClickSkills() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Skills);
@@ -408,6 +422,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickPerks() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Perks);
+        };
+
+        public Action OnClickTechniques() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Techniques, new TechniquesPayload());
         };
 
         public Action OnClickChangePortrait() => () =>
@@ -820,6 +839,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
+            ForceAttack = Stat.GetAttack(_target, AbilityType.Willpower, SkillType.Force);
             PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
@@ -844,7 +864,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             string tooltip;
             if (useDefaultMinimumDelay)
-                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next attack uses {baseDelaySeconds:0.##}s default minimum)";
+                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next swing at {swingDelaySeconds:0.##}s resolves extra attacks at your fastest possible speed)";
             else if (attackerDelayMilliseconds <= Combat.BaseAttackDelayMilliseconds)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({baseDelaySeconds:0.##}s default minimum)";
             else if (effectiveDelayMilliseconds < Combat.BaseAttackDelayMilliseconds)
@@ -879,20 +899,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Combat Readiness", FormatPercent(Stat.GetCombatReadinessPercent(_target)), "Increases activated ability damage and healing. Does not reduce cooldowns.");
             AddStat("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Ability to deflect attacks with a shield.");
             AddStat("Attack Deflection", FormatPercent(Stat.GetAttackDeflectionChance(_target)), "Chance to deflect attacks while wielding a weapon without a shield.");
-            AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage by 20% and increase enmity gain.");
+            AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage and increase enmity gain.");
+            AddStat("Guard Reduction", FormatPercent(Combat.GetGuardDamageReductionPercent(_target)), "Amount of damage removed from a hit when Guard succeeds.");
             AddStat("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better.");
             AddStat("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better.");
+            AddStat("Physical DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Physical)), "Bonus or penalty applied to Physical DEF. Already included in the Physical DEF shown on the Attributes tab.");
+            AddStat("Force DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Force)), "Bonus or penalty applied to Force DEF. Already included in the Force DEF shown on the Attributes tab.");
             AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Hit chance adjustment for physical weapon and Force abilities.");
+            AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Bonus or penalty applied to Accuracy. Already included in the Accuracy shown on the Attributes tab.");
+            AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
+            AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "Bonus or penalty applied to Attack when using physical attacks and abilities.");
+            AddStat("Force Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ForceAttackPercentAdjustment)), "Bonus or penalty applied to Attack when using Force-typed attacks and abilities.");
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
+            AddStat("Damage Dealt", FormatPercent(Stat.GetStatAdjustment(_target, StatType.DamageDealtPercentAdjustment)), "Adjusts all outgoing damage.");
+            AddStat("Weapon/Force Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.WeaponAndForceDamageDealtPercentAdjustment)), "Adjusts outgoing weapon and Force damage. Stacks with Damage Dealt.");
+            AddStat("Healing Received", FormatPercent(Stat.GetStatAdjustment(_target, StatType.HealingReceivedPercentAdjustment)), "Adjusts the amount of healing you receive from all sources.");
             AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
+            AddStat("FP Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.FPCostPercentAdjustment)), "Adjusts the FP cost of abilities. Lower is better.");
+            AddStat("STM Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AbilityStaminaCostPercentAdjustment)), "Adjusts the Stamina cost of abilities. Lower is better.");
             AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
+            AddStat("Off-Hand Haste", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target)), "Increases off-hand attack speed. Only applies while dual wielding.");
             AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
             AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
             AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
             AddStat("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
             AddStat("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability.");
             AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Affects Force ability effectiveness based on type. Range: -10 to 10. Negative represents Dark-side and positive represents Light-side.");
+            AddStat("Detection", Stat.GetDetection(_target).ToString(), "Ability to notice hidden creatures.");
+            AddStat("Stealth", Stat.GetStealth(_target).ToString(), "Ability to avoid being noticed while sneaking.");
+            AddStat("Experience", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ExperiencePercentAdjustment)), "Bonus or penalty applied to experience gained from skill use.");
 
             StatNames = names;
             StatValues = values;
@@ -1155,6 +1191,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
             IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
+            IsTechniquesEnabled = Perk.GetPerkLevel(_target, PerkType.CombatAnalyzer) >= 1;
 
             if (IsPlayerMode)
             {
@@ -1240,6 +1277,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             LoadData();
+        }
+
+        public void Refresh(TechniqueChangedRefreshEvent payload)
+        {
+            if (!GetIsPC(_target))
+                return;
+
+            RefreshStats();
+            RefreshEquipmentStats();
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

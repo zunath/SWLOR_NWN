@@ -127,9 +127,13 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);");
         communicationSource.Should().Contain("private static void SendProcessedChatMessage(");
         communicationSource.Should().NotContain("SendMessageToPC(receiver");
-        communicationSource.Should().Contain("var finalChannel = channel == ChatChannel.PlayerParty");
-        communicationSource.Should().Contain("? ChatChannel.DMTalk");
-        communicationSource.Should().Contain("ChatPlugin.SendMessage(finalChannel, message, speaker, receiver)");
+        // NWNX_Rename only patches the per-observer name override around the native Party/Shout/Tell
+        // chat functions (see its HOOK_CHAT registrations) - not Talk/Whisper (which instead rely on
+        // the speaker's object update already being visible/patched to a nearby observer) and not any
+        // DM_* channel. Comms must dispatch on the native PlayerParty channel, not DMTalk, or the
+        // override never applies and the speaker's true name leaks once they leave the receiver's area.
+        communicationSource.Should().NotContain("ChatChannel.DMTalk");
+        communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
         communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");
         communicationSource.Should().NotContain("ChatChannel.PlayerDM, finalMessageColored");
@@ -215,10 +219,14 @@ public class PlayerFacingNameBroadcastTests
             .Where(path =>
             {
                 var areaResref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(path));
-                return areaResref.StartsWith("vrotr") ||
+                var hasEventResref = areaResref.StartsWith("vrotr") ||
                        areaResref.StartsWith("ka_") ||
                        areaResref.StartsWith("na_ka_") ||
                        areaResref == "republicshipevnt";
+                // The DM Comms event areas are all "[Prefab] ..." prefab areas. Require the prefab
+                // name too, so non-prefab areas that merely share a resref prefix (e.g. the capstone
+                // boss arena ka_ar_czweaparen) are not held to the COMMS_EVENT_AREA invariant.
+                return hasEventResref && GetAreaDisplayName(path).StartsWith("[Prefab]", StringComparison.Ordinal);
             })
             .ToList();
 
@@ -332,7 +340,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "ElectionViewModel.cs"));
-        electionSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, candidate.Id, candidate.Name)");
+        electionSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, candidate.Id, candidate.Name)");
         electionSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, selectedCandidateId, dbCandidate.Name)");
         electionSource.Should().NotContain("Your vote for {dbCandidate.Name} has been cast.");
 
@@ -343,7 +351,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "ManageCityViewModel.cs"));
-        citySource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, citizen.Id, citizen.Name)");
+        citySource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, citizen.Id, citizen.Name)");
 
         var citizenshipSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -352,7 +360,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "ManageCitizenshipViewModel.cs"));
-        citizenshipSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name)");
+        citizenshipSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name)");
         citizenshipSource.Should().NotContain("Mayor: {dbMayorPlayer.Name}");
 
         var propertySource = File.ReadAllText(Path.Combine(
@@ -562,14 +570,34 @@ public class PlayerFacingNameBroadcastTests
     private static int? GitLocalInt(string gitPath, string variableName)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(gitPath));
-        var areaProperties = document.RootElement
-            .GetProperty("AreaProperties")
-            .GetProperty("value");
+        var root = document.RootElement;
 
-        if (!areaProperties.TryGetProperty("VarTable", out var varTable) ||
-            !varTable.TryGetProperty("value", out var variables))
+        // The runtime reads this with GetLocalInt(area, ...), i.e. the area instance's top-level
+        // VarTable, which is also where the toolset writes area locals. Older hand-authored areas
+        // keep it under AreaProperties, so accept either location.
+        if (TryReadIntLocal(root, variableName, out var topLevel))
         {
-            return null;
+            return topLevel;
+        }
+
+        if (root.TryGetProperty("AreaProperties", out var areaProperties) &&
+            areaProperties.TryGetProperty("value", out var areaPropertiesValue) &&
+            TryReadIntLocal(areaPropertiesValue, variableName, out var nested))
+        {
+            return nested;
+        }
+
+        return null;
+    }
+
+    private static bool TryReadIntLocal(JsonElement container, string variableName, out int result)
+    {
+        result = 0;
+        if (!container.TryGetProperty("VarTable", out var varTable) ||
+            !varTable.TryGetProperty("value", out var variables) ||
+            variables.ValueKind != JsonValueKind.Array)
+        {
+            return false;
         }
 
         foreach (var variable in variables.EnumerateArray())
@@ -585,13 +613,14 @@ public class PlayerFacingNameBroadcastTests
                 !variable.TryGetProperty("Value", out var value) ||
                 value.GetProperty("type").GetString() != "int")
             {
-                return null;
+                return false;
             }
 
-            return value.GetProperty("value").GetInt32();
+            result = value.GetProperty("value").GetInt32();
+            return true;
         }
 
-        return null;
+        return false;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void ThermalDetonatorFoundation()
         {
-            _builder.Create(ThermalDetonatorFoundationQuestId, "First Principle: Thermal Detonator")
+            _builder.Create(ThermalDetonatorFoundationQuestId, "Unlogged Charge")
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -88,20 +88,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator capstone line continues in Hutlar Qion Test Site. Defeat Thermal Detonator adepts and secure the Thermal Detonator Qion Test Log.")
+                    "Six Thermal Detonator adepts are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Thermal Detonator Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorQionTestLog)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Thermal Detonator Qion Test Log from Hutlar Qion Test Site. Return to Ruk Halven for the next Thermal Detonator lesson.")
+                    "The Thermal Detonator Qion Test Log has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void ThermalDetonatorMeasure()
         {
-            _builder.Create(ThermalDetonatorMeasureQuestId, "The Measure of Thermal Detonator")
+            _builder.Create(ThermalDetonatorMeasureQuestId, "Short Fuze Report")
                 .PrerequisiteQuest(ThermalDetonatorFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneThermalDetonatorCryoRangeRegulator)
@@ -109,20 +109,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator capstone line continues in Hutlar Qion Test Site. Defeat Thermal Detonator specialists and secure the Thermal Detonator Cryo-Range Regulator.")
+                    "Five Thermal Detonator specialists are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Thermal Detonator Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorCryoRangeRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Thermal Detonator Cryo-Range Regulator from Hutlar Qion Test Site. Return to Ruk Halven for the next Thermal Detonator lesson.")
+                    "The Thermal Detonator Cryo-Range Regulator has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void ThermalDetonatorBreach()
         {
-            _builder.Create(ThermalDetonatorBreachQuestId, "Fault Line: Thermal Detonator")
+            _builder.Create(ThermalDetonatorBreachQuestId, "Full-Yield Breach")
                 .PrerequisiteQuest(ThermalDetonatorMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneThermalDetonatorFrostburnedTestCrest)
@@ -130,20 +130,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator capstone line continues in Hutlar Qion Test Site. Defeat the Thermal Detonator warden and secure the Thermal Detonator Frostburned Test Crest.")
+                    "The Thermal Detonator warden is stationed in Hutlar Qion Test Site on Hutlar. Defeat the warden and recover the Thermal Detonator Frostburned Test Crest.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorFrostburnedTestCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Thermal Detonator Frostburned Test Crest from Hutlar Qion Test Site. Return to Ruk Halven for the next Thermal Detonator lesson.")
+                    "The Thermal Detonator Frostburned Test Crest has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void ThermalDetonatorCircle()
         {
-            _builder.Create(ThermalDetonatorCircleQuestId, "Circle of Proof: Thermal Detonator")
+            _builder.Create(ThermalDetonatorCircleQuestId, "Site Purge Order")
                 .PrerequisiteQuest(ThermalDetonatorBreachQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneThermalDetonatorSiteChiefsOverrideChip)
@@ -151,31 +151,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator capstone line continues in Hutlar Qion Test Site. Defeat the Thermal Detonator inner circle and secure the Thermal Detonator Site Chief's Override Chip.")
+                    "The Thermal Detonator inner circle, four in number, holds Hutlar Qion Test Site on Hutlar. Defeat them and recover the Thermal Detonator Site Chief's Override Chip.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorSiteChiefsOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Thermal Detonator Site Chief's Override Chip from Hutlar Qion Test Site. Return to Ruk Halven for the next Thermal Detonator lesson.")
+                    "The Thermal Detonator Site Chief's Override Chip has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void ThermalDetonatorMastery()
         {
-            _builder.Create(ThermalDetonatorMasteryQuestId, "Thermal Detonator Mastery")
+            _builder.Create(ThermalDetonatorMasteryQuestId, "Zero-Margin Incident")
                 .PrerequisiteQuest(ThermalDetonatorCircleQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Thermal Detonator master is waiting in Hutlar Qion Test Site. Defeat the master and end the capstone trial.")
+                    "The Thermal Detonator master is stationed in Hutlar Qion Test Site on Hutlar. Defeat the master to complete the trial.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Thermal Detonator master is defeated. Return to Ruk Halven and claim the completed lesson.")
+                    "The Thermal Detonator master has been defeated. Return to Ruk Halven at the Hutlar Outpost to complete the trial.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void OverloadBarrageFoundation()
         {
-            _builder.Create(OverloadBarrageFoundationQuestId, "First Principle: Overload Barrage")
+            _builder.Create(OverloadBarrageFoundationQuestId, "Overdraw, Unsigned")
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -201,20 +201,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage capstone line continues in Hutlar Qion Test Site. Defeat Overload Barrage adepts and secure the Overload Barrage Qion Test Log.")
+                    "Six Overload Barrage adepts are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Overload Barrage Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageQionTestLog)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Overload Barrage Qion Test Log from Hutlar Qion Test Site. Return to Miri Koss for the next Overload Barrage lesson.")
+                    "The Overload Barrage Qion Test Log has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void OverloadBarrageMeasure()
         {
-            _builder.Create(OverloadBarrageMeasureQuestId, "The Measure of Overload Barrage")
+            _builder.Create(OverloadBarrageMeasureQuestId, "Cells Don't Lie")
                 .PrerequisiteQuest(OverloadBarrageFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOverloadBarrageCryoRangeRegulator)
@@ -222,20 +222,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage capstone line continues in Hutlar Qion Test Site. Defeat Overload Barrage specialists and secure the Overload Barrage Cryo-Range Regulator.")
+                    "Five Overload Barrage specialists are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Overload Barrage Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageCryoRangeRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Overload Barrage Cryo-Range Regulator from Hutlar Qion Test Site. Return to Miri Koss for the next Overload Barrage lesson.")
+                    "The Overload Barrage Cryo-Range Regulator has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void OverloadBarrageBreach()
         {
-            _builder.Create(OverloadBarrageBreachQuestId, "Fault Line: Overload Barrage")
+            _builder.Create(OverloadBarrageBreachQuestId, "Full Dump, No Slag")
                 .PrerequisiteQuest(OverloadBarrageMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOverloadBarrageFrostburnedTestCrest)
@@ -243,20 +243,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage capstone line continues in Hutlar Qion Test Site. Defeat the Overload Barrage warden and secure the Overload Barrage Frostburned Test Crest.")
+                    "The Overload Barrage warden is stationed in Hutlar Qion Test Site on Hutlar. Defeat the warden and recover the Overload Barrage Frostburned Test Crest.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageFrostburnedTestCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Overload Barrage Frostburned Test Crest from Hutlar Qion Test Site. Return to Miri Koss for the next Overload Barrage lesson.")
+                    "The Overload Barrage Frostburned Test Crest has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void OverloadBarrageCircle()
         {
-            _builder.Create(OverloadBarrageCircleQuestId, "Circle of Proof: Overload Barrage")
+            _builder.Create(OverloadBarrageCircleQuestId, "Charge Table Recovered")
                 .PrerequisiteQuest(OverloadBarrageBreachQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOverloadBarrageSiteChiefsOverrideChip)
@@ -264,31 +264,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage capstone line continues in Hutlar Qion Test Site. Defeat the Overload Barrage inner circle and secure the Overload Barrage Site Chief's Override Chip.")
+                    "The Overload Barrage inner circle, four in number, holds Hutlar Qion Test Site on Hutlar. Defeat them and recover the Overload Barrage Site Chief's Override Chip.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageSiteChiefsOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Overload Barrage Site Chief's Override Chip from Hutlar Qion Test Site. Return to Miri Koss for the next Overload Barrage lesson.")
+                    "The Overload Barrage Site Chief's Override Chip has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void OverloadBarrageMastery()
         {
-            _builder.Create(OverloadBarrageMasteryQuestId, "Overload Barrage Mastery")
+            _builder.Create(OverloadBarrageMasteryQuestId, "One Fighter Down, Three Don't")
                 .PrerequisiteQuest(OverloadBarrageCircleQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Overload Barrage master is waiting in Hutlar Qion Test Site. Defeat the master and end the capstone trial.")
+                    "The Overload Barrage master is stationed in Hutlar Qion Test Site on Hutlar. Defeat the master to complete the lesson.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Overload Barrage master is defeated. Return to Miri Koss and claim the completed lesson.")
+                    "The Overload Barrage master has been defeated. Return to Miri Koss at Fort Ka'ra on Hutlar to complete the lesson.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void KillzoneBeaconFoundation()
         {
-            _builder.Create(KillzoneBeaconFoundationQuestId, "First Principle: Killzone Beacon")
+            _builder.Create(KillzoneBeaconFoundationQuestId, "Operation Quiet Grid")
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -314,20 +314,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon capstone line continues in Viscara Republic Engineering Bunker. Defeat Killzone Beacon adepts and secure the Killzone Beacon Republic Bunker Docket.")
+                    "Six Killzone Beacon adepts are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Killzone Beacon Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconRepublicBunkerDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Killzone Beacon Republic Bunker Docket from Viscara Republic Engineering Bunker. Return to Aric Jorr for the next Killzone Beacon lesson.")
+                    "The Killzone Beacon Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void KillzoneBeaconMeasure()
         {
-            _builder.Create(KillzoneBeaconMeasureQuestId, "The Measure of Killzone Beacon")
+            _builder.Create(KillzoneBeaconMeasureQuestId, "Operation Dead Reckoning")
                 .PrerequisiteQuest(KillzoneBeaconFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneKillzoneBeaconShieldGridRelay)
@@ -335,20 +335,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon capstone line continues in Viscara Republic Engineering Bunker. Defeat Killzone Beacon specialists and secure the Killzone Beacon Shield Grid Relay.")
+                    "Five Killzone Beacon specialists are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Killzone Beacon Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconShieldGridRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Killzone Beacon Shield Grid Relay from Viscara Republic Engineering Bunker. Return to Aric Jorr for the next Killzone Beacon lesson.")
+                    "The Killzone Beacon Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void KillzoneBeaconBreach()
         {
-            _builder.Create(KillzoneBeaconBreachQuestId, "Fault Line: Killzone Beacon")
+            _builder.Create(KillzoneBeaconBreachQuestId, "Operation Cracked Command")
                 .PrerequisiteQuest(KillzoneBeaconMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneKillzoneBeaconCrackedCommandCrest)
@@ -356,20 +356,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon capstone line continues in Viscara Republic Engineering Bunker. Defeat the Killzone Beacon warden and secure the Killzone Beacon Cracked Command Crest.")
+                    "The Killzone Beacon warden is stationed in Viscara Republic Engineering Bunker on Viscara. Defeat the warden and recover the Killzone Beacon Cracked Command Crest.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconCrackedCommandCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Killzone Beacon Cracked Command Crest from Viscara Republic Engineering Bunker. Return to Aric Jorr for the next Killzone Beacon lesson.")
+                    "The Killzone Beacon Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void KillzoneBeaconCircle()
         {
-            _builder.Create(KillzoneBeaconCircleQuestId, "Circle of Proof: Killzone Beacon")
+            _builder.Create(KillzoneBeaconCircleQuestId, "Operation Clean Ledger")
                 .PrerequisiteQuest(KillzoneBeaconBreachQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneKillzoneBeaconQuartermasterOverrideChip)
@@ -377,31 +377,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon capstone line continues in Viscara Republic Engineering Bunker. Defeat the Killzone Beacon inner circle and secure the Killzone Beacon Quartermaster Override Chip.")
+                    "The Killzone Beacon inner circle, four in number, holds Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Killzone Beacon Quartermaster Override Chip.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconQuartermasterOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Killzone Beacon Quartermaster Override Chip from Viscara Republic Engineering Bunker. Return to Aric Jorr for the next Killzone Beacon lesson.")
+                    "The Killzone Beacon Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void KillzoneBeaconMastery()
         {
-            _builder.Create(KillzoneBeaconMasteryQuestId, "Killzone Beacon Mastery")
+            _builder.Create(KillzoneBeaconMasteryQuestId, "Operation Last Painted Target")
                 .PrerequisiteQuest(KillzoneBeaconCircleQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Killzone Beacon master is waiting in Viscara Republic Engineering Bunker. Defeat the master and end the capstone trial.")
+                    "The Killzone Beacon master is stationed in Viscara Republic Engineering Bunker on Viscara. Defeat the master to complete the briefing.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Killzone Beacon master is defeated. Return to Aric Jorr and claim the completed lesson.")
+                    "The Killzone Beacon master has been defeated. Return to Aric Jorr at the Republic Base on Viscara to complete the briefing.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -412,7 +412,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void EmergencyBunkerFoundation()
         {
-            _builder.Create(EmergencyBunkerFoundationQuestId, "First Principle: Emergency Bunker")
+            _builder.Create(EmergencyBunkerFoundationQuestId, "Certify: Sublevel Access")
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -427,20 +427,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker capstone line continues in Viscara Republic Engineering Bunker. Defeat Emergency Bunker adepts and secure the Emergency Bunker Republic Bunker Docket.")
+                    "Six Emergency Bunker adepts are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Emergency Bunker Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerRepublicBunkerDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Emergency Bunker Republic Bunker Docket from Viscara Republic Engineering Bunker. Return to Nella Voss for the next Emergency Bunker lesson.")
+                    "The Emergency Bunker Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void EmergencyBunkerMeasure()
         {
-            _builder.Create(EmergencyBunkerMeasureQuestId, "The Measure of Emergency Bunker")
+            _builder.Create(EmergencyBunkerMeasureQuestId, "Certify: Load-Bearing Trust")
                 .PrerequisiteQuest(EmergencyBunkerFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyBunkerShieldGridRelay)
@@ -448,20 +448,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker capstone line continues in Viscara Republic Engineering Bunker. Defeat Emergency Bunker specialists and secure the Emergency Bunker Shield Grid Relay.")
+                    "Five Emergency Bunker specialists are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Emergency Bunker Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerShieldGridRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Emergency Bunker Shield Grid Relay from Viscara Republic Engineering Bunker. Return to Nella Voss for the next Emergency Bunker lesson.")
+                    "The Emergency Bunker Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void EmergencyBunkerBreach()
         {
-            _builder.Create(EmergencyBunkerBreachQuestId, "Fault Line: Emergency Bunker")
+            _builder.Create(EmergencyBunkerBreachQuestId, "Certify: Breach Protocol")
                 .PrerequisiteQuest(EmergencyBunkerMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyBunkerCrackedCommandCrest)
@@ -469,20 +469,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker capstone line continues in Viscara Republic Engineering Bunker. Defeat the Emergency Bunker warden and secure the Emergency Bunker Cracked Command Crest.")
+                    "The Emergency Bunker warden is stationed in Viscara Republic Engineering Bunker on Viscara. Defeat the warden and recover the Emergency Bunker Cracked Command Crest.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerCrackedCommandCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Emergency Bunker Cracked Command Crest from Viscara Republic Engineering Bunker. Return to Nella Voss for the next Emergency Bunker lesson.")
+                    "The Emergency Bunker Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void EmergencyBunkerCircle()
         {
-            _builder.Create(EmergencyBunkerCircleQuestId, "Circle of Proof: Emergency Bunker")
+            _builder.Create(EmergencyBunkerCircleQuestId, "Certify: The Chain of Custody")
                 .PrerequisiteQuest(EmergencyBunkerBreachQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyBunkerQuartermasterOverrideChip)
@@ -490,31 +490,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker capstone line continues in Viscara Republic Engineering Bunker. Defeat the Emergency Bunker inner circle and secure the Emergency Bunker Quartermaster Override Chip.")
+                    "The Emergency Bunker inner circle, four in number, holds Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Emergency Bunker Quartermaster Override Chip.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerQuartermasterOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Emergency Bunker Quartermaster Override Chip from Viscara Republic Engineering Bunker. Return to Nella Voss for the next Emergency Bunker lesson.")
+                    "The Emergency Bunker Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void EmergencyBunkerMastery()
         {
-            _builder.Create(EmergencyBunkerMasteryQuestId, "Emergency Bunker Mastery")
+            _builder.Create(EmergencyBunkerMasteryQuestId, "Certify: The Patient Wall")
                 .PrerequisiteQuest(EmergencyBunkerCircleQuestId)
                 .PrerequisiteSkill(SkillType.Devices, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Emergency Bunker master is waiting in Viscara Republic Engineering Bunker. Defeat the master and end the capstone trial.")
+                    "The Emergency Bunker master is stationed in Viscara Republic Engineering Bunker on Viscara. Defeat the master to complete the certification.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Emergency Bunker master is defeated. Return to Nella Voss and claim the completed lesson.")
+                    "The Emergency Bunker master has been defeated. Return to Nella Voss at the Republic Base grounds on Viscara to complete the certification.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

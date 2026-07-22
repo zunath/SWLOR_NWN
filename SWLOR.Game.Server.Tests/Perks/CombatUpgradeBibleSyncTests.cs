@@ -223,6 +223,7 @@ public class CombatUpgradeBibleSyncTests
         ["Katar"] = SkillType.Katar,
         ["Leadership"] = SkillType.Leadership,
         ["Lightsaber"] = SkillType.Lightsaber,
+        ["Mimicry"] = SkillType.Mimicry,
         ["Piloting"] = SkillType.Piloting,
         ["Pistol"] = SkillType.Pistol,
         ["Rifle"] = SkillType.Rifle,
@@ -949,7 +950,11 @@ public class CombatUpgradeBibleSyncTests
             if (!definitionName.EndsWith(suffix, StringComparison.Ordinal))
                 continue;
 
-            var expected = NormalizeName(GetBaseName(ability.Detail.Name));
+            // Mimicry technique classes keep a "Technique" suffix (their FeatType would otherwise
+            // collide with the source NPC feat, e.g. ToxicSpitTechnique vs ToxicSpit), while their
+            // player-facing name deliberately drops it. Compare against the suffixed form for those.
+            var baseName = GetBaseName(ability.Detail.Name);
+            var expected = NormalizeName(ability.Detail.MimicryTier > 0 ? baseName + "Technique" : baseName);
             var actual = NormalizeName(definitionName[..^suffix.Length]);
             if (!actual.Equals(expected, StringComparison.Ordinal))
             {
@@ -1165,6 +1170,14 @@ public class CombatUpgradeBibleSyncTests
         {
             if (!scopedPerkTypes.Contains(ability.Detail.EffectiveLevelPerkType) ||
                 expectedActiveFeats.Contains(feat))
+            {
+                continue;
+            }
+
+            // Mimicry techniques use Combat Analyzer as their EffectiveLevelPerkType for scaling/tier gating, but they
+            // are granted by equipping a learned technique through the Mimicry system, not by any perk level's granted
+            // feats. Skip them here the same way IsTameRow/IsAuxiliaryGrantedFeat carve out other equip/aux-granted feats.
+            if (ability.Detail.MimicryTier > 0)
             {
                 continue;
             }
@@ -1654,6 +1667,11 @@ public class CombatUpgradeBibleSyncTests
         if (OutOfScopeTabs.Contains(row.Tab))
             return new ReviewScope(false, $"Skipped: out-of-scope tab {row.Tab}");
 
+        // Mimicry techniques are learned creature abilities rather than purchasable perks; they are
+        // reviewed as feat-granting abilities, not perk levels, regardless of their Type label.
+        if ("Technique".Equals(row.Style, StringComparison.OrdinalIgnoreCase))
+            return new ReviewScope(false, "Skipped: Mimicry learned technique");
+
         if (!ScopedTypes.Contains(row.Type))
             return new ReviewScope(false, $"Skipped: non-scoped type {row.Type}");
 
@@ -1976,7 +1994,11 @@ public class CombatUpgradeBibleSyncTests
 
     private static bool IsScopedImplementedRow(BiblePerkRow row)
     {
+        // Mimicry techniques are learned creature abilities, not purchasable perks: they carry a
+        // "Technique" style and are validated as feat-granting abilities elsewhere, so they are
+        // excluded from perk-level scope regardless of their (standard) Type label.
         return !OutOfScopeTabs.Contains(row.Tab) &&
+               !"Technique".Equals(row.Style, StringComparison.OrdinalIgnoreCase) &&
                ScopedTypes.Contains(row.Type) &&
                ImplementedStatuses.Contains(row.DevStatus) &&
                !string.IsNullOrWhiteSpace(row.PerkName);
@@ -2121,6 +2143,9 @@ public class CombatUpgradeBibleSyncTests
             ("First Aid", "Trauma Medic") => PerkCategoryType.FirstAidTraumaMedic,
             ("Engineering", "Droidcraft") => PerkCategoryType.Engineering,
             ("Fabrication", "Invention") => PerkCategoryType.Fabrication,
+            ("Force", "Alter") => PerkCategoryType.ForceAlter,
+            ("Force", "Control") => PerkCategoryType.ForceControl,
+            ("Force", "Sense") => PerkCategoryType.ForceSense,
             ("Gathering", "General") => PerkCategoryType.Gathering,
             ("Gathering", "Harvesting") => PerkCategoryType.Gathering,
             ("Gathering", "Scavenging") => PerkCategoryType.Gathering,
@@ -2134,6 +2159,7 @@ public class CombatUpgradeBibleSyncTests
             ("Leadership", "Vanguard Command") => PerkCategoryType.LeadershipVanguardCommand,
             ("Lightsaber", "Severance") => PerkCategoryType.LightsaberDefense,
             ("Lightsaber", "Ward") => PerkCategoryType.LightsaberOffense,
+            ("Mimicry", "Mimicry") => PerkCategoryType.Mimicry,
             ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
@@ -2160,16 +2186,6 @@ public class CombatUpgradeBibleSyncTests
 
     private static PerkCategoryType[] GetExpectedCategories(BiblePerkRow row)
     {
-        if (row.Tab.Equals("Force", StringComparison.OrdinalIgnoreCase))
-        {
-            return new[]
-            {
-                PerkCategoryType.ForceLight,
-                PerkCategoryType.ForceDark,
-                PerkCategoryType.ForceUniversal
-            };
-        }
-
         var category = TryGetExpectedCategory(row);
         return category.HasValue
             ? new[] { category.Value }

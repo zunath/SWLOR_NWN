@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 10988
+    "value": 10986
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 10989
+    "value": 10987
   },
   "Cursed": {
     "type": "byte",
@@ -72,7 +72,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 33
+          "value": 25
         },
         "Param1": {
           "type": "byte",
@@ -170,6 +170,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "arc_shuriken"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

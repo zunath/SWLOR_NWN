@@ -544,6 +544,8 @@ function Get-CanonicalManifestHeader {
         "devstatus" { return "DevStatus" }
         "additionalrequirements" { return "AdditionalRequirements" }
         "notes" { return "Notes" }
+        "slots" { return "Slots" }
+        "slot" { return "Slots" }
         default { return "" }
     }
 }
@@ -686,6 +688,7 @@ function Import-BibleWorkbookManifestRows {
                     DevStatus = $devStatus
                     AdditionalRequirements = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "AdditionalRequirements"
                     Notes = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Notes"
+                    Slots = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Slots"
                 }) | Out-Null
             }
         }
@@ -709,7 +712,8 @@ $sheetTabs = @(
     "Armor", "Vibroblade", "Vibroknife", "Lightsaber", "Heavy Vibroblade", "Spear",
     "Twin Blade", "Saberstaff", "Katar", "Staff", "Pistol", "Rifle", "Throwing",
     "Force", "Devices", "Beast Mastery", "Piloting", "Leadership", "First Aid",
-    "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering"
+    "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering",
+    "Mimicry"
 )
 $localWorkbookSheetTabAliases = @{
     Armor = "General"
@@ -753,6 +757,7 @@ if ($RefreshBible) {
                 DevStatus = Get-FirstPropertyValue $row @("DevStatus", "Dev Status")
                 AdditionalRequirements = Get-FirstPropertyValue $row @("AdditionalRequirements", "Additional Requirements")
                 Notes = Get-PropertyValue $row "Notes"
+                Slots = Get-FirstPropertyValue $row @("Slots", "Slot")
             }) | Out-Null
         }
     }
@@ -872,6 +877,11 @@ $statusChecks = @(
 $auditRows = New-Object System.Collections.Generic.List[object]
 
 foreach ($row in $manifest) {
+    # Mimicry learned techniques are not purchasable perks and have no perk name, recast group, or
+    # dedicated perk-menu ability; they are audited as feat-granting abilities elsewhere. Skip the
+    # perk/ability/recast checks for them regardless of their (standard) Type label.
+    if ($row.Style -eq "Technique") { continue }
+
     $rowBaseName = Get-SanitizedName $row.PerkName
     $expectsPerkDefinition = $row.DevStatus -eq "Implemented"
     if ($expectsPerkDefinition -and !$perkBaseNameIndex.ContainsKey($rowBaseName)) {

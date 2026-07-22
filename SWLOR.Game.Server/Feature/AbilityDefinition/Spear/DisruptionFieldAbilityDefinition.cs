@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                Spell.DisruptionField2,
                 AbilityTargetingShapeType.Sphere,
                 5.0f,
                 0.0f,

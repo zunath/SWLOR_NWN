@@ -844,6 +844,94 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Applies an enhancement-provided item property onto a crafted item,
+        /// merging with any existing property of the same type. DMG amounts are
+        /// summed together; a conflicting WeaponDamageType is resolved by randomly
+        /// keeping one of the two rather than always favoring the latest one applied.
+        /// </summary>
+        public static void ApplyCraftedItemProperty(uint item, ItemProperty ip)
+        {
+            var type = GetItemPropertyType(ip);
+            var subType = GetItemPropertySubType(ip);
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (type == ItemPropertyType.WeaponDamageType)
+            {
+                ApplyWeaponDamageTypeProperty(item, ip, subType);
+                return;
+            }
+
+            // Scan for matches first and remove them in a separate pass afterward -
+            // removing an item property while GetNextItemProperty is still iterating
+            // shifts the underlying list, which silently skips every other match.
+            //
+            // Subtype matching is judged off the INCOMING property's subtype, not the
+            // existing property's. Property types with no subtype table in
+            // itempropdef.2da (DMG, Attack, ForceAttack, Evasion, HPBonus, FP, Stamina,
+            // ShieldDeflection, CombatReadiness, StructureBonus, ...) are always packed
+            // with subtype -1, but re-querying that -1 back off a property already
+            // attached to a live item is not reliable - the engine has no subtype table
+            // to round-trip it through. Trusting the freshly-built incoming property's
+            // subtype instead of re-reading the attached one is what actually holds: if
+            // the enhancement never had a meaningful subtype to begin with, any existing
+            // property of the same type is a match; if it does (Defense, Resistance,
+            // FoodBonus, DroidStat), only the same subtype matches.
+            var matches = new List<ItemProperty>();
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == type &&
+                    (subType == -1 || GetItemPropertySubType(property) == subType))
+                {
+                    amount += GetItemPropertyCostTableValue(property);
+                    matches.Add(property);
+                }
+            }
+
+            foreach (var property in matches)
+            {
+                RemoveItemProperty(item, property);
+            }
+
+            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
+            unpacked.CostTableValue = amount;
+            ip = ItemPropertyPlugin.PackIP(unpacked);
+
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+        }
+
+        /// <summary>
+        /// A weapon can only carry one damage type. If it already has a different
+        /// type than the one being applied now, keep only one - chosen at random
+        /// rather than always letting whichever enhancement was socketed last
+        /// silently win.
+        /// </summary>
+        private static void ApplyWeaponDamageTypeProperty(uint item, ItemProperty ip, int subType)
+        {
+            var damageTypeMatches = new List<ItemProperty>();
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
+                {
+                    damageTypeMatches.Add(property);
+                }
+            }
+
+            var keepExisting = damageTypeMatches.Count > 0 &&
+                                GetItemPropertySubType(damageTypeMatches[0]) != subType &&
+                                Random.D100(1) <= 50;
+
+            if (keepExisting)
+                return;
+
+            foreach (var property in damageTypeMatches)
+            {
+                RemoveItemProperty(item, property);
+            }
+
+            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+        }
+
         [NWNEventHandler(ScriptName.OnRefineryUsed)]
         public static void UseRefinery()
         {

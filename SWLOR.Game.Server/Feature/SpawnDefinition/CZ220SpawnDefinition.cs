@@ -105,6 +105,27 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome();
+
+            // Named rare elite droids live in a dedicated rare table (tagged waypoint in the
+            // dungeon), so the capstone lesson table stays exactly the general enemy steps.
+            builder.Create("CZ220_BREAKER_YARD_RARES", "CZ-220 Breaker Yard - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "bulwark")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "slagborn")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "demolisherzr9")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

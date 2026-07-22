@@ -22,9 +22,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.RepeatedTargetDamageAutoAttackOnly, "1");
         AssertSourceContains("VibrobladePerkDefinition.cs", "EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0");
 
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedRequiredCategory, "(int)StatusEffectCategory.ShadowToxin");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedRequiredCategory, "(int)StatusEffectCategory.Venom");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedPercentAdjustment, "-15");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackRequiredCategory, "(int)StatusEffectCategory.ShadowToxin");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackRequiredCategory, "(int)StatusEffectCategory.Venom");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackAppliedCategory, "(int)StatusEffectCategory.Infection");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackMaximum, "5");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetBonus, "12");
@@ -36,15 +36,6 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseEssenceHunter, "1");
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseSoulAscension, "1");
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore, "1");
-
-        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.DeflectionNearbyAllyGuard, "10");
-        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.DeflectionNearbyAllyGuardDurationSeconds, "30");
-        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardAbilityDefensePercentAdjustment, "10");
-        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardAbilityForceDefensePercentAdjustment, "10");
-        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardAbilityDefenseDurationSeconds, "30");
-        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardAbilityDefenseCategoryId, "(int)PerkCategoryType.LightsaberOffense");
-        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardSharedDamageNextSkillAbilityDamageBonus, "10");
-        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardSharedDamageNextSkillAbilityWindowSeconds, "30");
 
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilitySkillType, "(int)SkillType.Rifle");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityDamageBonus, "14");
@@ -187,22 +178,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(suppression, StatType.RangedHitSuppressionStackDurationSeconds, 30);
         AssertStatusStat(suppression, StatType.RangedCriticalDamagePercentAdjustment, -10);
 
-        var focused = new FocusedStanceStatusEffect();
-        AssertStatusStat(focused, StatType.HitChanceAgainstSunderedTargetPercentAdjustment, 10);
-        AssertStatusStat(focused, StatType.CriticalRateAgainstSunderedTargetPercentAdjustment, 8);
-        AssertStatusStat(focused, StatType.SkillAreaAbilityDamagePercentAdjustmentSkillType, (int)SkillType.Lightsaber);
-        AssertStatusStat(focused, StatType.SkillAreaAbilityDamagePercentAdjustment, -15);
-
         var scrapper = new ScrapperStanceStatusEffect();
         AssertStatusStat(scrapper, StatType.OutgoingControlDurationPercentAdjustment, 20);
         AssertStatusStat(scrapper, StatType.HostileAbilityRecastDelayPercentAdjustment, 10);
-
-        var impenetrableGuard = new ImpenetrableGuardStatusEffect();
-        AssertStatusStat(impenetrableGuard, StatType.WardTargetPhysicalDefensePercentAdjustment, 5);
-        AssertStatusStat(impenetrableGuard, StatType.WardTargetForceDefensePercentAdjustment, 5);
-        AssertStatusStat(impenetrableGuard, StatType.EnmityPercentAdjustment, 20);
-        AssertStatusStat(impenetrableGuard, StatType.AttackPercentAdjustment, -20);
-        AssertStatusStat(impenetrableGuard, StatType.ForceAttackPercentAdjustment, -20);
 
         var infiniteConduit = new InfiniteConduitStatusEffect();
         AssertStatusStat(infiniteConduit, StatType.AbilityStaminaCostFPRestorePercentSkillType, (int)SkillType.Saberstaff);
@@ -237,8 +215,16 @@ public class GeneratedWeaponPerkBehaviorTests
         foreach (var feat in new[] { FeatType.PathogenStrike1, FeatType.PathogenStrike2, FeatType.PathogenStrike3, FeatType.PathogenStrike4 })
         {
             pathogenStrike[feat].IsHostileAbility.Should().BeTrue();
-            pathogenStrike[feat].RequiresTarget.Should().BeTrue();
-            AssertFeatSpellTargeting(featRows, spellRows, feat, "****", "1", "M", "0x03", "0");
+            pathogenStrike[feat].RequiresTarget.Should().BeFalse();
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "M", "0x03", "0");
+        }
+
+        var virulentBlade = new VirulentBladeAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.VirulentBlade1, FeatType.VirulentBlade2, FeatType.VirulentBlade3 })
+        {
+            virulentBlade[feat].IsHostileAbility.Should().BeTrue();
+            virulentBlade[feat].RequiresTarget.Should().BeFalse();
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "M", "0x03", "0");
         }
 
         var cripplingSlice = new CripplingSliceAbilityDefinition().BuildAbilities();
@@ -465,12 +451,12 @@ public class GeneratedWeaponPerkBehaviorTests
         abilitySource.Should().Contain("beforeSuccessfulImpactRiders");
 
         var bleedSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "BleedStatusEffect.cs"));
-        var shadowToxinSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ShadowToxinStatusEffect.cs"));
+        var venomSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "VenomStatusEffect.cs"));
         var infectionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "InfectionStatusEffect.cs"));
         var suppressionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
         bleedSource.Should().Contain("WasNaturallyExpired");
-        shadowToxinSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
-        shadowToxinSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, DamagePerTick, CombatDamageType.Poison)");
+        venomSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
+        venomSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, DamagePerTick, CombatDamageType.Poison)");
         infectionSource.Should().Contain("public int Stacks");
         infectionSource.Should().Contain("DamagePerStack * Math.Max(1, Stacks)");
         infectionSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
@@ -491,14 +477,6 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatResourceAboveThresholdPercent = 40");
         AssertAbilitySourceContains(root, "Saberstaff", "SeverFocusAbilityDefinition.cs", "DrainTargetResourceAboveThresholdPercent = 80");
         AssertAbilitySourceContains(root, "Saberstaff", "InfiniteConduitAbilityDefinition.cs", "typeof(InfiniteConduitStatusEffect)");
-        AssertAbilitySourceContains(root, "Lightsaber", "WardBondAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(45, 12, 12, 0, 8.0f)");
-        AssertAbilitySourceDoesNotContain(root, "Lightsaber", "FocusedStanceAbilityDefinition.cs", "SelfAccuracyPercent");
-        AssertAbilitySourceDoesNotContain(root, "Lightsaber", "ImpenetrableGuardAbilityDefinition.cs", "SelfDefensePercent");
-        AssertAbilitySourceContains(root, "Lightsaber", "SaberStormAbilityDefinition.cs", "ExtraDamageTargetStatusEffect = typeof(SunderStatusEffect)");
-        AssertAbilitySourceContains(root, "Lightsaber", "SaberStormAbilityDefinition.cs", "ExtraDamageIfTargetStatusEffect = 30");
-        AssertAbilitySourceContains(root, "Lightsaber", "SaberStormAbilityDefinition.cs", "ConditionalTargetStatusEffect = typeof(SunderStatusEffect)");
-        AssertAbilitySourceContains(root, "Lightsaber", "SaberStormAbilityDefinition.cs", "AbilityTargetingShapeType.None");
-        AssertAbilitySourceDoesNotContain(root, "Lightsaber", "SaberStormAbilityDefinition.cs", "AbilityTargetingShapeType.Sphere");
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new GuardedStatusEffect(50, 5.0f)");
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "FriendlyTargetStatusPersistsUntilBroken = true");
         AssertAbilitySourceContains(root, "Katar", "TagInAbilityDefinition.cs", "RequiresGuardedTarget = true");
@@ -520,8 +498,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Staff", "UnmovingCenterAbilityDefinition.cs", "SelfKnockdownDazedImmunityDurationSeconds = 45");
         AssertAbilitySourceContains(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityExposedDurationSeconds = 30");
         AssertAbilitySourceContains(root, "Staff", "WorldbreakerAbilityDefinition.cs", "RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control");
-        AssertAbilitySourceContains(root, "Vibroknife", "PathogenStrikeAbilityDefinition.cs", "SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) }");
-        AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStatusEffect = typeof(ShadowToxinStatusEffect)");
+        AssertAbilitySourceContains(root, "Vibroknife", "PathogenStrikeAbilityDefinition.cs", "SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
+        AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStatusEffect = typeof(VenomStatusEffect)");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStackStatusEffect = typeof(InfectionStatusEffect)");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ConsumeSourceStatusEffectsOnHit = true");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "SuppressSourceStatusStackRiders = true");
@@ -565,11 +543,6 @@ public class GeneratedWeaponPerkBehaviorTests
     {
         var root = FindRepositoryRoot();
 
-        AssertAbilitySourceContains(root, "Lightsaber", "WardBondAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(45, 12, 12, 0, 8.0f)");
-        AssertAbilitySourceContains(root, "Lightsaber", "WardBondAbilityDefinition.cs", "Animation.DoubleStrike,\r\n                8.0f,");
-        AssertAbilitySourceContains(root, "Lightsaber", "GuardianMasterAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(50, 15, 15, 15, 8.0f)");
-        AssertAbilitySourceContains(root, "Lightsaber", "GuardianMasterAbilityDefinition.cs", "Animation.DoubleStrike,\r\n                8.0f,");
-
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "builder.Create(FeatType.TwinGuardStance1, PerkType.TwinGuardStance)");
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new GuardedStatusEffect(50, 5.0f)");
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "FriendlyTargetStatusPersistsUntilBroken = true");
@@ -606,47 +579,6 @@ public class GeneratedWeaponPerkBehaviorTests
         var tagIn = new TagInAbilityDefinition().BuildAbilities()[FeatType.TwinIntercept1];
         tagIn.IsSingleTargetAbility.Should().BeTrue();
         tagIn.RequiresTarget.Should().BeFalse();
-    }
-
-    [Test]
-    public void GuardiansChallenge_AppliesConditionalEnmityWithoutRequiringRecentWardHitTarget()
-    {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "Lightsaber",
-            "GuardiansChallengeAbilityDefinition.cs"));
-
-        var rankOneIndex = source.IndexOf("FeatType.GuardiansChallenge1", StringComparison.Ordinal);
-        var rankTwoIndex = source.IndexOf("FeatType.GuardiansChallenge2", StringComparison.Ordinal);
-        var rankThreeIndex = source.IndexOf("FeatType.GuardiansChallenge3", StringComparison.Ordinal);
-        var endIndex = source.IndexOf("return builder.Build()", StringComparison.Ordinal);
-        rankOneIndex.Should().BeGreaterThanOrEqualTo(0);
-        rankTwoIndex.Should().BeGreaterThan(rankOneIndex);
-        rankThreeIndex.Should().BeGreaterThan(rankTwoIndex);
-        endIndex.Should().BeGreaterThan(rankThreeIndex);
-
-        var rankOneBlock = source.Substring(rankOneIndex, rankTwoIndex - rankOneIndex);
-        var rankTwoBlock = source.Substring(rankTwoIndex, rankThreeIndex - rankTwoIndex);
-        var rankThreeBlock = source.Substring(rankThreeIndex, endIndex - rankThreeIndex);
-
-        rankOneBlock.Should().NotContain("RequiresRecentWardHitTarget = true");
-        rankOneBlock.Should().Contain("ProtectedTargetHitWindowSeconds = 30");
-        rankOneBlock.Should().Contain("SelfEnmityPercentIfRecentWardHit = 20");
-        rankOneBlock.Should().Contain("SelfEnmityDurationSecondsIfRecentWardHit = 30");
-
-        rankTwoBlock.Should().NotContain("RequiresRecentWardHitTarget = true");
-        rankTwoBlock.Should().Contain("ProtectedTargetHitWindowSeconds = 30");
-        rankTwoBlock.Should().Contain("SelfEnmityPercentIfRecentWardHit = 30");
-        rankTwoBlock.Should().Contain("SelfEnmityDurationSecondsIfRecentWardHit = 30");
-
-        rankThreeBlock.Should().NotContain("RequiresRecentWardHitTarget = true");
-        rankThreeBlock.Should().Contain("ProtectedTargetHitWindowSeconds = 30");
-        rankThreeBlock.Should().Contain("SelfEnmityPercentIfRecentWardHit = 40");
-        rankThreeBlock.Should().Contain("SelfEnmityDurationSecondsIfRecentWardHit = 30");
     }
 
     [Test]

@@ -359483,7 +359483,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Blueprint: Social Adaption II"
+                        "0": "Blueprint: Social Adaptation II"
                       }
                     },
                     "ModelPart1": {
@@ -371962,7 +371962,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Blueprint: Social Adaption I"
+                        "0": "Blueprint: Social Adaptation I"
                       }
                     },
                     "ModelPart1": {
@@ -385961,6 +385961,26 @@
   "TriggerList": {
     "type": "list",
     "value": []
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "WaypointList": {
     "type": "list",

@@ -108,13 +108,13 @@ public class NPCEnemyBalanceAuditTests
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
     {
-        new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 199, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 22, 30),
-        new("man_warrior_2", "mando_war_skin", "npc_mando_blade", 14, 203, 11, 16, 20, 11, 16, 21, 27, 5, 7, 4, 3, 7, 18, 23),
+        new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 199, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 24, 30),
+        new("man_warrior_2", "mando_war_skin", "npc_mando_blade", 14, 203, 11, 16, 20, 11, 16, 21, 27, 5, 7, 4, 3, 7, 20, 23),
         new("v_raivor2", "raivor_skin", "raivor_c_claw", 14, 238, 20, 11, 11, 16, 16, 35, 6, 9, 0, 2, 6, 4, 27, 24),
         new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 291, 21, 12, 12, 17, 17, 40, 7, 10, 0, 3, 7, 5, 31, 24),
-        new("s_app_m", "s_app_hide", "s_app_electro", 24, 363, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 27, 24),
-        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 15, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 43, 30),
-        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 77, 23),
+        new("s_app_m", "s_app_hide", "s_app_electro", 24, 363, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 16, 24),
+        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 15, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 46, 30),
+        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
     };
 
     private static readonly ExpectedEnemy[] ExpectedBloodFrenzyEnemies =
@@ -149,11 +149,50 @@ public class NPCEnemyBalanceAuditTests
         new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("vrix7", "pulsemarks_skin", "pulsemarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 30),
         new("ashwing", "ashwing_sk", "ashwing_wp", 2, 114, 10, 13, 16, 10, 13, 12, 15, 3, 5, 3, 1, 5, 7, 24),
-        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 620, 17, 24, 28, 17, 24, 45, 52, 11, 13, 8, 8, 12, 38, 24),
-        new("sable_quarr", "sableq_sk", "sableq_wp", 29, 720, 29, 17, 17, 24, 24, 68, 12, 16, 0, 6, 12, 10, 48, 30),
-        new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1420, 20, 33, 20, 27, 27, 95, 26, 19, 3, 11, 14, 14, 60, 22),
-        new("inkveil", "inkveil_sk", "inkveil_wp", 31, 760, 30, 18, 18, 25, 25, 72, 13, 17, 0, 6, 13, 11, 55, 24),
-        new("glassjaw", "glassjaw_sk", "glassjaw_wp", 30, 660, 18, 25, 31, 18, 25, 44, 56, 13, 15, 9, 10, 15, 25, 24),
+        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 1103, 29, 17, 17, 24, 24, 88, 15, 16, 2, 6, 13, 11, 53, 24),
+        new("sable_quarr", "sableq_sk", "sableq_wp", 29, 1082, 18, 30, 18, 25, 25, 82, 20, 17, 2, 9, 12, 12, 54, 30),
+        new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1270, 19, 32, 19, 27, 27, 91, 23, 18, 2, 10, 13, 13, 61, 22),
+        new("inkveil", "inkveil_sk", "inkveil_wp2", 31, 1109, 18, 25, 31, 18, 25, 60, 78, 13, 15, 9, 11, 15, 23, 24),
+        new("glassjaw", "glassjaw_sk", "glassjaw_wp2", 30, 1128, 18, 31, 18, 25, 25, 84, 21, 17, 2, 10, 12, 12, 28, 24),
+        new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 24, 34, 42, 24, 139, 46, 21, 2, 9, 25, 22, 76, 23),
+        new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("overwatch", "overwatch_sk", "overwatch_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("blastbreaker", "blastbreaker_sk", "blastbreaker_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("suppressor", "suppressor_sk", "suppressor_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("ironjaw", "ironjaw_sk", "ironjaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("quickdraw", "quickdraw_sk", "quickdraw_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("hexcaller", "hexcaller_sk", "hexcaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("grottoalpha", "grottoalpha_sk", "grottoalpha_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 24),
+        new("spinequill", "spinequill_sk", "spinequill_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 24),
+        new("ritestalker", "ritestalker_sk", "ritestalker_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 24),
+        new("invictus", "invictus_sk", "invictus_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("ruptorvane", "ruptorvane_sk", "ruptorvane_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("blackoutwrd", "blackoutwrd_sk", "blackoutwrd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("sabraetrial", "sabraetrial_sk", "sabraetrial_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("enclavesentl", "enclavesentl_sk", "enclavesentl_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("cycloneadpt", "cycloneadpt_sk", "cycloneadpt_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("forgewright", "forgewright_sk", "forgewright_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("flameweaver", "flameweaver_sk", "flameweaver_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("banecaller", "banecaller_sk", "banecaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("canyonbulwrk", "canyonbulwrk_sk", "canyonbulwrk_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("dunedeadeye", "dunedeadeye_sk", "dunedeadeye_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("deadhandzeph", "deadhandzeph_sk", "deadhandzeph_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("flurrychamp", "flurrychamp_sk", "flurrychamp_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("thermlancer", "thermlancer_sk", "thermlancer_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("barrieroverse", "barrieroverse_sk", "barrieroverse_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("cryptwarden", "cryptwarden_sk", "cryptwarden_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("markahunger", "markahunger_sk", "markahunger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("eclipseshade", "eclipseshade_sk", "eclipseshade_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("bunkerbreak", "bunkerbreak_sk", "bunkerbreak_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("beaconmarks", "beaconmarks_sk", "beaconmarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("decurioncmd", "decurioncmd_sk", "decurioncmd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("triagewarden", "triagewarden_sk", "triagewarden_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("chemslinger", "chemslinger_sk", "chemslinger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("conduitmatrn", "conduitmatrn_sk", "conduitmatrn_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("tarnapexmaw", "tarnapexmaw_sk", "tarnapexmaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 24),
+        new("quillstalker", "quillstalker_sk", "quillstalker_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 24),
+        new("rhydelalpha", "rhydelalpha_sk", "rhydelalpha_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 24),
     };
 
     private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
@@ -196,13 +235,52 @@ public class NPCEnemyBalanceAuditTests
             ["shardeye"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 5, [ResistanceType.Electrical] = 3, [ResistanceType.Ice] = 3, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 7, [ResistanceType.Disruption] = -10 },
             ["rootcoil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 10, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = 6 },
             ["mirevein"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 10, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = 6 },
-            ["vrix7"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["vrix7"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
             ["ashwing"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 6, [ResistanceType.Electrical] = 2, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 8, [ResistanceType.Mobility] = 4, [ResistanceType.Trauma] = 6, [ResistanceType.Disruption] = 4 },
-            ["reefmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 7, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = -10 },
-            ["sable_quarr"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 5, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 5, [ResistanceType.Trauma] = 6, [ResistanceType.Disruption] = 5 },
-            ["kael_drox"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 8, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 8, [ResistanceType.Ice] = 8, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = 8 },
-            ["inkveil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = -10 },
-            ["glassjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 7, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = -10 },
+            ["reefmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 15, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 17, [ResistanceType.Trauma] = 19, [ResistanceType.Disruption] = -10 },
+            ["sable_quarr"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 14, [ResistanceType.Disruption] = 12 },
+            ["kael_drox"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 15, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 15, [ResistanceType.Ice] = 15, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 15, [ResistanceType.Trauma] = 17, [ResistanceType.Disruption] = 15 },
+            ["inkveil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 17, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 19, [ResistanceType.Trauma] = 21, [ResistanceType.Disruption] = -10 },
+            ["glassjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 16, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 18, [ResistanceType.Trauma] = 20, [ResistanceType.Disruption] = -10 },
+            ["bulwark"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["slagborn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["demolisherzr9"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["overwatch"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["blastbreaker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["suppressor"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["ironjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["quickdraw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["hexcaller"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["grottoalpha"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["spinequill"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["ritestalker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["invictus"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["ruptorvane"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["blackoutwrd"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["sabraetrial"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["enclavesentl"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["cycloneadpt"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["forgewright"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["flameweaver"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["banecaller"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["canyonbulwrk"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["dunedeadeye"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["deadhandzeph"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["flurrychamp"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["thermlancer"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["barrieroverse"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["cryptwarden"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["markahunger"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["eclipseshade"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["bunkerbreak"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["beaconmarks"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["decurioncmd"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["triagewarden"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["chemslinger"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["conduitmatrn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["tarnapexmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["quillstalker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["rhydelalpha"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
         };
 
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
@@ -236,6 +314,45 @@ public class NPCEnemyBalanceAuditTests
         ["kael_drox"] = new[] { FeatType.TacticalMark, FeatType.TargetLock, FeatType.ShrapnelBurst, FeatType.ArcPulse, FeatType.IonBurst },
         ["inkveil"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TailSweep, FeatType.ToxicCloud },
         ["glassjaw"] = new[] { FeatType.PiercingQuills, FeatType.VenomSpray, FeatType.PouncingStrike, FeatType.RakingClaws },
+        ["bulwark"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["slagborn"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["demolisherzr9"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["overwatch"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["blastbreaker"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["suppressor"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["ironjaw"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["quickdraw"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["hexcaller"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["grottoalpha"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["spinequill"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["ritestalker"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["invictus"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["ruptorvane"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["blackoutwrd"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["sabraetrial"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["enclavesentl"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["cycloneadpt"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["forgewright"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["flameweaver"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["banecaller"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["canyonbulwrk"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["dunedeadeye"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["deadhandzeph"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["flurrychamp"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["thermlancer"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["barrieroverse"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["cryptwarden"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["markahunger"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["eclipseshade"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["bunkerbreak"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["beaconmarks"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["decurioncmd"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["triagewarden"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["chemslinger"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["conduitmatrn"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["tarnapexmaw"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["quillstalker"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["rhydelalpha"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
     };
 
     private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>
@@ -245,11 +362,16 @@ public class NPCEnemyBalanceAuditTests
         ["malfunctioningsp"] = "malfspiddroi_sk",
         ["malsecdroid"] = "patroldroid_sk",
         ["malspiderdroid"] = "probedroid_sk",
-        ["nar_cmd_droid"] = "nar_droid_sk",
-        ["nar_rogue_droid"] = "nar_droid_sk",
-        ["nar_scavenger"] = "cz220_droid_hide",
+        ["nar_cmd_droid"] = "nar_cmddr_sk",
+        ["nar_rogue_droid"] = "nar_rogued_sk",
+        ["nar_scavenger"] = "nar_scav_sk",
+        ["sewerdatacollect"] = "sewerdata_sk",
+        ["sewermaintenance"] = "sewermaint_sk",
+        ["sewerpatroldroid"] = "sewerpatrol_sk",
         ["vkorrdundroidhvy"] = "imphvydrone_sk",
         ["vkorrdunwarform"] = "impwarform_sk",
+        ["vnpcssabot"] = "sithsabot_sk",
+        ["vrix7"] = "pulsemarks_skin",
         ["vsithbot1"] = "impobsunit_sk",
         ["vsithbot2"] = "imppatrol_sk",
         ["vsithbot3"] = "impturret_sk",
@@ -267,9 +389,9 @@ public class NPCEnemyBalanceAuditTests
     {
         new("s_app", 38),
         new("byysk_warrior", 43),
-        new("vdathguard", 66),
-        new("vkorrdunmarauder", 67),
-        new("byysk_champion", 75),
+        new("vdathguard", 81),
+        new("vkorrdunmarauder", 73),
+        new("byysk_champion", 89),
         new("vnpcswar3", 59),
     };
 
@@ -684,7 +806,7 @@ public class NPCEnemyBalanceAuditTests
         }
 
         var handEntryStyle = GetWorkbookCellStyle(worksheet, "A202");
-        foreach (var row in Enumerable.Range(2, 422))
+        foreach (var row in Enumerable.Range(2, 443))
         {
             foreach (var column in new[] { "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL" })
             {
@@ -706,11 +828,11 @@ public class NPCEnemyBalanceAuditTests
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$AR$423", "the reusable resistance override columns should be included in World NPCs filtering");
+            .Be("$A$1:$AR$444", "the reusable resistance override columns should be included in World NPCs filtering");
 
         worksheet
             .Descendants(ns + "dataValidation")
-            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL423")
+            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL444")
             .Attribute("type")?
             .Value
             .Should()
@@ -722,12 +844,12 @@ public class NPCEnemyBalanceAuditTests
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$E$201", "the Blood Frenzy weapon-delay lookup rows should be filterable");
+            .Be("$A$1:$E$442", "the weapon-delay lookup rows should be filterable");
 
-        GetWorkbookCellText(weaponDelays, sharedStrings, "A197").Should().Be("bf_scavenger");
-        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D197").Should().Be(230m);
-        GetWorkbookCellText(weaponDelays, sharedStrings, "A201").Should().Be("bf_kess");
-        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D201").Should().Be(230m);
+        GetWorkbookCellText(weaponDelays, sharedStrings, "A8").Should().Be("bf_scavenger");
+        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D8").Should().Be(230m);
+        GetWorkbookCellText(weaponDelays, sharedStrings, "A6").Should().Be("bf_kess");
+        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D6").Should().Be(230m);
     }
 
     [Test]

@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void LastWordFoundation()
         {
-            _builder.Create(LastWordFoundationQuestId, "First Principle: Last Word")
+            _builder.Create(LastWordFoundationQuestId, "Ten Paces")
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -62,20 +62,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Word capstone line continues in Anchorhead Canyon Range. Defeat Last Word adepts and secure the Last Word Canyon Range Tally.")
+                    "Defeat six Last Word adepts in the Anchorhead Canyon Range on Tatooine and claim the Last Word Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordCanyonRangeTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Last Word Canyon Range Tally from Anchorhead Canyon Range. Return to Jek Talin for the next Last Word lesson.")
+                    "You claimed the Last Word Canyon Range Tally. Deliver it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void LastWordMeasure()
         {
-            _builder.Create(LastWordMeasureQuestId, "The Measure of Last Word")
+            _builder.Create(LastWordMeasureQuestId, "Called Shot")
                 .PrerequisiteQuest(LastWordFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastWordSightlineCalibrator)
@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Word capstone line continues in Anchorhead Canyon Range. Defeat Last Word specialists and secure the Last Word Sightline Calibrator.")
+                    "Defeat five Last Word specialists in the Anchorhead Canyon Range on Tatooine and recover the Last Word Sightline Calibrator.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordSightlineCalibrator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Last Word Sightline Calibrator from Anchorhead Canyon Range. Return to Jek Talin for the next Last Word lesson.")
+                    "You recovered the Last Word Sightline Calibrator. Return it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void LastWordBreach()
         {
-            _builder.Create(LastWordBreachQuestId, "Fault Line: Last Word")
+            _builder.Create(LastWordBreachQuestId, "Dead to Rights")
                 .PrerequisiteQuest(LastWordMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastWordShatteredRangeCrest)
@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Word capstone line continues in Anchorhead Canyon Range. Defeat the Last Word warden and secure the Last Word Shattered Range Crest.")
+                    "Defeat the Last Word warden in the Anchorhead Canyon Range on Tatooine and take the Last Word Shattered Range Crest.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordShatteredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Last Word Shattered Range Crest from Anchorhead Canyon Range. Return to Jek Talin for the next Last Word lesson.")
+                    "You took the Last Word Shattered Range Crest from the warden. Bring it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void LastWordCircle()
         {
-            _builder.Create(LastWordCircleQuestId, "Circle of Proof: Last Word")
+            _builder.Create(LastWordCircleQuestId, "No Second Draw")
                 .PrerequisiteQuest(LastWordBreachQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastWordMarshalsChallengeChit)
@@ -125,31 +125,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Word capstone line continues in Anchorhead Canyon Range. Defeat the Last Word inner circle and secure the Last Word Marshal's Challenge Chit.")
+                    "Defeat four members of the Last Word inner circle in the Anchorhead Canyon Range on Tatooine and secure the Last Word Marshal's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordMarshalsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Last Word Marshal's Challenge Chit from Anchorhead Canyon Range. Return to Jek Talin for the next Last Word lesson.")
+                    "You secured the Last Word Marshal's Challenge Chit. Return it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void LastWordMastery()
         {
-            _builder.Create(LastWordMasteryQuestId, "Last Word Mastery")
+            _builder.Create(LastWordMasteryQuestId, "The Quiet After")
                 .PrerequisiteQuest(LastWordCircleQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Last Word master is waiting in Anchorhead Canyon Range. Defeat the master and end the capstone trial.")
+                    "Defeat the Last Word master at the marshal's overlook in the Anchorhead Canyon Range on Tatooine.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Last Word master is defeated. Return to Jek Talin and claim the completed lesson.")
+                    "The Last Word master is defeated. Report to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void DeadMansHandFoundation()
         {
-            _builder.Create(DeadMansHandFoundationQuestId, "First Principle: Dead Man's Hand")
+            _builder.Create(DeadMansHandFoundationQuestId, "Table Stakes")
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -175,20 +175,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Dead Man's Hand capstone line continues in Anchorhead Canyon Range. Defeat Dead Man's Hand adepts and secure the Dead Man's Hand Canyon Range Tally.")
+                    "Defeat six Dead Man's Hand adepts in the Anchorhead Canyon Range on Tatooine and claim the Dead Man's Hand Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandCanyonRangeTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Dead Man's Hand Canyon Range Tally from Anchorhead Canyon Range. Return to Pavo Orrel for the next Dead Man's Hand lesson.")
+                    "You claimed the Dead Man's Hand Canyon Range Tally. Deliver it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void DeadMansHandMeasure()
         {
-            _builder.Create(DeadMansHandMeasureQuestId, "The Measure of Dead Man's Hand")
+            _builder.Create(DeadMansHandMeasureQuestId, "Marked Cards")
                 .PrerequisiteQuest(DeadMansHandFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneDeadMansHandSightlineCalibrator)
@@ -196,20 +196,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Dead Man's Hand capstone line continues in Anchorhead Canyon Range. Defeat Dead Man's Hand specialists and secure the Dead Man's Hand Sightline Calibrator.")
+                    "Defeat five Dead Man's Hand specialists in the Anchorhead Canyon Range on Tatooine and recover the Dead Man's Hand Sightline Calibrator.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandSightlineCalibrator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Dead Man's Hand Sightline Calibrator from Anchorhead Canyon Range. Return to Pavo Orrel for the next Dead Man's Hand lesson.")
+                    "You recovered the Dead Man's Hand Sightline Calibrator. Return it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void DeadMansHandBreach()
         {
-            _builder.Create(DeadMansHandBreachQuestId, "Fault Line: Dead Man's Hand")
+            _builder.Create(DeadMansHandBreachQuestId, "Calling the Bluff")
                 .PrerequisiteQuest(DeadMansHandMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneDeadMansHandShatteredRangeCrest)
@@ -217,20 +217,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Dead Man's Hand capstone line continues in Anchorhead Canyon Range. Defeat the Dead Man's Hand warden and secure the Dead Man's Hand Shattered Range Crest.")
+                    "Defeat the Dead Man's Hand warden in the Anchorhead Canyon Range on Tatooine and take the Dead Man's Hand Shattered Range Crest.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandShatteredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Dead Man's Hand Shattered Range Crest from Anchorhead Canyon Range. Return to Pavo Orrel for the next Dead Man's Hand lesson.")
+                    "You took the Dead Man's Hand Shattered Range Crest from the warden. Bring it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void DeadMansHandCircle()
         {
-            _builder.Create(DeadMansHandCircleQuestId, "Circle of Proof: Dead Man's Hand")
+            _builder.Create(DeadMansHandCircleQuestId, "House Rules")
                 .PrerequisiteQuest(DeadMansHandBreachQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneDeadMansHandMarshalsChallengeChit)
@@ -238,31 +238,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Dead Man's Hand capstone line continues in Anchorhead Canyon Range. Defeat the Dead Man's Hand inner circle and secure the Dead Man's Hand Marshal's Challenge Chit.")
+                    "Defeat four members of the Dead Man's Hand inner circle in the Anchorhead Canyon Range on Tatooine and secure the Dead Man's Hand Marshal's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandMarshalsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Dead Man's Hand Marshal's Challenge Chit from Anchorhead Canyon Range. Return to Pavo Orrel for the next Dead Man's Hand lesson.")
+                    "You secured the Dead Man's Hand Marshal's Challenge Chit. Return it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void DeadMansHandMastery()
         {
-            _builder.Create(DeadMansHandMasteryQuestId, "Dead Man's Hand Mastery")
+            _builder.Create(DeadMansHandMasteryQuestId, "Aces and Eights")
                 .PrerequisiteQuest(DeadMansHandCircleQuestId)
                 .PrerequisiteSkill(SkillType.Pistol, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Dead Man's Hand master is waiting in Anchorhead Canyon Range. Defeat the master and end the capstone trial.")
+                    "Defeat the Dead Man's Hand master at the marshal's overlook in the Anchorhead Canyon Range on Tatooine.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Dead Man's Hand master is defeated. Return to Pavo Orrel and claim the completed lesson.")
+                    "The Dead Man's Hand master is defeated. Report to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

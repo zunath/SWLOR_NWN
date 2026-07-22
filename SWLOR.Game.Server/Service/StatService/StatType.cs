@@ -4965,10 +4965,16 @@ namespace SWLOR.Game.Server.Service.StatService
         FirstHostileAbilityHitDamageBonus = 862,
 
         /// <summary>
-        /// Number of hostile ability hits per combat engagement that receive FirstHostileAbilityHitDamageBonus.
+        /// Number of hostile ability hits (stacks) that receive FirstHostileAbilityHitDamageBonus before the window is exhausted.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         FirstHostileAbilityHitMaximumCount = 863,
+
+        /// <summary>
+        /// Seconds after the FirstHostileAbilityHitMaximumCount stacks are exhausted before the stacks recharge. 0 recharges only on leaving combat.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FirstHostileAbilityHitCooldownSeconds = 886,
 
         /// <summary>
         /// Flat Stamina restored by the first attack in combat.
@@ -5100,7 +5106,264 @@ namespace SWLOR.Game.Server.Service.StatService
         /// StatusEffectCategory value for DirectDamageToStatusCategoryOrStealthBonus.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        DirectDamageToStatusCategoryOrStealthBonusCategory = 885
+        DirectDamageToStatusCategoryOrStealthBonusCategory = 885,
+
+        /// <summary>
+        /// Percent of incoming physical damage converted to Force damage before mitigation (Saber Ward / Perfect Aegis).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        IncomingPhysicalToForceConversionPercent = 887,
+
+        /// <summary>
+        /// Defense percent granted per Embattled stack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EmbattledStackDefensePercent = 904,
+
+        /// <summary>
+        /// Force Defense percent granted per Embattled stack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EmbattledStackForceDefensePercent = 905,
+
+        /// <summary>
+        /// Maximum number of Embattled stacks that may be held.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        EmbattledMaxStacks = 906,
+
+        /// <summary>
+        /// Embattled stack count at or above which high-stack bonuses apply.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        EmbattledHighStackThreshold = 907,
+
+        /// <summary>
+        /// Mobility Resistance granted while at or above the Embattled high-stack threshold.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EmbattledHighStackMobilityResistance = 908,
+
+        /// <summary>
+        /// Additional Deflecting Return reflection percent while at or above the Embattled high-stack threshold.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EmbattledHighStackDeflectionReflectionBonusPercent = 909,
+
+        /// <summary>
+        /// Percent of a deflected ranged attack's pre-mitigation damage reflected back to its source.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedDeflectionReflectionPercent = 894,
+
+        /// <summary>
+        /// Cap on Deflecting Return reflected damage, expressed as a percent of normal main-hand weapon damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedDeflectionReflectionCapPercent = 895,
+
+        /// <summary>
+        /// Force Attack percent granted for spending at least the minimum FP on a hostile combat ability (Overpower).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityFPSpendForceAttackPercent = 896,
+
+        /// <summary>
+        /// Maximum stacked Force Attack percent from Overpower's FP-spend trigger.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityFPSpendForceAttackMaxPercent = 897,
+
+        /// <summary>
+        /// Minimum FP cost required to trigger Overpower's Force Attack bonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityFPSpendForceAttackMinFPCost = 898,
+
+        /// <summary>
+        /// Duration in seconds of Overpower's Force Attack bonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityFPSpendForceAttackDurationSeconds = 899,
+
+        /// <summary>
+        /// FP restored when landing an auto-attack on a target afflicted by the attacker's Sunder (High Ground).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackSunderedTargetFPRestore = 900,
+
+        /// <summary>
+        /// Attack percent granted while current FP is below the low-FP threshold (Focus Shift).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LowFPAttackPercentAdjustment = 901,
+
+        /// <summary>
+        /// FP percent below which the low-FP Attack bonus applies.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LowFPAttackThresholdPercent = 902,
+
+        /// <summary>
+        /// While positive, the wearer's hostile weapon auto-attacks deal Force damage instead of their normal type (Imbuement Stance).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StanceHostileAutoAttackForceConversion = 903,
+
+        /// <summary>
+        /// FP cost consumed by each hostile auto-attack while Imbuement Stance is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StanceHostileAutoAttackFPCost = 916,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Bleed on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtBleedChance = 910,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Freezing on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtFreezingChance = 911,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Shock on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtShockChance = 912,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Sunder on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtSunderChance = 913,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Hemorrhage on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtHemorrhageChance = 914,
+
+        /// <summary>
+        /// Percent bonus to the direct damage of mimicked techniques (combat analyzer potency).
+        /// Granted by Combat Analyzer ranks, the Overclocked Analyzer capstone's Overload, and
+        /// damage-type loadout set bonuses; read by the Mimicry technique impact as a damage-percent adjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MimicryPotencyPercent = 915,
+
+        /// <summary>
+        /// Percent chance for a mimicked trait to inflict Poison on damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtPoisonChance = 917,
+
+        /// <summary>
+        /// Percent of incoming physical damage reflected back to the attacker after mitigation.
+        /// The physical counterpart to <see cref="ForceDamageReflectionPercentAdjustment"/> and
+        /// <see cref="ElementalDamageReflectionPercentAdjustment"/>.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PhysicalDamageReflectionPercentAdjustment = 918,
+
+        /// <summary>
+        /// Flat bonus to the stealth side of the opposed stealth detection check.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Stealth = 919,
+
+        /// <summary>
+        /// Flat bonus to the detection side of the opposed stealth detection check.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Detection = 920,
+
+        /// <summary>
+        /// Increases the effect strength of traps placed by the creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapBonus = 921,
+
+        /// <summary>
+        /// Improves the creature's ability to disarm hostile traps.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapDisarm = 922,
+
+        /// <summary>
+        /// Increases the potency of weapon poisons applied by the creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonBonus = 923,
+
+        /// <summary>
+        /// Improves the creature's ability to slice locks, terminals, and lockboxes.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        Lockpicking = 924,
+
+        /// <summary>
+        /// Percent multiplier applied to the creature's total Stealth stat while stealthed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthEffectivenessPercent = 925,
+
+        /// <summary>
+        /// Percent by which stamina drain while stealthed is slowed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StealthStaminaDrainReductionPercent = 926,
+
+        /// <summary>
+        /// Percent adjustment to how long weapon poison coatings applied by the creature last.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonCoatingDurationPercent = 927,
+
+        /// <summary>
+        /// Percent adjustment applied to melee weapon damage dealt while the attacker is behind the target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackDamagePercentAdjustment = 928,
+
+        /// <summary>
+        /// Critical rate percent adjustment applied to melee weapon attacks made while the attacker is behind the target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackCriticalRatePercentAdjustment = 929,
+
+        /// <summary>
+        /// Additional traps the creature may keep active at the same time beyond the base allowance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AdditionalTrapCapacity = 930,
+
+        /// <summary>
+        /// Defense reduction percent applied as Exposed when the creature lands a back attack.
+        /// Consumed on the next landed back attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackExposedPercent = 931,
+
+        /// <summary>
+        /// Duration in seconds for the Exposed effect applied by BackAttackExposedPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BackAttackExposedDurationSeconds = 932,
+
+        /// <summary>
+        /// Percent reduction to the time a placed trap takes to arm.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapPlacementSpeedPercent = 933,
+
+        /// <summary>
+        /// Additional metres of range at which the creature notices concealed traps.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TrapDetectionRangeBonus = 934,
     }
 
     public class StatTypeAttribute : Attribute

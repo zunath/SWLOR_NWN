@@ -119,6 +119,23 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             "id_tranqshot1",
             "id_tranqshot2",
             "id_tranqshot3",
+            // The recipes that taught the legacy single-step saber upgrade kits have
+            // no equivalent in the tiered Engineering upgrade kit line (those kits are
+            // never unlock-gated), so there is nothing to convert them to.
+            "recipe_saberupg1",
+            "recipe_staffupg1",
+        };
+
+        /// <summary>
+        /// Held obsolete items that convert into their replacement instead of being
+        /// destroyed outright. The legacy single-step saber/saberstaff upgrade kits
+        /// were replaced by the tiered Engineering upgrade kit line, so a held kit is
+        /// converted to the lowest tier of that line rather than lost.
+        /// </summary>
+        private static readonly Dictionary<string, string> ObsoleteItemConversions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "saber_upg1", "saber_upg2" },
+            { "saberstaff_upg1", "staff_upg2" },
         };
 
         private static readonly Dictionary<PerkType, int> CurrentDroidInstructionMaxLevels = new()
@@ -152,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             { PerkType.PainSuppressant, 2 },
             { PerkType.PowerCell, 3 },
             { PerkType.Provoke, 2 },
-            { PerkType.RailDart, 2 },
+            { PerkType.RailDart, 3 },
             { PerkType.RemoteCharge, 2 },
             { PerkType.Resuscitation, 2 },
             { PerkType.Shielding, 3 },
@@ -169,6 +186,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         {
             return !string.IsNullOrWhiteSpace(resref) &&
                    ObsoleteItemResRefs.Contains(resref);
+        }
+
+        public static bool TryGetConversionResRef(string resref, out string replacementResRef)
+        {
+            replacementResRef = null;
+            return !string.IsNullOrWhiteSpace(resref) &&
+                   ObsoleteItemConversions.TryGetValue(resref, out replacementResRef);
         }
 
         public static int RemoveObsoleteItemsFromObject(uint obj)
@@ -200,7 +224,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             if (objectType == ObjectType.Item)
             {
-                if (IsObsoleteResRef(GetResRef(obj)))
+                var resref = GetResRef(obj);
+                if (TryGetConversionResRef(resref, out var replacementResRef))
+                {
+                    var possessor = GetItemPossessor(obj);
+                    var target = GetIsObjectValid(possessor) ? possessor : GetObjectByTag("TEMP_ITEM_STORAGE");
+                    CreateItemOnObject(replacementResRef, target);
+                    DestroyObject(obj);
+                    result.RemovedItems++;
+                    return;
+                }
+
+                if (IsObsoleteResRef(resref))
                 {
                     DestroyObject(obj);
                     result.RemovedItems++;
@@ -261,12 +296,27 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!GetIsObjectValid(obj))
                 return false;
 
-            if (GetObjectType(obj) == ObjectType.Item && IsObsoleteResRef(GetResRef(obj)))
+            if (GetObjectType(obj) == ObjectType.Item)
             {
-                DestroyObject(obj);
-                removedRoot = true;
-                removedCount = 1;
-                return true;
+                var resref = GetResRef(obj);
+                if (TryGetConversionResRef(resref, out var replacementResRef))
+                {
+                    DestroyObject(obj);
+                    var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
+                    var replacement = CreateItemOnObject(replacementResRef, tempStorage);
+                    migratedSerializedObject = ObjectPlugin.Serialize(replacement);
+                    DestroyObject(replacement);
+                    removedCount = 1;
+                    return true;
+                }
+
+                if (IsObsoleteResRef(resref))
+                {
+                    DestroyObject(obj);
+                    removedRoot = true;
+                    removedCount = 1;
+                    return true;
+                }
             }
 
             var result = new MigrationResult();

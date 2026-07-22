@@ -747,7 +747,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // DSBE-002
             _builder.Create(RecipeType.DSBE002, SkillType.Engineering)
                 .Category(RecipeCategoryType.Belt)
-                .Resref("dsbe001")
+                .Resref("dsbe002")
                 .Level(20)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)

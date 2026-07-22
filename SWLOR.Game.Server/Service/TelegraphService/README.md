@@ -12,7 +12,7 @@ The Telegraph System provides visual indicators for area-of-effect abilities, al
 
 ## Core Components
 
-### TelegraphService
+### Telegraph
 The main service class that manages all telegraph functionality.
 
 ### Telegraph Types
@@ -32,7 +32,7 @@ The main service class that manages all telegraph functionality.
 
 ```csharp
 // Create a simple sphere telegraph
-var telegraphId = TelegraphHelper.CreateSphereTelegraph(
+var telegraphId = Telegraph.CreateSphereTelegraph(
     attacker,           // Creator of the telegraph
     position,           // Center position
     5.0f,              // Radius in meters
@@ -54,7 +54,7 @@ var telegraphId = TelegraphHelper.CreateSphereTelegraph(
 ### Cone Telegraph
 
 ```csharp
-var telegraphId = TelegraphHelper.CreateConeTelegraph(
+var telegraphId = Telegraph.CreateConeTelegraph(
     attacker,
     position,
     facing,             // Direction in radians
@@ -68,7 +68,7 @@ var telegraphId = TelegraphHelper.CreateConeTelegraph(
 ### Line Telegraph
 
 ```csharp
-var telegraphId = TelegraphHelper.CreateLineTelegraph(
+var telegraphId = Telegraph.CreateLineTelegraph(
     attacker,
     position,
     facing,             // Direction in radians
@@ -83,7 +83,7 @@ var telegraphId = TelegraphHelper.CreateLineTelegraph(
 
 ```csharp
 // Create telegraph at a specific creature's position
-var telegraphId = TelegraphHelper.CreateTelegraphAtCreature(
+var telegraphId = Telegraph.CreateTelegraphAtCreature(
     creator,
     target,
     TelegraphType.Sphere,
@@ -93,7 +93,7 @@ var telegraphId = TelegraphHelper.CreateTelegraphAtCreature(
     action);
 
 // Create telegraph in front of a creature
-var telegraphId = TelegraphHelper.CreateTelegraphInFrontOfCreature(
+var telegraphId = Telegraph.CreateTelegraphInFrontOfCreature(
     creator,
     target,
     2.0f,                    // Distance in front
@@ -106,7 +106,7 @@ var telegraphId = TelegraphHelper.CreateTelegraphInFrontOfCreature(
 
 ## API Reference
 
-### TelegraphService Methods
+### Telegraph Methods
 
 - `CreateTelegraph()` - Create a custom telegraph
 - `CancelTelegraph(string telegraphId)` - Cancel a telegraph before completion
@@ -114,7 +114,7 @@ var telegraphId = TelegraphHelper.CreateTelegraphInFrontOfCreature(
 - `IsCreatureInTelegraph(uint creature, string telegraphId)` - Check if creature is in telegraph
 - `ClearAllTelegraphs()` - Clear all telegraphs (cleanup)
 
-### TelegraphHelper Methods
+### Telegraph Shape Helpers
 
 - `CreateSphereTelegraph()` - Create a sphere telegraph
 - `CreateConeTelegraph()` - Create a cone telegraph
@@ -124,29 +124,43 @@ var telegraphId = TelegraphHelper.CreateTelegraphInFrontOfCreature(
 
 ## Event System
 
-The telegraph system integrates with SWLOR's event system:
+A telegraph is backed by a temporary `EffectRunScript` effect on its creator. When that
+effect expires, the `telegraph_effect` handler (`ScriptName.TelegraphEffect`) fires
+`Telegraph.OnRemoved`, which runs the telegraph's action against the creatures inside its
+shape and then clears the entry. There is no separate applied/ticked event.
 
-- `TelegraphEvents.TelegraphApplied` - Fired when telegraph is applied
-- `TelegraphEvents.TelegraphTicked` - Fired during telegraph duration
-- `TelegraphEvents.TelegraphRemoved` - Fired when telegraph is removed
+Shader uniforms are refreshed when a telegraph is created or removed in an area, and when a
+player enters an area. There is no periodic tick.
+
+## Pre-cast telegraphs vs the impact flash
+
+Two distinct paths render a shape, and they are not interchangeable:
+
+- **Pre-cast telegraph** — drawn by `UsePerkFeat` for the length of an ability's activation
+  delay, or by `Ability.ApplyTelegraphedCombatImpact` when `telegraphDuration > 0`. This
+  *gates* the effect: the action runs when the telegraph expires. Only use it for abilities
+  the Design Bible grants a real casting time.
+- **Impact flash** — drawn by `Ability.ApplyTelegraphedCombatImpact` when
+  `telegraphDuration <= 0`. Purely visual, carries no action, and does not delay damage.
+  This is what makes Bible-"Instant" area abilities visible without changing their
+  activation time. Duration comes from `Ability.DefaultImpactFlashDuration`.
+
+Do not set `GeneratedWeaponAbilityProfile.TelegraphDuration` from a Bible casting time: the
+pre-cast telegraph already covers the activation delay, and this one applies at impact, so
+the two would stack into a double delay and a double render.
 
 ## Testing
 
-Use the `TelegraphTest` class for testing telegraph functionality:
-
-- `TestSphereTelegraph()` - Test sphere telegraphs
-- `TestConeTelegraph()` - Test cone telegraphs
-- `TestLineTelegraph()` - Test line telegraphs
-- `TestBeneficialTelegraph()` - Test beneficial telegraphs
-- `TestMultipleTelegraphs()` - Test multiple simultaneous telegraphs
-- `ClearAllTelegraphs()` - Clear all active telegraphs
+`SWLOR.Game.Server.Tests/Service/TelegraphTests.cs` covers the shader bit-packing, the
+impact-flash default, and the double-delay invariant. Rendering itself needs an in-game
+check; there is no headless harness for it.
 
 ## Performance Considerations
 
 - Maximum of 16 telegraphs rendered per player at once
-- Telegraphs are automatically cleaned up when areas are unloaded
-- Shader updates are limited to 30 FPS to maintain performance
-- Telegraphs are tracked by area for efficient management
+- Telegraphs are tracked by area, and shader updates only touch players in that area
+- The impact flash fires on every instant area ability, so anything added to the
+  create/remove path runs in the combat hot path
 
 ## Integration with Abilities
 
@@ -165,7 +179,7 @@ public static void FireballAbility(uint caster, uint target)
     var position = GetPosition(target);
 
     // Create telegraph
-    var telegraphId = TelegraphHelper.CreateSphereTelegraph(
+    var telegraphId = Telegraph.CreateSphereTelegraph(
         caster,
         position,
         5.0f,  // 5 meter radius

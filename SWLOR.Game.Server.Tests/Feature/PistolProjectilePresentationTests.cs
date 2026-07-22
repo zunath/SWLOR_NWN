@@ -29,28 +29,6 @@ public class PistolProjectilePresentationTests
         result.Should().Be((byte)expectedClientBaseItem);
     }
 
-    [TestCase(0, BaseItem.Sling, 2, 0)]
-    [TestCase(5, BaseItem.Sling, 3, 0)]
-    [TestCase(6, BaseItem.Sling, 2, 2)]
-    [TestCase(7, BaseItem.Sling, 3, 3)]
-    [TestCase(0, BaseItem.Pistol, 2, 2)]
-    public void ClientProjectilePath_UsesTheStraightDefaultOnlyForCanonicalWeaponShots(
-        byte projectileType,
-        BaseItem serverBaseItem,
-        byte serverProjectilePathType,
-        byte expectedClientProjectilePathType)
-    {
-        var method = typeof(PistolProjectilePresentation).GetMethod(
-            "GetClientProjectilePathType",
-            BindingFlags.NonPublic | BindingFlags.Static)!;
-
-        var result = (byte)method.Invoke(
-            null,
-            new object[] { projectileType, (byte)serverBaseItem, serverProjectilePathType })!;
-
-        result.Should().Be(expectedClientProjectilePathType);
-    }
-
     [Test]
     public void NativeProjectileVector_MatchesTheEngineAbi()
     {

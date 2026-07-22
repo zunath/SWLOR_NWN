@@ -135,11 +135,18 @@ $rows | Sort-Object Category, Name | Format-Table -AutoSize | Out-String -Width 
 
 Write-Host "SUMMARY total=$($report.Total) passed=$($report.Passed) failed=$($report.Failed) skipped=$($report.Skipped)"
 
-if ($report.Total -gt 0 -and $report.Failed -eq 0) {
+# The container exit status participates in the verdict: a server that crashed AFTER
+# writing a passing report (e.g. during the delayed shutdown) must not be reported green.
+if ($composeExitCode -eq 0 -and $report.Total -gt 0 -and $report.Failed -eq 0) {
     Write-Host "Engine tests passed." -ForegroundColor Green
     exit 0
 }
 else {
-    Write-Host "Engine tests failed (or none ran)." -ForegroundColor Red
+    if ($composeExitCode -ne 0) {
+        Write-Host "Engine tests failed: server container exited with code $composeExitCode." -ForegroundColor Red
+    }
+    else {
+        Write-Host "Engine tests failed (or none ran)." -ForegroundColor Red
+    }
     exit 1
 }

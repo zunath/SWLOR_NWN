@@ -161,10 +161,16 @@ done
 
 echo "SUMMARY total=$TOTAL passed=$PASSED failed=$FAILED skipped=$SKIPPED"
 
-if [ "$TOTAL" -gt 0 ] && [ "$FAILED" -eq 0 ]; then
+# The container exit status participates in the verdict: a server that crashed AFTER
+# writing a passing report (e.g. during the delayed shutdown) must not be reported green.
+if [ "$COMPOSE_EXIT_CODE" -eq 0 ] && [ "$TOTAL" -gt 0 ] && [ "$FAILED" -eq 0 ]; then
     echo "Engine tests passed."
     exit 0
 else
-    echo "Engine tests failed (or none ran)."
+    if [ "$COMPOSE_EXIT_CODE" -ne 0 ]; then
+        echo "Engine tests failed: server container exited with code $COMPOSE_EXIT_CODE." >&2
+    else
+        echo "Engine tests failed (or none ran)." >&2
+    fi
     exit 1
 fi

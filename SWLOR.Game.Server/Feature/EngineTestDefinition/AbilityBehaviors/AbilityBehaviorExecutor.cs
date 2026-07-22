@@ -49,6 +49,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             {
                 foreach (var behaviorCase in cases)
                 {
+                    // A runner timeout must stop the whole sweep promptly - continuing would
+                    // outlive the cancellation grace period and keep the combat overrides
+                    // active while the runner cleans up.
+                    ctx.CancellationToken.ThrowIfCancellationRequested();
+
                     if (!string.IsNullOrWhiteSpace(behaviorCase.SkipReason))
                     {
                         skippedFeats.Add(behaviorCase.Feat.ToString());
@@ -62,6 +67,9 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     }
                     catch (Exception ex)
                     {
+                        if (ctx.CancellationToken.IsCancellationRequested)
+                            throw;
+
                         var message = ex is EngineTestAssertionException
                             ? ex.Message
                             : $"{ex.GetType().Name}: {ex.Message}";

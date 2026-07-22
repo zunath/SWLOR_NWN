@@ -829,17 +829,44 @@ def first_sentence_duration(description):
     return int(match.group(1)) if match else 0
 
 
+AREA_MARKERS = (
+    "area",
+    "cone",
+    "line",
+    "sphere",
+    "nearby enemies",
+    "all enemies",
+    "enemies within",
+    "enemies in",
+    "secondary targets",
+)
+
+# Phrases where an area marker refers to OTHER abilities empowered during a self
+# buff's window rather than the activation's own impact. Saber Cyclone is the
+# canonical example: "For 45 seconds, area combat abilities restore 4 FP ...".
+SELF_BUFF_AREA_REFERENCES = (
+    "area combat abilities",
+    "area abilities",
+)
+
+
+def has_area_marker(lowered):
+    return any(marker in lowered for marker in AREA_MARKERS) or hostile_radius_phrase(lowered) is not None
+
+
 def is_self_only_active(description):
     lowered = description.lower()
+    # Strip buff-window references to other abilities, then reject the COMPLETE
+    # area-marker set (shared with is_area): any remaining marker means the
+    # activation itself impacts an area/shape and must not classify as self-only.
+    without_references = lowered
+    for phrase in SELF_BUFF_AREA_REFERENCES:
+        without_references = without_references.replace(phrase, "")
+
     return (
         lowered.startswith("for ") and
         "deals weapon" not in lowered and
-        # Reject every recognized area marker (kept in sync with is_area) so an
-        # area description like "For 10 seconds, all enemies in ..." never
-        # classifies as a self-only buff and loses its area targeting.
-        "enemies within" not in lowered and
-        "all enemies" not in lowered and
-        "enemies in" not in lowered and
+        not has_area_marker(without_references) and
         "target" not in lowered
     )
 
@@ -2328,28 +2355,15 @@ def stance_status_type(base, status_effect_types):
 
 
 def is_area(description):
-    # A self buff can describe the area abilities used during its window without making the
-    # activation itself an area impact. Saber Cyclone is the canonical example: it empowers
-    # later area combat abilities for 45 seconds and neither targets nor impacts an area itself.
+    # A self buff can reference the area abilities empowered during its window without the
+    # activation itself being an area impact (see SELF_BUFF_AREA_REFERENCES). is_self_only_active
+    # strips those references and rejects every other recognized area marker itself, so this
+    # early return can no longer swallow a description whose activation genuinely impacts a
+    # shape (e.g. "For 10 seconds, deal damage in an 8m x 2.5m line").
     if is_self_only_active(description):
         return False
 
-    lowered = description.lower()
-    markers = [
-        "area",
-        "cone",
-        "line",
-        "sphere",
-        "nearby enemies",
-        "all enemies",
-        "enemies within",
-        "enemies in",
-        "secondary targets",
-    ]
-    if any(marker in lowered for marker in markers):
-        return True
-
-    return hostile_radius_phrase(lowered) is not None
+    return has_area_marker(description.lower())
 
 
 def has_explicit_area_target_point(lowered):

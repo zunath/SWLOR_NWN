@@ -279,8 +279,8 @@ identical and are kept in sync. Both:
 3. Run `docker compose -f docker-compose.enginetests.yml up --abort-on-container-exit
    --exit-code-from swlor-server` from `SWLOR.Game.Server/Docker/`, then tear the containers down.
 4. Parse the resulting JSON report, print a table of every test (category, name, outcome, duration,
-   message), print the summary line, and exit non-zero unless at least one test ran and none
-   failed.
+   message), print the summary line, and exit non-zero unless the server container exited cleanly,
+   at least one test ran, and none failed.
 
 **Prerequisites**: the `dotnet` SDK (unless `--skip-build`), `docker compose`, and - for the bash
 script only - `jq` (used to parse the JSON report; the run fails at the reporting step without it).

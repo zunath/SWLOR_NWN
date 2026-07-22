@@ -210,7 +210,12 @@ public class EquipmentRestrictionsTests
             "SWLOR_Haks",
             "sw_2da",
             "ammunitiontypes.2da"));
-        ammunitionRows[2]["Model"].Should().Be("wambu_001");
+        ammunitionRows[2]["Model"].Should().Be(
+            "wamar_001",
+            "pistol bullets use the existing single-emitter arrow blaster model");
+        ammunitionRows[2]["ShotSound"].Should().Be(
+            "cb_sh_blstrfire1",
+            "pistol bullets use the existing single-shot blaster sound");
 
         rows[514]["label"].Should().Be("legacy_smallarms");
         rows[514]["EquipableSlots"].Should().Be("0x00030");

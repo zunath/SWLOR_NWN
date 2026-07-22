@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using System.Text.Json;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Services
@@ -144,36 +144,7 @@ namespace SWLOR.Toolset.Services
 
         internal static string ReadModuleFileName(string moduleRoot)
         {
-            // config.json is only trusted when the file it names actually exists — it has been
-            // stale before (it still said "Star Wars LOR.mod" long after the v2 rename), and
-            // packing to a wrong name silently breaks the deploy pipeline, which copies the
-            // v2 file by name.
-            try
-            {
-                var configPath = Path.Combine(moduleRoot, "config.json");
-                if (File.Exists(configPath))
-                {
-                    using var document = JsonDocument.Parse(File.ReadAllText(configPath));
-                    if (document.RootElement.TryGetProperty("ModuleFileName", out var name) &&
-                        name.GetString() is { Length: > 0 } value &&
-                        File.Exists(Path.Combine(moduleRoot, value)))
-                    {
-                        return value;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // Fall through to the on-disk probe.
-            }
-
-            var existing = Directory.EnumerateFiles(moduleRoot, "*.mod")
-                .OrderByDescending(File.GetLastWriteTimeUtc)
-                .FirstOrDefault();
-            if (existing != null)
-                return Path.GetFileName(existing);
-
-            return "Star Wars LOR v2.mod";
+            return ModuleFileNameResolver.Read(moduleRoot);
         }
     }
 }

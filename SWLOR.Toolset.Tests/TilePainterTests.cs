@@ -157,6 +157,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PaintTerrain_WhenAnyPopulatedNeighbourCannotBlend_RejectsTheWholePaint()
+        {
+            var ts = new TilesetDefinition
+            {
+                Terrains = new[]
+                {
+                    new TerrainDefinition("Office_Vinyl", null, null),
+                    new TerrainDefinition("Office_Alum", null, null)
+                },
+                Tiles = new[]
+                {
+                    Tile("Office_Vinyl", "Office_Vinyl", "Office_Vinyl", "Office_Vinyl"),
+                    Tile("Office_Alum", "Office_Alum", "Office_Alum", "Office_Alum")
+                }
+            };
+            var cells = Filled(3, 3, 0);
+
+            var changes = TilePainter.PaintTerrain(
+                ts, 3, 3, Grid(cells, 3, 3), 1, 1, "Office_Alum");
+
+            changes.Should().BeEmpty(
+                "a solid tile without any mixed transition cannot form a valid boundary, so the centre must not be applied alone");
+        }
+
+        [Test]
         public void PaintTerrain_UsesTileRankToBreakTies_WhenCurrentTileIsInvalid()
         {
             // Two solid-grass tiles (0 and a duplicate at index 5); painting Grass onto an all-dirt

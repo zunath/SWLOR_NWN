@@ -218,7 +218,10 @@ namespace SWLOR.Toolset.Editors
             FieldDescriptor descriptor, EditorFieldContext context, IReadOnlyList<LookupOption> options)
             : base(descriptor, context)
         {
-            Options = options;
+            var unset = DropdownValueValidator.GetUnsetSentinel(descriptor.FieldType);
+            Options = options.Count == 0 || options.Any(option => option.Id == unset)
+                ? options
+                : new[] { new LookupOption(unset, "(None)") }.Concat(options).ToList();
             RefreshFromDocument();
         }
 

@@ -17,24 +17,6 @@ namespace SWLOR.Toolset.Domain.Gff
         /// <summary>All GFF files on disk are version "V3.2"; nwn_gff JSON never records it.</summary>
         private const string GffVersion = "V3.2";
 
-        // NWN1's native string encoding is Windows-1252 (matches Radoub.Formats.Gff.GffReader /
-        // GffWriter, which use the same code page for real binary I/O of CExoString, CResRef,
-        // and CExoLocString substrings). CP-1252 is a total, bijective single-byte encoding, so
-        // it doubles as a lossless byte<->string bridge for "string" field content that may embed
-        // raw non-UTF-8 bytes -- e.g. NWN's "<c RGB>" color codes inside CExoString/locstring
-        // text, which do appear in the module corpus and are not valid UTF-8 on their own.
-        // JsonStringCodec.Decode/Encode go through UTF-8 and are lossy for such bytes, so this
-        // bridge uses JsonStringCodec.DecodeToBytes/EncodeBytes (byte-level JSON escaping) plus
-        // CP-1252 (byte<->string) instead, for every "string" field type except void, which
-        // Radoub already models as byte[].
-        private static readonly Encoding NwnEncoding;
-
-        static GffJsonBridge()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            NwnEncoding = Encoding.GetEncoding(1252);
-        }
-
         // ---------------------------------------------------------------
         // JSON -> GffFile
         // ---------------------------------------------------------------
@@ -147,14 +129,14 @@ namespace SWLOR.Toolset.Domain.Gff
         /// preserving any embedded non-UTF-8 bytes (e.g. color codes) losslessly.</summary>
         private static string DecodeNwnString(byte[] rawValue)
         {
-            return NwnEncoding.GetString(JsonStringCodec.DecodeToBytes(rawValue));
+            return JsonStringCodec.Decode(rawValue);
         }
 
         /// <summary>Inverse of <see cref="DecodeNwnString"/>: encodes text back to a raw JSON
         /// string token via CP-1252 + the byte-level codec.</summary>
         private static byte[] EncodeNwnString(string value)
         {
-            return JsonStringCodec.EncodeBytes(NwnEncoding.GetBytes(value));
+            return JsonStringCodec.Encode(value);
         }
 
         // ---------------------------------------------------------------

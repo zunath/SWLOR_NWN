@@ -4,16 +4,22 @@ namespace SWLOR.Toolset.Domain.Gff
 {
     /// <summary>
     /// Decodes and encodes JSON string tokens in the style emitted by nwn_gff (Nim's json
-    /// module). Decoding is for display/inspection only — untouched values round-trip through
-    /// their raw bytes and are never re-encoded, which matters because void fields embed raw
-    /// binary (including invalid UTF-8) directly in string tokens.
+    /// module). NWN text is Windows-1252 rather than UTF-8; the byte-level methods remain available
+    /// for void fields, which can contain arbitrary binary.
     /// </summary>
     public static class JsonStringCodec
     {
+        private static readonly Encoding NwnEncoding;
+
+        static JsonStringCodec()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            NwnEncoding = Encoding.GetEncoding(1252);
+        }
+
         /// <summary>
-        /// Decodes a raw string token (including surrounding quotes) to a .NET string.
-        /// Invalid UTF-8 sequences decode to replacement characters; callers must not
-        /// re-encode a decoded string over an untouched raw token.
+        /// Decodes a raw NWN string token (including surrounding quotes) as Windows-1252. Because
+        /// that is a single-byte encoding, native high bytes survive an edit round trip unchanged.
         /// </summary>
         public static string Decode(ReadOnlySpan<byte> rawToken)
         {
@@ -21,18 +27,15 @@ namespace SWLOR.Toolset.Domain.Gff
                 throw new FormatException("String token must be enclosed in double quotes.");
 
             var inner = rawToken[1..^1];
-            if (inner.IndexOf((byte)'\\') < 0)
-                return Encoding.UTF8.GetString(inner);
-
-            var bytes = new List<byte>(inner.Length);
+            var text = new StringBuilder(inner.Length);
+            var segmentStart = 0;
             for (var i = 0; i < inner.Length; i++)
             {
-                var b = inner[i];
-                if (b != (byte)'\\')
-                {
-                    bytes.Add(b);
+                if (inner[i] != (byte)'\\')
                     continue;
-                }
+
+                if (i > segmentStart)
+                    text.Append(NwnEncoding.GetString(inner[segmentStart..i]));
 
                 i++;
                 if (i >= inner.Length)
@@ -40,75 +43,40 @@ namespace SWLOR.Toolset.Domain.Gff
 
                 switch ((char)inner[i])
                 {
-                    case '"': bytes.Add((byte)'"'); break;
-                    case '\\': bytes.Add((byte)'\\'); break;
-                    case '/': bytes.Add((byte)'/'); break;
-                    case 'b': bytes.Add(8); break;
-                    case 'f': bytes.Add(12); break;
-                    case 'n': bytes.Add((byte)'\n'); break;
-                    case 'r': bytes.Add((byte)'\r'); break;
-                    case 't': bytes.Add((byte)'\t'); break;
+                    case '"': text.Append('"'); break;
+                    case '\\': text.Append('\\'); break;
+                    case '/': text.Append('/'); break;
+                    case 'b': text.Append('\b'); break;
+                    case 'f': text.Append('\f'); break;
+                    case 'n': text.Append('\n'); break;
+                    case 'r': text.Append('\r'); break;
+                    case 't': text.Append('\t'); break;
                     case 'u':
                         if (i + 4 >= inner.Length)
                             throw new FormatException("Truncated \\u escape in string token.");
-                        var code = ParseHex4(inner.Slice(i + 1, 4));
+                        text.Append((char)ParseHex4(inner.Slice(i + 1, 4)));
                         i += 4;
-                        AppendUtf8(bytes, code);
                         break;
                     default:
                         throw new FormatException($"Unknown escape '\\{(char)inner[i]}' in string token.");
                 }
+
+                segmentStart = i + 1;
             }
 
-            return Encoding.UTF8.GetString(bytes.ToArray());
+            if (segmentStart < inner.Length)
+                text.Append(NwnEncoding.GetString(inner[segmentStart..]));
+            return text.ToString();
         }
 
         /// <summary>
         /// Encodes a .NET string as a raw JSON string token (including quotes) using
         /// nwn_gff-compatible escaping: only the JSON-mandated escapes plus \u00XX for other
-        /// control characters; non-ASCII passes through as raw UTF-8.
+        /// control characters; non-ASCII passes through as raw Windows-1252.
         /// </summary>
         public static byte[] Encode(string value)
         {
-            var builder = new List<byte>(value.Length + 2) { (byte)'"' };
-            foreach (var b in Encoding.UTF8.GetBytes(value))
-            {
-                switch (b)
-                {
-                    case (byte)'"':
-                        builder.Add((byte)'\\');
-                        builder.Add((byte)'"');
-                        break;
-                    case (byte)'\\':
-                        builder.Add((byte)'\\');
-                        builder.Add((byte)'\\');
-                        break;
-                    case 8:
-                        AddAscii(builder, "\\b");
-                        break;
-                    case 12:
-                        AddAscii(builder, "\\f");
-                        break;
-                    case (byte)'\n':
-                        AddAscii(builder, "\\n");
-                        break;
-                    case (byte)'\r':
-                        AddAscii(builder, "\\r");
-                        break;
-                    case (byte)'\t':
-                        AddAscii(builder, "\\t");
-                        break;
-                    default:
-                        if (b < 0x20)
-                            AddAscii(builder, $"\\u{b:x4}");
-                        else
-                            builder.Add(b);
-                        break;
-                }
-            }
-
-            builder.Add((byte)'"');
-            return builder.ToArray();
+            return EncodeBytes(NwnEncoding.GetBytes(value));
         }
 
         /// <summary>

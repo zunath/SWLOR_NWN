@@ -29,7 +29,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// <paramref name="row"/>) would rewrite. The clicked cell is filled with
         /// <paramref name="terrain"/> (a solid, crosser-free tile when the tileset has one) and its
         /// eight neighbours are re-blended. Returns an empty list for an out-of-range cell, a blank
-        /// terrain, or a terrain the tileset cannot present as a full tile.
+        /// terrain, a terrain the tileset cannot present as a full tile, or a boundary whose
+        /// populated neighbours cannot all be solved.
         /// <paramref name="tileRank"/> maps a tile id to a preference rank (lower = preferred, e.g.
         /// negated corpus frequency); null falls back to lowest-id.
         /// </summary>
@@ -100,7 +101,13 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 var choice = SelectCandidate(tileset, candidates, WorkingAt(nc, nr), tileRank, preferBlankEdges: false);
                 if (choice is { } chosen)
                     Place(nc, nr, chosen);
-                // No legal blend (choice == null): leave the neighbour as-is rather than clearing it.
+                else
+                    // Returning no changes rejects the entire pure paint operation. Applying only
+                    // the centre (or a partially solved ring) would leave mismatched terrain at a
+                    // shared vertex, which is an invalid area even though every individual tile id
+                    // is valid. The caller applies this result as one transaction, so an empty result
+                    // is the atomic "this terrain cannot be painted here" outcome.
+                    return Array.Empty<TilePaintChange>();
             }
 
             return changes;
@@ -241,8 +248,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// matched, Doorway 93%). Being permissive here produced half a dock jutting into open water
         /// with nothing on the far side.
         ///
-        /// A cell with no legal candidate under this rule is left alone by the caller rather than
-        /// forced, so the rare one-sided-crosser layouts are never rewritten.
+        /// A cell with no legal candidate under this rule rejects the entire paint operation, so a
+        /// rare one-sided-crosser layout is never partially rewritten into an invalid boundary.
         /// </summary>
         private static IReadOnlyList<TileCandidate> WithMatchingCrossers(
             TilesetDefinition tileset, IReadOnlyList<TileCandidate> candidates,

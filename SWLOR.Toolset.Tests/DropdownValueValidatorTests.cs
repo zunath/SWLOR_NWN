@@ -199,6 +199,18 @@ namespace SWLOR.Toolset.Tests
                 .Should().ContainSingle().Which.Value.Should().Be(0);
         }
 
+        [TestCase(GffFieldType.Byte, 255)]
+        [TestCase(GffFieldType.Word, 65535)]
+        [TestCase(GffFieldType.Dword, 4294967295L)]
+        [TestCase(GffFieldType.Int, -1)]
+        public void GetUnsetSentinel_ReturnsTheFieldWidthMarker(GffFieldType fieldType, long expected)
+        {
+            var sentinel = DropdownValueValidator.GetUnsetSentinel(fieldType);
+
+            sentinel.Should().Be(expected);
+            DropdownValueValidator.IsUnsetSentinel(sentinel, fieldType).Should().BeTrue();
+        }
+
         [Test]
         public void RealCorpusPlaceable_WithAnEmpty2DaRow_WouldBeBlocked()
         {

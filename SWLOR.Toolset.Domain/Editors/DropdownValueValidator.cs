@@ -87,7 +87,7 @@ namespace SWLOR.Toolset.Domain.Editors
         /// this guard rather than a defect in the data. Zero is deliberately NOT treated as unset:
         /// row 0 is a real row in every table wired to a dropdown.
         /// </summary>
-        private static bool IsUnsetSentinel(long value, GffFieldType fieldType)
+        public static bool IsUnsetSentinel(long value, GffFieldType fieldType)
         {
             if (value == -1)
                 return true;
@@ -101,5 +101,18 @@ namespace SWLOR.Toolset.Domain.Editors
                 _ => false
             };
         }
+
+        /// <summary>
+        /// The canonical "nothing assigned" value a populated dropdown should expose for this
+        /// GFF field width. Unsigned fields use their all-bits-set value; signed fields use -1.
+        /// </summary>
+        public static long GetUnsetSentinel(GffFieldType fieldType) => fieldType switch
+        {
+            GffFieldType.Byte => byte.MaxValue,
+            GffFieldType.Word => ushort.MaxValue,
+            GffFieldType.Dword => uint.MaxValue,
+            GffFieldType.Char or GffFieldType.Short or GffFieldType.Int or GffFieldType.Int64 => -1,
+            _ => -1
+        };
     }
 }

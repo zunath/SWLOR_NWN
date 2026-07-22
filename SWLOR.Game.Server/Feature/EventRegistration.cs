@@ -529,16 +529,6 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_BEFORE", ScriptName.OnBroadcastCastSpellBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_AFTER", ScriptName.OnBroadcastCastSpellAfter);
 
-            // Broadcast Safe Projectile events. Weapon projectile types are 0 through 5.
-            const string projectileTypeWhitelist = "NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE";
-            EventsPlugin.ToggleIDWhitelist(projectileTypeWhitelist, true);
-            for (var projectileType = 0; projectileType <= 5; projectileType++)
-            {
-                EventsPlugin.AddIDToWhitelist(projectileTypeWhitelist, projectileType);
-            }
-            EventsPlugin.SubscribeEvent(
-                "NWNX_ON_BROADCAST_SAFE_PROJECTILE_BEFORE", ScriptName.OnBroadcastSafeProjectileBefore);
-
             // RunScript Debug Events
             EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_BEFORE", ScriptName.OnDebugRunScriptBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_AFTER", ScriptName.OnDebugRunScriptAfter);

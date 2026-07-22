@@ -1,12 +1,12 @@
 # Combat Upgrade Current-State Balance Audit
 
-Last reviewed: 2026-07-11 (Lightsaber Ward/Severance redesign; see addendum below)
+Last reviewed: 2026-07-19 (full Bible and cross-skill interaction audit)
 
 ## Scope
 
 This audit captures the current pre-release tuning state of the combat upgrade after the release-blocker implementation pass. It records the player-feedback risks, the mitigations now in code/Bible/TLK, and the post-fix playtest queue using the current Bible, perk definitions, status effects, and shared combat/stat systems.
 
-The audit includes weapons, Force, Devices, Leadership, First Aid, Beast Mastery, Armor, and companion contribution. Force, Devices, Leadership, First Aid, and Beast Mastery remain balance-audit surfaces, not broad thematic redesign targets.
+The audit includes weapons, Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, Espionage, Armor, and companion contribution. Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage remain balance-audit surfaces, not broad thematic redesign targets.
 
 ## Key Mechanical Facts
 
@@ -15,6 +15,8 @@ The audit includes weapons, Force, Devices, Leadership, First Aid, Beast Mastery
 - Shield Deflection is checked before Attack Deflection. If a shield deflect chance exists, it is used and Attack Deflection is skipped for that attack.
 - Attack Deflection requires a valid weapon and no equipped shield. Its default cap is 50, and `AttackDeflectionChanceCap` can raise that cap.
 - Guard is a damage-stage mitigation mechanic. It is separate from both deflection mechanics and currently has a base 20 percent reduction with a 40 percent maximum reduction.
+- Direct, triggered, periodic, and transferred damage are distinct delivery types. Only direct damage may run ordinary damage-dealt and status-effect procs; reflection and secondary riders use triggered delivery, while shared damage uses transferred delivery and cannot reshare.
+- Damage-derived healing from all riders on one hit shares a 50 percent per-hit cap. Cross-resource conversion restores 35 percent of the resource actually spent and cannot call the inverse conversion. Cooldown reduction cannot affect capstones or reduce a timer past ready.
 
 ## Release Blockers
 
@@ -89,7 +91,11 @@ Lightsaber Offense riders were moved from mostly area-only payoff to the actual 
 
 ### W-000 Release Validation Matrix - Automated Coverage Added
 
-`CombatReleaseBalanceAuditTests` now checks curated archetype legality, permanent Attack Deflection cap access, and full 400 SP package-frontier outlier reporting. `CombatUpgradeReleaseValidationMatrix.md` defines the manual test set for real enemies, attack-delay feel, support-system interactions, weapon identity checks, peak-damage target bands, and mob-tuning decisions.
+`CombatReleaseBalanceAuditTests` now checks curated archetype legality, permanent Attack Deflection cap access, full 400 SP package-frontier outlier reporting, and every active weapon package combined with the legal cross-skill support frontier. The scope includes Mimicry and all three Espionage categories. Curated danger profiles cover poison/trap/Mimicry, stealth burst, cross-resource sustain, damage-derived healing, deflection/reflection, and layered control. `CombatUpgradeReleaseValidationMatrix.md` defines the manual test set for real enemies, attack-delay feel, support-system interactions, weapon identity checks, peak-damage target bands, and mob-tuning decisions.
+
+### W-000A Cross-Skill Feedback Loops - Automated Coverage Added
+
+`CrossSkillPerkInteractionSafetyTests` proves the shared static termination rules: triggered and periodic damage exit before direct-hit perk/status procs; reflection and Marked for Death bonus damage use triggered delivery; transferred damage cannot reshare; one-shot redirects are consumed before damage dispatch; damage-derived healing aggregates under one per-hit cap; cross-resource conversion stays below 100 percent of paid cost and cannot call the inverse conversion; and cooldown reduction cannot reset capstones or run past ready.
 
 ### W-001 Crit Cap Pressure - Automated Coverage Added
 
@@ -156,9 +162,15 @@ Both Lightsaber perk trees were fully replaced on 2026-07-11, superseding B-001'
 
 The Bible workbook and `CombatUpgradeBiblePerkManifest.csv` are the source of truth for the new Ward/Severance rows; this addendum is qualitative and does not restate specific numeric tuning values.
 
+## 2026-07-19 Addendum: Full Static Review And Deflecting Return Correction
+
+The refreshed workbook review contains 1,003 rows: 998 in-scope rows pass and only the five unimplemented, first-iteration-out-of-scope Agriculture rows are skipped. Mimicry is 98/98 pass, including all 88 techniques; Espionage is 41/41 pass.
+
+The production-consumer audit found one real stat wiring defect: `EmbattledHighStackDeflectionReflectionBonusPercent` was granted by Center of the Storm but never consumed. It is now applied at the documented Embattled stack threshold. The same review found that Aegis Eternal's Perfect Aegis status added its 24% reflection and 75% cap on top of Deflecting Return instead of setting the documented final values. Perfect Aegis now uses stat-driven override values, so the capstone resolves to exactly 24% reflection with a 75% damage cap while normal Center of the Storm behavior resolves to 20%/50% at high Embattled stacks.
+
 ## Not Recommended
 
 - Do not tune mobs around pre-fix damage screenshots.
 - Do not add combo-specific hardcoded penalties.
 - Do not weapon-lock broad perk lines unless softer budget, source-tier, uptime, or trigger changes fail.
-- Do not perform broad thematic rewrites to Force, Devices, Leadership, First Aid, or Beast Mastery in this leg.
+- Do not perform broad thematic rewrites to Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, or Espionage in this leg.

@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(row =>
             {
                 row.AddLabel()
-                    .SetText("Activating starts a 30-minute cooldown before you can activate another disguise.")
+                    .BindText(model => model.ActivationDelayNote)
                     .SetHeight(NoteHeight)
                     .SetColor(160, 152, 128)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);

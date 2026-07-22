@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Serrated Slash")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.SerratedSlash, 2, 2)
+                .MimicryTrait(FeatType.SerratedSlash, 30, 2)
                 .MimicryTraitStat(StatType.DamageDealtBleedChance, 10);
 
             return _builder.Build();

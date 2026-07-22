@@ -25,13 +25,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .HasRecastDelay(RecastGroup.WardenOrder, 30f)
                 .RequirementStamina(10)
                 .IsCastedAbility()
-                .MimicryTechnique(FeatType.WardenOrder, 4, 3)
+                .MimicryTechnique(FeatType.WardenOrder, 49, 3)
                 .MimicryUtility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5.5f))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(GameMath.PercentOf(GetMaxHitPoints(ally), 15)), ally);
+                        var amount = GameMath.PercentOf(GetMaxHitPoints(ally), 15);
+                        amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
+                        ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), ally);
                     }
                 });
 

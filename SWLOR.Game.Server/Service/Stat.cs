@@ -32,13 +32,13 @@ namespace SWLOR.Game.Server.Service
         private const float DefaultPlayerMovementSpeedIncrease = 0.25f;
         private const float DefaultCompanionMovementSpeedIncrease = 0.25f;
         private const float DefaultNPCMovementSpeedIncrease = 0.30f;
-        private const int DefaultAttackDeflectionChanceCap = 50;
-        private const int MaximumDeflectionChanceCap = 100;
-        private const int MaximumShieldDeflectionChance = 75;
-        private const int MaximumGuardChance = 100;
+        public const int DefaultAttackDeflectionChanceCap = 50;
+        public const int MaximumDeflectionChanceCap = 100;
+        public const int MaximumShieldDeflectionChance = 75;
+        public const int MaximumGuardChance = 100;
         public const int MaximumCombatReadinessPercent = 15;
-        private const float MinimumMovementSpeedMultiplier = 0f;
-        private const float MaximumMovementSpeedMultiplier = 1.5f;
+        public const float MinimumMovementSpeedMultiplier = 0f;
+        public const float MaximumMovementSpeedMultiplier = 1.5f;
         private const float DeflectionEvasionBoostDurationSeconds = 30f;
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
@@ -1429,28 +1429,39 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The detection rating of a creature.</returns>
         public static int GetDetection(uint creature)
         {
-            var detection = GetAbilityScore(creature, AbilityType.Perception);
+            var perception = GetAbilityScore(creature, AbilityType.Perception);
+            var willpower = GetAbilityScore(creature, AbilityType.Willpower);
+            var equipmentBonus = 0;
 
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                detection += dbPlayer.Detection;
+                equipmentBonus = dbPlayer.Detection;
             }
             else
             {
-                detection += GetNPCSkinStat(creature, ItemPropertyType.Detection);
+                equipmentBonus = GetNPCSkinStat(creature, ItemPropertyType.Detection);
             }
 
-            detection += GetStatAdjustment(creature, StatType.Detection);
+            return CalculateDetectionRating(
+                perception,
+                willpower,
+                equipmentBonus,
+                GetStatAdjustment(creature, StatType.Detection),
+                GetActionMode(creature, ActionMode.Detect));
+        }
 
-            if (GetActionMode(creature, ActionMode.Detect))
-            {
-                detection += 5;
-            }
-
-            return detection;
+        public static int CalculateDetectionRating(
+            int perception,
+            int willpower,
+            int equipmentBonus,
+            int adjustment,
+            bool detectMode)
+        {
+            var detectModeBonus = detectMode ? 5 : 0;
+            return Math.Max(0, perception + willpower + equipmentBonus + adjustment + detectModeBonus);
         }
 
         /// <summary>
@@ -1460,24 +1471,30 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The stealth rating of a creature.</returns>
         public static int GetStealth(uint creature)
         {
-            var stealth = GetAbilityScore(creature, AbilityType.Agility);
+            var agility = GetAbilityScore(creature, AbilityType.Agility);
+            var equipmentBonus = 0;
 
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                stealth += dbPlayer.Stealth;
+                equipmentBonus = dbPlayer.Stealth;
             }
             else
             {
-                stealth += GetNPCSkinStat(creature, ItemPropertyType.Stealth);
+                equipmentBonus = GetNPCSkinStat(creature, ItemPropertyType.Stealth);
             }
 
-            stealth += GetStatAdjustment(creature, StatType.Stealth);
+            return CalculateStealthRating(
+                agility,
+                equipmentBonus,
+                GetStatAdjustment(creature, StatType.Stealth));
+        }
 
-            var effectivenessPercent = GetStatAdjustment(creature, StatType.StealthEffectivenessPercent);
-            return (stealth * (100 + effectivenessPercent)) / 100;
+        public static int CalculateStealthRating(int agility, int equipmentBonus, int adjustment)
+        {
+            return Math.Max(0, agility * 2 + equipmentBonus + adjustment);
         }
 
         /// <summary>
@@ -1905,6 +1922,29 @@ namespace SWLOR.Game.Server.Service
             var mimicryTraitAdjustment = Mimicry.GetStatBonus(creature, stat);
 
             return statusAdjustment + perkAdjustment + mimicryTraitAdjustment;
+        }
+
+        public static int ApplyOutgoingAbilityHealingAdjustment(uint source, int amount)
+        {
+            if (amount <= 0 || !GetIsObjectValid(source))
+                return amount;
+
+            var statSource = BeastMastery.IsPlayerBeast(source)
+                ? GetMaster(source)
+                : source;
+            var adjustment = GetStatAdjustment(
+                statSource,
+                StatType.OutgoingAbilityHealingPercentAdjustment);
+
+            return CalculateOutgoingAbilityHealingAmount(amount, adjustment);
+        }
+
+        public static int CalculateOutgoingAbilityHealingAmount(int amount, int adjustment)
+        {
+            if (amount <= 0 || adjustment <= 0)
+                return amount;
+
+            return amount + (int)Math.Ceiling(amount * (adjustment / 100f));
         }
 
         public static int ApplyHealingReceivedAdjustment(uint creature, int amount)

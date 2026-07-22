@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public const int ConversionPercent = 40;
         public const int TreatedAsEmbattledStacks = 5;
+        public const int ReflectionPercent = 24;
+        public const int ReflectionCapPercent = 75;
 
         public override string Name => "Perfect Aegis";
         public override EffectIconType Icon => EffectIconType.PerfectAegisStatusEffect;
@@ -28,9 +30,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 12 + TreatedAsEmbattledStacks * 2;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = 25;
 
-            // Deflecting Return is driven to the capstone ceiling of 24% / 75% by the shared reflection reader.
-            StatGroup.Stats[StatType.RangedDeflectionReflectionPercent] = 24;
-            StatGroup.Stats[StatType.RangedDeflectionReflectionCapPercent] = 75;
+            // These are final overrides rather than additive bonuses: ordinary perk reflection and
+            // Center of the Storm remain present while the capstone status is active.
+            StatGroup.Stats[StatType.RangedDeflectionReflectionOverridePercent] = ReflectionPercent;
+            StatGroup.Stats[StatType.RangedDeflectionReflectionCapOverridePercent] = ReflectionCapPercent;
         }
     }
 }

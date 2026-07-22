@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Name("Tactical Mark")
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
-                .MimicryTrait(FeatType.TacticalMark, 2, 2)
+                .MimicryTrait(FeatType.TacticalMark, 5, 2)
                 .MimicryTraitStat(StatType.AttackPercentAdjustment, 6);
 
             return _builder.Build();

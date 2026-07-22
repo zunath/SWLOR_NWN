@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Enmity
     {
+        public const int MinimumEnmityPercentAdjustment = -50;
+        public const int MaximumEnmityPercentAdjustment = 50;
         // Enemy -> Creature -> EnmityAmount mapping
         private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
@@ -228,8 +230,17 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The enmity adjustment percentage.</returns>
         private static int CalculateEnmityAdjustment(uint creature, uint enemy)
         {
-            return Stat.GetStatAdjustment(creature, StatType.EnmityPercentAdjustment) +
-                   GetStatusSourceEnmityAdjustment(enemy, creature);
+            var adjustment = Stat.GetStatAdjustment(creature, StatType.EnmityPercentAdjustment) +
+                             GetStatusSourceEnmityAdjustment(enemy, creature);
+            return ClampEnmityPercentAdjustment(adjustment);
+        }
+
+        public static int ClampEnmityPercentAdjustment(int adjustment)
+        {
+            return Math.Clamp(
+                adjustment,
+                MinimumEnmityPercentAdjustment,
+                MaximumEnmityPercentAdjustment);
         }
 
         /// <summary>
@@ -401,6 +412,32 @@ namespace SWLOR.Game.Server.Service
         {
             return _proximityEnmityAmounts.TryGetValue(enemy, out var table) &&
                    table.ContainsKey(creature);
+        }
+
+        /// <summary>
+        /// Returns true when an enemy has any enmity that did not come solely from its aggro aura.
+        /// Attack, damage, and ability enmity make the enemy an active combatant and therefore an
+        /// invalid source for a new Espionage infiltration attempt.
+        /// </summary>
+        public static bool HasNonProximityEnmity(uint enemy)
+        {
+            if (!_enemyEnmityTables.TryGetValue(enemy, out var table))
+                return false;
+
+            return table.Any(entry => !HasOnlyProximityEnmity(entry.Key, enemy));
+        }
+
+        /// <summary>
+        /// Returns true when a creature appears on any enemy table for more than aggro proximity.
+        /// This distinguishes real combat from the proximity-only entries created as multiple
+        /// stealthed players cross overlapping aggro auras.
+        /// </summary>
+        public static bool HasNonProximityEnmityForCreature(uint creature)
+        {
+            if (!_creatureToEnemies.TryGetValue(creature, out var enemies))
+                return false;
+
+            return enemies.Any(enemy => !HasOnlyProximityEnmity(creature, enemy));
         }
 
         /// <summary>

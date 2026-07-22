@@ -162,6 +162,70 @@ public class EnmityTests
     }
 
     [Test]
+    public void HasNonProximityEnmity_AllowsAuraOnlyTrafficButRejectsCombatEnmity()
+    {
+        const uint proximityOnlyEnemy = 100;
+        const uint combatEnemy = 200;
+        const uint untrackedEnemy = 300;
+        const uint target = 1;
+
+        EnemyEnmityTables()[proximityOnlyEnemy] = new Dictionary<uint, int>
+        {
+            [target] = 1
+        };
+        EnemyEnmityTables()[combatEnemy] = new Dictionary<uint, int>
+        {
+            [target] = 5
+        };
+        EnemyEnmityTables()[untrackedEnemy] = new Dictionary<uint, int>
+        {
+            [target] = 3
+        };
+        ProximityEnmityAmounts()[proximityOnlyEnemy] = new Dictionary<uint, int>
+        {
+            [target] = 1
+        };
+        ProximityEnmityAmounts()[combatEnemy] = new Dictionary<uint, int>
+        {
+            [target] = 2
+        };
+
+        Enmity.HasNonProximityEnmity(proximityOnlyEnemy).Should().BeFalse();
+        Enmity.HasNonProximityEnmity(combatEnemy).Should().BeTrue();
+        Enmity.HasNonProximityEnmity(untrackedEnemy).Should().BeTrue();
+        Enmity.HasNonProximityEnmity(999).Should().BeFalse();
+    }
+
+    [Test]
+    public void HasNonProximityEnmityForCreature_AllowsOverlappingAuraTrafficButRejectsRealCombat()
+    {
+        const uint creature = 1;
+        const uint proximityOnlyEnemy = 100;
+        const uint combatEnemy = 200;
+
+        CreatureToEnemies()[creature] = new List<uint> { proximityOnlyEnemy };
+        EnemyEnmityTables()[proximityOnlyEnemy] = new Dictionary<uint, int>
+        {
+            [creature] = 1
+        };
+        ProximityEnmityAmounts()[proximityOnlyEnemy] = new Dictionary<uint, int>
+        {
+            [creature] = 1
+        };
+
+        Enmity.HasNonProximityEnmityForCreature(creature).Should().BeFalse();
+
+        CreatureToEnemies()[creature].Add(combatEnemy);
+        EnemyEnmityTables()[combatEnemy] = new Dictionary<uint, int>
+        {
+            [creature] = 3
+        };
+
+        Enmity.HasNonProximityEnmityForCreature(creature).Should().BeTrue();
+        Enmity.HasNonProximityEnmityForCreature(999).Should().BeFalse();
+    }
+
+    [Test]
     public void ShouldIssueAttackCommand_ReissuesWhenTargetIsStaleButNoAttackActionIsRunning()
     {
         ShouldIssueAttackCommand(1, 1, ActionType.Invalid, false, commandIssuedAt: DateTime.UtcNow.AddSeconds(-7))

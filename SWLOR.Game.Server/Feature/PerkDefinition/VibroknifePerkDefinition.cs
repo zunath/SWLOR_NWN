@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VenaticRecoveryTrait)
-                .Description("Your first attack in combat restores 15 STM. Once every 1 minute.")
+                .Description("Your first attack in combat restores 15 STM. This can trigger once every 60 seconds.")
                 .IncreasesStat(StatType.FirstCombatAttackStaminaRestore, 15)
                 .IncreasesStat(StatType.FirstCombatAttackStaminaRestoreCooldownSeconds, 60)
                 .Price(4)

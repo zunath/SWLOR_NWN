@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
+                .SetIsClosable(true)
                 .SetInitialGeometry(0, 0, 375f, 340f)
                 .SetTitle("Settings")
 
@@ -77,6 +78,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddSpacer()
                                 .SetWidth(28f);
 
+                            row.AddCheckBox()
+                                .SetText("Comms Range Warnings")
+                                .SetTooltip("Warns you when one or more party members are outside the range of a Comms message and do not receive it.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.DisplayCommsOutOfRangeWarnings);
+                        })
+                            .SetHeight(30f);
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
                             row.AddButton()
                                 .SetText("Change Description")
                                 .SetTooltip("Modify your publicly-viewable description which displays when you are examined.")
@@ -92,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     view.AddColumn(col =>
                     {
+
                         col.AddRow(row =>
                         {
                             row.AddSpacer()

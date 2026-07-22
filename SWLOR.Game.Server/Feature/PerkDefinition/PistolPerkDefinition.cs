@@ -79,9 +79,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MobileFootworkTrait)
                 .Description("After using a hostile ranged ability, gain +8% Evasion for 30 seconds.")
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Pistol)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 8)
-                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.SecondaryAbilityUsedEvasionPercentAdjustment, 8)
+                .IncreasesStat(StatType.SecondaryAbilityUsedEvasionDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 5);
         }

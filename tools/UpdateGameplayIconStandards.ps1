@@ -8,7 +8,7 @@ param(
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
     [string]$TlkJsonPath = "SWLOR_Haks\sw_tlk\sw_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2791,
+    [int]$GeneratedFeatEnd = 2898,
     [int]$CustomFeatStart = 1116,
     [int]$CustomSpellStart = 1000,
     [int]$StatusEffectIconStart = 141,
@@ -603,7 +603,7 @@ function Get-AbilitySemanticCategory([string]$label) {
         return "Control"
     }
 
-    if ($label -match "MedKit|TreatmentKit|Kolto|Infusion|Mend|Benevolence|Renewal|Shielding|Deflector|Rayshield|Barrier|Ward|Sanctuary|Guard|Bastion|Resolve|Rally|Rousing|Bolster|Recovery|Cleanse|Antitoxin|Coagulant|PainSuppressant|Adrenal|FocusStim|PowerCell|Maintenance|Soothe|Revive|Reward|Hasten|IronHide|Warding|Unbreakable|Untouchable|PackRecovery|FieldRecovery|SteadyFormation|HoldTheLine|WatchfulPresence|HarmonicRestoration|SereneFocus") {
+    if ($label -match "MedKit|TreatmentKit|Kolto|Infusion|Mend|Benevolence|Renewal|Shielding|Deflector|Rayshield|Barrier|Ward|Sanctuary|Guard|Bastion|Resolve|Rally|Rousing|Bolster|Recovery|Cleanse|Antitoxin|Coagulant|PainSuppressant|Adrenal|FocusStim|PowerCell|Maintenance|Soothe|Revive|Reward|Hasten|IronHide|IronShell|Warding|Unbreakable|Untouchable|PackRecovery|FieldRecovery|SteadyFormation|HoldTheLine|WatchfulPresence|HarmonicRestoration|SereneFocus") {
         return "Beneficial"
     }
 

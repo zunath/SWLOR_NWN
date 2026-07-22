@@ -197,8 +197,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             learnedView = SelectedSortOrderId switch
             {
                 1 => learnedView.OrderByDescending(x => x.Detail.Name),
-                2 => learnedView.OrderBy(x => x.Detail.MimicryTier).ThenBy(x => x.Detail.Name),
-                3 => learnedView.OrderByDescending(x => x.Detail.MimicryTier).ThenBy(x => x.Detail.Name),
+                2 => learnedView.OrderBy(x => x.Detail.MimicrySkillRequirement).ThenBy(x => x.Detail.Name),
+                3 => learnedView.OrderByDescending(x => x.Detail.MimicrySkillRequirement).ThenBy(x => x.Detail.Name),
                 _ => learnedView.OrderBy(x => x.Detail.Name),
             };
 
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static GuiColor GetUnequippedRowColor(AbilityDetail detail, int skillRank, int usedSlots, int maxSlots)
         {
-            if (skillRank < Mimicry.GetTierSkillRequirement(detail.MimicryTier))
+            if (skillRank < detail.MimicrySkillRequirement)
                 return LockedColor;
 
             if (usedSlots + detail.MimicrySlotCost > maxSlots)
@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static string BuildRowText(AbilityDetail detail)
         {
             var slotLabel = detail.MimicrySlotCost == 1 ? "slot" : "slots";
-            return $"{detail.Name} (T{detail.MimicryTier} / {detail.MimicrySlotCost} {slotLabel})";
+            return $"{detail.Name} (Rank {detail.MimicrySkillRequirement} / {detail.MimicrySlotCost} {slotLabel})";
         }
 
         private void RefreshSlots(PlayerEntity dbPlayer)
@@ -298,9 +298,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!string.IsNullOrWhiteSpace(description))
                 text += $"{description}\n\n";
 
-            text += $"Tier: {detail.MimicryTier}\n" +
-                    $"Slot Cost: {detail.MimicrySlotCost}\n" +
-                    $"Requires: Mimicry Rank {Mimicry.GetTierSkillRequirement(detail.MimicryTier)}\n";
+            text += $"Slot Cost: {detail.MimicrySlotCost}\n" +
+                    $"Requires: Mimicry Rank {detail.MimicrySkillRequirement}\n";
 
             if (detail.IsMimicryTrait)
             {

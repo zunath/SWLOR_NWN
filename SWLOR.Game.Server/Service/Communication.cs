@@ -21,6 +21,14 @@ namespace SWLOR.Game.Server.Service
         public const string EventCommsAreaVariable = "COMMS_EVENT_AREA";
         private const string DisabledChannelMessage = "This chat channel is disabled.";
         private const string CommsOutOfRangeMessage = "Your Comms message could not reach one or more out-of-range receivers.";
+        // Base-game dialog.tlk 66755 is the PlayerParty chat-input label, while 10303 is the
+        // prefix rendered on received PlayerParty messages. Comms must still use the native
+        // Party packet so NWNX_Rename can apply observer-specific player names, but neither
+        // player-facing chat label should expose the underlying Party transport.
+        private const int PartyChatChannelNameStrRef = 66755;
+        private const int PartyChatMessagePrefixStrRef = 10303;
+        private const string CommsChannelName = "Comms";
+        private const string CommsMessagePrefix = "[Comms] ";
 
         public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
         public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
@@ -42,6 +50,18 @@ namespace SWLOR.Game.Server.Service
             ColonForward,
             ColonBackward
         };
+
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyCommsChannelName()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player))
+                return;
+
+            // The chat-channel selector treats angle-bracket color markup as TLK substitution tokens.
+            PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);
+            PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
+        }
 
         /// <summary>
         /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
@@ -275,10 +295,13 @@ namespace SWLOR.Game.Server.Service
 
                     var distance = GetDistanceBetween(sender, target);
 
+                    // Preserve the Master behavior for overhearing: anyone in the same area and
+                    // within the channel's local range can hear the message, regardless of party
+                    // membership or long-range Comms scope. Comms scope applies only to the party
+                    // member delivery pass above.
                     if (GetArea(target) == GetArea(sender) &&
                         distance <= distanceCheck &&
-                        !recipients.Contains(target) &&
-                        (channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)))
+                        !recipients.Contains(target))
                     {
                         recipients.Add(target);
                     }
@@ -287,7 +310,11 @@ namespace SWLOR.Game.Server.Service
 
             if (outOfRangeCommsPartyMembers > 0)
             {
-                SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));
+                var dbSender = DB.Get<Player>(GetObjectUUID(sender));
+                if (dbSender?.Settings?.DisplayCommsOutOfRangeWarnings ?? true)
+                {
+                    SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));
+                }
             }
 
             // The speaker and the language being spoken are the same for every recipient, so resolve
@@ -316,8 +343,6 @@ namespace SWLOR.Game.Server.Service
 
                 if (channel == ChatChannel.PlayerParty)
                 {
-                    finalMessage.Append("[Comms] ");
-
                     if (GetIsDM(receiver))
                     {
                         // Convenience for DMs - append the party members.

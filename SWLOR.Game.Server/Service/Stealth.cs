@@ -58,6 +58,30 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
+            // NWNX always fires the AFTER event even when the BEFORE event rejected the engine
+            // transition. Do not create a status icon or start stamina drain unless stealth really
+            // became active and the player owns the perk.
+            var ownsStealth = Perk.GetPerkLevel(creature, PerkType.Stealth) > 0;
+            var enteredDuringCombatWithoutWindow =
+                GetIsInCombat(creature) &&
+                GetLocalInt(creature, CombatEntryWindowVariable) == 0;
+            if (!GetActionMode(creature, ActionMode.Stealth) ||
+                !ownsStealth ||
+                enteredDuringCombatWithoutWindow)
+            {
+                if (GetActionMode(creature, ActionMode.Stealth))
+                {
+                    AssignCommand(creature, () =>
+                    {
+                        SetActionMode(creature, ActionMode.Stealth, false);
+                    });
+                }
+
+                StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
+                return;
+            }
+
+            ClearVerdictsForTarget(creature);
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
         }
 
@@ -88,6 +112,7 @@ namespace SWLOR.Game.Server.Service
         {
             var creature = OBJECT_SELF;
 
+            EspionageInfiltration.CancelPlayer(creature);
             StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
             ClearVerdictsForTarget(creature);
         }
@@ -111,7 +136,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             var detected = GetOrRollVerdict(observer, target);
+            EspionageInfiltration.RecordDetection(observer, target, detected);
             EventsPlugin.SetEventResult(detected ? "1" : "0");
+
+            if (detected)
+                ExitDetectedPlayerStealth(target);
         }
 
         [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]
@@ -138,6 +167,25 @@ namespace SWLOR.Game.Server.Service
 
             _verdicts[key] = (detected, now.AddSeconds(DetectionCheckIntervalSeconds));
             return detected;
+        }
+
+        /// <summary>
+        /// A successful detection reveals a player to everyone by ending their stealth mode. NPC
+        /// stealth keeps the engine's observer-specific behavior so creature encounters are not
+        /// globally revealed when a single observer succeeds.
+        /// </summary>
+        private static void ExitDetectedPlayerStealth(uint target)
+        {
+            if (!GetIsPC(target) ||
+                GetIsDM(target) ||
+                !GetActionMode(target, ActionMode.Stealth))
+                return;
+
+            AssignCommand(target, () =>
+            {
+                SetActionMode(target, ActionMode.Stealth, false);
+            });
+            SendMessageToPC(target, ColorToken.Red("You have been detected and are forced out of stealth."));
         }
 
         private static void ClearVerdictsForTarget(uint target)

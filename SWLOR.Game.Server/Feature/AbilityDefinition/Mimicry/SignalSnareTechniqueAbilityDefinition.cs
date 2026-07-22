@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)
-                .MimicryTechnique(FeatType.SignalSnare, 3, 2)
+                .MimicryTechnique(FeatType.SignalSnare, 41, 2)
                 .MimicryElement(CombatDamageType.Sonic);
 
             return _builder.Build();

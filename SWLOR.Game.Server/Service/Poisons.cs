@@ -45,9 +45,9 @@ namespace SWLOR.Game.Server.Service
 
             var tier = GetLocalInt(weapon, CoatingTierVariable);
             var potency = GetLocalInt(weapon, CoatingPotencyVariable);
-            var durationSeconds = GetVenomDurationSeconds(tier, potency);
+            var durationSeconds = GetVenomDurationSeconds(tier);
 
-            StatusEffect.ApplyStatusEffect<VenomStatusEffect>(attacker, defender, durationSeconds);
+            StatusEffect.ApplyStatusEffect(attacker, defender, new VenomStatusEffect(potency), durationSeconds);
 
             var charges = GetLocalInt(weapon, CoatingChargesVariable) - 1;
             if (charges > 0)
@@ -62,10 +62,9 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(attacker, $"The venom coating on {GetName(weapon)} has worn off.");
         }
 
-        private static float GetVenomDurationSeconds(int tier, int potency)
+        public static float GetVenomDurationSeconds(int tier)
         {
-            var baseDuration = 6 + tier * 6;
-            return baseDuration * (100 + Math.Max(0, potency)) / 100f;
+            return 6 + Math.Clamp(tier, 1, 5) * 6;
         }
     }
 }

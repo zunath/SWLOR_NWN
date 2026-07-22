@@ -15,6 +15,8 @@ namespace SWLOR.CLI
         private const int MaxDefaultWorkerCount = 12;
         private const int ProgressInterval = 100;
         private const int ReservedProcessorCount = 2;
+        private const int ResourceConversionRetryCount = 3;
+        private const int ResourceConversionRetryDelayMilliseconds = 250;
         private const string PackingDirectory = "./packing";
         private const string WorkerCountEnvironmentVariable = "SWLOR_RESOURCE_CONVERSION_WORKERS";
 
@@ -45,8 +47,9 @@ namespace SWLOR.CLI
                         var fileNameNoJson = Path.GetFileNameWithoutExtension(file);
                         var outputFile = Path.Combine(PackingDirectory, fileNameNoJson);
 
-                        RunProcess(
-                            "nwn_gff.exe",
+                        RunResourceConversion(
+                            file,
+                            outputFile,
                             "-l", "json",
                             "-i", file,
                             "-o", outputFile,
@@ -107,11 +110,9 @@ namespace SWLOR.CLI
 
             sw.Stop();
             Console.WriteLine($"Packing module completed in {sw.ElapsedMilliseconds}ms");
-
             if (!noPrompt)
             {
-                Console.WriteLine("Program finished. Press any key to end.");
-                Console.ReadKey();
+                WaitForKeyIfInteractive();
             }
         }
 
@@ -171,10 +172,12 @@ namespace SWLOR.CLI
                 {
                     var extension = Path.GetExtension(file)?.Replace(".", string.Empty);
 
-                    RunProcess(
-                        "nwn_gff.exe",
+                    var outputFile = $"./{extension}/{file}.json";
+                    RunResourceConversion(
+                        file,
+                        outputFile,
                         "-i", file,
-                        "-o", $"./{extension}/{file}.json",
+                        "-o", outputFile,
                         "-p");
 
                     // Remove the extracted file.
@@ -200,11 +203,9 @@ namespace SWLOR.CLI
 
             sw.Stop();
             Console.WriteLine($"Unpacking module completed in {sw.ElapsedMilliseconds}ms");
-
             if (!noPrompt)
             {
-                Console.WriteLine("Program finished. Press any key to end.");
-                Console.ReadKey();
+                WaitForKeyIfInteractive();
             }
         }
 
@@ -244,6 +245,47 @@ namespace SWLOR.CLI
                         $"Command failed with exit code {process.ExitCode}: {command}{Environment.NewLine}{standardOutput}{standardError}");
                 }
             }
+        }
+
+        private static void RunResourceConversion(
+            string resource,
+            string outputFile,
+            params string[] arguments)
+        {
+            Exception lastException = null;
+
+            for (var attempt = 1; attempt <= ResourceConversionRetryCount; attempt++)
+            {
+                try
+                {
+                    if (attempt > 1)
+                    {
+                        DeleteFileWithRetry(outputFile);
+                    }
+
+                    RunProcess("nwn_gff.exe", arguments);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                }
+
+                if (attempt < ResourceConversionRetryCount)
+                {
+                    var retryDelay = ResourceConversionRetryDelayMilliseconds * attempt;
+                    Console.Error.WriteLine(
+                        $"Resource conversion failed for '{resource}' " +
+                        $"(attempt {attempt}/{ResourceConversionRetryCount}). " +
+                        $"Retrying in {retryDelay}ms...");
+                    Thread.Sleep(retryDelay);
+                }
+            }
+
+            DeleteFileWithRetry(outputFile);
+            throw new InvalidOperationException(
+                $"Resource conversion failed after {ResourceConversionRetryCount} attempts.",
+                lastException);
         }
 
         private static string ResolveToolPath(string fileName)
@@ -311,6 +353,17 @@ namespace SWLOR.CLI
             {
                 Console.WriteLine($"{label} {completedCount:N0}/{totalCount:N0}");
             }
+        }
+
+        private static void WaitForKeyIfInteractive()
+        {
+            if (Console.IsInputRedirected)
+            {
+                return;
+            }
+
+            Console.WriteLine("Program finished. Press any key to end.");
+            Console.ReadKey();
         }
 
         private static void RecreateDirectory(string directory)

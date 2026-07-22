@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.DisguiseService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -17,10 +18,10 @@ namespace SWLOR.Game.Server.Service
         public const int WipeCreditCost = 100000;
         public const int WipeRoleplayXPCost = 25000;
         public const int ActivationDelayMinutes = 30;
+        public const int MinimumActivationDelayMinutes = 5;
 
         public const int MaxPrivateNameLength = 32;
         private const int DisguiseQueryPageSize = 50;
-        private static readonly TimeSpan ActivationDelay = TimeSpan.FromMinutes(ActivationDelayMinutes);
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyActiveDisguiseOnEnter()
@@ -134,11 +135,42 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
         }
 
-        public static int GetDisguiseSlotLimit(Player dbPlayer)
+        public static int GetDisguiseSlotLimit(uint player, Player dbPlayer)
         {
-            return dbPlayer?.DisguiseSlotLimit > 0
+            var baseLimit = dbPlayer?.DisguiseSlotLimit > 0
                 ? dbPlayer.DisguiseSlotLimit
                 : Player.DefaultDisguiseSlotLimit;
+
+            return CalculateDisguiseSlotLimit(
+                baseLimit,
+                Stat.GetStatAdjustment(player, StatType.AdditionalDisguiseSlots));
+        }
+
+        public static int CalculateDisguiseSlotLimit(int baseLimit, int additionalSlots)
+        {
+            return Math.Max(Player.DefaultDisguiseSlotLimit, baseLimit + additionalSlots);
+        }
+
+        /// <summary>
+        /// The delay this player must wait between disguise activations, after perk reductions.
+        /// </summary>
+        public static TimeSpan GetActivationDelay(uint player)
+        {
+            return CalculateActivationDelay(
+                Stat.GetStatAdjustment(player, StatType.DisguiseSwapCooldownReductionPercent));
+        }
+
+        /// <summary>
+        /// Applies a cooldown reduction percent to the base activation delay. The result never drops
+        /// below <see cref="MinimumActivationDelayMinutes"/> so that stacked reduction sources cannot
+        /// remove the delay entirely and let a player cycle identities faster than they can be observed.
+        /// </summary>
+        public static TimeSpan CalculateActivationDelay(int reductionPercent)
+        {
+            var clamped = Math.Clamp(reductionPercent, 0, 100);
+            var minutes = ActivationDelayMinutes * (100 - clamped) / 100f;
+
+            return TimeSpan.FromMinutes(Math.Max(MinimumActivationDelayMinutes, minutes));
         }
 
         public static int CountUsedSlots(string playerId)
@@ -152,7 +184,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var usedSlots = CountUsedSlots(playerId);
-            var slotLimit = GetDisguiseSlotLimit(dbPlayer);
+            var slotLimit = GetDisguiseSlotLimit(player, dbPlayer);
 
             if (usedSlots >= slotLimit)
                 return null;
@@ -239,7 +271,7 @@ namespace SWLOR.Game.Server.Service
                 return ActivateDisguiseResult.Success();
             }
 
-            var delayError = ValidateActivationDelay(playerId);
+            var delayError = ValidateActivationDelay(player, playerId);
             if (!string.IsNullOrWhiteSpace(delayError))
                 return ActivateDisguiseResult.Failure(delayError);
 
@@ -489,17 +521,20 @@ namespace SWLOR.Game.Server.Service
                    dbPlayer.ActiveDisguiseId == disguiseId;
         }
 
-        private static string ValidateActivationDelay(string playerId)
+        private static string ValidateActivationDelay(uint player, string playerId)
         {
             var latestActivation = GetLatestActivationDate(playerId);
             if (!latestActivation.HasValue)
                 return string.Empty;
 
-            var remaining = ActivationDelay - (DateTime.UtcNow - latestActivation.Value);
+            var delay = GetActivationDelay(player);
+            var remaining = delay - (DateTime.UtcNow - latestActivation.Value);
             if (remaining <= TimeSpan.Zero)
                 return string.Empty;
 
-            return $"There is a {ActivationDelayMinutes}-minute delay between disguise activations. You must wait {FormatRemainingDelay(remaining)} before activating another disguise. Deactivation is available immediately.";
+            var delayMinutes = (int)Math.Round(delay.TotalMinutes);
+
+            return $"There is a {delayMinutes}-minute delay between disguise activations. You must wait {FormatRemainingDelay(remaining)} before activating another disguise. Deactivation is available immediately.";
         }
 
         private static DateTime? GetLatestActivationDate(string playerId)

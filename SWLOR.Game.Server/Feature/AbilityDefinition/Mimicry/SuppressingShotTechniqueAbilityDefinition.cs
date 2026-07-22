@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .MimicryTechnique(FeatType.SuppressingShot, 2, 2)
+                .MimicryTechnique(FeatType.SuppressingShot, 1, 2)
                 .HasTargetingLine(
                     Spell.SuppressingShotTechnique,
                     10f,

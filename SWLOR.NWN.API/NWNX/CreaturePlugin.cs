@@ -1910,5 +1910,35 @@ namespace SWLOR.NWN.API.NWNX
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetCasterLevelOverride(creature, (int)classId);
         }
+
+        /// <summary>
+        /// Instantly casts an item spell at an object or location without consuming a spell slot.
+        /// </summary>
+        /// <param name="creature">The caster.</param>
+        /// <param name="target">The target object, or OBJECT_INVALID when targeting a location.</param>
+        /// <param name="targetLocation">The location used when target is OBJECT_INVALID.</param>
+        /// <param name="spell">The spell whose impact data is used.</param>
+        /// <param name="casterLevel">The caster level.</param>
+        /// <param name="projectileTime">Seconds before the projectile reaches its destination.</param>
+        /// <param name="projectilePathType">The projectile flight path.</param>
+        /// <param name="projectileSpell">The spell whose projectile presentation is used.</param>
+        /// <param name="item">The item exposed by GetSpellCastItem(), or OBJECT_INVALID.</param>
+        /// <param name="impactScript">The impact script, or **** to suppress impact processing.</param>
+        public static void DoItemCastSpell(
+            uint creature,
+            uint target,
+            SWLOR.NWN.API.Engine.Location targetLocation,
+            Spell spell,
+            int casterLevel,
+            float projectileTime,
+            ProjectilePathType projectilePathType,
+            Spell projectileSpell,
+            uint item,
+            string impactScript)
+        {
+            global::NWN.Core.NWNX.CreaturePlugin.DoItemCastSpell(
+                creature, target, targetLocation, (int)spell, casterLevel, projectileTime,
+                (int)projectilePathType, (int)projectileSpell, item, impactScript);
+        }
     }
 }

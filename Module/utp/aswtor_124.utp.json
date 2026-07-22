@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 32025
+    "value": 32125
   },
   "AutoRemoveKey": {
     "type": "byte",

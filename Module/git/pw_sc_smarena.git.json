@@ -511,7 +511,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -1167,7 +1167,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 64.27353668212891
+          "value": 64.2735366821289
         },
         "Z": {
           "type": "float",
@@ -2769,7 +2769,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31985
+          "value": 32085
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -2777,7 +2777,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -2996,7 +2996,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31985
+          "value": 32085
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -3004,7 +3004,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -3223,7 +3223,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -3439,7 +3439,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3450,7 +3450,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31918
+          "value": 32018
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -3666,7 +3666,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3677,7 +3677,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -3893,7 +3893,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3904,7 +3904,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -4120,7 +4120,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4131,7 +4131,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31918
+          "value": 32018
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -4347,7 +4347,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4358,7 +4358,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -4585,7 +4585,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -4812,7 +4812,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -5039,7 +5039,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31920
+          "value": 32020
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -5047,7 +5047,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -5255,7 +5255,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5266,7 +5266,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31920
+          "value": 32020
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -5274,7 +5274,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -5482,7 +5482,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5707,7 +5707,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5718,7 +5718,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31910
+          "value": 32010
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -5945,7 +5945,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31910
+          "value": 32010
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -6615,7 +6615,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -6861,7 +6861,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -7067,7 +7067,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -7078,7 +7078,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31920
+          "value": 32020
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -7086,7 +7086,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -7294,7 +7294,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -7305,7 +7305,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -7532,7 +7532,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -7540,7 +7540,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -7748,7 +7748,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -7759,7 +7759,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -7767,7 +7767,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -7975,7 +7975,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -7994,7 +7994,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -8425,7 +8425,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 64.43044281005859
+          "value": 64.4304428100586
         },
         "Z": {
           "type": "float",
@@ -9129,7 +9129,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -9560,7 +9560,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -9579,7 +9579,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -9785,7 +9785,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -9796,7 +9796,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31971
+          "value": 32071
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -10012,7 +10012,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10023,7 +10023,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31971
+          "value": 32071
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -10239,7 +10239,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10250,7 +10250,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -10466,7 +10466,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10477,7 +10477,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -10693,7 +10693,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10704,7 +10704,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -10920,7 +10920,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10931,7 +10931,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31918
+          "value": 32018
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -11147,7 +11147,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -11158,7 +11158,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31985
+          "value": 32085
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -11166,7 +11166,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -11385,7 +11385,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31985
+          "value": 32085
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -11393,7 +11393,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -12278,7 +12278,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 64.13742828369141
+          "value": 64.1374282836914
         },
         "Z": {
           "type": "float",
@@ -12755,7 +12755,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -12980,7 +12980,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -13186,7 +13186,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -13197,7 +13197,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -13205,7 +13205,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -13424,7 +13424,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31920
+          "value": 32020
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -13432,7 +13432,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -13636,11 +13636,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 68.60813140869141
+          "value": 68.6081314086914
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -13651,7 +13651,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -13867,7 +13867,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -13878,7 +13878,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -14094,7 +14094,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -14105,7 +14105,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -14113,7 +14113,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -14332,7 +14332,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31985
+          "value": 32085
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -14340,7 +14340,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -15475,7 +15475,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -15921,7 +15921,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31985
+          "value": 32085
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -15929,7 +15929,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -16148,7 +16148,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -16375,7 +16375,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -16602,7 +16602,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -16829,7 +16829,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -17056,7 +17056,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31916
+          "value": 32016
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -17283,7 +17283,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31962
+          "value": 32062
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -17499,7 +17499,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -17518,7 +17518,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -17724,7 +17724,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -17743,7 +17743,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -17949,7 +17949,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -17968,7 +17968,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.58643182052765e-007
+          "value": 7.58643182052765e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -18174,7 +18174,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -18185,7 +18185,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 31918
+          "value": 32018
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -18401,7 +18401,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {

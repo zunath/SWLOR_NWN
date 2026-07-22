@@ -161,6 +161,21 @@ public class EquipmentRestrictionsTests
         result.Should().Be(expectedSlot);
     }
 
+    [TestCase(BaseItem.Bullet, true, true)]
+    [TestCase(BaseItem.Bullet, false, false)]
+    [TestCase(BaseItem.Arrow, true, false)]
+    public void PistolAmmunitionMigration_ClearsAnOccupiedBulletSlotBeforeEquipping(
+        BaseItem normalizedLegacyAmmoType,
+        bool bulletSlotOccupied,
+        bool expected)
+    {
+        var result = PistolBaseItemCompatibility.ShouldClearBulletSlot(
+            normalizedLegacyAmmoType,
+            bulletSlotOccupied);
+
+        result.Should().Be(expected);
+    }
+
     [Test]
     public void PistolBaseItems_UseOneHandedWieldingAndRightHandOnlySlots()
     {
@@ -218,6 +233,48 @@ public class EquipmentRestrictionsTests
             .GetInt32()
             .Should()
             .Be((int)BaseItem.Bullet);
+    }
+
+    [Test]
+    public void CreatureBlueprints_EquipConvertedPistolAmmunitionInTheBulletSlot()
+    {
+        const int bulletEquipmentStructId = 4096;
+        var root = FindRepositoryRoot();
+        var ammoResrefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "004",
+            "blaster_bullets",
+        };
+        var matches = new List<string>();
+
+        foreach (var path in Directory.EnumerateFiles(
+                     Path.Combine(root.FullName, "Module", "utc"),
+                     "*.utc.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            if (!document.RootElement.TryGetProperty("Equip_ItemList", out var equipList))
+                continue;
+
+            foreach (var entry in equipList.GetProperty("value").EnumerateArray())
+            {
+                var resref = entry
+                    .GetProperty("EquippedRes")
+                    .GetProperty("value")
+                    .GetString();
+                if (resref == null || !ammoResrefs.Contains(resref))
+                    continue;
+
+                matches.Add($"{Path.GetFileName(path)}:{resref}");
+                entry.GetProperty("__struct_id")
+                    .GetInt32()
+                    .Should()
+                    .Be(
+                        bulletEquipmentStructId,
+                        $"{Path.GetFileName(path)} equips converted ammunition {resref}");
+            }
+        }
+
+        matches.Should().NotBeEmpty("converted pistol ammunition is equipped by creature blueprints");
     }
 
     [TestCase("blast_jawa_d.uti.json")]

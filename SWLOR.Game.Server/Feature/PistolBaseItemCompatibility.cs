@@ -59,13 +59,33 @@ namespace SWLOR.Game.Server.Feature
             if (equippedItemChanged)
                 RefreshEquippedItemAppearance(creature);
 
-            if (GetIsObjectValid(equippedLegacyAmmo) &&
-                GetBaseItemType(equippedLegacyAmmo) == BaseItem.Bullet)
+            var normalizedLegacyAmmoType = GetIsObjectValid(equippedLegacyAmmo)
+                ? GetBaseItemType(equippedLegacyAmmo)
+                : BaseItem.Invalid;
+            if (normalizedLegacyAmmoType == BaseItem.Bullet)
             {
+                var equippedBulletAmmo = GetItemInSlot(InventorySlot.Bullets, creature);
+                var clearOccupiedBulletSlot = ShouldClearBulletSlot(
+                    normalizedLegacyAmmoType,
+                    GetIsObjectValid(equippedBulletAmmo));
+
                 AssignCommand(
                     creature,
-                    () => ActionEquipItem(equippedLegacyAmmo, InventorySlot.Bullets));
+                    () =>
+                    {
+                        if (clearOccupiedBulletSlot && GetIsObjectValid(equippedBulletAmmo))
+                            ActionUnequipItem(equippedBulletAmmo);
+
+                        ActionEquipItem(equippedLegacyAmmo, InventorySlot.Bullets);
+                    });
             }
+        }
+
+        public static bool ShouldClearBulletSlot(
+            BaseItem normalizedLegacyAmmoType,
+            bool bulletSlotOccupied)
+        {
+            return normalizedLegacyAmmoType == BaseItem.Bullet && bulletSlotOccupied;
         }
 
         public static BaseItem GetCanonicalBaseItem(BaseItem currentBaseItem, string resref)

@@ -70,7 +70,15 @@ namespace SWLOR.Game.Server
                 return defaultValue;
 
             var normalized = value.Trim().ToLower();
-            return normalized == "true" || normalized == "1" || normalized == "yes";
+            if (normalized == "true" || normalized == "1" || normalized == "yes")
+                return true;
+            if (normalized == "false" || normalized == "0" || normalized == "no")
+                return false;
+
+            // An unrecognized value (e.g. a typo) keeps the setting's declared default rather
+            // than silently flipping it - a mistyped SWLOR_ENGINE_TEST_SHUTDOWN must not leave
+            // a headless test server running forever.
+            return defaultValue;
         }
 
         private static float ParseFloat(string value, float defaultValue)

@@ -7121,6 +7121,20 @@ namespace SWLOR.Game.Server.Service
                 MaximumCriticalRate);
         }
 
+        private static bool? _abilityHitResolutionOverride;
+
+        /// <summary>
+        /// Forces every TryResolveAbilityHit call to the given outcome instead of rolling.
+        /// Intended solely for the in-engine test harness: ability behavior assertions cannot
+        /// be made against a hit roll that legitimately misses up to 5% of the time even at
+        /// capped hit rates. Pass null to restore normal resolution. Always restore in a
+        /// finally block.
+        /// </summary>
+        public static void SetAbilityHitResolutionOverride(bool? forcedOutcome)
+        {
+            _abilityHitResolutionOverride = forcedOutcome;
+        }
+
         public static bool TryResolveAbilityHit(
             uint attacker,
             uint defender,
@@ -7168,7 +7182,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             hitRate = CalculateHitRate(accuracy, evasion, modifier);
-            var isHit = Random.D100(1) <= hitRate;
+            var isHit = _abilityHitResolutionOverride ?? Random.D100(1) <= hitRate;
             if (!isHit && skillType == SkillType.Force)
             {
                 ApplyForceAbilityEvadedEffects(defender);

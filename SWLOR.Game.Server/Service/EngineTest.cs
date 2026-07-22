@@ -93,10 +93,11 @@ namespace SWLOR.Game.Server.Service
 
                     if (_suiteAborted)
                     {
-                        // A timed-out test never settled after cancellation. It may still be
-                        // running against the shared arena, so any further results would be
+                        // Isolation is gone - either a timed-out test never settled after
+                        // cancellation (and may still be running against the shared arena) or
+                        // cleanup failed and left objects behind. Any further results would be
                         // untrustworthy - skip the remainder instead of producing noise.
-                        var abortMessage = $"Suite aborted: '{attribute.Name}' did not stop after cancellation, so this test did not run.";
+                        var abortMessage = $"Suite aborted after '{attribute.Name}' ({result.Message}); this test did not run.";
                         Console.WriteLine($"{ConsolePrefix} ABORT - {abortMessage}");
                         Log.Write(LogGroup.EngineTest, abortMessage, true);
 
@@ -316,7 +317,16 @@ namespace SWLOR.Game.Server.Service
                 }
                 catch (Exception cleanupEx)
                 {
-                    Log.Write(LogGroup.EngineTest, $"[{attribute.Name}] Cleanup failed: {cleanupEx.Message}", true);
+                    // Leftover objects/areas mean isolation is gone: this result can't be
+                    // trusted even if the test itself passed, and neither can later tests.
+                    _suiteAborted = true;
+                    result.Outcome = EngineTestOutcome.Failed;
+                    var cleanupMessage = $"Cleanup failed after the test ran: {cleanupEx.Message}";
+                    result.Message = string.IsNullOrWhiteSpace(result.Message)
+                        ? cleanupMessage
+                        : $"{result.Message} | {cleanupMessage}";
+                    Console.WriteLine($"{ConsolePrefix} WARNING - [{attribute.Name}] {cleanupMessage}");
+                    Log.Write(LogGroup.EngineTest, $"[{attribute.Name}] {cleanupMessage}", true);
                 }
             }
 

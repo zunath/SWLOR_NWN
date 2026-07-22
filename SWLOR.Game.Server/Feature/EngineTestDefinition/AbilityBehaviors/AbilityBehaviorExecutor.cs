@@ -28,29 +28,42 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             var failures = new List<string>();
             var skipped = 0;
 
-            foreach (var behaviorCase in cases)
+            // Ability impacts roll Combat.TryResolveAbilityHit, which legitimately misses up to
+            // 5% of the time even at capped hit rates - across hundreds of cases a sweep would
+            // almost always be red from ordinary misses. Behavior cases assert what an ability
+            // DOES on a hit, so hit resolution is forced for the duration of the sweep and
+            // always restored afterward.
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
             {
-                if (!string.IsNullOrWhiteSpace(behaviorCase.SkipReason))
+                foreach (var behaviorCase in cases)
                 {
-                    skipped++;
-                    ctx.Log($"SKIP {behaviorCase.Feat}: {behaviorCase.SkipReason}");
-                    continue;
-                }
+                    if (!string.IsNullOrWhiteSpace(behaviorCase.SkipReason))
+                    {
+                        skipped++;
+                        ctx.Log($"SKIP {behaviorCase.Feat}: {behaviorCase.SkipReason}");
+                        continue;
+                    }
 
-                try
-                {
-                    await RunCaseAsync(ctx, behaviorCase);
-                }
-                catch (Exception ex)
-                {
-                    var message = ex is EngineTestAssertionException
-                        ? ex.Message
-                        : $"{ex.GetType().Name}: {ex.Message}";
-                    failures.Add($"{behaviorCase.Feat}: {message}");
-                    ctx.Log($"FAILED CASE - {behaviorCase.Feat}: {message}");
-                }
+                    try
+                    {
+                        await RunCaseAsync(ctx, behaviorCase);
+                    }
+                    catch (Exception ex)
+                    {
+                        var message = ex is EngineTestAssertionException
+                            ? ex.Message
+                            : $"{ex.GetType().Name}: {ex.Message}";
+                        failures.Add($"{behaviorCase.Feat}: {message}");
+                        ctx.Log($"FAILED CASE - {behaviorCase.Feat}: {message}");
+                    }
 
-                await NwTask.NextFrame();
+                    await NwTask.NextFrame();
+                }
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
             }
 
             var passed = cases.Count - skipped - failures.Count;
@@ -125,10 +138,15 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
 
                     if (behaviorCase.ExpectsTargetDamage)
                     {
+                        // Requiring the caster as last damager proves the damage came from this
+                        // ability rather than a placed arena creature engaging the hostile
+                        // target. Abilities whose damage arrives via a placeable (traps) may
+                        // need per-case relaxation once validated on a live server.
                         await ctx.WaitUntilAsync(
-                            () => GetCurrentHitPoints(target) < targetHPBefore,
+                            () => GetCurrentHitPoints(target) < targetHPBefore &&
+                                  GetLastDamager(target) == caster,
                             EffectWaitSeconds,
-                            "target hit points to drop after impact");
+                            "this ability's damage (caster as last damager) to lower the target's hit points");
                     }
 
                     // Casted costs apply when activation completes (after the activation delay),

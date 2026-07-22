@@ -94,8 +94,10 @@ All values are read once into `ApplicationSettings` (`SWLOR.Game.Server/Applicat
 | `SWLOR_ENGINE_TEST_ARENA_RESREF` | `EngineTestArenaResref` | `null`/empty (uses the module's starting area's own resref) | Overrides which area resref is instanced as the test arena. Override arenas anchor spawns at the area's geometric center, so pick a small, flat area. |
 | `SWLOR_ENVIRONMENT` | `ServerEnvironment` | `Development` (any unset/unrecognized value) | `"prod"`/`"production"` -> `Production` (engine tests refuse to run); `"test"`/`"testing"` -> `Test`; anything else -> `Development`. |
 
-Booleans accept `true`/`1`/`yes` (case-insensitive) as true, anything else (including unset) as
-false unless noted otherwise above. Floats fall back to their default on a parse failure.
+Booleans accept `true`/`1`/`yes` as true and `false`/`0`/`no` as false (case-insensitive); any
+other value - including unset and typos - keeps the setting's declared default, so a mistyped
+`SWLOR_ENGINE_TEST_SHUTDOWN` can't leave a headless server running forever. Floats fall back to
+their default on a parse failure.
 
 ## How to Write a New Engine Test
 
@@ -218,7 +220,11 @@ damage, FP/Stamina cost, recast). The shared `AbilityBehaviorExecutor` turns eve
 activation through `UsePerkFeat.TryUseAbility`:
 
 - **Casted** abilities assert declared status effects/damage after the activation delay, plus costs
-  and recast.
+  and recast. Damage assertions also require the caster to be the target's last damager, so a
+  placed arena creature engaging the hostile target can't produce a false pass. During the sweep,
+  `Combat.SetAbilityHitResolutionOverride(true)` forces ability hit resolution (restored in a
+  `finally`) - cases assert what an ability does on a hit, and a legitimate 5% miss chance across
+  hundreds of cases would otherwise make every sweep red.
 - **Weapon** (queued-on-hit) abilities assert queue state (`UsePerkFeat.IsWeaponAbilityQueued`),
   costs (applied at queue time), and recast - landing a hit is combat-timing dependent, so on-hit
   impact effects are documented in `Notes` rather than asserted.

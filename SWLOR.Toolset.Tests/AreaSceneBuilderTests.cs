@@ -52,6 +52,77 @@ namespace SWLOR.Toolset.Tests
             return (are, git);
         }
 
+        /// <summary>
+        /// Every tile must occupy exactly its own grid cell, at EVERY orientation.
+        ///
+        /// NWN tile models are origin-centred (geometry spans -TileSize/2..+TileSize/2), so a tile is
+        /// placed by rotating about its own centre and translating that centre to the cell centre.
+        /// A corner-to-centre pre-translation before the rotation instead rotates the tile about a
+        /// corner, which lands rotated tiles a FULL CELL away - overlapping a neighbour and leaving
+        /// their own cell empty (visible as holes in the floor). Orientation 0 merely shifts the whole
+        /// grid by half a tile, so the defect stayed invisible until painting produced rotated tiles
+        /// beside unrotated ones. Asserted through the transform rather than model geometry, so it
+        /// holds regardless of which models resolve.
+        /// </summary>
+        [Test]
+        public void Build_EveryTilePlacement_CoversExactlyItsOwnGridCell()
+        {
+            var index = BuildHakOnlyIndex();
+            var tilesetCatalog = new TilesetCatalog(index);
+            var modelCache = new TileModelCache(index);
+            var workspace = new ModuleWorkspace(ModuleDirectory);
+
+            var orientationsSeen = new HashSet<int>();
+            var offenders = new List<string>();
+            var checkedTiles = 0;
+            const float half = AreaSceneBuilder.TileSize / 2f;
+
+            foreach (var resRef in workspace.EnumerateAreaResRefs().Take(40))
+            {
+                var (are, git, _) = workspace.LoadArea(resRef);
+                var scene = AreaSceneBuilder.Build(are, git, tilesetCatalog, modelCache);
+
+                foreach (var tile in scene.Tiles)
+                {
+                    orientationsSeen.Add(tile.Orientation);
+                    checkedTiles++;
+
+                    // The model's own footprint corners, in model space.
+                    var corners = new[]
+                    {
+                        new Vector3(-half, -half, 0f), new Vector3(half, -half, 0f),
+                        new Vector3(half, half, 0f), new Vector3(-half, half, 0f)
+                    }.Select(c => Vector3.Transform(c, tile.Transform)).ToList();
+
+                    var expectedX0 = tile.Column * AreaSceneBuilder.TileSize;
+                    var expectedY0 = tile.Row * AreaSceneBuilder.TileSize;
+
+                    var minX = corners.Min(c => c.X);
+                    var minY = corners.Min(c => c.Y);
+                    var maxX = corners.Max(c => c.X);
+                    var maxY = corners.Max(c => c.Y);
+
+                    if (Math.Abs(minX - expectedX0) > 0.001f || Math.Abs(minY - expectedY0) > 0.001f ||
+                        Math.Abs(maxX - (expectedX0 + AreaSceneBuilder.TileSize)) > 0.001f ||
+                        Math.Abs(maxY - (expectedY0 + AreaSceneBuilder.TileSize)) > 0.001f)
+                    {
+                        if (offenders.Count < 20)
+                            offenders.Add(
+                                $"{resRef} ({tile.Column},{tile.Row}) orient={tile.Orientation}: " +
+                                $"X=[{minX:F1},{maxX:F1}] Y=[{minY:F1},{maxY:F1}] expected " +
+                                $"X=[{expectedX0:F1},{expectedX0 + AreaSceneBuilder.TileSize:F1}] " +
+                                $"Y=[{expectedY0:F1},{expectedY0 + AreaSceneBuilder.TileSize:F1}]");
+                    }
+                }
+            }
+
+            checkedTiles.Should().BeGreaterThan(500, "the check must exercise a real sample of tiles");
+            orientationsSeen.Should().BeEquivalentTo(new[] { 0, 1, 2, 3 },
+                "all four orientations must be exercised - the bug this guards only shows on rotated tiles");
+            offenders.Should().BeEmpty(
+                "every tile must land on its own cell:\n" + string.Join("\n", offenders));
+        }
+
         [Test]
         public void Build_BankArea_TileCountMatchesWidthTimesHeight()
         {

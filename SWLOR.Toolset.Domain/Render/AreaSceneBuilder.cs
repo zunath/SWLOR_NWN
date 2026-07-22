@@ -122,9 +122,15 @@ namespace SWLOR.Toolset.Domain.Render
                 var centerY = row * TileSize + TileSize / 2f;
                 var heightOffset = tileset != null ? tileHeight * tileset.Transition : 0;
 
+                // NWN tile models are ORIGIN-CENTRED - their geometry spans -TileSize/2..+TileSize/2
+                // on both axes - so a tile is placed by rotating it about its own centre and then
+                // moving that centre to the cell centre. There is deliberately no corner-to-centre
+                // pre-translation: adding one rotates the tile about a corner instead, which lands
+                // rotated tiles a full cell away from where they belong (orientation 0 merely shifts
+                // the whole grid by half a tile, which is why that read as "fine" until painting
+                // started producing rotated tiles next to unrotated ones).
                 var angle = (float)(orientation * (Math.PI / 2.0));
                 var transform =
-                    Matrix4x4.CreateTranslation(-TileSize / 2f, -TileSize / 2f, 0f) *
                     Matrix4x4.CreateRotationZ(angle) *
                     Matrix4x4.CreateTranslation(centerX, centerY, heightOffset);
 

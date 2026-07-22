@@ -924,3 +924,33 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   filter makes it fail with exactly the reported symptom - 8 one-sided `Dock` boundaries, the same
   count found in the user's saved area. (Worth doing, since this is the second rule in this feature
   derived from under-weighed evidence.)
+## Tile placement transform — 2026-07-21 — Rotated tiles landed a full cell away (paint gate feedback)
+- Reported: holes remained in the floor after painting, even with the crosser fix in.
+- The saved .are was clean this time - only proper Cobble/Water tiles, no dock tiles - so the fault
+  was downstream of painting. Probed the built scene instead: every model resolved (0 fallbacks) and
+  every tile had full XY coverage, so nothing was missing. Transforming each tile's geometry into
+  world space found the real problem:
+
+      orientation 0 -> offset (-5,-5)     orientation 2 -> offset (+5,+5)
+      orientation 1 -> offset (+5,-5)     orientation 3 -> offset (-5,+5)
+
+  A rotated tile lands a FULL CELL from where it belongs - overlapping a neighbour and leaving its
+  own cell empty. Those empty cells are the holes.
+- Root cause in `AreaSceneBuilder.BuildTiles`, present since WP4.5: the transform pre-translated by
+  (-TileSize/2, -TileSize/2) before rotating. That is only correct if tile models have their origin
+  at a corner. NWN tile models are ORIGIN-CENTRED (measured: geometry spans -5..+5 on both axes), so
+  the pre-translation rotates each tile about a corner instead of its centre. Fixed by rotating about
+  the centre and translating straight to the cell centre.
+- **Why it hid for three phases:** at orientation 0 the error degenerates to a uniform (-5,-5) shift
+  of the entire grid, which still tiles seamlessly and looks perfectly fine. It only becomes visible
+  when rotated tiles sit beside unrotated ones - which is exactly what terrain painting produces, and
+  why an area that renders "correctly" for months can still be wrong. It affected every area view,
+  not just painted ones: with the old transform, `anchor_entreenor` tiles (0,0) and (1,0) both land
+  at X=[5,15] Y=[5,15], directly on top of each other.
+- It also silently corrupted every world-space consumer of the transform - walkmesh ground raycast,
+  instance placement snapping, and click-to-paint cell mapping - all of which were resolving against
+  tiles drawn up to a full cell from where the grid math believed they were.
+- Test: `Build_EveryTilePlacement_CoversExactlyItsOwnGridCell` transforms each tile's footprint
+  corners and requires them to match the cell exactly, over 40 corpus areas; it asserts all four
+  orientations are exercised so it cannot pass vacuously. Verified to have teeth - restoring the old
+  transform makes it fail immediately on real corpus areas.

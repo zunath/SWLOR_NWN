@@ -23,6 +23,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 "blast_jawa_d",
                 "dualpistolmain",
+                "extjawa004_wp",
+                "jawa_wp",
+                "jawaaddit_wp",
             };
 
         [NWNEventHandler(ScriptName.OnModuleAcquire)]

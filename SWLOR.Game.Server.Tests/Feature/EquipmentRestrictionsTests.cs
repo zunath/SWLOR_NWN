@@ -129,6 +129,9 @@ public class EquipmentRestrictionsTests
     [TestCase(BaseItem.Bullet, "blaster_bullets", BaseItem.Bullet)]
     [TestCase(BaseItem.Sling, "blast_jawa_d", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.Sling, "dualpistolmain", BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.Sling, "extjawa004_wp", BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.Sling, "jawa_wp", BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.Sling, "jawaaddit_wp", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.LegacyPistol, "blast_jawa_d", BaseItem.LegacyPistol)]
     public void PistolBaseItems_AreCanonicalizedWithoutShieldDependentSwaps(
         BaseItem currentBaseItem,
@@ -214,6 +217,25 @@ public class EquipmentRestrictionsTests
             .GetInt32()
             .Should()
             .Be((int)BaseItem.Bullet);
+    }
+
+    [TestCase("blast_jawa_d.uti.json")]
+    [TestCase("dualpistolmain.uti.json")]
+    [TestCase("extjawa004_wp.uti.json")]
+    [TestCase("jawa_wp.uti.json")]
+    [TestCase("jawaaddit_wp.uti.json")]
+    public void LegacySmallArmsBlueprints_UseTheLegacyBaseItem(string fileName)
+    {
+        var root = FindRepositoryRoot();
+        var path = Path.Combine(root.FullName, "Module", "uti", fileName);
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+
+        document.RootElement
+            .GetProperty("BaseItem")
+            .GetProperty("value")
+            .GetInt32()
+            .Should()
+            .Be((int)BaseItem.LegacyPistol);
     }
 
     private static Dictionary<int, Dictionary<string, string>> Read2daRows(string path)

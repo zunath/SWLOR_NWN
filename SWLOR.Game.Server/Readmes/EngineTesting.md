@@ -208,7 +208,41 @@ public static class AbilityActivationEngineTests
 }
 ```
 
-New tests belong in `SWLOR.Game.Server/Feature/EngineTestDefinition/`, one file per suite,
+### The ability behavior coverage program
+
+Beyond hand-written suites, per-ability coverage is data-driven. Each ability tree has an
+`IAbilityBehaviorSource` in `Feature/EngineTestDefinition/AbilityBehaviors/` declaring one
+`AbilityBehaviorCase` per registered `FeatType`: who the ability targets, what weapon (if any) must
+be equipped, and which observable outcomes to assert (status effects on activator/target, target
+damage, FP/Stamina cost, recast). The shared `AbilityBehaviorExecutor` turns every case into a live
+activation through `UsePerkFeat.TryUseAbility`:
+
+- **Casted** abilities assert declared status effects/damage after the activation delay, plus costs
+  and recast.
+- **Weapon** (queued-on-hit) abilities assert queue state (`UsePerkFeat.IsWeaponAbilityQueued`),
+  costs (applied at queue time), and recast - landing a hit is combat-timing dependent, so on-hit
+  impact effects are documented in `Notes` rather than asserted.
+- **Stance** abilities assert their stance status effect on the activator.
+
+Coverage is enforced by an NUnit ratchet (`SWLOR.Game.Server.Tests/Feature/AbilityBehaviorCoverageTests.cs`):
+every feat registered by an `IAbilityListDefinition` must have exactly one behavior case unless its
+tree is on the ratchet's explicit not-yet-covered list. **Adding a new ability without adding a
+behavior case fails the unit test suite.** Cases that genuinely can't run in-engine yet carry a
+`SkipReason` (they count as declared, execute as skipped, and should be burned down over time).
+
+Batch status:
+
+| Batch | Trees | Status |
+|---|---|---|
+| 1 | Force, FirstAid, Leadership, Espionage, Armor, CombatAnalyzer, top-level, Vibroblade, HeavyVibroblade, TwinBlade, Vibroknife, Katar, Spear, Staff, Lightsaber, Saberstaff, Rifle, Pistol, Throwing, Devices | Cases declared (pending first live-server run) |
+| 2 | NPC, Mimicry, Beastmaster | Not started - exempted in the ratchet's not-yet-covered list |
+
+To cover a new ability: add one `AbilityBehaviorCase` to its tree's `*AbilityBehaviors.cs` (create
+the source class for a brand-new tree and remove the tree from the ratchet's exemption list). Run
+the behavior tests alone with `SWLOR_ENGINE_TEST_FILTER=AbilityBehavior` - the full behavior sweep
+is minutes long and intended for nightly/CI rather than every local iteration.
+
+New hand-written tests belong in `SWLOR.Game.Server/Feature/EngineTestDefinition/`, one file per suite,
 following the same shape: `SpawnCreature`, drive the real system under test, assert on the real
 resulting state via `WaitUntilAsync` where a delay or tick is involved. The current suites (see
 that directory) also cover harness sanity (`HarnessSanityEngineTests`), ability registration

@@ -40,15 +40,18 @@ namespace SWLOR.Toolset.Domain.Render
             instance.Model != null && (showPlaceableModels || instance.Kind != InstanceMarkerKind.Placeable);
 
         /// <summary>
-        /// The local-to-world transform for one instance marker's position/heading: rotate about Z
-        /// by the (cos, sin) heading, then translate to the instance's position. Mirrors
+        /// The local-to-world transform for one instance marker: apply its optional visual
+        /// scale/rotation/translation, rotate about Z by the (cos, sin) heading, then translate to
+        /// the instance's position. Mirrors
         /// GlAreaControl.DrawInstanceMarkers' instanceTransform exactly (both passes there use this
         /// same formula) so picking always matches what is drawn.
         /// </summary>
         public static Matrix4x4 ComputeInstanceTransform(InstanceMarker instance)
         {
             var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
-            return Matrix4x4.CreateRotationZ(heading) * Matrix4x4.CreateTranslation(instance.Position);
+            return instance.VisualTransform *
+                   Matrix4x4.CreateRotationZ(heading) *
+                   Matrix4x4.CreateTranslation(instance.Position);
         }
 
         /// <summary>
@@ -94,12 +97,12 @@ namespace SWLOR.Toolset.Domain.Render
         public static float? PickInstance(PickRay ray, InstanceMarker instance, bool drawsAsModel) =>
             drawsAsModel ? PickModelInstance(ray, instance) : PickMarkerInstance(ray, instance);
 
-        /// <summary>World-space AABB of one instance's marker pyramid (independent of heading - an axis-aligned box around the pyramid's square base/apex is sufficient for hit-testing, per the WP5.1 brief).</summary>
+        /// <summary>World-space AABB of one instance's transformed marker pyramid.</summary>
         public static (Vector3 Min, Vector3 Max) ComputeMarkerWorldBounds(InstanceMarker instance)
         {
-            var min = instance.Position + new Vector3(-MarkerHalfWidth, -MarkerHalfWidth, MarkerGroundOffset);
-            var max = instance.Position + new Vector3(MarkerHalfWidth, MarkerHalfWidth, MarkerGroundOffset + MarkerHeight);
-            return (min, max);
+            var min = new Vector3(-MarkerHalfWidth, -MarkerHalfWidth, MarkerGroundOffset);
+            var max = new Vector3(MarkerHalfWidth, MarkerHalfWidth, MarkerGroundOffset + MarkerHeight);
+            return TransformAabb(min, max, ComputeInstanceTransform(instance));
         }
 
         /// <summary>Merged world-space AABB across every mesh of an instance's resolved model, or null when it has none.</summary>

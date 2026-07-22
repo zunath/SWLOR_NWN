@@ -14,13 +14,15 @@ namespace SWLOR.Toolset.Tests
     public class AreaPickingTests
     {
         private static InstanceMarker MakeMarkerInstance(
-            InstanceMarkerKind kind, Vector3 position, string tag, RenderModel? model = null) => new()
+            InstanceMarkerKind kind, Vector3 position, string tag, RenderModel? model = null,
+            Matrix4x4? visualTransform = null) => new()
         {
             Kind = kind,
             TemplateResRef = tag,
             Tag = tag,
             Position = position,
             Orientation = new Vector2(1f, 0f),
+            VisualTransform = visualTransform ?? Matrix4x4.Identity,
             Model = model
         };
 
@@ -246,6 +248,28 @@ namespace SWLOR.Toolset.Tests
             bounds.Should().NotBeNull();
             bounds!.Value.Min.X.Should().BeApproximately(95f, 0.0001f);
             bounds.Value.Max.X.Should().BeApproximately(105f, 0.0001f);
+        }
+
+        [Test]
+        public void VisualTransform_AffectsModelBoundsAndPicking()
+        {
+            var visual = Matrix4x4.CreateScale(0.5f) * Matrix4x4.CreateTranslation(10f, 0f, 4f);
+            var instance = MakeMarkerInstance(
+                InstanceMarkerKind.Placeable,
+                new Vector3(100f, 0f, 0f),
+                "transformed",
+                MakeRightTriangleModel(),
+                visual);
+
+            var bounds = AreaPicking.ComputeModelWorldBounds(instance);
+            var hit = AreaPicking.PickInstance(
+                DownwardRayAt(111f, 1f), instance, drawsAsModel: true);
+
+            bounds.Should().NotBeNull();
+            bounds!.Value.Min.X.Should().BeApproximately(110f, 0.0001f);
+            bounds.Value.Max.X.Should().BeApproximately(115f, 0.0001f);
+            bounds.Value.Min.Z.Should().BeApproximately(4f, 0.0001f);
+            hit.Should().NotBeNull("picking must use the same visual transform as rendering");
         }
 
         [Test]

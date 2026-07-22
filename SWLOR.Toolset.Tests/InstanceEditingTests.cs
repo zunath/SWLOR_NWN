@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
@@ -121,6 +122,57 @@ namespace SWLOR.Toolset.Tests
             xPosition.Type.Should().Be(GffFieldType.Float);
             xPosition.GetSingle().Should().Be(12.5f);
             Encoding.ASCII.GetString(xPosition.RawValue!).Should().Be("12.5");
+        }
+
+        [Test]
+        public void CreateInstance_Trigger_GetsUsableDefaultSquareGeometry()
+        {
+            var blueprintPath = Directory.EnumerateFiles(
+                Path.Combine(CorpusLocator.ModuleDirectory, "utt"), "*.utt.json").First();
+            var blueprint = JsonGffDocument.Parse(File.ReadAllBytes(blueprintPath));
+
+            var instance = InstanceFieldMap.CreateInstance(ResourceType.Utt, blueprint, 10, 20, 3);
+            var geometry = instance.Get("Geometry");
+
+            geometry.Type.Should().Be(GffFieldType.List);
+            geometry.Elements.Should().HaveCount(4, "a trigger needs a polygon to receive events");
+            geometry.Elements!.Select(point => point.Get("PointX").GetSingle())
+                .Should().Equal(-1f, 1f, 1f, -1f);
+            geometry.Elements.Select(point => point.Get("PointY").GetSingle())
+                .Should().Equal(-1f, -1f, 1f, 1f);
+            geometry.Elements.Should().OnlyContain(point =>
+                Encoding.ASCII.GetString(point.RawStructId!) == "3" &&
+                Math.Abs(point.Get("PointZ").GetSingle() - 0.025f) < 0.0001f);
+        }
+
+        [Test]
+        public void GetVisualTransform_ReadsScaleDegreeRotationAndTranslation()
+        {
+            var instance = new JsonGffStruct();
+            var visual = JsonGffField.CreateStruct(6);
+            var visualStruct = visual.Struct!;
+            AddSingle(visualStruct, "ScaleX", 2f);
+            AddSingle(visualStruct, "ScaleY", 2f);
+            AddSingle(visualStruct, "ScaleZ", 2f);
+            AddSingle(visualStruct, "RotateZ", 90f);
+            AddSingle(visualStruct, "TranslateX", 3f);
+            AddSingle(visualStruct, "TranslateY", 4f);
+            AddSingle(visualStruct, "TranslateZ", 5f);
+            instance.Add("VisualTransform", visual);
+
+            var transformed = Vector3.Transform(new Vector3(1f, 0f, 0f),
+                InstanceFieldMap.GetVisualTransform(instance));
+
+            transformed.X.Should().BeApproximately(3f, 0.0001f);
+            transformed.Y.Should().BeApproximately(6f, 0.0001f);
+            transformed.Z.Should().BeApproximately(5f, 0.0001f);
+        }
+
+        private static void AddSingle(JsonGffStruct target, string name, float value)
+        {
+            var field = JsonGffField.CreateScalar(GffFieldType.Float, Array.Empty<byte>());
+            field.SetSingle(value);
+            target.Add(name, field);
         }
 
         /// <summary>

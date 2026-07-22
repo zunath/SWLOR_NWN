@@ -14,7 +14,7 @@
       <Button Content="Save All" Command="{Binding SaveAllCommand}" />
       <Button Content="Pack Module" Command="{Binding PackModuleCommand}" />
     </StackPanel>
-    <DockControl Grid.Row="1" Layout="{Binding Layout}" Margin="4" />
+    <DockControl Grid.Row="1" Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsPacking}" />
     <Border Grid.Row="2"
             Padding="8,4"
             Background="{DynamicResource DockThemeBackgroundLowBrush}"

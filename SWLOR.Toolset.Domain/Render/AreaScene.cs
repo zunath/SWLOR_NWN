@@ -101,6 +101,13 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>Heading as a (cos, sin) unit vector - XOrientation/YOrientation, or Bearing converted for placeables/doors. (1,0) when the instance carries no heading (ambient sounds, encounters).</summary>
         public required Vector2 Orientation { get; init; }
 
+        /// <summary>
+        /// Optional enhanced-edition model transform (scale, Euler rotation, translation) in
+        /// instance-local space. Composed before <see cref="Orientation"/> and
+        /// <see cref="Position"/> for rendering and picking.
+        /// </summary>
+        public Matrix4x4 VisualTransform { get; init; } = Matrix4x4.Identity;
+
         /// <summary>Polygon points (world-space) for trigger/encounter volumes; null for every other kind or when absent.</summary>
         public IReadOnlyList<Vector3>? Geometry { get; init; }
 

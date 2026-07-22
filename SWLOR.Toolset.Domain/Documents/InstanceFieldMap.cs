@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
@@ -20,8 +21,8 @@ namespace SWLOR.Toolset.Domain.Documents
     /// never carries - are added with the given placement. Creatures/waypoints/stores/triggers
     /// use XPosition/YPosition/ZPosition plus an XOrientation/YOrientation heading vector (with
     /// triggers also carrying a ZOrientation, always 0 in the corpus, and an instance-only
-    /// "Geometry" point list, defaulted empty since authoring a trigger volume is out of scope
-    /// here); placeables/doors use X/Y/Z plus a single "Bearing" angle (radians,
+    /// "Geometry" point list, initialized to a usable 2m square around the placement);
+    /// placeables/doors use X/Y/Z plus a single "Bearing" angle (radians,
     /// atan2(yOrientation, xOrientation), matching the corpus range of -pi..pi); ambient sounds
     /// use XPosition/YPosition/ZPosition plus an instance-only "GeneratedType" dword (always 0 in
     /// the corpus).</item>
@@ -154,6 +155,38 @@ namespace SWLOR.Toolset.Domain.Documents
             }
         }
 
+        /// <summary>
+        /// Reads an instance's optional enhanced-edition VisualTransform. Rotations are stored in
+        /// degrees; missing scale components mean 1 while missing rotation/translation components
+        /// mean 0. The returned matrix is local to the instance and must be composed before its
+        /// heading and world-position transforms.
+        /// </summary>
+        public static Matrix4x4 GetVisualTransform(JsonGffStruct instance)
+        {
+            if (instance.GetOrNull("VisualTransform")?.Struct is not { } transform)
+                return Matrix4x4.Identity;
+
+            const float degreesToRadians = MathF.PI / 180f;
+            var scale = new Vector3(
+                transform.GetSingleOrNull("ScaleX") ?? 1f,
+                transform.GetSingleOrNull("ScaleY") ?? 1f,
+                transform.GetSingleOrNull("ScaleZ") ?? 1f);
+            var rotation = new Vector3(
+                (transform.GetSingleOrNull("RotateX") ?? 0f) * degreesToRadians,
+                (transform.GetSingleOrNull("RotateY") ?? 0f) * degreesToRadians,
+                (transform.GetSingleOrNull("RotateZ") ?? 0f) * degreesToRadians);
+            var translation = new Vector3(
+                transform.GetSingleOrNull("TranslateX") ?? 0f,
+                transform.GetSingleOrNull("TranslateY") ?? 0f,
+                transform.GetSingleOrNull("TranslateZ") ?? 0f);
+
+            return Matrix4x4.CreateScale(scale) *
+                   Matrix4x4.CreateRotationX(rotation.X) *
+                   Matrix4x4.CreateRotationY(rotation.Y) *
+                   Matrix4x4.CreateRotationZ(rotation.Z) *
+                   Matrix4x4.CreateTranslation(translation);
+        }
+
         private static (string X, string Y, string Z) PositionFieldNames(ResourceType type)
         {
             return type switch
@@ -232,7 +265,7 @@ namespace SWLOR.Toolset.Domain.Documents
                     instance.SetSingle("YOrientation", (float)yOrientation);
                     instance.SetSingle("ZOrientation", 0f);
                     if (!instance.Contains("Geometry"))
-                        instance.Add("Geometry", JsonGffField.CreateList());
+                        instance.Add("Geometry", CreateDefaultTriggerGeometry());
                     break;
 
                 case ResourceType.Utd:
@@ -243,6 +276,21 @@ namespace SWLOR.Toolset.Domain.Documents
                     instance.SetSingle("Bearing", (float)Math.Atan2(yOrientation, xOrientation));
                     break;
             }
+        }
+
+        private static JsonGffField CreateDefaultTriggerGeometry()
+        {
+            var geometry = JsonGffField.CreateList();
+            foreach (var (x, y) in new[] { (-1f, -1f), (1f, -1f), (1f, 1f), (-1f, 1f) })
+            {
+                var point = JsonGffField.CreateStruct(3).Struct!;
+                point.SetSingle("PointX", x);
+                point.SetSingle("PointY", y);
+                point.SetSingle("PointZ", 0.025f);
+                geometry.InsertElement(geometry.Elements!.Count, point);
+            }
+
+            return geometry;
         }
 
         /// <summary>Deep-clones a field (recursively for struct/list children) so the new

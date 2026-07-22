@@ -31,6 +31,9 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private string _statusText = "Starting...";
 
+        [ObservableProperty]
+        private bool _isPacking;
+
         private readonly Editors.EditorService _editorService;
         private readonly PackService _packService;
 
@@ -61,7 +64,7 @@ namespace SWLOR.Toolset.Shell
                 factory.InitLayout(Layout);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
         private async Task SaveAll()
         {
             var saved = await _editorService.SaveAllAsync().ConfigureAwait(true);
@@ -69,9 +72,18 @@ namespace SWLOR.Toolset.Shell
         }
 
         /// <summary>Returns true when the main window may close after handling unsaved editors.</summary>
-        public Task<bool> TryCloseAsync() => _editorService.TryPrepareApplicationCloseAsync();
+        public Task<bool> TryCloseAsync()
+        {
+            if (IsPacking)
+            {
+                StatusText = "Wait for the module pack to finish before closing.";
+                return Task.FromResult(false);
+            }
 
-        [RelayCommand]
+            return _editorService.TryPrepareApplicationCloseAsync();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
         private async Task PackModuleAsync()
         {
             var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
@@ -81,16 +93,32 @@ namespace SWLOR.Toolset.Shell
                 return;
             }
 
-            if (!await _editorService.SaveAllAsync().ConfigureAwait(true))
+            IsPacking = true;
+            try
             {
-                StatusText = "Pack cancelled because an open editor could not be saved.";
-                _log.AppendLine("Pack aborted: one or more open editors were not saved.");
-                return;
-            }
+                if (!await _editorService.SaveAllAsync().ConfigureAwait(true))
+                {
+                    StatusText = "Pack cancelled because an open editor could not be saved.";
+                    _log.AppendLine("Pack aborted: one or more open editors were not saved.");
+                    return;
+                }
 
-            StatusText = "Packing module...";
-            var exitCode = await _packService.PackAsync(moduleRoot).ConfigureAwait(true);
-            StatusText = exitCode == 0 ? "Pack completed." : $"Pack failed (exit code {exitCode}) — see Output.";
+                StatusText = "Packing module...";
+                var exitCode = await _packService.PackAsync(moduleRoot).ConfigureAwait(true);
+                StatusText = exitCode == 0 ? "Pack completed." : $"Pack failed (exit code {exitCode}) — see Output.";
+            }
+            finally
+            {
+                IsPacking = false;
+            }
+        }
+
+        private bool CanMutateModule() => !IsPacking;
+
+        partial void OnIsPackingChanged(bool value)
+        {
+            SaveAllCommand.NotifyCanExecuteChanged();
+            PackModuleCommand.NotifyCanExecuteChanged();
         }
 
         /// <summary>

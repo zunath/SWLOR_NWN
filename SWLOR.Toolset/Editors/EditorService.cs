@@ -1,3 +1,4 @@
+using Avalonia.Threading;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Gff;
@@ -35,6 +36,7 @@ namespace SWLOR.Toolset.Editors
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<BlueprintEditorViewModel, DispatcherTimer> _previewTimers = new();
 
         public EditorService(
             WorkspaceContext workspaceContext,
@@ -106,9 +108,14 @@ namespace SWLOR.Toolset.Editors
 
                 var editor = new BlueprintEditorViewModel(
                     filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts);
-                editor.Closed += _ => _openEditors.Remove(filePath);
+                editor.Closed += closedEditor =>
+                {
+                    _openEditors.Remove(filePath);
+                    if (_previewTimers.Remove(closedEditor, out var timer))
+                        timer.Stop();
+                };
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
-                editor.DocumentChanged += () => PreviewEditorModel(editor);
+                editor.DocumentChanged += () => SchedulePreviewEditorModel(editor);
                 _openEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
                 PreviewEditorModel(editor);
@@ -253,6 +260,31 @@ namespace SWLOR.Toolset.Editors
         private void PreviewEditorModel(BlueprintEditorViewModel editor)
         {
             _modelPreview?.ShowForDocument(editor.BlueprintType, editor.DocumentRoot, editor.Title);
+        }
+
+        /// <summary>
+        /// Coalesces rapid TwoWay-bound field edits (especially text keystrokes) into one model
+        /// rebuild after the user pauses. Non-previewable blueprint types do not need live refreshes.
+        /// </summary>
+        private void SchedulePreviewEditorModel(BlueprintEditorViewModel editor)
+        {
+            if (editor.BlueprintType is not (ResourceType.Utc or ResourceType.Utp or ResourceType.Utd))
+                return;
+
+            if (!_previewTimers.TryGetValue(editor, out var timer))
+            {
+                timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+                timer.Tick += (_, _) =>
+                {
+                    timer.Stop();
+                    if (_openEditors.ContainsValue(editor))
+                        PreviewEditorModel(editor);
+                };
+                _previewTimers[editor] = timer;
+            }
+
+            timer.Stop();
+            timer.Start();
         }
 
         private static EditorSchema? GetSchema(ResourceType type)

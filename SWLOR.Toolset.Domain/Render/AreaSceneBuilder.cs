@@ -255,6 +255,7 @@ namespace SWLOR.Toolset.Domain.Render
                     Tag = tag,
                     Position = position,
                     Orientation = new Vector2(xo, yo),
+                    VisualTransform = InstanceFieldMap.GetVisualTransform(instance),
                     Geometry = geometry,
                     Model = resolveModel?.Invoke(instance)
                 });

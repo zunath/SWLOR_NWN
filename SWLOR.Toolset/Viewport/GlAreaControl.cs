@@ -656,6 +656,7 @@ void main()
             Tag = source.Tag,
             Position = position,
             Orientation = orientation,
+            VisualTransform = source.VisualTransform,
             Geometry = source.Geometry,
             Model = source.Model
         };
@@ -1299,9 +1300,7 @@ void main()
                     continue;
 
                 var instance = Displayed(raw);
-                var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
-                var instanceTransform =
-                    Matrix4x4.CreateRotationZ(heading) * Matrix4x4.CreateTranslation(instance.Position);
+                var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
 
                 var buffer = GetOrBuildModelBuffer(raw.Model!);
                 _gl!.BindVertexArray(buffer.Vao);
@@ -1336,8 +1335,7 @@ void main()
                     continue;
 
                 var instance = Displayed(raw);
-                var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
-                var model = Matrix4x4.CreateRotationZ(heading) * Matrix4x4.CreateTranslation(instance.Position);
+                var model = AreaPicking.ComputeInstanceTransform(instance);
 
                 SetUniformMatrix4("model", model);
                 SetUniformVec3("flatColor", MarkerColor(instance.Kind));

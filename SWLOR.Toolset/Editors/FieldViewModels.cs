@@ -71,8 +71,12 @@ namespace SWLOR.Toolset.Editors
 
         partial void OnTextChanged(string value)
         {
-            Context.RunEdit($"Change {Label}",
-                () => SchemaFieldAccessor.SetText(Context.Document, Descriptor, value));
+            if (Context.IsRefreshing)
+                return;
+
+            if (!Context.RunEdit($"Change {Label}",
+                    () => SchemaFieldAccessor.SetText(Context.Document, Descriptor, value)))
+                RefreshFromDocument();
         }
     }
 
@@ -96,8 +100,12 @@ namespace SWLOR.Toolset.Editors
 
         partial void OnValueChanged(long value)
         {
-            Context.RunEdit($"Change {Label}",
-                () => SchemaFieldAccessor.SetInteger(Context.Document, Descriptor, value));
+            if (Context.IsRefreshing)
+                return;
+
+            if (!Context.RunEdit($"Change {Label}",
+                    () => SchemaFieldAccessor.SetInteger(Context.Document, Descriptor, value)))
+                RefreshFromDocument();
         }
     }
 
@@ -121,8 +129,12 @@ namespace SWLOR.Toolset.Editors
 
         partial void OnValueChanged(double value)
         {
-            Context.RunEdit($"Change {Label}",
-                () => SchemaFieldAccessor.SetFloat(Context.Document, Descriptor, value));
+            if (Context.IsRefreshing)
+                return;
+
+            if (!Context.RunEdit($"Change {Label}",
+                    () => SchemaFieldAccessor.SetFloat(Context.Document, Descriptor, value)))
+                RefreshFromDocument();
         }
     }
 
@@ -146,8 +158,12 @@ namespace SWLOR.Toolset.Editors
 
         partial void OnIsCheckedChanged(bool value)
         {
-            Context.RunEdit($"Toggle {Label}",
-                () => SchemaFieldAccessor.SetBool(Context.Document, Descriptor, value));
+            if (Context.IsRefreshing)
+                return;
+
+            if (!Context.RunEdit($"Toggle {Label}",
+                    () => SchemaFieldAccessor.SetBool(Context.Document, Descriptor, value)))
+                RefreshFromDocument();
         }
     }
 
@@ -177,8 +193,12 @@ namespace SWLOR.Toolset.Editors
 
         partial void OnTextChanged(string value)
         {
-            Context.RunEdit($"Change {Label}",
-                () => SchemaFieldAccessor.SetText(Context.Document, Descriptor, value));
+            if (Context.IsRefreshing)
+                return;
+
+            if (!Context.RunEdit($"Change {Label}",
+                    () => SchemaFieldAccessor.SetText(Context.Document, Descriptor, value)))
+                RefreshFromDocument();
         }
     }
 
@@ -212,20 +232,22 @@ namespace SWLOR.Toolset.Editors
 
         partial void OnSelectedOptionChanged(LookupOption? value)
         {
-            if (value == null)
+            if (Context.IsRefreshing || value == null)
                 return;
 
-            Context.RunEdit($"Change {Label}",
-                () => SchemaFieldAccessor.SetInteger(Context.Document, Descriptor, value.Id));
+            if (!Context.RunEdit($"Change {Label}",
+                    () => SchemaFieldAccessor.SetInteger(Context.Document, Descriptor, value.Id)))
+                RefreshFromDocument();
         }
 
         partial void OnRawValueChanged(long value)
         {
-            if (HasOptions)
+            if (Context.IsRefreshing || HasOptions)
                 return;
 
-            Context.RunEdit($"Change {Label}",
-                () => SchemaFieldAccessor.SetInteger(Context.Document, Descriptor, value));
+            if (!Context.RunEdit($"Change {Label}",
+                    () => SchemaFieldAccessor.SetInteger(Context.Document, Descriptor, value)))
+                RefreshFromDocument();
         }
     }
 

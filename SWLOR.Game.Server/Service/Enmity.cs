@@ -455,18 +455,26 @@ namespace SWLOR.Game.Server.Service
         /// someone outside that pair. Pair-specific checks use this to distinguish an expected
         /// aggro transition from unrelated combat.
         /// </summary>
-        public static bool HasNonProximityEnmityOutsidePair(uint creature, uint enemy)
+        public static bool HasNonProximityEnmityOutsidePair(uint first, uint second)
         {
-            var creatureHasOtherCombat =
-                _creatureToEnemies.TryGetValue(creature, out var enemies) &&
-                enemies.Any(otherEnemy =>
-                    otherEnemy != enemy && HasNonProximityEnmity(creature, otherEnemy));
-            var enemyHasOtherCombat =
-                _enemyEnmityTables.TryGetValue(enemy, out var table) &&
-                table.Keys.Any(otherCreature =>
-                    otherCreature != creature && HasNonProximityEnmity(otherCreature, enemy));
+            return HasNonProximityEnmityAsCreatureOutsidePair(first, second) ||
+                   HasNonProximityEnmityAsEnemyOutsidePair(first, second) ||
+                   HasNonProximityEnmityAsCreatureOutsidePair(second, first) ||
+                   HasNonProximityEnmityAsEnemyOutsidePair(second, first);
+        }
 
-            return creatureHasOtherCombat || enemyHasOtherCombat;
+        private static bool HasNonProximityEnmityAsCreatureOutsidePair(uint creature, uint pairedEnemy)
+        {
+            return _creatureToEnemies.TryGetValue(creature, out var enemies) &&
+                   enemies.Any(enemy =>
+                       enemy != pairedEnemy && HasNonProximityEnmity(creature, enemy));
+        }
+
+        private static bool HasNonProximityEnmityAsEnemyOutsidePair(uint enemy, uint pairedCreature)
+        {
+            return _enemyEnmityTables.TryGetValue(enemy, out var table) &&
+                   table.Keys.Any(creature =>
+                       creature != pairedCreature && HasNonProximityEnmity(creature, enemy));
         }
 
         /// <summary>

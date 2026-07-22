@@ -262,6 +262,17 @@ public class EnmityTests
         };
 
         Enmity.HasNonProximityEnmityOutsidePair(player, npc).Should().BeTrue();
+
+        EnemyEnmityTables()[npc].Remove(otherPlayer);
+        ProximityEnmityAmounts().Remove(npc);
+        CreatureToEnemies()[npc] = new List<uint> { otherNpc };
+        EnemyEnmityTables()[otherNpc][npc] = 1;
+        ProximityEnmityAmounts()[otherNpc][npc] = 1;
+
+        Enmity.HasNonProximityEnmityOutsidePair(player, npc).Should().BeFalse();
+
+        EnemyEnmityTables()[otherNpc][npc] = 2;
+        Enmity.HasNonProximityEnmityOutsidePair(player, npc).Should().BeTrue();
     }
 
     [Test]

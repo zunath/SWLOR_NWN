@@ -900,3 +900,27 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   (`FindSolidTile(tcn01, "Cobble")` must return a PathNode `A` tile and specifically not id 0).
 - Not a bug: the Lower tool clamps at height 0, so clicking Lower on a fresh area does nothing.
   NWN tile heights are non-negative; Lower only undoes a previous Raise.
+## Crosser symmetry — 2026-07-21 — Painting left half-built docks (paint gate feedback)
+- Reported: with the fill now correct, painting Water into a `tcn01` cobble plaza left "holes" -
+  piers jutting into open water with nothing on the far side.
+- Checked the saved .are against the painter's own rules first: **0 corner mismatches**, so terrain
+  placement was correct. But all 8 crosser boundaries were ONE-SIDED - `('Dock','')` or `('','Dock')`,
+  never `('Dock','Dock')`. A crosser is a structure that SPANS a boundary, so one tile rendered half
+  a dock and its neighbour rendered plain water: the visible hole.
+- **This was a bad rule I introduced in WP7.1.** `EdgeCrossersMatch` is blank-tolerant ("match only
+  required when both sides declare one"), which I derived from seeing ~114 blank-vs-crosser pairs in
+  the corpus - without weighing them against how many pairs MATCHED. Measured properly this time,
+  per crosser type across all hand-built areas: Corridor 3136 matched / 0 blank, Dunes, Routes,
+  Slope, Trench, Road, Alley, Bridge all 100% matched, Doorway 93%. The blanks are a rare exception,
+  not the rule. Worse, the blank-tolerant predicate made the WP7.1 corpus gate pass trivially, so the
+  gate could never have caught this.
+- Fix (`TilePainter.WithMatchingCrossers`): generation now requires each edge crosser to EXACTLY
+  equal the placed neighbour's crosser on the shared edge, blank included. `EdgeCrossersMatch` stays
+  blank-tolerant for VALIDATION, because the rare one-sided corpus boundaries genuinely exist and the
+  WP7.1 gate must keep accepting them - liberal in what we accept, strict in what we emit. A cell
+  with no candidate under the strict rule is left untouched rather than forced, so those rare
+  layouts are never rewritten.
+- The regression test was verified to have TEETH rather than assumed: temporarily disabling the new
+  filter makes it fail with exactly the reported symptom - 8 one-sided `Dock` boundaries, the same
+  count found in the user's saved area. (Worth doing, since this is the second rule in this feature
+  derived from under-weighed evidence.)

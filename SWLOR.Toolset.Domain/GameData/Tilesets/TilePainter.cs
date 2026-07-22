@@ -68,7 +68,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             {
                 NorthWest = terrain, NorthEast = terrain, SouthWest = terrain, SouthEast = terrain
             };
-            var centreCandidates = SetRuleMatcher.FindMatchingTiles(tileset, centreConstraint);
+            var centreCandidates = WithMatchingCrossers(
+                tileset, SetRuleMatcher.FindMatchingTiles(tileset, centreConstraint),
+                col, row, currentAt, overlay);
             var centre = SelectCandidate(tileset, centreCandidates, WorkingAt(col, row), tileRank, preferBlankEdges: true);
             if (centre is not { } centreChoice)
                 return Array.Empty<TilePaintChange>(); // terrain not presentable as a full tile here
@@ -91,8 +93,10 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 if (WorkingAt(nc, nr) is null)
                     continue; // never fill a cell that has no tile yet
 
-                var candidates = SetRuleMatcher.FindMatchingTiles(
-                    tileset, ConstraintFromVertices(tileset, nc, nr, currentAt, overlay));
+                var candidates = WithMatchingCrossers(
+                    tileset,
+                    SetRuleMatcher.FindMatchingTiles(tileset, ConstraintFromVertices(tileset, nc, nr, currentAt, overlay)),
+                    nc, nr, currentAt, overlay);
                 var choice = SelectCandidate(tileset, candidates, WorkingAt(nc, nr), tileRank, preferBlankEdges: false);
                 if (choice is { } chosen)
                     Place(nc, nr, chosen);
@@ -222,6 +226,57 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 SouthWest = Corner(TileCorner.SouthWest),
                 SouthEast = Corner(TileCorner.SouthEast)
             };
+        }
+
+        /// <summary>
+        /// Keeps only candidates whose edge crossers EXACTLY match those of the already-placed
+        /// neighbour on each side (blank included).
+        ///
+        /// A crosser is a structure that spans a tile boundary - a dock, bridge, corridor, doorway -
+        /// so both tiles must declare it or neither does. <see cref="TileAdjacency.EdgeCrossersMatch"/>
+        /// is deliberately blank-TOLERANT, because a handful of real corpus boundaries genuinely have
+        /// a crosser on one side only, and the WP7.1 validation gate has to accept those. Generation
+        /// is held to the stricter rule the corpus overwhelmingly follows: symmetric or nothing
+        /// (Corridor 3136 matched vs 0 blank, Dunes/Routes/Slope/Trench/Road/Alley/Bridge 100%
+        /// matched, Doorway 93%). Being permissive here produced half a dock jutting into open water
+        /// with nothing on the far side.
+        ///
+        /// A cell with no legal candidate under this rule is left alone by the caller rather than
+        /// forced, so the rare one-sided-crosser layouts are never rewritten.
+        /// </summary>
+        private static IReadOnlyList<TileCandidate> WithMatchingCrossers(
+            TilesetDefinition tileset, IReadOnlyList<TileCandidate> candidates,
+            int col, int row,
+            Func<int, int, TileCandidate?> currentAt,
+            IReadOnlyDictionary<(int, int), TileCandidate> overlay)
+        {
+            string? Required(TileEdge edge, int dc, int dr)
+            {
+                var key = (col + dc, row + dr);
+                var neighbour = overlay.TryGetValue(key, out var fresh) ? fresh : currentAt(key.Item1, key.Item2);
+                if (neighbour is not { } tile || tile.TileId < 0 || tile.TileId >= tileset.Tiles.Count)
+                    return null; // nothing placed there yet - this edge is free
+
+                return TileAdjacency.WorldEdgeCrosser(
+                    tileset.Tiles[tile.TileId], tile.Orientation, TileAdjacency.OppositeEdge(edge)) ?? string.Empty;
+            }
+
+            var requirements = new (TileEdge Edge, string? Crosser)[]
+            {
+                (TileEdge.North, Required(TileEdge.North, 0, 1)),
+                (TileEdge.East, Required(TileEdge.East, 1, 0)),
+                (TileEdge.South, Required(TileEdge.South, 0, -1)),
+                (TileEdge.West, Required(TileEdge.West, -1, 0))
+            };
+
+            var kept = candidates.Where(candidate => requirements.All(r =>
+                r.Crosser == null ||
+                string.Equals(
+                    TileAdjacency.WorldEdgeCrosser(tileset.Tiles[candidate.TileId], candidate.Orientation, r.Edge) ?? string.Empty,
+                    r.Crosser,
+                    StringComparison.OrdinalIgnoreCase))).ToList();
+
+            return kept;
         }
 
         /// <summary>

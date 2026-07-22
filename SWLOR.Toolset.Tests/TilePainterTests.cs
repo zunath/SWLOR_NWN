@@ -236,6 +236,63 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PaintTerrain_NeverLeavesAOneSidedCrosser()
+        {
+            // Regression: painting Water into a tcn01 cobble plaza produced boundaries where one tile
+            // declared a Dock and its neighbour declared nothing - half a pier jutting into open
+            // water, with a hole where the other half should have been. A crosser spans the boundary,
+            // so both sides must agree.
+            var catalog = new TilesetCatalog(ResourceIndex.FromHakBuilderConfig(
+                Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
+                Path.Combine(RepoRoot, "SWLOR_Haks")));
+
+            if (!catalog.TryGetTileset("tcn01", out var tileset))
+            {
+                Assert.Ignore("tcn01 could not be resolved from the haks.");
+                return;
+            }
+
+            var fill = TilePainter.FindSolidTile(tileset, "Cobble");
+            fill.Should().NotBeNull();
+
+            const int size = 6;
+            var cells = new Dictionary<(int, int), TileCandidate>();
+            for (var r = 0; r < size; r++)
+            for (var c = 0; c < size; c++)
+                cells[(c, r)] = fill!.Value;
+
+            // Paint a small blob of water, as a user would.
+            foreach (var (c, r) in new[] { (2, 2), (3, 2), (2, 3), (3, 3) })
+                Apply(cells, TilePainter.PaintTerrain(tileset, size, size, Grid(cells, size, size), c, r, "Water"));
+
+            var offenders = new List<string>();
+            for (var r = 0; r < size; r++)
+            for (var c = 0; c < size; c++)
+            {
+                var here = cells[(c, r)];
+                foreach (var (dc, dr, edge) in new[]
+                         {
+                             (1, 0, TileEdge.East), (0, 1, TileEdge.North)
+                         })
+                {
+                    if (!cells.TryGetValue((c + dc, r + dr), out var there))
+                        continue;
+
+                    var mine = TileAdjacency.WorldEdgeCrosser(tileset.Tiles[here.TileId], here.Orientation, edge) ?? "";
+                    var theirs = TileAdjacency.WorldEdgeCrosser(
+                        tileset.Tiles[there.TileId], there.Orientation, TileAdjacency.OppositeEdge(edge)) ?? "";
+
+                    if (!string.Equals(mine, theirs, StringComparison.OrdinalIgnoreCase))
+                        offenders.Add($"({c},{r})->{edge}: '{mine}' vs '{theirs}'");
+                }
+            }
+
+            offenders.Should().BeEmpty(
+                "a crosser spans the boundary, so a painted result must never leave one dangling:\n"
+                + string.Join("\n", offenders));
+        }
+
+        [Test]
         public void FindSolidTile_PrefersACrosserFreeTile()
         {
             var ts = new TilesetDefinition

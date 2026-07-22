@@ -116,6 +116,8 @@ namespace SWLOR.Toolset.Editors
 
         private bool _syncingSelection;
 
+        private (ResourceType Type, int Index)? _pendingSectionSelection;
+
         private InstanceMarker? _selectedSceneInstance;
 
         /// <summary>
@@ -187,6 +189,7 @@ namespace SWLOR.Toolset.Editors
             if (_syncingSelection)
                 return;
 
+            _pendingSectionSelection = null;
             _syncingSelection = true;
             try
             {
@@ -232,8 +235,30 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            // The 3D scene is built lazily when the user first opens that tab. Keep the list row
+            // and its detail/actions selected until a scene exists, then bind it to the matching
+            // marker at the end of the first successful build.
+            if (AreaScene == null)
+            {
+                _pendingSectionSelection = (section.BlueprintType, row.Index);
+
+                _syncingSelection = true;
+                try
+                {
+                    SelectedSceneInstance = null;
+                    foreach (var otherSection in Sections.Where(candidate => !ReferenceEquals(candidate, section)))
+                        otherSection.SelectedRow = null;
+                }
+                finally
+                {
+                    _syncingSelection = false;
+                }
+
+                return;
+            }
+
             var kind = MapSectionTypeToKind(section.BlueprintType);
-            var kindInstances = kind != null && AreaScene != null
+            var kindInstances = kind != null
                 ? AreaScene.Instances.Where(i => i.Kind == kind).ToList()
                 : new List<InstanceMarker>();
 
@@ -782,6 +807,13 @@ namespace SWLOR.Toolset.Editors
                     if (key.Index >= 0 && key.Index < kindInstances.Count)
                         toSelect = kindInstances[key.Index];
                 }
+                else if (_pendingSectionSelection is { } pending &&
+                         MapSectionTypeToKind(pending.Type) is { } pendingKind)
+                {
+                    var kindInstances = scene.Instances.Where(i => i.Kind == pendingKind).ToList();
+                    if (pending.Index >= 0 && pending.Index < kindInstances.Count)
+                        toSelect = kindInstances[pending.Index];
+                }
 
                 // Every previous scene's InstanceMarker objects are gone now (Build returns a fresh
                 // list each time) - a selection with no reselect key (or whose key no longer
@@ -831,8 +863,7 @@ namespace SWLOR.Toolset.Editors
         {
             try
             {
-                using (session.Begin(description))
-                    mutation();
+                session.Execute(description, mutation);
 
                 AfterHistoryChange();
                 return true;

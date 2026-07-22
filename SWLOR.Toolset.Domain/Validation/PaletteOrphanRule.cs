@@ -44,7 +44,9 @@ namespace SWLOR.Toolset.Domain.Validation
                 foreach (var leaf in PaletteTraversal.EnumerateLeaves(palette))
                 {
                     var resRef = leaf.ResRef;
-                    if (string.IsNullOrEmpty(resRef) || context.ResourceExists(type, resRef))
+                    if (string.IsNullOrEmpty(resRef) ||
+                        context.ResourceExists(type, resRef) ||
+                        context.ResolvableOutsideModule(type, resRef))
                         continue;
 
                     issues.Add(new ValidationIssue(

@@ -76,11 +76,17 @@ namespace SWLOR.Toolset.Shell.Panels
         public void ShowFor(ResourceType type, string resRef)
         {
             if (!IsPreviewable(type))
+            {
+                SetModel(null, $"Model preview is not available for {type} resources.");
                 return;
+            }
 
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
+            {
+                SetModel(null, "Model preview unavailable (no module workspace is open).");
                 return;
+            }
 
             try
             {
@@ -101,7 +107,10 @@ namespace SWLOR.Toolset.Shell.Panels
         public void ShowForDocument(ResourceType type, JsonGffStruct root, string resRef)
         {
             if (!IsPreviewable(type))
+            {
+                SetModel(null, $"Model preview is not available for {type} resources.");
                 return;
+            }
 
             if (_resourceIndex == null)
             {

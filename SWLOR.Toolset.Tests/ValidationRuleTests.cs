@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Validation;
 using SWLOR.Toolset.Domain.Workspace;
@@ -448,6 +449,27 @@ namespace SWLOR.Toolset.Tests
             // module and correctly produce Warning issues (missing file) - only assert no Error
             // was raised for the populated "alask" entry.
             issues.Should().NotContain(i => i.Severity == ValidationSeverity.Error);
+        }
+
+        [Test]
+        public void PaletteEntry_WithHakBlueprint_NoIssue()
+        {
+            using var module = SyntheticModule.Create();
+            var hakDirectory = System.IO.Path.Combine(module.Path, "test_hak");
+            Directory.CreateDirectory(hakDirectory);
+            File.WriteAllText(System.IO.Path.Combine(hakDirectory, "hak_item.uti"), "fixture");
+            module.WritePalette("itempalcus", SyntheticPalette.Flat(("Hak Item", "hak_item")));
+
+            var index = new ResourceIndex(
+                baseLayer: null,
+                hakLayersInOrder: new[] { new ResourceIndex.HakLayer("test_hak", hakDirectory) });
+
+            var issues = new PaletteOrphanRule()
+                .Validate(new ValidationContext(module.Workspace, resourceIndex: index))
+                .ToList();
+
+            issues.Should().NotContain(i =>
+                i.Severity == ValidationSeverity.Error && i.ResRef == "hak_item");
         }
 
         [Test]

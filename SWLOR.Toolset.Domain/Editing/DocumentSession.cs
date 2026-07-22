@@ -43,6 +43,27 @@ namespace SWLOR.Toolset.Domain.Editing
         }
 
         /// <summary>
+        /// Runs one grouped edit and commits it as a single undo step. If the mutation throws,
+        /// every edit captured before the failure is rolled back and the exception is rethrown.
+        /// </summary>
+        public void Execute(string description, Action mutation)
+        {
+            ArgumentNullException.ThrowIfNull(mutation);
+
+            using var transaction = Begin(description);
+            try
+            {
+                mutation();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        /// <summary>
         /// True if the file at FilePath has a different last-write time than when this session
         /// was opened (or has been deleted since, or now exists when it did not before).
         /// </summary>

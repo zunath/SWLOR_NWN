@@ -155,14 +155,14 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            using (_session.Begin($"Rename category to '{newName}'"))
+            _session.Execute($"Rename category to '{newName}'", () =>
             {
                 if (node.Struct.TryGet("NAME", out var existing))
                     existing.SetString(newName);
                 else
                     node.Struct.Add("NAME",
                         JsonGffField.CreateScalar(GffFieldType.CExoString, JsonStringCodec.Encode(newName)));
-            }
+            });
 
             RebuildTree();
             NotifyHistoryChanged();
@@ -184,8 +184,9 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            using (_session.Begin($"Delete category '{node.DisplayName}'"))
-                node.ParentListField.RemoveElementAt(node.IndexInParent);
+            _session.Execute(
+                $"Delete category '{node.DisplayName}'",
+                () => node.ParentListField.RemoveElementAt(node.IndexInParent));
 
             SelectedNode = null;
             RebuildTree();

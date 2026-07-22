@@ -100,10 +100,7 @@ namespace SWLOR.Toolset.Editors
         {
             try
             {
-                using (_session.Begin(description))
-                {
-                    mutation();
-                }
+                _session.Execute(description, mutation);
 
                 AfterHistoryChange();
                 return true;

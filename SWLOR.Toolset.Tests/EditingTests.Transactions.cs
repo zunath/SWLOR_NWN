@@ -58,6 +58,29 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Execute_WhenMutationThrows_RollsBackCapturedEditsAndLeavesHistoryClean()
+        {
+            var path = CorpusFiles.FindFileWithMutableInteger("utc");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+
+            var field = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+            var original = field.GetInteger();
+
+            var act = () => session.Execute("failing multi-field edit", () =>
+            {
+                field.SetInteger(original + 1);
+                throw new FormatException("second field is malformed");
+            });
+
+            act.Should().Throw<FormatException>();
+            field.GetInteger().Should().Be(original, "the mutation before the failure must be reverted");
+            session.UndoStack.Entries.Should().BeEmpty();
+            session.UndoStack.IsDirty.Should().BeFalse();
+            EditScope.IsTransactionOpen.Should().BeFalse();
+        }
+
+        [Test]
         public void MutatingGuardedDocumentOutsideTransaction_Throws()
         {
             var path = CorpusFiles.FindFileWithMutableInteger("utc");

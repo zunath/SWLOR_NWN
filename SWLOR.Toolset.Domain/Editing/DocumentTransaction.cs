@@ -54,6 +54,24 @@ namespace SWLOR.Toolset.Domain.Editing
                 _stack.Push(this);
         }
 
+        /// <summary>
+        /// Ends recording without adding an undo step and reverts every mutation captured so far.
+        /// This is the exception path for multi-field edits: callers can abandon a partially
+        /// applied mutation without leaving the document changed or dirty. Safe to call more than
+        /// once.
+        /// </summary>
+        public void Rollback()
+        {
+            if (_finished)
+                return;
+
+            _finished = true;
+            _scope.Dispose();
+
+            using (EditScope.EnterReplay())
+                Revert();
+        }
+
         /// <summary>Equivalent to Commit(); lets transactions be opened in a using block.</summary>
         public void Dispose()
         {

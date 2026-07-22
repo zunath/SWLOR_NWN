@@ -871,3 +871,32 @@ append details as work happens. Statuses: `pending | in-progress | done | blocke
   the Avalonia app project which the headless test project deliberately does not reference — the same
   boundary that hid the original bug. `SchemaLookupKeyTests` covers the schema half and the provider
   carries a remark pointing at it.
+## Tile fill selection — 2026-07-21 — Prefer open ground (paint gate feedback)
+- Reported: a new 8x8 `tcn01` area with a little Water painted came out as a field of tall walls and
+  seemingly mismatched heights.
+- Examined the saved .are rather than the render. Two findings:
+  - The **terrain logic was correct**. The water pool was tile 166 (all-Water) ringed by tiles 7/8/10,
+    which are genuine Cobble/Water transition tiles - a properly blended shore. Every `Tile_Height`
+    was 0, so nothing height-related was wrong in the data; the "stepping" was the wall geometry of
+    the fill tile itself.
+  - The **fill tile was wrong**. `tcn01` has 244 crosser-free all-Cobble tiles, and no corpus area
+    uses `tcn01` at all - so the frequency ranking had nothing to say and the tie-break fell through
+    to lowest tile id. That is id 0, `tcn01_a01_01`, whose PathNode is `B`: cobble with a building
+    wall on it. All 64 tiles got one.
+- Root cause in one line: **corner terrain does not describe what is BUILT on a tile.** `tcn01` ids
+  92-99 are all-Cobble yet carry buildings. Matching corners is necessary but not sufficient.
+- Fix: `TilePainter.SelectCandidate` now prefers tiles whose .set `PathNode` is `A` - the open,
+  unobstructed layout - after the existing crosser-free preference and before the id tie-break.
+  Applied as a soft preference (`Narrow` only filters when something matches), so it can never empty
+  the candidate set; interior tilesets like `tib01`, whose fill terrain is solid rock with no open
+  tiles, are unaffected.
+- Evidence for `A` rather than a guess: across 422 hand-built areas and ~99k placed tiles, `A` is
+  46.7% of everything placed - far more than any other code - and it is the dominant fill of every
+  exterior tileset sampled (`tms01` id 12, `ttd01` id 69, `dgt04` id 75, `fifi` id 34, `tjsb0`).
+  The tilesets whose dominant code is `T`/`I`/`H` are corridor-based interiors, where a corridor
+  shape being the bulk of the area is correct - which is also why this is a preference, not a rule.
+- Tests: a hermetic case (two identical all-Grass tiles differing only in PathNode - the open one
+  must win over the lower id) and a real-data regression pinned to the actual failure
+  (`FindSolidTile(tcn01, "Cobble")` must return a PathNode `A` tile and specifically not id 0).
+- Not a bug: the Lower tool clamps at height 0, so clicking Lower on a fresh area does nothing.
+  NWN tile heights are non-negative; Lower only undoes a previous Raise.

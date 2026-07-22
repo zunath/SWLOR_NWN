@@ -184,6 +184,58 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void FindSolidTile_PrefersOpenGroundOverBuiltUpTiles()
+        {
+            // Two tiles satisfy "all corners Grass" equally; only the PathNode tells them apart.
+            var ts = new TilesetDefinition
+            {
+                Floor = "Grass",
+                Terrains = new[] { new TerrainDefinition("Grass", null, null) },
+                Tiles = new[]
+                {
+                    new TileDefinition
+                    {
+                        TopLeft = "Grass", TopRight = "Grass", BottomLeft = "Grass", BottomRight = "Grass",
+                        PathNode = "B" // lower id, but obstructed (e.g. carries a wall)
+                    },
+                    new TileDefinition
+                    {
+                        TopLeft = "Grass", TopRight = "Grass", BottomLeft = "Grass", BottomRight = "Grass",
+                        PathNode = "A" // open ground
+                    }
+                }
+            };
+
+            TilePainter.FindSolidTile(ts, "Grass")!.Value.TileId
+                .Should().Be(1, "an open tile must win over a lower-id obstructed one");
+        }
+
+        [Test]
+        public void FindSolidTile_RealCityTileset_PicksOpenCobbleNotAWalledTile()
+        {
+            // Regression for a new tcn01 area coming out as a field of walls: tcn01 has 244
+            // crosser-free all-Cobble tiles, and id 0 (the lowest, so the old tie-break winner)
+            // carries a building wall (PathNode B). No corpus area uses tcn01, so frequency ranking
+            // cannot break the tie either - the PathNode preference is what has to.
+            var catalog = new TilesetCatalog(ResourceIndex.FromHakBuilderConfig(
+                Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
+                Path.Combine(RepoRoot, "SWLOR_Haks")));
+
+            if (!catalog.TryGetTileset("tcn01", out var tileset))
+            {
+                Assert.Ignore("tcn01 could not be resolved from the haks.");
+                return;
+            }
+
+            var fill = TilePainter.FindSolidTile(tileset, "Cobble");
+
+            fill.Should().NotBeNull();
+            var chosen = tileset.Tiles[fill!.Value.TileId];
+            chosen.PathNode.Trim().Should().BeEquivalentTo("A", "the fill must be open, walkable ground");
+            fill.Value.TileId.Should().NotBe(0, "tile 0 is cobble with a building wall on it");
+        }
+
+        [Test]
         public void FindSolidTile_PrefersACrosserFreeTile()
         {
             var ts = new TilesetDefinition

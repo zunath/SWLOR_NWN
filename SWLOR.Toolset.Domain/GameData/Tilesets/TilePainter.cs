@@ -266,11 +266,13 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
 
             IEnumerable<TileCandidate> pool = candidates;
             if (preferBlankEdges)
-            {
-                var blank = candidates.Where(c => AllEdgesBlank(tileset.Tiles[c.TileId])).ToList();
-                if (blank.Count > 0)
-                    pool = blank;
-            }
+                pool = Narrow(pool, c => AllEdgesBlank(tileset.Tiles[c.TileId]));
+
+            // Prefer unobstructed ground. A terrain can be satisfied by many tiles that differ only
+            // in the scenery built on them - tcn01 has 244 crosser-free all-Cobble tiles, of which
+            // id 0 carries a building wall - so without this the fill is chosen by tile id and an
+            // area comes out as a field of walls.
+            pool = Narrow(pool, c => IsOpenGround(tileset.Tiles[c.TileId]));
 
             return pool
                 .OrderBy(c => tileRank?.Invoke(c.TileId) ?? c.TileId)
@@ -278,6 +280,25 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 .ThenBy(c => c.Orientation)
                 .First();
         }
+
+        /// <summary>Applies a preference: narrows the pool only when something actually matches, so a preference never empties it.</summary>
+        private static IEnumerable<TileCandidate> Narrow(
+            IEnumerable<TileCandidate> pool, Func<TileCandidate, bool> preferred)
+        {
+            var kept = pool.Where(preferred).ToList();
+            return kept.Count > 0 ? kept : pool;
+        }
+
+        /// <summary>
+        /// Whether a tile is fully open ground, from its .set PathNode code. "A" is the open,
+        /// unobstructed layout; the other letters describe tiles whose geometry blocks movement
+        /// (walls, corners, dead ends). Verified against the corpus: across 422 hand-built areas and
+        /// ~99k placed tiles, "A" is 46.7% of everything placed and the dominant tile in 202 areas -
+        /// far more than any other code - which is what a plain floor being the bulk of most areas
+        /// looks like.
+        /// </summary>
+        private static bool IsOpenGround(TileDefinition tile) =>
+            tile.PathNode.Trim().Equals("A", StringComparison.OrdinalIgnoreCase);
 
         private static bool AllEdgesBlank(TileDefinition tile) =>
             string.IsNullOrEmpty(tile.Top) && string.IsNullOrEmpty(tile.Right) &&

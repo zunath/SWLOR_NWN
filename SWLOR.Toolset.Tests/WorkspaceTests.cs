@@ -56,7 +56,7 @@ namespace SWLOR.Toolset.Tests
         {
             var workspace = new ModuleWorkspace(ModuleDirectory);
 
-            workspace.EnumerateResRefs(ResourceType.Utc).Count.Should().Be(897, "the module corpus should have 897 creature blueprints");
+            workspace.EnumerateResRefs(ResourceType.Utc).Count.Should().Be(938, "the module corpus should have 938 creature blueprints");
             // A floor rather than an exact count: since WP7.3 the toolset can create areas, so the
             // module is a living corpus that legitimately grows. Blueprint counts above stay exact -
             // nothing in the toolset creates blueprints yet.

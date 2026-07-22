@@ -103,6 +103,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 var fpBefore = Stat.GetCurrentFP(caster);
                 var stmBefore = Stat.GetCurrentStamina(caster);
                 var targetHPBefore = GetCurrentHitPoints(target);
+                var activatorStatAdjustmentsBefore = behaviorCase.ExpectedActivatorStatAdjustments
+                    .ToDictionary(pair => pair.Key, pair => Stat.GetStatAdjustment(caster, pair.Key));
 
                 var used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
                 ctx.Assert(used, "TryUseAbility returned false - activation requirements were not met");
@@ -134,6 +136,15 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                             () => StatusEffect.HasStatusEffect(target, effectType),
                             EffectWaitSeconds,
                             $"target status effect {effectType.Name} after impact");
+                    }
+
+                    foreach (var (statType, expectedAdjustment) in behaviorCase.ExpectedActivatorStatAdjustments)
+                    {
+                        var expectedValue = activatorStatAdjustmentsBefore[statType] + expectedAdjustment;
+                        await ctx.WaitUntilAsync(
+                            () => Stat.GetStatAdjustment(caster, statType) == expectedValue,
+                            EffectWaitSeconds,
+                            $"activator stat {statType} to change by {expectedAdjustment} after impact");
                     }
 
                     if (behaviorCase.ExpectsTargetDamage)

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
@@ -33,6 +35,12 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         /// Status effect classes expected on the TARGET after impact.
         /// </summary>
         public Type[] ExpectedTargetStatusEffects { get; set; } = Array.Empty<Type>();
+
+        /// <summary>
+        /// Temporary stat adjustments expected on the ACTIVATOR after impact, expressed as a
+        /// delta from the value immediately before activation.
+        /// </summary>
+        public Dictionary<StatType, int> ExpectedActivatorStatAdjustments { get; set; } = new();
 
         /// <summary>
         /// Expect the target's hit points to drop below their pre-activation value.

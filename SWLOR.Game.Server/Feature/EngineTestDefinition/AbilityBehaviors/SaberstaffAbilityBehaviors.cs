@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Service.EngineTestService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
@@ -218,21 +219,25 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Notes = "FP restore on hit is a conditional rider, not an upfront cost/effect; not asserted."
                 },
 
-                // SaberCycloneAbilityDefinition - capstone. Authored with isHostile:false despite an
-                // AoE Sphere/HarmsEnemies targeting spell, so ConfigureGeneratedWeaponAbility's hostile
-                // branch (IsHostileAbility/IsAreaAbility, and all damage/status impact) never runs; the
-                // impact action falls into the no-target self path and applies no unconditional status
-                // or damage - only conditional temporary stat riders behind further thresholds. Tested
-                // as a costed, no-target self activation; the apparent isHostile:false authoring gap is
-                // flagged separately for review, not fixed here.
+                // SaberCycloneAbilityDefinition - capstone self buff. For 45 seconds, later area
+                // combat abilities restore FP and grant Attack Deflection; the activation itself
+                // neither targets nor damages an enemy.
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.SaberCyclone1,
                     Target = AbilityTargetKind.Self,
                     EquipMainHandResref = SaberstaffResref,
+                    ExpectedActivatorStatAdjustments = new Dictionary<StatType, int>
+                    {
+                        [StatType.AreaAbilityMinTargetsResourceRestoreThreshold] = 1,
+                        [StatType.AreaAbilityFPRestore] = 4,
+                        [StatType.AreaAbilityMinTargetsBuffThreshold] = 1,
+                        [StatType.AreaAbilityAttackDeflection] = 8,
+                        [StatType.AreaAbilityBuffDurationSeconds] = 30
+                    },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Authored with isHostile:false despite AoE/HarmsEnemies targeting metadata, so the hostile impact branch never runs and no unconditional damage or status is applied (see flagged follow-up)."
+                    Notes = "The five temporary stat modifiers last 45 seconds and empower subsequent area combat ability impacts."
                 },
 
                 // SeverFocusAbilityDefinition - hostile damage; resource drain is conditional on the

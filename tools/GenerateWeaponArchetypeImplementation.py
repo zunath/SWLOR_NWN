@@ -695,6 +695,9 @@ def parse_skill_rank(value):
 
 
 def parse_damage(description, level):
+    if "area combat abilities restore" in description.lower():
+        return 0
+
     if re.search(r"^\s*For \d+ seconds, ranged hits add Suppression stacks", description, re.IGNORECASE):
         return 0
 
@@ -2320,6 +2323,12 @@ def stance_status_type(base, status_effect_types):
 
 
 def is_area(description):
+    # A self buff can describe the area abilities used during its window without making the
+    # activation itself an area impact. Saber Cyclone is the canonical example: it empowers
+    # later area combat abilities for 45 seconds and neither targets nor impacts an area itself.
+    if is_self_only_active(description):
+        return False
+
     lowered = description.lower()
     markers = [
         "area",

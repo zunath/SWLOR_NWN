@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature
         private static readonly HashSet<string> LegacySmallArmsResrefs =
             new(StringComparer.OrdinalIgnoreCase)
             {
+                "blast_se14_d",
                 "blast_jawa_d",
                 "dualpistolmain",
                 "extjawa004_wp",

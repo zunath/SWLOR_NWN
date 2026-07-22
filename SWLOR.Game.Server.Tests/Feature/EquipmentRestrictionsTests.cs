@@ -133,6 +133,8 @@ public class EquipmentRestrictionsTests
     [TestCase(BaseItem.Sling, "extjawa004_wp", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.Sling, "jawa_wp", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.Sling, "jawaaddit_wp", BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.Sling, "blast_se14_d", BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.LegacyPistol, "blast_se14_d", BaseItem.LegacyPistol)]
     [TestCase(BaseItem.LegacyPistol, "blast_jawa_d", BaseItem.LegacyPistol)]
     public void PistolBaseItems_AreCanonicalizedWithoutShieldDependentSwaps(
         BaseItem currentBaseItem,
@@ -282,6 +284,68 @@ public class EquipmentRestrictionsTests
         matches.Should().NotBeEmpty("converted pistol ammunition is equipped by creature blueprints");
     }
 
+    [Test]
+    public void PlacedCreatureItems_UseCanonicalPistolData()
+    {
+        const int arrowEquipmentStructId = 2048;
+        const int bulletEquipmentStructId = 4096;
+        const string legacyResref = "blast_se14_d";
+        var root = FindRepositoryRoot();
+        var ammoMatches = new List<string>();
+        var legacyMatches = new List<string>();
+
+        foreach (var path in Directory.EnumerateFiles(
+                     Path.Combine(root.FullName, "Module", "git"),
+                     "*.git.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            foreach (var entry in EnumerateJsonObjects(document.RootElement))
+            {
+                if (entry.TryGetProperty("__struct_id", out var structId) &&
+                    structId.GetInt32() is (arrowEquipmentStructId or bulletEquipmentStructId) &&
+                    entry.TryGetProperty("Tag", out var tag) &&
+                    tag.TryGetProperty("value", out var tagValue) &&
+                    tagValue.GetString() == "blaster_bullets")
+                {
+                    var resref = entry
+                        .GetProperty("TemplateResRef")
+                        .GetProperty("value")
+                        .GetString();
+                    ammoMatches.Add($"{Path.GetFileName(path)}:{resref}");
+                    structId.GetInt32()
+                        .Should()
+                        .Be(
+                            bulletEquipmentStructId,
+                            $"{Path.GetFileName(path)} equips embedded blaster ammunition {resref}");
+                    entry.GetProperty("BaseItem")
+                        .GetProperty("value")
+                        .GetInt32()
+                        .Should()
+                        .Be(
+                            (int)BaseItem.Bullet,
+                            $"{Path.GetFileName(path)} embeds blaster ammunition {resref}");
+                }
+
+                if (entry.TryGetProperty("TemplateResRef", out var templateResRef) &&
+                    templateResRef.TryGetProperty("value", out var resrefValue) &&
+                    resrefValue.GetString() == legacyResref &&
+                    entry.TryGetProperty("BaseItem", out var baseItem))
+                {
+                    legacyMatches.Add(Path.GetFileName(path));
+                    baseItem.GetProperty("value")
+                        .GetInt32()
+                        .Should()
+                        .Be(
+                            (int)BaseItem.LegacyPistol,
+                            $"{Path.GetFileName(path)} embeds legacy small arm {legacyResref}");
+                }
+            }
+        }
+
+        ammoMatches.Should().NotBeEmpty("converted pistol ammunition is embedded in placed creatures");
+        legacyMatches.Should().NotBeEmpty($"{legacyResref} is embedded in a placed creature");
+    }
+
     [TestCase("blast_jawa_d.uti.json")]
     [TestCase("dualpistolmain.uti.json")]
     [TestCase("extjawa004_wp.uti.json")]
@@ -325,6 +389,31 @@ public class EquipmentRestrictionsTests
         }
 
         return rows;
+    }
+
+    private static IEnumerable<JsonElement> EnumerateJsonObjects(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            yield return element;
+            foreach (var property in element.EnumerateObject())
+            {
+                foreach (var child in EnumerateJsonObjects(property.Value))
+                {
+                    yield return child;
+                }
+            }
+        }
+        else if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var item in element.EnumerateArray())
+            {
+                foreach (var child in EnumerateJsonObjects(item))
+                {
+                    yield return child;
+                }
+            }
+        }
     }
 
     private static DirectoryInfo FindRepositoryRoot()

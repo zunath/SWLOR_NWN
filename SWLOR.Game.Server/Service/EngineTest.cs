@@ -165,9 +165,11 @@ namespace SWLOR.Game.Server.Service
             {
                 // NwTask, not DelayCommand: this method runs as an async continuation with no
                 // valid OBJECT_SELF, and DelayCommand callbacks scheduled from such a context
-                // never fire - the server would sit running forever after COMPLETE.
+                // never fire. The shutdown call itself is assigned to the module for the same
+                // reason - it needs a valid object script context to take effect.
                 await NwTask.Delay(TimeSpan.FromSeconds(3));
-                AdministrationPlugin.ShutdownServer();
+                Console.WriteLine($"{ConsolePrefix} Shutting down server.");
+                AssignCommand(GetModule(), () => AdministrationPlugin.ShutdownServer());
             }
         }
 

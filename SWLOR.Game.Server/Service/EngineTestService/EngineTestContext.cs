@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -132,10 +134,17 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         }
 
         /// <summary>
-        /// Sets an NPC's current FP and Stamina pools (stored as local variables for NPCs).
+        /// Sets an NPC's current FP and Stamina pools. NPC max FP/STM come from skin item
+        /// properties (zero for stock blueprints) plus stat adjustments, and both spawn
+        /// initialization and heartbeat regen clamp the current-value locals to that max -
+        /// so the max is raised via temporary stat modifiers first, then the pools are set.
+        /// Call this AFTER the creature's spawn scripts have run (one frame after spawning),
+        /// or spawn initialization will overwrite the pools with the unraised max.
         /// </summary>
         public void SetNPCResources(uint npc, int fp, int stamina)
         {
+            TemporaryStatModifier.Add(npc, StatType.MaxFP, fp, 3600f, "ENGINE_TEST_RESOURCES");
+            TemporaryStatModifier.Add(npc, StatType.MaxStamina, stamina, 3600f, "ENGINE_TEST_RESOURCES");
             SetLocalInt(npc, NPCCurrentFPVariable, fp);
             SetLocalInt(npc, NPCCurrentStaminaVariable, stamina);
         }

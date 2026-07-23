@@ -62,9 +62,17 @@ if (-not $ServerHome) {
     $ServerHome = $env:SWLOR_ENGINE_TEST_SERVER_HOME
 }
 if (-not $ServerHome) {
+    # A dedicated enginetests-home keeps the test server fully separate from the standard
+    # dev/testing server that uses debugserver/ - no shared logs, database, report paths,
+    # or module file locks. debugserver/ remains only as a shared-with-dev fallback.
+    $engineTestsHomeDir = Join-Path $RepoRoot "enginetests-home"
     $debugServerDir = Join-Path $RepoRoot "debugserver"
-    if (Test-Path (Join-Path $debugServerDir "swlor.env")) {
+    if (Test-Path (Join-Path $engineTestsHomeDir "swlor.env")) {
+        $ServerHome = $engineTestsHomeDir
+    }
+    elseif (Test-Path (Join-Path $debugServerDir "swlor.env")) {
         $ServerHome = $debugServerDir
+        Write-Host "WARNING: using debugserver/ as the server home - this is SHARED with the standard dev server (logs, database, module file). Create <repo>\enginetests-home (modules, hak, tlk, swlor.env) for full isolation." -ForegroundColor Yellow
     }
     else {
         $ServerHome = Join-Path $RepoRoot "SWLOR.Game.Server\Docker"

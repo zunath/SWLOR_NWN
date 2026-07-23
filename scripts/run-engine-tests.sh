@@ -64,12 +64,16 @@ SERVER_PROJECT="$REPO_ROOT/SWLOR.Game.Server/SWLOR.Game.Server.csproj"
 # The server home is the directory mounted as /nwn/home: it holds modules/, hak/,
 # tlk/, dotnet/, swlor.env, and receives app_logs/. SWLOR.Game.Server/Docker only
 # holds the tracked compose configuration - it is NOT a runtime home. Resolution
-# order: --server-home, SWLOR_ENGINE_TEST_SERVER_HOME, the repo's debugserver/
-# directory (the dev-machine convention), then SWLOR.Game.Server/Docker as the
-# last resort (what the CI workflow stages).
+# order: --server-home, SWLOR_ENGINE_TEST_SERVER_HOME, the repo's enginetests-home/
+# (dedicated, fully isolated from the dev server), the repo's debugserver/ (SHARED
+# with the standard dev server - fallback only), then SWLOR.Game.Server/Docker as
+# the last resort (what the CI workflow stages).
 if [ -z "$SERVER_HOME" ]; then
-    if [ -f "$REPO_ROOT/debugserver/swlor.env" ]; then
+    if [ -f "$REPO_ROOT/enginetests-home/swlor.env" ]; then
+        SERVER_HOME="$REPO_ROOT/enginetests-home"
+    elif [ -f "$REPO_ROOT/debugserver/swlor.env" ]; then
         SERVER_HOME="$REPO_ROOT/debugserver"
+        echo "WARNING: using debugserver/ as the server home - this is SHARED with the standard dev server (logs, database, module file). Create <repo>/enginetests-home (modules, hak, tlk, swlor.env) for full isolation." >&2
     else
         SERVER_HOME="$REPO_ROOT/SWLOR.Game.Server/Docker"
     fi

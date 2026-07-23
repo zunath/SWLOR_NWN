@@ -123,8 +123,6 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
 
             try
             {
-                ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
-
                 if (behaviorCase.Target == AbilityTargetKind.HostileCreature)
                 {
                     target = ctx.SpawnCreature(TargetResref, 1.5f, 0f);
@@ -135,6 +133,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         target,
                         3600f);
                 }
+
+                // Let spawn initialization scripts run before configuring resources - they
+                // reset the FP/STAMINA locals to the (unraised) max and would overwrite us.
+                await NwTask.NextFrame();
+                ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
 
                 if (!string.IsNullOrWhiteSpace(behaviorCase.EquipMainHandResref))
                 {

@@ -811,10 +811,10 @@ foreach ($entry in $mimicryDamageScaling.GetEnumerator()) {
 }
 
 $espionageDescriptions = @{
-    "Stealth I" = "Enter stealth, increasing Stealth by 5 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth II" = "Enter stealth, increasing Stealth by 10 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth III" = "Enter stealth, increasing Stealth by 15 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth IV" = "Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth I" = "Unlocks NWN's built-in Stealth mode and grants +5 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth II" = "Improves NWN's built-in Stealth mode to grant +10 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth III" = "Improves NWN's built-in Stealth mode to grant +15 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth IV" = "Improves NWN's built-in Stealth mode to grant +20 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
     "Back Attack I" = "Melee weapon attacks from behind a target deal +3% damage."
     "Back Attack II" = "Melee weapon attacks from behind a target deal +5% damage and gain +3% Critical Rate."
     "Back Attack III" = "Melee weapon attacks from behind a target deal +8% damage and gain +5% Critical Rate."
@@ -852,10 +852,16 @@ foreach ($entry in $alertnessDescriptions.GetEnumerator()) {
     }
 }
 foreach ($entry in $espionageDescriptions.GetEnumerator()) {
+    $values = @{ Description = $entry.Value }
+    if ($entry.Key -match '^Stealth (I|II|III|IV)$') {
+        $values['Type'] = 'Toggle'
+        $values['Casting Time'] = '-'
+        $values['Cooldown Time'] = '-'
+    }
     $perkChanges += @{
         Sheet = "Espionage"
         PerkName = $entry.Key
-        Values = @{ Description = $entry.Value }
+        Values = $values
     }
 }
 

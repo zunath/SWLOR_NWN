@@ -142,10 +142,24 @@ $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
 # supported way to avoid duplicating ~13GB of haks.
 if (-not $env:SWLOR_ENGINE_TEST_HAK_DIR) {
     $homeHakDir = Join-Path $ServerHome "hak"
-    $devHakDir = Join-Path $RepoRoot "debugserver\hak"
-    if (-not (Test-Path (Join-Path $homeHakDir "*.hak")) -and (Test-Path $devHakDir)) {
-        $env:SWLOR_ENGINE_TEST_HAK_DIR = $devHakDir
-        Write-Host "Sharing hak set from $devHakDir (test home has no haks of its own)."
+    if (-not (Test-Path (Join-Path $homeHakDir "*.hak"))) {
+        # Probe both next to the repo root and next to the server home - when running
+        # from a worktree, debugserver/ only exists beside the real server homes.
+        $devHakCandidates = @(
+            (Join-Path $RepoRoot "debugserver\hak"),
+            (Join-Path (Split-Path -Parent $ServerHome) "debugserver\hak")
+        )
+        foreach ($devHakDir in $devHakCandidates) {
+            if (Test-Path (Join-Path $devHakDir "*.hak")) {
+                $env:SWLOR_ENGINE_TEST_HAK_DIR = $devHakDir
+                Write-Host "Sharing hak set from $devHakDir (test home has no haks of its own)."
+                break
+            }
+        }
+        if (-not $env:SWLOR_ENGINE_TEST_HAK_DIR) {
+            Write-Host "Server home '$ServerHome' has no haks and no debugserver hak set was found - the module will fail to load." -ForegroundColor Red
+            exit 1
+        }
     }
 }
 

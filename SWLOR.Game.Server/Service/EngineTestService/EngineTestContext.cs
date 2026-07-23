@@ -87,12 +87,16 @@ namespace SWLOR.Game.Server.Service.EngineTestService
 
         /// <summary>
         /// Spawns a creature in the arena and tracks it for automatic cleanup.
-        /// Fails the test if the creature could not be created.
+        /// The creature is normalized to the standard Defender faction regardless of its
+        /// blueprint - stock blueprints vary (nw_rat001 ships as Hostile), and tests need a
+        /// deterministic baseline where spawned creatures are friendly to each other and only
+        /// MakeHostile creates an enemy. Fails the test if the creature could not be created.
         /// </summary>
         public uint SpawnCreature(string resref, float xOffset = 0f, float yOffset = 0f)
         {
             var creature = CreateObject(ObjectType.Creature, resref, GetArenaLocation(xOffset, yOffset));
             Assert(GetIsObjectValid(creature), $"Failed to spawn creature with resref '{resref}'.");
+            ChangeToStandardFaction(creature, StandardFaction.Defender);
             Track(creature);
 
             return creature;

@@ -243,8 +243,15 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             if (!GetIsObjectValid(creature))
                 return;
 
-            AssignCommand(creature, () => SetIsDestroyable(true, false, false));
-            DestroyObject(creature);
+            // Both calls run inside one assigned context: SetIsDestroyable executes
+            // immediately there (it operates on OBJECT_SELF, so it cannot be called
+            // directly from this context), and the deferred destruction is processed
+            // after that same context ends - guaranteeing the flag is set first.
+            AssignCommand(creature, () =>
+            {
+                SetIsDestroyable(true, false, false);
+                DestroyObject(creature);
+            });
         }
 
         private static void AssertCosts(

@@ -130,7 +130,7 @@ Every `[EngineTest]` method receives one of these, scoped to that single test ru
 | `TestName` | The test's `Name` from its attribute. |
 | `Arena` | The instanced arena area (`uint`) this test runs in. |
 | `GetArenaLocation(xOffset = 0f, yOffset = 0f, facing = 0f)` | Builds a `Location` in the arena, offset from the arena's known-walkable spawn point. |
-| `SpawnCreature(resref, xOffset = 0f, yOffset = 0f)` | Creates a creature blueprint at an arena location, asserts it's valid, and tracks it for automatic cleanup. Returns the creature. |
+| `SpawnCreature(resref, xOffset = 0f, yOffset = 0f)` | Creates a creature blueprint at an arena location, asserts it's valid, normalizes it to the standard Defender faction (blueprint factions vary - stock `nw_rat001` ships as Hostile), and tracks it for automatic cleanup. Returns the creature. |
 | `Track(uint obj)` | Registers any object for automatic destruction when the test finishes. |
 | `CreateInstancedArea(areaResref)` | Creates an additional instanced area copy, asserts it's valid, and tracks it for cleanup. Returns the area. |
 | `SetNPCPerkLevel(npc, PerkType, level)` | Caps an NPC's effective perk level via the `PERK_LEVEL_{id}` local int. NPCs default to a perk's max level when this is unset. |

@@ -138,6 +138,24 @@ public class SlicingContentTests
     }
 
     [Test]
+    public void SlicingProvisions_UseTheRegisteredFoodItemTag()
+    {
+        var root = FindRepositoryRoot();
+        foreach (var resref in new[]
+                 {
+                     "food_quietwatch", "food_dustveil", "food_tombwalk", "food_snowblind", "food_nightmarch"
+                 })
+        {
+            var path = Path.Combine(root, "Module", "uti", resref + ".uti.json");
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+
+            GetString(document.RootElement, "Tag").Should().Be("FOOD",
+                $"{resref} must route through ConsumableItemDefinition when used");
+            GetString(document.RootElement, "TemplateResRef").Should().Be(resref);
+        }
+    }
+
+    [Test]
     public void SlicingStructures_HaveOneStorageAndUnusedAppearances()
     {
         var root = FindRepositoryRoot();

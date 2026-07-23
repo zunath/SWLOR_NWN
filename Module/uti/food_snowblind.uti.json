@@ -135,7 +135,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "food_snowblind"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

@@ -135,7 +135,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "food_quietwatch"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

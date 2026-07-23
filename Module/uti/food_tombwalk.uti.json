@@ -135,7 +135,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "food_tombwalk"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

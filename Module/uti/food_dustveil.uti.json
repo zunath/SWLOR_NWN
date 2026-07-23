@@ -135,7 +135,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "food_dustveil"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

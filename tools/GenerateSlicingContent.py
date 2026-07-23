@@ -387,7 +387,7 @@ def make_foods_and_concentrates() -> None:
             "A 30-minute field provision prepared from hunted ingredients and tiered herbs. "
             "It accepts one standard food enhancement."
         )
-        item = configure_item(food_template, resref, name, description)
+        item = configure_item(food_template, resref, name, description, "FOOD")
         activation = copy.deepcopy(food_template["PropertiesList"]["value"][0])
         item["PropertiesList"]["value"] = [activation, prop(106, 45, tier + 1, food_subtype)]
         save(UTI / f"{resref}.uti.json", item)

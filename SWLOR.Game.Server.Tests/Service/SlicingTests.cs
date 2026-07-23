@@ -128,6 +128,27 @@ public class SlicingTests
     }
 
     [Test]
+    public void DeferredToolBenefits_RequireThePrimedItemToRemainInInventory()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "SlicingService",
+            "SlicingSession.cs"));
+        var validateAction = Between(source, "private static string ValidateAction", "private static bool TryClaim");
+
+        validateAction.Should().Contain("session.PrimedToolItem != OBJECT_INVALID");
+        validateAction.Should().Contain("GetIsObjectValid(session.PrimedToolItem)");
+        validateAction.Should().Contain("GetItemPossessor(session.PrimedToolItem) != player");
+        validateAction.IndexOf("session.PrimedToolItem != OBJECT_INVALID", StringComparison.Ordinal)
+            .Should().BeLessThan(validateAction.IndexOf("Touch(session)", StringComparison.Ordinal),
+                "a detached primed tool must reject the action before session state changes");
+        validateAction.Should().Contain("session.PrimedTool = SlicingToolType.Invalid;");
+        validateAction.Should().Contain("session.PrimedToolItem = OBJECT_INVALID;");
+    }
+
+    [Test]
     public void ActionCost_DoesNotMutateFreeActionsUntilTheActionSucceeds()
     {
         var session = new SlicingSession.ActiveSlicingSession

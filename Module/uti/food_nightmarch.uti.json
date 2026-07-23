@@ -135,7 +135,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "food_nightmarch"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

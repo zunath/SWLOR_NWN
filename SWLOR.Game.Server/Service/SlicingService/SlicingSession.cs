@@ -420,6 +420,13 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 return "The lockbox must remain in your inventory.";
             if (session.Source == SlicingSourceType.Terminal && GetDistanceBetween(player, session.Target) > 5f)
                 return "You are too far away from the terminal.";
+            if (session.PrimedToolItem != OBJECT_INVALID &&
+                (!GetIsObjectValid(session.PrimedToolItem) || GetItemPossessor(session.PrimedToolItem) != player))
+            {
+                session.PrimedTool = SlicingToolType.Invalid;
+                session.PrimedToolItem = OBJECT_INVALID;
+                return "The primed slicing tool must remain in your inventory until its effect is used.";
+            }
 
             Touch(session);
             return string.Empty;

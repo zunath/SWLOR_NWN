@@ -1874,17 +1874,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine Hay Bales"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dan_hay"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Dantooine Herbs"
                     },
                     "RESREF": {
@@ -2324,17 +2313,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "korrduninquis"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Korriban Dungeon Loot - Forge"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "korrdunforgeloot"
                     }
                   },
                   {

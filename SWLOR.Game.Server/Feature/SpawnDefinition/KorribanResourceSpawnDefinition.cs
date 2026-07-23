@@ -121,11 +121,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ResourceDespawnDelay(45) // 45 minutes for elite dungeon loot
                 .AddSpawn(ObjectType.Placeable, "korrduntemple")
                 .WithFrequency(1);
-
-            _builder.Create("KorribanDungeonLootForge")
-                .ResourceDespawnDelay(45) // 45 minutes for elite dungeon loot
-                .AddSpawn(ObjectType.Placeable, "korrdunforge")
-                .WithFrequency(1);
         }
     }
 }

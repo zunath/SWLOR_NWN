@@ -249,17 +249,6 @@
                   },
                   {
                     "__struct_id": 0,
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "zep_swordrack001"
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16812392
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
                       "value": "Scorch Mark"
@@ -311,17 +300,6 @@
                     "STRREF": {
                       "type": "dword",
                       "value": 16813404
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "zep_weaponrck001"
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16813492
                     }
                   },
                   {
@@ -617,17 +595,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Boarded Doorway - New 1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "zep_ce_bdr_002"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Boarded Doorway - Weathered Brown"
                           },
                           "RESREF": {
@@ -650,66 +617,11 @@
                           "__struct_id": 0,
                           "RESREF": {
                             "type": "resref",
-                            "value": "zep_doors006"
-                          },
-                          "STRREF": {
-                            "type": "dword",
-                            "value": 16812212
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "zep_doors008"
-                          },
-                          "STRREF": {
-                            "type": "dword",
-                            "value": 16812212
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "zep_doors001"
-                          },
-                          "STRREF": {
-                            "type": "dword",
-                            "value": 16812220
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "RESREF": {
-                            "type": "resref",
                             "value": "zep_doors007"
                           },
                           "STRREF": {
                             "type": "dword",
                             "value": 16812220
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "zep_doors011"
-                          },
-                          "STRREF": {
-                            "type": "dword",
-                            "value": 16812220
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "zep_doors009"
-                          },
-                          "STRREF": {
-                            "type": "dword",
-                            "value": 16812812
                           }
                         }
                       ]
@@ -1276,17 +1188,6 @@
                           "STRREF": {
                             "type": "dword",
                             "value": 16813462
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "zep_wall003"
-                          },
-                          "STRREF": {
-                            "type": "dword",
-                            "value": 16813464
                           }
                         }
                       ]
@@ -6671,17 +6572,6 @@
                     "__struct_id": 0,
                     "RESREF": {
                       "type": "resref",
-                      "value": "zep_cobweb004"
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16813502
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "RESREF": {
-                      "type": "resref",
                       "value": "zep_cobweb005"
                     },
                     "STRREF": {
@@ -9675,17 +9565,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Wall, Spaceport, Heavy"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_signw03"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Wall, Weapons"
                     },
                     "RESREF": {
@@ -10680,17 +10559,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Landspeeder AV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_lands01"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Landspeeder F"
                     },
                     "RESREF": {
@@ -10888,17 +10756,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_doorarc"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Flag, Sith"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_flagsit"
                     }
                   },
                   {
@@ -12800,28 +12657,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_clntnke"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cloning Tank (Smashed)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_clntnks"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cloning Tank (with Body)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_clntnkw"
                     }
                   },
                   {
@@ -18225,28 +18060,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Metal Wall, X-Wide - Screens"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_walls16"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Metal Wall, X-Wide - Strips, Horizontal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_walls02"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Metal Wall, X-Wide - Strips, Vertical"
                     },
                     "RESREF": {
@@ -19631,28 +19444,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ruins, Stones"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_ruins01"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Ruins, Tree"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_ruins03"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Ruins, Wall"
                     },
                     "RESREF": {
@@ -20158,17 +19949,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_nwsbxxd"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Oil Puddle"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_oilslic"
                     }
                   },
                   {
@@ -22439,17 +22219,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Barricade, Concrete, Stripes"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_barrics"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Barricade, Concrete, Worn"
                     },
                     "RESREF": {
@@ -22576,17 +22345,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_strtlmp"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Street, End"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_strtend"
                     }
                   }
                 ]
@@ -22774,17 +22532,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Floodlight, 2 Way"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_parklgt"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Floodlight, 4 Way"
                     },
                     "RESREF": {
@@ -22856,17 +22603,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_mnkybrs"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Playground, Seesaw (Green)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_seesawg"
                     }
                   },
                   {
@@ -23470,17 +23206,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_grft32"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Graffiti 34"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_grft34"
                     }
                   },
                   {
@@ -25251,17 +24976,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instrument Panel"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_instpnl"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instrument Panel, Rusted"
                     },
                     "RESREF": {
@@ -25377,72 +25091,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Beaker, Blue"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb02"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Beaker, Empty, Stopper"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb29"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Beaker, Green, Curved"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb11"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Beaker, Red, Pipette"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb08"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blood Plasma"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_bloodp1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bottle (Drug)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_drug05"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Bottle (Drug) Morphine"
                     },
                     "RESREF": {
@@ -25465,72 +25113,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Bottle (Pills) "
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_drug03"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bottle, Blue, Round"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb22"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bottle, Blue, Sphere"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb26"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bottle, Empty"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb17"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bottle, Green, Round"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb23"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bottle, Red"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_alchb20"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Box (Drug)"
                     },
                     "RESREF": {
@@ -25547,17 +25129,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_tirermp"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cash Register, Old 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_cashrgr"
                     }
                   },
                   {
@@ -25613,28 +25184,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_grnd001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fire Extinguisher (Old Style)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_fireex1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Floor Buffer"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_flrbuff"
                     }
                   },
                   {
@@ -25954,17 +25503,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_specjr3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spray Can, Refill"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_sprayrf"
                     }
                   },
                   {
@@ -26592,17 +26130,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Papers, Notes Scatter"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_pape007"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Papers, Notes Scatter Old"
                     },
                     "RESREF": {
@@ -26855,17 +26382,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_bedmubg"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bench (Metal)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_chair21"
                     }
                   },
                   {
@@ -27356,33 +26872,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Chair, Metal Frame (Black)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_chrblkm"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Chair, Metal Frame (Grey)"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_chrgrym"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chair, Modern Metal Frame (Black)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_chrmdrn"
                     }
                   },
                   {
@@ -28203,17 +27697,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Stool, Camp"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_stool03"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Stool, Camp, Tripod"
                     },
                     "RESREF": {
@@ -28648,17 +28131,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Bottle, Wine (Green) On Side"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_bottle9"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Bottles, Pack"
                     },
                     "RESREF": {
@@ -28945,39 +28417,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Carton, Apple Juice"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_food025"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Carton, Fruit Juice"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_food034"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Carton, Milk"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_food043"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Chicken, Fries"
                     },
                     "RESREF": {
@@ -28994,17 +28433,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_food042"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cleaver"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_cleaver"
                     }
                   },
                   {
@@ -29198,33 +28626,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Food, Salad"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_food046"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Food, Steak"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_food047"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Freezer Dinner"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_food032"
                     }
                   },
                   {
@@ -29528,17 +28934,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Pot"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_pot"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Punch Bowl & Cups"
                     },
                     "RESREF": {
@@ -29555,17 +28950,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_pot2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Skillet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_skillet"
                     }
                   },
                   {
@@ -29628,17 +29012,6 @@
               "LIST": {
                 "type": "list",
                 "value": [
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Flood Light, Portable"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_floodla"
-                    }
-                  },
                   {
                     "__struct_id": 0,
                     "NAME": {
@@ -30253,17 +29626,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Poker, Leaning"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_pokerlg"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Pool Table (Billiards)"
                     },
                     "RESREF": {
@@ -30489,17 +29851,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_sinkb"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Washbasin, Lever Faucet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_sinka"
                     }
                   },
                   {
@@ -31011,17 +30362,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cigar Box"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_cigar02"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Cigar Butt"
                     },
                     "RESREF": {
@@ -31126,28 +30466,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_diary"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dice, Cuts"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_dicecut"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dice, Dots"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_dicedot"
                     }
                   },
                   {
@@ -32599,17 +31917,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_wall001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Wall Papers 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_wall002"
                     }
                   },
                   {
@@ -38670,17 +37977,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hay Piles"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dan_hay"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Hemorgite Vein"
                     },
                     "RESREF": {
@@ -39401,17 +38697,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "korrduntemple"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Sith Fortress - Supply Cache"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "korrdunforge"
                     }
                   },
                   {

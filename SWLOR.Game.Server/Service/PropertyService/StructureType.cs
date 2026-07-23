@@ -1267,8 +1267,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         WardrobeCurvedWhite = 213,
-        [Structure("Washbasin, Lever Faucet",
-            "_mdrn_pl_sinka",
+        [Structure("Washbasin",
+            "_mdrn_pl_washbdl",
             "",
             true,
             1)]

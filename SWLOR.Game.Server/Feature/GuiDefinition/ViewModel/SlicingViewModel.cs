@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -23,29 +22,63 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsToolSelectionEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsToolActivationEnabled { get => Get<bool>(); set => Set(value); }
 
-        public GuiBindingList<string> TileColumn0 { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> TileColumn1 { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> TileColumn2 { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> TileColumn3 { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> TileColumn4 { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public bool IsColumn0Visible => Get<bool>();
+        public bool IsColumn1Visible => Get<bool>();
+        public bool IsColumn2Visible => Get<bool>();
+        public bool IsColumn3Visible => Get<bool>();
+        public bool IsColumn4Visible => Get<bool>();
 
-        public GuiBindingList<string> TooltipColumn0 { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> TooltipColumn1 { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> TooltipColumn2 { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> TooltipColumn3 { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> TooltipColumn4 { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public string TileImage0 => Get<string>();
+        public string TileImage1 => Get<string>();
+        public string TileImage2 => Get<string>();
+        public string TileImage3 => Get<string>();
+        public string TileImage4 => Get<string>();
+        public string TileImage5 => Get<string>();
+        public string TileImage6 => Get<string>();
+        public string TileImage7 => Get<string>();
+        public string TileImage8 => Get<string>();
+        public string TileImage9 => Get<string>();
+        public string TileImage10 => Get<string>();
+        public string TileImage11 => Get<string>();
+        public string TileImage12 => Get<string>();
+        public string TileImage13 => Get<string>();
+        public string TileImage14 => Get<string>();
+        public string TileImage15 => Get<string>();
+        public string TileImage16 => Get<string>();
+        public string TileImage17 => Get<string>();
+        public string TileImage18 => Get<string>();
+        public string TileImage19 => Get<string>();
+        public string TileImage20 => Get<string>();
+        public string TileImage21 => Get<string>();
+        public string TileImage22 => Get<string>();
+        public string TileImage23 => Get<string>();
+        public string TileImage24 => Get<string>();
 
-        public GuiBindingList<bool> EnabledColumn0 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> EnabledColumn1 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> EnabledColumn2 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> EnabledColumn3 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> EnabledColumn4 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-
-        public GuiBindingList<bool> VisibleColumn0 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> VisibleColumn1 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> VisibleColumn2 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> VisibleColumn3 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> VisibleColumn4 { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public string TileTooltip0 => Get<string>();
+        public string TileTooltip1 => Get<string>();
+        public string TileTooltip2 => Get<string>();
+        public string TileTooltip3 => Get<string>();
+        public string TileTooltip4 => Get<string>();
+        public string TileTooltip5 => Get<string>();
+        public string TileTooltip6 => Get<string>();
+        public string TileTooltip7 => Get<string>();
+        public string TileTooltip8 => Get<string>();
+        public string TileTooltip9 => Get<string>();
+        public string TileTooltip10 => Get<string>();
+        public string TileTooltip11 => Get<string>();
+        public string TileTooltip12 => Get<string>();
+        public string TileTooltip13 => Get<string>();
+        public string TileTooltip14 => Get<string>();
+        public string TileTooltip15 => Get<string>();
+        public string TileTooltip16 => Get<string>();
+        public string TileTooltip17 => Get<string>();
+        public string TileTooltip18 => Get<string>();
+        public string TileTooltip19 => Get<string>();
+        public string TileTooltip20 => Get<string>();
+        public string TileTooltip21 => Get<string>();
+        public string TileTooltip22 => Get<string>();
+        public string TileTooltip23 => Get<string>();
+        public string TileTooltip24 => Get<string>();
 
         protected override void Initialize(SlicingPayload initialPayload)
         {
@@ -58,11 +91,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Refresh();
         }
 
-        public Action OnTile0() => () => ClickTile(0);
-        public Action OnTile1() => () => ClickTile(1);
-        public Action OnTile2() => () => ClickTile(2);
-        public Action OnTile3() => () => ClickTile(3);
-        public Action OnTile4() => () => ClickTile(4);
+        public Action OnTile(int row, int column) => () => ClickTile(row, column);
 
         public Action OnPreviousTool() => () => ChangeTool(-1);
         public Action OnNextTool() => () => ChangeTool(1);
@@ -113,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SlicingSession.Abort(Player);
         };
 
-        private void ClickTile(int column)
+        private void ClickTile(int row, int column)
         {
             var session = SlicingSession.Get(Player);
             if (session == null)
@@ -122,9 +151,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var row = NuiGetEventArrayIndex();
             var index = row * session.Board.Width + column;
-            if (column >= session.Board.Width || index >= session.Board.Tiles.Count)
+            if (row >= session.Board.Height || column >= session.Board.Width || index >= session.Board.Tiles.Count)
                 return;
 
             string message;
@@ -183,36 +211,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             FailureText = $"Failure {failureNumber}: {Slicing.GetDestructionChance(failureNumber)}% break risk";
 
             var powered = Slicing.GetPoweredIndices(session.Board);
-            var images = CreateStringColumns();
-            var tooltips = CreateStringColumns();
-            var enabled = CreateBoolColumns();
-            var visible = CreateBoolColumns();
+            for (var column = 0; column < 5; column++)
+                Set(column < session.Board.Width, $"IsColumn{column}Visible");
 
-            for (var row = 0; row < session.Board.Height; row++)
+            for (var row = 0; row < 5; row++)
             {
                 for (var column = 0; column < 5; column++)
                 {
-                    var isVisible = column < session.Board.Width;
-                    visible[column].Add(isVisible);
-                    if (!isVisible)
+                    var slot = row * 5 + column;
+                    if (row >= session.Board.Height || column >= session.Board.Width)
                     {
-                        images[column].Add("Blank");
-                        tooltips[column].Add(string.Empty);
-                        enabled[column].Add(false);
+                        SetTileBinding(slot, "Blank", string.Empty);
                         continue;
                     }
 
                     var index = row * session.Board.Width + column;
-                    images[column].Add(GetTileImage(session, index, powered.Contains(index), integrity));
-                    tooltips[column].Add(GetTileTooltip(session, index));
-                    enabled[column].Add(true);
+                    SetTileBinding(
+                        slot,
+                        GetTileImage(session, index, powered.Contains(index), integrity),
+                        GetTileTooltip(session, index));
                 }
             }
-
-            TileColumn0 = images[0]; TileColumn1 = images[1]; TileColumn2 = images[2]; TileColumn3 = images[3]; TileColumn4 = images[4];
-            TooltipColumn0 = tooltips[0]; TooltipColumn1 = tooltips[1]; TooltipColumn2 = tooltips[2]; TooltipColumn3 = tooltips[3]; TooltipColumn4 = tooltips[4];
-            EnabledColumn0 = enabled[0]; EnabledColumn1 = enabled[1]; EnabledColumn2 = enabled[2]; EnabledColumn3 = enabled[3]; EnabledColumn4 = enabled[4];
-            VisibleColumn0 = visible[0]; VisibleColumn1 = visible[1]; VisibleColumn2 = visible[2]; VisibleColumn3 = visible[3]; VisibleColumn4 = visible[4];
 
             _tools.Clear();
             _tools.AddRange(SlicingSession.GetEligibleTools(Player));
@@ -294,14 +313,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return string.Join(" - ", parts);
         }
 
-        private static GuiBindingList<string>[] CreateStringColumns()
+        private void SetTileBinding(int slot, string image, string tooltip)
         {
-            return Enumerable.Range(0, 5).Select(_ => new GuiBindingList<string>()).ToArray();
-        }
-
-        private static GuiBindingList<bool>[] CreateBoolColumns()
-        {
-            return Enumerable.Range(0, 5).Select(_ => new GuiBindingList<bool>()).ToArray();
+            Set(image, $"TileImage{slot}");
+            Set(tooltip, $"TileTooltip{slot}");
         }
 
         private static string FormatToolName(SlicingToolType type)

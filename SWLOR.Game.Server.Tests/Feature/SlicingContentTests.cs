@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
@@ -190,7 +191,7 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingNuiLayout_UsesOneSquareGridHidesUnusedCellsAndRestoresGeometry()
+    public void SlicingNuiLayout_UsesStaticScalarBoundGridAndRestoresGeometry()
     {
         var root = FindRepositoryRoot();
         var definition = File.ReadAllText(Path.Combine(
@@ -199,21 +200,29 @@ public class SlicingContentTests
             root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "SlicingViewModel.cs"));
 
         definition.Should().Contain("private const float TileSize = 72f;");
-        definition.Should().Contain(".SetRowHeight(TileSize)");
-        definition.Should().Contain("cell.SetWidth(TileSize);");
-        definition.Should().Contain("cell.SetIsVariable(false);");
-        definition.Should().Contain(".SetScrollbars(NuiScrollbars.None)");
-        definition.Should().Contain("IMPORTANT: Keep the board as one GuiList.");
-        (definition.Split(".AddList(", StringSplitOptions.None).Length - 1).Should().Be(1);
-        definition.Should().NotContain("AddTileColumn");
-        definition.Should().Contain(".BindIsVisible(model => model.VisibleColumn3)");
-        definition.Should().Contain(".BindIsVisible(model => model.VisibleColumn4)");
+        definition.Should().Contain("Keep this as a static row/column board.");
+        definition.Should().Contain("Do not reintroduce list templates or vector visibility");
+        definition.Should().NotContain(".AddList(", "list templates collapse this particular live NUI window");
+        definition.Should().Contain("for (var tileColumn = 0; tileColumn < 5; tileColumn++)");
+        definition.Should().Contain("AddTileColumn(row, tileColumn);");
+        definition.Should().Contain(".BindIsVisible(Binding<bool>($\"IsColumn{column}Visible\"))");
+        definition.Should().Contain(".BindOnClicked(model => model.OnTile(tileRow, column))");
+        definition.Should().Contain(".SetHeight(TileSize)");
+        definition.Should().Contain(".SetWidth(TileSize)");
 
         viewModel.Should().Contain("RestoreFixedWindowGeometry();");
         viewModel.Should().Contain("Keep this recovery local to Slicing; do not generalize it into Gui.");
-        viewModel.Should().Contain("for (var column = 0; column < 5; column++)");
-        viewModel.Should().Contain("var isVisible = column < session.Board.Width;");
-        viewModel.Should().Contain("images[column].Add(\"Blank\")");
+        viewModel.Should().Contain("Set(column < session.Board.Width, $\"IsColumn{column}Visible\");");
+        viewModel.Should().Contain("var slot = row * 5 + column;");
+        viewModel.Should().Contain("Set(image, $\"TileImage{slot}\");");
+        viewModel.Should().NotContain("GuiBindingList<string> TileColumn");
+        viewModel.Should().NotContain("NuiGetEventArrayIndex()");
+
+        for (var slot = 0; slot < 25; slot++)
+        {
+            typeof(SlicingViewModel).GetProperty($"TileImage{slot}").Should().NotBeNull();
+            typeof(SlicingViewModel).GetProperty($"TileTooltip{slot}").Should().NotBeNull();
+        }
     }
 
     [Test]

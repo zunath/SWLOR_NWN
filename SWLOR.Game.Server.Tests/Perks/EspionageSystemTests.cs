@@ -119,6 +119,16 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("Perk.GetPerkLevel(creature, PerkType.Stealth) > 0");
         stealthSource.Should().Contain("enteredDuringCombatWithoutWindow");
         stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);");
+
+        var auditSource = File.ReadAllText(Path.Combine(
+            root,
+            "tools",
+            "UpdateCombatUpgradeAudit.ps1"));
+        auditSource.Should().Contain("Import-NativeActionModePerkNameIndex");
+        auditSource.Should().Contain(".AutoAddActionModeToHotBar");
+        auditSource.Should().Contain(
+            "if ($isActiveType -and !$usesNativeActionMode -and !$abilityBaseNameIndex.ContainsKey($rowBaseName))",
+            "native action-mode metadata should suppress only the custom-ability audit requirement");
     }
 
     [Test]

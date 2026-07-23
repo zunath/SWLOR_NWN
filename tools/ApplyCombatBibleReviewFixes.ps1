@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$WorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx"
+    [string]$WorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx",
+    [switch]$EspionageStealthOnly
 )
 
 Set-StrictMode -Version Latest
@@ -811,10 +812,10 @@ foreach ($entry in $mimicryDamageScaling.GetEnumerator()) {
 }
 
 $espionageDescriptions = @{
-    "Stealth I" = "Unlocks NWN's built-in Stealth mode and grants +5 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth II" = "Improves NWN's built-in Stealth mode to grant +10 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth III" = "Improves NWN's built-in Stealth mode to grant +15 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
-    "Stealth IV" = "Improves NWN's built-in Stealth mode to grant +20 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth I" = "Enter stealth, increasing Stealth by 5 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth II" = "Enter stealth, increasing Stealth by 10 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth III" = "Enter stealth, increasing Stealth by 15 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
+    "Stealth IV" = "Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat."
     "Back Attack I" = "Melee weapon attacks from behind a target deal +3% damage."
     "Back Attack II" = "Melee weapon attacks from behind a target deal +5% damage and gain +3% Critical Rate."
     "Back Attack III" = "Melee weapon attacks from behind a target deal +8% damage and gain +5% Critical Rate."
@@ -1205,6 +1206,15 @@ function Get-OrCreateWorksheetCell {
 
     $Row.Add($cell)
     return $cell
+}
+
+if ($EspionageStealthOnly) {
+    $stealthPerkNames = @("Stealth I", "Stealth II", "Stealth III", "Stealth IV")
+    $perkChanges = @($perkChanges | Where-Object {
+        $_.Sheet -eq "Espionage" -and $_.PerkName -in $stealthPerkNames
+    })
+    $characterStatChanges = @()
+    $auditSheetChanges = @()
 }
 
 $tempWorkbookPath = Join-Path ([IO.Path]::GetTempPath()) ("swlor-combat-bible-{0}.xlsx" -f [guid]::NewGuid())

@@ -20,6 +20,7 @@ public class SkillMappingTests
     public void GetSkillTypeByBaseItem_MapsPistolProjectileBaseItemsToPistol()
     {
         Skill.GetSkillTypeByBaseItem(BaseItem.Pistol).Should().Be(SkillType.Pistol);
+        Skill.GetSkillTypeByBaseItem(BaseItem.LegacyPistol).Should().Be(SkillType.Pistol);
         Skill.GetSkillTypeByBaseItem(BaseItem.Arrow).Should().Be(SkillType.Pistol);
         Skill.GetSkillTypeByBaseItem(BaseItem.Bullet).Should().Be(SkillType.Pistol);
         Skill.GetSkillTypeByBaseItem(BaseItem.Sling).Should().Be(SkillType.Pistol);

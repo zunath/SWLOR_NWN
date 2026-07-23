@@ -140,6 +140,29 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BlueprintCatalog_LocStringWithOnlyStrRef_UsesTlkResolverForNameAndSearch()
+        {
+            using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);
+            var workspace = new ModuleWorkspace(synthetic.Path);
+            var placeable = UtpDocument.Load(
+                workspace.GetResourcePath(ResourceType.Utp, "zep_shrine"));
+            var expectedStrRef = placeable.LocName.StrRef;
+            expectedStrRef.Should().NotBeNull();
+
+            var catalog = new BlueprintCatalog(
+                workspace,
+                resolveStrRef: strRef => strRef == expectedStrRef ? "Resolved Zepher Shrine" : null);
+            catalog.BuildTask.GetAwaiter().GetResult();
+
+            var entry = catalog.Entries.Should().ContainSingle(item =>
+                item.ResourceType == ResourceType.Utp && item.ResRef == "zep_shrine").Subject;
+            entry.Name.Should().Be("Resolved Zepher Shrine");
+            catalog.Search("resolved zepher").Should().ContainSingle(result =>
+                result.Entry.ResRef == "zep_shrine" &&
+                result.MatchKind == CatalogMatchKind.Prefix);
+        }
+
+        [Test]
         public void BlueprintCatalog_Progress_ReachesTotalCountOnCompletion()
         {
             using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);
@@ -281,6 +304,14 @@ namespace SWLOR.Toolset.Tests
                         System.IO.Path.Combine(realModuleDirectory, "utc", "alask.utc.json"),
                         System.IO.Path.Combine(root, "utc", "alask.utc.json"));
                     utcCount++;
+                }
+
+                // This blueprint intentionally stores only a custom TLK strref in LocName, making
+                // it a compact regression fixture for catalog name resolution through TlkService.
+                if (!File.Exists(System.IO.Path.Combine(root, "utp", "zep_shrine.utp.json")))
+                {
+                    CopyNamed(realModuleDirectory, root, "utp", "zep_shrine");
+                    utpCount++;
                 }
 
                 var expectedCount = 1 /* area */ + utcCount + utiCount + utpCount + utdCount;

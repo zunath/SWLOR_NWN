@@ -13,7 +13,50 @@ namespace SWLOR.Toolset.Editors
 {
     /// <summary>One row of an instance-list grid: enough to display and re-locate the backing
     /// struct (by list index) for the detail form below the grid.</summary>
-    public sealed record InstanceRow(int Index, string Tag, string TemplateResRef, float X, float Y, float Z);
+    public sealed class InstanceRow : ObservableObject
+    {
+        private string _tag;
+        private float _x;
+        private float _y;
+        private float _z;
+
+        public int Index { get; }
+        public string TemplateResRef { get; }
+
+        public string Tag
+        {
+            get => _tag;
+            set => SetProperty(ref _tag, value);
+        }
+
+        public float X
+        {
+            get => _x;
+            set => SetProperty(ref _x, value);
+        }
+
+        public float Y
+        {
+            get => _y;
+            set => SetProperty(ref _y, value);
+        }
+
+        public float Z
+        {
+            get => _z;
+            set => SetProperty(ref _z, value);
+        }
+
+        public InstanceRow(int index, string tag, string templateResRef, float x, float y, float z)
+        {
+            Index = index;
+            _tag = tag;
+            TemplateResRef = templateResRef;
+            _x = x;
+            _y = y;
+            _z = z;
+        }
+    }
 
     /// <summary>
     /// One expandable section of the composite area editor: the placed-instance list for a
@@ -96,8 +139,9 @@ namespace SWLOR.Toolset.Editors
             RefreshFromDocument();
         }
 
-        /// <summary>Rebuilds the grid rows from the current document state (initial load and
-        /// after every edit, including undo/redo).</summary>
+        /// <summary>Rebuilds the grid rows from the current document state for initial load,
+        /// structural edits, and undo/redo. Detail-field edits update the selected row in place
+        /// so typing does not recreate every row in a large area.</summary>
         public void RefreshFromDocument()
         {
             var selectedIndex = SelectedRow?.Index;
@@ -133,16 +177,7 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            _isLoadingDetail = true;
-            DetailTag = InstanceFieldMap.GetTag(element) ?? string.Empty;
-            var (x, y, z) = InstanceFieldMap.GetPosition(_blueprintType, element);
-            DetailX = x;
-            DetailY = y;
-            DetailZ = z;
-            var (xOrientation, yOrientation) = InstanceFieldMap.GetOrientation(_blueprintType, element);
-            DetailXOrientation = xOrientation;
-            DetailYOrientation = yOrientation;
-            _isLoadingDetail = false;
+            LoadDetailFromElement(element);
 
             VarTableSection = new VarTableSectionViewModel(
                 new EditorFieldContext(_gitSession.Document, (description, mutation) => _runEdit(description, mutation)),
@@ -159,8 +194,10 @@ namespace SWLOR.Toolset.Editors
             if (element == null)
                 return;
 
-            _runEdit($"Change {Title} tag", () => InstanceFieldMap.SetTag(element, value));
-            RefreshFromDocument();
+            if (_runEdit($"Change {Title} tag", () => InstanceFieldMap.SetTag(element, value)))
+                row.Tag = value;
+            else
+                LoadDetailFromElement(element);
         }
 
         partial void OnDetailXChanged(double value) => ApplyPositionEdit();
@@ -181,8 +218,18 @@ namespace SWLOR.Toolset.Editors
             var x = (float)DetailX;
             var y = (float)DetailY;
             var z = (float)DetailZ;
-            _runEdit($"Move {Title} instance", () => InstanceFieldMap.SetPosition(_blueprintType, element, x, y, z));
-            RefreshFromDocument();
+            if (_runEdit(
+                    $"Move {Title} instance",
+                    () => InstanceFieldMap.SetPosition(_blueprintType, element, x, y, z)))
+            {
+                row.X = x;
+                row.Y = y;
+                row.Z = z;
+            }
+            else
+            {
+                LoadDetailFromElement(element);
+            }
         }
 
         private void ApplyOrientationEdit()
@@ -196,9 +243,32 @@ namespace SWLOR.Toolset.Editors
 
             var xOrientation = (float)DetailXOrientation;
             var yOrientation = (float)DetailYOrientation;
-            _runEdit($"Rotate {Title} instance",
-                () => InstanceFieldMap.SetOrientation(_blueprintType, element, xOrientation, yOrientation));
-            RefreshFromDocument();
+            if (!_runEdit(
+                    $"Rotate {Title} instance",
+                    () => InstanceFieldMap.SetOrientation(_blueprintType, element, xOrientation, yOrientation)))
+            {
+                LoadDetailFromElement(element);
+            }
+        }
+
+        private void LoadDetailFromElement(JsonGffStruct element)
+        {
+            _isLoadingDetail = true;
+            try
+            {
+                DetailTag = InstanceFieldMap.GetTag(element) ?? string.Empty;
+                var (x, y, z) = InstanceFieldMap.GetPosition(_blueprintType, element);
+                DetailX = x;
+                DetailY = y;
+                DetailZ = z;
+                var (xOrientation, yOrientation) = InstanceFieldMap.GetOrientation(_blueprintType, element);
+                DetailXOrientation = xOrientation;
+                DetailYOrientation = yOrientation;
+            }
+            finally
+            {
+                _isLoadingDetail = false;
+            }
         }
 
         [RelayCommand]

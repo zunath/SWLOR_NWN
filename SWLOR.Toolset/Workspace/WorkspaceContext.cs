@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Workspace
@@ -14,6 +15,7 @@ namespace SWLOR.Toolset.Workspace
     {
         private readonly Func<string, ModuleWorkspace> _workspaceFactory;
         private readonly OutputLogService _log;
+        private readonly TlkService? _tlkService;
 
         public ModuleWorkspace? Workspace { get; private set; }
         public BlueprintCatalog? Catalog { get; private set; }
@@ -21,10 +23,14 @@ namespace SWLOR.Toolset.Workspace
         public event Action? WorkspaceOpened;
         public event Action<ResourceType, string>? CatalogEntryRefreshed;
 
-        public WorkspaceContext(Func<string, ModuleWorkspace> workspaceFactory, OutputLogService log)
+        public WorkspaceContext(
+            Func<string, ModuleWorkspace> workspaceFactory,
+            OutputLogService log,
+            TlkService? tlkService = null)
         {
             _workspaceFactory = workspaceFactory ?? throw new ArgumentNullException(nameof(workspaceFactory));
             _log = log ?? throw new ArgumentNullException(nameof(log));
+            _tlkService = tlkService;
         }
 
         /// <summary>
@@ -42,18 +48,21 @@ namespace SWLOR.Toolset.Workspace
             var catalogStopwatch = Stopwatch.StartNew();
             var lastLoggedPercent = -1;
 
-            Catalog = new BlueprintCatalog(Workspace, (processed, total) =>
-            {
-                if (total <= 0)
-                    return;
+            Catalog = new BlueprintCatalog(
+                Workspace,
+                (processed, total) =>
+                {
+                    if (total <= 0)
+                        return;
 
-                var percent = processed * 100 / total;
-                if (percent == lastLoggedPercent || percent % 20 != 0)
-                    return;
+                    var percent = processed * 100 / total;
+                    if (percent == lastLoggedPercent || percent % 20 != 0)
+                        return;
 
-                lastLoggedPercent = percent;
-                _log.AppendLine($"Catalog build: {processed}/{total} ({percent}%).");
-            });
+                    lastLoggedPercent = percent;
+                    _log.AppendLine($"Catalog build: {processed}/{total} ({percent}%).");
+                },
+                _tlkService == null ? null : _tlkService.GetString);
 
             Catalog.BuildTask.ContinueWith(_ =>
             {

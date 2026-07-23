@@ -214,9 +214,12 @@ void main()
         private uint _highlightVbo;
         private bool _hasHighlightBuffer;
 
-        private AreaScene? _scene;
+        private sealed record SceneState(AreaScene? Scene, long Version);
+
+        private SceneState _sceneState = new(null, 0);
+        private long _nextSceneVersion;
+        private long _renderedSceneVersion = -1;
         private IReadOnlyList<AreaDrawBatcher.TileBatch>? _tileBatches;
-        private bool _sceneDirty;
 
         private int _viewportWidth;
         private int _viewportHeight;
@@ -405,12 +408,12 @@ void main()
         /// </summary>
         public AreaScene? Scene
         {
-            get => _scene;
+            get => Volatile.Read(ref _sceneState).Scene;
             set
             {
-                var hadScene = _scene != null;
-                _scene = value;
-                _sceneDirty = true;
+                var hadScene = Volatile.Read(ref _sceneState).Scene != null;
+                var version = Interlocked.Increment(ref _nextSceneVersion);
+                Volatile.Write(ref _sceneState, new SceneState(value, version));
 
                 if (value != null && !hadScene)
                     ResetCameraForScene(value);
@@ -601,7 +604,8 @@ void main()
         /// </summary>
         private void RaiseInstancePicked(Point screenPos)
         {
-            if (_scene == null || _viewportWidth <= 0 || _viewportHeight <= 0)
+            var scene = Volatile.Read(ref _sceneState).Scene;
+            if (scene == null || _viewportWidth <= 0 || _viewportHeight <= 0)
             {
                 InstancePicked?.Invoke(null);
                 return;
@@ -611,7 +615,7 @@ void main()
                 new Vector2((float)screenPos.X, (float)screenPos.Y),
                 _viewportWidth, _viewportHeight, _lastView, _lastProjection);
 
-            var hit = AreaPicking.PickClosestInstance(ray, _scene, _showPlaceableModels);
+            var hit = AreaPicking.PickClosestInstance(ray, scene, _showPlaceableModels);
             InstancePicked?.Invoke(hit);
         }
 
@@ -630,7 +634,8 @@ void main()
         /// <summary>Whether a press at <paramref name="screenPos"/> lands on <see cref="_selectedInstance"/> specifically (not the whole scene), using the same marker-vs-model rule everything else here uses.</summary>
         private bool TryHitSelectedInstance(Point screenPos)
         {
-            if (_scene == null || _selectedInstance is not { } selected)
+            if (Volatile.Read(ref _sceneState).Scene == null ||
+                _selectedInstance is not { } selected)
                 return false;
 
             var ray = TryBuildRay(screenPos);
@@ -738,7 +743,8 @@ void main()
             // Snap the new instance onto the real walkmesh floor under the cursor (its Z
             // then matches in-game ground, including on elevated tiles). Areas/tiles with no
             // resolvable .wok fall back to the flat Z=0 ground plane the pre-6.1 flow always used.
-            var point = (_scene != null ? AreaWalkmesh.RaycastGround(ray.Value, _scene) : null)
+            var scene = Volatile.Read(ref _sceneState).Scene;
+            var point = (scene != null ? AreaWalkmesh.RaycastGround(ray.Value, scene) : null)
                         ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
             if (point is not { } hit)
                 return;
@@ -759,7 +765,8 @@ void main()
             if (ray == null)
                 return;
 
-            var point = (_scene != null ? AreaWalkmesh.RaycastGround(ray.Value, _scene) : null)
+            var scene = Volatile.Read(ref _sceneState).Scene;
+            var point = (scene != null ? AreaWalkmesh.RaycastGround(ray.Value, scene) : null)
                         ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
             if (point is not { } hit)
                 return;
@@ -856,6 +863,7 @@ void main()
 
                 _uniformLocations.Clear(); // Locations are per-program; a fresh program invalidates any cached ones.
                 BuildStaticMeshes();
+                _renderedSceneVersion = -1;
 
                 RaiseStatus(IsLikelySoftwareRenderer(renderer)
                     ? $"3D view running on software rendering ({renderer}); performance may be degraded."
@@ -948,20 +956,22 @@ void main()
             _gl.Disable(EnableCap.CullFace);
             _gl.Viewport(0, 0, pixelWidth, pixelHeight);
 
-            if (_scene == null)
+            var sceneState = Volatile.Read(ref _sceneState);
+            var scene = sceneState.Scene;
+            if (scene == null)
                 return;
 
             try
             {
-                if (_sceneDirty)
+                if (sceneState.Version != _renderedSceneVersion)
                 {
-                    RebuildPolygonBuffer(_scene);
-                    RebuildWalkmeshBuffer(_scene);
-                    _tileBatches = AreaDrawBatcher.GroupByModel(_scene.Tiles);
-                    _sceneDirty = false;
+                    RebuildPolygonBuffer(scene);
+                    RebuildWalkmeshBuffer(scene);
+                    _tileBatches = AreaDrawBatcher.GroupByModel(scene.Tiles);
+                    _renderedSceneVersion = sceneState.Version;
                 }
 
-                DrawScene(width, height);
+                DrawScene(scene, width, height);
             }
             catch (Exception ex)
             {
@@ -1115,12 +1125,11 @@ void main()
         /// <summary>
         /// The area's decoded lighting brightened for editor visibility: each channel of the
         /// ambient and diffuse colors is lifted from a floor toward its authored value, so night
-        /// areas keep their cool hue but never go too dark to edit. Falls back to the neutral
-        /// default when no scene/lighting is set.
+        /// areas keep their cool hue but never go too dark to edit.
         /// </summary>
-        private (Vector3 Ambient, Vector3 Diffuse) EditorSceneLighting()
+        private static (Vector3 Ambient, Vector3 Diffuse) EditorSceneLighting(AreaScene scene)
         {
-            var lighting = _scene?.Lighting ?? AreaLighting.Default;
+            var lighting = scene.Lighting;
             return (
                 LiftFromFloor(lighting.AmbientColor, AmbientLightFloor),
                 LiftFromFloor(lighting.DiffuseColor, DiffuseLightFloor));
@@ -1129,7 +1138,7 @@ void main()
         private static Vector3 LiftFromFloor(Vector3 color, float floor) =>
             new Vector3(floor) + color * (1f - floor);
 
-        private void DrawScene(int width, int height)
+        private void DrawScene(AreaScene scene, int width, int height)
         {
             var farPlane = MathF.Max(_distance, _initialDistance) * 25f + 100f;
             var aspect = (float)width / height;
@@ -1147,7 +1156,7 @@ void main()
             _gl!.UseProgram(_shaderProgram);
             SetUniformMatrix4("view", view);
             SetUniformMatrix4("projection", projection);
-            var (ambient, diffuse) = EditorSceneLighting();
+            var (ambient, diffuse) = EditorSceneLighting(scene);
             SetUniformVec3("lightDir", LightDir);
             SetUniformVec3("lightColor", diffuse);
             SetUniformVec3("ambientColor", ambient);
@@ -1159,7 +1168,7 @@ void main()
             // Markers, walkmesh overlay, and trigger outlines are never ceiling-clipped — reset the sticky per-tile value.
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
             DrawWalkmeshOverlay();
-            DrawInstanceMarkers();
+            DrawInstanceMarkers(scene);
             DrawPolygonOverlays();
             DrawSelectionHighlight();
 
@@ -1286,15 +1295,12 @@ void main()
             return !(outLeft == 8 || outRight == 8 || outBottom == 8 || outTop == 8 || outNear == 8 || outFar == 8);
         }
 
-        private void DrawInstanceMarkers()
+        private void DrawInstanceMarkers(AreaScene scene)
         {
-            if (_scene == null)
-                return;
-
             // Pass 1: instances with resolved render geometry (placeables, doors) draw their
             // actual model, textured and lit, at the instance's position/heading (or its live
             // manipulation preview, while a move/rotate drag is in progress on it).
-            foreach (var raw in _scene.Instances)
+            foreach (var raw in scene.Instances)
             {
                 if (!DrawsAsModel(raw))
                     continue;
@@ -1329,7 +1335,7 @@ void main()
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", 1f);
 
-            foreach (var raw in _scene.Instances)
+            foreach (var raw in scene.Instances)
             {
                 if (DrawsAsModel(raw))
                     continue;
@@ -1415,7 +1421,7 @@ void main()
         /// </summary>
         private void DrawSelectionHighlight()
         {
-            if (_scene == null || _selectedInstance is not { } instance || _gl == null)
+            if (_selectedInstance is not { } instance || _gl == null)
                 return;
 
             var (min, max) = AreaPicking.ComputeInstanceWorldBounds(Displayed(instance), DrawsAsModel(instance));

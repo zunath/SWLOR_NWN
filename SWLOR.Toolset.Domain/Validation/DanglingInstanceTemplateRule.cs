@@ -64,7 +64,10 @@ namespace SWLOR.Toolset.Domain.Validation
                     foreach (var instance in mapping.Selector(git))
                     {
                         if (mapping.Type == ResourceType.Utp &&
-                            instance.GetStringOrNull("OnUsed") == QuestEncounterOnUsed)
+                            string.Equals(
+                                instance.GetStringOrNull("OnUsed"),
+                                QuestEncounterOnUsed,
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }

@@ -32,7 +32,7 @@ dotnet build SWLOR.Game.Server.sln -p:RunPostBuildEvent=Never
 ```
 
 ```bash
-dotnet run --project SWLOR.Toolset
+dotnet run --no-build --project SWLOR.Toolset
 ```
 
 > **Do not run `dotnet` from inside `External/Radoub`.** Its `global.json` pins SDK `9.0.100`, which

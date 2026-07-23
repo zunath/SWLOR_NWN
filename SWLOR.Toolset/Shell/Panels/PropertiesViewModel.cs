@@ -57,7 +57,8 @@ namespace SWLOR.Toolset.Shell.Panels
             {
                 if (entry.ResourceType == ResourceType.Area)
                 {
-                    var (are, _, _) = workspace.LoadArea(entry.ResRef);
+                    var are = AreDocument.Load(
+                        workspace.GetResourcePath(ResourceType.Area, entry.ResRef));
                     ShowAreaSummary(are);
                 }
                 else

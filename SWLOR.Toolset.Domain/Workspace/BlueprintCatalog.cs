@@ -33,6 +33,7 @@ namespace SWLOR.Toolset.Domain.Workspace
     public sealed class BlueprintCatalog
     {
         private readonly ModuleWorkspace _workspace;
+        private readonly Func<uint, string?>? _resolveStrRef;
         private readonly object _snapshotLock = new();
         private readonly ConcurrentDictionary<string, CatalogEntry> _indexedEntries =
             new(StringComparer.OrdinalIgnoreCase);
@@ -63,9 +64,18 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// (processedCount, totalCount). Not guaranteed to be invoked on any particular thread -
         /// callers updating UI state must marshal back themselves.
         /// </param>
-        public BlueprintCatalog(ModuleWorkspace workspace, Action<int, int>? onProgress = null)
+        /// <param name="resolveStrRef">
+        /// Optional TLK resolver used when a localized name has a string reference but no inline
+        /// English text. Without one, those names remain unresolved while resref/tag indexing
+        /// continues normally.
+        /// </param>
+        public BlueprintCatalog(
+            ModuleWorkspace workspace,
+            Action<int, int>? onProgress = null,
+            Func<uint, string?>? resolveStrRef = null)
         {
             _workspace = workspace ?? throw new ArgumentNullException(nameof(workspace));
+            _resolveStrRef = resolveStrRef;
             BuildTask = Task.Run(() => Build(onProgress));
         }
 
@@ -149,58 +159,70 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
         }
 
-        private static (string? Name, string? Tag) ExtractNameAndTag(ResourceType type, byte[] bytes)
+        private (string? Name, string? Tag) ExtractNameAndTag(ResourceType type, byte[] bytes)
         {
             switch (type)
             {
                 case ResourceType.Area:
                 {
                     var doc = AreDocument.Parse(bytes);
-                    return (doc.Name.Text, doc.Tag);
+                    return (ResolveLocString(doc.Name), doc.Tag);
                 }
                 case ResourceType.Utc:
                 {
                     var doc = UtcDocument.Parse(bytes);
-                    return (JoinName(doc.FirstName.Text, doc.LastName.Text), doc.Tag);
+                    return (JoinName(
+                        ResolveLocString(doc.FirstName),
+                        ResolveLocString(doc.LastName)), doc.Tag);
                 }
                 case ResourceType.Uti:
                 {
                     var doc = UtiDocument.Parse(bytes);
-                    return (doc.LocalizedName.Text, doc.Tag);
+                    return (ResolveLocString(doc.LocalizedName), doc.Tag);
                 }
                 case ResourceType.Utp:
                 {
                     var doc = UtpDocument.Parse(bytes);
-                    return (doc.LocName.Text, doc.Tag);
+                    return (ResolveLocString(doc.LocName), doc.Tag);
                 }
                 case ResourceType.Utd:
                 {
                     var doc = UtdDocument.Parse(bytes);
-                    return (doc.LocName.Text, doc.Tag);
+                    return (ResolveLocString(doc.LocName), doc.Tag);
                 }
                 case ResourceType.Utm:
                 {
                     var doc = UtmDocument.Parse(bytes);
-                    return (doc.LocName.Text, doc.Tag);
+                    return (ResolveLocString(doc.LocName), doc.Tag);
                 }
                 case ResourceType.Utt:
                 {
                     var doc = UttDocument.Parse(bytes);
-                    return (doc.LocalizedName.Text, doc.Tag);
+                    return (ResolveLocString(doc.LocalizedName), doc.Tag);
                 }
                 case ResourceType.Uts:
                 {
                     var doc = UtsDocument.Parse(bytes);
-                    return (doc.LocName.Text, doc.Tag);
+                    return (ResolveLocString(doc.LocName), doc.Tag);
                 }
                 case ResourceType.Utw:
                 {
                     var doc = UtwDocument.Parse(bytes);
-                    return (doc.LocalizedName.Text, doc.Tag);
+                    return (ResolveLocString(doc.LocalizedName), doc.Tag);
                 }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.");
             }
+        }
+
+        private string? ResolveLocString(LocString value)
+        {
+            if (!string.IsNullOrEmpty(value.Text))
+                return value.Text;
+
+            return value.StrRef is { } strRef && strRef != uint.MaxValue
+                ? _resolveStrRef?.Invoke(strRef)
+                : null;
         }
 
         private static string? JoinName(string? first, string? last)

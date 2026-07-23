@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editing;
@@ -155,14 +156,22 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
-            _session.Execute($"Rename category to '{newName}'", () =>
+            try
             {
-                if (node.Struct.TryGet("NAME", out var existing))
-                    existing.SetString(newName);
-                else
-                    node.Struct.Add("NAME",
-                        JsonGffField.CreateScalar(GffFieldType.CExoString, JsonStringCodec.Encode(newName)));
-            });
+                _session.Execute($"Rename category to '{newName}'", () =>
+                {
+                    if (node.Struct.TryGet("NAME", out var existing))
+                        existing.SetString(newName);
+                    else
+                        node.Struct.Add("NAME",
+                            JsonGffField.CreateScalar(GffFieldType.CExoString, JsonStringCodec.Encode(newName)));
+                });
+            }
+            catch (EncoderFallbackException)
+            {
+                StatusMessage = "Category names may only contain Windows-1252 characters.";
+                return;
+            }
 
             RebuildTree();
             NotifyHistoryChanged();

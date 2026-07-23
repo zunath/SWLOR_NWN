@@ -124,9 +124,9 @@ namespace SWLOR.Toolset.Tests
 
             var git = SyntheticGit.Create();
             git.Fields.Add("Placeable List", SyntheticGit.ListOf(
-                SyntheticGit.Instance(("Tag", GffFieldType.CExoString, "bf_kess_call"),
-                    ("TemplateResRef", GffFieldType.ResRef, "bf_kess_call"),
-                    ("OnUsed", GffFieldType.ResRef, "quest_enc"))));
+                    SyntheticGit.Instance(("Tag", GffFieldType.CExoString, "bf_kess_call"),
+                        ("TemplateResRef", GffFieldType.ResRef, "bf_kess_call"),
+                        ("OnUsed", GffFieldType.ResRef, "QUEST_ENC"))));
             module.WriteGit("dangletest", git);
 
             var issues = new DanglingInstanceTemplateRule().Validate(new ValidationContext(module.Workspace)).ToList();

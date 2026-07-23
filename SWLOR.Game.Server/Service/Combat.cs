@@ -3086,7 +3086,9 @@ namespace SWLOR.Game.Server.Service
                 return true;
 
             return GetIsReactionTypeHostile(attacker, defender) ||
-                   GetIsEnemy(attacker, defender);
+                   GetIsReactionTypeHostile(defender, attacker) ||
+                   GetIsEnemy(attacker, defender) ||
+                   GetIsEnemy(defender, attacker);
         }
 
         private static void SendGuardedHitFeedback(uint defender, uint attacker, int preventedDamage)

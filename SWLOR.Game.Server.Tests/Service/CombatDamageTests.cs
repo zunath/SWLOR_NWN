@@ -555,6 +555,11 @@ public class CombatDamageTests
         guard.IndexOf("!isLandedAttack", StringComparison.Ordinal).Should().BeLessThan(
             guard.IndexOf("var guardChance", StringComparison.Ordinal),
             "discarded swings must never enter the Guard roll");
+        var guardableSource = ExtractMethod(combatSource, "private static bool IsGuardableAttackSource(");
+        guardableSource.Should().Contain("GetIsReactionTypeHostile(attacker, defender)");
+        guardableSource.Should().Contain("GetIsReactionTypeHostile(defender, attacker)");
+        guardableSource.Should().Contain("GetIsEnemy(attacker, defender)");
+        guardableSource.Should().Contain("GetIsEnemy(defender, attacker)");
         damageRollSource.Should().Contain("private static bool IsLandedAttackOnDamageableTarget(");
         damageRollSource.Should().Contain("targetObject.m_bPlotObject == 1");
         damageRollSource.Should().Contain("ResolveAttackRoll.IsSuccessfulAttackResult(attackData.m_nAttackResult)");

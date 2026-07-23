@@ -40,16 +40,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.Stealth)
                 .Name("Stealth")
+                .Icon("ife_stealth1")
+                .AutoAddActionModeToHotBar(ActionMode.Stealth)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Stealth1)
                 .Description("Enter stealth, increasing Stealth by 5 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.Stealth, 5)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Stealth2)
                 .Description("Enter stealth, increasing Stealth by 10 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 15)
@@ -57,7 +57,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.Stealth, 10)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Stealth3)
                 .Description("Enter stealth, increasing Stealth by 15 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 28)
@@ -65,7 +64,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.Stealth, 15)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Stealth4)
                 .Description("Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)

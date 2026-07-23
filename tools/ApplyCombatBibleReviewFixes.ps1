@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$WorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx"
+    [string]$WorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx",
+    [switch]$EspionageStealthOnly
 )
 
 Set-StrictMode -Version Latest
@@ -852,10 +853,16 @@ foreach ($entry in $alertnessDescriptions.GetEnumerator()) {
     }
 }
 foreach ($entry in $espionageDescriptions.GetEnumerator()) {
+    $values = @{ Description = $entry.Value }
+    if ($entry.Key -match '^Stealth (I|II|III|IV)$') {
+        $values['Type'] = 'Toggle'
+        $values['Casting Time'] = '-'
+        $values['Cooldown Time'] = '-'
+    }
     $perkChanges += @{
         Sheet = "Espionage"
         PerkName = $entry.Key
-        Values = @{ Description = $entry.Value }
+        Values = $values
     }
 }
 
@@ -1199,6 +1206,15 @@ function Get-OrCreateWorksheetCell {
 
     $Row.Add($cell)
     return $cell
+}
+
+if ($EspionageStealthOnly) {
+    $stealthPerkNames = @("Stealth I", "Stealth II", "Stealth III", "Stealth IV")
+    $perkChanges = @($perkChanges | Where-Object {
+        $_.Sheet -eq "Espionage" -and $_.PerkName -in $stealthPerkNames
+    })
+    $characterStatChanges = @()
+    $auditSheetChanges = @()
 }
 
 $tempWorkbookPath = Join-Path ([IO.Path]::GetTempPath()) ("swlor-combat-bible-{0}.xlsx" -f [guid]::NewGuid())

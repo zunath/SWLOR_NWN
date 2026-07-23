@@ -812,6 +812,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Perk.SyncGrantedFeats(target, perkType, rank, true);
             SyncHotBarActiveAbilityFeats(previousActiveAbilityFeats, currentActiveAbilityFeats);
+
+            if (rank == 1)
+            {
+                foreach (var actionMode in Perk.GetPerkDetails(perkType).HotBarActionModes)
+                {
+                    AddModeToggleToHotBar(actionMode);
+                }
+            }
         }
 
         private void SyncHotBarActiveAbilityFeats(
@@ -908,6 +916,62 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 PlayerPlugin.SetQuickBarSlot(Player, slot, qbs);
                 return;
+            }
+        }
+
+        private void AddModeToggleToHotBar(ActionMode mode)
+        {
+            if (!IsInMyPerksMode)
+                return;
+
+            if (IsModeOnHotBar(mode))
+                return;
+
+            var quickBarSlot = PlayerQuickBarSlot.ToggleMode((int)mode);
+            for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
+            {
+                if (PlayerPlugin.GetQuickBarSlot(Player, slot).ObjectType != QuickBarSlotType.Empty)
+                    continue;
+
+                PlayerPlugin.SetQuickBarSlot(Player, slot, quickBarSlot);
+                return;
+            }
+        }
+
+        private bool IsModeOnHotBar(ActionMode mode)
+        {
+            for (var slot = 0; slot < TotalHotBarSlots; slot++)
+            {
+                if (IsModeHotBarSlot(PlayerPlugin.GetQuickBarSlot(Player, slot), mode))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsModeHotBarSlot(QuickBarSlot quickBarSlot, ActionMode mode)
+        {
+            return quickBarSlot.ObjectType == QuickBarSlotType.ModeToggle &&
+                   quickBarSlot.INTParam1 == (int)mode;
+        }
+
+        private void RemoveModeToggleFromHotBar(ActionMode mode)
+        {
+            if (!IsInMyPerksMode)
+                return;
+
+            for (var slot = 0; slot < TotalHotBarSlots; slot++)
+            {
+                var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
+                if (IsModeHotBarSlot(quickBarSlot, mode))
+                {
+                    PlayerPlugin.SetQuickBarSlot(
+                        Player,
+                        slot,
+                        PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                }
             }
         }
 
@@ -1192,6 +1256,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);
                     RemoveFeatsFromHotBar(feats);
+
+                    foreach (var actionMode in perkDetail.HotBarActionModes)
+                    {
+                        RemoveModeToggleFromHotBar(actionMode);
+                    }
 
                     // Run all of the triggers related to refunding this perk.
                     foreach (var action in perkDetail.RefundedTriggers)

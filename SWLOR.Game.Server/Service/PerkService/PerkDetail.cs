@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         public PerkGroupType GroupType { get; set; }
         public ForceAffinityType? ForceAffinityType { get; set; }
         public List<PerkStatBonus> StatBonuses { get; set; }
+        public List<ActionMode> HotBarActionModes { get; set; }
 
         public PerkPurchaseRequirementAction PurchaseRequirement { get; set; }
         public PerkRefundRequirementAction RefundRequirement { get; set; }
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             GroupType = PerkGroupType.Player;
             PerkLevels = new Dictionary<int, PerkLevel>();
             StatBonuses = new List<PerkStatBonus>();
+            HotBarActionModes = new List<ActionMode>();
 
             EquippedTriggers = new List<PerkTriggerEquippedAction>();
             UnequippedTriggers = new List<PerkTriggerUnequippedAction>();

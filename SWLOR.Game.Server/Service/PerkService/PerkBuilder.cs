@@ -125,6 +125,20 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
+        /// Declares a native action mode which should be added to the player's hotbar when this perk is purchased.
+        /// The matching mode is removed from the hotbar when the perk is fully refunded.
+        /// </summary>
+        /// <param name="mode">The native action mode to add to the hotbar.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder AutoAddActionModeToHotBar(ActionMode mode)
+        {
+            if (!_activePerk.HotBarActionModes.Contains(mode))
+                _activePerk.HotBarActionModes.Add(mode);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a feat to grant to the player when the perk is purchased.
         /// </summary>
         /// <param name="feat">The feat to grant</param>

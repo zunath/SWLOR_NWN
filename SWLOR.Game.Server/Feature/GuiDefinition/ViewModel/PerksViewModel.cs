@@ -813,9 +813,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Perk.SyncGrantedFeats(target, perkType, rank, true);
             SyncHotBarActiveAbilityFeats(previousActiveAbilityFeats, currentActiveAbilityFeats);
 
-            if (perkType == PerkType.Stealth && rank == 1)
+            if (rank == 1)
             {
-                AddModeToggleToHotBar(ActionMode.Stealth);
+                foreach (var actionMode in Perk.GetPerkDetails(perkType).HotBarActionModes)
+                {
+                    AddModeToggleToHotBar(actionMode);
+                }
             }
         }
 
@@ -1254,9 +1257,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);
                     RemoveFeatsFromHotBar(feats);
 
-                    if (selectedPerk == PerkType.Stealth)
+                    foreach (var actionMode in perkDetail.HotBarActionModes)
                     {
-                        RemoveModeToggleFromHotBar(ActionMode.Stealth);
+                        RemoveModeToggleFromHotBar(actionMode);
                     }
 
                     // Run all of the triggers related to refunding this perk.

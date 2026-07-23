@@ -95,6 +95,9 @@ public class EspionageSystemTests
             PerkType.Stealth);
         stealth.PerkLevels.Values.Should().OnlyContain(level => level.GrantedFeats.Count == 0,
             "the NWN Stealth action is the sole player-facing toggle");
+        stealth.HotBarActionModes.Should().ContainSingle()
+            .Which.Should().Be(ActionMode.Stealth,
+                "the perk metadata should declaratively add the native action to the hotbar");
         File.Exists(Path.Combine(
                 root,
                 "SWLOR.Game.Server",

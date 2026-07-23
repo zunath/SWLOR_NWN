@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.Stealth)
                 .Name("Stealth")
+                .AutoAddActionModeToHotBar(ActionMode.Stealth)
 
                 .AddPerkLevel()
                 .Description("Unlocks NWN's built-in Stealth mode and grants +5 Stealth while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")

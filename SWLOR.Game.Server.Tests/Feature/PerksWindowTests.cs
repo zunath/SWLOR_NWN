@@ -94,11 +94,12 @@ public class PerksWindowTests
             "ViewModel",
             "PerksViewModel.cs"));
 
-        viewModelSource.Should().Contain("if (perkType == PerkType.Stealth && rank == 1)");
-        viewModelSource.Should().Contain("AddModeToggleToHotBar(ActionMode.Stealth);");
+        viewModelSource.Should().NotContain("PerkType.Stealth");
+        viewModelSource.Should().Contain("Perk.GetPerkDetails(perkType).HotBarActionModes");
+        viewModelSource.Should().Contain("AddModeToggleToHotBar(actionMode);");
         viewModelSource.Should().Contain("PlayerQuickBarSlot.ToggleMode((int)mode)");
-        viewModelSource.Should().Contain("if (selectedPerk == PerkType.Stealth)");
-        viewModelSource.Should().Contain("RemoveModeToggleFromHotBar(ActionMode.Stealth);");
+        viewModelSource.Should().Contain("foreach (var actionMode in perkDetail.HotBarActionModes)");
+        viewModelSource.Should().Contain("RemoveModeToggleFromHotBar(actionMode);");
 
         var matcher = typeof(PerksViewModel).GetMethod(
             "IsModeHotBarSlot",

@@ -762,6 +762,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             migrated |= SerializedItemResistanceMigration.MigrateObject(obj);
             migrated |= SerializedItemWeaponDamageTypeMigration.MigrateObject(obj);
             migrated |= CombatReadinessMigration.MigrateObject(obj);
+            migrated |= PistolBaseItemMigration.MigrateStoredObject(obj);
             migrated |= ObsoleteItemMigration.RemoveObsoleteItemsFromObject(
                 obj,
                 out var removedItems,

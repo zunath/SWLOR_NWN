@@ -11,19 +11,19 @@ using SWLOR.Toolset.Domain.Render;
 namespace SWLOR.Toolset.Viewport
 {
     /// <summary>
-    /// Read-only 3D viewport for one area's <see cref="AreaScene"/> (WP4.5): renders tile-grid
+    /// 3D viewport for one area's <see cref="AreaScene"/>: renders tile-grid
     /// placements (batched per distinct <see cref="RenderModel"/> via <see cref="AreaDrawBatcher"/>)
     /// plus placed-instance markers, with an orbit/pan/zoom camera framed on the area's tile-grid
     /// bounds (<see cref="AreaCameraMath"/>). Follows the same <see cref="OpenGlControlBase"/> +
     /// Silk.NET.OpenGL skeleton as Radoub.UI's <c>ModelPreviewGLControl</c> (see
     /// Viewport/README.md) but is a fresh implementation tailored to a scene of many placements
     /// sharing a handful of distinct meshes, rather than one model per control.
-    /// WP5.1 adds read-only picking: a plain left-click (press+release with &lt;4px of movement)
+    /// Read-only picking uses a plain left-click (press+release with &lt;4px of movement)
     /// raises <see cref="InstancePicked"/> with the hit instance (or null for empty space), using
     /// the same view/projection the last frame rendered with (<see cref="AreaCameraMath.ScreenPointToRay"/>
     /// + <see cref="AreaPicking"/>). <see cref="SelectedInstance"/> draws a wireframe highlight box
     /// around the current selection. This control still never mutates the scene or the underlying
-    /// documents - editing/gizmos are WP5.2.
+    /// documents; editing happens through the view model's transaction paths.
     /// </summary>
     public sealed class GlAreaControl : OpenGlControlBase
     {
@@ -56,7 +56,7 @@ namespace SWLOR.Toolset.Viewport
 
         private static readonly Vector3 LightDir = Vector3.Normalize(new Vector3(0.35f, -0.5f, 0.8f));
 
-        // Editor lighting (WP6.2): the area's authored ambient/diffuse colors drive hue and mood,
+        // Editor lighting: the area's authored ambient/diffuse colors drive hue and mood,
         // but authored night colors are near-black - too dark to edit in - so each channel is
         // lifted from a floor toward its true value (raw 0 -> floor, raw 1 -> unchanged). Tunable;
         // the human gate calibrates the feel.
@@ -67,14 +67,14 @@ namespace SWLOR.Toolset.Viewport
         private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
         private static readonly Vector3 SelectionHighlightColor = new(1f, 0.95f, 0.2f);
 
-        // Walkmesh overlay (WP6.1): walkable faces green, non-walkable red, drawn translucent just
+        // Walkmesh overlay: walkable faces green, non-walkable red, drawn translucent just
         // above the floor so the tile geometry still shows through.
         private static readonly Vector3 WalkmeshWalkableColor = new(0.25f, 0.9f, 0.35f);
         private static readonly Vector3 WalkmeshBlockedColor = new(0.9f, 0.2f, 0.2f);
         private const float WalkmeshOverlayAlpha = 0.4f;
         private const float WalkmeshHeightOffset = 0.06f; // lift above the floor to avoid z-fighting (just above PolygonHeightOffset)
 
-        // ----- GLSL source (kept inline per the WP4.5 brief; adapted from, not shared with,
+        // ----- GLSL source (kept inline for this renderer; adapted from, not shared with,
         // Radoub.UI's OpenGLShaderManager - this control needs an alpha-cutoff/unlit uniform that
         // control doesn't expose, and Radoub's sources must never be modified). -----
         private const string VersionEs = "#version 300 es\nprecision highp float;\n";
@@ -188,7 +188,7 @@ void main()
         private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _textureCache =
             new(StringComparer.OrdinalIgnoreCase);
 
-        // WP6.2 perf: memoize the raw-mesh-texture-name -> resolved result so the per-draw path
+        // Memoize the raw-mesh-texture-name -> resolved result so the per-draw path
         // (thousands of BindMeshTexture calls per frame) skips MaterialResolver's string resolution.
         // Points at the same GL texture ids as _textureCache; cleared alongside it on GL teardown.
         private readonly Dictionary<string, (uint TexId, float AlphaCutoff)> _rawTextureCache =
@@ -202,7 +202,7 @@ void main()
         private bool _hasPolygonBuffer;
         private List<(int Start, int Count)> _polygonRanges = new();
 
-        // Walkmesh overlay (WP6.1): one VBO of world-space triangles, walkable faces first then
+        // Walkmesh overlay: one VBO of world-space triangles, walkable faces first then
         // blocked faces, drawn as two flat-colored translucent ranges.
         private uint _walkmeshVao;
         private uint _walkmeshVbo;
@@ -225,7 +225,7 @@ void main()
         private Matrix4x4 _lastView = Matrix4x4.Identity;
         private Matrix4x4 _lastProjection = Matrix4x4.Identity;
 
-        /// <summary>Combined view*projection from the current frame, used for per-tile frustum culling (WP6.2 perf).</summary>
+        /// <summary>Combined view*projection from the current frame, used for per-tile frustum culling.</summary>
         private Matrix4x4 _viewProjection = Matrix4x4.Identity;
 
         // ----- Orbit camera state -----
@@ -239,18 +239,18 @@ void main()
         private DragMode _dragMode = DragMode.None;
         private Point _lastPointerPos;
 
-        // ----- Picking (WP5.1) -----
+        // ----- Picking -----
         private Point _pressStartPos;
         private bool _isClickCandidate;
         private InstanceMarker? _selectedInstance;
 
-        // ----- Move/rotate gizmo (WP5.2) -----
+        // ----- Move/rotate gizmo -----
         private InstanceMarker? _manipulationOriginal;
         private InstanceMarker? _manipulationPreview;
         private float _manipulationHeadingRadians;
         private bool _manipulationCancelled;
 
-        // ----- Place-from-palette (WP5.2) -----
+        // ----- Place-from-palette -----
         private bool _isPlacementActive;
 
         /// <summary>
@@ -282,7 +282,7 @@ void main()
         public event Action<InstanceMarker?>? InstancePicked;
 
         /// <summary>
-        /// Raised once a move-gizmo drag releases (WP5.2): the instance that was selected when the
+        /// Raised once a move-gizmo drag releases: the instance that was selected when the
         /// drag started, and its final world position (Z unchanged - the move gizmo only edits X/Y).
         /// Not raised when the drag ended with no net change (e.g. a press+release with no motion).
         /// The host view is expected to commit this through the matching instance-list section's
@@ -294,8 +294,8 @@ void main()
         public event Action<InstanceMarker, Vector2>? InstanceRotated;
 
         /// <summary>
-        /// Whether a viewport click should place a new instance instead of picking/orbiting (WP5.2
-        /// "Place..." flow). The host view sets this once a palette blueprint has been chosen;
+        /// Whether a viewport click should place a new instance instead of picking/orbiting in the
+        /// "Place..." flow. The host view sets this once a palette blueprint has been chosen;
         /// this control clears it itself once a placement point is picked or cancelled.
         /// </summary>
         public bool IsPlacementActive
@@ -313,7 +313,7 @@ void main()
         private bool _isPaintActive;
 
         /// <summary>
-        /// Whether a viewport click should paint terrain instead of picking an instance (WP7.3).
+        /// Whether a viewport click should paint terrain instead of picking an instance.
         /// Unlike <see cref="IsPlacementActive"/>, this is a sticky brush: it stays armed across
         /// dabs so a user can keep painting, and is cleared by the host view (or Esc) rather than by
         /// the first click. Camera navigation is unaffected - a left DRAG still pans and
@@ -372,7 +372,7 @@ void main()
 
         /// <summary>
         /// When true, draws each tile's walkmesh as a translucent overlay (green walkable / red
-        /// blocked faces) just above the floor - the visual for the WP6.1 walkmesh feature. Off by
+        /// blocked faces) just above the floor - the visual for the walkmesh feature. Off by
         /// default; tiles without a resolved walkmesh simply contribute nothing.
         /// </summary>
         public bool ShowWalkmesh
@@ -471,7 +471,7 @@ void main()
             var alt = (e.KeyModifiers & KeyModifiers.Alt) != 0;
             var pos = e.GetPosition(this);
 
-            // Placement mode (WP5.2): a right-click cancels rather than panning the camera.
+            // In placement mode, a right-click cancels rather than panning the camera.
             if (_isPlacementActive && props.IsRightButtonPressed)
             {
                 CancelPlacement();
@@ -479,7 +479,7 @@ void main()
                 return;
             }
 
-            // Move/rotate gizmo (WP5.2): a plain left press landing ON the current selection
+            // For the move/rotate gizmo, a plain left press landing ON the current selection
             // starts an object-manipulation drag - the left button is the primary "grab", matching
             // modern editors where you left-drag an object to move it (Alt to rotate). Hit-test the
             // press against the selection first; any other press (empty space, shift, or another
@@ -615,7 +615,7 @@ void main()
             InstancePicked?.Invoke(hit);
         }
 
-        // ----- Move/rotate gizmo (WP5.2) -----
+        // ----- Move/rotate gizmo -----
 
         /// <summary>Builds a ray from the last rendered frame's view/projection for the given screen point, or null before anything has ever rendered.</summary>
         private PickRay? TryBuildRay(Point screenPos)
@@ -718,7 +718,7 @@ void main()
         private InstanceMarker Displayed(InstanceMarker instance) =>
             _manipulationPreview != null && ReferenceEquals(instance, _manipulationOriginal) ? _manipulationPreview : instance;
 
-        // ----- Place-from-palette (WP5.2) -----
+        // ----- Place-from-palette -----
 
         private void CancelPlacement()
         {
@@ -735,7 +735,7 @@ void main()
             if (ray == null)
                 return;
 
-            // WP6.1: snap the new instance onto the real walkmesh floor under the cursor (its Z
+            // Snap the new instance onto the real walkmesh floor under the cursor (its Z
             // then matches in-game ground, including on elevated tiles). Areas/tiles with no
             // resolvable .wok fall back to the flat Z=0 ground plane the pre-6.1 flow always used.
             var point = (_scene != null ? AreaWalkmesh.RaycastGround(ray.Value, _scene) : null)
@@ -801,7 +801,7 @@ void main()
             HandlePointerWheel(e);
         }
 
-        /// <summary>Esc cancels an in-progress manipulation drag (reverting to the instance's real position/heading) or an active placement (WP5.2).</summary>
+        /// <summary>Esc cancels an in-progress manipulation drag (reverting to the instance's real position/heading) or an active placement.</summary>
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -1032,7 +1032,7 @@ void main()
             return shader;
         }
 
-        // ----- Uniform helpers. Locations are cached per shader program (WP6.2 perf): the large
+        // ----- Uniform helpers. Locations are cached per shader program: the large
         // area (pw_ar_czarmrange, 256 tiles) issues thousands of uniform sets per frame, and an
         // uncached glGetUniformLocation is a driver string lookup each time. The cache is cleared
         // whenever the program is (re)created (OnOpenGlInit) or torn down (OnOpenGlDeinit). -----
@@ -1233,7 +1233,7 @@ void main()
             }
         }
 
-        // Frustum culling (WP6.2 perf): the largest area (pw_ar_czarmrange, 256 tiles) issues
+        // Frustum culling: the largest area (pw_ar_czarmrange, 256 tiles) issues
         // thousands of draw calls per frame; skipping tiles fully outside the view frustum cuts
         // that sharply when the camera is zoomed/panned into a region. The per-tile box is a
         // deliberately generous superset of the tile's cell footprint (tile geometry can overhang
@@ -1293,7 +1293,7 @@ void main()
 
             // Pass 1: instances with resolved render geometry (placeables, doors) draw their
             // actual model, textured and lit, at the instance's position/heading (or its live
-            // WP5.2 manipulation preview, while a move/rotate drag is in progress on it).
+            // manipulation preview, while a move/rotate drag is in progress on it).
             foreach (var raw in _scene.Instances)
             {
                 if (!DrawsAsModel(raw))
@@ -1349,7 +1349,7 @@ void main()
         }
 
         /// <summary>
-        /// Draws the walkmesh overlay (WP6.1): translucent world-space triangles, walkable faces
+        /// Draws the walkmesh overlay: translucent world-space triangles, walkable faces
         /// green and blocked faces red, blended over the tile floor with depth-writes disabled so
         /// it tints the geometry rather than occluding it. A no-op when the toggle is off or the
         /// scene resolved no walkmeshes.
@@ -1652,7 +1652,7 @@ void main()
         }
 
         /// <summary>
-        /// Cheap subset of TXI transparency honoring (per the WP4.5 brief): a punch-through
+        /// Cheap subset of TXI transparency honoring: a punch-through
         /// texture gets a hard alpha cutoff in the fragment shader; every other case (additive,
         /// no hint, unparseable/missing TXI) draws fully opaque. Full alpha sorting/blending is
         /// explicitly out of scope.

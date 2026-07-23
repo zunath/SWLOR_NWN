@@ -12,7 +12,7 @@
             ToolTip.Tip="Create a new area from the module's area template" />
   </StackPanel>
 
-  <!-- WP7.3 new-area wizard, shown inline (same overlay pattern as the palette browser). -->
+  <!-- New-area wizard, shown inline (same overlay pattern as the palette browser). -->
   <Border Grid.Row="1" ZIndex="1"
           IsVisible="{Binding ActiveNewArea, Converter={x:Static ObjectConverters.IsNotNull}}"
           Background="#E0202020" BorderBrush="Gray" BorderThickness="1"

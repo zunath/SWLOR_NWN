@@ -50,7 +50,7 @@ namespace SWLOR.Toolset.Editors
     /// <summary>
     /// Browses one palette (.itp) tree for a blueprint type and lets the caller pick a leaf's
     /// resref to place (<c>onResRefChosen</c>), or cancel (<c>onCancelled</c>) - both close the
-    /// host's popup. Also covers the WP3.3 "light" palette editing scope: renaming a category
+    /// host's popup. Also covers lightweight palette editing: renaming a category
     /// node's display name and deleting an empty category, saved back to the .itp file through
     /// its own tiny DocumentSession. Creating or moving palette entries is out of scope.
     /// </summary>
@@ -197,7 +197,7 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand(CanExecute = nameof(CanUndo))]
         private void Undo()
         {
-            _session?.UndoStack.Undo();
+            _session?.Undo();
             RebuildTree();
             NotifyHistoryChanged();
         }
@@ -205,7 +205,7 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand(CanExecute = nameof(CanRedo))]
         private void Redo()
         {
-            _session?.UndoStack.Redo();
+            _session?.Redo();
             RebuildTree();
             NotifyHistoryChanged();
         }
@@ -246,7 +246,7 @@ namespace SWLOR.Toolset.Editors
                     }
                 }
 
-                Services.SaveService.WriteAtomic(_session.FilePath, _session.Document.ToBytes());
+                Services.SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState();
                 StatusMessage = $"Saved {_session.FilePath}.";

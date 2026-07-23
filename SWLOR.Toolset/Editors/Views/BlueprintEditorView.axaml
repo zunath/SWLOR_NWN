@@ -5,7 +5,7 @@
              x:DataType="editors:BlueprintEditorViewModel">
 
   <!-- Field editor DataTemplates (LocString/Check/Integer/Float/Dropdown/Script/Text) are shared
-       app-wide from App.axaml's Application.DataTemplates (WP6.2 dedupe). -->
+       app-wide from App.axaml's Application.DataTemplates. -->
   <DockPanel>
     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="8,6">
       <Button Content="Save" Command="{Binding SaveCommand}" />

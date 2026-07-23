@@ -56,31 +56,31 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// WP5.1: a click in the 3D view selects the corresponding instance-list row (and vice
+        /// A click in the 3D view selects the corresponding instance-list row (and vice
         /// versa - see AreaEditorViewModel.ApplySelection/OnSectionSelectionChanged). Routed through
         /// the view model rather than setting AreaView.SelectedInstance directly here, so both
         /// selection directions funnel through the same re-entrancy-guarded code path.
         /// </summary>
         private void OnInstancePicked(InstanceMarker? instance) => _viewModel?.SelectSceneInstance(instance);
 
-        /// <summary>WP5.2: the move gizmo released with a net change - commit it through the view model's InstanceFieldMap-based path.</summary>
+        /// <summary>The move gizmo released with a net change - commit it through the view model's InstanceFieldMap-based path.</summary>
         private void OnInstanceMoved(InstanceMarker instance, Vector3 newPosition) =>
             _viewModel?.MoveSelectedInstance(instance, newPosition);
 
-        /// <summary>WP5.2: the rotate gizmo released with a net change.</summary>
+        /// <summary>The rotate gizmo released with a net change.</summary>
         private void OnInstanceRotated(InstanceMarker instance, Vector2 newOrientation) =>
             _viewModel?.RotateSelectedInstance(instance, newOrientation);
 
-        /// <summary>WP5.2: a pending placement resolved to a viewport click.</summary>
+        /// <summary>A pending placement resolved to a viewport click.</summary>
         private void OnPlacementPointPicked(Vector3 position) => _viewModel?.CommitPlacement(position);
 
-        /// <summary>WP5.2: a pending placement was cancelled (Esc or right-click in the viewport).</summary>
+        /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();
 
-        /// <summary>WP7.3: a paint dab landed on a tile - apply the active brush tool there.</summary>
+        /// <summary>A paint dab landed on a tile - apply the active brush tool there.</summary>
         private void OnPaintPointPicked(Vector3 position) => _viewModel?.CommitPaint(position);
 
-        /// <summary>WP7.3: the brush was disarmed from inside the viewport (Esc) - untoggle the UI.</summary>
+        /// <summary>The brush was disarmed from inside the viewport (Esc) - untoggle the UI.</summary>
         private void OnPaintCancelled() => _viewModel?.CancelPaint();
 
         /// <summary>Builds the 3D scene lazily the first time the "3D View" tab is activated - never on area-editor open.</summary>

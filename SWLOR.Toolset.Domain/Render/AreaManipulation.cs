@@ -3,7 +3,7 @@ using System.Numerics;
 namespace SWLOR.Toolset.Domain.Render
 {
     /// <summary>
-    /// Pure math for the WP5.2 in-viewport move/rotate gizmo: ray/horizontal-plane intersection
+    /// Pure math for the in-viewport move/rotate gizmo: ray/horizontal-plane intersection
     /// (dragging an instance across the ground plane at its current Z) and grid-snap rounding. No
     /// GL/UI/document dependency - <c>GlAreaControl</c> drives a live drag preview with this, and
     /// <c>AreaEditorViewModel</c> commits the final values through <c>InstanceFieldMap</c>'s

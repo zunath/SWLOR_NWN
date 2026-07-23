@@ -47,6 +47,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Raised after every edit/undo/redo/save so the preview can re-resolve the model.</summary>
         public event Action? DocumentChanged;
 
+        /// <summary>Raised after this resource is saved or reloaded so catalog views can re-index it.</summary>
+        public event Action? CatalogEntryChanged;
+
         public BlueprintEditorViewModel(
             string filePath,
             string resRef,
@@ -138,15 +141,17 @@ namespace SWLOR.Toolset.Editors
                         RecreateVarTableSection();
                         RefreshAllFields();
                         AfterHistoryChange();
+                        CatalogEntryChanged?.Invoke();
                         _log.AppendLine($"Reloaded externally changed file {_session.FilePath}.");
                         return true;
                     }
                 }
 
-                Services.SaveService.WriteAtomic(_session.FilePath, _session.Document.ToBytes());
+                Services.SaveService.WriteAtomic(_session.FilePath, _session.ToBytes());
                 _session.UndoStack.MarkSaved();
                 _session.RecordCurrentFileState();
                 AfterHistoryChange();
+                CatalogEntryChanged?.Invoke();
                 _log.AppendLine($"Saved {_session.FilePath}.");
                 return true;
             }
@@ -160,7 +165,7 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand(CanExecute = nameof(CanUndo))]
         private void Undo()
         {
-            _session.UndoStack.Undo();
+            _session.Undo();
             RefreshAllFields();
             AfterHistoryChange();
         }
@@ -168,7 +173,7 @@ namespace SWLOR.Toolset.Editors
         [RelayCommand(CanExecute = nameof(CanRedo))]
         private void Redo()
         {
-            _session.UndoStack.Redo();
+            _session.Redo();
             RefreshAllFields();
             AfterHistoryChange();
         }

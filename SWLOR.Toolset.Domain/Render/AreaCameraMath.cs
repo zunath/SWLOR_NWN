@@ -4,7 +4,7 @@ namespace SWLOR.Toolset.Domain.Render
 {
     /// <summary>
     /// A world-space ray (origin + normalized direction) produced by unprojecting a screen point,
-    /// consumed by <see cref="AreaPicking"/> for instance hit-testing (WP5.1).
+    /// consumed by <see cref="AreaPicking"/> for instance hit-testing.
     /// </summary>
     public readonly struct PickRay
     {
@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Domain.Render
     }
 
     /// <summary>
-    /// Pure orbit-camera math for the WP4.5 area viewport: initial framing from an area's tile-grid
+    /// Pure orbit-camera math for the area viewport: initial framing from an area's tile-grid
     /// bounds, orbit/pan/zoom invariants, and the resulting eye offset. No GL/UI dependency - the
     /// GL control (<c>SWLOR.Toolset\Viewport\GlAreaControl.cs</c>) owns the mutable camera state
     /// (target/azimuth/elevation/distance) and calls these functions each time it changes; keeping

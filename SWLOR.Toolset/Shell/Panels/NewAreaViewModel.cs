@@ -8,7 +8,7 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
-    /// The new-area wizard (WP7.3): collects a resref, display name, tileset, and size, then creates
+    /// The new-area wizard collects a resref, display name, tileset, and size, then creates
     /// the area triplet through <see cref="NewAreaWriter"/>. Presented inline by the Module Explorer
     /// (the same overlay pattern the palette browser uses) rather than as a separate window, so it
     /// needs no window lifetime plumbing.
@@ -82,6 +82,15 @@ namespace SWLOR.Toolset.Shell.Panels
         [RelayCommand]
         private void Create()
         {
+            if (!double.IsFinite(Width) ||
+                !double.IsFinite(Height) ||
+                Width != Math.Truncate(Width) ||
+                Height != Math.Truncate(Height))
+            {
+                StatusMessage = "Area width and height must be whole numbers.";
+                return;
+            }
+
             NewAreaWriter.TilesetResolver? resolver = _tilesetCatalog == null
                 ? null
                 : (string resRef, out TilesetDefinition tileset) => _tilesetCatalog.TryGetTileset(resRef, out tileset);

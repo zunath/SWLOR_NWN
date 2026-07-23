@@ -10,7 +10,10 @@ namespace SWLOR.Toolset.Domain.Editing
     /// </summary>
     public sealed class DocumentSession : IDisposable
     {
+        private static long _nextLockOrder;
         private readonly IDisposable _guard;
+        private readonly object _syncRoot = new();
+        private readonly long _lockOrder = Interlocked.Increment(ref _nextLockOrder);
         private DateTime? _loadedMTimeUtc;
         private bool _disposed;
 
@@ -39,7 +42,19 @@ namespace SWLOR.Toolset.Domain.Editing
         /// <summary>Begins a transaction on this session's undo stack.</summary>
         public DocumentTransaction Begin(string description)
         {
-            return UndoStack.Begin(description);
+            Monitor.Enter(_syncRoot);
+            try
+            {
+                return new DocumentTransaction(
+                    UndoStack,
+                    description,
+                    new Releaser(() => Monitor.Exit(_syncRoot)));
+            }
+            catch
+            {
+                Monitor.Exit(_syncRoot);
+                throw;
+            }
         }
 
         /// <summary>
@@ -69,10 +84,13 @@ namespace SWLOR.Toolset.Domain.Editing
         /// </summary>
         public bool HasExternalChange()
         {
-            if (!File.Exists(FilePath))
-                return _loadedMTimeUtc != null;
+            lock (_syncRoot)
+            {
+                if (!File.Exists(FilePath))
+                    return _loadedMTimeUtc != null;
 
-            return File.GetLastWriteTimeUtc(FilePath) != _loadedMTimeUtc;
+                return File.GetLastWriteTimeUtc(FilePath) != _loadedMTimeUtc;
+            }
         }
 
         /// <summary>
@@ -81,15 +99,72 @@ namespace SWLOR.Toolset.Domain.Editing
         /// </summary>
         public void ReloadFromDisk()
         {
-            Document.ReplaceWith(JsonGffDocument.Load(FilePath));
-            UndoStack.Reset();
-            RecordCurrentFileState();
+            lock (_syncRoot)
+            {
+                Document.ReplaceWith(JsonGffDocument.Load(FilePath));
+                UndoStack.Reset();
+                RecordCurrentFileState();
+            }
         }
 
         /// <summary>Records the current on-disk state after this session successfully saves.</summary>
         public void RecordCurrentFileState()
         {
-            _loadedMTimeUtc = File.Exists(FilePath) ? File.GetLastWriteTimeUtc(FilePath) : null;
+            lock (_syncRoot)
+                _loadedMTimeUtc = File.Exists(FilePath) ? File.GetLastWriteTimeUtc(FilePath) : null;
+        }
+
+        /// <summary>Serializes this document while excluding edits and undo/redo replay.</summary>
+        public byte[] ToBytes()
+        {
+            lock (_syncRoot)
+                return Document.ToBytes();
+        }
+
+        /// <summary>Undoes one transaction while excluding snapshot serialization.</summary>
+        public void Undo()
+        {
+            lock (_syncRoot)
+                UndoStack.Undo();
+        }
+
+        /// <summary>Redoes one transaction while excluding snapshot serialization.</summary>
+        public void Redo()
+        {
+            lock (_syncRoot)
+                UndoStack.Redo();
+        }
+
+        /// <summary>
+        /// Serializes several sessions under a stable lock order, producing a mutually consistent
+        /// immutable snapshot without reading a live document graph on a worker thread.
+        /// </summary>
+        public static byte[][] CaptureSnapshots(params DocumentSession[] sessions)
+        {
+            ArgumentNullException.ThrowIfNull(sessions);
+            if (sessions.Any(session => session == null))
+                throw new ArgumentException("Snapshot sessions cannot contain null.", nameof(sessions));
+
+            var ordered = sessions
+                .Distinct()
+                .OrderBy(session => session._lockOrder)
+                .ToArray();
+            byte[][]? snapshots = null;
+
+            void CaptureUnderLock(int index)
+            {
+                if (index == ordered.Length)
+                {
+                    snapshots = sessions.Select(session => session.Document.ToBytes()).ToArray();
+                    return;
+                }
+
+                lock (ordered[index]._syncRoot)
+                    CaptureUnderLock(index + 1);
+            }
+
+            CaptureUnderLock(0);
+            return snapshots!;
         }
 
         /// <summary>Releases this session's guard on the ambient EditScope.</summary>
@@ -100,6 +175,21 @@ namespace SWLOR.Toolset.Domain.Editing
 
             _disposed = true;
             _guard.Dispose();
+        }
+
+        private sealed class Releaser : IDisposable
+        {
+            private Action? _release;
+
+            public Releaser(Action release)
+            {
+                _release = release;
+            }
+
+            public void Dispose()
+            {
+                Interlocked.Exchange(ref _release, null)?.Invoke();
+            }
         }
     }
 }

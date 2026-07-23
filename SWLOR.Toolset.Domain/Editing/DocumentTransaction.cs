@@ -13,6 +13,7 @@ namespace SWLOR.Toolset.Domain.Editing
         private readonly UndoStack _stack;
         private readonly List<IDocumentEdit> _edits = new();
         private readonly IDisposable _scope;
+        private readonly IDisposable? _ownerLock;
         private bool _finished;
 
         /// <summary>The description this transaction will be shown under in undo/redo UI.</summary>
@@ -21,10 +22,11 @@ namespace SWLOR.Toolset.Domain.Editing
         /// <summary>The edits captured so far, in the order they were applied.</summary>
         public IReadOnlyList<IDocumentEdit> Edits => _edits;
 
-        internal DocumentTransaction(UndoStack stack, string description)
+        internal DocumentTransaction(UndoStack stack, string description, IDisposable? ownerLock = null)
         {
             _stack = stack ?? throw new ArgumentNullException(nameof(stack));
             Description = description ?? throw new ArgumentNullException(nameof(description));
+            _ownerLock = ownerLock;
             _scope = EditScope.EnterTransaction(this);
         }
 
@@ -49,9 +51,15 @@ namespace SWLOR.Toolset.Domain.Editing
 
             _finished = true;
             _scope.Dispose();
-
-            if (_edits.Count > 0)
-                _stack.Push(this);
+            try
+            {
+                if (_edits.Count > 0)
+                    _stack.Push(this);
+            }
+            finally
+            {
+                _ownerLock?.Dispose();
+            }
         }
 
         /// <summary>
@@ -67,9 +75,15 @@ namespace SWLOR.Toolset.Domain.Editing
 
             _finished = true;
             _scope.Dispose();
-
-            using (EditScope.EnterReplay())
-                Revert();
+            try
+            {
+                using (EditScope.EnterReplay())
+                    Revert();
+            }
+            finally
+            {
+                _ownerLock?.Dispose();
+            }
         }
 
         /// <summary>Equivalent to Commit(); lets transactions be opened in a using block.</summary>

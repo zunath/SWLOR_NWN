@@ -11,7 +11,7 @@ namespace SWLOR.Toolset.Domain.Render
     /// Assembles a render-ready <see cref="AreaScene"/> from an area's .are/.git documents: tile
     /// grid placements (resolved against the area's tileset and shared render geometry via
     /// <see cref="TileModelCache"/>) plus placed-instance markers. Headless/Domain-level - no GL or
-    /// app dependency; consumed later by the WP4.5 area view.
+    /// app dependency; consumed later by the area view.
     /// </summary>
     public static class AreaSceneBuilder
     {
@@ -23,7 +23,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// tilesets - those degrade to fallback placements with a diagnostic note on the returned
         /// scene's <see cref="AreaScene.Diagnostics"/>. When <paramref name="walkmeshes"/> is
         /// supplied, every non-fallback tile also gets its <see cref="TilePlacement.Walkmesh"/>
-        /// resolved (WP6.1); omitting it (the default) leaves every tile's Walkmesh null,
+        /// resolved; omitting it (the default) leaves every tile's Walkmesh null,
         /// matching prior behavior exactly.
         /// </summary>
         public static AreaScene Build(
@@ -72,7 +72,7 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// Decodes the area's ambient/diffuse lighting (WP6.2) from the .are: moon colors when the
+        /// Decodes the area's ambient/diffuse lighting from the .are: moon colors when the
         /// area is flagged night, sun colors otherwise. A missing color field falls back to the
         /// neutral default's component so a partially-authored area still lights sanely.
         /// </summary>
@@ -270,9 +270,10 @@ namespace SWLOR.Toolset.Domain.Render
                 return null;
 
             var appearanceId = instance.GetIntOrNull("Appearance") ?? -1;
-            var row = placeableAppearances.GetAll().FirstOrDefault(r => r.Id == appearanceId);
+            if (!placeableAppearances.TryGet(appearanceId, out var row))
+                return null;
 
-            return string.IsNullOrWhiteSpace(row?.ModelName) ? null : modelCache.GetOrBuild(row.ModelName);
+            return string.IsNullOrWhiteSpace(row.ModelName) ? null : modelCache.GetOrBuild(row.ModelName);
         }
 
         /// <summary>
@@ -308,7 +309,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// Encounters carry no single X/Y/Z field in the Aurora GIT format - unlike every other
         /// supported instance list, an encounter is defined by a Geometry polygon (same shape as
         /// TriggerList's) plus a separate spawn-point list. No corpus area in this repo actually
-        /// has an Encounter List entry (WORKLOG/verification both confirm zero), so this path is
+        /// has an Encounter List entry (corpus verification confirms zero), so this path is
         /// unverified against real data; it is written defensively (every field read is
         /// null-tolerant) so a future authored encounter still assembles instead of throwing. The
         /// reported Position is the Geometry polygon's centroid when present, else the origin.

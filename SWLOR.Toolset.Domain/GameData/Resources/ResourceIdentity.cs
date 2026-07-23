@@ -8,7 +8,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
     /// resref+type, case-insensitively).
     ///
     /// The extension&lt;-&gt;type mapping is backed by <see cref="ResourceTypes"/> (Radoub.Formats.
-    /// Common) for every extension WP2.3 needs - mdl, wok, set, tga, dds, txi, plt, 2da, tlk, itp,
+    /// Common) for every extension the resource index needs - mdl, wok, set, tga, dds, txi, plt, 2da, tlk, itp,
     /// wav all match Radoub's table exactly. The one gap is "mtr" (NWN:EE material files, type
     /// 2072 per SWLOR.NWN.API's own <c>ResType</c> enum - Radoub.Formats.Common.ResourceTypes does
     /// not define it), which is patched in locally rather than re-deriving Radoub's whole table.

@@ -33,7 +33,7 @@ namespace SWLOR.Toolset.Domain.Validation
                     continue;
                 }
 
-                if (utp.OnUsed == QuestEncounterOnUsed)
+                if (string.Equals(utp.OnUsed, QuestEncounterOnUsed, StringComparison.OrdinalIgnoreCase))
                 {
                     issues.Add(new ValidationIssue(
                         ValidationSeverity.Error,
@@ -63,7 +63,9 @@ namespace SWLOR.Toolset.Domain.Validation
                     continue; // a missing blueprint is PaletteOrphanRule's concern, not this rule's
 
                 var (document, error) = context.LoadBlueprint(ResourceType.Utp, resRef);
-                if (error != null || document is not UtpDocument utp || utp.OnUsed != QuestEncounterOnUsed)
+                if (error != null ||
+                    document is not UtpDocument utp ||
+                    !string.Equals(utp.OnUsed, QuestEncounterOnUsed, StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 issues.Add(new ValidationIssue(

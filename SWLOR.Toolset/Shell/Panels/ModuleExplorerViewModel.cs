@@ -35,7 +35,7 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private ExplorerItem? _selectedItem;
 
-        /// <summary>The new-area wizard while it is open, or null - the view shows it as an overlay (WP7.3).</summary>
+        /// <summary>The new-area wizard while it is open, or null - the view shows it as an overlay.</summary>
         [ObservableProperty]
         private NewAreaViewModel? _activeNewArea;
 
@@ -53,10 +53,15 @@ namespace SWLOR.Toolset.Shell.Panels
             _tilesetCatalog = tilesetCatalog;
             Id = "ModuleExplorer";
             Title = "Module Explorer";
+            _workspaceContext.CatalogEntryRefreshed += (_, _) =>
+            {
+                if (_workspaceContext.Catalog is { } catalog)
+                    RefreshFromCatalog(catalog);
+            };
         }
 
         /// <summary>
-        /// Opens the new-area wizard (WP7.3). On success the explorer re-enumerates (so the new area
+        /// Opens the new-area wizard. On success the explorer re-enumerates (so the new area
         /// shows up in the Areas category) and the area opens in its editor, ready to paint.
         /// </summary>
         [RelayCommand]
@@ -73,12 +78,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 {
                     ActiveNewArea = null;
                     Initialize();
-                    var catalog = _workspaceContext.Catalog;
-                    if (catalog != null)
-                    {
-                        catalog.RefreshEntry(ResourceType.Area, resRef);
-                        RefreshFromCatalog(catalog);
-                    }
+                    _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
 
                     SelectedCategory = Categories.FirstOrDefault(c => c.Type == ResourceType.Area);
                     _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);

@@ -50,6 +50,12 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
             return row;
         }
 
+        /// <summary>Tries to look up one row by its placeable Appearance_Type id.</summary>
+        public bool TryGet(int id, out PlaceableAppearanceRow row)
+        {
+            return _byId.Value.TryGetValue(id, out row!);
+        }
+
         private static IReadOnlyList<PlaceableAppearanceRow> Build(TwoDaService twoDa, TlkService tlk)
         {
             var table = twoDa.GetTable(TableName);

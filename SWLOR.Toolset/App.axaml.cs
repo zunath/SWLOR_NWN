@@ -161,13 +161,13 @@ namespace SWLOR.Toolset
 
                 services.AddSingleton(ResourceIndex.FromHakBuilderConfig(hakBuilderConfigPath, swlorHaksRoot, baseLayer));
 
-                // The WP4.5 area 3D view needs both, and both need the ResourceIndex above -
+                // The area 3D view needs both, and both need the ResourceIndex above -
                 // registered inside this same guard so resolving either never hits a missing
                 // ResourceIndex dependency when the repo layout wasn't found.
                 services.AddSingleton(sp => new Domain.GameData.Lookups.TilesetCatalog(sp.GetRequiredService<ResourceIndex>()));
                 services.AddSingleton(sp => new Domain.Render.TileModelCache(sp.GetRequiredService<ResourceIndex>()));
 
-                // WP6.1 walkmesh cache: resolves each tile model's .wok and classifies faces via
+                // Walkmesh cache: resolves each tile model's .wok and classifies faces via
                 // surfacemat.2da's Walk column (for the overlay color + placement height-snap).
                 services.AddSingleton(sp => new Domain.Render.TileWalkmeshCache(
                     sp.GetRequiredService<ResourceIndex>(),

@@ -8,7 +8,7 @@ using SWLOR.Toolset.Shell.Panels;
 namespace SWLOR.Toolset.Shell
 {
     /// <summary>
-    /// Builds the fixed WP2.6 dock layout: Search across the top, Module Explorer / Properties
+    /// Builds the fixed dock layout: Search across the top, Module Explorer / Properties
     /// split left-right in the middle, Output and Validation tabbed together across the bottom.
     /// All tool view models are DI-resolved singletons handed in rather than constructed here, so
     /// the same instances the rest of the app (startup orchestration, the file watcher log) talk
@@ -24,6 +24,8 @@ namespace SWLOR.Toolset.Shell
         private readonly ModelPreviewViewModel _modelPreview;
         private IRootDock? _rootDock;
         private DocumentDock? _documentDock;
+
+        public event Action<Document?>? ActiveDocumentChanged;
 
         public ToolsetDockFactory(
             ModuleExplorerViewModel explorer,
@@ -68,6 +70,11 @@ namespace SWLOR.Toolset.Shell
                 CanCreateDocument = false,
                 VisibleDockables = CreateList<IDockable>(),
                 Proportion = 0.47
+            };
+            _documentDock.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(DocumentDock.ActiveDockable))
+                    ActiveDocumentChanged?.Invoke(_documentDock.ActiveDockable as Document);
             };
 
             var middleLayout = new ProportionalDock

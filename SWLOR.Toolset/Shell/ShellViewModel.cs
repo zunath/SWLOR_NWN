@@ -34,6 +34,11 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isPacking;
 
+        [ObservableProperty]
+        private bool _isValidationRunning;
+
+        public bool IsModuleMutationLocked => IsPacking || IsValidationRunning;
+
         private readonly Editors.EditorService _editorService;
         private readonly PackService _packService;
 
@@ -46,7 +51,8 @@ namespace SWLOR.Toolset.Shell
             SearchViewModel search,
             ToolsetDockFactory factory,
             Editors.EditorService editorService,
-            PackService packService)
+            PackService packService,
+            ValidationViewModel validation)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
@@ -56,6 +62,13 @@ namespace SWLOR.Toolset.Shell
             _search = search ?? throw new ArgumentNullException(nameof(search));
             _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
             _packService = packService ?? throw new ArgumentNullException(nameof(packService));
+            ArgumentNullException.ThrowIfNull(validation);
+            IsValidationRunning = validation.IsRunning;
+            validation.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(ValidationViewModel.IsRunning))
+                    IsValidationRunning = validation.IsRunning;
+            };
 
             if (factory == null) throw new ArgumentNullException(nameof(factory));
 
@@ -74,9 +87,9 @@ namespace SWLOR.Toolset.Shell
         /// <summary>Returns true when the main window may close after handling unsaved editors.</summary>
         public Task<bool> TryCloseAsync()
         {
-            if (IsPacking)
+            if (IsModuleMutationLocked)
             {
-                StatusText = "Wait for the module pack to finish before closing.";
+                StatusText = "Wait for the active module operation to finish before closing.";
                 return Task.FromResult(false);
             }
 
@@ -113,10 +126,21 @@ namespace SWLOR.Toolset.Shell
             }
         }
 
-        private bool CanMutateModule() => !IsPacking;
+        private bool CanMutateModule() => !IsModuleMutationLocked;
 
         partial void OnIsPackingChanged(bool value)
         {
+            NotifyMutationStateChanged();
+        }
+
+        partial void OnIsValidationRunningChanged(bool value)
+        {
+            NotifyMutationStateChanged();
+        }
+
+        private void NotifyMutationStateChanged()
+        {
+            OnPropertyChanged(nameof(IsModuleMutationLocked));
             SaveAllCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
         }

@@ -37,7 +37,7 @@ namespace SWLOR.Toolset.Editors
 
         public string Title { get; }
 
-        /// <summary>The blueprint type this section's list holds (e.g. Utc for Creatures) - used by AreaEditorViewModel (WP5.1) to map a 3D-view <see cref="Domain.Render.InstanceMarkerKind"/> to the matching section for selection sync.</summary>
+        /// <summary>The blueprint type this section's list holds (e.g. Utc for Creatures) - used by AreaEditorViewModel to map a 3D-view <see cref="Domain.Render.InstanceMarkerKind"/> to the matching section for selection sync.</summary>
         public ResourceType BlueprintType => _blueprintType;
 
         public ObservableCollection<InstanceRow> Rows { get; } = new();
@@ -208,11 +208,14 @@ namespace SWLOR.Toolset.Editors
         /// Opens this section's palette browser - the same flow this section's own "Add..." uses
         /// below - and invokes <paramref name="onResRefChosen"/> once a blueprint is picked, or
         /// <paramref name="onCancelled"/> if the browser is dismissed instead. Also used by the
-        /// WP5.2 3D-view "Place..." flow (AreaEditorViewModel.BeginPlace), which reuses this exact
+        /// 3D-view "Place..." flow (AreaEditorViewModel.BeginPlace), which reuses this exact
         /// path rather than a parallel one, so both entry points browse identically.
         /// </summary>
         public void OpenPaletteBrowser(Action<string> onResRefChosen, Action onCancelled)
         {
+            if (ActivePaletteBrowser != null)
+                return;
+
             var itpPath = Path.Combine(_workspace.ModuleRoot, "itp", PaletteFileName(_blueprintType));
             if (!File.Exists(itpPath))
             {
@@ -255,7 +258,7 @@ namespace SWLOR.Toolset.Editors
         /// Creates a new instance from <paramref name="resRef"/>'s blueprint at the given
         /// placement (via <see cref="InstanceFieldMap.CreateInstance"/>) and inserts it as one
         /// RunGitEdit transaction - the exact path this section's own "Add..." (at the origin) and
-        /// the WP5.2 3D-view "Place..." flow (at the clicked ground position) both use.
+        /// the 3D-view "Place..." flow (at the clicked ground position) both use.
         /// </summary>
         public bool AddInstanceAt(
             string resRef, float x, float y, float z, float xOrientation = 1f, float yOrientation = 0f)
@@ -292,7 +295,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>
         /// Sets the position of the instance at <paramref name="index"/> through
         /// <see cref="InstanceFieldMap.SetPosition"/> - the exact setter the detail form's X/Y/Z
-        /// editors use - as one RunGitEdit transaction. Used by the WP5.2 3D-view move gizmo
+        /// editors use - as one RunGitEdit transaction. Used by the 3D-view move gizmo
         /// (AreaEditorViewModel.MoveSelectedInstance) so a 3D-view drag produces the identical diff
         /// shape a detail-form edit would.
         /// </summary>
@@ -311,7 +314,7 @@ namespace SWLOR.Toolset.Editors
             return ok;
         }
 
-        /// <summary>Mirrors <see cref="SetInstancePosition"/> for heading, via <see cref="InstanceFieldMap.SetOrientation"/> - used by the WP5.2 3D-view rotate gizmo.</summary>
+        /// <summary>Mirrors <see cref="SetInstancePosition"/> for heading, via <see cref="InstanceFieldMap.SetOrientation"/> - used by the 3D-view rotate gizmo.</summary>
         public bool SetInstanceOrientation(int index, float xOrientation, float yOrientation, string? description = null)
         {
             var element = GetElement(index);

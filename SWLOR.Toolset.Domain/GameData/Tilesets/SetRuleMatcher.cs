@@ -55,7 +55,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// <summary>
     /// Solves which tiles can legally occupy a cell given corner/edge requirements, using the
     /// corner-terrain + edge-crosser + orientation rules validated in <see cref="TileAdjacency"/>
-    /// (see <c>SetRuleCorpusTests</c>). This is the WP7.2 engine the paint tools (WP7.3) drive: a
+    /// (see <c>SetRuleCorpusTests</c>). This is the SET-rule engine the paint tools drive: a
     /// paint fixes some corners, placed neighbours fix others, and this returns the tiles that
     /// satisfy every fixed corner/edge. Underspecified constraints legitimately return many
     /// candidates; the caller chooses among them (e.g. preferring the corpus's most-used tile).
@@ -127,7 +127,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// The tiles that can legally occupy (<paramref name="col"/>, <paramref name="row"/>) given
         /// its placed neighbours, optionally with a paint override that forces specific corner
         /// terrains (a painted corner wins over the neighbour-inherited value). Convenience over
-        /// <see cref="ConstraintFromNeighbours"/> + <see cref="FindMatchingTiles"/> for the WP7.3
+        /// <see cref="ConstraintFromNeighbours"/> + <see cref="FindMatchingTiles"/> for the
         /// paint tools.
         /// </summary>
         public static IReadOnlyList<TileCandidate> SolveCell(

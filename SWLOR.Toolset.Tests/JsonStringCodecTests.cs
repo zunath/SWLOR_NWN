@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Gff;
+using System.Text;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -23,6 +24,14 @@ namespace SWLOR.Toolset.Tests
             var escaped = System.Text.Encoding.ASCII.GetBytes("\"It\\u2019s\"");
 
             JsonStringCodec.Decode(escaped).Should().Be("It’s");
+        }
+
+        [Test]
+        public void EditableNwnText_RejectsCharactersOutsideWindows1252()
+        {
+            var act = () => JsonStringCodec.Encode("Not representable: 😀");
+
+            act.Should().Throw<EncoderFallbackException>();
         }
 
         [Test]

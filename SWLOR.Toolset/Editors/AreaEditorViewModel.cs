@@ -112,7 +112,7 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        // ----- WP5.1: 3D-view <-> instance-list selection sync -----
+        // ----- 3D-view <-> instance-list selection sync -----
 
         private bool _syncingSelection;
 
@@ -197,7 +197,7 @@ namespace SWLOR.Toolset.Editors
 
                 var targetType = instance != null ? MapKindToSectionType(instance.Kind) : null;
 
-                // Index-within-kind mapping (WORKLOG/WP4.4): both the scene's Instances (built by
+                // Index-within-kind mapping: both the scene's Instances (built by
                 // AreaSceneBuilder.BuildInstances, one AddMarkers call per kind, each iterating its
                 // .git list in order) and a section's Rows (InstanceListSectionViewModel.RefreshFromDocument,
                 // iterating that same .git list field in order) enumerate the identical underlying
@@ -266,7 +266,7 @@ namespace SWLOR.Toolset.Editors
             ApplySelection(instance);
         }
 
-        /// <summary>The current scene's index of <paramref name="instance"/> within its own kind's instance list - the same convention <see cref="ApplySelection"/> and every WP5.2 gizmo/placement path below uses to rebind a selection across a scene rebuild.</summary>
+        /// <summary>The current scene's index of <paramref name="instance"/> within its own kind's instance list - the same convention <see cref="ApplySelection"/> and every gizmo/placement path below uses to rebind a selection across a scene rebuild.</summary>
         private int IndexWithinKind(InstanceMarker instance) =>
             AreaScene != null ? AreaScene.Instances.Where(i => i.Kind == instance.Kind).ToList().IndexOf(instance) : -1;
 
@@ -277,7 +277,7 @@ namespace SWLOR.Toolset.Editors
             return type != null ? Sections.FirstOrDefault(s => s.BlueprintType == type) : null;
         }
 
-        // ----- WP5.2: 3D-view move/rotate gizmo and place-from-palette -----
+        // ----- 3D-view move/rotate gizmo and place-from-palette -----
 
         private InstanceListSectionViewModel? _placementSection;
 
@@ -408,7 +408,7 @@ namespace SWLOR.Toolset.Editors
             _ = BuildSceneAsync((instance.Kind, index));
         }
 
-        // ----- WP7.3: terrain paint / rotate / raise-lower tools -----
+        // ----- Terrain paint / rotate / raise-lower tools -----
 
         /// <summary>
         /// Memo of the corpus tile-frequency ranking per (module, tileset). The scan reads every
@@ -644,10 +644,16 @@ namespace SWLOR.Toolset.Editors
 
         private bool RotateTileAt(AreDocument are, int col, int row)
         {
-            if (AreaTiles.At(are, col, row) is not { } placed)
+            if (_paintTileset is not { } tileset || AreaTiles.At(are, col, row) is not { } placed)
                 return false;
 
             var orientation = (placed.Orientation + 1) % 4;
+            if (!TilePainter.CanRotateTile(tileset, AreaTiles.Reader(are), col, row, orientation))
+            {
+                SceneStatus = "Rotation rejected: the tile would no longer match its neighbours.";
+                return false;
+            }
+
             return RunAreEdit($"Rotate tile ({col},{row})", () => AreaTiles.SetOrientation(are, col, row, orientation));
         }
 
@@ -708,7 +714,7 @@ namespace SWLOR.Toolset.Editors
                     _gitSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts));
             }
 
-            // WP5.1 selection sync: a row click in any section should update the 3D-view highlight
+            // A row click in any section should update the 3D-view highlight
             // (and clear every other section's own selection) via ApplySelection.
             foreach (var section in Sections)
             {
@@ -752,7 +758,7 @@ namespace SWLOR.Toolset.Editors
             _ = BuildSceneAsync();
         }
 
-        /// <summary>Manual refresh for the 3D view after edits - there is no live auto-rebuild (WP5.x territory).</summary>
+        /// <summary>Manual refresh for the 3D view after edits outside the live viewport-edit paths.</summary>
         [RelayCommand]
         private async Task RebuildScene()
         {
@@ -760,11 +766,11 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Rebuilds the scene. When <paramref name="reselect"/> is supplied (a WP5.2 gizmo edit,
+        /// Rebuilds the scene. When <paramref name="reselect"/> is supplied (a gizmo edit,
         /// placement, or an undo/redo of one), the instance at that kind+index in the freshly
         /// built scene is reselected (rebind by kind+index - the fresh scene's InstanceMarker
         /// objects never equal the old ones by reference); otherwise any stale selection is
-        /// dropped, matching the pre-WP5.2 behavior.
+        /// dropped, matching the behavior for a plain rebuild.
         /// </summary>
         private async Task BuildSceneAsync((InstanceMarkerKind Kind, int Index)? reselect = null)
         {
@@ -783,13 +789,15 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                // Build from a point-in-time copy. UI edits can start another build while this one
-                // is on the thread pool, but they cannot mutate the document graph being read here.
-                var areBytes = _areSession.Document.ToBytes();
-                var gitBytes = _gitSession.Document.ToBytes();
-                var scene = await Task.Run(() => AreaSceneBuilder.Build(
-                    AreDocument.Parse(areBytes), GitDocument.Parse(gitBytes),
-                    tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache));
+                // Serialize both sessions under their shared edit locks on the worker thread. The
+                // builder then owns immutable bytes and never reads a live document graph.
+                var scene = await Task.Run(() =>
+                {
+                    var snapshots = DocumentSession.CaptureSnapshots(_areSession, _gitSession);
+                    return AreaSceneBuilder.Build(
+                        AreDocument.Parse(snapshots[0]), GitDocument.Parse(snapshots[1]),
+                        tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache);
+                });
 
                 if (generation != Volatile.Read(ref _sceneBuildGeneration))
                     return;
@@ -884,6 +892,8 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Saves both area documents, returning false if any prompt is cancelled or write fails.</summary>
         public async Task<bool> TrySaveAsync()
         {
+            var areaCatalogEntryChanged = _areSession.UndoStack.IsDirty;
+
             foreach (var section in Sections)
             {
                 if (!await section.TrySavePaletteAsync().ConfigureAwait(true))
@@ -906,6 +916,8 @@ namespace SWLOR.Toolset.Editors
                 _ = BuildSceneAsync(CaptureReselectKey());
 
             AfterHistoryChange();
+            if (areaCatalogEntryChanged || areResult.Reloaded)
+                CatalogEntryChanged?.Invoke();
             return true;
         }
 
@@ -930,7 +942,7 @@ namespace SWLOR.Toolset.Editors
                     }
                 }
 
-                Services.SaveService.WriteAtomic(session.FilePath, session.Document.ToBytes());
+                Services.SaveService.WriteAtomic(session.FilePath, session.ToBytes());
                 session.UndoStack.MarkSaved();
                 session.RecordCurrentFileState();
                 _log.AppendLine($"Saved {session.FilePath}.");
@@ -944,7 +956,7 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Undo/redo for the area-properties (.are) group's own small history. Since WP7.3 the .are
+        /// Undo/redo for the area-properties (.are) group's own small history. The .are
         /// history also carries tile paints, so this refreshes the 3D view too (when it has ever been
         /// built) - otherwise undoing a paint would leave the viewport showing the painted tiles.
         /// </summary>
@@ -953,7 +965,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            _areSession.UndoStack.Undo();
+            _areSession.Undo();
             RefreshAreaPropertyFields();
 
             if (_sceneBuildRequested)
@@ -969,7 +981,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            _areSession.UndoStack.Redo();
+            _areSession.Redo();
             RefreshAreaPropertyFields();
 
             if (_sceneBuildRequested)
@@ -982,14 +994,14 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Undo/redo for the instance lists (.git) - the toolbar's primary pair, since
         /// placing/moving/removing instances is the bulk of this screen's editing. Also refreshes
-        /// the 3D view (WP5.2) when it has ever been built, rebinding the current selection by
+        /// the 3D view when it has ever been built, rebinding the current selection by
         /// kind+index so undoing/redoing a 3D-view gizmo edit is visible without pressing Rebuild.</summary>
         [RelayCommand(CanExecute = nameof(CanUndoInstances))]
         private void UndoInstances()
         {
             var reselect = CaptureReselectKey();
 
-            _gitSession.UndoStack.Undo();
+            _gitSession.Undo();
             RefreshInstanceSections();
 
             if (_sceneBuildRequested)
@@ -1005,7 +1017,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            _gitSession.UndoStack.Redo();
+            _gitSession.Redo();
             RefreshInstanceSections();
 
             if (_sceneBuildRequested)
@@ -1033,6 +1045,9 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>Raised after an async close prompt approves closing this tab.</summary>
         public event Action<AreaEditorViewModel>? CloseRequested;
+
+        /// <summary>Raised after the ARE resource is saved or reloaded so catalog views can re-index it.</summary>
+        public event Action? CatalogEntryChanged;
 
         /// <summary>Suppresses a second tab-level prompt after the window-level discard decision.</summary>
         internal void ApproveApplicationClose() => _closeApproved = true;

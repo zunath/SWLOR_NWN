@@ -1,6 +1,6 @@
 namespace SWLOR.Toolset.Editors
 {
-    /// <summary>Which edit a paint dab applies to the tile under the cursor (WP7.3).</summary>
+    /// <summary>Which edit a paint dab applies to the tile under the cursor.</summary>
     public enum AreaPaintTool
     {
         /// <summary>Fill the tile with the selected terrain and blend its neighbours.</summary>

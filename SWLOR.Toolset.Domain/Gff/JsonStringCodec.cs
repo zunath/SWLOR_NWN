@@ -14,7 +14,10 @@ namespace SWLOR.Toolset.Domain.Gff
         static JsonStringCodec()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            NwnEncoding = Encoding.GetEncoding(1252);
+            NwnEncoding = Encoding.GetEncoding(
+                1252,
+                EncoderFallback.ExceptionFallback,
+                DecoderFallback.ReplacementFallback);
         }
 
         /// <summary>
@@ -72,7 +75,8 @@ namespace SWLOR.Toolset.Domain.Gff
         /// <summary>
         /// Encodes a .NET string as a raw JSON string token (including quotes) using
         /// nwn_gff-compatible escaping: only the JSON-mandated escapes plus \u00XX for other
-        /// control characters; non-ASCII passes through as raw Windows-1252.
+        /// control characters; non-ASCII passes through as raw Windows-1252. Characters that
+        /// Windows-1252 cannot represent are rejected instead of being silently replaced by '?'.
         /// </summary>
         public static byte[] Encode(string value)
         {

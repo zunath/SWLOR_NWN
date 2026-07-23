@@ -3,7 +3,7 @@ using System.Numerics;
 namespace SWLOR.Toolset.Domain.Render
 {
     /// <summary>
-    /// Ground-height raycast for the WP6.1 walkmesh feature: given a world-space <see cref="PickRay"/>
+    /// Ground-height raycast for the walkmesh feature: given a world-space <see cref="PickRay"/>
     /// and an <see cref="AreaScene"/>, finds where the ray hits a tile's real walkmesh floor
     /// instead of the Z=0 ground-plane heuristic <see cref="AreaManipulation.IntersectRayWithHorizontalPlane"/>
     /// uses. No GL/UI dependency - the app's placement-click handler calls this to snap a new

@@ -38,7 +38,7 @@ namespace SWLOR.Toolset.Domain.Render
     /// Parses a tile's <c>.wok</c> walkmesh resource into a <see cref="WalkMesh"/>.
     ///
     /// <para>
-    /// EMPIRICAL FINDING (WP6.1): every real <c>.wok</c> resource actually present in this
+    /// EMPIRICAL FINDING: every real <c>.wok</c> resource actually present in this
     /// project's asset corpus - both the SWLOR custom hak-source folders under
     /// <c>SWLOR_Haks\sw_t_*</c> (e.g. <c>tfb01_p05_01.wok</c>, <c>ttd02_f04_01.wok</c>) and the
     /// retail base game's <c>nwn_base.key</c>/<c>.bif</c> archives (verified directly, e.g.
@@ -48,7 +48,7 @@ namespace SWLOR.Toolset.Domain.Render
     /// <c>beginwalkmeshgeom</c> keyword). None of the dozens of real files sampled (including a
     /// brute-force byte search for the literal text "BWM V1.0" across every tileset .bif in a
     /// local NWN:EE install) contained the binary "Aurora Binary Walkmesh" layout originally
-    /// assumed for this work package. <see cref="ParseAscii"/> is therefore the path every real
+    /// assumed for this implementation. <see cref="ParseAscii"/> is therefore the path every real
     /// resource in this project takes. <see cref="ParseBinary"/> is kept as a defensive/forward
     /// compatible fallback matching that original binary spec exactly (self-consistency guarded),
     /// in case a binary-format .wok is ever encountered, but it has not been exercised against a
@@ -295,7 +295,7 @@ namespace SWLOR.Toolset.Domain.Render
             float.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
 
         // ------------------------------------------------------------------------------------
-        // Binary "BWM V1.0" Aurora walkmesh layout, per the original WP6.1 spec. Kept as a
+        // Binary "BWM V1.0" Aurora walkmesh layout, per the original format specification. Kept as a
         // defensive/forward-compatible fallback (see the class doc comment) - not exercised by
         // any real sample in this project's corpus, so every offset below is guarded by a
         // self-consistency check rather than trusted blindly.
@@ -322,7 +322,7 @@ namespace SWLOR.Toolset.Domain.Render
             var faceMaterialsOffset = BinaryPrimitives.ReadUInt32LittleEndian(bytes.Slice(0x40, 4));
             var faceNormalsOffset = BinaryPrimitives.ReadUInt32LittleEndian(bytes.Slice(0x44, 4));
 
-            // Self-consistency guards (mandatory per the WP6.1 brief) - if these don't hold, the
+            // Self-consistency guards - if these don't hold, the
             // offset/order assumption is wrong for whatever produced these bytes and this is not
             // a safe binary BWM to trust.
             if (faceCount > 0)

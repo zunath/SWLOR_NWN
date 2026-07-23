@@ -83,8 +83,9 @@ namespace SWLOR.Toolset.Services
                 stopwatch.Stop();
                 _log.AppendLine($"Pack finished with exit code {process.ExitCode} in {stopwatch.ElapsedMilliseconds}ms.");
 
-                if (process.ExitCode == 0)
-                    DeployToDebugServer(repoRoot, moduleRoot, moduleFileName);
+                if (process.ExitCode == 0 &&
+                    !DeployToDebugServer(repoRoot, moduleRoot, moduleFileName))
+                    return -2;
 
                 return process.ExitCode;
             }
@@ -106,7 +107,7 @@ namespace SWLOR.Toolset.Services
         /// the toolset has no business rebuilding. Skipped quietly (with a hint) when the
         /// debugserver directory doesn't exist.
         /// </summary>
-        private void DeployToDebugServer(string repoRoot, string moduleRoot, string moduleFileName)
+        private bool DeployToDebugServer(string repoRoot, string moduleRoot, string moduleFileName)
         {
             try
             {
@@ -115,31 +116,31 @@ namespace SWLOR.Toolset.Services
                 {
                     _log.AppendLine(
                         "debugserver\\modules not found - skipping deploy copy (run the CLI's full deploy (-o) once to create it).");
-                    return;
+                    return true;
                 }
 
                 var source = Path.Combine(moduleRoot, moduleFileName);
                 var destination = Path.Combine(modulesDirectory, moduleFileName);
                 File.Copy(source, destination, overwrite: true);
                 _log.AppendLine($"Deployed '{moduleFileName}' to debugserver\\modules.");
+                return true;
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Pack succeeded but the debugserver copy failed: {ex.Message}");
+                return false;
             }
         }
 
-        /// <summary>Finds a solution-built CLI that supports the required --no-prompt option.</summary>
+        /// <summary>Finds the newest solution-built CLI that supports the required --no-prompt option.</summary>
         internal static string? ResolveCli(string repoRoot)
         {
-            foreach (var configuration in new[] { "Debug", "Release" })
-            {
-                var built = Path.Combine(repoRoot, "SWLOR.CLI", "bin", configuration, "net10.0", "SWLOR.CLI.exe");
-                if (File.Exists(built))
-                    return built;
-            }
-
-            return null;
+            return new[] { "Debug", "Release" }
+                .Select(configuration =>
+                    Path.Combine(repoRoot, "SWLOR.CLI", "bin", configuration, "net10.0", "SWLOR.CLI.exe"))
+                .Where(File.Exists)
+                .OrderByDescending(File.GetLastWriteTimeUtc)
+                .FirstOrDefault();
         }
 
         internal static string ReadModuleFileName(string moduleRoot)

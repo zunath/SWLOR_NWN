@@ -84,7 +84,7 @@ namespace SWLOR.Toolset.Domain.Render
 
     /// <summary>
     /// A lightweight placement marker for one instance from a .git list. Deliberately does not
-    /// resolve the instance's appearance model - that is WP4.5's concern once the actual GL area
+    /// resolve the instance's appearance model - that is the GL area renderer's concern
     /// view exists; this is data assembly only.
     /// </summary>
     public sealed class InstanceMarker
@@ -137,7 +137,7 @@ namespace SWLOR.Toolset.Domain.Render
 
     /// <summary>
     /// A render-ready scene description for one area: its tile grid placements and placed-instance
-    /// markers, plus assembly diagnostics. Pure data - no GL/app dependency; consumed by the WP4.5
+    /// markers, plus assembly diagnostics. Pure data - no GL/app dependency; consumed by the
     /// area view.
     /// </summary>
     public sealed class AreaScene
@@ -150,7 +150,7 @@ namespace SWLOR.Toolset.Domain.Render
         public required AreaSceneDiagnostics Diagnostics { get; init; }
 
         /// <summary>
-        /// The area's decoded ambient/diffuse lighting (WP6.2), from its .are sun colors by day or
+        /// The area's decoded ambient/diffuse lighting, from its .are sun colors by day or
         /// moon colors at night. Defaults to a neutral mid-gray when not set (e.g. synthetic test
         /// scenes) so existing callers that build an <see cref="AreaScene"/> directly still compile.
         /// </summary>
@@ -158,7 +158,7 @@ namespace SWLOR.Toolset.Domain.Render
     }
 
     /// <summary>
-    /// True per-area lighting decoded from the .are (WP6.2): the sun ambient/diffuse colors during
+    /// True per-area lighting decoded from the .are: the sun ambient/diffuse colors during
     /// the day, the moon colors at night. Colors are linear RGB in 0..1. This is the faithful area
     /// color - a presentation layer (the GL area view) may brighten it for editor visibility, since
     /// authored night colors are near-black.

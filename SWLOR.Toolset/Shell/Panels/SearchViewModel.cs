@@ -31,6 +31,7 @@ namespace SWLOR.Toolset.Shell.Panels
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
             Id = "Search";
             Title = "Search";
+            _workspaceContext.CatalogEntryRefreshed += (_, _) => Refresh();
         }
 
         partial void OnQueryChanged(string value)

@@ -326,7 +326,7 @@ namespace SWLOR.Toolset.Tests
         {
             using var module = SyntheticModule.Create();
             var utp = UtpDocument.Parse(File.ReadAllBytes(RealUtpPath("building_exit")));
-            utp.OnUsed = "quest_enc";
+            utp.OnUsed = "QuEsT_EnC";
             module.WriteBlueprint(ResourceType.Utp, "qtest_activator", utp);
             module.WritePalette("placeablepalcus", SyntheticPalette.Empty());
 
@@ -341,7 +341,7 @@ namespace SWLOR.Toolset.Tests
         {
             using var module = SyntheticModule.Create();
             var utp = UtpDocument.Parse(File.ReadAllBytes(RealUtpPath("building_exit")));
-            utp.OnUsed = "quest_enc";
+            utp.OnUsed = "QUEST_ENC";
             module.WriteBlueprint(ResourceType.Utp, "qtest_activator", utp);
             module.WritePalette("placeablepalcus", SyntheticPalette.Flat(("Quest Activator", "qtest_activator")));
 

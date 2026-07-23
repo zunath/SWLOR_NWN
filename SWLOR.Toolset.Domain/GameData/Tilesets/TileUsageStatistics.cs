@@ -5,7 +5,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
 {
     /// <summary>
     /// Counts how often each tile id is placed across a module's areas that use a given tileset -
-    /// the corpus-frequency signal the WP7.3 paint tools use to break ties when
+    /// the corpus-frequency signal the paint tools use to break ties when
     /// <see cref="SetRuleMatcher"/> leaves a cell underspecified (many legal tiles). Preferring the
     /// most-used tile makes an auto-solved fill look like hand-authored areas rather than picking an
     /// arbitrary legal-but-unusual tile. Scanning is a plain read of the module's .are files;

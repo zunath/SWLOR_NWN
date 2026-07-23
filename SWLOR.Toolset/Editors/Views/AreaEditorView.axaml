@@ -6,7 +6,7 @@
              x:DataType="editors:AreaEditorViewModel">
 
   <!-- Field editor DataTemplates (LocString/Check/Integer/Float/Dropdown/Script/Text) are shared
-       app-wide from App.axaml's Application.DataTemplates (WP6.2 dedupe). -->
+       app-wide from App.axaml's Application.DataTemplates. -->
   <DockPanel>
     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="8,6">
       <Button Content="Save" Command="{Binding SaveCommand}" />
@@ -194,7 +194,7 @@
             <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
           </Border>
 
-          <!-- WP5.2: place-from-palette. Choosing a blueprint here arms placement mode; the next
+          <!-- Place-from-palette. Choosing a blueprint here arms placement mode; the next
                viewport click (or Esc/right-click to cancel) resolves it via
                AreaEditorViewModel.CommitPlacement/CancelPlacement. -->
           <!-- FallbackValue matters: with no kind chosen yet, PlacementSection is null and the
@@ -223,7 +223,7 @@
             </StackPanel>
           </Border>
 
-          <!-- WP7.3 tile brush. Toggling "Paint" arms a sticky brush: a viewport CLICK edits the
+          <!-- Tile brush. Toggling "Paint" arms a sticky brush: a viewport CLICK edits the
                tile under the cursor while drags/orbit still drive the camera. Esc (handled in the
                viewport) disarms it. -->
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"

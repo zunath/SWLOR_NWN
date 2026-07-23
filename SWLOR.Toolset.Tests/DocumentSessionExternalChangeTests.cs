@@ -52,12 +52,30 @@ namespace SWLOR.Toolset.Tests
             using (session.Begin("edit"))
                 field.SetInteger(field.GetInteger() + 1);
 
-            File.WriteAllBytes(_path, session.Document.ToBytes());
+            File.WriteAllBytes(_path, session.ToBytes());
             session.UndoStack.MarkSaved();
             session.RecordCurrentFileState();
 
             session.HasExternalChange().Should().BeFalse();
             session.UndoStack.IsDirty.Should().BeFalse();
+        }
+
+        [Test]
+        public void CaptureSnapshots_WaitsForAnOpenEditTransaction()
+        {
+            using var session = DocumentSession.Open(_path);
+            var field = CorpusFiles.FindFirstMutableInteger(session.Document.Root)!;
+            using var transaction = session.Begin("edit");
+            field.SetInteger(field.GetInteger() + 1);
+
+            var capture = Task.Run(() => DocumentSession.CaptureSnapshots(session));
+            Thread.Sleep(50);
+            capture.IsCompleted.Should().BeFalse("snapshot serialization must not race a live edit");
+
+            transaction.Commit();
+            var snapshot = capture.GetAwaiter().GetResult().Single();
+
+            JsonGffDocument.Parse(snapshot).Should().NotBeNull();
         }
     }
 }

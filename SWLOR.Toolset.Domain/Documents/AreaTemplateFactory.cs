@@ -3,7 +3,7 @@ using SWLOR.Toolset.Domain.Gff;
 namespace SWLOR.Toolset.Domain.Documents
 {
     /// <summary>
-    /// Builds the contents of a brand-new area from a template triplet (the WP7.3 new-area wizard's
+    /// Builds the contents of a brand-new area from a template triplet (the new-area wizard's
     /// core). Only the .are needs reshaping - its ResRef/Tag/Name/Tileset/dimensions are rewritten
     /// and its Tile_List is regenerated as a solid width×height fill; the paired .git/.gic are
     /// generic empty instance lists that just get saved under the new resref unchanged. Also owns

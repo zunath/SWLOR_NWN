@@ -8,7 +8,7 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// Coverage for the WP7.3 <see cref="TilePainter"/>: whole-tile terrain fill with border blend
+    /// Coverage for <see cref="TilePainter"/>: whole-tile terrain fill with border blend
     /// on a synthetic tileset (centre becomes solid terrain, orthogonal neighbours blend to it,
     /// re-paint is a fixed point), plus a corpus fixed-point gate proving the same idempotency holds
     /// against every real SWLOR tileset's corner rules.
@@ -66,6 +66,58 @@ namespace SWLOR.Toolset.Tests
         {
             foreach (var ch in changes)
                 cells[(ch.Col, ch.Row)] = new TileCandidate(ch.TileId, ch.Orientation);
+        }
+
+        [Test]
+        public void CanRotateTile_RejectsAnAsymmetricTerrainBoundary()
+        {
+            var tileset = Synthetic();
+            var cells = new Dictionary<(int, int), TileCandidate>
+            {
+                [(0, 2)] = new(SolidGrass, 0),
+                [(1, 2)] = new(SolidGrass, 0),
+                [(2, 2)] = new(SolidGrass, 0),
+                [(0, 1)] = new(2, 0),
+                [(1, 1)] = new(2, 0),
+                [(2, 1)] = new(2, 0),
+                [(0, 0)] = new(SolidDirt, 0),
+                [(1, 0)] = new(SolidDirt, 0),
+                [(2, 0)] = new(SolidDirt, 0)
+            };
+
+            TilePainter.CanRotateTile(tileset, Grid(cells, 3, 3), 1, 1, 1)
+                .Should().BeFalse();
+        }
+
+        [Test]
+        public void CanRotateTile_RejectsAnIncompatibleCrosserBoundary()
+        {
+            var tileset = new TilesetDefinition
+            {
+                Tiles = new[]
+                {
+                    Tile("Grass", "Grass", "Grass", "Grass", top: "Wall", right: "Fence"),
+                    Tile("Grass", "Grass", "Grass", "Grass", bottom: "Wall")
+                }
+            };
+            var cells = new Dictionary<(int, int), TileCandidate>
+            {
+                [(0, 0)] = new(0, 0),
+                [(0, 1)] = new(1, 0)
+            };
+
+            TilePainter.CanRotateTile(tileset, Grid(cells, 1, 2), 0, 0, 1)
+                .Should().BeFalse();
+        }
+
+        [Test]
+        public void CanRotateTile_AllowsASymmetricTile()
+        {
+            var tileset = Synthetic();
+            var cells = Filled(3, 3, SolidGrass);
+
+            TilePainter.CanRotateTile(tileset, Grid(cells, 3, 3), 1, 1, 1)
+                .Should().BeTrue();
         }
 
         [Test]

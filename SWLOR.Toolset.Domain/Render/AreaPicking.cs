@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace SWLOR.Toolset.Domain.Render
 {
     /// <summary>
-    /// Instance hit-testing for the WP5.1 area-view picking feature: given a world-space
+    /// Instance hit-testing for the area-view picking feature: given a world-space
     /// <see cref="PickRay"/> (see <see cref="AreaCameraMath.ScreenPointToRay"/>) and an
     /// <see cref="AreaScene"/>, finds the closest <see cref="InstanceMarker"/> the ray hits. No
     /// GL/UI dependency - <c>GlAreaControl</c> calls this from its click handler using the same
@@ -60,7 +60,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// and <see cref="DrawsAsModel"/>) are tested per-mesh: an AABB reject first, then an exact
         /// Möller-Trumbore ray-triangle test against every triangle in that mesh - a hit requires an
         /// actual triangle hit, not just an AABB overlap. Marker instances are tested against the
-        /// marker pyramid's AABB only (sufficient per the WP5.1 brief - the pyramid is small and its
+        /// marker pyramid's AABB only (sufficient because the pyramid is small and its
         /// exact silhouette isn't worth the extra precision).
         /// </summary>
         public static InstanceMarker? PickClosestInstance(PickRay ray, AreaScene scene, bool showPlaceableModels)
@@ -90,7 +90,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// Hit-tests <paramref name="ray"/> against a single <paramref name="instance"/> (rather
         /// than scanning a whole scene), using the same marker-vs-model rule
         /// (<paramref name="drawsAsModel"/>) <see cref="PickClosestInstance"/> and drawing already
-        /// use. Used by WP5.2's move/rotate gizmo (GlAreaControl) to check whether a press landed
+        /// use. Used by the move/rotate gizmo (GlAreaControl) to check whether a press landed
         /// specifically on the current selection before starting a manipulation drag, without
         /// re-scanning every instance in the scene.
         /// </summary>

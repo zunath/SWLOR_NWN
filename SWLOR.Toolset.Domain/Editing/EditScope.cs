@@ -19,7 +19,7 @@ namespace SWLOR.Toolset.Domain.Editing
     /// <see cref="DocumentSession"/>. In the intended usage — one document actively open for
     /// editing per logical flow — this is equivalent to per-document guarding. Running multiple
     /// guarded sessions concurrently on the same call context (e.g. two documents open on one
-    /// UI thread with interleaved edits) is out of scope for WP1.5: mutating either document
+    /// UI thread with interleaved edits) is out of scope for this transaction guard: mutating either document
     /// outside a transaction would throw as long as any session is open.
     /// </para>
     /// </remarks>

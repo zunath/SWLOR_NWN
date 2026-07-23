@@ -6,7 +6,7 @@ using SWLOR.Toolset.Domain.GameData.Tilesets;
 namespace SWLOR.Toolset.Domain.Workspace
 {
     /// <summary>
-    /// Creates a new area on disk (the WP7.3 new-area wizard's action): clones the module's area
+    /// Creates a new area on disk (the new-area wizard's action): clones the module's area
     /// template triplet under a new resref, reshapes the .are into a solid fill of the chosen
     /// tileset's own floor terrain, and registers the area in module.ifo. The .git/.gic halves are copied
     /// byte-for-byte - they are generic empty instance lists with nothing area-specific in them, so

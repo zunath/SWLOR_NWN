@@ -17,7 +17,7 @@ namespace SWLOR.Toolset.Editors
     /// <summary>
     /// Opens blueprint editors as document tabs. One editor per file: requesting an already
     /// open blueprint activates its existing tab. Types without a schema yet log a notice
-    /// instead of opening (schemas beyond UTC arrive with the next work package).
+    /// instead of opening until a schema for that type is available.
     /// </summary>
     public sealed class EditorService
     {
@@ -37,6 +37,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<BlueprintEditorViewModel, DispatcherTimer> _previewTimers = new();
+        private readonly Dictionary<BlueprintEditorViewModel, long> _previewRevisions = new();
 
         public EditorService(
             WorkspaceContext workspaceContext,
@@ -66,6 +67,13 @@ namespace SWLOR.Toolset.Editors
             _placeableAppearances = placeableAppearances;
             _doorTypes = doorTypes;
             _tileWalkmeshCache = tileWalkmeshCache;
+            _factory.ActiveDocumentChanged += document =>
+            {
+                if (document is BlueprintEditorViewModel editor)
+                    PreviewEditorModel(editor);
+                else
+                    _modelPreview?.InvalidatePendingRefreshes();
+            };
         }
 
         public void TryOpenEditor(ResourceType type, string resRef)
@@ -113,9 +121,12 @@ namespace SWLOR.Toolset.Editors
                     _openEditors.Remove(filePath);
                     if (_previewTimers.Remove(closedEditor, out var timer))
                         timer.Stop();
+                    _previewRevisions.Remove(closedEditor);
                 };
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.DocumentChanged += () => SchedulePreviewEditorModel(editor);
+                editor.CatalogEntryChanged += () =>
+                    _workspaceContext.RefreshCatalogEntry(editor.BlueprintType, resRef);
                 _openEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
                 PreviewEditorModel(editor);
@@ -198,6 +209,8 @@ namespace SWLOR.Toolset.Editors
                     _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                editor.CatalogEntryChanged += () =>
+                    _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);
             }
@@ -277,12 +290,15 @@ namespace SWLOR.Toolset.Editors
                 timer.Tick += (_, _) =>
                 {
                     timer.Stop();
-                    if (_openEditors.ContainsValue(editor))
+                    if (_openEditors.ContainsValue(editor) &&
+                        _previewRevisions.TryGetValue(editor, out var expectedRevision) &&
+                        expectedRevision == _modelPreview?.Revision)
                         PreviewEditorModel(editor);
                 };
                 _previewTimers[editor] = timer;
             }
 
+            _previewRevisions[editor] = _modelPreview?.Revision ?? 0;
             timer.Stop();
             timer.Start();
         }

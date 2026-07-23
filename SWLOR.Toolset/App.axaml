@@ -7,7 +7,7 @@
              RequestedThemeVariant="Dark">
 
   <Application.DataTemplates>
-    <!-- Shared editor field templates (WP6.2): one app-wide copy for every blueprint/area field
+    <!-- Shared editor field templates: one app-wide copy for every blueprint/area field
          editor, formerly duplicated verbatim in BlueprintEditorView and AreaEditorView. Listed
          before the ViewLocator catch-all. -->
     <DataTemplate DataType="editors:LocStringFieldViewModel">

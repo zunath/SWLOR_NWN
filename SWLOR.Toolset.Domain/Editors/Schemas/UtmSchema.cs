@@ -7,7 +7,7 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
     /// Editor schema for store blueprints (.utm). Field names and GFF types verified against the
     /// module corpus (e.g. Module\utm\bartender.utm.json). Corpus verification note: stores use
     /// "ResRef" for the blueprint resref field, not "TemplateResRef" like every other blueprint
-    /// type in this package (see WP1.4 worklog). StoreList/WillNotBuy/WillOnlyBuy (the item lists)
+    /// type in this package. StoreList/WillNotBuy/WillOnlyBuy (the item lists)
     /// are intentionally not exposed here; they need their own dedicated list editor. No corpus
     /// .utm file carries a VarTable, so this schema does not offer the var-table grid.
     /// </summary>

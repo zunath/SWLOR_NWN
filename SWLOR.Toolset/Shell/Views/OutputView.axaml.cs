@@ -27,7 +27,7 @@ namespace SWLOR.Toolset.Shell.Views
 
         /// <summary>
         /// Auto-scrolls the Output list to the newest line as entries arrive, so the latest log
-        /// output is always visible (WP6.2 nice-to-have). Posted to the UI thread so the item
+        /// output is always visible. Posted to the UI thread so the item
         /// container exists before scrolling, and so appends from background threads are marshaled
         /// safely.
         /// </summary>

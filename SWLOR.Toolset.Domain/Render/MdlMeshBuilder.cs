@@ -176,7 +176,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// its parent chain, accumulating each ancestor's local Scale * Rotation * Translation
         /// (SRT, row-vector convention matching <see cref="System.Numerics.Matrix4x4"/>).
         /// Mirrors Radoub.UI's <c>ModelViewController.GetWorldTransform</c> (the App-layer GL
-        /// renderer reused by WP4.1) so both consumers place nodes identically.
+        /// renderer reused by the model preview) so both consumers place nodes identically.
         /// </summary>
         public static Matrix4x4 ComposeNodeTransform(MdlNode? node)
         {

@@ -14,7 +14,7 @@ namespace SWLOR.Toolset.Domain.Render
     /// <summary>
     /// Minimal parse of an NWN TXI (texture info) file: plain-text <c>key value</c> lines that
     /// accompany a texture and hint at how it should be rendered. Only the transparency-relevant
-    /// keys WP4.2 needs are parsed (<c>blending</c>, <c>alphamean</c>, <c>envmaptexture</c>,
+    /// renderer keys are parsed (<c>blending</c>, <c>alphamean</c>, <c>envmaptexture</c>,
     /// <c>cube</c>); every other key (procedural water/fire animation parameters, mip/filter
     /// settings, etc.) is read past but otherwise ignored.
     /// </summary>

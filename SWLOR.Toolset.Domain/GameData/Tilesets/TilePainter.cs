@@ -4,9 +4,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     public readonly record struct TilePaintChange(int Col, int Row, int TileId, int Orientation);
 
     /// <summary>
-    /// The WP7.3 terrain paint engine. A paint "fills" one cell with a chosen terrain (all four
+    /// The terrain paint engine. A paint "fills" one cell with a chosen terrain (all four
     /// corners) and then re-solves the eight surrounding cells so the boundary blends, driving the
-    /// WP7.2 <see cref="SetRuleMatcher"/> throughout. It is a pure function of the current grid,
+    /// <see cref="SetRuleMatcher"/> throughout. It is a pure function of the current grid,
     /// tileset, and brush - it returns the set of cells that would change (never mutating anything),
     /// so the caller can apply them as a single transaction.
     ///
@@ -24,6 +24,64 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// </summary>
     public static class TilePainter
     {
+        /// <summary>
+        /// Returns whether rotating one populated cell to <paramref name="orientation"/> preserves
+        /// its SET corner-terrain and edge-crosser boundaries with every orthogonal neighbour.
+        /// Unknown tile ids are rejected. This lets the rotate tool reject an unsafe quarter turn
+        /// atomically instead of leaving an invalid transition in the area.
+        /// </summary>
+        public static bool CanRotateTile(
+            TilesetDefinition tileset,
+            Func<int, int, TileCandidate?> currentAt,
+            int col,
+            int row,
+            int orientation)
+        {
+            ArgumentNullException.ThrowIfNull(tileset);
+            ArgumentNullException.ThrowIfNull(currentAt);
+
+            if (currentAt(col, row) is not { } placed ||
+                placed.TileId < 0 ||
+                placed.TileId >= tileset.Tiles.Count)
+                return false;
+
+            var candidate = new TileCandidate(placed.TileId, ((orientation % 4) + 4) % 4);
+            var candidateDefinition = tileset.Tiles[candidate.TileId];
+            var neighbours = new (TileEdge Edge, int Dc, int Dr)[]
+            {
+                (TileEdge.North, 0, 1),
+                (TileEdge.East, 1, 0),
+                (TileEdge.South, 0, -1),
+                (TileEdge.West, -1, 0)
+            };
+
+            foreach (var (edge, dc, dr) in neighbours)
+            {
+                if (currentAt(col + dc, row + dr) is not { } neighbour)
+                    continue;
+                if (neighbour.TileId < 0 || neighbour.TileId >= tileset.Tiles.Count)
+                    return false;
+
+                var opposite = TileAdjacency.OppositeEdge(edge);
+                var neighbourDefinition = tileset.Tiles[neighbour.TileId];
+                var (nearCorner, farCorner) = TileAdjacency.SharedCorners(edge);
+                var (oppositeNearCorner, oppositeFarCorner) = TileAdjacency.SharedCorners(opposite);
+
+                if (!TileAdjacency.CornerTerrainsMatch(
+                        TileAdjacency.WorldCornerTerrain(candidateDefinition, candidate.Orientation, nearCorner),
+                        TileAdjacency.WorldCornerTerrain(neighbourDefinition, neighbour.Orientation, oppositeNearCorner)) ||
+                    !TileAdjacency.CornerTerrainsMatch(
+                        TileAdjacency.WorldCornerTerrain(candidateDefinition, candidate.Orientation, farCorner),
+                        TileAdjacency.WorldCornerTerrain(neighbourDefinition, neighbour.Orientation, oppositeFarCorner)) ||
+                    !TileAdjacency.EdgeCrossersMatch(
+                        TileAdjacency.WorldEdgeCrosser(candidateDefinition, candidate.Orientation, edge),
+                        TileAdjacency.WorldEdgeCrosser(neighbourDefinition, neighbour.Orientation, opposite)))
+                    return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Computes the cells a whole-tile terrain paint at (<paramref name="col"/>,
         /// <paramref name="row"/>) would rewrite. The clicked cell is filled with
@@ -242,7 +300,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         /// A crosser is a structure that spans a tile boundary - a dock, bridge, corridor, doorway -
         /// so both tiles must declare it or neither does. <see cref="TileAdjacency.EdgeCrossersMatch"/>
         /// is deliberately blank-TOLERANT, because a handful of real corpus boundaries genuinely have
-        /// a crosser on one side only, and the WP7.1 validation gate has to accept those. Generation
+        /// a crosser on one side only, and the corpus validation gate has to accept those. Generation
         /// is held to the stricter rule the corpus overwhelmingly follows: symmetric or nothing
         /// (Corridor 3136 matched vs 0 blank, Dunes/Routes/Slope/Trench/Road/Alley/Bridge 100%
         /// matched, Doorway 93%). Being permissive here produced half a dock jutting into open water

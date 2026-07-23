@@ -9,7 +9,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// the same layout <see cref="Render.AreaSceneBuilder"/> renders and the corpus stores
     /// (index = row * width + col). Mutations touch only the addressed cell's Tile_ID /
     /// Tile_Orientation / Tile_Height fields in place, so a paint or rotate produces the smallest
-    /// possible diff and undoes cleanly; the WP7.3 paint tools drive these under one
+    /// possible diff and undoes cleanly; the paint tools drive these under one
     /// DocumentTransaction. Reading is index-safe (out-of-range returns null); writing an
     /// out-of-range cell is a no-op.
     /// </summary>

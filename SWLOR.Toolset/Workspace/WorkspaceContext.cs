@@ -19,6 +19,7 @@ namespace SWLOR.Toolset.Workspace
         public BlueprintCatalog? Catalog { get; private set; }
 
         public event Action? WorkspaceOpened;
+        public event Action<ResourceType, string>? CatalogEntryRefreshed;
 
         public WorkspaceContext(Func<string, ModuleWorkspace> workspaceFactory, OutputLogService log)
         {
@@ -62,6 +63,15 @@ namespace SWLOR.Toolset.Workspace
             });
 
             WorkspaceOpened?.Invoke();
+        }
+
+        /// <summary>
+        /// Re-indexes one saved resource and tells catalog-backed panels to refresh immediately.
+        /// </summary>
+        public void RefreshCatalogEntry(ResourceType type, string resRef)
+        {
+            Catalog?.RefreshEntry(type, resRef);
+            CatalogEntryRefreshed?.Invoke(type, resRef);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SWLOR.Toolset.Shell.Panels
     /// headless <see cref="BlueprintModelResolver"/>; simple models parse directly, segmented
     /// (MODELTYPE=P) creatures compose from body-part MDLs via Radoub's <see cref="MdlPartComposer"/>.
     /// Driven two ways: explorer selection previews the on-disk blueprint; an open utc/utp/utd editor
-    /// previews its live in-memory document and refreshes as the appearance changes (WP4.3).
+    /// previews its live in-memory document and refreshes as the appearance changes.
     /// </summary>
     public partial class ModelPreviewViewModel : Tool
     {
@@ -40,6 +40,18 @@ namespace SWLOR.Toolset.Shell.Panels
 
         [ObservableProperty]
         private string _statusText = "Select a creature, placeable, or door to preview its model.";
+
+        /// <summary>
+        /// Changes whenever a caller selects a preview target. Debounced editor refreshes capture
+        /// this value so an older timer cannot overwrite a newer explorer or editor selection.
+        /// </summary>
+        public long Revision { get; private set; }
+
+        /// <summary>Invalidates delayed refreshes without changing the model currently displayed.</summary>
+        public void InvalidatePendingRefreshes()
+        {
+            Revision++;
+        }
 
         public ModelPreviewViewModel(
             WorkspaceContext workspaceContext,
@@ -75,6 +87,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         public void ShowFor(ResourceType type, string resRef)
         {
+            Revision++;
             if (!IsPreviewable(type))
             {
                 SetModel(null, $"Model preview is not available for {type} resources.");
@@ -106,6 +119,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         public void ShowForDocument(ResourceType type, JsonGffStruct root, string resRef)
         {
+            Revision++;
             if (!IsPreviewable(type))
             {
                 SetModel(null, $"Model preview is not available for {type} resources.");

@@ -25,7 +25,7 @@ namespace SWLOR.Toolset.Services
 
             try
             {
-                WriteAtomic(session.FilePath, session.Document.ToBytes());
+                WriteAtomic(session.FilePath, session.ToBytes());
                 session.UndoStack.MarkSaved();
                 _log.AppendLine($"Saved {session.FilePath}.");
                 return true;

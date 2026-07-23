@@ -47,6 +47,17 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
+        /// Sets an explicit icon resource for a perk instead of deriving it from a granted feat.
+        /// </summary>
+        /// <param name="iconResref">The icon resource reference.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder Icon(string iconResref)
+        {
+            _activePerk.IconResref = iconResref;
+            return this;
+        }
+
+        /// <summary>
         /// Sets the description of the perk or the perk level.
         /// </summary>
         /// <param name="description">The description to set.</param>
@@ -354,6 +365,9 @@ namespace SWLOR.Game.Server.Service.PerkService
             // If not found, it will fall back to the 'default_perk' icon instead.
             foreach (var (_, detail) in _perks)
             {
+                if (!string.IsNullOrWhiteSpace(detail.IconResref))
+                    continue;
+
                 detail.IconResref = "default_perk";
                 foreach (var (_, perkLevel) in detail.PerkLevels)
                 {

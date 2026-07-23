@@ -98,6 +98,8 @@ public class EspionageSystemTests
         stealth.HotBarActionModes.Should().ContainSingle()
             .Which.Should().Be(ActionMode.Stealth,
                 "the perk metadata should declaratively add the native action to the hotbar");
+        stealth.IconResref.Should().Be("ife_stealth1",
+            "removing the duplicate ability must preserve Stealth's existing perk-menu artwork");
         File.Exists(Path.Combine(
                 root,
                 "SWLOR.Game.Server",

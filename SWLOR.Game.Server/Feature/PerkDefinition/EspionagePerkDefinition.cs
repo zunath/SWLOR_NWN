@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.Stealth)
                 .Name("Stealth")
+                .Icon("ife_stealth1")
                 .AutoAddActionModeToHotBar(ActionMode.Stealth)
 
                 .AddPerkLevel()

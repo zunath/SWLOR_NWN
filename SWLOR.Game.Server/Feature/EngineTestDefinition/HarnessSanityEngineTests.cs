@@ -37,7 +37,9 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
             var marker = ctx.SpawnCreature("nw_rat001");
             ctx.Assert(GetLocalInt(marker, SanityFlagVariable) == 0, "Sanity flag should start unset.");
 
-            DelayCommand(1.0f, () => SetLocalInt(marker, SanityFlagVariable, 1));
+            // DelayCommand must be scheduled from a valid object's context - callbacks scheduled
+            // from the async test context (no OBJECT_SELF) never fire.
+            AssignCommand(marker, () => DelayCommand(1.0f, () => SetLocalInt(marker, SanityFlagVariable, 1)));
 
             await ctx.WaitUntilAsync(
                 () => GetLocalInt(marker, SanityFlagVariable) == 1,

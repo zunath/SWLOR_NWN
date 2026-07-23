@@ -163,7 +163,11 @@ namespace SWLOR.Game.Server.Service
 
             if (settings.EngineTestShutdownOnCompletion)
             {
-                DelayCommand(3f, AdministrationPlugin.ShutdownServer);
+                // NwTask, not DelayCommand: this method runs as an async continuation with no
+                // valid OBJECT_SELF, and DelayCommand callbacks scheduled from such a context
+                // never fire - the server would sit running forever after COMPLETE.
+                await NwTask.Delay(TimeSpan.FromSeconds(3));
+                AdministrationPlugin.ShutdownServer();
             }
         }
 

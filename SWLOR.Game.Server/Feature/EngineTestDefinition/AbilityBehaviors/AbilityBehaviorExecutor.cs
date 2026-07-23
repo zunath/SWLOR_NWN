@@ -125,7 +125,9 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             {
                 if (behaviorCase.Target == AbilityTargetKind.HostileCreature)
                 {
-                    target = ctx.SpawnCreature(TargetResref, 1.5f, 0f);
+                    // 2m separation: a +/-1.5 split put the pair at exactly 3.0m, the outer
+                    // boundary of short-range melee abilities, which then failed range checks.
+                    target = ctx.SpawnCreature(TargetResref, 1.0f, 0f);
                     ctx.MakeHostile(target);
                     ApplyEffectToObject(
                         DurationType.Temporary,

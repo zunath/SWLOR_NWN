@@ -156,10 +156,23 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         /// </summary>
         public async Task<uint> EquipItemAsync(uint creature, string itemResref, InventorySlot slot, float timeoutSeconds = 10f)
         {
-            var item = CreateItemOnObject(itemResref, creature);
-            Assert(GetIsObjectValid(item), $"Failed to create item with resref '{itemResref}'.");
+            // Item creation and equipping both need the creature's script context -
+            // CreateItemOnObject returns OBJECT_INVALID when called from an async
+            // continuation, even for stock blueprints.
+            var item = OBJECT_INVALID;
+            AssignCommand(creature, () =>
+            {
+                item = CreateItemOnObject(itemResref, creature);
+                if (GetIsObjectValid(item))
+                {
+                    ActionEquipItem(item, slot);
+                }
+            });
 
-            AssignCommand(creature, () => ActionEquipItem(item, slot));
+            await WaitUntilAsync(
+                () => GetIsObjectValid(item),
+                timeoutSeconds,
+                $"item '{itemResref}' to be created");
             await WaitUntilAsync(
                 () => GetItemInSlot(slot, creature) == item,
                 timeoutSeconds,

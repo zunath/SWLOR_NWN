@@ -23,7 +23,16 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
             var npc = ctx.SpawnCreature("nw_rat001");
             ctx.SetNPCResources(npc, StartingFP, StartingStamina);
 
-            var used = UsePerkFeat.TryUseAbility(npc, npc, FeatType.Renewal1, GetLocation(npc));
+            // The activation must run in the caster's script context (line-of-sight and the
+            // delayed impact both depend on OBJECT_SELF), matching the real feat-use event.
+            var used = false;
+            var attempted = false;
+            AssignCommand(npc, () =>
+            {
+                used = UsePerkFeat.TryUseAbility(npc, npc, FeatType.Renewal1, GetLocation(npc));
+                attempted = true;
+            });
+            await ctx.WaitUntilAsync(() => attempted, 5f, "the assigned activation command to execute");
             ctx.Assert(used, "TryUseAbility should report success activating Renewal I on its caster.");
 
             // Renewal I has a 1s activation delay before its impact (and cost deduction) apply;

@@ -83,33 +83,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Notes = "Trap is placed at the target's own location, triggering on the stationary target ~3s after activation.",
                 },
 
-                // StealthAbilityDefinition - toggles ActionMode.Stealth, not a tracked status
-                // effect; no FP/Stamina cost is declared.
-                new()
-                {
-                    Feat = FeatType.Stealth1,
-                    Target = AbilityTargetKind.Self,
-                    ExpectsRecast = true,
-                    Notes = "Toggles ActionMode.Stealth directly; not observable as a status effect. No cost is declared.",
-                },
-                new()
-                {
-                    Feat = FeatType.Stealth2,
-                    Target = AbilityTargetKind.Self,
-                    ExpectsRecast = true,
-                },
-                new()
-                {
-                    Feat = FeatType.Stealth3,
-                    Target = AbilityTargetKind.Self,
-                    ExpectsRecast = true,
-                },
-                new()
-                {
-                    Feat = FeatType.Stealth4,
-                    Target = AbilityTargetKind.Self,
-                    ExpectsRecast = true,
-                },
+                // Stealth1-4 were removed as registered abilities when stealth moved to NWN's
+                // native Stealth action (#2134); the coverage ratchet no longer requires them.
 
                 // TacticalEscapeAbilityDefinition - self buff; evasion is a TemporaryStatModifier,
                 // not a tracked status effect.

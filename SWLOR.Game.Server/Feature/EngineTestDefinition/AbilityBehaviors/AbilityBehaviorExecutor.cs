@@ -47,8 +47,12 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             Combat.SetAutoAttackHitResolutionOverride(false);
             try
             {
-                foreach (var behaviorCase in cases)
+                for (var index = 0; index < cases.Count; index++)
                 {
+                    var behaviorCase = cases[index];
+                    var progress = $"[{index + 1}/{cases.Count}]";
+                    var remaining = $"{cases.Count - index - 1} case(s) remaining";
+
                     // A runner timeout must stop the whole sweep promptly - continuing would
                     // outlive the cancellation grace period and keep the combat overrides
                     // active while the runner cleans up.
@@ -57,13 +61,14 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     if (!string.IsNullOrWhiteSpace(behaviorCase.SkipReason))
                     {
                         skippedFeats.Add(behaviorCase.Feat.ToString());
-                        ctx.Log($"SKIP {behaviorCase.Feat}: {behaviorCase.SkipReason}");
+                        ctx.Log($"{progress} SKIP {behaviorCase.Feat} - {remaining}: {behaviorCase.SkipReason}");
                         continue;
                     }
 
                     try
                     {
                         await RunCaseAsync(ctx, behaviorCase);
+                        ctx.Log($"{progress} PASS {behaviorCase.Feat} - {remaining}");
                     }
                     catch (Exception ex)
                     {
@@ -74,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                             ? ex.Message
                             : $"{ex.GetType().Name}: {ex.Message}";
                         failures.Add($"{behaviorCase.Feat}: {message}");
-                        ctx.Log($"FAILED CASE - {behaviorCase.Feat}: {message}");
+                        ctx.Log($"{progress} FAIL {behaviorCase.Feat} - {remaining}: {message}");
                     }
 
                     await NwTask.NextFrame();

@@ -83,6 +83,8 @@ namespace SWLOR.Game.Server.Service
                 for (var index = 0; index < tests.Count; index++)
                 {
                     var (method, attribute) = tests[index];
+                    Console.WriteLine($"{ConsolePrefix} RUN [{index + 1}/{tests.Count}] {attribute.Name}");
+
                     var result = await RunSingleTestAsync(method, attribute, arena, spawnLocation);
                     report.Results.Add(result);
 
@@ -93,7 +95,7 @@ namespace SWLOR.Game.Server.Service
                         _ => "FAIL"
                     };
                     var suffix = string.IsNullOrWhiteSpace(result.Message) ? string.Empty : $" - {result.Message}";
-                    Console.WriteLine($"{ConsolePrefix} {marker} {result.Name} ({result.DurationMilliseconds}ms){suffix}");
+                    Console.WriteLine($"{ConsolePrefix} [{index + 1}/{tests.Count}] {marker} {result.Name} ({result.DurationMilliseconds}ms) - {tests.Count - index - 1} test(s) remaining{suffix}");
 
                     if (_suiteAborted)
                     {

@@ -270,14 +270,21 @@ level resolution (`PerkEngineTests`) - each is a good reference for a different 
 ## How to Run Locally
 
 `scripts/run-engine-tests.ps1` (Windows) and `scripts/run-engine-tests.sh` (bash) are functionally
-identical and are kept in sync. Both:
+identical and are kept in sync. Both run against a **server home** directory - the folder mounted
+as `/nwn/home`, holding `modules/`, `hak/`, `tlk/`, `swlor.env` and receiving `dotnet/` and
+`app_logs/`. The home resolves in this order: the `-ServerHome`/`--server-home` argument, the
+`SWLOR_ENGINE_TEST_SERVER_HOME` env var, the repo's `debugserver/` directory when it exists (the
+dev-machine convention used by the normal `SWLOR.Runner` flow), and finally
+`SWLOR.Game.Server/Docker/` (the layout the CI workflow stages - that folder is tracked compose
+*configuration*, not inherently a runtime home). Both scripts:
 
 1. Build `SWLOR.Game.Server` in `Release` (unless skipped) with `-p:RunPostBuildEvent=Never` (so
    the normal Windows-only CLI post-build deploy step doesn't run), then copy the build output from
-   `SWLOR.Game.Server/bin/{Configuration}/net10.0` into `SWLOR.Game.Server/Docker/dotnet`.
+   `SWLOR.Game.Server/bin/{Configuration}/net10.0` into `<server home>/dotnet`.
 2. Delete any stale `engine-test-results.json` from a previous run.
-3. Run `docker compose -f docker-compose.enginetests.yml up --abort-on-container-exit
-   --exit-code-from swlor-server` from `SWLOR.Game.Server/Docker/`, then tear the containers down.
+3. Run `docker compose -p swlor-engine-tests -f <repo>/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml
+   up --abort-on-container-exit --exit-code-from swlor-server` from the server home (the dedicated
+   project name keeps these containers isolated from the normal dev stack), then tear down.
 4. Parse the resulting JSON report, print a table of every test (category, name, outcome, duration,
    message), print the summary line, and exit non-zero unless the server container exited cleanly,
    at least one test ran, and none failed.
@@ -285,11 +292,9 @@ identical and are kept in sync. Both:
 **Prerequisites**: the `dotnet` SDK (unless `--skip-build`), `docker compose`, and - for the bash
 script only - `jq` (used to parse the JSON report; the run fails at the reporting step without it).
 
-**This assumes `SWLOR.Game.Server/Docker/` already has `modules/`, `hak/`, `tlk/`, and (after step
-1) `dotnet/` populated with the current module and hak assets** - the normal deploy-machine flow
-(e.g. after `SWLOR.CLI.exe -o`, or the asset-assembly steps the CI workflow performs). The script
-itself only builds and stages the compiled .NET assembly; it does not pack the module or build the
-haks.
+**This assumes the server home already has `modules/`, `hak/`, and `tlk/` populated with the
+current module and hak assets** - the normal dev/deploy-machine flow. The script itself only
+builds and stages the compiled .NET assembly; it does not pack the module or build the haks.
 
 Usage:
 
@@ -303,6 +308,10 @@ Usage:
 scripts/run-engine-tests.sh
 scripts/run-engine-tests.sh --skip-build --filter Combat
 scripts/run-engine-tests.sh --arena-resref my_test_arena --configuration Debug
+
+# explicit server home (otherwise: env var, then debugserver/, then SWLOR.Game.Server/Docker/)
+./scripts/run-engine-tests.ps1 -ServerHome D:\nwn\home
+scripts/run-engine-tests.sh --server-home /opt/nwn/home
 ```
 
 `-Filter`/`--filter` and `-ArenaResref`/`--arena-resref` are passed straight through as

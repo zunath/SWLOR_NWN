@@ -8,11 +8,15 @@
 #       SWLOR_ENGINE_TESTS_ENABLED / SWLOR_ENVIRONMENT to turn the suite on,
 #       NWNX_METRICS_INFLUXDB_SKIP because no influxdb service exists in this file
 #
-# Run from the Docker/ directory (so ${PWD-.} resolves to it, matching /nwn/home):
-#   docker compose -f docker-compose.enginetests.yml up --abort-on-container-exit --exit-code-from swlor-server
+# Run from the SERVER HOME directory (so ${PWD-.} resolves to it, matching /nwn/home) -
+# on a dev machine that's the repo's debugserver/ folder; in CI it's this Docker/ folder
+# after the workflow stages assets into it. This file lives here because it's tracked
+# solution configuration; the directory it sits in is not inherently the runtime home.
+# Use the runner scripts, which resolve the home and pass a dedicated compose project
+# name (-p swlor-engine-tests) so these containers never collide with the dev stack:
+#   scripts/run-engine-tests.ps1 / scripts/run-engine-tests.sh
 #
-# Expects Docker/modules, Docker/hak, Docker/tlk, Docker/dotnet to already be populated
-# (see scripts/run-engine-tests.* and .github/workflows/engine-tests.yml).
+# Expects <server home>/modules, hak, tlk, dotnet, and swlor.env to be populated.
 
 services:
     redis:

@@ -5,15 +5,16 @@
     the server writes (see SWLOR.Game.Server/Service/EngineTest.cs).
 
 .DESCRIPTION
-    This script assumes it is running on a machine where SWLOR.Game.Server/Docker
-    already has modules/, hak/, and tlk/ populated with the current module and
-    hak assets (the normal deploy-machine flow, e.g. after `SWLOR.CLI.exe -o`
-    or the CI asset-assembly steps in .github/workflows/engine-tests.yml). It
-    only builds and deploys the compiled .NET assembly, then runs the test
-    container.
+    Runs against a server home directory whose modules/, hak/, tlk/, and
+    swlor.env are already populated (the normal dev/deploy-machine flow). The
+    home resolves to -ServerHome, then SWLOR_ENGINE_TEST_SERVER_HOME, then the
+    repo's debugserver/ directory, then SWLOR.Game.Server/Docker (the layout
+    the CI workflow stages). The script only builds and stages the compiled
+    .NET assembly into the home, then runs the test container against it.
 
 .PARAMETER SkipBuild
-    Skip building SWLOR.Game.Server and copying its output into Docker/dotnet.
+    Skip building SWLOR.Game.Server and copying its output into the server
+    home's dotnet/ directory.
     Use this when Docker/dotnet is already up to date (e.g. a prior step in
     the same pipeline already built and staged it).
 
@@ -27,6 +28,11 @@
 .PARAMETER Configuration
     Build configuration to use. Defaults to Release.
 
+.PARAMETER ServerHome
+    The NWN home directory to run against (holds modules/, hak/, tlk/, swlor.env;
+    receives dotnet/ and app_logs/). Defaults to SWLOR_ENGINE_TEST_SERVER_HOME,
+    then the repo's debugserver/ directory if present, then SWLOR.Game.Server/Docker.
+
 .EXAMPLE
     ./scripts/run-engine-tests.ps1
 .EXAMPLE
@@ -37,17 +43,44 @@ param(
     [switch]$SkipBuild,
     [string]$Filter = "",
     [string]$ArenaResref = "",
-    [string]$Configuration = "Release"
+    [string]$Configuration = "Release",
+    [string]$ServerHome = ""
 )
 
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $ServerProject = Join-Path $RepoRoot "SWLOR.Game.Server\SWLOR.Game.Server.csproj"
-$DockerDir = Join-Path $RepoRoot "SWLOR.Game.Server\Docker"
-$DotnetOutputDir = Join-Path $DockerDir "dotnet"
-$ComposeFile = "docker-compose.enginetests.yml"
-$ReportPath = Join-Path $DockerDir "app_logs\engine_tests\engine-test-results.json"
+
+# The server home is the directory mounted as /nwn/home: it holds modules/, hak/,
+# tlk/, dotnet/, swlor.env, and receives app_logs/. SWLOR.Game.Server/Docker only
+# holds the tracked compose configuration - it is NOT a runtime home. Resolution
+# order: -ServerHome parameter, SWLOR_ENGINE_TEST_SERVER_HOME env var, the
+# repo's debugserver/ directory (the dev-machine convention), and finally
+# SWLOR.Game.Server/Docker as the last resort (what the CI workflow stages).
+if (-not $ServerHome) {
+    $ServerHome = $env:SWLOR_ENGINE_TEST_SERVER_HOME
+}
+if (-not $ServerHome) {
+    $debugServerDir = Join-Path $RepoRoot "debugserver"
+    if (Test-Path (Join-Path $debugServerDir "swlor.env")) {
+        $ServerHome = $debugServerDir
+    }
+    else {
+        $ServerHome = Join-Path $RepoRoot "SWLOR.Game.Server\Docker"
+    }
+}
+if (-not (Test-Path (Join-Path $ServerHome "swlor.env"))) {
+    Write-Host "Server home '$ServerHome' has no swlor.env - it doesn't look like an NWN home directory." -ForegroundColor Red
+    exit 1
+}
+
+$ComposeFile = Join-Path $RepoRoot "SWLOR.Game.Server\Docker\docker-compose.enginetests.yml"
+# A dedicated project name keeps these containers isolated from the normal dev
+# stack even though both may use the same server home directory.
+$ComposeProject = "swlor-engine-tests"
+$DotnetOutputDir = Join-Path $ServerHome "dotnet"
+$ReportPath = Join-Path $ServerHome "app_logs\engine_tests\engine-test-results.json"
 
 function Write-Section($message) {
     Write-Host ""
@@ -69,7 +102,7 @@ if (-not $SkipBuild) {
         throw "Expected build output directory not found: $buildOutputDir"
     }
 
-    Write-Section "Deploying build output to Docker/dotnet"
+    Write-Section "Deploying build output to $DotnetOutputDir"
     if (Test-Path $DotnetOutputDir) {
         Remove-Item $DotnetOutputDir -Recurse -Force
     }
@@ -78,7 +111,7 @@ if (-not $SkipBuild) {
     Write-Host "Copied $buildOutputDir -> $DotnetOutputDir"
 }
 else {
-    Write-Section "Skipping build (assuming Docker/dotnet is already current)"
+    Write-Section "Skipping build (assuming $DotnetOutputDir is already current)"
 }
 
 # Stale report from a previous run must not be mistaken for this run's result.
@@ -92,17 +125,18 @@ if (Test-Path $ReportPath) {
     exit 1
 }
 
-Write-Section "Running engine tests via docker compose"
+Write-Section "Running engine tests via docker compose (server home: $ServerHome)"
 $env:SWLOR_ENGINE_TEST_FILTER = $Filter
 $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
 
-Push-Location $DockerDir
+# Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
+Push-Location $ServerHome
 try {
-    & docker compose -f $ComposeFile up --abort-on-container-exit --exit-code-from swlor-server
+    & docker compose -p $ComposeProject -f $ComposeFile up --abort-on-container-exit --exit-code-from swlor-server
     $composeExitCode = $LASTEXITCODE
 
     Write-Section "Tearing down containers"
-    & docker compose -f $ComposeFile down --volumes
+    & docker compose -p $ComposeProject -f $ComposeFile down --volumes
 }
 finally {
     Pop-Location

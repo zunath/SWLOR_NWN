@@ -4,15 +4,17 @@
 # headless Docker container, and reports pass/fail based on the JSON report
 # the server writes (see SWLOR.Game.Server/Service/EngineTest.cs).
 #
-# Assumes it is running on a machine where SWLOR.Game.Server/Docker already
-# has modules/, hak/, and tlk/ populated with the current module and hak
-# assets (the normal deploy-machine flow, e.g. after `SWLOR.CLI.exe -o` or
-# the CI asset-assembly steps in .github/workflows/engine-tests.yml). It only
-# builds and deploys the compiled .NET assembly, then runs the test container.
+# Runs against a server home directory (modules/, hak/, tlk/, swlor.env already
+# populated - the normal dev/deploy-machine flow). The home resolves to
+# --server-home, then SWLOR_ENGINE_TEST_SERVER_HOME, then the repo's
+# debugserver/ directory, then SWLOR.Game.Server/Docker (the CI-staged layout).
+# The script only builds and stages the compiled .NET assembly into the home,
+# then runs the test container against it.
 #
 # Usage:
 #   scripts/run-engine-tests.sh [--skip-build] [--filter <substring>]
 #                                [--arena-resref <resref>] [--configuration <cfg>]
+#                                [--server-home <dir>]
 #
 # Requires: dotnet SDK (unless --skip-build), docker compose, jq
 #
@@ -24,6 +26,7 @@ SKIP_BUILD=0
 FILTER=""
 ARENA_RESREF=""
 CONFIGURATION="Release"
+SERVER_HOME="${SWLOR_ENGINE_TEST_SERVER_HOME:-}"
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -43,6 +46,10 @@ while [ $# -gt 0 ]; do
             CONFIGURATION="$2"
             shift 2
             ;;
+        --server-home)
+            SERVER_HOME="$2"
+            shift 2
+            ;;
         *)
             echo "Unknown argument: $1" >&2
             exit 2
@@ -53,10 +60,31 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SERVER_PROJECT="$REPO_ROOT/SWLOR.Game.Server/SWLOR.Game.Server.csproj"
-DOCKER_DIR="$REPO_ROOT/SWLOR.Game.Server/Docker"
-DOTNET_OUTPUT_DIR="$DOCKER_DIR/dotnet"
-COMPOSE_FILE="docker-compose.enginetests.yml"
-REPORT_PATH="$DOCKER_DIR/app_logs/engine_tests/engine-test-results.json"
+
+# The server home is the directory mounted as /nwn/home: it holds modules/, hak/,
+# tlk/, dotnet/, swlor.env, and receives app_logs/. SWLOR.Game.Server/Docker only
+# holds the tracked compose configuration - it is NOT a runtime home. Resolution
+# order: --server-home, SWLOR_ENGINE_TEST_SERVER_HOME, the repo's debugserver/
+# directory (the dev-machine convention), then SWLOR.Game.Server/Docker as the
+# last resort (what the CI workflow stages).
+if [ -z "$SERVER_HOME" ]; then
+    if [ -f "$REPO_ROOT/debugserver/swlor.env" ]; then
+        SERVER_HOME="$REPO_ROOT/debugserver"
+    else
+        SERVER_HOME="$REPO_ROOT/SWLOR.Game.Server/Docker"
+    fi
+fi
+if [ ! -f "$SERVER_HOME/swlor.env" ]; then
+    echo "Server home '$SERVER_HOME' has no swlor.env - it doesn't look like an NWN home directory." >&2
+    exit 1
+fi
+
+COMPOSE_FILE="$REPO_ROOT/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml"
+# A dedicated project name keeps these containers isolated from the normal dev
+# stack even though both may use the same server home directory.
+COMPOSE_PROJECT="swlor-engine-tests"
+DOTNET_OUTPUT_DIR="$SERVER_HOME/dotnet"
+REPORT_PATH="$SERVER_HOME/app_logs/engine_tests/engine-test-results.json"
 
 section() {
     echo ""
@@ -80,7 +108,7 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
         exit 1
     fi
 
-    section "Deploying build output to Docker/dotnet"
+    section "Deploying build output to $DOTNET_OUTPUT_DIR"
     # Every staging step is checked: silently running the test container against a stale
     # or partially copied assembly would produce a passing report for the wrong build.
     if ! rm -rf "$DOTNET_OUTPUT_DIR"; then
@@ -97,7 +125,7 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
     fi
     echo "Copied $BUILD_OUTPUT_DIR -> $DOTNET_OUTPUT_DIR"
 else
-    section "Skipping build (assuming Docker/dotnet is already current)"
+    section "Skipping build (assuming $DOTNET_OUTPUT_DIR is already current)"
 fi
 
 # Stale report from a previous run must not be mistaken for this run's result.
@@ -110,17 +138,18 @@ if [ -e "$REPORT_PATH" ]; then
     exit 1
 fi
 
-section "Running engine tests via docker compose"
+section "Running engine tests via docker compose (server home: $SERVER_HOME)"
 export SWLOR_ENGINE_TEST_FILTER="$FILTER"
 export SWLOR_ENGINE_TEST_ARENA_RESREF="$ARENA_RESREF"
 
-pushd "$DOCKER_DIR" > /dev/null
+# Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
+pushd "$SERVER_HOME" > /dev/null
 
-docker compose -f "$COMPOSE_FILE" up --abort-on-container-exit --exit-code-from swlor-server
+docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" up --abort-on-container-exit --exit-code-from swlor-server
 COMPOSE_EXIT_CODE=$?
 
 section "Tearing down containers"
-docker compose -f "$COMPOSE_FILE" down --volumes
+docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" down --volumes
 
 popd > /dev/null
 

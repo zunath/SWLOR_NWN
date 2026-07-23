@@ -50,4 +50,9 @@ services:
         volumes:
             - ${PWD-.}/logs:/nwn/run/logs.0
             - ${PWD-.}/:/nwn/home
+            # The hak set can be shared from another server home (e.g. the dev server's)
+            # without duplicating ~13GB on disk: NTFS junctions do NOT survive Docker bind
+            # mounts, so the share happens here as its own mount instead. Defaults to the
+            # server home's own hak directory. The runner scripts set this automatically.
+            - ${SWLOR_ENGINE_TEST_HAK_DIR:-${PWD-.}/hak}:/nwn/home/hak
             - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0

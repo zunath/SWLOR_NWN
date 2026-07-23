@@ -146,6 +146,16 @@ section "Running engine tests via docker compose (server home: $SERVER_HOME)"
 export SWLOR_ENGINE_TEST_FILTER="$FILTER"
 export SWLOR_ENGINE_TEST_ARENA_RESREF="$ARENA_RESREF"
 
+# Share the dev server's hak set via a dedicated Docker mount when the test home has
+# none of its own - NTFS junctions do not survive Docker bind mounts, so this is the
+# supported way to avoid duplicating ~13GB of haks.
+if [ -z "${SWLOR_ENGINE_TEST_HAK_DIR:-}" ]; then
+    if ! ls "$SERVER_HOME"/hak/*.hak > /dev/null 2>&1 && [ -d "$REPO_ROOT/debugserver/hak" ]; then
+        export SWLOR_ENGINE_TEST_HAK_DIR="$REPO_ROOT/debugserver/hak"
+        echo "Sharing hak set from $SWLOR_ENGINE_TEST_HAK_DIR (test home has no haks of its own)."
+    fi
+fi
+
 # Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
 pushd "$SERVER_HOME" > /dev/null
 

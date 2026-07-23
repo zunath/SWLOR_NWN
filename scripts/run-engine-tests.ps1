@@ -137,6 +137,18 @@ Write-Section "Running engine tests via docker compose (server home: $ServerHome
 $env:SWLOR_ENGINE_TEST_FILTER = $Filter
 $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
 
+# Share the dev server's hak set via a dedicated Docker mount when the test home has
+# none of its own - NTFS junctions do not survive Docker bind mounts, so this is the
+# supported way to avoid duplicating ~13GB of haks.
+if (-not $env:SWLOR_ENGINE_TEST_HAK_DIR) {
+    $homeHakDir = Join-Path $ServerHome "hak"
+    $devHakDir = Join-Path $RepoRoot "debugserver\hak"
+    if (-not (Test-Path (Join-Path $homeHakDir "*.hak")) -and (Test-Path $devHakDir)) {
+        $env:SWLOR_ENGINE_TEST_HAK_DIR = $devHakDir
+        Write-Host "Sharing hak set from $devHakDir (test home has no haks of its own)."
+    }
+}
+
 # Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
 Push-Location $ServerHome
 # docker compose writes progress to stderr; under ErrorActionPreference=Stop with

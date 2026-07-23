@@ -269,6 +269,7 @@ __pycache__/
 .dotnet_home/
 SWLOR.Game.Server/nwnpath.config
 debugserver
+enginetests-home
 Module/temp0
 Module/Star Wars LOR v2.BackupMod
 Module/Star Wars LOR v2.mod

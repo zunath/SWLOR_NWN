@@ -152,6 +152,32 @@ function Import-CodeNameIndex {
     return $index
 }
 
+function Import-NativeActionModePerkNameIndex {
+    param([string]$Path)
+
+    $index = @{}
+    $files = Get-ChildItem -Path $Path -Filter "*PerkDefinition.cs" -Recurse
+
+    foreach ($file in $files) {
+        $content = Get-Content $file.FullName -Raw
+        $builderSegments = [regex]::Split($content, '(?=\.Create\s*\()')
+        foreach ($segment in $builderSegments) {
+            if ($segment -notmatch '\.AutoAddActionModeToHotBar\s*\(') {
+                continue
+            }
+
+            $nameMatch = [regex]::Match($segment, '\.Name\("([^"]+)"\)')
+            if (!$nameMatch.Success) {
+                continue
+            }
+
+            $index[(Get-SanitizedName $nameMatch.Groups[1].Value)] = $true
+        }
+    }
+
+    return $index
+}
+
 function Import-AbilityFileIndex {
     param([string]$Path)
 
@@ -810,6 +836,7 @@ if (@($manifest).Count -eq 0) {
 }
 
 $perkIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition") -Filter "*PerkDefinition.cs"
+$nativeActionModePerkBaseNameIndex = Import-NativeActionModePerkNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition")
 $abilityNameIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -Filter "*AbilityDefinition.cs"
 $abilityFileIndex = Import-AbilityFileIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition")
 $playerAbilityFeatLabelsRequiringSpellLink = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
@@ -905,7 +932,8 @@ foreach ($row in $manifest) {
             (Test-ManifestValuePresent $row.CastingTime) -or
             (Test-ManifestValuePresent $row.CooldownTime) -or
             $abilityBaseNameIndex.ContainsKey($rowBaseName)))
-    if ($isActiveType -and !$abilityBaseNameIndex.ContainsKey($rowBaseName)) {
+    $usesNativeActionMode = $nativeActionModePerkBaseNameIndex.ContainsKey($rowBaseName)
+    if ($isActiveType -and !$usesNativeActionMode -and !$abilityBaseNameIndex.ContainsKey($rowBaseName)) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingAbilityDefinition" -BibleRow $row
     }
 

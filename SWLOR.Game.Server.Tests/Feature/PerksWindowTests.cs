@@ -1,9 +1,11 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -78,6 +80,48 @@ public class PerksWindowTests
 
         categoryIndex.Should().BeLessThan(recastIndex);
         recastIndex.Should().BeLessThan(currentUpgradeIndex);
+    }
+
+    [Test]
+    public void NativeStealthMode_IsAddedAndRemovedAsAModeToggle()
+    {
+        var root = FindRepositoryRoot();
+        var viewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "PerksViewModel.cs"));
+
+        viewModelSource.Should().Contain("if (perkType == PerkType.Stealth && rank == 1)");
+        viewModelSource.Should().Contain("AddModeToggleToHotBar(ActionMode.Stealth);");
+        viewModelSource.Should().Contain("PlayerQuickBarSlot.ToggleMode((int)mode)");
+        viewModelSource.Should().Contain("if (selectedPerk == PerkType.Stealth)");
+        viewModelSource.Should().Contain("RemoveModeToggleFromHotBar(ActionMode.Stealth);");
+
+        var matcher = typeof(PerksViewModel).GetMethod(
+            "IsModeHotBarSlot",
+            BindingFlags.Static | BindingFlags.NonPublic)!;
+        var stealthMode = new QuickBarSlot
+        {
+            ObjectType = QuickBarSlotType.ModeToggle,
+            INTParam1 = (int)ActionMode.Stealth,
+        };
+        var stealthFeat = new QuickBarSlot
+        {
+            ObjectType = QuickBarSlotType.Feat,
+            INTParam1 = (int)ActionMode.Stealth,
+        };
+        var detectMode = new QuickBarSlot
+        {
+            ObjectType = QuickBarSlotType.ModeToggle,
+            INTParam1 = (int)ActionMode.Detect,
+        };
+
+        matcher.Invoke(null, new object[] { stealthMode, ActionMode.Stealth }).Should().Be(true);
+        matcher.Invoke(null, new object[] { stealthFeat, ActionMode.Stealth }).Should().Be(false);
+        matcher.Invoke(null, new object[] { detectMode, ActionMode.Stealth }).Should().Be(false);
     }
 
     [Test]

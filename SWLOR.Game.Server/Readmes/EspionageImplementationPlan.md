@@ -32,7 +32,7 @@ Perk-only adjustments such as flat Stealth rating, stealthed movement speed, ste
 
 ## Stealth and detection
 
-- Baseline stealth requires Stealth I-IV and can only be entered out of combat. Ghost Protocol is the sole in-combat entry window.
+- Baseline stealth uses NWN's built-in Stealth action, requires Stealth I-IV, and can only be entered out of combat. No separate Stealth ability is granted. Ghost Protocol is the sole in-combat entry window.
 - Spot detection replaces the vanilla roll with one opposed check: `d20 + Detection` versus `d20 + Stealth`. The verdict is cached per observer/target pair for 30 seconds. Ties favor the stealthed target.
 - A successful Spot check against a player exits that player's stealth and reveals them globally. NPC stealth retains the engine's observer-specific visibility behavior.
 - Listen detection is suppressed so there is one detection model rather than separate Spot and Listen rolls.

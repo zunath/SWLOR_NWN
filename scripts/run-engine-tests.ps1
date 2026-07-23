@@ -131,14 +131,23 @@ $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
 
 # Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
 Push-Location $ServerHome
+# docker compose writes progress to stderr; under ErrorActionPreference=Stop with
+# redirected output (CI, transcripts, IDE consoles) every such line would become a
+# terminating NativeCommandError. Relax it for the native compose calls only.
+$previousErrorActionPreference = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
 try {
-    & docker compose -p $ComposeProject -f $ComposeFile up --abort-on-container-exit --exit-code-from swlor-server
+    # Remove anything a previously interrupted run left behind before starting fresh.
+    & docker compose -p $ComposeProject -f $ComposeFile down --volumes --remove-orphans 2>&1 | ForEach-Object { "$_" } | Write-Host
+
+    & docker compose -p $ComposeProject -f $ComposeFile up --abort-on-container-exit --exit-code-from swlor-server 2>&1 | ForEach-Object { "$_" } | Write-Host
     $composeExitCode = $LASTEXITCODE
 
     Write-Section "Tearing down containers"
-    & docker compose -p $ComposeProject -f $ComposeFile down --volumes
+    & docker compose -p $ComposeProject -f $ComposeFile down --volumes 2>&1 | ForEach-Object { "$_" } | Write-Host
 }
 finally {
+    $ErrorActionPreference = $previousErrorActionPreference
     Pop-Location
 }
 

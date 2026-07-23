@@ -147,8 +147,30 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 var activatorStatAdjustmentsBefore = behaviorCase.ExpectedActivatorStatAdjustments
                     .ToDictionary(pair => pair.Key, pair => Stat.GetStatAdjustment(caster, pair.Key));
 
-                var used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
-                ctx.Assert(used, "TryUseAbility returned false - activation requirements were not met");
+                // The activation must run in the CASTER's script context, exactly like the real
+                // feat-use event: DelayCommand(activationDelay, CompleteActivation) schedules
+                // against OBJECT_SELF, and the engine evaluates line-of-sight in OBJECT_SELF's
+                // area. Called directly from the async runner (module context), casted impacts
+                // never fire and every LOS check fails.
+                var used = false;
+                var activationAttempted = false;
+                AssignCommand(caster, () =>
+                {
+                    used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+                    activationAttempted = true;
+                });
+                await ctx.WaitUntilAsync(
+                    () => activationAttempted,
+                    5f,
+                    "the assigned activation command to execute in the caster's context");
+
+                if (!used)
+                {
+                    var denial = Ability.GetLastActivationDenialReason();
+                    ctx.Fail(string.IsNullOrWhiteSpace(denial)
+                        ? "TryUseAbility returned false - activation requirements were not met (no denial reason was recorded)"
+                        : $"TryUseAbility returned false - {denial}");
+                }
 
                 if (ability.ActivationType == AbilityActivationType.Weapon)
                 {

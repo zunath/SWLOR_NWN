@@ -145,6 +145,9 @@ export SWLOR_ENGINE_TEST_ARENA_RESREF="$ARENA_RESREF"
 # Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
 pushd "$SERVER_HOME" > /dev/null
 
+# Remove anything a previously interrupted run left behind before starting fresh.
+docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" down --volumes --remove-orphans
+
 docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" up --abort-on-container-exit --exit-code-from swlor-server
 COMPOSE_EXIT_CODE=$?
 

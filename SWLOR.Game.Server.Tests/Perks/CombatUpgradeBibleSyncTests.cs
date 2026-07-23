@@ -260,7 +260,11 @@ public class CombatUpgradeBibleSyncTests
             scopedPerkTypes.Add(perkType);
             AssertPerkRow(row, perk, level, failures);
 
-            if (ShouldValidateAsActiveAbility(row, level))
+            if (IsNativeStealthRow(row))
+            {
+                AssertNativeStealthRow(row, level, root, failures);
+            }
+            else if (ShouldValidateAsActiveAbility(row, level))
             {
                 if (IsTameRow(row))
                 {
@@ -756,7 +760,12 @@ public class CombatUpgradeBibleSyncTests
 
                         AssertPerkRow(row, perk, level, failures);
 
-                        if (ShouldValidateAsActiveAbility(row, level))
+                        if (IsNativeStealthRow(row))
+                        {
+                            AssertNativeStealthRow(row, level, root, failures);
+                            abilityEvidence = "Uses NWN's built-in Stealth action; no custom feat or ability definition by design.";
+                        }
+                        else if (ShouldValidateAsActiveAbility(row, level))
                         {
                             if (IsTameRow(row))
                             {
@@ -2487,6 +2496,47 @@ public class CombatUpgradeBibleSyncTests
     private static int[] GetExpectedWeaponProgressionPricePattern(string styleKey, int[] defaultPattern)
     {
         return WeaponProgressionPricePatternByStyle.GetValueOrDefault(styleKey, defaultPattern);
+    }
+
+    private static bool IsNativeStealthRow(BiblePerkRow row)
+    {
+        return row.Tab.Equals("Espionage", StringComparison.OrdinalIgnoreCase) &&
+               GetBaseName(row.PerkName).Equals("Stealth", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static void AssertNativeStealthRow(
+        BiblePerkRow row,
+        PerkLevel level,
+        PathInfo root,
+        List<string> failures)
+    {
+        if (!row.Type.Equals("Toggle", StringComparison.OrdinalIgnoreCase))
+        {
+            failures.Add($"{Describe(row)}: native Stealth must be documented as a Toggle.");
+        }
+
+        if (level.GrantedFeats.Any(feat => feat != FeatType.Invalid))
+        {
+            failures.Add($"{Describe(row)}: native Stealth must not grant a duplicate custom feat.");
+        }
+
+        if (TryParseActivationSeconds(row.CastingTime) != null ||
+            TryParseDurationSeconds(row.CooldownTime) != null)
+        {
+            failures.Add($"{Describe(row)}: native Stealth must not declare custom casting or cooldown timing.");
+        }
+
+        var abilityPath = Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Espionage",
+            "StealthAbilityDefinition.cs");
+        if (File.Exists(abilityPath))
+        {
+            failures.Add($"{Describe(row)}: duplicate Stealth ability definition still exists.");
+        }
     }
 
     private static bool ShouldValidateAsActiveAbility(BiblePerkRow row, PerkLevel level)

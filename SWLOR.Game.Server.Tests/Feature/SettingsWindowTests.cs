@@ -47,6 +47,36 @@ public class SettingsWindowTests
     }
 
     [Test]
+    public void PartialChanges_RepublishExistingListBindingsAfterInsertion()
+    {
+        var (_, viewModelSource) = LoadSettingsSources();
+        var changeSettingsView = ExtractMethod(
+            viewModelSource,
+            "private void ChangeSettingsView",
+            "private string GetSelectedPartial");
+        var partialSwap = changeSettingsView.IndexOf(
+            "ChangePartialView(SettingsView, partialName);",
+            StringComparison.Ordinal);
+        var refresh = changeSettingsView.IndexOf(
+            "RefreshPartialViewBindings();",
+            StringComparison.Ordinal);
+        var restoreMainView = ExtractMethod(
+            viewModelSource,
+            "protected override void OnMainViewRestored",
+            "private void LoadColor");
+
+        partialSwap.Should().BeGreaterThanOrEqualTo(0);
+        refresh.Should().BeGreaterThan(partialSwap);
+        changeSettingsView.Should().NotContain("partialName == ChatPartial");
+        changeSettingsView.Should().Contain("ChatColorNames?.ResetBindings();");
+        changeSettingsView.Should().Contain("ChatColors?.ResetBindings();");
+        changeSettingsView.Should().Contain("ChatColorToggles?.ResetBindings();");
+        changeSettingsView.Should().NotContain("LoadChatView();");
+        restoreMainView.Should().Contain("ChangeSettingsView(GetSelectedPartial());");
+        restoreMainView.Should().NotContain("ChangePartialView(SettingsView");
+    }
+
+    [Test]
     public void Save_PersistsWithoutClosingTheWindow()
     {
         var (definitionSource, viewModelSource) = LoadSettingsSources();

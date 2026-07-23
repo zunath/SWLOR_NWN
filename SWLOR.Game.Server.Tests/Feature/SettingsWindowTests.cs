@@ -47,6 +47,30 @@ public class SettingsWindowTests
     }
 
     [Test]
+    public void ChatTab_RepublishesExistingListBindingsAfterItsPartialIsInserted()
+    {
+        var (_, viewModelSource) = LoadSettingsSources();
+        var changeSettingsView = ExtractMethod(
+            viewModelSource,
+            "private void ChangeSettingsView",
+            "private string GetSelectedPartial");
+        var partialSwap = changeSettingsView.IndexOf(
+            "ChangePartialView(SettingsView, partialName);",
+            StringComparison.Ordinal);
+        var refresh = changeSettingsView.IndexOf(
+            "RefreshChatBindings();",
+            StringComparison.Ordinal);
+
+        partialSwap.Should().BeGreaterThanOrEqualTo(0);
+        refresh.Should().BeGreaterThan(partialSwap);
+        changeSettingsView.Should().Contain("if (partialName == ChatPartial)");
+        changeSettingsView.Should().Contain("ChatColorNames?.ResetBindings();");
+        changeSettingsView.Should().Contain("ChatColors?.ResetBindings();");
+        changeSettingsView.Should().Contain("ChatColorToggles?.ResetBindings();");
+        changeSettingsView.Should().NotContain("LoadChatView();");
+    }
+
+    [Test]
     public void Save_PersistsWithoutClosingTheWindow()
     {
         var (definitionSource, viewModelSource) = LoadSettingsSources();

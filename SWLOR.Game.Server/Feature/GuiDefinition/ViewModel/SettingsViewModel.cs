@@ -274,6 +274,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // temporarily changes the window geometry.
             UpdatePropertyFromClient(nameof(Geometry));
             ChangePartialView(SettingsView, partialName);
+
+            if (partialName == ChatPartial)
+                RefreshChatBindings();
+        }
+
+        private void RefreshChatBindings()
+        {
+            // The Chat partial is not present when its list binds are initialized. Republish the
+            // existing lists after inserting the partial so the client can populate its rows
+            // without reloading persisted values over unsaved color changes.
+            ChatColorNames?.ResetBindings();
+            ChatColors?.ResetBindings();
+            ChatColorToggles?.ResetBindings();
         }
 
         private string GetSelectedPartial()

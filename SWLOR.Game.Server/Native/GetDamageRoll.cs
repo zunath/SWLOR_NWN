@@ -128,8 +128,14 @@ namespace SWLOR.Game.Server.Native
                 var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem, attackerStatType, useForceAttack);
                 var totalDamage = 0;
 
+                // The engine calls this hook for swings it later discards. On-hit riders such as
+                // Guard must only fire when the attack roll actually landed against a target that
+                // can take damage.
+                var isLandedAttack = IsLandedAttackOnDamageableTarget(pAttackData, defender);
+
                 var physicalDamage = ProcessDamage(pTarget, attacker, damageProfile, pAttackData,
                     attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, defender, weaponSkillType,
+                    isLandedAttack,
                     out totalDamage,
                     out var effectiveCritical);
 
@@ -187,10 +193,21 @@ namespace SWLOR.Game.Server.Native
                 $"DAMAGE: attacker attribute modifier: {attackerStat}, weapon damage rating {damageProfile.DamageType}: {damageProfile.Damage}");
         }
 
+        private static bool IsLandedAttackOnDamageableTarget(void* pAttackData, CNWSObject targetObject)
+        {
+            if (targetObject == null || targetObject.m_bPlotObject == 1 || pAttackData == null)
+                return false;
+
+            var attackData = CNWSCombatAttackData.FromPointer(pAttackData);
+            return attackData != null &&
+                   ResolveAttackRoll.IsSuccessfulAttackResult(attackData.m_nAttackResult);
+        }
+
         private static int ProcessDamage(void* pTarget, CNWSCreature attacker,
             WeaponDamageProfile damageProfile, void* pAttackData, int attackerAttack,
             int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags,
-            int bOffHand, CNWSObject targetObject, SkillType skillType, out int totalDamage, out int effectiveCritical)
+            int bOffHand, CNWSObject targetObject, SkillType skillType, bool isLandedAttack,
+            out int totalDamage, out int effectiveCritical)
         {
             var physicalDamage = 0;
             effectiveCritical = critical;
@@ -204,7 +221,8 @@ namespace SWLOR.Game.Server.Native
             }
 
             var damage = CalculateTargetSpecificDamage(pTarget, attacker, damageProfile,
-                attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType, out effectiveCritical);
+                attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType,
+                isLandedAttack, out effectiveCritical);
 
             // Plot target takes no damage
             if (targetObject.m_bPlotObject == 1)
@@ -472,7 +490,8 @@ namespace SWLOR.Game.Server.Native
 
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker,
             WeaponDamageProfile damageProfile, int attackerAttack,
-            int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags, int bOffHand, SkillType skillType, out int effectiveCritical)
+            int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags, int bOffHand, SkillType skillType,
+            bool isLandedAttack, out int effectiveCritical)
         {
             effectiveCritical = critical;
             var targetObject = CNWSObject.FromPointer(pTarget);
@@ -481,7 +500,8 @@ namespace SWLOR.Game.Server.Native
             {
                 case (int)ObjectType.Creature:
                     return CalculateCreatureDamage(pTarget, attacker, damageProfile, attackerAttack,
-                        attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType, out effectiveCritical);
+                        attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, skillType,
+                        isLandedAttack, out effectiveCritical);
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
@@ -500,7 +520,8 @@ namespace SWLOR.Game.Server.Native
 
         private static int CalculateCreatureDamage(void* pTarget, CNWSCreature attacker, WeaponDamageProfile damageProfile,
             int attackerAttack, int attackerStat, int critical, int weaponDeltaCap,
-            uint attackType, uint damageFlags, int bOffHand, SkillType skillType, out int effectiveCritical)
+            uint attackType, uint damageFlags, int bOffHand, SkillType skillType,
+            bool isLandedAttack, out int effectiveCritical)
         {
             effectiveCritical = critical;
             var target = CNWSCreature.FromPointer(pTarget);
@@ -586,7 +607,12 @@ namespace SWLOR.Game.Server.Native
                 damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, bRangedAttack);
             }
 
-            damage = Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);
+            damage = Combat.ApplyGuardedHitModifiers(
+                target.m_idSelf,
+                attacker.m_idSelf,
+                damage,
+                damageType,
+                isLandedAttack);
             if (damage > 0 && attackType == (uint)AttackType.Melee)
             {
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);

@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
         {
             var npc = ctx.SpawnCreature("nw_rat001");
             ctx.SetNPCResources(npc, StartingFP, StartingStamina);
+            var fpBefore = Stat.GetCurrentFP(npc);
 
             // The activation must run in the caster's script context (line-of-sight and the
             // delayed impact both depend on OBJECT_SELF), matching the real feat-use event.
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
                 "Renewal I's regeneration status effect to appear on the caster after its activation delay");
 
             var remainingFP = Stat.GetCurrentFP(npc);
-            ctx.Assert(remainingFP < StartingFP, $"FP should have decreased below {StartingFP} after casting Renewal I, but is still {remainingFP}.");
+            ctx.Assert(remainingFP < fpBefore, $"FP should have decreased below its pre-activation value of {fpBefore} after casting Renewal I, but is {remainingFP}.");
         }
     }
 }

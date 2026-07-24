@@ -145,8 +145,14 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         {
             TemporaryStatModifier.Add(npc, StatType.MaxFP, fp, 3600f, "ENGINE_TEST_RESOURCES");
             TemporaryStatModifier.Add(npc, StatType.MaxStamina, stamina, 3600f, "ENGINE_TEST_RESOURCES");
-            SetLocalInt(npc, NPCCurrentFPVariable, fp);
-            SetLocalInt(npc, NPCCurrentStaminaVariable, stamina);
+
+            // Pools start at EXACTLY the effective max (modifier + ability-score-derived),
+            // which makes regen inert: at max, each regen tick clamps to no-op, so a cost
+            // deduction is immediately visible as a dip below the pre-activation snapshot.
+            // Starting below max, ~1/sec regen accrues during the activation delay and can
+            // fully mask the deduction against that snapshot.
+            SetLocalInt(npc, NPCCurrentFPVariable, Stat.GetMaxFP(npc));
+            SetLocalInt(npc, NPCCurrentStaminaVariable, Stat.GetMaxStamina(npc));
         }
 
         /// <summary>
@@ -158,21 +164,27 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         {
             // Item creation and equipping both need the creature's script context -
             // CreateItemOnObject returns OBJECT_INVALID when called from an async
-            // continuation, even for stock blueprints.
+            // continuation, even for stock blueprints. Creation and equipping run in
+            // SEPARATE assigned contexts with a settle frame between: an ActionEquipItem
+            // queued in the same script that created the item references an item that
+            // hasn't finished entering the inventory and silently does nothing.
             var item = OBJECT_INVALID;
             AssignCommand(creature, () =>
             {
                 item = CreateItemOnObject(itemResref, creature);
-                if (GetIsObjectValid(item))
-                {
-                    ActionEquipItem(item, slot);
-                }
             });
 
             await WaitUntilAsync(
-                () => GetIsObjectValid(item),
+                () => GetIsObjectValid(item) && GetItemPossessor(item) == creature,
                 timeoutSeconds,
-                $"item '{itemResref}' to be created");
+                $"item '{itemResref}' to be created in the creature's inventory");
+            await NwTask.NextFrame();
+
+            AssignCommand(creature, () =>
+            {
+                ClearAllActions();
+                ActionEquipItem(item, slot);
+            });
             await WaitUntilAsync(
                 () => GetItemInSlot(slot, creature) == item,
                 timeoutSeconds,

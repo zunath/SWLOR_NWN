@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<SlicingSession.EligibleSlicingTool> _tools = new();
         private int _toolIndex;
         private bool _suppressCloseFailure;
-        private float _appliedContentWidth = -1f;
 
         public string ThemeBackground { get => Get<string>(); set => Set(value); }
         public string TraceText { get => Get<string>(); set => Set(value); }
@@ -81,14 +80,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(SlicingPayload initialPayload)
         {
             EnsureUsableWindowGeometry();
-            ReapplyContentLayout();
             // The base partial-view swap schedules its own zero-delay geometry redraw. Reapply the
-            // minimum and generated content afterward so neither is lost during that redraw.
-            DelayCommand(0.0f, () =>
-            {
-                EnsureUsableWindowGeometry();
-                ReapplyContentLayout();
-            });
+            // minimum afterward so a legacy title-bar-sized geometry cannot persist.
+            DelayCommand(0.0f, EnsureUsableWindowGeometry);
             _suppressCloseFailure = false;
             _toolIndex = 0;
             StatusText = string.Empty;
@@ -101,8 +95,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ChangeView("%%WINDOW_MAIN%%");
             Refresh();
-            ReapplyContentLayout();
-            DelayCommand(0.0f, ReapplyContentLayout);
         };
 
         public Action OnPreviousTool() => () => ChangeTool(-1);
@@ -205,40 +197,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChangePartialView("_window_", partialName);
         }
 
-        /// <summary>
-        /// Regenerates the inner panel for the width reported by the client. NUI does not support
-        /// binding widget widths, so replacing the group layout is what makes the content respond.
-        /// </summary>
-        private void RefreshContentLayout()
-        {
-            var contentWidth = SlicingDefinition.CalculateContentWidth(Geometry.Width);
-            if (_appliedContentWidth > 0f && Math.Abs(contentWidth - _appliedContentWidth) < 8f)
-                return;
-
-            _appliedContentWidth = contentWidth;
-            SetGroupLayout(
-                SlicingDefinition.ContentElement,
-                SlicingDefinition.BuildMainContentLayout(contentWidth));
-        }
-
-        private void ReapplyContentLayout()
-        {
-            _appliedContentWidth = -1f;
-            RefreshContentLayout();
-        }
-
-        protected override void OnClientPropertyUpdated(string propertyName)
-        {
-            if (propertyName == nameof(Geometry))
-                RefreshContentLayout();
-        }
-
-        protected override void OnMainViewRestored()
-        {
-            ReapplyContentLayout();
-            DelayCommand(0.0f, ReapplyContentLayout);
-        }
-
         private void EnsureUsableWindowGeometry()
         {
             var current = Geometry;
@@ -247,11 +205,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 current.Height >= SlicingDefinition.MinimumWindowHeight)
                 return;
 
+            // A title-bar-sized rectangle was persisted by earlier collapsing layouts. Restore
+            // the full default size in that case so the repaired body is immediately visible.
+            // Less severe undersizing is only clamped to the supported minimum.
+            var wasCollapsed = current.Width < 100f || current.Height < 100f;
             Geometry = new GuiRectangle(
                 current.X,
                 current.Y,
-                Math.Max(current.Width, SlicingDefinition.MinimumWindowWidth),
-                Math.Max(current.Height, SlicingDefinition.MinimumWindowHeight));
+                Math.Max(
+                    current.Width,
+                    wasCollapsed ? SlicingDefinition.WindowWidth : SlicingDefinition.MinimumWindowWidth),
+                Math.Max(
+                    current.Height,
+                    wasCollapsed ? SlicingDefinition.WindowHeight : SlicingDefinition.MinimumWindowHeight));
         }
 
         private void Refresh()

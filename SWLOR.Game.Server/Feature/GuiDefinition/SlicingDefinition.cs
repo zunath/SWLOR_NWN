@@ -3,17 +3,11 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SlicingDefinition : IGuiWindowDefinition
     {
-        // The main panel is regenerated when the window width changes because NUI widget widths
-        // cannot be bound. Event-bearing controls therefore need stable IDs shared by the
-        // registration copy and every runtime-generated copy.
-        public const string ContentElement = "SLICING_CONTENT";
-        private const string ContentDefaultPartial = "SLICING_CONTENT_DEFAULT";
         private const string HelpButtonId = "slc_help";
         private const string PreviousToolButtonId = "slc_tool_previous";
         private const string NextToolButtonId = "slc_tool_next";
@@ -23,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         internal const float WindowHeight = 650f;
         internal const float MinimumWindowWidth = 360f;
         internal const float MinimumWindowHeight = 240f;
-        private const float MinimumContentWidth = 300f;
         private const float TileSize = 56f;
         private const string HelpText =
             "OBJECTIVE\n" +
@@ -55,108 +48,56 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(false)
                 .BindOnClosed(model => model.OnWindowClosed())
                 .DefinePartialView(SlicingViewModel.HelpPartial, AddHelp)
-                .DefinePartialView(ContentDefaultPartial, group =>
+                .AddRow(wrapperRow =>
                 {
-                    BuildMainContent(group, CalculateContentWidth(WindowWidth));
-                })
-                .AddRow(row => row.AddPartialView(ContentElement));
+                    // This full static body must be present in the initial window JSON. Replacing
+                    // it with an empty partial and populating that partial at runtime causes the
+                    // live client to collapse the entire window to its title bar.
+                    wrapperRow.AddGroup(wrapper =>
+                    {
+                        wrapper.SetShowBorder(false)
+                            .SetScrollbars(NuiScrollbars.Auto);
+                        wrapper.AddColumn(AddMainContent);
+                    });
+                });
 
             return _builder.Build();
         }
 
-        /// <summary>
-        /// Converts window width to usable panel width after accounting for NUI chrome and the
-        /// vertical scrollbar. At the minimum, the centered five-tile board still fits.
-        /// </summary>
-        public static float CalculateContentWidth(float windowWidth)
+        private static void AddMainContent(GuiColumn<SlicingViewModel> column)
         {
-            var contentWidth = windowWidth - 60f;
-            return contentWidth < MinimumContentWidth ? MinimumContentWidth : contentWidth;
-        }
-
-        /// <summary>
-        /// Builds a main panel sized to the current client window width for NuiSetGroupLayout.
-        /// </summary>
-        public static Json BuildMainContentLayout(float contentWidth)
-        {
-            var host = new GuiGroup<SlicingViewModel>();
-            BuildMainContent(host, contentWidth);
-            return host.ToJson();
-        }
-
-        private static void BuildMainContent(GuiGroup<SlicingViewModel> host, float contentWidth)
-        {
-            host.SetShowBorder(false)
-                .SetScrollbars(NuiScrollbars.None);
-
-            host.AddColumn(outer =>
-            {
-                outer.SetWidth(contentWidth);
-                outer.AddRow(row =>
-                {
-                    row.AddGroup(scrollGroup =>
-                    {
-                        scrollGroup.SetShowBorder(false)
-                            .SetScrollbars(NuiScrollbars.Auto);
-                        scrollGroup.AddColumn(column => AddMainContent(column, contentWidth));
-                    });
-                });
-            });
-        }
-
-        private static void AddMainContent(GuiColumn<SlicingViewModel> column, float contentWidth)
-        {
-            var bannerWidth = Math.Min(contentWidth, 640f);
             column.AddRow(row =>
             {
-                row.SetHeight(bannerWidth * 0.15f);
-                row.AddSpacer();
+                row.SetHeight(78f);
                 row.AddImage()
                     .BindResref(model => model.ThemeBackground)
-                    .SetHeight(bannerWidth * 0.15f)
-                    .SetWidth(bannerWidth);
-                row.AddSpacer();
+                    .SetAspect(NuiAspect.Fit)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                    .SetHeight(78f);
             });
-
-            if (contentWidth >= 500f)
-            {
-                column.AddRow(row =>
-                {
-                    row.SetHeight(30f);
-                    row.AddLabel().BindText(model => model.TraceText).SetWidth(100f).SetHeight(28f);
-                    row.AddLabel().BindText(model => model.IntegrityText).SetWidth(120f).SetHeight(28f);
-                    row.AddText()
-                        .BindText(model => model.FailureText)
-                        .SetShowBorder(false)
-                        .SetScrollbars(NuiScrollbars.None)
-                        .SetHeight(28f);
-                    AddHelpButton(row);
-                });
-            }
-            else
-            {
-                column.AddRow(row =>
-                {
-                    row.SetHeight(30f);
-                    row.AddLabel().BindText(model => model.TraceText).SetWidth(90f).SetHeight(28f);
-                    row.AddLabel().BindText(model => model.IntegrityText).SetWidth(120f).SetHeight(28f);
-                    row.AddSpacer();
-                    AddHelpButton(row);
-                });
-                column.AddRow(row =>
-                {
-                    row.SetHeight(30f);
-                    row.AddText()
-                        .BindText(model => model.FailureText)
-                        .SetShowBorder(false)
-                        .SetScrollbars(NuiScrollbars.None)
-                        .SetHeight(28f);
-                });
-            }
 
             column.AddRow(row =>
             {
-                row.SetHeight(contentWidth < 520f ? 40f : 28f);
+                row.SetHeight(30f);
+                row.AddLabel().BindText(model => model.TraceText).SetWidth(100f).SetHeight(28f);
+                row.AddLabel().BindText(model => model.IntegrityText).SetWidth(120f).SetHeight(28f);
+                row.AddSpacer();
+                AddHelpButton(row);
+            });
+            column.AddRow(row =>
+            {
+                row.SetHeight(30f);
+                row.AddText()
+                    .BindText(model => model.FailureText)
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None)
+                    .SetHeight(28f);
+            });
+
+            column.AddRow(row =>
+            {
+                row.SetHeight(40f);
                 row.AddText()
                     .SetText("GOAL: Connect the amber START tile to the magenta GOAL tile.")
                     .SetShowBorder(false)
@@ -164,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
             column.AddRow(row =>
             {
-                row.SetHeight(contentWidth < 400f ? 80f : contentWidth < 520f ? 60f : 44f);
+                row.SetHeight(80f);
                 row.AddText()
                     .SetText("Select any tile for free. Click it again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).")
                     .SetShowBorder(false)
@@ -220,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             column.AddRow(row =>
             {
-                row.SetHeight(contentWidth < 500f ? 56f : 42f);
+                row.SetHeight(56f);
                 row.AddText()
                     .BindText(model => model.StatusText)
                     .SetShowBorder(false)

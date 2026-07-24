@@ -3,7 +3,6 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
@@ -267,7 +266,7 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingNuiLayout_ReflowsOnResizeWrapsTextAndUsesAStaticScalarBoundGrid()
+    public void SlicingNuiLayout_UsesANonCollapsingStaticFlexibleBodyWithWrappedText()
     {
         var root = FindRepositoryRoot();
         var definition = File.ReadAllText(Path.Combine(
@@ -277,12 +276,15 @@ public class SlicingContentTests
 
         definition.Should().Contain("private const float TileSize = 56f;");
         definition.Should().Contain(".SetIsResizable(true)");
-        definition.Should().Contain("public const string ContentElement = \"SLICING_CONTENT\";");
-        definition.Should().Contain(".DefinePartialView(ContentDefaultPartial");
-        definition.Should().Contain(".AddPartialView(ContentElement)");
-        definition.Should().Contain("BuildMainContentLayout(float contentWidth)");
-        definition.Should().Contain("outer.SetWidth(contentWidth)");
+        definition.Should().Contain(".AddRow(wrapperRow =>");
+        definition.Should().Contain("wrapperRow.AddGroup(wrapper =>");
+        definition.Should().Contain("wrapper.AddColumn(AddMainContent)");
         definition.Should().Contain(".SetScrollbars(NuiScrollbars.Auto)");
+        definition.Should().Contain(".SetAspect(NuiAspect.Fit)");
+        definition.Should().NotContain("ContentElement");
+        definition.Should().NotContain("ContentDefaultPartial");
+        definition.Should().NotContain("BuildMainContentLayout");
+        definition.Should().NotContain(".SetWidth(520f)", "the banner must flex with the static window body");
         definition.Should().Contain(".SetText(\"GOAL: Connect the amber START tile to the magenta GOAL tile.\")");
         definition.Should().Contain(".SetText(\"Select any tile for free. Click it again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).\")");
         definition.Should().Contain(".BindText(model => model.FailureText)");
@@ -308,11 +310,10 @@ public class SlicingContentTests
 
         viewModel.Should().NotContain("RestoreFixedWindowGeometry");
         viewModel.Should().Contain("EnsureUsableWindowGeometry");
-        viewModel.Should().Contain("OnClientPropertyUpdated(string propertyName)");
-        viewModel.Should().Contain("SetGroupLayout(");
-        viewModel.Should().Contain("SlicingDefinition.BuildMainContentLayout(contentWidth)");
-        viewModel.Should().Contain("Math.Abs(contentWidth - _appliedContentWidth) < 8f");
-        viewModel.Should().Contain("DelayCommand(0.0f, ReapplyContentLayout)");
+        viewModel.Should().Contain("DelayCommand(0.0f, EnsureUsableWindowGeometry)");
+        viewModel.Should().NotContain("SetGroupLayout(");
+        viewModel.Should().NotContain("ReapplyContentLayout");
+        viewModel.Should().NotContain("_appliedContentWidth");
         viewModel.Should().Contain("var slot = row * 5 + column;");
         viewModel.Should().Contain("Set(image, $\"TileImage{slot}\");");
         viewModel.Should().NotContain("GuiBindingList<string> TileColumn");
@@ -323,15 +324,6 @@ public class SlicingContentTests
             typeof(SlicingViewModel).GetProperty($"TileImage{slot}").Should().NotBeNull();
             typeof(SlicingViewModel).GetProperty($"TileTooltip{slot}").Should().NotBeNull();
         }
-    }
-
-    [Test]
-    public void SlicingContentWidth_TracksWindowWidthAndKeepsTheBoardUsable()
-    {
-        SlicingDefinition.CalculateContentWidth(800f).Should().Be(740f);
-        SlicingDefinition.CalculateContentWidth(560f).Should().Be(500f);
-        SlicingDefinition.CalculateContentWidth(360f).Should().Be(300f);
-        SlicingDefinition.CalculateContentWidth(200f).Should().Be(300f);
     }
 
     [Test]
@@ -412,7 +404,7 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingWindowGeometry_RecoversLegacyCollapsedSizeWithoutResettingNormalResizes()
+    public void SlicingWindowGeometry_RecoversCollapsedAndUndersizedWindowsWithoutResettingNormalResizes()
     {
         var viewModel = new SlicingViewModel
         {
@@ -423,6 +415,14 @@ public class SlicingContentTests
 
         viewModel.Geometry.X.Should().Be(17f);
         viewModel.Geometry.Y.Should().Be(23f);
+        viewModel.Geometry.Width.Should().Be(560f);
+        viewModel.Geometry.Height.Should().Be(650f);
+
+        viewModel.Geometry = new GuiRectangle(19f, 27f, 200f, 150f);
+        InvokeViewModelMethod<object>("EnsureUsableWindowGeometry", viewModel);
+
+        viewModel.Geometry.X.Should().Be(19f);
+        viewModel.Geometry.Y.Should().Be(27f);
         viewModel.Geometry.Width.Should().Be(360f);
         viewModel.Geometry.Height.Should().Be(240f);
 

@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (session == null)
                 return;
 
-            ThemeBackground = session.Source == SlicingSourceType.Lockbox ? "slc_bg_l" : "slc_bg_t";
+            ThemeBackground = session.Source == SlicingSourceType.Lockbox ? "slc_goal_l" : "slc_goal_t";
             TraceText = $"Trace: {session.TraceRemaining}";
             var integrity = SlicingSession.GetIntegrity(session.Target);
             IntegrityText = $"Integrity: {integrity}%";
@@ -306,13 +306,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : powered
                         ? 'p'
                         : 'u';
-            return $"slc{theme}{type}{tile.Orientation}{state}";
+            var family = tile.Type is SlicingTileType.Entry or SlicingTileType.Core
+                ? "slcg"
+                : "slc";
+            return $"{family}{theme}{type}{tile.Orientation}{state}";
         }
 
         private static string GetTileTooltip(SlicingSession.ActiveSlicingSession session, int index)
         {
-            var parts = new List<string> { $"Tile {index + 1}" };
             var tile = session.Board.Tiles[index];
+            var identity = tile.Type switch
+            {
+                SlicingTileType.Entry => "START / Entry",
+                SlicingTileType.Core => "GOAL / Core",
+                _ => $"Tile {index + 1}"
+            };
+            var parts = new List<string> { identity };
             if (tile.IsRouteRevealed)
                 parts.Add("Verified route tile");
             if (tile.IsOrientationRevealed)

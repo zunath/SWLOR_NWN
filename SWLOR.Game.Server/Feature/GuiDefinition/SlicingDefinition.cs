@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float TileSize = 56f;
         private const string HelpText =
             "OBJECTIVE\n" +
-            "Create one continuous powered circuit from the yellow Entry socket to the red Core socket. " +
+            "Create one continuous powered circuit from the amber START / Entry tile to the magenta GOAL / Core tile. " +
             "Connected tiles glow yellow. You win as soon as power reaches the Core; decoy tiles do not need to be connected.\n\n" +
             "CONTROLS\n" +
-            "- Click any unselected tile to select it. Selection is free and is shown by white brackets.\n" +
+            "- Click any unselected tile to select it. Selection is free and is shown by a bright diamond outline.\n" +
             "- Click the selected tile again to rotate it clockwise. This costs 1 Trace.\n" +
             "- Click a tile directly above, below, left, or right of the selected tile to swap them. This costs 2 Trace. " +
             "The Entry and Core cannot be swapped.\n" +
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             column.AddRow(row =>
             {
                 row.AddLabel()
-                    .SetText("Select a tile. Click the selected tile again to rotate it (1 Trace), or click an adjacent tile to swap them (2 Trace).")
+                    .SetText("START -> GOAL: connect the amber Entry to the magenta Core. Click the selected tile again to rotate (1 Trace), or an adjacent tile to swap (2 Trace).")
                     .SetHeight(46f);
             });
 

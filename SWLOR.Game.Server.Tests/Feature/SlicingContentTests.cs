@@ -198,11 +198,21 @@ public class SlicingContentTests
         foreach (var theme in new[] { 'l', 't' })
         {
             AssertTga(Path.Combine(ui, $"slc_bg_{theme}.tga"), 640, 96);
+            AssertTga(Path.Combine(ui, $"slc_goal_{theme}.tga"), 640, 96);
             foreach (var type in new[] { 's', 'c', 'j', 'x', 'e', 'o', 'b', 'q' })
             foreach (var orientation in Enumerable.Range(0, 4))
             foreach (var state in new[] { 'u', 'p', 's', 'd' })
             {
                 var resref = $"slc{theme}{type}{orientation}{state}";
+                resref.Length.Should().BeLessThanOrEqualTo(16);
+                AssertTga(Path.Combine(ui, resref + ".tga"), 72, 72);
+            }
+
+            foreach (var type in new[] { 'e', 'o' })
+            foreach (var orientation in Enumerable.Range(0, 4))
+            foreach (var state in new[] { 'u', 'p', 's', 'd' })
+            {
+                var resref = $"slcg{theme}{type}{orientation}{state}";
                 resref.Length.Should().BeLessThanOrEqualTo(16);
                 AssertTga(Path.Combine(ui, resref + ".tga"), 72, 72);
             }
@@ -259,7 +269,8 @@ public class SlicingContentTests
 
         definition.Should().Contain(".SetText(\"?\")");
         definition.Should().Contain(".BindOnClicked(model => model.OnHelp())");
-        definition.Should().Contain("Create one continuous powered circuit");
+        definition.Should().Contain("amber START / Entry tile to the magenta GOAL / Core tile");
+        definition.Should().Contain("bright diamond outline");
         definition.Should().Contain("Click the selected tile again to rotate it clockwise. This costs 1 Trace.");
         definition.Should().Contain("directly above, below, left, or right");
         definition.Should().Contain("This costs 2 Trace.");
@@ -291,6 +302,32 @@ public class SlicingContentTests
             .Should().EndWith("s", "selected art must take priority so the documented white brackets remain visible");
         InvokeViewModelMethod<string>("GetTileImage", null, session, 1, true, 50)
             .Should().EndWith("d", "unselected tiles should still communicate the target's damaged state");
+    }
+
+    [Test]
+    public void SlicingEndpoints_UseExplicitStartAndGoalArt()
+    {
+        var board = Slicing.BuildBoard(1, 982451653);
+        var entry = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Entry);
+        var core = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Core);
+        var route = board.Tiles.FindIndex(tile =>
+            tile.Type is not SlicingTileType.Entry and not SlicingTileType.Core);
+        var session = new SlicingSession.ActiveSlicingSession
+        {
+            Source = SlicingSourceType.Lockbox,
+            Board = board
+        };
+
+        InvokeViewModelMethod<string>("GetTileImage", null, session, entry, true, 100)
+            .Should().StartWith("slcgle", "Entry uses the visually explicit START asset family");
+        InvokeViewModelMethod<string>("GetTileImage", null, session, core, false, 100)
+            .Should().StartWith("slcglo", "Core uses the visually explicit GOAL asset family");
+        InvokeViewModelMethod<string>("GetTileImage", null, session, route, false, 100)
+            .Should().StartWith("slcl", "ordinary circuit tiles retain the original visual family");
+        InvokeViewModelMethod<string>("GetTileTooltip", null, session, entry)
+            .Should().StartWith("START / Entry");
+        InvokeViewModelMethod<string>("GetTileTooltip", null, session, core)
+            .Should().StartWith("GOAL / Core");
     }
 
     [Test]

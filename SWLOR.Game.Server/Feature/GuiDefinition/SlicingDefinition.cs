@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         internal const float WindowWidth = 560f;
         internal const float WindowHeight = 650f;
+        internal const float MinimumWindowWidth = 320f;
+        internal const float MinimumWindowHeight = 240f;
         private const float TileSize = 56f;
         private const string HelpText =
             "OBJECTIVE\n" +
@@ -23,9 +25,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "- Click any other non-adjacent tile to move the selection for free.\n" +
             "There is no double-click action.\n\n" +
             "TRACE AND FAILURE\n" +
-            "Trace is your action budget. Reach the Core before it runs out. Slicing rank, Lockpicking, and positive Perception " +
-            "can grant extra Trace. Once a rotation, swap, or tool effect is applied, the attempt is committed. Running out of Trace, closing, " +
-            "or aborting a committed attempt counts as a failure and raises the risk that the target is destroyed.\n\n" +
+            "Trace is your action budget. Reach the Core before it runs out. Slicing rank, Lockpicking, and positive Perception can grant extra Trace. " +
+            "A rotation or swap commits the attempt. An immediate tool effect also commits it; a primed tool commits when its effect is consumed. " +
+            "Before commitment, closing or aborting is safe. After commitment, running out of Trace, closing, or aborting counts as a failure and raises " +
+            "the risk that the target is destroyed.\n\n" +
             "TOOLS\n" +
             "You may use one compatible slicing tool per attempt. Tools can reduce action costs, restore Trace, reveal route " +
             "information, correct a tile, or rewind actions. Some tools require a selected tile.";

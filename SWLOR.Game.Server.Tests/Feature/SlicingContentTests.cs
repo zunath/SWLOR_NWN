@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SlicingService;
@@ -234,6 +235,7 @@ public class SlicingContentTests
         definition.Should().Contain(".SetWidth(TileSize)");
 
         viewModel.Should().NotContain("RestoreFixedWindowGeometry");
+        viewModel.Should().Contain("EnsureUsableWindowGeometry");
         viewModel.Should().Contain("var slot = row * 5 + column;");
         viewModel.Should().Contain("Set(image, $\"TileImage{slot}\");");
         viewModel.Should().NotContain("GuiBindingList<string> TileColumn");
@@ -262,12 +264,57 @@ public class SlicingContentTests
         definition.Should().Contain("directly above, below, left, or right");
         definition.Should().Contain("This costs 2 Trace.");
         definition.Should().Contain("There is no double-click action.");
-        definition.Should().Contain("Once a rotation, swap, or tool effect is applied, the attempt is committed.");
+        definition.Should().Contain("A rotation or swap commits the attempt.");
+        definition.Should().Contain("Before commitment, closing or aborting is safe.");
+        definition.Should().Contain("After commitment, running out of Trace, closing, or aborting counts as a failure");
         definition.Should().Contain(".BindOnClicked(model => model.OnCloseHelp())");
 
         viewModel.Should().Contain("public const string HelpPartial = \"SLICING_HELP\";");
-        viewModel.Should().Contain("ChangePartialView(\"_window_\", HelpPartial)");
-        viewModel.Should().Contain("ChangePartialView(\"_window_\", \"%%WINDOW_MAIN%%\")");
+        viewModel.Should().Contain("ChangeView(HelpPartial)");
+        viewModel.Should().Contain("ChangeView(\"%%WINDOW_MAIN%%\")");
+        viewModel.Should().Contain("UpdatePropertyFromClient(nameof(Geometry));");
+        viewModel.Should().Contain("ChangePartialView(\"_window_\", partialName);");
+    }
+
+    [Test]
+    public void SlicingSelection_RemainsVisibleWhenIntegrityUsesDamagedArt()
+    {
+        var board = Slicing.BuildBoard(1, 982451653);
+        var session = new SlicingSession.ActiveSlicingSession
+        {
+            Source = SlicingSourceType.Lockbox,
+            Board = board,
+            SelectedIndex = 0
+        };
+
+        InvokeViewModelMethod<string>("GetTileImage", null, session, 0, true, 50)
+            .Should().EndWith("s", "selected art must take priority so the documented white brackets remain visible");
+        InvokeViewModelMethod<string>("GetTileImage", null, session, 1, true, 50)
+            .Should().EndWith("d", "unselected tiles should still communicate the target's damaged state");
+    }
+
+    [Test]
+    public void SlicingWindowGeometry_RecoversLegacyCollapsedSizeWithoutResettingNormalResizes()
+    {
+        var viewModel = new SlicingViewModel
+        {
+            Geometry = new GuiRectangle(17f, 23f, 80f, 31f)
+        };
+
+        InvokeViewModelMethod<object>("EnsureUsableWindowGeometry", viewModel);
+
+        viewModel.Geometry.X.Should().Be(17f);
+        viewModel.Geometry.Y.Should().Be(23f);
+        viewModel.Geometry.Width.Should().Be(320f);
+        viewModel.Geometry.Height.Should().Be(240f);
+
+        viewModel.Geometry = new GuiRectangle(29f, 31f, 440f, 350f);
+        InvokeViewModelMethod<object>("EnsureUsableWindowGeometry", viewModel);
+
+        viewModel.Geometry.X.Should().Be(29f);
+        viewModel.Geometry.Y.Should().Be(31f);
+        viewModel.Geometry.Width.Should().Be(440f);
+        viewModel.Geometry.Height.Should().Be(350f);
     }
 
     [Test]
@@ -320,4 +367,12 @@ public class SlicingContentTests
 
     private static string GetString(JsonElement element, string property) =>
         element.GetProperty(property).GetProperty("value").GetString() ?? string.Empty;
+
+    private static T InvokeViewModelMethod<T>(string name, SlicingViewModel instance, params object[] arguments)
+    {
+        var flags = BindingFlags.NonPublic |
+                    (instance == null ? BindingFlags.Static : BindingFlags.Instance);
+        var method = typeof(SlicingViewModel).GetMethod(name, flags)!;
+        return (T)method.Invoke(instance, arguments)!;
+    }
 }

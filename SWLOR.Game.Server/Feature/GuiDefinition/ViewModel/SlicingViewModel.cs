@@ -78,6 +78,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(SlicingPayload initialPayload)
         {
+            EnsureUsableWindowGeometry();
+            // The base partial-view swap schedules its own zero-delay geometry redraw. Reapply the
+            // minimum afterward so a legacy title-bar-sized geometry cannot lose a pixel and persist.
+            DelayCommand(0.0f, EnsureUsableWindowGeometry);
             _suppressCloseFailure = false;
             _toolIndex = 0;
             StatusText = string.Empty;
@@ -85,10 +89,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public Action OnTile(int row, int column) => () => ClickTile(row, column);
-        public Action OnHelp() => () => ChangePartialView("_window_", HelpPartial);
+        public Action OnHelp() => () => ChangeView(HelpPartial);
         public Action OnCloseHelp() => () =>
         {
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            ChangeView("%%WINDOW_MAIN%%");
             Refresh();
         };
 
@@ -124,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var failureNumber = SlicingSession.GetFailures(session.Target) + 1;
             var destructionChance = Slicing.GetDestructionChance(failureNumber);
+            UpdatePropertyFromClient(nameof(Geometry));
             ShowModal(
                 $"Abort this committed attempt? It will count as failure {failureNumber} and has a {destructionChance}% chance to destroy the target.",
                 () =>
@@ -182,6 +187,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _toolIndex = (_toolIndex + direction + _tools.Count) % _tools.Count;
             RefreshToolDisplay();
+        }
+
+        private void ChangeView(string partialName)
+        {
+            // Capture a resize before the partial-view redraw workaround mutates the geometry bind.
+            UpdatePropertyFromClient(nameof(Geometry));
+            ChangePartialView("_window_", partialName);
+        }
+
+        private void EnsureUsableWindowGeometry()
+        {
+            var current = Geometry;
+            if (current == null ||
+                current.Width >= SlicingDefinition.MinimumWindowWidth &&
+                current.Height >= SlicingDefinition.MinimumWindowHeight)
+                return;
+
+            Geometry = new GuiRectangle(
+                current.X,
+                current.Y,
+                Math.Max(current.Width, SlicingDefinition.MinimumWindowWidth),
+                Math.Max(current.Height, SlicingDefinition.MinimumWindowHeight));
         }
 
         private void Refresh()
@@ -272,10 +299,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SlicingTileType.Blocker => 'b',
                 _ => 'q'
             };
-            var state = integrity <= 50
-                ? 'd'
-                : session.SelectedIndex == index
-                    ? 's'
+            var state = session.SelectedIndex == index
+                ? 's'
+                : integrity <= 50
+                    ? 'd'
                     : powered
                         ? 'p'
                         : 'u';

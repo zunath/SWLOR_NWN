@@ -132,6 +132,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         MiscellaneousFurniture = 63,
         [RecipeCategory("Poison", true)]
         Poison = 64,
+        [RecipeCategory("Farming Supplies", true)]
+        FarmingSupply = 65,
     }
 
     public class RecipeCategoryAttribute : Attribute

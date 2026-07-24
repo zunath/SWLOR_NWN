@@ -736,7 +736,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         Alertness = 800,
         FalseIdentities = 801,
         CoverStory = 802,
+        Cultivation = 650,
+        Horticulture = 803,
+        Botany = 804,
 
-        // IDs 650 and 803+ are free.
+        // IDs 805+ are free.
     }
 }

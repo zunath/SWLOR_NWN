@@ -2426,5 +2426,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         RazorTrap1 = 2896,
         RazorTrap2 = 2897,
         ShockTrap = 2898,
+        Cultivation = 2775,
+        Horticulture = 2779,
+        Botany = 2781,
 }
 }

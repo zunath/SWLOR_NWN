@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             Craft,
             /// <summary>Raw fish from fishing—quest copy uses "Catch".</summary>
             Catch,
+            /// <summary>Farmed produce from planters—quest copy uses "Grow".</summary>
+            Grow,
         }
 
         private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_035", "peeled_lobster", 1, 0);
             BuildItemTask(builder, "agr_tsk_036", "cooked_bibikibo", 1, 0);
             BuildItemTask(builder, "agr_tsk_037", "sliced_sardine", 1, 0);
+            BuildItemTask(builder, "agr_tsk_900", "jogan_fruit", 6, 0, AgricultureCollectActivity.Grow);
 
             // Tier 2 (Rank 1)
             BuildItemTask(builder, "agr_tsk_200", "raivor_mball", 1, 1);
@@ -118,6 +121,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_232", "brain_stew", 1, 1);
             BuildItemTask(builder, "agr_tsk_233", "cooked_siredon", 1, 1);
             BuildItemTask(builder, "agr_tsk_234", "cooked_istavrit", 1, 1);
+            BuildItemTask(builder, "agr_tsk_901", "tarine_leaf", 6, 1, AgricultureCollectActivity.Grow);
 
             // Tier 3 (Rank 2)
             BuildItemTask(builder, "agr_tsk_400", "aradile_mball", 1, 2);
@@ -156,6 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_433", "white_p_lobster", 1, 2);
             BuildItemTask(builder, "agr_tsk_434", "fat_greedie_stew", 1, 2);
             BuildItemTask(builder, "agr_tsk_435", "idol_sushi", 1, 2);
+            BuildItemTask(builder, "agr_tsk_902", "nysillim_grain", 8, 2, AgricultureCollectActivity.Grow);
 
             // Tier 4 (Rank 3)
             BuildItemTask(builder, "agr_tsk_600", "womp_mball", 1, 3);
@@ -194,6 +199,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_633", "steamed_catfish", 1, 3);
             BuildItemTask(builder, "agr_tsk_634", "cooked_yayin", 1, 3);
             BuildItemTask(builder, "agr_tsk_635", "dead_stew", 1, 3);
+            BuildItemTask(builder, "agr_tsk_903", "shuura_fruit", 6, 3, AgricultureCollectActivity.Grow);
 
             // Tier 5 (Rank 4)
             BuildItemTask(builder, "agr_tsk_800", "wild_mball", 1, 4);
@@ -237,6 +243,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_838", "dan_carrotcake", 1, 4);
             BuildItemTask(builder, "agr_tsk_839", "munch_fungusb", 1, 4);
             BuildItemTask(builder, "agr_tsk_840", "dan_flapjack", 1, 4);
+            BuildItemTask(builder, "agr_tsk_904", "meiloorun", 6, 4, AgricultureCollectActivity.Grow);
+            BuildItemTask(builder, "agr_tsk_905", "silkvine_fiber", 6, 4, AgricultureCollectActivity.Grow);
 
             return builder.Build();
         }
@@ -261,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             var itemName = Cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
-            var producerForObjective = activity == AgricultureCollectActivity.Catch
+            var producerForObjective = activity == AgricultureCollectActivity.Catch || activity == AgricultureCollectActivity.Grow
                 ? CollectItemProducerRequirementType.None
                 : collectItemProducerRequirement;
 
@@ -271,6 +279,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             {
                 questTitle = $"Catch {amount}x {itemName}";
                 journalText = $"Catch {amount}x {itemName} and return to the Agriculture Guildmaster";
+            }
+            else if (activity == AgricultureCollectActivity.Grow)
+            {
+                questTitle = $"Grow {amount}x {itemName}";
+                journalText = $"Grow {amount}x {itemName} and return to the Agriculture Guildmaster";
             }
             else if (producerForObjective == CollectItemProducerRequirementType.None)
             {

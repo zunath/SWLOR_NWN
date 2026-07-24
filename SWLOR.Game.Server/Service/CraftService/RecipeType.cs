@@ -730,6 +730,10 @@ namespace SWLOR.Game.Server.Service.CraftService
         QuietstepReinforcedBoots = 693,
         DeadDropArmoredCloak = 694,
         BlacksiteBreachHarness = 695,
+
+        // Silkweave (farmed Silkvine fiber)
+        SilkweaveCloak = 700,
+        SilkweaveBelt = 701,
         #endregion
 
 		#region Fabrication:  1001-2000
@@ -1197,6 +1201,10 @@ namespace SWLOR.Game.Server.Service.CraftService
         GhostChannelConsole = 1521,
         BlacksiteAnalysisStation = 1522,
 
+        // Farming structures
+        PlanterBox = 1523,
+        HydroponicRack = 1524,
+
         #endregion
 
         #region Cooking: 2001-3000
@@ -1481,6 +1489,50 @@ namespace SWLOR.Game.Server.Service.CraftService
         TombwalkerBroth = 2268,
         SnowblindHuntersStew = 2269,
         NightMarchReserve = 2270,
+
+        // Farming supplies
+        NutrientSolution = 2275,
+        GrowthFertilizer = 2271,
+        YieldFertilizer = 2272,
+        QualityFertilizer = 2273,
+        Compost = 2274,
+
+        // Milling (Nysillim Grain)
+        VegetableFlour = 2280,
+        BakingFlour = 2281,
+        RefinedFlour = 2282,
+        PremiumFlour = 2283,
+        BreadFlour = 2284,
+
+        // Seed extraction (farming-exclusive crops)
+        ExtractJoganSeeds = 2290,
+        ExtractTarineSeeds = 2291,
+        ExtractNysillimSeeds = 2292,
+        ExtractShuuraSeeds = 2293,
+        ExtractSilkvineSeeds = 2294,
+        ExtractMeiloorunSeeds = 2295,
+        ExtractFirepepperSeeds = 2296,
+
+        // Farm-to-table dishes
+        JoganTart = 2300,
+        SweetcaneGlazeCake = 2301,
+        TarineHerbBroth = 2302,
+        NysillimPorridge = 2303,
+        ShuuraGlazedRoast = 2304,
+        ShuuraChutney = 2305,
+        MeiloorunSorbet = 2306,
+        MeiloorunFeast = 2307,
+        FirepepperNoodleSoup = 2308,
+        FirepepperAmbrosia = 2309,
+
+        // Teas
+        TarineTea = 2320,
+        CitrusTarineTea = 2321,
+        MastersTarineTea = 2322,
+
+        // Premium pet food
+        PremiumGrainFeed = 2330,
+        UniversalTreat = 2331,
 
         #endregion
 

@@ -277,6 +277,9 @@ namespace SWLOR.Game.Server.Core
         // Incubator events
         public const string OnIncubatorTerminal = "incubator_term";
 
+        // Farming events
+        public const string OnPlanterUsed = "planter_used";
+
         // DNA events
         public const string OnDNAExtractUsed = "dna_extract_used";
 

@@ -109,19 +109,34 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("v_orange", 20)
                 .AddItem("v_lemon", 20)
                 .AddItem("v_pebble", 20)
-                .AddItem("herb_v", 5);
+                .AddItem("herb_v", 5)
+                .AddItem("seed_vesh", 3)
+                .AddItem("seed_pebble", 3)
+                .AddItem("seed_citrus", 3)
+                .AddItem("seed_cane", 3)
+                .AddItem("seed_jogan", 2);
 
             _builder.Create("VEGETABLES_PATCH_2")
                 .AddItem("v_apple", 20)
                 .AddItem("v_peas", 20)
                 .AddItem("passion_fruit", 20)
-                .AddItem("herb_m", 5);
+                .AddItem("herb_m", 5)
+                .AddItem("seed_mara", 3)
+                .AddItem("seed_peas", 3)
+                .AddItem("seed_apple", 3)
+                .AddItem("seed_passion", 3)
+                .AddItem("seed_tarine", 2);
 
             _builder.Create("VEGETABLES_PATCH_3")
                 .AddItem("herb_c", 5)
                 .AddItem("h_acorn", 20)
                 .AddItem("s_pineapple", 20)
-                .AddItem("veggie_clump", 20);
+                .AddItem("veggie_clump", 20)
+                .AddItem("seed_cassa", 3)
+                .AddItem("seed_vegclump", 3)
+                .AddItem("seed_pineapple", 3)
+                .AddItem("seed_hardnut", 3)
+                .AddItem("seed_nysillim", 2);
 
             _builder.Create("VEGETABLES_PATCH_4")
                 .AddItem("ginger", 10)
@@ -130,14 +145,25 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("plant_butter", 10)
                 .AddItem("walnut", 10)
                 .AddItem("cornucopia", 5)
-                .AddItem("herb_t", 5);
+                .AddItem("herb_t", 5)
+                .AddItem("seed_tosh", 3)
+                .AddItem("seed_mushroom", 3)
+                .AddItem("seed_ginger", 3)
+                .AddItem("seed_butter", 3)
+                .AddItem("seed_shuura", 2);
 
             _builder.Create("VEGETABLES_PATCH_5")
                 .AddItem("herb_x", 5)
                 .AddItem("turnip", 20)
                 .AddItem("tofu", 20)
                 .AddItem("dried_bonito", 10)
-                .AddItem("tomato", 10);
+                .AddItem("tomato", 10)
+                .AddItem("seed_xen", 3)
+                .AddItem("seed_tomato", 3)
+                .AddItem("seed_cornucopia", 3)
+                .AddItem("seed_silkvine", 2)
+                .AddItem("seed_meiloorun", 2)
+                .AddItem("seed_firepepper", 1);
         }
 
         private void AsteroidMining()

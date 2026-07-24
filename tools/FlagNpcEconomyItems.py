@@ -70,6 +70,8 @@ def collect():
         r'\.AddItemReward\(\s*"([^"]+)"',
         r'RefinedItemResref\s*=\s*"([^"]+)"', r'new\s+TerminalItem\([^,]+,\s*"([^"]+)"',
         r'(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*"([^"]+)"',
+        # Farming: crop yields and pristine variants are produced when harvesting a planter.
+        r'\.Yield\(\s*"([^"]+)"', r'\.PristineResref\(\s*"([^"]+)"',
     ]
     # Files whose bare string literals are all item resrefs (attribute-decorated registries).
     literal_registries = (

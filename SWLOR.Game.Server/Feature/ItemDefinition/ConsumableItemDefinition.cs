@@ -253,8 +253,14 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var dbBeast = DB.Get<Beast>(beastId);
 
                     var xpBonus = foodTier * 10;
+                    var isUniversalTreat = GetLocalInt(item, "BEAST_FOOD_UNIVERSAL") == 1;
 
-                    if (dbBeast.FavoriteFood == foodType)
+                    if (isUniversalTreat)
+                    {
+                        xpBonus += 10;
+                        SendMessageToPC(user, "Your beast loves this treat!");
+                    }
+                    else if (dbBeast.FavoriteFood == foodType)
                     {
                         xpBonus += 10;
                         SendMessageToPC(user, "Your beast likes this food a lot!");

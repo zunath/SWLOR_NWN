@@ -138,6 +138,9 @@ public class EconomyObtainabilityCoverageTests
             @"RefinedItemResref\s*=\s*""([^""]+)""",
             @"new\s+TerminalItem\([^,]+,\s*""([^""]+)""",
             @"(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*""([^""]+)""",
+            // Farming: crop yields and pristine variants are produced when harvesting a planter.
+            @"\.Yield\(\s*""([^""]+)""",
+            @"\.PristineResref\(\s*""([^""]+)""",
         };
         var compiled = literalPatterns.Select(p => new Regex(p)).ToArray();
 

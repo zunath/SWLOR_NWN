@@ -5590,6 +5590,23 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         NextAttackGuardedHitEnmityBonus = 971,
 
+        /// <summary>
+        /// Percent reduction to crop growth stage durations for farming.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CropGrowthSpeedPercentBonus = 889,
+
+        /// <summary>
+        /// Percent bonus to produce quantity when harvesting crops.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HarvestYieldPercentBonus = 890,
+
+        /// <summary>
+        /// Percent bonus to the chance of harvesting pristine produce from crops.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PristineHarvestChancePercentBonus = 891
     }
 
     public class StatTypeAttribute : Attribute

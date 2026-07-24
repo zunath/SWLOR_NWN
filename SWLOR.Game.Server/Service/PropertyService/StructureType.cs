@@ -2718,6 +2718,22 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         BlacksiteAnalysisStation = 435,
 
+        [Structure("Planter Box",
+            "planter_box",
+            "A soil bed for growing a single crop. Used with the Agriculture skill.",
+            true,
+            0,
+            PropertyType.Apartment | PropertyType.City | PropertyType.House | PropertyType.Lab)]
+        PlanterBox = 436,
+
+        [Structure("Hydroponic Rack",
+            "hydro_rack",
+            "A nutrient-circulating growing rack which accelerates crop growth. Used with the Agriculture skill.",
+            true,
+            0,
+            PropertyType.Apartment | PropertyType.City | PropertyType.House | PropertyType.Lab)]
+        HydroponicRack = 437,
+
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
             "city_hall",

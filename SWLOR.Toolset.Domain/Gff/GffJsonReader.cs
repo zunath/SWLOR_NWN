@@ -35,7 +35,8 @@ namespace SWLOR.Toolset.Domain.Gff
             var document = new JsonGffDocument(dataType, root)
             {
                 UsesCrLf = DetectCrLf(content),
-                HasTrailingNewline = DetectTrailingNewline(content)
+                HasTrailingNewline = DetectTrailingNewline(content),
+                TrailingNewlineUsesCrLf = DetectTrailingCrLf(content)
             };
 
             scanner.SkipWhitespace();
@@ -254,6 +255,11 @@ namespace SWLOR.Toolset.Domain.Gff
         private static bool DetectTrailingNewline(byte[] content)
         {
             return content.Length > 0 && content[^1] == (byte)'\n';
+        }
+
+        private static bool DetectTrailingCrLf(byte[] content)
+        {
+            return content.Length > 1 && content[^1] == (byte)'\n' && content[^2] == (byte)'\r';
         }
 
         private sealed class Scanner

@@ -322,10 +322,15 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void MaterialResolver_Parse_RealCorpusMtrFile_MatchesFileContents()
         {
-            var path = Path.Combine(HaksDirectory, "sw_cr_creature", "c_huttbomb1.mtr");
-            File.Exists(path).Should().BeTrue();
+            // Located by name rather than by hak folder: the haks reorganise periodically
+            // (this file has already moved from sw_cr_creature to sw_cr_vehicle), and what the
+            // test cares about is that a real shipped .mtr parses, not where it currently lives.
+            var path = Directory
+                .EnumerateFiles(HaksDirectory, "c_huttbomb1.mtr", SearchOption.AllDirectories)
+                .FirstOrDefault();
+            path.Should().NotBeNull("c_huttbomb1.mtr must ship in one of the haks");
 
-            var material = MaterialResolver.Parse(File.ReadAllText(path));
+            var material = MaterialResolver.Parse(File.ReadAllText(path!));
 
             material.RenderHint.Should().Be("NormalAndSpecMapped");
             material.GetTexture(0).Should().Be("hutt_hbody");
@@ -336,7 +341,7 @@ namespace SWLOR.Toolset.Tests
         {
             var index = BuildHakOnlyIndex();
 
-            // c_huttbomb1.mtr ships in sw_cr_creature (confirmed above) and declares texture0
+            // c_huttbomb1.mtr ships in the haks (confirmed above) and declares texture0
             // "hutt_hbody" - resolving the mesh/material name "c_huttbomb1" should follow the
             // material to its diffuse texture rather than passing the bare name through.
             var resolved = MaterialResolver.ResolveDiffuseTextureName(index, "c_huttbomb1");

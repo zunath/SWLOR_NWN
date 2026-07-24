@@ -17,12 +17,20 @@ namespace SWLOR.Toolset.Domain.Gff
         /// <summary>True when the file ends with a newline after the closing brace.</summary>
         public bool HasTrailingNewline { get; set; }
 
+        /// <summary>
+        /// True when the trailing newline itself is CRLF. Tracked separately from <see cref="UsesCrLf"/>
+        /// because the module corpus mixes the two: the unpack pipeline writes an LF body but
+        /// terminates the file with CRLF, so a document's last line ending is not implied by its body.
+        /// </summary>
+        public bool TrailingNewlineUsesCrLf { get; set; }
+
         public JsonGffDocument(string dataType, JsonGffStruct root)
         {
             DataType = dataType;
             Root = root;
             UsesCrLf = true;
             HasTrailingNewline = true;
+            TrailingNewlineUsesCrLf = true;
         }
 
         public static JsonGffDocument Load(string path)
@@ -52,6 +60,7 @@ namespace SWLOR.Toolset.Domain.Gff
             Root = replacement.Root;
             UsesCrLf = replacement.UsesCrLf;
             HasTrailingNewline = replacement.HasTrailingNewline;
+            TrailingNewlineUsesCrLf = replacement.TrailingNewlineUsesCrLf;
         }
     }
 }

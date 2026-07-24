@@ -45,6 +45,7 @@ namespace SWLOR.Toolset.Tests
                     // Copy it from the source so the byte comparison targets content only.
                     roundTripped.UsesCrLf = document.UsesCrLf;
                     roundTripped.HasTrailingNewline = document.HasTrailingNewline;
+                    roundTripped.TrailingNewlineUsesCrLf = document.TrailingNewlineUsesCrLf;
 
                     var written = roundTripped.ToBytes();
 

@@ -31,7 +31,7 @@ namespace SWLOR.Toolset.Domain.Gff
             writer.NewLine();
             writer.Ascii("}");
             if (document.HasTrailingNewline)
-                writer.NewLine();
+                writer.Raw(document.TrailingNewlineUsesCrLf ? "\r\n"u8.ToArray() : "\n"u8.ToArray());
 
             return output.ToArray();
         }

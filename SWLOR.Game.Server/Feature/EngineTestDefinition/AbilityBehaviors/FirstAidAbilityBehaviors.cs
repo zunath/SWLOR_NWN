@@ -59,9 +59,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Feat = FeatType.EmergencyCocktail1,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(EmergencyCocktailStatusEffect) },
-                    ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Also grants temporary HP and cleanses poison/toxin; not tracked as status effect types.",
+                    Notes = "Also grants temporary HP and cleanses poison/toxin; not tracked as status effect types. Declares a capstone stamina cost, but the cocktail's own restore refills the pool in the same tick, so no net dip is observable (live-run verified: before=current=max).",
                 },
 
                 // EmergencyTriageAbilityDefinition - direct heal only, no tracked status effect;

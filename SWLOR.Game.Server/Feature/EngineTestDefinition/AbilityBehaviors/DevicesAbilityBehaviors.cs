@@ -398,24 +398,24 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Feat = FeatType.PowerCell1,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(PowerCell1StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true
+                    ExpectsRecast = true,
+                    Notes = "Declares RequirementStamina(4), but the self-cast stamina-battery effect restores the pool in the same tick, so no net dip is observable (live-run verified: before=current=max)."
                 },
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.PowerCell2,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(PowerCell2StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true
+                    ExpectsRecast = true,
+                    Notes = "Cost masked by the ability's own stamina restore on a self-cast; see PowerCell1."
                 },
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.PowerCell3,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(PowerCell3StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true
+                    ExpectsRecast = true,
+                    Notes = "Cost masked by the ability's own stamina restore on a self-cast; see PowerCell1."
                 },
 
                 // RailDartAbilityDefinition - hostile single-target damage + unconditional Bleed.

@@ -154,6 +154,13 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 var activatorStatAdjustmentsBefore = behaviorCase.ExpectedActivatorStatAdjustments
                     .ToDictionary(pair => pair.Key, pair => Stat.GetStatAdjustment(caster, pair.Key));
 
+                // A creature can be briefly uncommandable right after equip actions, and
+                // commands assigned in that window are dropped silently.
+                await ctx.WaitUntilAsync(
+                    () => GetCommandable(caster),
+                    5f,
+                    "the caster to become commandable before activation");
+
                 // The activation must run in the CASTER's script context, exactly like the real
                 // feat-use event: DelayCommand(activationDelay, CompleteActivation) schedules
                 // against OBJECT_SELF, and the engine evaluates line-of-sight in OBJECT_SELF's

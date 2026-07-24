@@ -24,10 +24,17 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
 
             // A large temporary-HP buffer keeps the 5-HP rat alive even if arena bystanders
             // engage it - a dead target before our attacker's first credited hit would
-            // otherwise time this test out.
+            // otherwise time this test out. The target is also pinned in place: a surviving
+            // hostile rat otherwise runs off fighting bystanders and the attacker chases at
+            // ~3.5m without ever reaching melee range (live-run diagnostic).
             ApplyEffectToObject(
                 DurationType.Temporary,
                 EffectTemporaryHitpoints(1000),
+                target,
+                3600f);
+            ApplyEffectToObject(
+                DurationType.Temporary,
+                EffectCutsceneImmobilize(),
                 target,
                 3600f);
 

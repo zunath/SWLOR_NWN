@@ -239,6 +239,33 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void MeleeAutoAttackScope_AllowsCrossSkillMeleeTraitsWithoutAffectingRangedWeapons()
+    {
+        Combat.IsMeleeWeaponSkill(SkillType.Vibroblade).Should().BeTrue();
+        Combat.IsMeleeWeaponSkill(SkillType.Spear).Should().BeTrue();
+        Combat.IsMeleeWeaponSkill(SkillType.Rifle).Should().BeFalse();
+        Combat.IsMeleeWeaponSkill(SkillType.Devices).Should().BeFalse();
+
+        Stat.GetStatTypeCategory(StatType.MeleeAutoAttackCycleRequiredCount)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.MeleeAutoAttackCycleDamage)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.MeleeRepeatedTargetDamageBonusPerHit)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.MeleeRepeatedTargetDamageBonusMax)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+    }
+
+    [Test]
+    public void TargetLowHPDamageAdjustment_AppliesAtTheExecutionerThreshold()
+    {
+        Combat.ApplyTargetHPDamageAdjustment(100, 25, 100, 25, 8).Should().Be(108);
+        Combat.ApplyTargetHPDamageAdjustment(100, 25, 100, 25, 10).Should().Be(110);
+        Combat.ApplyTargetHPDamageAdjustment(100, 26, 100, 25, 10).Should().Be(100);
+        Combat.ApplyTargetHPDamageAdjustment(7, 1, 100, 25, 8).Should().Be(8);
+    }
+
+    [Test]
     public void QueuedWeaponAbilityImpacts_DoNotRollSeparateAbilityHit()
     {
         var root = FindRepositoryRoot();

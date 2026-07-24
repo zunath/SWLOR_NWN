@@ -22,7 +22,10 @@ public class GeneratedWeaponPerkBehaviorTests
     {
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.AutoAttackDamageBonusChance, "15");
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.AutoAttackDamageBonus, "10");
-        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.RepeatedTargetDamageAutoAttackOnly, "1");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeRepeatedTargetDamageBonusPerHit, "3");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeRepeatedTargetDamageBonusMax, "15");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeAutoAttackCycleRequiredCount, "3");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.MeleeAutoAttackCycleDamage, "10");
         AssertSourceContains("VibrobladePerkDefinition.cs", "EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0");
 
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedRequiredCategory, "(int)StatusEffectCategory.Venom");

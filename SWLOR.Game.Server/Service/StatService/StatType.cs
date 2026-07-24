@@ -5590,6 +5590,30 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         NextAttackGuardedHitEnmityBonus = 971,
 
+        /// <summary>
+        /// Number of melee auto-attacks required before the cross-skill melee cycle deals bonus damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        MeleeAutoAttackCycleRequiredCount = 972,
+
+        /// <summary>
+        /// Flat DMG added by the cross-skill melee auto-attack cycle.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MeleeAutoAttackCycleDamage = 973,
+
+        /// <summary>
+        /// Flat DMG gained per consecutive melee auto-attack against the same target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MeleeRepeatedTargetDamageBonusPerHit = 974,
+
+        /// <summary>
+        /// Maximum flat DMG from consecutive melee auto-attacks against the same target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MeleeRepeatedTargetDamageBonusMax = 975,
+
     }
 
     public class StatTypeAttribute : Attribute

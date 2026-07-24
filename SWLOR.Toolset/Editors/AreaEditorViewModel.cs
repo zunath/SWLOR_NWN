@@ -59,6 +59,9 @@ namespace SWLOR.Toolset.Editors
         private readonly IEditorPromptService _prompts;
         private bool _sceneBuildRequested;
         private long _sceneBuildGeneration;
+        private long _sceneInputRevision;
+        private long _builtSceneInputRevision = -1;
+        private long _buildingSceneInputRevision = -1;
         private bool _closeApproved;
         private bool _closePromptOpen;
         private bool _disposed;
@@ -507,6 +510,9 @@ namespace SWLOR.Toolset.Editors
                         ? "Choose a terrain to paint."
                         : $"Painting \"{SelectedTerrain}\" - click a tile to fill it (Esc to stop).",
                     AreaPaintTool.Rotate => "Click a tile to rotate it a quarter turn (Esc to stop).",
+                    AreaPaintTool.Raise or AreaPaintTool.Lower
+                        when _paintTileset is { HasHeightTransition: false } =>
+                        "Height painting unavailable: this tileset has no height transitions.",
                     AreaPaintTool.Raise => "Click a tile to raise it one height step (Esc to stop).",
                     _ => "Click a tile to lower it one height step (Esc to stop)."
                 };
@@ -659,6 +665,15 @@ namespace SWLOR.Toolset.Editors
 
         private bool ChangeHeightAt(AreDocument are, int col, int row, int delta)
         {
+            if (_paintTileset == null)
+                return false;
+
+            if (!_paintTileset.HasHeightTransition)
+            {
+                SceneStatus = "Height painting rejected: this tileset has no height transitions.";
+                return false;
+            }
+
             var current = AreaTiles.HeightLevelOf(are, col, row);
             var updated = Math.Max(0, current + delta);
             if (updated == current)
@@ -744,18 +759,26 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Called by the view when the 3D View tab is first activated. Builds the scene once
-        /// (lazily) so opening the area editor itself stays fast - subsequent activations are a
-        /// no-op until <see cref="RebuildSceneCommand"/> is used explicitly. Safe to call multiple
-        /// times or before game-data services are available.
+        /// Called by the view when the 3D View tab is activated. Builds the scene lazily on first
+        /// use and rebuilds it after an ARE/GIT edit made from the Properties tab. Safe to call
+        /// multiple times or before game-data services are available.
         /// </summary>
         public void EnsureSceneBuilt()
         {
-            if (_sceneBuildRequested)
+            var inputRevision = Volatile.Read(ref _sceneInputRevision);
+            if (_sceneBuildRequested &&
+                (Volatile.Read(ref _builtSceneInputRevision) == inputRevision ||
+                 IsBuildingScene &&
+                 Volatile.Read(ref _buildingSceneInputRevision) == inputRevision))
+            {
                 return;
+            }
 
+            var reselect = CaptureReselectKey();
+            if (_sceneBuildRequested && AreaScene != null)
+                AreaScene = null;
             _sceneBuildRequested = true;
-            _ = BuildSceneAsync();
+            _ = BuildSceneAsync(reselect);
         }
 
         /// <summary>Manual refresh for the 3D view after edits outside the live viewport-edit paths.</summary>
@@ -781,6 +804,8 @@ namespace SWLOR.Toolset.Editors
             }
 
             var generation = Interlocked.Increment(ref _sceneBuildGeneration);
+            var inputRevision = Volatile.Read(ref _sceneInputRevision);
+            Volatile.Write(ref _buildingSceneInputRevision, inputRevision);
             IsBuildingScene = true;
             SceneStatus = "Building scene...";
 
@@ -802,6 +827,15 @@ namespace SWLOR.Toolset.Editors
                 if (generation != Volatile.Read(ref _sceneBuildGeneration))
                     return;
 
+                // An edit landed after this build captured its input revision. Do not publish a
+                // stale scene even briefly; supersede it with a build against the current docs.
+                if (inputRevision != Volatile.Read(ref _sceneInputRevision))
+                {
+                    _ = BuildSceneAsync(reselect ?? CaptureReselectKey());
+                    return;
+                }
+
+                Volatile.Write(ref _builtSceneInputRevision, inputRevision);
                 AreaScene = scene;
 
                 // The scene build has just resolved (and cached) this area's tileset, so the terrain
@@ -873,6 +907,7 @@ namespace SWLOR.Toolset.Editors
             {
                 session.Execute(description, mutation);
 
+                Interlocked.Increment(ref _sceneInputRevision);
                 AfterHistoryChange();
                 return true;
             }

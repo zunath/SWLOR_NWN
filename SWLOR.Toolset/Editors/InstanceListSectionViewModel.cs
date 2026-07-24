@@ -352,7 +352,8 @@ namespace SWLOR.Toolset.Editors
                     }
 
                     var instance = InstanceFieldMap.CreateInstance(
-                        _blueprintType, blueprint.Document, x, y, z, xOrientation, yOrientation);
+                        _blueprintType, blueprint.Document, resRef,
+                        x, y, z, xOrientation, yOrientation);
                     listField.InsertElement(listField.Elements!.Count, instance);
                 });
 

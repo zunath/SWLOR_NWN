@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
@@ -22,6 +23,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly WorkspaceContext _workspaceContext;
         private readonly AppearanceService? _appearanceService;
         private readonly PortraitService? _portraitService;
+        private readonly TlkService? _tlkService;
         private readonly OutputLogService _log;
 
         [ObservableProperty]
@@ -33,12 +35,14 @@ namespace SWLOR.Toolset.Shell.Panels
             WorkspaceContext workspaceContext,
             OutputLogService log,
             AppearanceService? appearanceService = null,
-            PortraitService? portraitService = null)
+            PortraitService? portraitService = null,
+            TlkService? tlkService = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _appearanceService = appearanceService;
             _portraitService = portraitService;
+            _tlkService = tlkService;
             Id = "Properties";
             Title = "Properties";
         }
@@ -79,7 +83,10 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private void ShowUtcSummary(UtcDocument utc)
         {
-            var name = string.Join(" ", new[] { utc.FirstName.Text, utc.LastName.Text }
+            var name = string.Join(" ", new[] {
+                    ResolveLocString(utc.FirstName),
+                    ResolveLocString(utc.LastName)
+                }
                 .Where(part => !string.IsNullOrEmpty(part)));
 
             Rows.Add(new PropertyRow("Name", string.IsNullOrEmpty(name) ? "(unnamed)" : name));
@@ -92,7 +99,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private void ShowAreaSummary(AreDocument are)
         {
-            Rows.Add(new PropertyRow("Name", are.Name.Text ?? string.Empty));
+            Rows.Add(new PropertyRow("Name", ResolveLocString(are.Name)));
             Rows.Add(new PropertyRow("Tag", are.Tag ?? string.Empty));
             Rows.Add(new PropertyRow("Tileset", are.Tileset ?? string.Empty));
             Rows.Add(new PropertyRow("Dimensions", $"{are.Width ?? 0} x {are.Height ?? 0}"));
@@ -149,7 +156,17 @@ namespace SWLOR.Toolset.Shell.Panels
             return portraitId.Value.ToString(CultureInfo.InvariantCulture);
         }
 
-        private static string DescribeField(JsonGffField field)
+        private string ResolveLocString(LocString value)
+        {
+            if (!string.IsNullOrEmpty(value.Text))
+                return value.Text;
+
+            return value.StrRef is { } strRef && strRef != uint.MaxValue
+                ? _tlkService?.GetString(strRef) ?? string.Empty
+                : string.Empty;
+        }
+
+        private string DescribeField(JsonGffField field)
         {
             try
             {
@@ -157,7 +174,17 @@ namespace SWLOR.Toolset.Shell.Panels
                     return field.GetString();
 
                 if (field.Type == GffFieldType.CExoLocString)
-                    return field.LocStringEntries?.FirstOrDefault(e => e.LanguageKey == "0")?.GetText() ?? string.Empty;
+                {
+                    var inlineText = field.LocStringEntries?
+                        .FirstOrDefault(e => e.LanguageKey == "0")?
+                        .GetText();
+                    if (!string.IsNullOrEmpty(inlineText))
+                        return inlineText;
+
+                    return field.GetLocStringId() is { } strRef && strRef != uint.MaxValue
+                        ? _tlkService?.GetString(strRef) ?? string.Empty
+                        : string.Empty;
+                }
 
                 if (field.Type == GffFieldType.Float)
                     return field.GetSingle().ToString(CultureInfo.InvariantCulture);

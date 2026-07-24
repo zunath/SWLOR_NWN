@@ -43,7 +43,7 @@ namespace SWLOR.Toolset.Tests
             using (session.Begin("add creature instance"))
             {
                 var instance = InstanceFieldMap.CreateInstance(
-                    ResourceType.Utc, blueprint, 12.5, 3.0, 15.0);
+                    ResourceType.Utc, blueprint, "vnpcsofficer", 12.5, 3.0, 15.0);
                 listField.InsertElement(listField.Elements!.Count, instance);
             }
 
@@ -69,7 +69,7 @@ namespace SWLOR.Toolset.Tests
             using (session.Begin("add creature instance"))
             {
                 var instance = InstanceFieldMap.CreateInstance(
-                    ResourceType.Utc, blueprint, 12.5, 3.0, 15.0);
+                    ResourceType.Utc, blueprint, "vnpcsofficer", 12.5, 3.0, 15.0);
                 listField.InsertElement(listField.Elements!.Count, instance);
             }
 
@@ -99,7 +99,8 @@ namespace SWLOR.Toolset.Tests
             var realFieldNames = realInstance.Entries.Select(e => e.Key).ToHashSet(StringComparer.Ordinal);
 
             var blueprint = JsonGffDocument.Parse(File.ReadAllBytes(BlueprintPath));
-            var newInstance = InstanceFieldMap.CreateInstance(ResourceType.Utc, blueprint, 0, 0, 0);
+            var newInstance = InstanceFieldMap.CreateInstance(
+                ResourceType.Utc, blueprint, "vnpcsofficer", 0, 0, 0);
             var newFieldNames = newInstance.Entries.Select(e => e.Key).ToHashSet(StringComparer.Ordinal);
 
             // The new instance's fields must be a subset of the real instance's fields modulo the
@@ -116,7 +117,8 @@ namespace SWLOR.Toolset.Tests
         public void CreateInstance_Creature_PositionFloats_FormatNimStyle()
         {
             var blueprint = JsonGffDocument.Parse(File.ReadAllBytes(BlueprintPath));
-            var instance = InstanceFieldMap.CreateInstance(ResourceType.Utc, blueprint, 12.5, 3.0, 15.0);
+            var instance = InstanceFieldMap.CreateInstance(
+                ResourceType.Utc, blueprint, "vnpcsofficer", 12.5, 3.0, 15.0);
 
             var xPosition = instance.Get("XPosition");
             xPosition.Type.Should().Be(GffFieldType.Float);
@@ -131,7 +133,8 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(CorpusLocator.ModuleDirectory, "utt"), "*.utt.json").First();
             var blueprint = JsonGffDocument.Parse(File.ReadAllBytes(blueprintPath));
 
-            var instance = InstanceFieldMap.CreateInstance(ResourceType.Utt, blueprint, 10, 20, 3);
+            var instance = InstanceFieldMap.CreateInstance(
+                ResourceType.Utt, blueprint, "test_trigger", 10, 20, 3);
             var geometry = instance.Get("Geometry");
 
             geometry.Type.Should().Be(GffFieldType.List);
@@ -143,6 +146,24 @@ namespace SWLOR.Toolset.Tests
             geometry.Elements.Should().OnlyContain(point =>
                 Encoding.ASCII.GetString(point.RawStructId!) == "3" &&
                 Math.Abs(point.Get("PointZ").GetSingle() - 0.025f) < 0.0001f);
+        }
+
+        [Test]
+        public void CreateInstance_Waypoint_UsesSelectedFileResRefInsteadOfStaleEmbeddedValue()
+        {
+            const string selectedResRef = "fp_danmount";
+            var blueprintPath = Path.Combine(
+                CorpusLocator.ModuleDirectory, "utw", selectedResRef + ".utw.json");
+            var blueprint = JsonGffDocument.Parse(File.ReadAllBytes(blueprintPath));
+            blueprint.Root.Get("TemplateResRef").GetString().Should().Be(
+                "fp_35", "the regression fixture intentionally has a stale embedded resref");
+
+            var instance = InstanceFieldMap.CreateInstance(
+                ResourceType.Utw, blueprint, selectedResRef, 10, 20, 3);
+
+            InstanceFieldMap.GetTemplateResRef(ResourceType.Utw, instance)
+                .Should().Be(selectedResRef);
+            instance.Get("TemplateResRef").Type.Should().Be(GffFieldType.ResRef);
         }
 
         [Test]

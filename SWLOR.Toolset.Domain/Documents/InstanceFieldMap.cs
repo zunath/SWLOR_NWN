@@ -38,19 +38,23 @@ namespace SWLOR.Toolset.Domain.Documents
 
         /// <summary>
         /// Creates a new placed-instance struct for <paramref name="type"/> from
-        /// <paramref name="blueprint"/>, positioned at (<paramref name="x"/>, <paramref name="y"/>,
-        /// <paramref name="z"/>) with the given heading vector. The returned struct is detached -
-        /// callers insert it into the target list field (e.g. via
+        /// <paramref name="blueprint"/>, stamping <paramref name="templateResRef"/> as the
+        /// blueprint it was selected from, and positioning it at (<paramref name="x"/>,
+        /// <paramref name="y"/>, <paramref name="z"/>) with the given heading vector. The returned
+        /// struct is detached - callers insert it into the target list field (e.g. via
         /// <c>JsonGffField.InsertElement</c>) inside their own DocumentTransaction.
         /// </summary>
         public static JsonGffStruct CreateInstance(
             ResourceType type,
             JsonGffDocument blueprint,
+            string templateResRef,
             double x, double y, double z,
             double xOrientation = 1.0, double yOrientation = 0.0)
         {
             if (blueprint == null)
                 throw new ArgumentNullException(nameof(blueprint));
+            if (string.IsNullOrWhiteSpace(templateResRef))
+                throw new ArgumentException("A selected blueprint resref is required.", nameof(templateResRef));
 
             var structId = GetListStructId(type);
             var excluded = GetExcludedBlueprintFields(type);
@@ -65,6 +69,12 @@ namespace SWLOR.Toolset.Domain.Documents
                 instance.Add(name, CloneField(field));
             }
 
+            // The file/palette selection is authoritative. Some legacy blueprints carry stale
+            // internal TemplateResRef values that no longer match their file resref.
+            instance.SetString(
+                GetInstanceTemplateField(type),
+                GffFieldType.ResRef,
+                templateResRef);
             ApplyPlacement(type, instance, x, y, z, xOrientation, yOrientation);
 
             return instance;

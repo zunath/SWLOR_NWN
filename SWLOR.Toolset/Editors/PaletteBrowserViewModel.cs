@@ -239,7 +239,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Saves this palette, returning false when a prompt is cancelled or the write fails.</summary>
         public async Task<bool> TrySaveAsync()
         {
-            if (_session == null)
+            if (_session == null || !_session.UndoStack.IsDirty)
                 return true;
 
             try

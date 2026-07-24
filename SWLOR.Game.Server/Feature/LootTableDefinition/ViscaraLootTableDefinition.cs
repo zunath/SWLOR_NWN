@@ -201,7 +201,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_KATH_HOUND_RARES")
                 .IsRare()
                 .AddItem("kath_blood", 2, 1, true)
-                .AddItem("k_hound_claw", 1, 1, true);
+                .AddItem("k_hound_claw", 1, 1, true)
+                .AddItem("lockbox_t1", 2, 1, true);
 
             _builder.Create("VISCARA_OLD_SCAR_RARES")
                 .IsRare()

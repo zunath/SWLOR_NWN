@@ -17,7 +17,9 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
     /// </summary>
     public static class AbilityBehaviorExecutor
     {
-        private const string CasterResref = "nw_rat001";
+        // The caster must be a humanoid: creatures like rats cannot equip weapons at all,
+        // which silently breaks every weapon-gated tree (ActionEquipItem never completes).
+        private const string CasterResref = "nw_bandit001";
         private const string TargetResref = "nw_rat001";
         private const int ResourcePool = 9999;
         private const float EffectWaitSeconds = 20f;
@@ -118,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             ctx.Assert(Ability.IsFeatRegistered(behaviorCase.Feat), "feat is not registered to any ability");
             var ability = Ability.GetAbilityDetail(behaviorCase.Feat);
 
-            var caster = ctx.SpawnCreature(CasterResref, -1.5f, 0f);
+            var caster = ctx.SpawnCreature(CasterResref, -0.5f, 0f);
             var target = caster;
 
             try
@@ -229,21 +231,39 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     }
 
                     // Casted costs apply when activation completes (after the activation delay),
-                    // so poll rather than assert immediately.
+                    // so poll rather than assert immediately. On timeout, report the observed
+                    // pool trajectory - regen, clamping, and cost-restore mechanics all look
+                    // identical without the numbers.
                     if (behaviorCase.ExpectsFPCost)
                     {
-                        await ctx.WaitUntilAsync(
-                            () => Stat.GetCurrentFP(caster) < fpBefore,
-                            CostWaitSeconds,
-                            "FP cost to be deducted");
+                        try
+                        {
+                            await ctx.WaitUntilAsync(
+                                () => Stat.GetCurrentFP(caster) < fpBefore,
+                                CostWaitSeconds,
+                                "FP cost to be deducted");
+                        }
+                        catch (EngineTestAssertionException ex)
+                        {
+                            throw new EngineTestAssertionException(
+                                $"{ex.Message} (before={fpBefore}, current={Stat.GetCurrentFP(caster)}, max={Stat.GetMaxFP(caster)})");
+                        }
                     }
 
                     if (behaviorCase.ExpectsSTMCost)
                     {
-                        await ctx.WaitUntilAsync(
-                            () => Stat.GetCurrentStamina(caster) < stmBefore,
-                            CostWaitSeconds,
-                            "Stamina cost to be deducted");
+                        try
+                        {
+                            await ctx.WaitUntilAsync(
+                                () => Stat.GetCurrentStamina(caster) < stmBefore,
+                                CostWaitSeconds,
+                                "Stamina cost to be deducted");
+                        }
+                        catch (EngineTestAssertionException ex)
+                        {
+                            throw new EngineTestAssertionException(
+                                $"{ex.Message} (before={stmBefore}, current={Stat.GetCurrentStamina(caster)}, max={Stat.GetMaxStamina(caster)})");
+                        }
                     }
                 }
 

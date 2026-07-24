@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
@@ -266,7 +267,7 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingNuiLayout_IsResizableScrollableAndUsesAStaticScalarBoundGrid()
+    public void SlicingNuiLayout_ReflowsOnResizeWrapsTextAndUsesAStaticScalarBoundGrid()
     {
         var root = FindRepositoryRoot();
         var definition = File.ReadAllText(Path.Combine(
@@ -276,8 +277,22 @@ public class SlicingContentTests
 
         definition.Should().Contain("private const float TileSize = 56f;");
         definition.Should().Contain(".SetIsResizable(true)");
-        definition.Should().Contain("wrapper.SetShowBorder(false)");
+        definition.Should().Contain("public const string ContentElement = \"SLICING_CONTENT\";");
+        definition.Should().Contain(".DefinePartialView(ContentDefaultPartial");
+        definition.Should().Contain(".AddPartialView(ContentElement)");
+        definition.Should().Contain("BuildMainContentLayout(float contentWidth)");
+        definition.Should().Contain("outer.SetWidth(contentWidth)");
         definition.Should().Contain(".SetScrollbars(NuiScrollbars.Auto)");
+        definition.Should().Contain(".SetText(\"GOAL: Connect the amber START tile to the magenta GOAL tile.\")");
+        definition.Should().Contain(".SetText(\"Select any tile for free. Click it again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).\")");
+        definition.Should().Contain(".BindText(model => model.FailureText)");
+        definition.Should().Contain(".BindText(model => model.ToolName)");
+        definition.Should().Contain(".BindText(model => model.StatusText)");
+        definition.Should().Contain(".SetId(HelpButtonId)");
+        definition.Should().Contain(".SetId(PreviousToolButtonId)");
+        definition.Should().Contain(".SetId(NextToolButtonId)");
+        definition.Should().Contain(".SetId(ActivateToolButtonId)");
+        definition.Should().Contain(".SetId(AbortButtonId)");
         definition.Should().Contain("Keep the board as five ordinary rows of five buttons.");
         definition.Should().Contain("the transposed row-of-columns layout collapse");
         definition.Should().NotContain(".AddList(", "list templates collapse this particular live NUI window");
@@ -287,11 +302,17 @@ public class SlicingContentTests
         definition.Should().NotContain("row.AddColumn(", "nested board columns collapse in the live NUI client");
         definition.Should().NotContain(".BindIsVisible(", "all 25 fixed cells must participate in initial layout");
         definition.Should().Contain(".BindOnClicked(model => model.OnTile(tileRow, columnIndex))");
+        definition.Should().Contain(".SetId($\"slc_tile_{slot}\")");
         definition.Should().Contain(".SetHeight(TileSize)");
         definition.Should().Contain(".SetWidth(TileSize)");
 
         viewModel.Should().NotContain("RestoreFixedWindowGeometry");
         viewModel.Should().Contain("EnsureUsableWindowGeometry");
+        viewModel.Should().Contain("OnClientPropertyUpdated(string propertyName)");
+        viewModel.Should().Contain("SetGroupLayout(");
+        viewModel.Should().Contain("SlicingDefinition.BuildMainContentLayout(contentWidth)");
+        viewModel.Should().Contain("Math.Abs(contentWidth - _appliedContentWidth) < 8f");
+        viewModel.Should().Contain("DelayCommand(0.0f, ReapplyContentLayout)");
         viewModel.Should().Contain("var slot = row * 5 + column;");
         viewModel.Should().Contain("Set(image, $\"TileImage{slot}\");");
         viewModel.Should().NotContain("GuiBindingList<string> TileColumn");
@@ -302,6 +323,15 @@ public class SlicingContentTests
             typeof(SlicingViewModel).GetProperty($"TileImage{slot}").Should().NotBeNull();
             typeof(SlicingViewModel).GetProperty($"TileTooltip{slot}").Should().NotBeNull();
         }
+    }
+
+    [Test]
+    public void SlicingContentWidth_TracksWindowWidthAndKeepsTheBoardUsable()
+    {
+        SlicingDefinition.CalculateContentWidth(800f).Should().Be(740f);
+        SlicingDefinition.CalculateContentWidth(560f).Should().Be(500f);
+        SlicingDefinition.CalculateContentWidth(360f).Should().Be(300f);
+        SlicingDefinition.CalculateContentWidth(200f).Should().Be(300f);
     }
 
     [Test]
@@ -393,7 +423,7 @@ public class SlicingContentTests
 
         viewModel.Geometry.X.Should().Be(17f);
         viewModel.Geometry.Y.Should().Be(23f);
-        viewModel.Geometry.Width.Should().Be(320f);
+        viewModel.Geometry.Width.Should().Be(360f);
         viewModel.Geometry.Height.Should().Be(240f);
 
         viewModel.Geometry = new GuiRectangle(29f, 31f, 440f, 350f);

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<SlicingSession.EligibleSlicingTool> _tools = new();
         private int _toolIndex;
         private bool _suppressCloseFailure;
+        private float _appliedContentWidth = -1f;
 
         public string ThemeBackground { get => Get<string>(); set => Set(value); }
         public string TraceText { get => Get<string>(); set => Set(value); }
@@ -80,9 +81,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(SlicingPayload initialPayload)
         {
             EnsureUsableWindowGeometry();
+            ReapplyContentLayout();
             // The base partial-view swap schedules its own zero-delay geometry redraw. Reapply the
-            // minimum afterward so a legacy title-bar-sized geometry cannot lose a pixel and persist.
-            DelayCommand(0.0f, EnsureUsableWindowGeometry);
+            // minimum and generated content afterward so neither is lost during that redraw.
+            DelayCommand(0.0f, () =>
+            {
+                EnsureUsableWindowGeometry();
+                ReapplyContentLayout();
+            });
             _suppressCloseFailure = false;
             _toolIndex = 0;
             StatusText = string.Empty;
@@ -95,6 +101,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ChangeView("%%WINDOW_MAIN%%");
             Refresh();
+            ReapplyContentLayout();
+            DelayCommand(0.0f, ReapplyContentLayout);
         };
 
         public Action OnPreviousTool() => () => ChangeTool(-1);
@@ -195,6 +203,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Capture a resize before the partial-view redraw workaround mutates the geometry bind.
             UpdatePropertyFromClient(nameof(Geometry));
             ChangePartialView("_window_", partialName);
+        }
+
+        /// <summary>
+        /// Regenerates the inner panel for the width reported by the client. NUI does not support
+        /// binding widget widths, so replacing the group layout is what makes the content respond.
+        /// </summary>
+        private void RefreshContentLayout()
+        {
+            var contentWidth = SlicingDefinition.CalculateContentWidth(Geometry.Width);
+            if (_appliedContentWidth > 0f && Math.Abs(contentWidth - _appliedContentWidth) < 8f)
+                return;
+
+            _appliedContentWidth = contentWidth;
+            SetGroupLayout(
+                SlicingDefinition.ContentElement,
+                SlicingDefinition.BuildMainContentLayout(contentWidth));
+        }
+
+        private void ReapplyContentLayout()
+        {
+            _appliedContentWidth = -1f;
+            RefreshContentLayout();
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(Geometry))
+                RefreshContentLayout();
+        }
+
+        protected override void OnMainViewRestored()
+        {
+            ReapplyContentLayout();
+            DelayCommand(0.0f, ReapplyContentLayout);
         }
 
         private void EnsureUsableWindowGeometry()

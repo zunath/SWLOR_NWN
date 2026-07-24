@@ -3,15 +3,27 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SlicingDefinition : IGuiWindowDefinition
     {
+        // The main panel is regenerated when the window width changes because NUI widget widths
+        // cannot be bound. Event-bearing controls therefore need stable IDs shared by the
+        // registration copy and every runtime-generated copy.
+        public const string ContentElement = "SLICING_CONTENT";
+        private const string ContentDefaultPartial = "SLICING_CONTENT_DEFAULT";
+        private const string HelpButtonId = "slc_help";
+        private const string PreviousToolButtonId = "slc_tool_previous";
+        private const string NextToolButtonId = "slc_tool_next";
+        private const string ActivateToolButtonId = "slc_tool_activate";
+        private const string AbortButtonId = "slc_abort";
         internal const float WindowWidth = 560f;
         internal const float WindowHeight = 650f;
-        internal const float MinimumWindowWidth = 320f;
+        internal const float MinimumWindowWidth = 360f;
         internal const float MinimumWindowHeight = 240f;
+        private const float MinimumContentWidth = 300f;
         private const float TileSize = 56f;
         private const string HelpText =
             "OBJECTIVE\n" +
@@ -43,49 +55,120 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(false)
                 .BindOnClosed(model => model.OnWindowClosed())
                 .DefinePartialView(SlicingViewModel.HelpPartial, AddHelp)
-                .AddRow(wrapperRow =>
+                .DefinePartialView(ContentDefaultPartial, group =>
                 {
-                    // The board keeps its proven fixed row/button shape, while the outer group
-                    // scrolls when the player shrinks the resizable window below its content.
-                    wrapperRow.AddGroup(wrapper =>
-                    {
-                        wrapper.SetShowBorder(false)
-                            .SetScrollbars(NuiScrollbars.Auto);
-                        wrapper.AddColumn(AddMainContent);
-                    });
-                });
+                    BuildMainContent(group, CalculateContentWidth(WindowWidth));
+                })
+                .AddRow(row => row.AddPartialView(ContentElement));
 
             return _builder.Build();
         }
 
-        private static void AddMainContent(GuiColumn<SlicingViewModel> column)
+        /// <summary>
+        /// Converts window width to usable panel width after accounting for NUI chrome and the
+        /// vertical scrollbar. At the minimum, the centered five-tile board still fits.
+        /// </summary>
+        public static float CalculateContentWidth(float windowWidth)
         {
+            var contentWidth = windowWidth - 60f;
+            return contentWidth < MinimumContentWidth ? MinimumContentWidth : contentWidth;
+        }
+
+        /// <summary>
+        /// Builds a main panel sized to the current client window width for NuiSetGroupLayout.
+        /// </summary>
+        public static Json BuildMainContentLayout(float contentWidth)
+        {
+            var host = new GuiGroup<SlicingViewModel>();
+            BuildMainContent(host, contentWidth);
+            return host.ToJson();
+        }
+
+        private static void BuildMainContent(GuiGroup<SlicingViewModel> host, float contentWidth)
+        {
+            host.SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None);
+
+            host.AddColumn(outer =>
+            {
+                outer.SetWidth(contentWidth);
+                outer.AddRow(row =>
+                {
+                    row.AddGroup(scrollGroup =>
+                    {
+                        scrollGroup.SetShowBorder(false)
+                            .SetScrollbars(NuiScrollbars.Auto);
+                        scrollGroup.AddColumn(column => AddMainContent(column, contentWidth));
+                    });
+                });
+            });
+        }
+
+        private static void AddMainContent(GuiColumn<SlicingViewModel> column, float contentWidth)
+        {
+            var bannerWidth = Math.Min(contentWidth, 640f);
             column.AddRow(row =>
             {
+                row.SetHeight(bannerWidth * 0.15f);
+                row.AddSpacer();
                 row.AddImage()
                     .BindResref(model => model.ThemeBackground)
-                    .SetHeight(78f)
-                    .SetWidth(520f);
+                    .SetHeight(bannerWidth * 0.15f)
+                    .SetWidth(bannerWidth);
+                row.AddSpacer();
             });
+
+            if (contentWidth >= 500f)
+            {
+                column.AddRow(row =>
+                {
+                    row.SetHeight(30f);
+                    row.AddLabel().BindText(model => model.TraceText).SetWidth(100f).SetHeight(28f);
+                    row.AddLabel().BindText(model => model.IntegrityText).SetWidth(120f).SetHeight(28f);
+                    row.AddText()
+                        .BindText(model => model.FailureText)
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None)
+                        .SetHeight(28f);
+                    AddHelpButton(row);
+                });
+            }
+            else
+            {
+                column.AddRow(row =>
+                {
+                    row.SetHeight(30f);
+                    row.AddLabel().BindText(model => model.TraceText).SetWidth(90f).SetHeight(28f);
+                    row.AddLabel().BindText(model => model.IntegrityText).SetWidth(120f).SetHeight(28f);
+                    row.AddSpacer();
+                    AddHelpButton(row);
+                });
+                column.AddRow(row =>
+                {
+                    row.SetHeight(30f);
+                    row.AddText()
+                        .BindText(model => model.FailureText)
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None)
+                        .SetHeight(28f);
+                });
+            }
 
             column.AddRow(row =>
             {
-                row.AddLabel().BindText(model => model.TraceText).SetWidth(100f).SetHeight(28f);
-                row.AddLabel().BindText(model => model.IntegrityText).SetWidth(110f).SetHeight(28f);
-                row.AddLabel().BindText(model => model.FailureText).SetWidth(230f).SetHeight(28f);
-                row.AddButton()
-                    .SetText("?")
-                    .SetTooltip("How slicing works")
-                    .SetWidth(34f)
-                    .SetHeight(28f)
-                    .BindOnClicked(model => model.OnHelp());
+                row.SetHeight(contentWidth < 520f ? 40f : 28f);
+                row.AddText()
+                    .SetText("GOAL: Connect the amber START tile to the magenta GOAL tile.")
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None);
             });
-
             column.AddRow(row =>
             {
-                row.AddLabel()
-                    .SetText("START -> GOAL: connect the fixed amber Entry to the fixed magenta Core. Rotate circuit tiles (1 Trace) or swap adjacent tiles (2 Trace).")
-                    .SetHeight(46f);
+                row.SetHeight(contentWidth < 400f ? 80f : contentWidth < 520f ? 60f : 44f);
+                row.AddText()
+                    .SetText("Select any tile for free. Click it again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).")
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None);
             });
 
             // Keep the board as five ordinary rows of five buttons. Previous list-based
@@ -99,30 +182,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             column.AddRow(row =>
             {
-                row.AddButton().SetText("<").SetWidth(36f).SetHeight(34f)
+                row.SetHeight(42f);
+                row.AddButton()
+                    .SetId(PreviousToolButtonId)
+                    .SetText("<")
+                    .SetWidth(36f)
+                    .SetHeight(34f)
                     .BindIsEnabled(model => model.IsToolSelectionEnabled)
                     .BindOnClicked(model => model.OnPreviousTool());
-                row.AddLabel().BindText(model => model.ToolName).SetHeight(34f);
-                row.AddButton().SetText(">").SetWidth(36f).SetHeight(34f)
+                row.AddText()
+                    .BindText(model => model.ToolName)
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None)
+                    .SetHeight(40f);
+                row.AddButton()
+                    .SetId(NextToolButtonId)
+                    .SetText(">")
+                    .SetWidth(36f)
+                    .SetHeight(34f)
                     .BindIsEnabled(model => model.IsToolSelectionEnabled)
                     .BindOnClicked(model => model.OnNextTool());
-                row.AddButton().SetText("Activate Tool").SetWidth(120f).SetHeight(34f)
-                    .BindIsEnabled(model => model.IsToolActivationEnabled)
-                    .BindOnClicked(model => model.OnActivateTool());
             });
 
             column.AddRow(row =>
             {
-                row.AddLabel().BindText(model => model.StatusText).SetHeight(36f);
+                row.SetHeight(42f);
+                row.AddSpacer();
+                row.AddButton()
+                    .SetId(ActivateToolButtonId)
+                    .SetText("Activate Tool")
+                    .SetWidth(120f)
+                    .SetHeight(34f)
+                    .BindIsEnabled(model => model.IsToolActivationEnabled)
+                    .BindOnClicked(model => model.OnActivateTool());
+                row.AddSpacer();
+            });
+
+            column.AddRow(row =>
+            {
+                row.SetHeight(contentWidth < 500f ? 56f : 42f);
+                row.AddText()
+                    .BindText(model => model.StatusText)
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None);
             });
 
             column.AddRow(row =>
             {
                 row.AddSpacer();
-                row.AddButton().SetText("Abort").SetWidth(140f).SetHeight(38f)
+                row.AddButton()
+                    .SetId(AbortButtonId)
+                    .SetText("Abort")
+                    .SetWidth(140f)
+                    .SetHeight(38f)
                     .BindOnClicked(model => model.OnAbort());
                 row.AddSpacer();
             });
+        }
+
+        private static void AddHelpButton(GuiRow<SlicingViewModel> row)
+        {
+            row.AddButton()
+                .SetId(HelpButtonId)
+                .SetText("?")
+                .SetTooltip("How slicing works")
+                .SetWidth(34f)
+                .SetHeight(28f)
+                .BindOnClicked(model => model.OnHelp());
         }
 
         private static void AddHelp(GuiGroup<SlicingViewModel> group)
@@ -139,9 +265,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
                 column.AddRow(row =>
                 {
-                    row.AddLabel()
+                    row.SetHeight(68f);
+                    row.AddText()
                         .BindText(model => model.BoardText)
-                        .SetHeight(40f);
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None);
                 });
                 column.AddRow(row =>
                 {
@@ -171,6 +299,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 var columnIndex = tileColumn;
                 var slot = tileRow * 5 + columnIndex;
                 row.AddButtonImage()
+                    .SetId($"slc_tile_{slot}")
                     .BindImageResref(Binding<string>($"TileImage{slot}"))
                     .BindTooltip(Binding<string>($"TileTooltip{slot}"))
                     .BindOnClicked(model => model.OnTile(tileRow, columnIndex))

@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
     {
         public string Name { get; set; }
         public int RespawnDelayMinutes { get; set; }
+        public int RespawnDelayMaximumMinutes { get; set; }
         public int ResourceDespawnMinutes { get; set; }
         public List<SpawnObject> Spawns { get; set; }
 
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         {
             Name = name;
             RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
+            RespawnDelayMaximumMinutes = Spawn.DefaultRespawnMinutes;
             ResourceDespawnMinutes = 180; // Default: 3 hours for resources
             Spawns = new List<SpawnObject>();
         }

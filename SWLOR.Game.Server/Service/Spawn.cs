@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Service
             public float Z { get; set; }
             public float Facing { get; set; }
             public int RespawnDelayMinutes { get; set; }
+            public int RespawnDelayMaximumMinutes { get; set; }
             public bool UseRandomSpawnLocation { get; set; }
         }
 
@@ -143,6 +144,7 @@ namespace SWLOR.Game.Server.Service
                             SpawnTableId = spawnTableId,
                             Area = area,
                             RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
+                            RespawnDelayMaximumMinutes = spawnTable.RespawnDelayMaximumMinutes,
                             UseRandomSpawnLocation = true
                         });
 
@@ -182,7 +184,8 @@ namespace SWLOR.Game.Server.Service
                             Z = position.Z,
                             Facing = facing,
                             Area = area,
-                            RespawnDelayMinutes = 5
+                            RespawnDelayMinutes = 5,
+                            RespawnDelayMaximumMinutes = 5
                         });
 
                         // Add this entry to the spawns by area cache.
@@ -208,7 +211,8 @@ namespace SWLOR.Game.Server.Service
                                 Z = position.Z,
                                 Facing = facing,
                                 Area = area,
-                                RespawnDelayMinutes = spawnTable.RespawnDelayMinutes
+                                RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
+                                RespawnDelayMaximumMinutes = spawnTable.RespawnDelayMaximumMinutes
                             });
 
                             // Add this entry to the spawns by area cache.
@@ -220,10 +224,12 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                // Resource and creature spawn tables can be placed as a local variable on the area.
+                // Resource, creature, and slicing-terminal spawn tables can be placed as a local variable on the area.
                 // If one is found, it will be registered.
                 RegisterAreaSpawnTable(area, "RESOURCE_SPAWN_TABLE_ID", CalculateResourceSpawnCount(area));
                 RegisterAreaSpawnTable(area, "CREATURE_SPAWN_TABLE_ID", CalculateCreatureSpawnCount(area));
+                var slicingTerminalCount = Math.Max(1, GetLocalInt(area, "SLICING_TERMINAL_SPAWN_COUNT"));
+                RegisterAreaSpawnTable(area, "SLICING_TERMINAL_SPAWN_TABLE_ID", slicingTerminalCount);
             }
         }
 
@@ -421,11 +427,47 @@ namespace SWLOR.Game.Server.Service
 
             var spawnGuid = new Guid(spawnId);
             var detail = _spawns[spawnGuid];
-            var respawnTime = DateTime.UtcNow.AddMinutes(detail.RespawnDelayMinutes);
+            var respawnTime = GetRespawnTime(detail);
 
             CreateQueuedSpawn(spawnGuid, respawnTime);
             RemoveActiveSpawn(detail, creature);
             SetLocalInt(creature, "RESPAWN_QUEUED", 1);
+        }
+
+        /// <summary>
+        /// Removes an active spawned object and queues its replacement using its spawn
+        /// table's respawn window. Used by interactable resources which are consumed
+        /// without firing a placeable death event.
+        /// </summary>
+        public static bool DespawnAndQueueRespawn(uint spawnObject)
+        {
+            if (!GetIsObjectValid(spawnObject))
+                return false;
+
+            var spawnId = GetLocalString(spawnObject, "SPAWN_ID");
+            if (!Guid.TryParse(spawnId, out var spawnGuid) || !_spawns.TryGetValue(spawnGuid, out var detail))
+            {
+                DestroyObject(spawnObject);
+                return false;
+            }
+
+            if (GetLocalInt(spawnObject, "RESPAWN_QUEUED") == 1)
+                return false;
+
+            CreateQueuedSpawn(spawnGuid, GetRespawnTime(detail));
+            RemoveActiveSpawn(detail, spawnObject);
+            SetLocalInt(spawnObject, "RESPAWN_QUEUED", 1);
+            DestroyObject(spawnObject);
+            return true;
+        }
+
+        private static DateTime GetRespawnTime(SpawnDetail detail)
+        {
+            var maximum = Math.Max(detail.RespawnDelayMinutes, detail.RespawnDelayMaximumMinutes);
+            var delay = maximum == detail.RespawnDelayMinutes
+                ? detail.RespawnDelayMinutes
+                : Random.Next(detail.RespawnDelayMinutes, maximum + 1);
+            return DateTime.UtcNow.AddMinutes(delay);
         }
 
         /// <summary>
@@ -590,7 +632,7 @@ namespace SWLOR.Game.Server.Service
                     DestroyObject(resourceDespawn.ResourceObject);
 
                     // Queue for respawn
-                    var respawnTime = now.AddMinutes(spawnDetail.RespawnDelayMinutes);
+                    var respawnTime = GetRespawnTime(spawnDetail);
                     CreateQueuedSpawn(resourceDespawn.SpawnDetailId, respawnTime);
 
                     _queuedResourceDespawns.RemoveAt(index);

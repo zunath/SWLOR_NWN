@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -86,31 +87,51 @@ public class EspionageSystemTests
     }
 
     [Test]
-    public void StealthToggle_PreservesModeThroughActivationAndRejectsPhantomStatusApplications()
+    public void StealthPerk_UsesTheNativeActionWithoutGrantingADuplicateAbility()
     {
-        var abilities = new StealthAbilityDefinition().BuildAbilities();
-        foreach (var feat in new[] { FeatType.Stealth1, FeatType.Stealth2, FeatType.Stealth3, FeatType.Stealth4 })
-        {
-            abilities[feat].PreservesStealthDuringActivation.Should().BeTrue();
-            abilities[feat].CustomValidation.Should().NotBeNull();
-        }
+        var root = FindRepositoryRoot();
+        var stealth = BuildPerkWithout2daLookup(
+            new EspionagePerkDefinition(),
+            "Stealth",
+            PerkType.Stealth);
+        stealth.PerkLevels.Values.Should().OnlyContain(level => level.GrantedFeats.Count == 0,
+            "the NWN Stealth action is the sole player-facing toggle");
+        stealth.HotBarActionModes.Should().ContainSingle()
+            .Which.Should().Be(ActionMode.Stealth,
+                "the perk metadata should declaratively add the native action to the hotbar");
+        stealth.IconResref.Should().Be("ife_stealth1",
+            "removing the duplicate ability must preserve Stealth's existing perk-menu artwork");
+        File.Exists(Path.Combine(
+                root,
+                "SWLOR.Game.Server",
+                "Feature",
+                "AbilityDefinition",
+                "Espionage",
+                "StealthAbilityDefinition.cs"))
+            .Should().BeFalse("Stealth must not have a duplicate custom ability definition");
 
         var stealthSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            root,
             "SWLOR.Game.Server",
             "Service",
             "Stealth.cs"));
+        stealthSource.Should().Contain("ScriptName.OnStealthEnterBefore");
+        stealthSource.Should().Contain("ScriptName.OnStealthEnterAfter");
+        stealthSource.Should().Contain("ScriptName.OnStealthExitAfter");
         stealthSource.Should().Contain("!GetActionMode(creature, ActionMode.Stealth)");
         stealthSource.Should().Contain("Perk.GetPerkLevel(creature, PerkType.Stealth) > 0");
         stealthSource.Should().Contain("enteredDuringCombatWithoutWindow");
         stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);");
 
-        var featUseSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
-            "SWLOR.Game.Server",
-            "Feature",
-            "UsePerkFeat.cs"));
-        featUseSource.Should().Contain("!ability.PreservesStealthDuringActivation");
+        var auditSource = File.ReadAllText(Path.Combine(
+            root,
+            "tools",
+            "UpdateCombatUpgradeAudit.ps1"));
+        auditSource.Should().Contain("Import-NativeActionModePerkNameIndex");
+        auditSource.Should().Contain(".AutoAddActionModeToHotBar");
+        auditSource.Should().Contain(
+            "if ($isActiveType -and !$usesNativeActionMode -and !$abilityBaseNameIndex.ContainsKey($rowBaseName))",
+            "native action-mode metadata should suppress only the custom-ability audit requirement");
     }
 
     [Test]
@@ -131,13 +152,13 @@ public class EspionageSystemTests
     }
 
     [Test]
-    public void SlicingRanksReduceLockboxUseDelayAtTheDocumentedBands()
+    public void SlicingRanksGrantTheDocumentedTraceBonuses()
     {
-        LockboxItemDefinition.CalculateUseDelaySeconds(0).Should().BeApproximately(2f, 0.001f);
-        LockboxItemDefinition.CalculateUseDelaySeconds(2).Should().BeApproximately(2f, 0.001f);
-        LockboxItemDefinition.CalculateUseDelaySeconds(3).Should().BeApproximately(1.6f, 0.001f);
-        LockboxItemDefinition.CalculateUseDelaySeconds(4).Should().BeApproximately(1.4f, 0.001f);
-        LockboxItemDefinition.CalculateUseDelaySeconds(5).Should().BeApproximately(1.2f, 0.001f);
+        Slicing.GetTraceBonus(0, 0, 0).Should().Be(0);
+        Slicing.GetTraceBonus(2, 0, 0).Should().Be(0);
+        Slicing.GetTraceBonus(3, 0, 0).Should().Be(1);
+        Slicing.GetTraceBonus(4, 0, 0).Should().Be(2);
+        Slicing.GetTraceBonus(5, 0, 0).Should().Be(3);
     }
 
     [Test]
@@ -268,7 +289,7 @@ public class EspionageSystemTests
     }
 
     [Test]
-    public void SlicingFirstIteration_IsConsumedOnlyByLockboxes()
+    public void SlicingRankGate_IsCentralizedForLockboxesAndTerminals()
     {
         var root = FindRepositoryRoot();
         var references = Directory
@@ -281,9 +302,9 @@ public class EspionageSystemTests
 
         references.Should().Equal(Path.Combine(
             "SWLOR.Game.Server",
-            "Feature",
-            "ItemDefinition",
-            "LockboxItemDefinition.cs"));
+            "Service",
+            "SlicingService",
+            "SlicingSession.cs"));
     }
 
     [Test]

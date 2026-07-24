@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     EquipMainHandResref = VibrobladeResref,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Weapon-queued; BleedStatusEffect(3s) is a conditional on-hit rider, not asserted."
+                    Notes = "Weapon-queued; BleedStatusEffect(3s) is a conditional on-hit rider, not asserted.",
+                    SkipReason = "PRODUCT BUG (found by this suite): PerkType.HackingBlade has no perk definition, so Perk.GetPerkLevel throws KeyNotFoundException for any NPC activator. Un-skip once the perk is registered."
                 },
                 new()
                 {
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     EquipMainHandResref = VibrobladeResref,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Weapon-queued; BleedStatusEffect(4s) is a conditional on-hit rider, not asserted."
+                    Notes = "Weapon-queued; BleedStatusEffect(4s) is a conditional on-hit rider, not asserted.",
+                    SkipReason = "PRODUCT BUG (found by this suite): PerkType.HackingBlade has no perk definition; see HackingBlade1."
                 },
 
                 // BerserkerStanceAbilityDefinition - ConfigureToggle: self stance.

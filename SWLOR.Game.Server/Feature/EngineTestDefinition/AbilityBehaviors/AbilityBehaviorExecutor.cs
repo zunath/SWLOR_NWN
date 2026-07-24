@@ -163,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 // window can reopen between a check and execution - so the assignment retries.
                 var used = false;
                 var activationAttempted = false;
+                Exception activationError = null;
                 for (var attempt = 0; attempt < 3 && !activationAttempted; attempt++)
                 {
                     await ctx.WaitUntilAsync(
@@ -172,8 +173,18 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
 
                     AssignCommand(caster, () =>
                     {
-                        used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+                        // Attempted is flagged FIRST and the call is guarded: an exception
+                        // inside an assigned context is otherwise swallowed into the Error log
+                        // and looks identical to the command never executing.
                         activationAttempted = true;
+                        try
+                        {
+                            used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+                        }
+                        catch (Exception ex)
+                        {
+                            activationError = ex;
+                        }
                     });
 
                     var deadline = DateTime.UtcNow.AddSeconds(2);
@@ -187,6 +198,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 ctx.Assert(
                     activationAttempted,
                     "the assigned activation command never executed in the caster's context after 3 attempts");
+
+                if (activationError != null)
+                {
+                    ctx.Fail($"activation threw {activationError.GetType().Name}: {activationError.Message}");
+                }
 
                 if (!used)
                 {

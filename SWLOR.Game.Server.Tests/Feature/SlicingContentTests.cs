@@ -218,19 +218,20 @@ public class SlicingContentTests
             root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "SlicingViewModel.cs"));
 
         definition.Should().Contain("private const float TileSize = 72f;");
-        definition.Should().Contain("Keep this as a static row/column board.");
-        definition.Should().Contain("Do not reintroduce list templates or vector visibility");
+        definition.Should().Contain("Keep the board as five ordinary rows of five buttons.");
+        definition.Should().Contain("the transposed row-of-columns layout collapse");
         definition.Should().NotContain(".AddList(", "list templates collapse this particular live NUI window");
-        definition.Should().Contain("for (var tileColumn = 0; tileColumn < 5; tileColumn++)");
-        definition.Should().Contain("AddTileColumn(row, tileColumn);");
-        definition.Should().Contain(".BindIsVisible(Binding<bool>($\"IsColumn{column}Visible\"))");
-        definition.Should().Contain(".BindOnClicked(model => model.OnTile(tileRow, column))");
+        definition.Should().Contain("for (var tileRow = 0; tileRow < 5; tileRow++)");
+        definition.Should().Contain("column.AddRow(row => AddTileRow(row, rowIndex));");
+        definition.Should().Contain("private static void AddTileRow");
+        definition.Should().NotContain("row.AddColumn(", "nested board columns collapse in the live NUI client");
+        definition.Should().NotContain(".BindIsVisible(", "all 25 fixed cells must participate in initial layout");
+        definition.Should().Contain(".BindOnClicked(model => model.OnTile(tileRow, columnIndex))");
         definition.Should().Contain(".SetHeight(TileSize)");
         definition.Should().Contain(".SetWidth(TileSize)");
 
         viewModel.Should().Contain("RestoreFixedWindowGeometry();");
         viewModel.Should().Contain("Keep this recovery local to Slicing; do not generalize it into Gui.");
-        viewModel.Should().Contain("Set(column < session.Board.Width, $\"IsColumn{column}Visible\");");
         viewModel.Should().Contain("var slot = row * 5 + column;");
         viewModel.Should().Contain("Set(image, $\"TileImage{slot}\");");
         viewModel.Should().NotContain("GuiBindingList<string> TileColumn");

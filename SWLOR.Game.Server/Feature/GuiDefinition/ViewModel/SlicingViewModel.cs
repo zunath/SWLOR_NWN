@@ -22,12 +22,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsToolSelectionEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsToolActivationEnabled { get => Get<bool>(); set => Set(value); }
 
-        public bool IsColumn0Visible => Get<bool>();
-        public bool IsColumn1Visible => Get<bool>();
-        public bool IsColumn2Visible => Get<bool>();
-        public bool IsColumn3Visible => Get<bool>();
-        public bool IsColumn4Visible => Get<bool>();
-
         public string TileImage0 => Get<string>();
         public string TileImage1 => Get<string>();
         public string TileImage2 => Get<string>();
@@ -211,9 +205,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             FailureText = $"Failure {failureNumber}: {Slicing.GetDestructionChance(failureNumber)}% break risk";
 
             var powered = Slicing.GetPoweredIndices(session.Board);
-            for (var column = 0; column < 5; column++)
-                Set(column < session.Board.Width, $"IsColumn{column}Visible");
-
             for (var row = 0; row < 5; row++)
             {
                 for (var column = 0; column < 5; column++)

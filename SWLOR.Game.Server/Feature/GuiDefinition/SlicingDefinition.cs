@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         internal const float WindowWidth = 680f;
         internal const float WindowHeight = 760f;
         private const float TileSize = 72f;
-        private const float BoardHeight = TileSize * 5;
         private readonly GuiWindowBuilder<SlicingViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -47,18 +46,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(38f);
                     });
 
-                    column.AddRow(row =>
+                    // Keep the board as five ordinary rows of five buttons. Previous list-based
+                    // layouts and the transposed row-of-columns layout collapse in the live NUI
+                    // client before the view model can populate their binds.
+                    for (var tileRow = 0; tileRow < 5; tileRow++)
                     {
-                        // IMPORTANT: Keep this as a static row/column board. GuiList-based versions of
-                        // this particular window have repeatedly collapsed to only their title controls
-                        // in the live NWN client. Do not reintroduce list templates or vector visibility
-                        // binds here; this window intentionally uses scalar-bound tiles and columns.
-                        row.AddSpacer();
-                        for (var tileColumn = 0; tileColumn < 5; tileColumn++)
-                            AddTileColumn(row, tileColumn);
-                        row.AddSpacer();
-                        row.SetHeight(BoardHeight);
-                    });
+                        var rowIndex = tileRow;
+                        column.AddRow(row => AddTileRow(row, rowIndex));
+                    }
 
                     column.AddRow(row =>
                     {
@@ -91,29 +86,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return _builder.Build();
         }
 
-        private static void AddTileColumn(GuiRow<SlicingViewModel> row, int column)
+        private static void AddTileRow(GuiRow<SlicingViewModel> row, int tileRow)
         {
-            row.AddColumn(tileColumn =>
+            row.AddSpacer();
+            for (var tileColumn = 0; tileColumn < 5; tileColumn++)
             {
-                for (var tileRow = 0; tileRow < 5; tileRow++)
-                {
-                    var slot = tileRow * 5 + column;
-                    tileColumn.AddRow(tileRowDefinition =>
-                    {
-                        tileRowDefinition.AddButtonImage()
-                            .BindImageResref(Binding<string>($"TileImage{slot}"))
-                            .BindTooltip(Binding<string>($"TileTooltip{slot}"))
-                            .BindOnClicked(model => model.OnTile(tileRow, column))
-                            .SetHeight(TileSize)
-                            .SetWidth(TileSize)
-                            .SetMargin(0f);
-                        tileRowDefinition.SetHeight(TileSize);
-                    });
-                }
-            })
-                .BindIsVisible(Binding<bool>($"IsColumn{column}Visible"))
-                .SetWidth(TileSize)
-                .SetHeight(BoardHeight);
+                var columnIndex = tileColumn;
+                var slot = tileRow * 5 + columnIndex;
+                row.AddButtonImage()
+                    .BindImageResref(Binding<string>($"TileImage{slot}"))
+                    .BindTooltip(Binding<string>($"TileTooltip{slot}"))
+                    .BindOnClicked(model => model.OnTile(tileRow, columnIndex))
+                    .SetHeight(TileSize)
+                    .SetWidth(TileSize)
+                    .SetMargin(0f);
+            }
+            row.AddSpacer();
+            row.SetHeight(TileSize);
         }
 
         private static Expression<Func<SlicingViewModel, TProperty>> Binding<TProperty>(string propertyName)

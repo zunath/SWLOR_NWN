@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         public const string PoisonCoatingPotencyVariable = "POISON_COATING_POTENCY";
 
         private const int BaseCharges = 20;
+        private const int ConcentratedCharges = 10;
 
         private static readonly Dictionary<int, string> _tierLabels = new()
         {
@@ -32,11 +33,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             CreateVial("poison_vial_3", 3);
             CreateVial("poison_vial_4", 4);
             CreateVial("poison_vial_5", 5);
+            CreateVial("conc_poison_1", 1, true);
+            CreateVial("conc_poison_2", 2, true);
+            CreateVial("conc_poison_3", 3, true);
+            CreateVial("conc_poison_4", 4, true);
+            CreateVial("conc_poison_5", 5, true);
 
             return _builder.Build();
         }
 
-        private void CreateVial(string tag, int tier)
+        private void CreateVial(string tag, int tier, bool concentrated = false)
         {
             _builder.Create(tag)
                 .Delay(2f)
@@ -74,9 +80,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var potency = Stat.GetStatAdjustment(user, StatType.PoisonBonus);
+                    var potency = Stat.GetStatAdjustment(user, StatType.PoisonBonus) + (concentrated ? tier * 10 : 0);
                     var coatingDurationBonus = Stat.GetStatAdjustment(user, StatType.PoisonCoatingDurationPercent);
-                    var charges = CalculateCharges(coatingDurationBonus);
+                    var charges = concentrated ? ConcentratedCharges : CalculateCharges(coatingDurationBonus);
 
                     SetLocalInt(target, PoisonCoatingTierVariable, tier);
                     SetLocalInt(target, PoisonCoatingChargesVariable, charges);
@@ -85,8 +91,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     Item.ReduceItemStack(item, 1);
 
                     Log.Write(LogGroup.Crafting,
-                        $"Player '{GetName(user)}' ({GetObjectUUID(user)}) applied Tier {_tierLabels[tier]} venom coating to '{GetName(target)}' (potency {potency}, {charges} charges).");
-                    SendMessageToPC(user, $"You coat {GetName(target)} in Tier {_tierLabels[tier]} venom. ({charges} charges)");
+                        $"Player '{GetName(user)}' ({GetObjectUUID(user)}) applied Tier {_tierLabels[tier]}{(concentrated ? " concentrated" : string.Empty)} venom coating to '{GetName(target)}' (potency {potency}, {charges} charges).");
+                    SendMessageToPC(user, $"You coat {GetName(target)} in Tier {_tierLabels[tier]}{(concentrated ? " concentrated" : string.Empty)} venom. ({charges} charges)");
                 });
         }
 

@@ -318,6 +318,7 @@ namespace SWLOR.Game.Server.Core
 
         // GUI events
         public const string OnOpenHoloNet = "open_holonet";
+        public const string OnSlicingTerminal = "slice_terminal";
         public const string OnOpenBank = "open_bank";
         public const string OnOpenTrainingStore = "open_train_store";
         public const string OnEnmityChanged = "enmity_changed";

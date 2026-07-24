@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 66
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed tier 5 lockbox. Requires Slicing rank 5 to crack open."
+      "0": "Right-click this item in your inventory and choose Activate Item to begin the Slicing minigame. Requires Slicing rank 5. Its circuit seed, failures, and integrity remain attached to the box when traded."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed tier 5 lockbox. Requires Slicing rank 5 to crack open."
+      "0": "Right-click this item in your inventory and choose Activate Item to begin the Slicing minigame. Requires Slicing rank 5. Its circuit seed, failures, and integrity remain attached to the box when traded."
     }
   },
   "Identified": {
@@ -48,7 +48,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 65
+    "value": 155
   },
   "PaletteID": {
     "type": "byte",
@@ -60,7 +60,39 @@
   },
   "PropertiesList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 335
+        }
+      }
+    ]
   },
   "StackSize": {
     "type": "word",
@@ -80,6 +112,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 65
+    "value": 155
   }
 }

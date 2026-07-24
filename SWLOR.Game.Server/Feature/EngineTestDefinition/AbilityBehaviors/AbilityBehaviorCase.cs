@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -61,6 +62,32 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         /// Expect the ability's recast group to be on cooldown after activation.
         /// </summary>
         public bool ExpectsRecast { get; set; }
+
+        /// <summary>
+        /// Expect the (dead) target to be alive again after impact - for revival abilities.
+        /// Usually paired with <see cref="TargetStartsDead"/>.
+        /// </summary>
+        public bool ExpectsTargetRevived { get; set; }
+
+        /// <summary>
+        /// Expect a temporary-hit-point effect on the ACTIVATOR after impact - for shield-style
+        /// abilities that grant raw EffectTemporaryHitpoints rather than a status effect.
+        /// </summary>
+        public bool ExpectsActivatorTemporaryHP { get; set; }
+
+        /// <summary>
+        /// Expect the ACTIVATOR's hit points to rise above their pre-activation value. The
+        /// executor wounds the caster before activation so the heal is observable.
+        /// </summary>
+        public bool ExpectsActivatorHealing { get; set; }
+
+        /// <summary>
+        /// Perk levels seeded onto the caster before activation, for abilities whose impact
+        /// scales off or requires OTHER perks (e.g. Leadership orders that emit the aura the
+        /// caster has trained). NPCs default every perk to max level when unset, so this is
+        /// only needed to pin a specific level or make a stat-gated branch deterministic.
+        /// </summary>
+        public Dictionary<PerkType, int> SetupNPCPerkLevels { get; set; } = new();
 
         /// <summary>
         /// When true, the spawned target is killed before activation - for revival abilities

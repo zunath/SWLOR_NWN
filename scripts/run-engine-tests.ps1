@@ -134,6 +134,12 @@ if (Test-Path $ReportPath) {
 }
 
 Write-Section "Running engine tests via docker compose (server home: $ServerHome)"
+# Everything set here is restored at the end of the run: PowerShell env changes
+# outlive the script in the calling shell, and a leaked SWLOR_ENGINE_TEST_HAK_DIR
+# from an auto-share would silently redirect a later run's hak mount.
+$previousFilter = $env:SWLOR_ENGINE_TEST_FILTER
+$previousArenaResref = $env:SWLOR_ENGINE_TEST_ARENA_RESREF
+$previousHakDir = $env:SWLOR_ENGINE_TEST_HAK_DIR
 $env:SWLOR_ENGINE_TEST_FILTER = $Filter
 $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
 
@@ -183,6 +189,9 @@ try {
 finally {
     $ErrorActionPreference = $previousErrorActionPreference
     Pop-Location
+    $env:SWLOR_ENGINE_TEST_FILTER = $previousFilter
+    $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $previousArenaResref
+    $env:SWLOR_ENGINE_TEST_HAK_DIR = $previousHakDir
 }
 
 Write-Host "docker compose exit code: $composeExitCode"

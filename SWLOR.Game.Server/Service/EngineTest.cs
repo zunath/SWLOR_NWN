@@ -46,6 +46,15 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Fail closed: a mistyped SWLOR_ENVIRONMENT (e.g. 'prodction') resolves to
+            // Development, which must never be enough to run destructive tests on what may
+            // actually be a live server. Only an explicitly recognized dev/test value runs.
+            if (!settings.ServerEnvironmentIsExplicit)
+            {
+                Log.Write(LogGroup.Error, $"{ConsolePrefix} Engine tests are enabled but SWLOR_ENVIRONMENT is missing or unrecognized. Refusing to run - set it explicitly to 'dev' or 'test'.", true);
+                return;
+            }
+
             if (_hasRun)
                 return;
             _hasRun = true;

@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.Benevolence1,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                     Notes = "Heals via ApplyActivatedScaledHeal (raw EffectHeal), not a tracked status effect.",
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.Benevolence2,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
@@ -38,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.Benevolence3,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },

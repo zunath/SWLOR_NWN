@@ -13,6 +13,14 @@ namespace SWLOR.Game.Server
         public string PropertyBroadcastWebhookUrl { get; }
         public string ServerNotificationWebhookUrl { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
+
+        /// <summary>
+        /// True only when SWLOR_ENVIRONMENT contained a recognized spelling. An unset or
+        /// mistyped value still resolves to Development, but consumers that must fail
+        /// closed (e.g. the engine test runner) can require an explicit environment.
+        /// </summary>
+        public bool ServerEnvironmentIsExplicit { get; }
+
         public bool EngineTestsEnabled { get; }
         public string EngineTestResultsDirectory { get; }
         public string EngineTestFilter { get; }
@@ -47,20 +55,24 @@ namespace SWLOR.Game.Server
             EngineTestShutdownOnCompletion = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_SHUTDOWN"), true);
             EngineTestArenaResref = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_ARENA_RESREF");
 
-            var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
-            if (!string.IsNullOrWhiteSpace(environment) &&
-                (environment.ToLower() == "prod" || environment.ToLower() == "production"))
+            var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT")?.Trim().ToLower() ?? string.Empty;
+            if (environment == "prod" || environment == "production")
             {
                 ServerEnvironment = ServerEnvironmentType.Production;
+                ServerEnvironmentIsExplicit = true;
             }
-            else if (!string.IsNullOrWhiteSpace(environment) &&
-                     (environment.ToLower() == "test" || environment.ToLower() == "testing"))
+            else if (environment == "test" || environment == "testing")
             {
                 ServerEnvironment = ServerEnvironmentType.Test;
+                ServerEnvironmentIsExplicit = true;
             }
             else
             {
                 ServerEnvironment = ServerEnvironmentType.Development;
+                // Only a recognized spelling counts as explicit - a typo'd production value
+                // falls through to Development, and anything gated on "not production"
+                // (like the engine test runner) must be able to fail closed on that.
+                ServerEnvironmentIsExplicit = environment == "dev" || environment == "development";
             }
         }
 
@@ -83,7 +95,11 @@ namespace SWLOR.Game.Server
 
         private static float ParseFloat(string value, float defaultValue)
         {
-            return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
+            // Non-finite values (Infinity/NaN) parse successfully but would break consumers
+            // like DelayCommand scheduling; only finite, non-negative values are accepted.
+            return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) &&
+                   float.IsFinite(parsed) &&
+                   parsed >= 0f
                 ? parsed
                 : defaultValue;
         }

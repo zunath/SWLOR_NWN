@@ -140,6 +140,19 @@ jobs:
           mkdir -p ../SWLOR.Game.Server/Docker/modules
           cp "./$MOD_FILE_NAME" "../SWLOR.Game.Server/Docker/modules/$MOD_FILE_NAME"
 
+      - name: Stage server assembly
+        # The "Build server and CLI" step already produced
+        # SWLOR.Game.Server/bin/Release/net10.0 as a transitive output; stage it
+        # into the server home's dotnet/ directory ourselves and run the script
+        # with --skip-build so the server isn't compiled a second time.
+        run: |
+          set -euo pipefail
+          BUILD_OUTPUT_DIR="SWLOR.Game.Server/bin/Release/net10.0"
+          test -d "$BUILD_OUTPUT_DIR"
+          rm -rf SWLOR.Game.Server/Docker/dotnet
+          mkdir -p SWLOR.Game.Server/Docker/dotnet
+          cp -r "$BUILD_OUTPUT_DIR"/. SWLOR.Game.Server/Docker/dotnet/
+
       - name: Run engine tests
         # The dispatch input goes through env rather than direct ${{ }} shell
         # interpolation so a crafted filter value cannot inject shell syntax.
@@ -147,7 +160,7 @@ jobs:
           ENGINE_TEST_FILTER: ${{ inputs.filter }}
         run: |
           set -euo pipefail
-          scripts/run-engine-tests.sh --filter "${ENGINE_TEST_FILTER:-}"
+          scripts/run-engine-tests.sh --skip-build --filter "${ENGINE_TEST_FILTER:-}"
 
       - name: Upload engine test results
         uses: actions/upload-artifact@v4

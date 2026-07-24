@@ -21,6 +21,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         // which silently breaks every weapon-gated tree (ActionEquipItem never completes).
         private const string CasterResref = "nw_bandit001";
         private const string TargetResref = "nw_rat001";
+
+        // Equipped for Weapon-activation cases that declare no weapon of their own: queued
+        // abilities consume through the weapon's item_on_hit event, so the caster must be
+        // armed to land the consuming hit. A stock shortsword keeps the fixture neutral.
+        private const string FallbackWeaponResref = "nw_wswss001";
         private const int ResourcePool = 9999;
         private const float EffectWaitSeconds = 20f;
         private const float CostWaitSeconds = 15f;
@@ -32,10 +37,20 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         /// </summary>
         private const int TargetTemporaryHP = 1000;
 
+        /// <summary>
+        /// A tree sweep aborts once this many cases have failed: that volume signals a
+        /// systemic problem (broken fixture, dead arena, bad build) rather than individual
+        /// ability bugs, and running out the remaining cases just burns the suite's wall
+        /// clock producing hundreds of copies of the same failure.
+        /// </summary>
+        private const int SystemicFailureThreshold = 25;
+
         public static async Task RunAsync(EngineTestContext ctx, List<AbilityBehaviorCase> cases)
         {
             var failures = new List<string>();
             var skippedFeats = new List<string>();
+            var abortedAsSystemic = false;
+            var passedCount = 0;
 
             // Ability impacts roll Combat.TryResolveAbilityHit, which legitimately misses up to
             // 5% of the time even at capped hit rates - across hundreds of cases a sweep would
@@ -70,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     try
                     {
                         await RunCaseAsync(ctx, behaviorCase);
+                        passedCount++;
                         ctx.Log($"{progress} PASS {behaviorCase.Feat} - {remaining}");
                     }
                     catch (Exception ex)
@@ -82,6 +98,13 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                             : $"{ex.GetType().Name}: {ex.Message}";
                         failures.Add($"{behaviorCase.Feat}: {message}");
                         ctx.Log($"{progress} FAIL {behaviorCase.Feat} - {remaining}: {message}");
+
+                        if (failures.Count >= SystemicFailureThreshold)
+                        {
+                            abortedAsSystemic = true;
+                            ctx.Log($"{progress} ABORT - {failures.Count} failures reached the systemic-failure threshold ({SystemicFailureThreshold}); skipping the remaining {cases.Count - index - 1} case(s).");
+                            break;
+                        }
                     }
 
                     await NwTask.NextFrame();
@@ -94,8 +117,13 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             }
 
             var skipped = skippedFeats.Count;
-            var passed = cases.Count - skipped - failures.Count;
+            var passed = passedCount;
             var summary = $"{cases.Count} case(s): {passed} passed, {failures.Count} failed, {skipped} skipped.";
+            if (abortedAsSystemic)
+            {
+                var notRun = cases.Count - passed - failures.Count - skipped;
+                summary += $" ABORTED as systemic after {failures.Count} failures; {notRun} case(s) not run.";
+            }
             if (skipped > 0)
             {
                 summary += $" Skipped: {string.Join(", ", skippedFeats)}.";
@@ -179,13 +207,45 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 await NwTask.NextFrame();
                 ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
 
+                foreach (var (setupPerk, setupLevel) in behaviorCase.SetupNPCPerkLevels)
+                {
+                    ctx.SetNPCPerkLevel(caster, setupPerk, setupLevel);
+                }
+
                 if (!string.IsNullOrWhiteSpace(behaviorCase.EquipMainHandResref))
                 {
                     await ctx.EquipItemAsync(caster, behaviorCase.EquipMainHandResref, InventorySlot.RightHand);
                 }
 
+                if (ability.ActivationType == AbilityActivationType.Weapon)
+                {
+                    // Queued abilities consume through the weapon's item_on_hit event. This
+                    // must be settled BEFORE activation: equipping fires the equip-validation
+                    // event, which clears any queued ability.
+                    var mainHand = GetItemInSlot(InventorySlot.RightHand, caster);
+                    if (!GetIsObjectValid(mainHand))
+                    {
+                        mainHand = await ctx.EquipItemAsync(caster, FallbackWeaponResref, InventorySlot.RightHand);
+                    }
+
+                    // Blueprint-supplied weapons never passed through the fixture's equip
+                    // path, so the live pipeline's PC-only OnHitCastSpell property is
+                    // mirrored here for them too.
+                    ctx.ApplyStandardOnHitProperty(mainHand);
+                }
+
+                if (behaviorCase.ExpectsActivatorHealing)
+                {
+                    // A full-health activator cannot show healing; wound it first.
+                    ApplyEffectToObject(
+                        DurationType.Instant,
+                        EffectDamage(Math.Max(1, GetCurrentHitPoints(caster) / 2)),
+                        caster);
+                }
+
                 var fpBefore = Stat.GetCurrentFP(caster);
                 var stmBefore = Stat.GetCurrentStamina(caster);
+                var casterHPBefore = GetCurrentHitPoints(caster);
                 var targetHPBefore = GetCurrentHitPoints(target);
                 var activatorStatAdjustmentsBefore = behaviorCase.ExpectedActivatorStatAdjustments
                     .ToDictionary(pair => pair.Key, pair => Stat.GetStatAdjustment(caster, pair.Key));
@@ -199,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 // window can reopen between a check and execution - so the assignment retries.
                 var used = false;
                 var activationAttempted = false;
+                var activationDenial = string.Empty;
                 Exception activationError = null;
                 for (var attempt = 0; attempt < 3 && !activationAttempted; attempt++)
                 {
@@ -216,6 +277,14 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         try
                         {
                             used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+
+                            // Captured HERE, not after the next yield: the denial reason is a
+                            // process-wide slot that any other creature's CanUseAbility call
+                            // (AI, arena bystanders) can overwrite within a frame.
+                            if (!used)
+                            {
+                                activationDenial = Ability.GetLastActivationDenialReason();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -242,25 +311,66 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
 
                 if (!used)
                 {
-                    var denial = Ability.GetLastActivationDenialReason();
-                    ctx.Fail(string.IsNullOrWhiteSpace(denial)
+                    ctx.Fail(string.IsNullOrWhiteSpace(activationDenial)
                         ? "TryUseAbility returned false - activation requirements were not met (no denial reason was recorded)"
-                        : $"TryUseAbility returned false - {denial}");
+                        : $"TryUseAbility returned false - {activationDenial}");
                 }
 
                 if (ability.ActivationType == AbilityActivationType.Weapon)
                 {
-                    // Weapon abilities queue for the next landed hit; costs and recast apply at
-                    // queue time. Landing the hit is combat-timing dependent, so queue state is
-                    // the assertion boundary here.
+                    // Weapon abilities queue for the next landed hit; costs and recast apply
+                    // at queue time.
                     ctx.Assert(
                         UsePerkFeat.IsWeaponAbilityQueued(caster, behaviorCase.Feat),
                         "weapon ability was not queued after activation");
 
                     AssertCosts(ctx, behaviorCase, caster, fpBefore, stmBefore);
+
+                    // Land the queued hit so the on-hit impact pipeline (impact, riders,
+                    // dequeue, native hook integration) is actually exercised. The sweep-wide
+                    // override forces auto-attack MISSES to protect damage attribution, so it
+                    // is flipped to forced HITS for just this attack. Consumption within the
+                    // wait window proves a landed hit - queue expiry alone takes 30s.
+                    var hitTarget = target != caster ? target : OBJECT_INVALID;
+                    var spawnedHitDummy = false;
+                    if (hitTarget == OBJECT_INVALID)
+                    {
+                        hitTarget = ctx.SpawnCreature(TargetResref, 1.0f, 0.5f);
+                        ctx.MakeHostile(hitTarget);
+                        ApplyEffectToObject(
+                            DurationType.Temporary,
+                            EffectTemporaryHitpoints(TargetTemporaryHP),
+                            hitTarget,
+                            3600f);
+                        spawnedHitDummy = true;
+                    }
+
+                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    try
+                    {
+                        AssignCommand(caster, () => ActionAttack(hitTarget));
+                        await ctx.WaitUntilAsync(
+                            () => !UsePerkFeat.IsWeaponAbilityQueued(caster, behaviorCase.Feat),
+                            EffectWaitSeconds,
+                            "the queued weapon ability to be consumed by a landed hit");
+                    }
+                    finally
+                    {
+                        Combat.SetAutoAttackHitResolutionOverride(false);
+                        AssignCommand(caster, () => ClearAllActions());
+                        if (spawnedHitDummy)
+                        {
+                            DestroyCaseActor(hitTarget);
+                        }
+                    }
                 }
                 else
                 {
+                    // Costs are checked FIRST: they apply the moment activation completes,
+                    // before impact effects, and small costs can be re-masked by regen while
+                    // waiting on slow delayed impacts (pulse emitters, telegraphs).
+                    await AssertCastedCostsAsync(ctx, behaviorCase, caster, fpBefore, stmBefore);
+
                     foreach (var effectType in behaviorCase.ExpectedActivatorStatusEffects)
                     {
                         await ctx.WaitUntilAsync(
@@ -299,40 +409,28 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                             "this ability's damage (caster as last damager) to lower the target's hit points");
                     }
 
-                    // Casted costs apply when activation completes (after the activation delay),
-                    // so poll rather than assert immediately. On timeout, report the observed
-                    // pool trajectory - regen, clamping, and cost-restore mechanics all look
-                    // identical without the numbers.
-                    if (behaviorCase.ExpectsFPCost)
+                    if (behaviorCase.ExpectsTargetRevived)
                     {
-                        try
-                        {
-                            await ctx.WaitUntilAsync(
-                                () => Stat.GetCurrentFP(caster) < fpBefore,
-                                CostWaitSeconds,
-                                "FP cost to be deducted");
-                        }
-                        catch (EngineTestAssertionException ex)
-                        {
-                            throw new EngineTestAssertionException(
-                                $"{ex.Message} (before={fpBefore}, current={Stat.GetCurrentFP(caster)}, max={Stat.GetMaxFP(caster)})");
-                        }
+                        await ctx.WaitUntilAsync(
+                            () => !GetIsDead(target),
+                            EffectWaitSeconds,
+                            "the dead target to be revived by the impact");
                     }
 
-                    if (behaviorCase.ExpectsSTMCost)
+                    if (behaviorCase.ExpectsActivatorTemporaryHP)
                     {
-                        try
-                        {
-                            await ctx.WaitUntilAsync(
-                                () => Stat.GetCurrentStamina(caster) < stmBefore,
-                                CostWaitSeconds,
-                                "Stamina cost to be deducted");
-                        }
-                        catch (EngineTestAssertionException ex)
-                        {
-                            throw new EngineTestAssertionException(
-                                $"{ex.Message} (before={stmBefore}, current={Stat.GetCurrentStamina(caster)}, max={Stat.GetMaxStamina(caster)})");
-                        }
+                        await ctx.WaitUntilAsync(
+                            () => HasEffectOfType(caster, EffectTypeScript.TemporaryHitpoints),
+                            EffectWaitSeconds,
+                            "a temporary-HP effect to be present on the activator after impact");
+                    }
+
+                    if (behaviorCase.ExpectsActivatorHealing)
+                    {
+                        await ctx.WaitUntilAsync(
+                            () => GetCurrentHitPoints(caster) > casterHPBefore,
+                            EffectWaitSeconds,
+                            "the activator's hit points to rise above their pre-activation value");
                     }
                 }
 
@@ -391,6 +489,67 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             {
                 ctx.Assert(Stat.GetCurrentStamina(caster) < stmBefore, "Stamina cost was not deducted at queue time");
             }
+        }
+
+        /// <summary>
+        /// Waits for casted-ability costs to be deducted. Costs apply when the activation
+        /// delay completes, so a poll window is needed; the pool sits at exact max making
+        /// regen inert, so a dip below the snapshot is unambiguous. Failure messages carry
+        /// the pool evidence (before/current/max) because cost bugs are indistinguishable
+        /// from resource-fixture bugs without it.
+        /// </summary>
+        private static async Task AssertCastedCostsAsync(
+            EngineTestContext ctx,
+            AbilityBehaviorCase behaviorCase,
+            uint caster,
+            int fpBefore,
+            int stmBefore)
+        {
+            if (behaviorCase.ExpectsFPCost)
+            {
+                try
+                {
+                    await ctx.WaitUntilAsync(
+                        () => Stat.GetCurrentFP(caster) < fpBefore,
+                        CostWaitSeconds,
+                        "the FP cost to be deducted after the activation delay");
+                }
+                catch (EngineTestAssertionException)
+                {
+                    ctx.Fail($"FP cost was not deducted (before={fpBefore}, current={Stat.GetCurrentFP(caster)}, max={Stat.GetMaxFP(caster)})");
+                }
+            }
+
+            if (behaviorCase.ExpectsSTMCost)
+            {
+                try
+                {
+                    await ctx.WaitUntilAsync(
+                        () => Stat.GetCurrentStamina(caster) < stmBefore,
+                        CostWaitSeconds,
+                        "the Stamina cost to be deducted after the activation delay");
+                }
+                catch (EngineTestAssertionException)
+                {
+                    ctx.Fail($"Stamina cost was not deducted (before={stmBefore}, current={Stat.GetCurrentStamina(caster)}, max={Stat.GetMaxStamina(caster)})");
+                }
+            }
+        }
+
+        /// <summary>
+        /// True when any effect of the given engine effect type is present - for abilities
+        /// that apply raw engine effects (e.g. EffectTemporaryHitpoints) with no status
+        /// effect wrapper to query.
+        /// </summary>
+        private static bool HasEffectOfType(uint creature, EffectTypeScript effectType)
+        {
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                if (GetEffectType(effect) == effectType)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

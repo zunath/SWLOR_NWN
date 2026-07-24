@@ -42,9 +42,24 @@ services:
             - SWLOR_ENGINE_TEST_ARENA_RESREF=${SWLOR_ENGINE_TEST_ARENA_RESREF:-}
             - SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS=${SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS:-15}
             - SWLOR_ENGINE_TEST_SHUTDOWN=${SWLOR_ENGINE_TEST_SHUTDOWN:-true}
+            # Pin the report location to where the runner scripts look for it
+            # (<server home>/app_logs/engine_tests/), regardless of where the home's
+            # swlor.env points SWLOR_APP_LOG_DIRECTORY. Without this, a home with a
+            # custom log directory would write the report where no runner finds it and
+            # every run would be judged "server crashed before writing a report".
+            - SWLOR_ENGINE_TEST_RESULTS_DIRECTORY=/nwn/home/app_logs/engine_tests/
             # No influxdb service in this compose file; skip the NWNX metrics plugin
             # so it doesn't fail trying to reach a host that doesn't exist.
             - NWNX_METRICS_INFLUXDB_SKIP=y
+            # Backstop for a test that hard-blocks the server's main thread: the NWNX
+            # thread watchdog kills the process when the main loop stops responding
+            # (PERIOD seconds per check, KILL_THRESHOLD missed checks = ~10 minutes),
+            # so a wedged run ends in an observable non-zero container exit instead of
+            # hanging until the CI job timeout. Forced here so a server home whose
+            # swlor.env disables the watchdog can't silently remove the backstop.
+            - NWNX_THREADWATCHDOG_SKIP=n
+            - NWNX_THREADWATCHDOG_PERIOD=30
+            - NWNX_THREADWATCHDOG_KILL_THRESHOLD=20
         links:
             - "redis:redis"
         volumes:

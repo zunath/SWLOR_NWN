@@ -33,7 +33,10 @@ The runner lives in `SWLOR.Game.Server/Service/EngineTest.cs`, with its supporti
 1. **Trigger** - `EngineTest.ScheduleEngineTests` is an `[NWNEventHandler(ScriptName.OnModuleLoad)]`
    handler. It checks `ApplicationSettings.EngineTestsEnabled`; if false, it does nothing. If the
    server's `ServerEnvironment` is `Production`, it logs an error and refuses to run even if
-   enabled. Otherwise it schedules `RunAllTestsAsync` via `DelayCommand` after
+   enabled. The environment must also be EXPLICIT (`ServerEnvironmentIsExplicit`): an unset or
+   mistyped `SWLOR_ENVIRONMENT` still resolves to `Development`, but the runner fails closed on
+   it - a typo'd production value must not silently become a test-eligible environment.
+   Otherwise it schedules `RunAllTestsAsync` via `DelayCommand` after
    `EngineTestStartupDelaySeconds` (default 15s), giving the module time to finish booting. A
    static `_hasRun` flag guards against scheduling twice on repeated `OnModuleLoad` events.
 
@@ -92,7 +95,7 @@ All values are read once into `ApplicationSettings` (`SWLOR.Game.Server/Applicat
 | `SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS` | `EngineTestStartupDelaySeconds` | `15` (float) | Seconds after `OnModuleLoad` before the test run starts. |
 | `SWLOR_ENGINE_TEST_SHUTDOWN` | `EngineTestShutdownOnCompletion` | `true` | Whether the server shuts itself down ~3s after the run completes. Set to `false` to keep the server up for debugging. |
 | `SWLOR_ENGINE_TEST_ARENA_RESREF` | `EngineTestArenaResref` | `null`/empty (uses the module's starting area's own resref) | Overrides which area resref is instanced as the test arena. Override arenas anchor spawns at the area's geometric center, so pick a small, flat area. |
-| `SWLOR_ENVIRONMENT` | `ServerEnvironment` | `Development` (any unset/unrecognized value) | `"prod"`/`"production"` -> `Production` (engine tests refuse to run); `"test"`/`"testing"` -> `Test`; anything else -> `Development`. |
+| `SWLOR_ENVIRONMENT` | `ServerEnvironment` | `Development` (any unset/unrecognized value) | `"prod"`/`"production"` -> `Production` (engine tests refuse to run); `"test"`/`"testing"` -> `Test`; `"dev"`/`"development"` -> `Development`. Anything else also resolves to `Development` but is NOT explicit (`ServerEnvironmentIsExplicit=false`) and the engine test runner fails closed on it. |
 
 Booleans accept `true`/`1`/`yes` as true and `false`/`0`/`no` as false (case-insensitive); any
 other value - including unset and typos - keeps the setting's declared default, so a mistyped
@@ -232,9 +235,27 @@ activation through `UsePerkFeat.TryUseAbility`:
   Case-level skips are surfaced in the tree test's result message (and therefore the JSON
   report), not just the log.
 - **Weapon** (queued-on-hit) abilities assert queue state (`UsePerkFeat.IsWeaponAbilityQueued`),
-  costs (applied at queue time), and recast - landing a hit is combat-timing dependent, so on-hit
-  impact effects are documented in `Notes` rather than asserted.
+  costs (applied at queue time), and recast - then LAND the queued hit: the executor flips the
+  auto-attack override to forced hits for just this attack, orders `ActionAttack` at the target
+  (spawning a temporary hostile dummy for self-target queued cases), and requires the queue slot
+  to be consumed within the wait window (queue expiry alone takes 30s, so consumption proves a
+  landed hit exercised the real on-hit impact pipeline). The override is restored to forced
+  misses in a `finally` so a timeout can't leak forced hits into subsequent cases.
 - **Stance** abilities assert their stance status effect on the activator.
+
+Beyond status effects/damage, cases can assert revival of a dead target (`ExpectsTargetRevived`),
+raw temporary-HP effects on the activator (`ExpectsActivatorTemporaryHP` - for shield abilities
+that apply `EffectTemporaryHitpoints` with no status-effect wrapper), and activator healing
+(`ExpectsActivatorHealing` - the executor wounds the caster to ~50% HP before activation so a
+raw `EffectHeal` is observable). `SetupNPCPerkLevels` seeds `PERK_LEVEL_` locals on the caster
+before activation, pinning perk-investment-gated branches (e.g. Leadership toggle auras read
+their aura level through `Perk.GetStatBonus`, which resolves NPC perk levels from those locals
+with no max-level fallback) so the asserted branch is deterministic.
+
+When a tree sweep accumulates 25 case failures it aborts and reports the remaining cases as not
+run: that volume signals a systemic problem (broken fixture, dead arena, stale build) rather
+than 25 independent ability bugs, and running out hundreds of remaining cases would just burn
+the suite's wall clock repeating the same failure.
 
 Coverage is enforced by an NUnit ratchet (`SWLOR.Game.Server.Tests/Feature/AbilityBehaviorCoverageTests.cs`):
 every feat registered by an `IAbilityListDefinition` must have exactly one behavior case unless its
@@ -353,8 +374,18 @@ scripts/run-engine-tests.sh --server-home /opt/nwn/home
 (`redis`, `swlor-server`) - not the full dev stack in `docker-compose.yml`. Redis uses a `tmpfs`
 data directory so every run starts against a fresh, empty database, there are no restart policies
 (a container exit is final and observable), and it overrides `SWLOR_ENGINE_TESTS_ENABLED=true`,
-`SWLOR_ENVIRONMENT=test`, and `NWNX_METRICS_INFLUXDB_SKIP=y` (no InfluxDB service exists in this
-compose file) on top of the normal `swlor.env` defaults.
+`SWLOR_ENVIRONMENT=test`, `SWLOR_ENGINE_TEST_RESULTS_DIRECTORY=/nwn/home/app_logs/engine_tests/`
+(pinning the JSON report to where the runner scripts look, regardless of where the server home's
+`swlor.env` points `SWLOR_APP_LOG_DIRECTORY`), and `NWNX_METRICS_INFLUXDB_SKIP=y` (no InfluxDB
+service exists in this compose file) on top of the normal `swlor.env` defaults.
+
+**Hung-run backstop**: the compose file force-enables the NWNX thread watchdog
+(`NWNX_THREADWATCHDOG_SKIP=n`, 30s check period, 20 missed checks) - per-test timeouts are
+cooperative (`CancellationToken` polled between frames), so a test or product bug that hard-blocks
+the server's main thread would otherwise hang the container until the CI job timeout. The watchdog
+kills the process when the main loop stops responding for ~10 minutes, turning a wedged run into
+an observable non-zero container exit. It is set in the compose `environment:` block precisely so
+a server home whose `swlor.env` disables the watchdog can't silently remove the backstop.
 
 **Keeping the server up for debugging**: export `SWLOR_ENGINE_TEST_SHUTDOWN=false` in your shell
 before invoking the script (or before running `docker compose` directly) - the compose file reads
@@ -376,8 +407,10 @@ It checks out with `submodules: recursive` and `fetch-depth: 1`, builds `SWLOR.C
 (`nwn_erf`/`nwn_gff`/`nwn_tlk`) and renames them to `*.exe` next to `SWLOR.CLI.dll` so `HakBuilder`/
 `ModulePacker`'s hardcoded process names resolve, builds the hak files via `SWLOR.CLI --hak`
 (retargeting `Build/hakbuilder.json`'s `OutputPath` to `SWLOR.Game.Server/Docker/`), packs the
-module via `SWLOR.CLI --pack` into `SWLOR.Game.Server/Docker/modules/`, then runs
-`scripts/run-engine-tests.sh --filter`. Engine test results and server logs are uploaded as
+module via `SWLOR.CLI --pack` into `SWLOR.Game.Server/Docker/modules/`, stages the
+already-built server assembly (a transitive output of the CLI build) into
+`SWLOR.Game.Server/Docker/dotnet/`, then runs `scripts/run-engine-tests.sh --skip-build --filter`
+so the server is not compiled a second time. Engine test results and server logs are uploaded as
 artifacts on every run (`if: always()`), each with 14-day retention.
 
 **This workflow has not yet had a successful (or attempted) run on GitHub-hosted runners**, per its

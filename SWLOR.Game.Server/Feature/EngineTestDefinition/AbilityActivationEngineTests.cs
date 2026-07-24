@@ -21,6 +21,10 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
         public static async Task RenewalActivationSpendsFPAndAppliesStatusEffect(EngineTestContext ctx)
         {
             var npc = ctx.SpawnCreature("nw_rat001");
+
+            // Spawn initialization scripts reset the FP/STAMINA locals a frame after creation;
+            // configuring resources before they run would let them overwrite the setup.
+            await ctx.WaitFrameAsync();
             ctx.SetNPCResources(npc, StartingFP, StartingStamina);
             var fpBefore = Stat.GetCurrentFP(npc);
 

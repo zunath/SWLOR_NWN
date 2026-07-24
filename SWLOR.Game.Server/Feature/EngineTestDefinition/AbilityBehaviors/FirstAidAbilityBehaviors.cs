@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.EmergencyTriage1,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                     Notes = "Heals via ApplyActivatedMedicalScaledHeal (raw EffectHeal); TraumaMedic rider requires a stat adjustment the NPC doesn't have.",
@@ -92,12 +93,15 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // InfusionAbilityDefinition - friendly self heal-over-time status.
+                // InfusionAbilityDefinition - friendly self heal-over-time status. The status effect's
+                // own Tick (Frequency=3s) applies a guaranteed, unconditional heal each pulse, well
+                // within the executor's wait window, so the caster's HP rise is also observable.
                 new()
                 {
                     Feat = FeatType.Infusion1,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(RegenerativeHealingStatusEffect) },
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -106,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Feat = FeatType.Infusion2,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(RegenerativeHealingStatusEffect) },
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -119,24 +124,29 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Feat = FeatType.KoltoMist1,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(KoltoMistHealingStatusEffect) },
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Zone is centered on the caster's own location (ResolveImpactLocation falls back to GetLocation(target) with target==activator); the caster is inside its own heal radius.",
+                    Notes = "Zone is centered on the caster's own location (ResolveImpactLocation falls back to GetLocation(target) with target==activator); the caster is inside its own heal radius and each 3s pulse also applies a raw EffectHeal via ApplyMedicalScaledHeal.",
                 },
                 new()
                 {
                     Feat = FeatType.KoltoMist2,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(KoltoMistHealingStatusEffect) },
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
 
-                // MedKitAbilityDefinition - direct heal only, no tracked status effect.
+                // MedKitAbilityDefinition - direct heal only, no tracked status effect. ApplyMedKit
+                // heals every friendly returned by GetFriendlyTargets(activator, target, false),
+                // which resolves to the activator on a self-cast, via a raw EffectHeal.
                 new()
                 {
                     Feat = FeatType.MedKit1,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -144,6 +154,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.MedKit2,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -151,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.MedKit3,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -158,6 +170,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.MedKit4,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },
@@ -189,14 +202,20 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Feat = FeatType.Resuscitation1,
                     Target = AbilityTargetKind.FriendlyCreature,
                     TargetStartsDead = true,
-                    Notes = "Revival cast on a dead spawned ally (requireDead:true friendly target).",
+                    ExpectsTargetRevived = true,
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                    Notes = "Revival cast on a dead spawned ally (requireDead:true friendly target). Applies EffectResurrection + a token EffectHeal(1) to the target.",
                 },
                 new()
                 {
                     Feat = FeatType.Resuscitation2,
                     Target = AbilityTargetKind.FriendlyCreature,
                     TargetStartsDead = true,
-                    Notes = "Same requireDead:true friendly-target requirement as Resuscitation1.",
+                    ExpectsTargetRevived = true,
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                    Notes = "Same requireDead:true friendly-target requirement as Resuscitation1; also heals the revived target for 20% via ApplyActivatedScaledHeal.",
                 },
 
                 // ShieldingAbilityDefinition - friendly self buff.

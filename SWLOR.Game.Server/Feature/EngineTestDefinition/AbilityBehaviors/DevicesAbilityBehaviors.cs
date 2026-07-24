@@ -149,30 +149,34 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
 
                 // DeflectorShieldAbilityDefinition - friendly single-target temporary HP shield; self
                 // targeting is allowed (ValidateFriendlyTarget defaults allowSelf:true). No status
-                // effect class is applied (temporary HP + conditional stat riders only).
+                // effect class is applied - ApplyShieldTemporaryHP grants a raw EffectTemporaryHitpoints
+                // to the resolved friendly target (the activator, on a self-cast).
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.DeflectorShield1,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants temporary hit points (not a status effect class); field-support riders are conditional on stat bonuses absent here."
+                    Notes = "Grants raw EffectTemporaryHitpoints (not a status effect class); field-support riders are conditional on stat bonuses absent here."
                 },
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.DeflectorShield2,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants temporary hit points (not a status effect class); field-support riders are conditional on stat bonuses absent here."
+                    Notes = "Grants raw EffectTemporaryHitpoints (not a status effect class); field-support riders are conditional on stat bonuses absent here."
                 },
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.DeflectorShield3,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants temporary hit points (not a status effect class); field-support riders are conditional on stat bonuses absent here."
+                    Notes = "Grants raw EffectTemporaryHitpoints (not a status effect class); field-support riders are conditional on stat bonuses absent here."
                 },
 
                 // DisruptionPulseAbilityDefinition - hostile AoE damage + unconditional (typed
@@ -277,14 +281,16 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
 
                 // GroupDeflectorAbilityDefinition - friendly party temporary HP shield; requires
                 // neither a target object nor a location (self-centered, party-wide). No status
-                // effect class is applied.
+                // effect class is applied - GetFriendlyTargets(activator, activator, true) includes
+                // the activator itself, so it also receives the raw EffectTemporaryHitpoints.
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.GroupDeflector1,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants temporary hit points to nearby party members (not a status effect class); field-support riders are conditional."
+                    Notes = "Grants raw EffectTemporaryHitpoints to nearby party members (not a status effect class), including the activator itself; field-support riders are conditional."
                 },
 
                 // IncendiaryFieldAbilityDefinition - hostile area-pulse damage (scheduled emitter,

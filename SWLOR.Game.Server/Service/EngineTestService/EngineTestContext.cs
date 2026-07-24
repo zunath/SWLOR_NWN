@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service.EngineTestService
 {
@@ -180,6 +183,12 @@ namespace SWLOR.Game.Server.Service.EngineTestService
                 $"item '{itemResref}' to be created in the creature's inventory");
             await NwTask.NextFrame();
 
+            // On a live server every player-equipped item gets the OnHitCastSpell property
+            // from StandardItemConfigurations.AddOnHitProperty - but that handler bails for
+            // non-PC equippers, so NPC fixtures must mirror it themselves. Without it, the
+            // item_on_hit event never fires and queued weapon abilities can never consume.
+            ApplyStandardOnHitProperty(item);
+
             // The equip validator cancels equips into an occupied slot (the swap path ends in
             // SkipEvent), so a caster that spawned armed must empty the hand first.
             var existing = GetItemInSlot(slot, creature);
@@ -208,6 +217,36 @@ namespace SWLOR.Game.Server.Service.EngineTestService
                 $"item '{itemResref}' to be equipped in slot {slot}");
 
             return item;
+        }
+
+        /// <summary>
+        /// Applies the OnHitCastSpell (Unique Power) item property the live equip pipeline
+        /// adds to every player-equipped item (StandardItemConfigurations.AddOnHitProperty
+        /// is PC-only). The item_on_hit script event this property fires is what consumes
+        /// queued weapon abilities - an NPC wielding a weapon without it can queue but
+        /// never consume.
+        /// </summary>
+        public void ApplyStandardOnHitProperty(uint item)
+        {
+            if (!GetIsObjectValid(item))
+                return;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.OnHitCastSpell &&
+                    GetItemPropertySubType(ip) == (int)OnHitCastSpell.ONHIT_UNIQUEPOWER)
+                {
+                    return;
+                }
+            }
+
+            BiowareXP2.IPSafeAddItemProperty(
+                item,
+                ItemPropertyOnHitCastSpell(OnHitCastSpellType.ONHIT_UNIQUEPOWER, 40),
+                0.0f,
+                AddItemPropertyPolicy.ReplaceExisting,
+                false,
+                false);
         }
 
         /// <summary>
@@ -270,6 +309,15 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         }
 
         /// <summary>
+        /// Yields one server frame - e.g. so a freshly spawned creature's initialization
+        /// scripts run before the test configures it.
+        /// </summary>
+        public async Task WaitFrameAsync()
+        {
+            await NwTask.NextFrame();
+        }
+
+        /// <summary>
         /// Waits for a fixed number of seconds of real server time.
         /// </summary>
         public async Task DelaySecondsAsync(float seconds)
@@ -296,8 +344,14 @@ namespace SWLOR.Game.Server.Service.EngineTestService
 
             foreach (var obj in _trackedObjects)
             {
-                if (GetIsObjectValid(obj))
-                    DestroyObject(obj);
+                if (!GetIsObjectValid(obj))
+                    continue;
+
+                // A fixture killed mid-test was marked non-destroyable by the death/loot
+                // pipeline; restore destroyability in its own context so the body is
+                // actually removed rather than lingering in the shared arena.
+                AssignCommand(obj, () => SetIsDestroyable(true, false, false));
+                DestroyObject(obj);
             }
             _trackedObjects.Clear();
 

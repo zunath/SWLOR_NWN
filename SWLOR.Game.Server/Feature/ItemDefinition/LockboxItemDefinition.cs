@@ -1,52 +1,26 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     /// <summary>
-    /// Lockboxes are rare loot drops opened with the Espionage skill's Slicing perk line. Each tier
-    /// requires the matching Slicing perk rank. A successful d100 roll destroys the box, grants
-    /// Espionage XP, and spawns loot from the matching ESPIONAGE_LOCKBOX_# table (see
-    /// LockboxLootTableDefinition). A failed roll keeps the box and applies a short per-item retry
-    /// lockout so the player can't spam attempts.
+    /// Opens the shared, turn-based slicing interface for portable lockboxes. Puzzle
+    /// seed, failures, and integrity live on the item, so trading it never rerolls or
+    /// repairs the lock.
     /// </summary>
     public class LockboxItemDefinition : IItemListDefinition
     {
-        private const string RetryAfterVariable = "LOCKBOX_RETRY_AFTER";
-        private const int RetryLockoutSeconds = 30;
-        private const float BaseUseDelaySeconds = 2f;
-
-        // Success formula: d100() <= BaseSuccessChance + (Lockpicking stat + PER modifier) * StatScalingMultiplier - tier * TierPenaltyPerTier,
-        // clamped to [MinSuccessChance, MaxSuccessChance].
-        private const int BaseSuccessChance = 50;
-        private const int StatScalingMultiplier = 2;
-        private const int TierPenaltyPerTier = 10;
-        private const int MinSuccessChance = 5;
-        private const int MaxSuccessChance = 95;
-
-        // Espionage skill rank required to unlock each Slicing tier (mirrors the RequirementSkill values
-        // on PerkType.Slicing in EspionagePerkDefinition). Used to scale XP off a level-vs-rank delta,
-        // the same approach Fishing/Gathering use for their skill-up grants.
-        private static readonly int[] TierSkillRequirement = { 8, 22, 30, 42, 48 };
-
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
-            Lockbox("lockbox_t1", 1);
-            Lockbox("lockbox_t2", 2);
-            Lockbox("lockbox_t3", 3);
-            Lockbox("lockbox_t4", 4);
-            Lockbox("lockbox_t5", 5);
+            for (var tier = 1; tier <= 5; tier++)
+                Lockbox($"lockbox_t{tier}", tier);
 
             return _builder.Build();
         }
@@ -54,95 +28,19 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private void Lockbox(string resref, int tier)
         {
             _builder.Create(resref)
-                .Delay((user, item, target, location, itemPropertyIndex) =>
-                    CalculateUseDelaySeconds(Perk.GetPerkLevel(user, PerkType.Slicing)))
-                .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
-                {
-                    if (!GetIsPC(user) || GetIsDM(user))
-                    {
-                        return "Only players may open lockboxes.";
-                    }
-
-                    if (Perk.GetPerkLevel(user, PerkType.Slicing) < tier)
-                    {
-                        return "You lack the Slicing expertise to crack this lockbox.";
-                    }
-
-                    if (GetLocalInt(item, RetryAfterVariable) > (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds())
-                    {
-                        return "The lock is still jammed from your last attempt. Wait a moment before trying again.";
-                    }
-
-                    return string.Empty;
-                })
+                    SlicingSession.ValidateStart(user, item, SlicingSourceType.Lockbox, tier))
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var successChance = CalculateSuccessChance(user, tier);
-                    var roll = d100();
-                    var playerId = GetObjectUUID(user);
-
-                    if (roll <= successChance)
+                    if (!SlicingSession.TryStart(user, item, SlicingSourceType.Lockbox, tier, out var error))
                     {
-                        GrantSlicingXP(user, tier);
-
-                        var lootTable = Loot.GetLootTableByName($"ESPIONAGE_LOCKBOX_{tier}");
-                        var loot = lootTable.GetRandomItem();
-                        var quantity = Random.Next(loot.MaxQuantity) + 1;
-                        CreateItemOnObject(loot.Resref, user, quantity);
-
-                        DestroyObject(item);
-
-                        Log.Write(LogGroup.Crafting,
-                            $"Player '{GetName(user)}' ({playerId}) opened tier {tier} lockbox (rolled {roll} vs {successChance}) and received {quantity}x '{loot.Resref}'.");
-                        SendMessageToPC(user, "You crack the lockbox open and recover its contents.");
+                        SendMessageToPC(user, error);
+                        return;
                     }
-                    else
-                    {
-                        SetLocalInt(item, RetryAfterVariable, (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + RetryLockoutSeconds);
 
-                        Log.Write(LogGroup.Crafting,
-                            $"Player '{GetName(user)}' ({playerId}) failed to open tier {tier} lockbox (rolled {roll} vs {successChance}).");
-                        SendMessageToPC(user, "You fail to crack the lockbox. The lock jams - try again in a moment.");
-                    }
+                    var payload = new SlicingPayload(item, SlicingSourceType.Lockbox, tier);
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Slicing, payload);
                 });
-        }
-
-        public static float CalculateUseDelaySeconds(int slicingRank)
-        {
-            var reductionPercent = slicingRank switch
-            {
-                >= 5 => 40,
-                4 => 30,
-                3 => 20,
-                _ => 0
-            };
-
-            return BaseUseDelaySeconds * (100 - reductionPercent) / 100f;
-        }
-
-        /// <summary>
-        /// Combines the Lockpicking stat and Perception scaling into a single success chance, penalized
-        /// by lock tier and clamped to a sane range. Kept in one method per the single-formula rule.
-        /// </summary>
-        private static int CalculateSuccessChance(uint user, int tier)
-        {
-            var lockpicking = Stat.GetStatAdjustment(user, StatType.Lockpicking);
-            var perceptionModifier = GetAbilityModifier(AbilityType.Perception, user);
-            var chance = BaseSuccessChance + (lockpicking + perceptionModifier) * StatScalingMultiplier - tier * TierPenaltyPerTier;
-
-            return Math.Clamp(chance, MinSuccessChance, MaxSuccessChance);
-        }
-
-        private static void GrantSlicingXP(uint user, int tier)
-        {
-            var playerId = GetObjectUUID(user);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbSkill = dbPlayer.Skills[SkillType.Espionage];
-            var delta = TierSkillRequirement[tier - 1] - dbSkill.Rank;
-            var xp = Skill.GetDeltaXP(delta);
-
-            Skill.GiveSkillXP(user, SkillType.Espionage, xp, false, false);
         }
     }
 }

@@ -725,6 +725,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShatterhideGuard = 688,
         ShatterhideVisor = 689,
         ShatterhideCharm = 690,
+        StitchplateLockGloves = 691,
+        FalseFaceFieldVisor = 692,
+        QuietstepReinforcedBoots = 693,
+        DeadDropArmoredCloak = 694,
+        BlacksiteBreachHarness = 695,
 
         // Silkweave (farmed Silkvine fiber)
         SilkweaveCloak = 700,
@@ -1190,10 +1195,15 @@ namespace SWLOR.Game.Server.Service.CraftService
         LargeHouseStyle3 = 1515,
         LargeHouseStyle4 = 1516,
         LabStyle1 = 1517,
+        RustlineDataTerminal = 1518,
+        CipherfileCabinet = 1519,
+        ListeningPostMonitor = 1520,
+        GhostChannelConsole = 1521,
+        BlacksiteAnalysisStation = 1522,
 
         // Farming structures
-        PlanterBox = 1520,
-        HydroponicRack = 1521,
+        PlanterBox = 1523,
+        HydroponicRack = 1524,
 
         #endregion
 
@@ -1474,9 +1484,14 @@ namespace SWLOR.Game.Server.Service.CraftService
         DeepwatchBroth = 2263,
         MidnightInkNoodles = 2264,
         ShatterfinCurry = 2265,
+        QuietwatchJerky = 2266,
+        DustveilTravelCakes = 2267,
+        TombwalkerBroth = 2268,
+        SnowblindHuntersStew = 2269,
+        NightMarchReserve = 2270,
 
         // Farming supplies
-        NutrientSolution = 2270,
+        NutrientSolution = 2275,
         GrowthFertilizer = 2271,
         YieldFertilizer = 2272,
         QualityFertilizer = 2273,
@@ -3193,6 +3208,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         SalvagedApexGauntlets = 5046,
         SalvagedQuillVisor = 5047,
         SalvagedRhydelCuirass = 5048,
+        CopperTraceFuse = 5049,
+        BraidedTraceFuse = 5050,
+        PhaseTraceFuse = 5051,
+        CryoTraceFuse = 5052,
+        NullTraceFuse = 5053,
 
         #endregion
 
@@ -3209,6 +3229,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         TrapKit3 = 6008,
         TrapKit4 = 6009,
         TrapKit5 = 6010,
+        WhisperthornConcentrate = 6011,
+        GlassfangConcentrate = 6012,
+        TombsporeConcentrate = 6013,
+        RimevenomConcentrate = 6014,
+        NightrootConcentrate = 6015,
 
         #endregion
 

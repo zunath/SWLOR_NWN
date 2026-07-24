@@ -137,6 +137,7 @@ public class EconomyObtainabilityCoverageTests
             @"\.AddItemReward\(\s*""([^""]+)""",
             @"RefinedItemResref\s*=\s*""([^""]+)""",
             @"new\s+TerminalItem\([^,]+,\s*""([^""]+)""",
+            @"(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*""([^""]+)""",
             // Farming: crop yields and pristine variants are produced when harvesting a planter.
             @"\.Yield\(\s*""([^""]+)""",
             @"\.PristineResref\(\s*""([^""]+)""",
@@ -144,7 +145,12 @@ public class EconomyObtainabilityCoverageTests
         var compiled = literalPatterns.Select(p => new Regex(p)).ToArray();
 
         // Files whose bare string literals are all item resrefs (attribute-decorated registries).
-        var literalRegistries = new[] { "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs" };
+        var literalRegistries = new[]
+        {
+            "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs",
+            "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
+            "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs",
+        };
         var serverDir = Path.Combine(root, "SWLOR.Game.Server");
         foreach (var file in Directory.EnumerateFiles(serverDir, "*.cs", SearchOption.AllDirectories))
         {

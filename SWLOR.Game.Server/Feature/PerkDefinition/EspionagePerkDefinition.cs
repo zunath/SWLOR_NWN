@@ -40,16 +40,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.EspionageInfiltrator, PerkType.Stealth)
                 .Name("Stealth")
+                .Icon("ife_stealth1")
+                .AutoAddActionModeToHotBar(ActionMode.Stealth)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Stealth1)
                 .Description("Enter stealth, increasing Stealth by 5 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.Stealth, 5)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Stealth2)
                 .Description("Enter stealth, increasing Stealth by 10 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 15)
@@ -57,7 +57,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.Stealth, 10)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Stealth3)
                 .Description("Enter stealth, increasing Stealth by 15 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 28)
@@ -65,7 +64,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.Stealth, 15)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Stealth4)
                 .Description("Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)
@@ -110,31 +108,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SlicingTrait)
-                .Description("Can open tier 1 lockboxes.")
+                .Description("Can slice tier 1 lockboxes and terminals.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 8)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can open tier 2 lockboxes.")
+                .Description("Can slice tier 2 lockboxes and terminals.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 22)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can open tier 3 lockboxes. Lockbox opening is 20% faster.")
+                .Description("Can slice tier 3 lockboxes and terminals. Grants +1 trace during slicing.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 30)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can open tier 4 lockboxes. Lockbox opening is 30% faster.")
+                .Description("Can slice tier 4 lockboxes and terminals. Grants +2 trace during slicing.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 42)
                 .RequirementCharacterType(CharacterType.Standard)
 
                 .AddPerkLevel()
-                .Description("Can open tier 5 lockboxes. Lockbox opening is 40% faster.")
+                .Description("Can slice tier 5 lockboxes and terminals. Grants +3 trace during slicing.")
                 .Price(4)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 48);

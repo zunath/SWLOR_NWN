@@ -2683,13 +2683,48 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         CommandlineWorkStool = 430,
 
+        [Structure("Rustline Data Terminal",
+            "slc_rustterm",
+            "A weathered analysis terminal recovered from a sealed slicing schematic.",
+            true,
+            1)]
+        RustlineDataTerminal = 431,
+
+        [Structure("Cipherfile Cabinet",
+            "slc_ciphcab",
+            "A secure cabinet with integrated cipher controls.",
+            true,
+            1)]
+        CipherfileCabinet = 432,
+
+        [Structure("Listening Post Monitor",
+            "slc_listmon",
+            "A compact signals monitor built from a recovered clandestine design.",
+            true,
+            1)]
+        ListeningPostMonitor = 433,
+
+        [Structure("Ghost-Channel Console",
+            "slc_ghostcon",
+            "A cold-channel communications console with shielded storage.",
+            true,
+            1)]
+        GhostChannelConsole = 434,
+
+        [Structure("Blacksite Analysis Station",
+            "slc_blackstat",
+            "A rare analysis station intended for compartmentalized field work.",
+            true,
+            1)]
+        BlacksiteAnalysisStation = 435,
+
         [Structure("Planter Box",
             "planter_box",
             "A soil bed for growing a single crop. Used with the Agriculture skill.",
             true,
             0,
             PropertyType.Apartment | PropertyType.City | PropertyType.House | PropertyType.Lab)]
-        PlanterBox = 431,
+        PlanterBox = 436,
 
         [Structure("Hydroponic Rack",
             "hydro_rack",
@@ -2697,7 +2732,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0,
             PropertyType.Apartment | PropertyType.City | PropertyType.House | PropertyType.Lab)]
-        HydroponicRack = 432,
+        HydroponicRack = 437,
 
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",

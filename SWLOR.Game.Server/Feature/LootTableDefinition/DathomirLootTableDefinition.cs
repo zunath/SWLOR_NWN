@@ -327,7 +327,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("map_67", 2, 1, true)
                 .AddItem("map_68", 2, 1, true)
                 .AddItem("map_69", 2, 1, true)
-                .AddItem("emerald", 1, 1, true);
+                .AddItem("emerald", 1, 1, true)
+                .AddItem("lockbox_t5", 2, 1, true);
         }
 
         private void KwiShaman()

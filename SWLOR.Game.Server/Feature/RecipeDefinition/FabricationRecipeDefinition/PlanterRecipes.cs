@@ -20,14 +20,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Planter Box
             _builder.Create(RecipeType.PlanterBox, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Structure)
-                .Resref("structure_0431")
+                .Resref("structure_0436")
                 .Level(5)
                 .Component("const_parts", 2);
 
             // Hydroponic Rack
             _builder.Create(RecipeType.HydroponicRack, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Structure)
-                .Resref("structure_0432")
+                .Resref("structure_0437")
                 .Level(25)
                 .Component("const_parts", 3)
                 .Component("pow_supp_unit", 2);

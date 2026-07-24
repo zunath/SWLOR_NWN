@@ -267,7 +267,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("ruby", 99, 1, true)
                 .AddItem("map_72", 2, 1, true)
-                .AddItem("emerald", 1, 1, true);
+                .AddItem("emerald", 1, 1, true)
+                .AddItem("lockbox_t5", 2, 1, true);
         }
 
         private void Gizka()

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A nutrient-circulating growing rack which accelerates crop growth. Used with the Agriculture skill."
+      "0": "A tradeable property structure with +1 item storage and one standard structure enhancement slot when crafted."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A tradeable property structure with +1 item storage and one standard structure enhancement slot when crafted."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hydroponic Rack"
+      "0": "Cipherfile Cabinet"
     }
   },
   "ModelPart1": {

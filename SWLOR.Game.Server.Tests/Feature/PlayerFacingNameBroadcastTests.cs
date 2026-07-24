@@ -24,7 +24,7 @@ public class PlayerFacingNameBroadcastTests
         var moduleEnterHandlerIndex = normalizedSource.IndexOf("[NWNEventHandler(ScriptName.OnModuleEnter)]", StringComparison.Ordinal);
         var applyChannelNameIndex = normalizedSource.IndexOf("public static void ApplyCommsChannelName()", StringComparison.Ordinal);
         var applyChannelNameOverrideIndex = normalizedSource.IndexOf(
-            "PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, ColorToken.Orange(CommsChannelName));",
+            "PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);",
             StringComparison.Ordinal);
         var applyMessagePrefixOverrideIndex = normalizedSource.IndexOf(
             "PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);",
@@ -290,7 +290,7 @@ public class PlayerFacingNameBroadcastTests
             "TlkOverrides.cs"));
         tlkOverrideSource.Should().Contain("SetTlkOverride(10303, \"[Comms] \");");
         tlkOverrideSource.Should().Contain("SetTlkOverride(66751, \"Disabled\");");
-        tlkOverrideSource.Should().Contain("SetTlkOverride(66755, ColorToken.Orange(\"Comms\"));");
+        tlkOverrideSource.Should().Contain("SetTlkOverride(66755, \"Comms\");");
 
         var settingsDefinitionSource = File.ReadAllText(Path.Combine(
             root.FullName,

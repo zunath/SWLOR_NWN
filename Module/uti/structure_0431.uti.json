@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A soil bed for growing a single crop. Used with the Agriculture skill."
+      "0": "A tradeable property structure with +1 item storage and one standard structure enhancement slot when crafted."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A tradeable property structure with +1 item storage and one standard structure enhancement slot when crafted."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Planter Box"
+      "0": "Rustline Data Terminal"
     }
   },
   "ModelPart1": {

@@ -69,7 +69,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         PlayerStatusPortrait = 64,
         PlayerStatusPortraitSpace = 65,
         Techniques = 66,
-        Planter = 67,
+        Slicing = 67,
+        Planter = 68,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -7,11 +8,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SlicingDefinition : IGuiWindowDefinition
     {
-        // Slicing is a fixed-size window. Its view model restores these dimensions on every open
-        // so stale client geometry cannot leave the interface collapsed to a narrow title bar.
-        internal const float WindowWidth = 680f;
-        internal const float WindowHeight = 760f;
-        private const float TileSize = 72f;
+        internal const float WindowWidth = 560f;
+        internal const float WindowHeight = 650f;
+        private const float TileSize = 56f;
+        private const string HelpText =
+            "OBJECTIVE\n" +
+            "Create one continuous powered circuit from the yellow Entry socket to the red Core socket. " +
+            "Connected tiles glow yellow. You win as soon as power reaches the Core; decoy tiles do not need to be connected.\n\n" +
+            "CONTROLS\n" +
+            "- Click any unselected tile to select it. Selection is free and is shown by white brackets.\n" +
+            "- Click the selected tile again to rotate it clockwise. This costs 1 Trace.\n" +
+            "- Click a tile directly above, below, left, or right of the selected tile to swap them. This costs 2 Trace. " +
+            "The Entry and Core cannot be swapped.\n" +
+            "- Click any other non-adjacent tile to move the selection for free.\n" +
+            "There is no double-click action.\n\n" +
+            "TRACE AND FAILURE\n" +
+            "Trace is your action budget. Reach the Core before it runs out. Slicing rank, Lockpicking, and positive Perception " +
+            "can grant extra Trace. Once a rotation, swap, or tool effect is applied, the attempt is committed. Running out of Trace, closing, " +
+            "or aborting a committed attempt counts as a failure and raises the risk that the target is destroyed.\n\n" +
+            "TOOLS\n" +
+            "You may use one compatible slicing tool per attempt. Tools can reduce action costs, restore Trace, reveal route " +
+            "information, correct a tile, or rewind actions. Some tools require a selected tile.";
         private readonly GuiWindowBuilder<SlicingViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -19,71 +36,122 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Slicing)
                 .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("Slicing Interface")
-                .SetIsResizable(false)
+                .SetIsResizable(true)
                 .SetIsCollapsible(false)
                 .BindOnClosed(model => model.OnWindowClosed())
-                .AddColumn(column =>
+                .DefinePartialView(SlicingViewModel.HelpPartial, AddHelp)
+                .AddRow(wrapperRow =>
                 {
-                    column.AddRow(row =>
+                    // The board keeps its proven fixed row/button shape, while the outer group
+                    // scrolls when the player shrinks the resizable window below its content.
+                    wrapperRow.AddGroup(wrapper =>
                     {
-                        row.AddImage()
-                            .BindResref(model => model.ThemeBackground)
-                            .SetHeight(96f)
-                            .SetWidth(640f);
-                    });
-
-                    column.AddRow(row =>
-                    {
-                        row.AddLabel().BindText(model => model.TraceText).SetHeight(24f);
-                        row.AddLabel().BindText(model => model.IntegrityText).SetHeight(24f);
-                        row.AddLabel().BindText(model => model.FailureText).SetHeight(24f);
-                    });
-
-                    column.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Click a tile to select it. Click it again to rotate clockwise (1 trace), or click an adjacent tile to swap (2 trace).")
-                            .SetHeight(38f);
-                    });
-
-                    // Keep the board as five ordinary rows of five buttons. Previous list-based
-                    // layouts and the transposed row-of-columns layout collapse in the live NUI
-                    // client before the view model can populate their binds.
-                    for (var tileRow = 0; tileRow < 5; tileRow++)
-                    {
-                        var rowIndex = tileRow;
-                        column.AddRow(row => AddTileRow(row, rowIndex));
-                    }
-
-                    column.AddRow(row =>
-                    {
-                        row.AddButton().SetText("<").SetWidth(36f).SetHeight(34f)
-                            .BindIsEnabled(model => model.IsToolSelectionEnabled)
-                            .BindOnClicked(model => model.OnPreviousTool());
-                        row.AddLabel().BindText(model => model.ToolName).SetHeight(34f);
-                        row.AddButton().SetText(">").SetWidth(36f).SetHeight(34f)
-                            .BindIsEnabled(model => model.IsToolSelectionEnabled)
-                            .BindOnClicked(model => model.OnNextTool());
-                        row.AddButton().SetText("Activate Tool").SetWidth(130f).SetHeight(34f)
-                            .BindIsEnabled(model => model.IsToolActivationEnabled)
-                            .BindOnClicked(model => model.OnActivateTool());
-                    });
-
-                    column.AddRow(row =>
-                    {
-                        row.AddLabel().BindText(model => model.StatusText).SetHeight(36f);
-                    });
-
-                    column.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddButton().SetText("Abort").SetWidth(140f).SetHeight(38f)
-                            .BindOnClicked(model => model.OnAbort());
-                        row.AddSpacer();
+                        wrapper.SetShowBorder(false)
+                            .SetScrollbars(NuiScrollbars.Auto);
+                        wrapper.AddColumn(AddMainContent);
                     });
                 });
 
             return _builder.Build();
+        }
+
+        private static void AddMainContent(GuiColumn<SlicingViewModel> column)
+        {
+            column.AddRow(row =>
+            {
+                row.AddImage()
+                    .BindResref(model => model.ThemeBackground)
+                    .SetHeight(78f)
+                    .SetWidth(520f);
+            });
+
+            column.AddRow(row =>
+            {
+                row.AddLabel().BindText(model => model.TraceText).SetWidth(100f).SetHeight(28f);
+                row.AddLabel().BindText(model => model.IntegrityText).SetWidth(110f).SetHeight(28f);
+                row.AddLabel().BindText(model => model.FailureText).SetWidth(230f).SetHeight(28f);
+                row.AddButton()
+                    .SetText("?")
+                    .SetTooltip("How slicing works")
+                    .SetWidth(34f)
+                    .SetHeight(28f)
+                    .BindOnClicked(model => model.OnHelp());
+            });
+
+            column.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Select a tile. Click the selected tile again to rotate it (1 Trace), or click an adjacent tile to swap them (2 Trace).")
+                    .SetHeight(46f);
+            });
+
+            // Keep the board as five ordinary rows of five buttons. Previous list-based
+            // layouts and the transposed row-of-columns layout collapse in the live NUI
+            // client before the view model can populate their binds.
+            for (var tileRow = 0; tileRow < 5; tileRow++)
+            {
+                var rowIndex = tileRow;
+                column.AddRow(row => AddTileRow(row, rowIndex));
+            }
+
+            column.AddRow(row =>
+            {
+                row.AddButton().SetText("<").SetWidth(36f).SetHeight(34f)
+                    .BindIsEnabled(model => model.IsToolSelectionEnabled)
+                    .BindOnClicked(model => model.OnPreviousTool());
+                row.AddLabel().BindText(model => model.ToolName).SetHeight(34f);
+                row.AddButton().SetText(">").SetWidth(36f).SetHeight(34f)
+                    .BindIsEnabled(model => model.IsToolSelectionEnabled)
+                    .BindOnClicked(model => model.OnNextTool());
+                row.AddButton().SetText("Activate Tool").SetWidth(120f).SetHeight(34f)
+                    .BindIsEnabled(model => model.IsToolActivationEnabled)
+                    .BindOnClicked(model => model.OnActivateTool());
+            });
+
+            column.AddRow(row =>
+            {
+                row.AddLabel().BindText(model => model.StatusText).SetHeight(36f);
+            });
+
+            column.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddButton().SetText("Abort").SetWidth(140f).SetHeight(38f)
+                    .BindOnClicked(model => model.OnAbort());
+                row.AddSpacer();
+            });
+        }
+
+        private static void AddHelp(GuiGroup<SlicingViewModel> group)
+        {
+            group.SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.Auto);
+            group.AddColumn(column =>
+            {
+                column.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .SetText("How Slicing Works")
+                        .SetHeight(32f);
+                });
+                column.AddRow(row =>
+                {
+                    row.AddText()
+                        .SetText(HelpText)
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.Auto);
+                });
+                column.AddRow(row =>
+                {
+                    row.AddSpacer();
+                    row.AddButton()
+                        .SetText("Close")
+                        .SetWidth(120f)
+                        .SetHeight(36f)
+                        .BindOnClicked(model => model.OnCloseHelp());
+                    row.AddSpacer();
+                });
+            });
         }
 
         private static void AddTileRow(GuiRow<SlicingViewModel> row, int tileRow)

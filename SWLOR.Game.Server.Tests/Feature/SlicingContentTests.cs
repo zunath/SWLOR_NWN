@@ -209,7 +209,7 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingNuiLayout_UsesStaticScalarBoundGridAndRestoresGeometry()
+    public void SlicingNuiLayout_IsResizableScrollableAndUsesAStaticScalarBoundGrid()
     {
         var root = FindRepositoryRoot();
         var definition = File.ReadAllText(Path.Combine(
@@ -217,7 +217,10 @@ public class SlicingContentTests
         var viewModel = File.ReadAllText(Path.Combine(
             root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "SlicingViewModel.cs"));
 
-        definition.Should().Contain("private const float TileSize = 72f;");
+        definition.Should().Contain("private const float TileSize = 56f;");
+        definition.Should().Contain(".SetIsResizable(true)");
+        definition.Should().Contain("wrapper.SetShowBorder(false)");
+        definition.Should().Contain(".SetScrollbars(NuiScrollbars.Auto)");
         definition.Should().Contain("Keep the board as five ordinary rows of five buttons.");
         definition.Should().Contain("the transposed row-of-columns layout collapse");
         definition.Should().NotContain(".AddList(", "list templates collapse this particular live NUI window");
@@ -230,8 +233,7 @@ public class SlicingContentTests
         definition.Should().Contain(".SetHeight(TileSize)");
         definition.Should().Contain(".SetWidth(TileSize)");
 
-        viewModel.Should().Contain("RestoreFixedWindowGeometry();");
-        viewModel.Should().Contain("Keep this recovery local to Slicing; do not generalize it into Gui.");
+        viewModel.Should().NotContain("RestoreFixedWindowGeometry");
         viewModel.Should().Contain("var slot = row * 5 + column;");
         viewModel.Should().Contain("Set(image, $\"TileImage{slot}\");");
         viewModel.Should().NotContain("GuiBindingList<string> TileColumn");
@@ -242,6 +244,30 @@ public class SlicingContentTests
             typeof(SlicingViewModel).GetProperty($"TileImage{slot}").Should().NotBeNull();
             typeof(SlicingViewModel).GetProperty($"TileTooltip{slot}").Should().NotBeNull();
         }
+    }
+
+    [Test]
+    public void SlicingHelp_ExplainsTheObjectiveControlsAndTraceCosts()
+    {
+        var root = FindRepositoryRoot();
+        var definition = File.ReadAllText(Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "SlicingDefinition.cs"));
+        var viewModel = File.ReadAllText(Path.Combine(
+            root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "SlicingViewModel.cs"));
+
+        definition.Should().Contain(".SetText(\"?\")");
+        definition.Should().Contain(".BindOnClicked(model => model.OnHelp())");
+        definition.Should().Contain("Create one continuous powered circuit");
+        definition.Should().Contain("Click the selected tile again to rotate it clockwise. This costs 1 Trace.");
+        definition.Should().Contain("directly above, below, left, or right");
+        definition.Should().Contain("This costs 2 Trace.");
+        definition.Should().Contain("There is no double-click action.");
+        definition.Should().Contain("Once a rotation, swap, or tool effect is applied, the attempt is committed.");
+        definition.Should().Contain(".BindOnClicked(model => model.OnCloseHelp())");
+
+        viewModel.Should().Contain("public const string HelpPartial = \"SLICING_HELP\";");
+        viewModel.Should().Contain("ChangePartialView(\"_window_\", HelpPartial)");
+        viewModel.Should().Contain("ChangePartialView(\"_window_\", \"%%WINDOW_MAIN%%\")");
     }
 
     [Test]

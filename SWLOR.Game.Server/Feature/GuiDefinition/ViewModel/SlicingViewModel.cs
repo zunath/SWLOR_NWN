@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SlicingViewModel : GuiViewModelBase<SlicingViewModel, SlicingPayload>
     {
+        public const string HelpPartial = "SLICING_HELP";
+
         private readonly List<SlicingSession.EligibleSlicingTool> _tools = new();
         private int _toolIndex;
         private bool _suppressCloseFailure;
@@ -76,9 +78,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(SlicingPayload initialPayload)
         {
-            RestoreFixedWindowGeometry();
-            // The base view swap schedules its own zero-delay geometry redraw, so repair once more after it settles.
-            DelayCommand(0.0f, RestoreFixedWindowGeometry);
             _suppressCloseFailure = false;
             _toolIndex = 0;
             StatusText = string.Empty;
@@ -86,6 +85,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public Action OnTile(int row, int column) => () => ClickTile(row, column);
+        public Action OnHelp() => () => ChangePartialView("_window_", HelpPartial);
+        public Action OnCloseHelp() => () =>
+        {
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            Refresh();
+        };
 
         public Action OnPreviousTool() => () => ChangeTool(-1);
         public Action OnNextTool() => () => ChangeTool(1);
@@ -177,18 +182,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _toolIndex = (_toolIndex + direction + _tools.Count) % _tools.Count;
             RefreshToolDisplay();
-        }
-
-        private void RestoreFixedWindowGeometry()
-        {
-            // Keep this recovery local to Slicing; do not generalize it into Gui.
-            // A forced close can leave this reused fixed window with narrow client geometry.
-            var currentGeometry = Geometry;
-            Geometry = new GuiRectangle(
-                currentGeometry?.X ?? 0f,
-                currentGeometry?.Y ?? 0f,
-                SlicingDefinition.WindowWidth,
-                SlicingDefinition.WindowHeight);
         }
 
         private void Refresh()

@@ -249,10 +249,20 @@ Batch status:
 | 1 | Force, FirstAid, Leadership, Espionage, Armor, CombatAnalyzer, top-level, Vibroblade, HeavyVibroblade, TwinBlade, Vibroknife, Katar, Spear, Staff, Lightsaber, Saberstaff, Rifle, Pistol, Throwing, Devices | LIVE-VALIDATED (2026-07-24 full sweep: green) |
 | 2 | NPC, Mimicry, Beastmaster | LIVE-VALIDATED (2026-07-24 full sweep: green) |
 
-The ratchet's not-yet-covered list is now **empty**: every registered ability feat in the game has
-a behavior case. The remaining skips (17 total) are individual cases whose activation is gated on
-a real player client (beast taming/reviving/reward flows, non-self ally targets) - each carries a
-precise `SkipReason` and should be burned down if the harness ever gains a player/ally fixture.
+The ratchet's not-yet-covered list is now **empty**, and the full suite runs GREEN against a live
+server (37/37 tests; 688 cases: 677 passed, 0 failed, 11 skipped). Ally-target abilities are
+covered via `AbilityTargetKind.FriendlyCreature` (same-faction spawned ally), with fixture flags
+for dead targets (`TargetStartsDead`), party membership (`TargetJoinsCasterParty`, formed through
+the real associate-add pipeline), and pre-applied source-tracked status effects
+(`TargetSetupStatusEffectFactory`, source reassigned to the caster - Guarded tracking registers by
+the instance's source). The 11 remaining skips are the beast-management flows hard-gated on
+`GetIsPC` plus live player DB records; they genuinely require a connected client and each carries
+a precise `SkipReason`.
+
+Perk passives are behaviorally verified per level by `PerkLevelBehaviorEngineTests`: for every
+perk level declaring stat bonuses, an NPC holding that level must receive exactly the bonus the
+built data declares from `Perk.GetStatBonus` (expectations derive from the perk data itself), and
+a canary proves `Stat.GetStatAdjustment` consumes the contribution.
 
 To cover a new ability: add one `AbilityBehaviorCase` to its tree's `*AbilityBehaviors.cs` (create
 the source class for a brand-new tree and remove the tree from the ratchet's exemption list). Run

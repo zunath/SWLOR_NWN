@@ -8,14 +8,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SlicingDefinition : IGuiWindowDefinition
     {
-        private const string HelpButtonId = "slc_help";
-        private const string PreviousToolButtonId = "slc_tool_previous";
-        private const string NextToolButtonId = "slc_tool_next";
-        private const string ActivateToolButtonId = "slc_tool_activate";
-        private const string AbortButtonId = "slc_abort";
         internal const float WindowWidth = 560f;
         internal const float WindowHeight = 650f;
-        internal const float MinimumWindowWidth = 360f;
+        internal const float MinimumWindowWidth = 320f;
         internal const float MinimumWindowHeight = 240f;
         private const float TileSize = 56f;
         private const string HelpText =
@@ -68,46 +63,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             column.AddRow(row =>
             {
-                row.SetHeight(78f);
                 row.AddImage()
                     .BindResref(model => model.ThemeBackground)
-                    .SetAspect(NuiAspect.Fit)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                    .SetHeight(78f);
+                    .SetHeight(78f)
+                    // This is the proven width anchor for the entire static content canvas.
+                    // Removing it collapses the live NUI layout to the top-left corner.
+                    .SetWidth(520f);
             });
 
             column.AddRow(row =>
             {
-                row.SetHeight(30f);
                 row.AddLabel().BindText(model => model.TraceText).SetWidth(100f).SetHeight(28f);
-                row.AddLabel().BindText(model => model.IntegrityText).SetWidth(120f).SetHeight(28f);
-                row.AddSpacer();
-                AddHelpButton(row);
-            });
-            column.AddRow(row =>
-            {
-                row.SetHeight(30f);
-                row.AddText()
-                    .BindText(model => model.FailureText)
-                    .SetShowBorder(false)
-                    .SetScrollbars(NuiScrollbars.None)
-                    .SetHeight(28f);
+                row.AddLabel().BindText(model => model.IntegrityText).SetWidth(110f).SetHeight(28f);
+                row.AddLabel().BindText(model => model.FailureText).SetWidth(230f).SetHeight(28f);
+                row.AddButton()
+                    .SetText("?")
+                    .SetTooltip("How slicing works")
+                    .SetWidth(34f)
+                    .SetHeight(28f)
+                    .BindOnClicked(model => model.OnHelp());
             });
 
             column.AddRow(row =>
             {
-                row.SetHeight(40f);
+                row.SetHeight(64f);
                 row.AddText()
-                    .SetText("GOAL: Connect the amber START tile to the magenta GOAL tile.")
-                    .SetShowBorder(false)
-                    .SetScrollbars(NuiScrollbars.None);
-            });
-            column.AddRow(row =>
-            {
-                row.SetHeight(80f);
-                row.AddText()
-                    .SetText("Select any tile for free. Click it again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).")
+                    .SetText("GOAL: Connect amber START to magenta GOAL.\nClick a selected tile again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).")
                     .SetShowBorder(false)
                     .SetScrollbars(NuiScrollbars.None);
             });
@@ -123,73 +104,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             column.AddRow(row =>
             {
-                row.SetHeight(42f);
-                row.AddButton()
-                    .SetId(PreviousToolButtonId)
-                    .SetText("<")
-                    .SetWidth(36f)
-                    .SetHeight(34f)
+                row.AddButton().SetText("<").SetWidth(36f).SetHeight(34f)
                     .BindIsEnabled(model => model.IsToolSelectionEnabled)
                     .BindOnClicked(model => model.OnPreviousTool());
-                row.AddText()
-                    .BindText(model => model.ToolName)
-                    .SetShowBorder(false)
-                    .SetScrollbars(NuiScrollbars.None)
-                    .SetHeight(40f);
-                row.AddButton()
-                    .SetId(NextToolButtonId)
-                    .SetText(">")
-                    .SetWidth(36f)
-                    .SetHeight(34f)
+                row.AddLabel().BindText(model => model.ToolName).SetHeight(34f);
+                row.AddButton().SetText(">").SetWidth(36f).SetHeight(34f)
                     .BindIsEnabled(model => model.IsToolSelectionEnabled)
                     .BindOnClicked(model => model.OnNextTool());
-            });
-
-            column.AddRow(row =>
-            {
-                row.SetHeight(42f);
-                row.AddSpacer();
-                row.AddButton()
-                    .SetId(ActivateToolButtonId)
-                    .SetText("Activate Tool")
-                    .SetWidth(120f)
-                    .SetHeight(34f)
+                row.AddButton().SetText("Activate Tool").SetWidth(120f).SetHeight(34f)
                     .BindIsEnabled(model => model.IsToolActivationEnabled)
                     .BindOnClicked(model => model.OnActivateTool());
-                row.AddSpacer();
             });
 
             column.AddRow(row =>
             {
-                row.SetHeight(56f);
-                row.AddText()
-                    .BindText(model => model.StatusText)
-                    .SetShowBorder(false)
-                    .SetScrollbars(NuiScrollbars.None);
+                row.AddLabel().BindText(model => model.StatusText).SetHeight(36f);
             });
 
             column.AddRow(row =>
             {
                 row.AddSpacer();
-                row.AddButton()
-                    .SetId(AbortButtonId)
-                    .SetText("Abort")
-                    .SetWidth(140f)
-                    .SetHeight(38f)
+                row.AddButton().SetText("Abort").SetWidth(140f).SetHeight(38f)
                     .BindOnClicked(model => model.OnAbort());
                 row.AddSpacer();
             });
-        }
-
-        private static void AddHelpButton(GuiRow<SlicingViewModel> row)
-        {
-            row.AddButton()
-                .SetId(HelpButtonId)
-                .SetText("?")
-                .SetTooltip("How slicing works")
-                .SetWidth(34f)
-                .SetHeight(28f)
-                .BindOnClicked(model => model.OnHelp());
         }
 
         private static void AddHelp(GuiGroup<SlicingViewModel> group)
@@ -240,7 +178,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 var columnIndex = tileColumn;
                 var slot = tileRow * 5 + columnIndex;
                 row.AddButtonImage()
-                    .SetId($"slc_tile_{slot}")
                     .BindImageResref(Binding<string>($"TileImage{slot}"))
                     .BindTooltip(Binding<string>($"TileTooltip{slot}"))
                     .BindOnClicked(model => model.OnTile(tileRow, columnIndex))

@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             EnsureUsableWindowGeometry();
             // The base partial-view swap schedules its own zero-delay geometry redraw. Reapply the
-            // minimum afterward so a legacy title-bar-sized geometry cannot persist.
+            // minimum afterward so a legacy title-bar-sized geometry cannot lose a pixel and persist.
             DelayCommand(0.0f, EnsureUsableWindowGeometry);
             _suppressCloseFailure = false;
             _toolIndex = 0;
@@ -205,19 +205,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 current.Height >= SlicingDefinition.MinimumWindowHeight)
                 return;
 
-            // A title-bar-sized rectangle was persisted by earlier collapsing layouts. Restore
-            // the full default size in that case so the repaired body is immediately visible.
-            // Less severe undersizing is only clamped to the supported minimum.
-            var wasCollapsed = current.Width < 100f || current.Height < 100f;
             Geometry = new GuiRectangle(
                 current.X,
                 current.Y,
-                Math.Max(
-                    current.Width,
-                    wasCollapsed ? SlicingDefinition.WindowWidth : SlicingDefinition.MinimumWindowWidth),
-                Math.Max(
-                    current.Height,
-                    wasCollapsed ? SlicingDefinition.WindowHeight : SlicingDefinition.MinimumWindowHeight));
+                Math.Max(current.Width, SlicingDefinition.MinimumWindowWidth),
+                Math.Max(current.Height, SlicingDefinition.MinimumWindowHeight));
         }
 
         private void Refresh()

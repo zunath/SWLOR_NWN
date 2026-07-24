@@ -266,7 +266,7 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingNuiLayout_UsesANonCollapsingStaticFlexibleBodyWithWrappedText()
+    public void SlicingNuiLayout_UsesTheProvenFixedWidthCanvasWithWrappedText()
     {
         var root = FindRepositoryRoot();
         var definition = File.ReadAllText(Path.Combine(
@@ -280,21 +280,13 @@ public class SlicingContentTests
         definition.Should().Contain("wrapperRow.AddGroup(wrapper =>");
         definition.Should().Contain("wrapper.AddColumn(AddMainContent)");
         definition.Should().Contain(".SetScrollbars(NuiScrollbars.Auto)");
-        definition.Should().Contain(".SetAspect(NuiAspect.Fit)");
+        definition.Should().Contain(".SetWidth(520f)", "the image anchors the live NUI content canvas");
+        definition.Should().Contain("This is the proven width anchor for the entire static content canvas.");
         definition.Should().NotContain("ContentElement");
         definition.Should().NotContain("ContentDefaultPartial");
         definition.Should().NotContain("BuildMainContentLayout");
-        definition.Should().NotContain(".SetWidth(520f)", "the banner must flex with the static window body");
-        definition.Should().Contain(".SetText(\"GOAL: Connect the amber START tile to the magenta GOAL tile.\")");
-        definition.Should().Contain(".SetText(\"Select any tile for free. Click it again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).\")");
-        definition.Should().Contain(".BindText(model => model.FailureText)");
-        definition.Should().Contain(".BindText(model => model.ToolName)");
-        definition.Should().Contain(".BindText(model => model.StatusText)");
-        definition.Should().Contain(".SetId(HelpButtonId)");
-        definition.Should().Contain(".SetId(PreviousToolButtonId)");
-        definition.Should().Contain(".SetId(NextToolButtonId)");
-        definition.Should().Contain(".SetId(ActivateToolButtonId)");
-        definition.Should().Contain(".SetId(AbortButtonId)");
+        definition.Should().Contain(".SetText(\"GOAL: Connect amber START to magenta GOAL.\\nClick a selected tile again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).\")");
+        definition.Should().Contain("row.SetHeight(64f)");
         definition.Should().Contain("Keep the board as five ordinary rows of five buttons.");
         definition.Should().Contain("the transposed row-of-columns layout collapse");
         definition.Should().NotContain(".AddList(", "list templates collapse this particular live NUI window");
@@ -304,7 +296,6 @@ public class SlicingContentTests
         definition.Should().NotContain("row.AddColumn(", "nested board columns collapse in the live NUI client");
         definition.Should().NotContain(".BindIsVisible(", "all 25 fixed cells must participate in initial layout");
         definition.Should().Contain(".BindOnClicked(model => model.OnTile(tileRow, columnIndex))");
-        definition.Should().Contain(".SetId($\"slc_tile_{slot}\")");
         definition.Should().Contain(".SetHeight(TileSize)");
         definition.Should().Contain(".SetWidth(TileSize)");
 
@@ -404,7 +395,7 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingWindowGeometry_RecoversCollapsedAndUndersizedWindowsWithoutResettingNormalResizes()
+    public void SlicingWindowGeometry_RecoversLegacyCollapsedSizeWithoutResettingNormalResizes()
     {
         var viewModel = new SlicingViewModel
         {
@@ -415,15 +406,7 @@ public class SlicingContentTests
 
         viewModel.Geometry.X.Should().Be(17f);
         viewModel.Geometry.Y.Should().Be(23f);
-        viewModel.Geometry.Width.Should().Be(560f);
-        viewModel.Geometry.Height.Should().Be(650f);
-
-        viewModel.Geometry = new GuiRectangle(19f, 27f, 200f, 150f);
-        InvokeViewModelMethod<object>("EnsureUsableWindowGeometry", viewModel);
-
-        viewModel.Geometry.X.Should().Be(19f);
-        viewModel.Geometry.Y.Should().Be(27f);
-        viewModel.Geometry.Width.Should().Be(360f);
+        viewModel.Geometry.Width.Should().Be(320f);
         viewModel.Geometry.Height.Should().Be(240f);
 
         viewModel.Geometry = new GuiRectangle(29f, 31f, 440f, 350f);

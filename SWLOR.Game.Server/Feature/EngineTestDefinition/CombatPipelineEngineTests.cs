@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Service.EngineTestService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.EngineTestDefinition
 {
@@ -21,6 +22,15 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
             var target = ctx.SpawnCreature("nw_rat001", 2f, 0f);
             ctx.MakeHostile(target);
 
+            // A large temporary-HP buffer keeps the 5-HP rat alive even if arena bystanders
+            // engage it - a dead target before our attacker's first credited hit would
+            // otherwise time this test out.
+            ApplyEffectToObject(
+                DurationType.Temporary,
+                EffectTemporaryHitpoints(1000),
+                target,
+                3600f);
+
             var startingHP = GetCurrentHitPoints(target);
 
             AssignCommand(attacker, () => ActionAttack(target));
@@ -29,12 +39,22 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
             // placed creatures that may also engage a Hostile-faction target. Requiring the
             // spawned attacker to be the last damager proves the damage came through our
             // commanded attack rather than a bystander.
-            await ctx.WaitUntilAsync(
-                () => GetIsObjectValid(target) &&
-                      GetCurrentHitPoints(target) < startingHP &&
-                      GetLastDamager(target) == attacker,
-                90f,
-                "the commanded attacker's damage to lower the target's hit points below its starting value");
+            try
+            {
+                await ctx.WaitUntilAsync(
+                    () => GetIsObjectValid(target) &&
+                          GetCurrentHitPoints(target) < startingHP &&
+                          GetLastDamager(target) == attacker,
+                    90f,
+                    "the commanded attacker's damage to lower the target's hit points below its starting value");
+            }
+            catch (EngineTestAssertionException ex)
+            {
+                throw new EngineTestAssertionException(
+                    $"{ex.Message} (targetValid={GetIsObjectValid(target)}, targetHP={GetCurrentHitPoints(target)}/{startingHP}, " +
+                    $"lastDamagerIsAttacker={GetLastDamager(target) == attacker}, distance={GetDistanceBetween(attacker, target)}, " +
+                    $"attackerAction={GetCurrentAction(attacker)})");
+            }
         }
     }
 }

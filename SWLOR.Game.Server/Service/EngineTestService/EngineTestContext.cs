@@ -180,6 +180,23 @@ namespace SWLOR.Game.Server.Service.EngineTestService
                 $"item '{itemResref}' to be created in the creature's inventory");
             await NwTask.NextFrame();
 
+            // The equip validator cancels equips into an occupied slot (the swap path ends in
+            // SkipEvent), so a caster that spawned armed must empty the hand first.
+            var existing = GetItemInSlot(slot, creature);
+            if (GetIsObjectValid(existing))
+            {
+                AssignCommand(creature, () =>
+                {
+                    ClearAllActions();
+                    ActionUnequipItem(existing);
+                });
+                await WaitUntilAsync(
+                    () => GetItemInSlot(slot, creature) != existing,
+                    timeoutSeconds,
+                    $"the previously equipped item to leave slot {slot}");
+                await NwTask.NextFrame();
+            }
+
             AssignCommand(creature, () =>
             {
                 ClearAllActions();

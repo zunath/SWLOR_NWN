@@ -317,6 +317,9 @@ public class SlicingTests
         validateAction.Should().Contain("RemoveSession(session);");
         swap.IndexOf("Entry and core sockets cannot be displaced.", StringComparison.Ordinal)
             .Should().BeLessThan(swap.IndexOf("GetActionCost", StringComparison.Ordinal));
+        swap.Should().Contain("Choose a tile directly above, below, left, or right of the selected tile.");
+        swap.Should().NotContain("message = \"Tile selected.\";",
+            "invalid swap destinations must not silently turn into selection changes");
         rotate.IndexOf("START and GOAL sockets are fixed", StringComparison.Ordinal)
             .Should().BeLessThan(rotate.IndexOf("GetActionCost", StringComparison.Ordinal));
         source.Should().Contain("Slicing.GetBoard(tier, boardNumber)");

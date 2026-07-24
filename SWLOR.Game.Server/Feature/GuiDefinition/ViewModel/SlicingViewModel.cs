@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private readonly List<SlicingSession.EligibleSlicingTool> _tools = new();
         private int _toolIndex;
+        private bool _isSwapMode;
         private bool _suppressCloseFailure;
 
         public string ThemeBackground { get => Get<string>(); set => Set(value); }
@@ -20,8 +21,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string IntegrityText { get => Get<string>(); set => Set(value); }
         public string FailureText { get => Get<string>(); set => Set(value); }
         public string BoardText { get => Get<string>(); set => Set(value); }
+        public string SwapButtonText { get => Get<string>(); set => Set(value); }
         public string ToolName { get => Get<string>(); set => Set(value); }
         public string StatusText { get => Get<string>(); set => Set(value); }
+        public bool IsSwapEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsToolSelectionEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsToolActivationEnabled { get => Get<bool>(); set => Set(value); }
 
@@ -85,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DelayCommand(0.0f, EnsureUsableWindowGeometry);
             _suppressCloseFailure = false;
             _toolIndex = 0;
+            _isSwapMode = false;
             StatusText = string.Empty;
             Refresh();
         }
@@ -99,6 +103,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnPreviousTool() => () => ChangeTool(-1);
         public Action OnNextTool() => () => ChangeTool(1);
+
+        public Action OnSwap() => () =>
+        {
+            var session = SlicingSession.Get(Player);
+            if (session == null)
+            {
+                CloseWindow();
+                return;
+            }
+
+            if (_isSwapMode)
+            {
+                _isSwapMode = false;
+                StatusText = "Swap cancelled.";
+                Refresh();
+                return;
+            }
+
+            if (!CanBeginSwap(session))
+            {
+                StatusText = session.SelectedIndex < 0
+                    ? "Select a movable tile first."
+                    : "START and GOAL sockets are fixed and cannot be swapped.";
+                Refresh();
+                return;
+            }
+
+            _isSwapMode = true;
+            StatusText = $"Swap armed for Tile {session.SelectedIndex + 1}. Choose a directly adjacent tile.";
+            Refresh();
+        };
 
         public Action OnActivateTool() => () =>
         {
@@ -160,20 +195,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (row >= session.Board.Height || column >= session.Board.Width || index >= session.Board.Tiles.Count)
                 return;
 
+            var action = DetermineTileClickAction(
+                _isSwapMode,
+                session.SelectedIndex,
+                index,
+                session.SelectedIndex >= 0 && Slicing.AreAdjacent(session.Board, session.SelectedIndex, index));
+
             string message;
-            if (session.SelectedIndex == index)
+            switch (action)
             {
-                SlicingSession.RotateSelected(Player, out message);
-            }
-            else if (session.SelectedIndex >= 0 && Slicing.AreAdjacent(session.Board, session.SelectedIndex, index))
-            {
-                SlicingSession.SwapSelectedWith(Player, index, out message);
-            }
-            else
-            {
-                SlicingSession.SelectTile(Player, index, out message);
-                if (string.IsNullOrWhiteSpace(message))
-                    message = "Tile selected.";
+                case TileClickAction.Rotate:
+                    SlicingSession.RotateSelected(Player, out message);
+                    break;
+                case TileClickAction.Swap:
+                    if (SlicingSession.SwapSelectedWith(Player, index, out message))
+                        _isSwapMode = false;
+                    break;
+                case TileClickAction.InvalidSwap:
+                    message = index == session.SelectedIndex
+                        ? "Choose a different tile directly above, below, left, or right, or click Cancel Swap."
+                        : "That tile is not directly adjacent. Choose another tile or click Cancel Swap.";
+                    break;
+                case TileClickAction.Select:
+                    SlicingSession.SelectTile(Player, index, out message);
+                    if (string.IsNullOrWhiteSpace(message))
+                        message = $"Tile {index + 1} selected.";
+                    break;
+                default:
+                    message = "That tile action is invalid.";
+                    break;
             }
 
             StatusText = message;
@@ -225,6 +275,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var failureNumber = SlicingSession.GetFailures(session.Target) + 1;
             FailureText = $"Failure {failureNumber}: {Slicing.GetDestructionChance(failureNumber)}% break risk";
             BoardText = $"BOARD ID: {session.Board.BoardId} - include this ID when reporting unexpected board behavior.";
+            SwapButtonText = _isSwapMode ? "Cancel Swap" : "Swap Tile (2 Trace)";
+            IsSwapEnabled = _isSwapMode || CanBeginSwap(session);
 
             var powered = Slicing.GetPoweredIndices(session.Board);
             for (var row = 0; row < 5; row++)
@@ -251,6 +303,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_toolIndex >= _tools.Count)
                 _toolIndex = 0;
             RefreshToolDisplay();
+        }
+
+        private static bool CanBeginSwap(SlicingSession.ActiveSlicingSession session)
+        {
+            return session.SelectedIndex >= 0 &&
+                   session.SelectedIndex < session.Board.Tiles.Count &&
+                   session.Board.Tiles[session.SelectedIndex].Type is not
+                       (SlicingTileType.Entry or SlicingTileType.Core);
+        }
+
+        private static TileClickAction DetermineTileClickAction(
+            bool isSwapMode,
+            int selectedIndex,
+            int clickedIndex,
+            bool isAdjacent)
+        {
+            if (isSwapMode)
+                return selectedIndex >= 0 && clickedIndex != selectedIndex && isAdjacent
+                    ? TileClickAction.Swap
+                    : TileClickAction.InvalidSwap;
+
+            return selectedIndex == clickedIndex
+                ? TileClickAction.Rotate
+                : TileClickAction.Select;
         }
 
         private void RefreshToolDisplay()
@@ -367,6 +443,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _suppressCloseFailure = true;
             Gui.TogglePlayerWindow(Player, GuiWindowType.Slicing);
+        }
+
+        private enum TileClickAction
+        {
+            Select,
+            Rotate,
+            Swap,
+            InvalidSwap
         }
     }
 }

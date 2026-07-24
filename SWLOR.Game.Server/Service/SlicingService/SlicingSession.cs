@@ -203,11 +203,15 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 message = "Select the first tile before choosing an adjacent tile.";
                 return false;
             }
+            if (secondIndex < 0 || secondIndex >= session.Board.Tiles.Count)
+            {
+                message = "That circuit tile is invalid.";
+                return false;
+            }
             if (!Slicing.AreAdjacent(session.Board, session.SelectedIndex, secondIndex))
             {
-                session.SelectedIndex = secondIndex;
-                message = "Tile selected.";
-                return true;
+                message = "Choose a tile directly above, below, left, or right of the selected tile.";
+                return false;
             }
 
             if (session.Board.Tiles[session.SelectedIndex].Type is SlicingTileType.Entry or SlicingTileType.Core ||

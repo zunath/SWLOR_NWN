@@ -285,7 +285,7 @@ public class SlicingContentTests
         definition.Should().NotContain("ContentElement");
         definition.Should().NotContain("ContentDefaultPartial");
         definition.Should().NotContain("BuildMainContentLayout");
-        definition.Should().Contain(".SetText(\"GOAL: Connect amber START to magenta GOAL.\\nClick a selected tile again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).\")");
+        definition.Should().Contain(".SetText(\"GOAL: Connect amber START to magenta GOAL.\\nClick selected again to rotate (1 Trace). To swap (2 Trace), click Swap Tile, then an adjacent tile.\")");
         definition.Should().Contain("row.SetHeight(64f)");
         definition.Should().Contain("Keep the board as five ordinary rows of five buttons.");
         definition.Should().Contain("the transposed row-of-columns layout collapse");
@@ -298,6 +298,9 @@ public class SlicingContentTests
         definition.Should().Contain(".BindOnClicked(model => model.OnTile(tileRow, columnIndex))");
         definition.Should().Contain(".SetHeight(TileSize)");
         definition.Should().Contain(".SetWidth(TileSize)");
+        definition.Should().Contain(".BindText(model => model.SwapButtonText)");
+        definition.Should().Contain(".BindIsEnabled(model => model.IsSwapEnabled)");
+        definition.Should().Contain(".BindOnClicked(model => model.OnSwap())");
 
         viewModel.Should().NotContain("RestoreFixedWindowGeometry");
         viewModel.Should().Contain("EnsureUsableWindowGeometry");
@@ -331,9 +334,12 @@ public class SlicingContentTests
         definition.Should().Contain(".BindText(model => model.BoardText)");
         definition.Should().Contain("amber START / Entry tile to the magenta GOAL / Core tile");
         definition.Should().Contain("bright diamond outline");
+        definition.Should().Contain("Click any different tile to select it, including an adjacent tile.");
         definition.Should().Contain("Click the selected tile again to rotate it clockwise. This costs 1 Trace.");
+        definition.Should().Contain("click Swap Tile, then click a tile directly above, below, left, or right.");
         definition.Should().Contain("directly above, below, left, or right");
         definition.Should().Contain("This costs 2 Trace.");
+        definition.Should().Contain("Click Cancel Swap if you change your mind.");
         definition.Should().Contain("START and GOAL are fixed sockets; they cannot be rotated or swapped.");
         definition.Should().Contain("There is no double-click action.");
         definition.Should().Contain("A rotation or swap commits the attempt.");
@@ -349,6 +355,48 @@ public class SlicingContentTests
         viewModel.Should().Contain("ChangeView(\"%%WINDOW_MAIN%%\")");
         viewModel.Should().Contain("UpdatePropertyFromClient(nameof(Geometry));");
         viewModel.Should().Contain("ChangePartialView(\"_window_\", partialName);");
+    }
+
+    [Test]
+    public void SlicingTileClicks_SelectAdjacentTilesUnlessSwapModeIsExplicitlyArmed()
+    {
+        DetermineTileClickAction(false, -1, 0, false).Should().Be("Select",
+            "the first click selects a tile without spending Trace");
+        DetermineTileClickAction(false, 0, 0, false).Should().Be("Rotate",
+            "repeated clicks on the selected tile continue to rotate it");
+        DetermineTileClickAction(false, 0, 1, true).Should().Be("Select",
+            "the next click on a different adjacent tile must change selection without spending Trace");
+        DetermineTileClickAction(false, 1, 1, false).Should().Be("Rotate",
+            "the newly selected tile rotates when clicked again");
+        DetermineTileClickAction(true, 0, 1, true).Should().Be("Swap",
+            "an adjacent click swaps only after the player explicitly arms swap mode");
+        DetermineTileClickAction(true, 0, 0, false).Should().Be("InvalidSwap",
+            "the selected tile is not a swap destination");
+        DetermineTileClickAction(true, 0, 2, false).Should().Be("InvalidSwap",
+            "an invalid swap target must not silently change selection or spend Trace");
+    }
+
+    [Test]
+    public void SlicingSwapMode_CanOnlyBeArmedForMovableTiles()
+    {
+        var board = Slicing.GetBoard(1, 53);
+        var session = new SlicingSession.ActiveSlicingSession
+        {
+            Board = board,
+            SelectedIndex = -1
+        };
+
+        InvokeViewModelMethod<bool>("CanBeginSwap", null, session).Should().BeFalse();
+
+        session.SelectedIndex = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Entry);
+        InvokeViewModelMethod<bool>("CanBeginSwap", null, session).Should().BeFalse();
+
+        session.SelectedIndex = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Core);
+        InvokeViewModelMethod<bool>("CanBeginSwap", null, session).Should().BeFalse();
+
+        session.SelectedIndex = board.Tiles.FindIndex(tile =>
+            tile.Type is not SlicingTileType.Entry and not SlicingTileType.Core);
+        InvokeViewModelMethod<bool>("CanBeginSwap", null, session).Should().BeTrue();
     }
 
     [Test]
@@ -475,5 +523,20 @@ public class SlicingContentTests
                     (instance == null ? BindingFlags.Static : BindingFlags.Instance);
         var method = typeof(SlicingViewModel).GetMethod(name, flags)!;
         return (T)method.Invoke(instance, arguments)!;
+    }
+
+    private static string DetermineTileClickAction(
+        bool isSwapMode,
+        int selectedIndex,
+        int clickedIndex,
+        bool isAdjacent)
+    {
+        return InvokeViewModelMethod<object>(
+            "DetermineTileClickAction",
+            null,
+            isSwapMode,
+            selectedIndex,
+            clickedIndex,
+            isAdjacent).ToString()!;
     }
 }

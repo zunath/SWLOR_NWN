@@ -18,11 +18,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Create one continuous powered circuit from the amber START / Entry tile to the magenta GOAL / Core tile. " +
             "Connected tiles glow yellow. You win as soon as power reaches the Core; decoy tiles do not need to be connected.\n\n" +
             "CONTROLS\n" +
-            "- Click any unselected tile to select it. Selection is free and is shown by a bright diamond outline.\n" +
+            "- Click any different tile to select it, including an adjacent tile. Selection is free and is shown by a bright diamond outline.\n" +
             "- Click the selected tile again to rotate it clockwise. This costs 1 Trace.\n" +
-            "- Click a tile directly above, below, left, or right of the selected tile to swap them. This costs 2 Trace. " +
+            "- To swap, select a movable tile, click Swap Tile, then click a tile directly above, below, left, or right. This costs 2 Trace. " +
+            "Click Cancel Swap if you change your mind. " +
             "START and GOAL are fixed sockets; they cannot be rotated or swapped.\n" +
-            "- Click any other non-adjacent tile to move the selection for free.\n" +
             "There is no double-click action.\n\n" +
             "TRACE AND FAILURE\n" +
             "Trace is your action budget. Reach the Core before it runs out. Slicing rank, Lockpicking, and positive Perception can grant extra Trace. " +
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 row.SetHeight(64f);
                 row.AddText()
-                    .SetText("GOAL: Connect amber START to magenta GOAL.\nClick a selected tile again to rotate (1 Trace), or click an adjacent tile to swap (2 Trace).")
+                    .SetText("GOAL: Connect amber START to magenta GOAL.\nClick selected again to rotate (1 Trace). To swap (2 Trace), click Swap Tile, then an adjacent tile.")
                     .SetShowBorder(false)
                     .SetScrollbars(NuiScrollbars.None);
             });
@@ -101,6 +101,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 var rowIndex = tileRow;
                 column.AddRow(row => AddTileRow(row, rowIndex));
             }
+
+            column.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddButton()
+                    .BindText(model => model.SwapButtonText)
+                    .SetTooltip("Arm a deliberate swap, then choose a directly adjacent tile")
+                    .SetWidth(160f)
+                    .SetHeight(34f)
+                    .BindIsEnabled(model => model.IsSwapEnabled)
+                    .BindOnClicked(model => model.OnSwap());
+                row.AddSpacer();
+            });
 
             column.AddRow(row =>
             {

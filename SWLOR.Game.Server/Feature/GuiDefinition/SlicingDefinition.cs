@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "- Click any unselected tile to select it. Selection is free and is shown by a bright diamond outline.\n" +
             "- Click the selected tile again to rotate it clockwise. This costs 1 Trace.\n" +
             "- Click a tile directly above, below, left, or right of the selected tile to swap them. This costs 2 Trace. " +
-            "The Entry and Core cannot be swapped.\n" +
+            "START and GOAL are fixed sockets; they cannot be rotated or swapped.\n" +
             "- Click any other non-adjacent tile to move the selection for free.\n" +
             "There is no double-click action.\n\n" +
             "TRACE AND FAILURE\n" +
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             column.AddRow(row =>
             {
                 row.AddLabel()
-                    .SetText("START -> GOAL: connect the amber Entry to the magenta Core. Click the selected tile again to rotate (1 Trace), or an adjacent tile to swap (2 Trace).")
+                    .SetText("START -> GOAL: connect the fixed amber Entry to the fixed magenta Core. Rotate circuit tiles (1 Trace) or swap adjacent tiles (2 Trace).")
                     .SetHeight(46f);
             });
 

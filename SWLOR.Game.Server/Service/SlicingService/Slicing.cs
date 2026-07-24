@@ -62,7 +62,9 @@ namespace SWLOR.Game.Server.Service.SlicingService
                         ? SlicingTileType.Core
                         : TypeForConnections(connections);
                 var solutionOrientation = FindOrientation(type, connections);
-                var scrambleSteps = random.Next(1, 4);
+                var scrambleSteps = type is SlicingTileType.Entry or SlicingTileType.Core
+                    ? 0
+                    : random.Next(1, 4);
 
                 board.Tiles[index] = new SlicingTile
                 {
@@ -75,12 +77,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             }
 
             ApplyDeterministicSwaps(board, route, rule.SwapCount, random);
-
-            // A decoy can occasionally complete an unintended path after scrambling.
-            // Break that path at the fixed entry socket without changing the authored solution.
-            var entry = board.Tiles.FindIndex(x => x.Type == SlicingTileType.Entry);
-            for (var turn = 0; turn < 3 && IsSolved(board); turn++)
-                RotateClockwise(board, entry);
+            EnsureMeaningfulStartingState(board);
 
             var rotationCost = board.Tiles
                 .Where(x => x.SolutionIndex >= 0)
@@ -128,6 +125,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
         public static bool RotateClockwise(SlicingBoard board, int index)
         {
             if (!IsValidIndex(board, index))
+                return false;
+            if (board.Tiles[index].Type is SlicingTileType.Entry or SlicingTileType.Core)
                 return false;
 
             board.Tiles[index].Orientation = (board.Tiles[index].Orientation + 1) % 4;
@@ -200,6 +199,39 @@ namespace SWLOR.Game.Server.Service.SlicingService
             return core >= 0 && GetPoweredIndices(board).Contains(core);
         }
 
+        public static bool CanSolveWithSingleAction(SlicingBoard board)
+        {
+            for (var index = 0; index < board.Tiles.Count; index++)
+            {
+                if (board.Tiles[index].Type is not (
+                        SlicingTileType.Straight or
+                        SlicingTileType.Corner or
+                        SlicingTileType.Junction))
+                    continue;
+
+                var rotated = board.Clone();
+                if (RotateClockwise(rotated, index) && IsSolved(rotated))
+                    return true;
+            }
+
+            for (var first = 0; first < board.Tiles.Count; first++)
+            {
+                for (var second = first + 1; second < board.Tiles.Count; second++)
+                {
+                    if (!AreAdjacent(board, first, second) ||
+                        board.Tiles[first].Type is SlicingTileType.Entry or SlicingTileType.Core ||
+                        board.Tiles[second].Type is SlicingTileType.Entry or SlicingTileType.Core)
+                        continue;
+
+                    var swapped = board.Clone();
+                    if (SwapAdjacent(swapped, first, second) && IsSolved(swapped))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         public static SlicingConnection GetConnections(SlicingTile tile)
         {
             var baseConnections = tile.Type switch
@@ -264,6 +296,35 @@ namespace SWLOR.Game.Server.Service.SlicingService
                     (board.Tiles[candidate.SecondIndex], board.Tiles[candidate.FirstIndex]);
                 board.SolutionSwaps.Insert(0, candidate);
             }
+        }
+
+        private static void EnsureMeaningfulStartingState(SlicingBoard board)
+        {
+            if (!IsSolved(board) && !CanSolveWithSingleAction(board))
+                return;
+
+            var adjustableIndices = board.Tiles
+                .Select((tile, index) => (tile, index))
+                .Where(x => x.tile.Type is
+                    SlicingTileType.Straight or
+                    SlicingTileType.Corner or
+                    SlicingTileType.Junction)
+                .OrderByDescending(x => x.tile.SolutionIndex >= 0)
+                .Select(x => x.index)
+                .ToList();
+
+            foreach (var index in adjustableIndices)
+            {
+                for (var turn = 0; turn < 3; turn++)
+                {
+                    RotateClockwise(board, index);
+                    if (!IsSolved(board) && !CanSolveWithSingleAction(board))
+                        return;
+                }
+            }
+
+            throw new InvalidOperationException(
+                $"Unable to generate a meaningful tier {board.Tier} slicing board for seed {board.Seed}.");
         }
 
         private static SlicingTile CreateDecoy(System.Random random)

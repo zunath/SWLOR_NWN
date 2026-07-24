@@ -165,6 +165,11 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 message = "Select a tile first.";
                 return false;
             }
+            if (session.Board.Tiles[session.SelectedIndex].Type is SlicingTileType.Entry or SlicingTileType.Core)
+            {
+                message = "START and GOAL sockets are fixed and cannot be rotated.";
+                return false;
+            }
 
             var cost = GetActionCost(session, SlicingToolType.RatchetBypassPin, 1, out var consumedTool);
             if (!PrepareAction(session, cost, out message))

@@ -21,7 +21,12 @@ public class SlicingTests
         board.Tiles.Should().HaveCount(width * height);
         board.SolutionSwaps.Should().HaveCount(swaps);
         board.BaseTrace.Should().BeGreaterThan(board.SolutionActionCost);
+        board.SolutionActionCost.Should().BeGreaterThan(1);
         Slicing.IsSolved(board).Should().BeFalse();
+        Slicing.CanSolveWithSingleAction(board).Should().BeFalse();
+        board.Tiles
+            .Where(tile => tile.Type is SlicingTileType.Entry or SlicingTileType.Core)
+            .Should().OnlyContain(tile => tile.Orientation == tile.SolutionOrientation);
     }
 
     [TestCaseSource(nameof(TiersAndSeeds))]
@@ -32,6 +37,10 @@ public class SlicingTests
 
         first.Tiles.Select(x => (x.Type, x.Orientation, x.SolutionIndex, x.RouteOrder, x.SolutionOrientation))
             .Should().Equal(second.Tiles.Select(x => (x.Type, x.Orientation, x.SolutionIndex, x.RouteOrder, x.SolutionOrientation)));
+        first.Tiles
+            .Where(tile => tile.Type is SlicingTileType.Entry or SlicingTileType.Core)
+            .Should().OnlyContain(tile => tile.Orientation == tile.SolutionOrientation);
+        Slicing.CanSolveWithSingleAction(first).Should().BeFalse();
 
         var spent = 0;
         foreach (var swap in first.SolutionSwaps)
@@ -99,6 +108,76 @@ public class SlicingTests
         board.Tiles[swap.SecondIndex].IsRouteRevealed.Should().BeTrue();
         board.Tiles[swap.SecondIndex].IsOrientationRevealed.Should().BeTrue();
         board.Clone().Tiles[swap.SecondIndex].IsRouteRevealed.Should().BeTrue("rewind snapshots clone tile reveal state");
+    }
+
+    [Test]
+    public void FixedEndpoints_CannotRotate()
+    {
+        var board = Slicing.BuildBoard(1, 982451653);
+        var entry = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Entry);
+        var core = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Core);
+        var entryOrientation = board.Tiles[entry].Orientation;
+        var coreOrientation = board.Tiles[core].Orientation;
+
+        Slicing.RotateClockwise(board, entry).Should().BeFalse();
+        Slicing.RotateClockwise(board, core).Should().BeFalse();
+        board.Tiles[entry].Orientation.Should().Be(entryOrientation);
+        board.Tiles[core].Orientation.Should().Be(coreOrientation);
+    }
+
+    [Test]
+    public void SingleActionDetection_IgnoresFixedCoreRotationButFindsCircuitRotation()
+    {
+        var coreOnlyBoard = new SlicingBoard
+        {
+            Width = 2,
+            Height = 1,
+            Tiles =
+            {
+                new SlicingTile { Type = SlicingTileType.Entry, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Core, Orientation = 2 }
+            }
+        };
+        var circuitBoard = new SlicingBoard
+        {
+            Width = 3,
+            Height = 1,
+            Tiles =
+            {
+                new SlicingTile { Type = SlicingTileType.Entry, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Straight, Orientation = 0 },
+                new SlicingTile { Type = SlicingTileType.Core, Orientation = 3 }
+            }
+        };
+
+        Slicing.CanSolveWithSingleAction(coreOnlyBoard).Should().BeFalse(
+            "GOAL rotation is not a legal action even when it would connect the circuit");
+        Slicing.CanSolveWithSingleAction(circuitBoard).Should().BeTrue();
+        Slicing.RotateClockwise(circuitBoard, 1).Should().BeTrue();
+        Slicing.IsSolved(circuitBoard).Should().BeTrue();
+    }
+
+    [Test]
+    public void SingleActionDetection_FindsSolvingAdjacentSwap()
+    {
+        var board = new SlicingBoard
+        {
+            Width = 3,
+            Height = 2,
+            Tiles =
+            {
+                new SlicingTile { Type = SlicingTileType.Entry, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Blocker },
+                new SlicingTile { Type = SlicingTileType.Core, Orientation = 3 },
+                new SlicingTile { Type = SlicingTileType.Blocker },
+                new SlicingTile { Type = SlicingTileType.Straight, Orientation = 1 },
+                new SlicingTile { Type = SlicingTileType.Blocker }
+            }
+        };
+
+        Slicing.CanSolveWithSingleAction(board).Should().BeTrue();
+        Slicing.SwapAdjacent(board, 1, 4).Should().BeTrue();
+        Slicing.IsSolved(board).Should().BeTrue();
     }
 
     [Test]
@@ -184,6 +263,7 @@ public class SlicingTests
             "SlicingSession.cs"));
         var validateAction = Between(source, "private static string ValidateAction", "private static bool TryClaim");
         var swap = Between(source, "public static bool SwapSelectedWith", "public static bool ActivateTool");
+        var rotate = Between(source, "public static bool RotateSelected", "public static bool SwapSelectedWith");
 
         validateAction.IndexOf("GetIsInCombat(player)", StringComparison.Ordinal)
             .Should().BeLessThan(validateAction.IndexOf("Touch(session)", StringComparison.Ordinal));
@@ -192,12 +272,14 @@ public class SlicingTests
         validateAction.Should().Contain("RemoveSession(session);");
         swap.IndexOf("Entry and core sockets cannot be displaced.", StringComparison.Ordinal)
             .Should().BeLessThan(swap.IndexOf("GetActionCost", StringComparison.Ordinal));
+        rotate.IndexOf("START and GOAL sockets are fixed", StringComparison.Ordinal)
+            .Should().BeLessThan(rotate.IndexOf("GetActionCost", StringComparison.Ordinal));
     }
 
     private static IEnumerable<TestCaseData> TiersAndSeeds()
     {
         for (var tier = 1; tier <= 5; tier++)
-        for (var seed = 1; seed <= 20; seed++)
+        for (var seed = 1; seed <= 100; seed++)
             yield return new TestCaseData(tier, seed);
     }
 

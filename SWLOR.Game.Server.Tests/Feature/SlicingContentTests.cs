@@ -274,6 +274,7 @@ public class SlicingContentTests
         definition.Should().Contain("Click the selected tile again to rotate it clockwise. This costs 1 Trace.");
         definition.Should().Contain("directly above, below, left, or right");
         definition.Should().Contain("This costs 2 Trace.");
+        definition.Should().Contain("START and GOAL are fixed sockets; they cannot be rotated or swapped.");
         definition.Should().Contain("There is no double-click action.");
         definition.Should().Contain("A rotation or swap commits the attempt.");
         definition.Should().Contain("Before commitment, closing or aborting is safe.");
@@ -325,9 +326,9 @@ public class SlicingContentTests
         InvokeViewModelMethod<string>("GetTileImage", null, session, route, false, 100)
             .Should().StartWith("slcl", "ordinary circuit tiles retain the original visual family");
         InvokeViewModelMethod<string>("GetTileTooltip", null, session, entry)
-            .Should().StartWith("START / Entry");
+            .Should().StartWith("START / Entry - Fixed socket");
         InvokeViewModelMethod<string>("GetTileTooltip", null, session, core)
-            .Should().StartWith("GOAL / Core");
+            .Should().StartWith("GOAL / Core - Fixed socket");
     }
 
     [Test]

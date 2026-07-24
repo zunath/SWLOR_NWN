@@ -317,8 +317,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var tile = session.Board.Tiles[index];
             var identity = tile.Type switch
             {
-                SlicingTileType.Entry => "START / Entry",
-                SlicingTileType.Core => "GOAL / Core",
+                SlicingTileType.Entry => "START / Entry - Fixed socket",
+                SlicingTileType.Core => "GOAL / Core - Fixed socket",
                 _ => $"Tile {index + 1}"
             };
             var parts = new List<string> { identity };

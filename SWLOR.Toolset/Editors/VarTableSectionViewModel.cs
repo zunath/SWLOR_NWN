@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Editors
 {
@@ -86,6 +88,14 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            if (!CanEncodeNwnString(name) ||
+                (NewType == "string" && !CanEncodeNwnString(NewValue)))
+            {
+                ValidationHint =
+                    "Variable names and string values may only contain Windows-1252 characters.";
+                return;
+            }
+
             var applied = NewType switch
             {
                 "int" when int.TryParse(NewValue, out var intValue) =>
@@ -97,14 +107,29 @@ namespace SWLOR.Toolset.Editors
                 _ => false
             };
 
-            if (!applied && NewType != "string")
+            if (!applied)
             {
-                ValidationHint = $"'{NewValue}' is not a valid {NewType}.";
+                ValidationHint = NewType == "string"
+                    ? "The string variable could not be applied."
+                    : $"'{NewValue}' is not a valid {NewType}.";
                 return;
             }
 
             WarnOnUnknownGameCodeValue(name);
             RefreshFromDocument();
+        }
+
+        private static bool CanEncodeNwnString(string value)
+        {
+            try
+            {
+                JsonStringCodec.Encode(value);
+                return true;
+            }
+            catch (EncoderFallbackException)
+            {
+                return false;
+            }
         }
 
         [RelayCommand]

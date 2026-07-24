@@ -58,8 +58,8 @@ namespace SWLOR.Toolset.Editors
     public partial class PaletteBrowserViewModel : ObservableObject
     {
         private readonly string _itpPath;
-        private readonly Action<string> _onResRefChosen;
-        private readonly Action _onCancelled;
+        private Action<string> _onResRefChosen;
+        private Action _onCancelled;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
         private DocumentSession? _session;
@@ -97,6 +97,17 @@ namespace SWLOR.Toolset.Editors
 
             _session = DocumentSession.Open(_itpPath);
             RebuildTree();
+        }
+
+        /// <summary>
+        /// Updates what choosing or cancelling this already-open browser completes. The same
+        /// browser can move between the Properties Add flow and the 3D Place flow while retaining
+        /// its selection and unsaved palette edits.
+        /// </summary>
+        internal void RebindCompletionActions(Action<string> onResRefChosen, Action onCancelled)
+        {
+            _onResRefChosen = onResRefChosen ?? throw new ArgumentNullException(nameof(onResRefChosen));
+            _onCancelled = onCancelled ?? throw new ArgumentNullException(nameof(onCancelled));
         }
 
         private void RebuildTree()

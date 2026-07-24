@@ -1736,9 +1736,9 @@ void main()
         }
 
         /// <summary>
-        /// A box spanning local [0,TileSize] x [0,TileSize] x [0,FallbackCubeHeight] - matching the
-        /// same corner-origin convention real tile MDLs use (see <see cref="AreaSceneBuilder"/>'s
-        /// Transform doc: it recenters via translate(-TileSize/2,-TileSize/2,0) before rotating).
+        /// A box spanning local [-TileSize/2,+TileSize/2] on X/Y and
+        /// [0,FallbackCubeHeight] on Z, matching the origin-centered convention used by real tile
+        /// MDLs and <see cref="AreaSceneBuilder"/>'s placement transform.
         /// Applying a fallback placement's Transform to this box fills the same 10m footprint a
         /// real tile model would, making a missing/unresolvable tile obvious at a glance rather
         /// than a near-invisible 1m cube lost inside the grid.
@@ -1746,21 +1746,24 @@ void main()
         private static (float[] Vertices, uint[] Indices) BuildFallbackCubeMesh()
         {
             const float size = AreaSceneBuilder.TileSize;
+            const float half = size / 2f;
             const float h = FallbackCubeHeight;
 
             var c = new[]
             {
-                new Vector3(0, 0, 0), new Vector3(size, 0, 0), new Vector3(size, size, 0), new Vector3(0, size, 0),
-                new Vector3(0, 0, h), new Vector3(size, 0, h), new Vector3(size, size, h), new Vector3(0, size, h)
+                new Vector3(-half, -half, 0), new Vector3(half, -half, 0),
+                new Vector3(half, half, 0), new Vector3(-half, half, 0),
+                new Vector3(-half, -half, h), new Vector3(half, -half, h),
+                new Vector3(half, half, h), new Vector3(-half, half, h)
             };
 
             var builder = new BoxMeshBuilder();
             builder.AddQuad(c[3], c[2], c[1], c[0], new Vector3(0, 0, -1)); // bottom
             builder.AddQuad(c[4], c[5], c[6], c[7], new Vector3(0, 0, 1));  // top
-            builder.AddQuad(c[0], c[1], c[5], c[4], new Vector3(0, -1, 0)); // front (y=0)
-            builder.AddQuad(c[2], c[3], c[7], c[6], new Vector3(0, 1, 0));  // back (y=size)
-            builder.AddQuad(c[3], c[0], c[4], c[7], new Vector3(-1, 0, 0)); // left (x=0)
-            builder.AddQuad(c[1], c[2], c[6], c[5], new Vector3(1, 0, 0));  // right (x=size)
+            builder.AddQuad(c[0], c[1], c[5], c[4], new Vector3(0, -1, 0)); // front
+            builder.AddQuad(c[2], c[3], c[7], c[6], new Vector3(0, 1, 0));  // back
+            builder.AddQuad(c[3], c[0], c[4], c[7], new Vector3(-1, 0, 0)); // left
+            builder.AddQuad(c[1], c[2], c[6], c[5], new Vector3(1, 0, 0));  // right
 
             return builder.Build();
         }

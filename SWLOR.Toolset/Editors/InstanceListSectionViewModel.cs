@@ -283,8 +283,22 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public void OpenPaletteBrowser(Action<string> onResRefChosen, Action onCancelled)
         {
-            if (ActivePaletteBrowser != null)
+            Action<string> complete = resRef =>
+            {
+                ActivePaletteBrowser = null;
+                onResRefChosen(resRef);
+            };
+            Action cancel = () =>
+            {
+                ActivePaletteBrowser = null;
+                onCancelled();
+            };
+
+            if (ActivePaletteBrowser is { } activeBrowser)
+            {
+                activeBrowser.RebindCompletionActions(complete, cancel);
                 return;
+            }
 
             var itpPath = Path.Combine(_workspace.ModuleRoot, "itp", PaletteFileName(_blueprintType));
             if (!File.Exists(itpPath))
@@ -296,16 +310,8 @@ namespace SWLOR.Toolset.Editors
             ActivePaletteBrowser = new PaletteBrowserViewModel(
                 Title,
                 itpPath,
-                resRef =>
-                {
-                    ActivePaletteBrowser = null;
-                    onResRefChosen(resRef);
-                },
-                () =>
-                {
-                    ActivePaletteBrowser = null;
-                    onCancelled();
-                },
+                complete,
+                cancel,
                 _log,
                 _prompts);
         }

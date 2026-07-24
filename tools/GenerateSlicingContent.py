@@ -272,6 +272,23 @@ def preserve_weapon_scaffolding(template: dict) -> list[dict]:
     return result
 
 
+def weapon_skill_requirement(template: dict, required_rank: int) -> dict:
+    requirements = [
+        item_property
+        for item_property in template["PropertiesList"]["value"]
+        if item_property["PropertyName"]["value"] == 131
+    ]
+    if len(requirements) != 1:
+        template_resref = template["TemplateResRef"]["value"]
+        raise ValueError(
+            f"{template_resref} must declare exactly one weapon skill requirement; found {len(requirements)}"
+        )
+
+    requirement = copy.deepcopy(requirements[0])
+    requirement["CostValue"]["value"] = required_rank
+    return requirement
+
+
 def make_weapons() -> None:
     attack = [1, 3, 6, 9, 12]
     readiness = [1, 1, 2, 3, 4]
@@ -287,7 +304,7 @@ def make_weapons() -> None:
         properties.extend(preserve_weapon_scaffolding(template))
         properties.append(prop(111, 45, attack[tier - 1] + (1 if exceptional and tier > 1 else 0)))
         properties.append(prop(118, 42, readiness[tier - 1]))
-        properties.append(prop(131, 48, level_for_tier(tier, exceptional), 6))
+        properties.append(weapon_skill_requirement(template, level_for_tier(tier, exceptional)))
         item["PropertiesList"]["value"] = properties
         item["AddCost"]["value"] = 100 * tier
         item["Cost"]["value"] = 100 * tier

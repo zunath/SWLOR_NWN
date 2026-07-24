@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
@@ -30,8 +31,9 @@ public class SlicingContentTests
     };
 
     [Test]
-    public void DirectRewardCatalog_BlueprintsExistAndUseArmorRequirementsWithoutRawAttributes()
+    public void DirectRewardCatalog_BlueprintsExistAndUseCategoryRequirementsWithoutRawAttributes()
     {
+        Skill.LoadMappings();
         var root = FindRepositoryRoot();
         foreach (var reward in SlicingRewardCatalog.Entries)
         {
@@ -46,12 +48,56 @@ public class SlicingContentTests
             properties.EnumerateArray().Should().NotContain(property => GetInt(property, "PropertyName") == 0,
                 $"{reward.Name} must not grant raw Might, Social, Vitality, Willpower, Perception, or Agility");
 
-            var armorRequirement = properties.EnumerateArray().Single(property =>
-                GetInt(property, "PropertyName") == 131 && GetInt(property, "Subtype") == 6);
+            var requirement = properties.EnumerateArray().Single(property =>
+                GetInt(property, "PropertyName") == 131);
+            var hasWeaponDamage = properties.EnumerateArray().Any(property =>
+                GetInt(property, "PropertyName") == 93);
+            var expectedSkill = hasWeaponDamage
+                ? Skill.GetSkillTypeByBaseItem((BaseItem)GetInt(document.RootElement, "BaseItem"))
+                : SkillType.Armor;
+            expectedSkill.Should().NotBe(SkillType.Invalid,
+                $"{reward.Name} is a weapon and must map its base item to a combat skill");
+            GetInt(requirement, "Subtype").Should().Be((int)expectedSkill,
+                $"{reward.Name} must require its weapon skill, while wearable gear requires Armor");
+
             var expectedLevel = (reward.Tier - 1) * 10 + (reward.IsExceptional ? 5 : 0);
-            GetInt(armorRequirement, "CostValue").Should().Be(expectedLevel,
-                $"{reward.Name} scales from Armor rather than Espionage");
+            GetInt(requirement, "CostValue").Should().Be(expectedLevel,
+                $"{reward.Name} scales from its equipment skill rather than Espionage");
         }
+    }
+
+    [Test]
+    public void SkillMappedWeaponBlueprints_NeverRequireArmor()
+    {
+        Skill.LoadMappings();
+        var root = FindRepositoryRoot();
+        var violations = new List<string>();
+
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(root, "Module", "uti"), "*.uti.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            var baseItem = (BaseItem)GetInt(document.RootElement, "BaseItem");
+            var properties = document.RootElement.GetProperty("PropertiesList").GetProperty("value")
+                .EnumerateArray()
+                .ToList();
+            var isDualUseWearable = baseItem is BaseItem.Bracer or BaseItem.Gloves;
+            var hasWeaponDamage = properties.Any(property => GetInt(property, "PropertyName") == 93);
+            if (Skill.GetSkillTypeByBaseItem(baseItem) == SkillType.Invalid ||
+                isDualUseWearable && !hasWeaponDamage)
+            {
+                continue;
+            }
+
+            if (properties.Any(property =>
+                    GetInt(property, "PropertyName") == 131 &&
+                    GetInt(property, "Subtype") == (int)SkillType.Armor))
+            {
+                violations.Add(Path.GetFileName(path));
+            }
+        }
+
+        violations.Should().BeEmpty(
+            "skill-mapped weapons must require their mapped combat skill rather than Armor");
     }
 
     [Test]

@@ -259,6 +259,27 @@ the source class for a brand-new tree and remove the tree from the ratchet's exe
 the behavior tests alone with `SWLOR_ENGINE_TEST_FILTER=AbilityBehavior` - the full behavior sweep
 is minutes long and intended for nightly/CI rather than every local iteration.
 
+### The perk coverage program
+
+Every registered perk (462 across all trees, including Beast) has a `PerkCoverageCase` in
+`Feature/EngineTestDefinition/PerkCoverage/` declaring its structure: level count, per-level SP
+prices, and granted feats in order. Enforcement is split by where each check can actually run
+(PerkBuilder.Build() reads 2DAs, so perks cannot be built in plain NUnit):
+
+- **NUnit ratchet** (`PerkCoverageTests`): source-scans the perk definitions and requires exactly
+  one case per registered perk (no dupes, no orphans), verifies every ability's perk reference
+  resolves to a registered perk (the static HackingBlade regression guard), and sanity-checks
+  case coherence. Runs at merge time.
+- **In-engine sweep** (`PerkSweepEngineTests`): verifies every case against the perk actually
+  BUILT by its definition (levels/prices/feats must match exactly - an unintended progression
+  change fails until the case is deliberately updated), validates stat-bonus StatTypes, and
+  exercises NPC `Perk.GetPerkLevel` plus the PERK_LEVEL cap round-trip for all 462 perks and
+  all ~600 ability perk references. LIVE-VALIDATED (2026-07-24: 462/462, 0 failures).
+
+Active perks' behavior is covered transitively: their granted feats flow through the ability
+behavior cases above. To cover a new perk: add one `PerkCoverageCase` to its tree's
+`*PerkCoverage.cs` - the ratchet fails until you do.
+
 New hand-written tests belong in `SWLOR.Game.Server/Feature/EngineTestDefinition/`, one file per suite,
 following the same shape: `SpawnCreature`, drive the real system under test, assert on the real
 resulting state via `WaitUntilAsync` where a delay or tick is involved. The current suites (see

@@ -246,8 +246,8 @@ Batch status:
 
 | Batch | Trees | Status |
 |---|---|---|
-| 1 | Force, FirstAid, Leadership, Espionage, Armor, CombatAnalyzer, top-level, Vibroblade, HeavyVibroblade, TwinBlade, Vibroknife, Katar, Spear, Staff, Lightsaber, Saberstaff, Rifle, Pistol, Throwing, Devices | Cases declared (pending first live-server run) |
-| 2 | NPC, Mimicry, Beastmaster | Cases declared (pending first live-server run) |
+| 1 | Force, FirstAid, Leadership, Espionage, Armor, CombatAnalyzer, top-level, Vibroblade, HeavyVibroblade, TwinBlade, Vibroknife, Katar, Spear, Staff, Lightsaber, Saberstaff, Rifle, Pistol, Throwing, Devices | LIVE-VALIDATED (2026-07-24 full sweep: green) |
+| 2 | NPC, Mimicry, Beastmaster | LIVE-VALIDATED (2026-07-24 full sweep: green) |
 
 The ratchet's not-yet-covered list is now **empty**: every registered ability feat in the game has
 a behavior case. The remaining skips (17 total) are individual cases whose activation is gated on

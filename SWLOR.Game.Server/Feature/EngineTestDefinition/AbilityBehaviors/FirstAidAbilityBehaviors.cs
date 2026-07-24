@@ -187,14 +187,16 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 new()
                 {
                     Feat = FeatType.Resuscitation1,
-                    Target = AbilityTargetKind.Self,
-                    SkipReason = "ValidateFriendlyTarget requires the target to be dead; the harness only spawns living Self/HostileCreature actors and has no way to produce a dead ally.",
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    TargetStartsDead = true,
+                    Notes = "Revival cast on a dead spawned ally (requireDead:true friendly target).",
                 },
                 new()
                 {
                     Feat = FeatType.Resuscitation2,
-                    Target = AbilityTargetKind.Self,
-                    SkipReason = "Same requireDead:true friendly-target requirement as Resuscitation1.",
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    TargetStartsDead = true,
+                    Notes = "Same requireDead:true friendly-target requirement as Resuscitation1.",
                 },
 
                 // ShieldingAbilityDefinition - friendly self buff.

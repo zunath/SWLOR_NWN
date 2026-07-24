@@ -63,6 +63,26 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         public bool ExpectsRecast { get; set; }
 
         /// <summary>
+        /// When true, the spawned target is killed before activation - for revival abilities
+        /// that require a dead friendly target.
+        /// </summary>
+        public bool TargetStartsDead { get; set; }
+
+        /// <summary>
+        /// When true, the spawned target joins the caster's party before activation (via the
+        /// real associate-add pipeline) - for abilities whose validation requires a party
+        /// member rather than just a same-faction ally.
+        /// </summary>
+        public bool TargetJoinsCasterParty { get; set; }
+
+        /// <summary>
+        /// Optional status effect applied to the target before activation, for abilities whose
+        /// validation requires pre-existing target state (e.g. Tag In requires a Guarded ally).
+        /// A factory because some status effects only have parameterized constructors.
+        /// </summary>
+        public Func<Service.StatusEffectService.IStatusEffect> TargetSetupStatusEffectFactory { get; set; }
+
+        /// <summary>
         /// Free-text context for a reviewer: why assertions are relaxed, quirks observed
         /// in the definition, etc. Not used by the executor.
         /// </summary>

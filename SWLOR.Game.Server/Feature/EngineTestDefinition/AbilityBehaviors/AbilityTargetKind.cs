@@ -10,6 +10,12 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         /// <summary>
         /// The ability is used on a freshly spawned Hostile-faction creature standing near the caster.
         /// </summary>
-        HostileCreature = 1
+        HostileCreature = 1,
+
+        /// <summary>
+        /// The ability is used on a freshly spawned same-faction ally standing near the caster
+        /// (for friendly-target abilities that disallow self-targeting).
+        /// </summary>
+        FriendlyCreature = 2
     }
 }

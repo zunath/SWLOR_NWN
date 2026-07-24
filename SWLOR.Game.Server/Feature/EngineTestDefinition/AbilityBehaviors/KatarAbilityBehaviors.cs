@@ -183,22 +183,26 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // SteelShoulderAbilityDefinition (FeatType.TwinGuardStance1) - isFriendlyTarget: requires an
-                // ally target. AbilityTargetKind only supports Self/HostileCreature, and
-                // ValidateFriendlyTargetStatus rejects a hostile-faction target, so this cannot be exercised.
+                // SteelShoulderAbilityDefinition (FeatType.TwinGuardStance1) - isFriendlyTarget:
+                // cast on a spawned same-faction ally.
                 new()
                 {
                     Feat = FeatType.TwinGuardStance1,
-                    SkipReason = "Friendly-target ability (applies GuardedStatusEffect to an ally); AbilityTargetKind only supports Self/HostileCreature and ValidateFriendlyTargetStatus would reject a hostile-faction target.",
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    TargetJoinsCasterParty = true,
+                    ExpectedTargetStatusEffects = new[] { typeof(GuardedStatusEffect) },
+                    Notes = "Applies Guarded to a spawned same-faction ally.",
                 },
 
-                // TagInAbilityDefinition (FeatType.TwinIntercept1) - isFriendlyTarget AND RequiresGuardedTarget:
-                // needs an existing Guarded ally target. Same harness limitation as SteelShoulder, plus an
-                // additional precondition that can't be set up here.
+                // TagInAbilityDefinition (FeatType.TwinIntercept1) - isFriendlyTarget AND
+                // RequiresGuardedTarget: the fixture pre-applies Guarded to the spawned ally.
                 new()
                 {
                     Feat = FeatType.TwinIntercept1,
-                    SkipReason = "Friendly-target ability requiring an already-Guarded ally target; AbilityTargetKind only supports Self/HostileCreature so the required friendly target/precondition can't be set up.",
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    TargetJoinsCasterParty = true,
+                    TargetSetupStatusEffectFactory = () => new GuardedStatusEffect(50, 5.0f),
+                    Notes = "Requires an already-Guarded ally; the fixture pre-applies GuardedStatusEffect to the spawned ally.",
                 },
 
                 // WhirlingGuardAbilityDefinition - self status path (not hostile/friendly, statusEffect set).

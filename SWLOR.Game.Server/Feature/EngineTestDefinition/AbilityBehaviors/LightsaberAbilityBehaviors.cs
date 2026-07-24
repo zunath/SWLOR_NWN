@@ -54,9 +54,9 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.ForceLink1,
-                    Target = AbilityTargetKind.Self,
+                    Target = AbilityTargetKind.FriendlyCreature,
                     EquipMainHandResref = LightsaberResref,
-                    SkipReason = "Requires a friendly (non-self) target - AbilityTargeting.ValidateFriendlyTarget is called with allowSelf:false, and the engine test harness only supports Self or HostileCreature targeting, so no ally can be supplied."
+                    Notes = "ValidateFriendlyTarget with allowSelf:false - cast on a spawned same-faction ally."
                 },
 
                 // ForceSheathAbilityDefinition - queued weapon ability, Force damage on next landed hit.

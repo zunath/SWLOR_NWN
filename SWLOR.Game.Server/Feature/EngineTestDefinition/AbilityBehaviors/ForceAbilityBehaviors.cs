@@ -161,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 new()
                 {
                     Feat = FeatType.ForceIntercept1,
-                    Target = AbilityTargetKind.Self,
-                    SkipReason = "ValidateFriendlyTarget is called with allowSelf:false, so a self target is rejected; the harness has no way to spawn a non-self ally target.",
+                    Target = AbilityTargetKind.FriendlyCreature,
+                    Notes = "ValidateFriendlyTarget with allowSelf:false - cast on a spawned same-faction ally.",
                 },
 
                 // ForceJudgmentAbilityDefinition - hostile direct/area damage with an unconditional

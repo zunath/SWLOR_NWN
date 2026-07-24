@@ -137,6 +137,42 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         target,
                         3600f);
                 }
+                else if (behaviorCase.Target == AbilityTargetKind.FriendlyCreature)
+                {
+                    // Same faction as the caster (SpawnCreature normalizes to Defender), so
+                    // friendly-target validation accepts it without allowing self.
+                    target = ctx.SpawnCreature(TargetResref, 1.0f, 0f);
+                }
+
+                if (behaviorCase.TargetStartsDead)
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
+                    await ctx.WaitUntilAsync(
+                        () => GetIsDead(target),
+                        5f,
+                        "the target to be dead before activation");
+                }
+
+                if (behaviorCase.TargetJoinsCasterParty)
+                {
+                    // AddHenchman fires the associate-add event, which routes through the real
+                    // Party service registration - the same path live gameplay uses.
+                    AssignCommand(caster, () => AddHenchman(caster, target));
+                    await ctx.WaitUntilAsync(
+                        () => Party.IsInParty(caster, target),
+                        5f,
+                        "the spawned ally to join the caster's party");
+                }
+
+                if (behaviorCase.TargetSetupStatusEffectFactory != null)
+                {
+                    // ReassignSource before applying: source-tracked effects (e.g. Guarded)
+                    // register the target against the SOURCE stored on the instance, and a
+                    // factory-created instance has none until it is assigned.
+                    var setupEffect = behaviorCase.TargetSetupStatusEffectFactory();
+                    setupEffect.ReassignSource(caster);
+                    StatusEffect.ApplyStatusEffect(caster, target, setupEffect, 60f);
+                }
 
                 // Let spawn initialization scripts run before configuring resources - they
                 // reset the FP/STAMINA locals to the (unraised) max and would overwrite us.

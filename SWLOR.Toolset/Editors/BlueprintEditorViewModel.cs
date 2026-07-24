@@ -20,7 +20,7 @@ namespace SWLOR.Toolset.Editors
     /// flows through a one-step DocumentTransaction on the session's undo stack; Save writes
     /// the document bytes atomically and marks the stack clean.
     /// </summary>
-    public partial class BlueprintEditorViewModel : Document
+    public partial class BlueprintEditorViewModel : Document, IEditorDocument
     {
         private readonly DocumentSession _session;
         private readonly EditorFieldContext _context;
@@ -163,7 +163,7 @@ namespace SWLOR.Toolset.Editors
         }
 
         [RelayCommand(CanExecute = nameof(CanUndo))]
-        private void Undo()
+        public void Undo()
         {
             _session.Undo();
             RefreshAllFields();
@@ -171,7 +171,7 @@ namespace SWLOR.Toolset.Editors
         }
 
         [RelayCommand(CanExecute = nameof(CanRedo))]
-        private void Redo()
+        public void Redo()
         {
             _session.Redo();
             RefreshAllFields();
@@ -257,6 +257,9 @@ namespace SWLOR.Toolset.Editors
             UndoCommand.NotifyCanExecuteChanged();
             RedoCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(IsDirty));
+            // The shell's Edit menu mirrors this tab's history, so it needs the change too.
+            OnPropertyChanged(nameof(CanUndo));
+            OnPropertyChanged(nameof(CanRedo));
             DocumentChanged?.Invoke();
         }
 

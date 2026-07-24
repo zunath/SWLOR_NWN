@@ -1,7 +1,9 @@
+using System.ComponentModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
+using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Shell.Panels;
@@ -39,6 +41,18 @@ namespace SWLOR.Toolset.Shell
 
         public bool IsModuleMutationLocked => IsPacking || IsValidationRunning;
 
+        /// <summary>
+        /// The editor tab the File/Edit menus act on, or null when no document is open. Tracked
+        /// from the dock's active document so Save/Undo/Redo always target what the user is looking
+        /// at; the shell listens to its property changes to keep the menu items enabled correctly.
+        /// </summary>
+        private IEditorDocument? _activeEditor;
+
+        private INotifyPropertyChanged? _activeEditorNotifier;
+
+        /// <summary>Raised when the File menu's Exit item asks the window to close (which still runs the unsaved-changes prompt).</summary>
+        public event Action? ExitRequested;
+
         private readonly Editors.EditorService _editorService;
         private readonly PackService _packService;
 
@@ -72,10 +86,51 @@ namespace SWLOR.Toolset.Shell
 
             if (factory == null) throw new ArgumentNullException(nameof(factory));
 
+            factory.ActiveDocumentChanged += SetActiveEditor;
+
             Layout = factory.CreateLayout();
             if (Layout != null)
                 factory.InitLayout(Layout);
         }
+
+        private void SetActiveEditor(Dock.Model.Mvvm.Controls.Document? document)
+        {
+            if (_activeEditorNotifier != null)
+                _activeEditorNotifier.PropertyChanged -= OnActiveEditorPropertyChanged;
+
+            _activeEditor = document as IEditorDocument;
+            _activeEditorNotifier = document as INotifyPropertyChanged;
+
+            if (_activeEditorNotifier != null)
+                _activeEditorNotifier.PropertyChanged += OnActiveEditorPropertyChanged;
+
+            NotifyActiveEditorCommandsChanged();
+        }
+
+        // Any property change on an editor may have moved its undo history (the editors raise their
+        // own Can*Undo/Redo notifications), so re-evaluate rather than matching property names that
+        // differ between the blueprint and area editors.
+        private void OnActiveEditorPropertyChanged(object? sender, PropertyChangedEventArgs e)
+            => NotifyActiveEditorCommandsChanged();
+
+        private void NotifyActiveEditorCommandsChanged()
+        {
+            SaveCommand.NotifyCanExecuteChanged();
+            UndoCommand.NotifyCanExecuteChanged();
+            RedoCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanSave))]
+        private async Task Save()
+        {
+            if (_activeEditor == null)
+                return;
+
+            var saved = await _activeEditor.TrySaveAsync().ConfigureAwait(true);
+            StatusText = saved ? "Saved." : "Save cancelled or failed - see Output.";
+        }
+
+        private bool CanSave() => !IsModuleMutationLocked && _activeEditor != null;
 
         [RelayCommand(CanExecute = nameof(CanMutateModule))]
         private async Task SaveAll()
@@ -83,6 +138,20 @@ namespace SWLOR.Toolset.Shell
             var saved = await _editorService.SaveAllAsync().ConfigureAwait(true);
             StatusText = saved ? "All open editors saved." : "Save cancelled or failed - see Output.";
         }
+
+        [RelayCommand(CanExecute = nameof(CanUndo))]
+        private void Undo() => _activeEditor?.Undo();
+
+        private bool CanUndo() => !IsModuleMutationLocked && _activeEditor?.CanUndo == true;
+
+        [RelayCommand(CanExecute = nameof(CanRedo))]
+        private void Redo() => _activeEditor?.Redo();
+
+        private bool CanRedo() => !IsModuleMutationLocked && _activeEditor?.CanRedo == true;
+
+        /// <summary>Closes the application, going through the window's normal unsaved-changes prompt.</summary>
+        [RelayCommand]
+        private void Exit() => ExitRequested?.Invoke();
 
         /// <summary>Returns true when the main window may close after handling unsaved editors.</summary>
         public Task<bool> TryCloseAsync()
@@ -143,6 +212,7 @@ namespace SWLOR.Toolset.Shell
             OnPropertyChanged(nameof(IsModuleMutationLocked));
             SaveAllCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
+            NotifyActiveEditorCommandsChanged();
         }
 
         /// <summary>

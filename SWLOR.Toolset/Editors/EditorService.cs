@@ -91,7 +91,7 @@ namespace SWLOR.Toolset.Editors
             var schema = GetSchema(type);
             if (schema == null)
             {
-                _log.AppendLine($"No editor available yet for {type} blueprints.");
+                _log.AppendLine($"No editor available yet for {type.DisplayName()}.");
                 return;
             }
 

@@ -8,11 +8,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>SWLOR.Toolset</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Taskbar/Explorer icon for the built exe. The window's own icon is the PNG below; both come
+         from the SWLOR Discord server icon. -->
+    <ApplicationIcon>Assets\swlor.ico</ApplicationIcon>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <!-- GlAreaControl uses pointer-offset DrawElements calls, matching Radoub.UI's
          ModelPreviewGLControl (which also sets this flag). -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.17" />

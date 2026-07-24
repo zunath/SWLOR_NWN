@@ -54,7 +54,7 @@ namespace SWLOR.Toolset.Shell.Panels
             if (workspace == null)
                 return;
 
-            SelectionTitle = $"{entry.ResourceType} — {entry.ResRef}";
+            SelectionTitle = $"{entry.ResourceTypeDisplayName} — {entry.ResRef}";
             Rows.Clear();
 
             try
@@ -77,7 +77,7 @@ namespace SWLOR.Toolset.Shell.Panels
             catch (Exception ex)
             {
                 Rows.Add(new PropertyRow("Error", ex.Message));
-                _log.AppendLine($"Failed to load '{entry.ResRef}' ({entry.ResourceType}): {ex.Message}");
+                _log.AppendLine($"Failed to load '{entry.ResRef}' ({entry.ResourceTypeDisplayName}): {ex.Message}");
             }
         }
 

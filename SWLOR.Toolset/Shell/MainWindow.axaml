@@ -7,13 +7,29 @@
         x:Class="SWLOR.Toolset.Shell.MainWindow"
         x:DataType="shell:ShellViewModel"
         Title="SWLOR Toolset"
+        Icon="/Assets/swlor-logo.png"
         Width="1280" Height="800"
         WindowStartupLocation="CenterScreen">
   <Grid RowDefinitions="Auto,*,Auto">
-    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" Margin="8,6">
-      <Button Content="Save All" Command="{Binding SaveAllCommand}" />
-      <Button Content="Pack Module" Command="{Binding PackModuleCommand}" />
-    </StackPanel>
+    <!-- InputGesture only draws the shortcut next to the item; the shortcuts themselves are
+         registered as window KeyBindings in the code-behind (MenuItem.HotKey would not do, because
+         a submenu item is not attached to a tree that reaches this window until its popup has been
+         opened once, and a KeyBinding declared here has no DataContext to bind a command from). -->
+    <Menu Grid.Row="0">
+      <MenuItem Header="_File">
+        <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGesture="Ctrl+S" />
+        <MenuItem Header="Save _All" Command="{Binding SaveAllCommand}" InputGesture="Ctrl+Shift+S" />
+        <Separator />
+        <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
+      </MenuItem>
+      <MenuItem Header="_Edit">
+        <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z" />
+        <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y" />
+      </MenuItem>
+      <MenuItem Header="_Build">
+        <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
+      </MenuItem>
+    </Menu>
     <DockControl Grid.Row="1" Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />
     <Border Grid.Row="2"
             Padding="8,4"

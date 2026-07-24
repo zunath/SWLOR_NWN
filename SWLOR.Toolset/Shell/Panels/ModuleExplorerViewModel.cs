@@ -106,9 +106,10 @@ namespace SWLOR.Toolset.Shell.Panels
             if (workspace == null)
                 return;
 
-            Categories.Add(new CategoryNode(ResourceType.Area, "Areas", workspace.EnumerateAreaResRefs().Count));
+            Categories.Add(new CategoryNode(
+                ResourceType.Area, ResourceType.Area.DisplayName(), workspace.EnumerateAreaResRefs().Count));
             foreach (var type in ModuleWorkspace.BlueprintTypes)
-                Categories.Add(new CategoryNode(type, type.ToString(), workspace.EnumerateResRefs(type).Count));
+                Categories.Add(new CategoryNode(type, type.DisplayName(), workspace.EnumerateResRefs(type).Count));
         }
 
         /// <summary>Called once the background <see cref="BlueprintCatalog"/> build completes, to enrich item display with parsed Name/Tag. Must be called on the UI thread.</summary>

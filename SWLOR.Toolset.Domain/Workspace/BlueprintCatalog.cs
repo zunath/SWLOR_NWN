@@ -4,7 +4,11 @@ using SWLOR.Toolset.Domain.Documents;
 namespace SWLOR.Toolset.Domain.Workspace
 {
     /// <summary>One indexed area or blueprint: its type, resref, parsed Name/Tag (if resolvable), and file path.</summary>
-    public sealed record CatalogEntry(ResourceType ResourceType, string ResRef, string? Name, string? Tag, string FilePath);
+    public sealed record CatalogEntry(ResourceType ResourceType, string ResRef, string? Name, string? Tag, string FilePath)
+    {
+        /// <summary>The friendly name for this entry's kind ("Creature", not "Utc"), for result lists.</summary>
+        public string ResourceTypeDisplayName => ResourceType.SingularDisplayName();
+    }
 
     /// <summary>How a <see cref="CatalogEntry"/> matched a <see cref="BlueprintCatalog.Search"/> query.</summary>
     public enum CatalogMatchKind

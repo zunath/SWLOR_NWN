@@ -33,7 +33,7 @@ namespace SWLOR.Toolset.Editors
     /// screen is mostly used for. Save writes whichever session(s) are dirty; the title's dirty
     /// marker reflects either session being dirty.
     /// </remarks>
-    public partial class AreaEditorViewModel : Document
+    public partial class AreaEditorViewModel : Document, IEditorDocument
     {
         private static readonly (string Title, string ListFieldName, ResourceType BlueprintType)[] InstanceListConfigs =
         {
@@ -57,6 +57,15 @@ namespace SWLOR.Toolset.Editors
         private readonly DoorTypeService? _doorTypes;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly IEditorPromptService _prompts;
+
+        /// <summary>
+        /// Whichever of the two sessions this tab touched most recently (by edit, undo, or redo).
+        /// The toolbar keeps a dedicated button pair per session, but the shell's single Edit-menu
+        /// Undo/Redo has to pick one, and "the history you were just working in" is the choice that
+        /// matches what the user expects Ctrl+Z to take back.
+        /// </summary>
+        private DocumentSession? _lastHistorySession;
+
         private bool _sceneBuildRequested;
         private long _sceneBuildGeneration;
         private long _sceneInputRevision;
@@ -907,6 +916,7 @@ namespace SWLOR.Toolset.Editors
             {
                 session.Execute(description, mutation);
 
+                _lastHistorySession = session;
                 Interlocked.Increment(ref _sceneInputRevision);
                 AfterHistoryChange();
                 return true;
@@ -1000,6 +1010,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
+            _lastHistorySession = _areSession;
             _areSession.Undo();
             RefreshAreaPropertyFields();
 
@@ -1016,6 +1027,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
+            _lastHistorySession = _areSession;
             _areSession.Redo();
             RefreshAreaPropertyFields();
 
@@ -1036,6 +1048,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
+            _lastHistorySession = _gitSession;
             _gitSession.Undo();
             RefreshInstanceSections();
 
@@ -1052,6 +1065,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
+            _lastHistorySession = _gitSession;
             _gitSession.Redo();
             RefreshInstanceSections();
 
@@ -1074,6 +1088,37 @@ namespace SWLOR.Toolset.Editors
         }
 
         public bool CanRedoInstances => _gitSession.UndoStack.CanRedo;
+
+        // ----- Shell Edit menu / Ctrl+Z / Ctrl+Y -----
+        //
+        // Implemented explicitly so the toolbar keeps its unambiguous per-session buttons: the two
+        // histories stay separate, and only this single-command view of them collapses to one. The
+        // session touched most recently wins, falling back to whichever one still has history so a
+        // shell Undo is never a no-op while an undoable edit exists.
+
+        bool IEditorDocument.CanUndo => CanUndoInstances || CanUndoAre;
+
+        bool IEditorDocument.CanRedo => CanRedoInstances || CanRedoAre;
+
+        void IEditorDocument.Undo()
+        {
+            if (_lastHistorySession == _areSession && CanUndoAre)
+                UndoAre();
+            else if (CanUndoInstances)
+                UndoInstances();
+            else if (CanUndoAre)
+                UndoAre();
+        }
+
+        void IEditorDocument.Redo()
+        {
+            if (_lastHistorySession == _areSession && CanRedoAre)
+                RedoAre();
+            else if (CanRedoInstances)
+                RedoInstances();
+            else if (CanRedoAre)
+                RedoAre();
+        }
 
         /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
         public event Action<AreaEditorViewModel>? Closed;

@@ -89,7 +89,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
     public sealed class SlicingBoard
     {
         public int Tier { get; init; }
-        public int Seed { get; init; }
+        public int BoardNumber { get; init; }
+        public string BoardId => $"T{Tier}-{BoardNumber:000}";
         public int Width { get; init; }
         public int Height { get; init; }
         public int BaseTrace { get; init; }
@@ -102,7 +103,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             var clone = new SlicingBoard
             {
                 Tier = Tier,
-                Seed = Seed,
+                BoardNumber = BoardNumber,
                 Width = Width,
                 Height = Height,
                 BaseTrace = BaseTrace,

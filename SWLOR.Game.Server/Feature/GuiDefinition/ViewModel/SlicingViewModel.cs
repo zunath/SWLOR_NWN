@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string TraceText { get => Get<string>(); set => Set(value); }
         public string IntegrityText { get => Get<string>(); set => Set(value); }
         public string FailureText { get => Get<string>(); set => Set(value); }
+        public string BoardText { get => Get<string>(); set => Set(value); }
         public string ToolName { get => Get<string>(); set => Set(value); }
         public string StatusText { get => Get<string>(); set => Set(value); }
         public bool IsToolSelectionEnabled { get => Get<bool>(); set => Set(value); }
@@ -223,6 +224,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IntegrityText = $"Integrity: {integrity}%";
             var failureNumber = SlicingSession.GetFailures(session.Target) + 1;
             FailureText = $"Failure {failureNumber}: {Slicing.GetDestructionChance(failureNumber)}% break risk";
+            BoardText = $"BOARD ID: {session.Board.BoardId} - include this ID when reporting unexpected board behavior.";
 
             var powered = Slicing.GetPoweredIndices(session.Board);
             for (var row = 0; row < 5; row++)

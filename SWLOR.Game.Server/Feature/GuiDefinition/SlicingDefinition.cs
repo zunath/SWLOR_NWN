@@ -139,6 +139,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
                 column.AddRow(row =>
                 {
+                    row.AddLabel()
+                        .BindText(model => model.BoardText)
+                        .SetHeight(40f);
+                });
+                column.AddRow(row =>
+                {
                     row.AddText()
                         .SetText(HelpText)
                         .SetShowBorder(false)

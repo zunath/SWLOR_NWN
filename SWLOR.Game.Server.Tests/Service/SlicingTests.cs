@@ -12,10 +12,11 @@ public class SlicingTests
     [TestCase(3, 4, 4, 2)]
     [TestCase(4, 5, 4, 3)]
     [TestCase(5, 5, 5, 4)]
-    public void BuildBoard_UsesTierDimensionsAndBoundedSwaps(int tier, int width, int height, int swaps)
+    public void CatalogBoard_UsesTierDimensionsAndBoundedSwaps(int tier, int width, int height, int swaps)
     {
-        var board = Slicing.BuildBoard(tier, 982451653);
+        var board = Slicing.GetBoard(tier, 53);
 
+        board.BoardId.Should().Be($"T{tier}-053");
         board.Width.Should().Be(width);
         board.Height.Should().Be(height);
         board.Tiles.Should().HaveCount(width * height);
@@ -29,14 +30,13 @@ public class SlicingTests
             .Should().OnlyContain(tile => tile.Orientation == tile.SolutionOrientation);
     }
 
-    [TestCaseSource(nameof(TiersAndSeeds))]
-    public void BuildBoard_IsDeterministicAndKnownSolutionConnectsCore(int tier, int seed)
+    [TestCaseSource(nameof(TiersAndBoardNumbers))]
+    public void CatalogBoard_HasKnownSolutionThatConnectsCore(int tier, int boardNumber)
     {
-        var first = Slicing.BuildBoard(tier, seed);
-        var second = Slicing.BuildBoard(tier, seed);
+        var first = Slicing.GetBoard(tier, boardNumber);
 
-        first.Tiles.Select(x => (x.Type, x.Orientation, x.SolutionIndex, x.RouteOrder, x.SolutionOrientation))
-            .Should().Equal(second.Tiles.Select(x => (x.Type, x.Orientation, x.SolutionIndex, x.RouteOrder, x.SolutionOrientation)));
+        first.BoardNumber.Should().Be(boardNumber);
+        first.BoardId.Should().Be($"T{tier}-{boardNumber:000}");
         first.Tiles
             .Where(tile => tile.Type is SlicingTileType.Entry or SlicingTileType.Core)
             .Should().OnlyContain(tile => tile.Orientation == tile.SolutionOrientation);
@@ -59,6 +59,51 @@ public class SlicingTests
 
         spent.Should().Be(first.SolutionActionCost);
         Slicing.IsSolved(first).Should().BeTrue();
+    }
+
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    [TestCase(5)]
+    public void Catalog_ContainsOneHundredIndependentBoardsPerTier(int tier)
+    {
+        Slicing.GetBoardCount(tier).Should().Be(100);
+        var playerVisibleLayouts = Enumerable.Range(1, 100)
+            .Select(boardNumber => Slicing.GetBoard(tier, boardNumber))
+            .Select(board => string.Join(";", board.Tiles.Select(tile =>
+                $"{(int)tile.Type},{tile.Orientation}")))
+            .ToList();
+        playerVisibleLayouts.Should().OnlyHaveUniqueItems(
+            "every catalog number should identify a distinct starting layout");
+
+        var first = Slicing.GetBoard(tier, 1);
+        var second = Slicing.GetBoard(tier, 1);
+        first.Should().NotBeSameAs(second);
+        first.Tiles.Should().NotBeSameAs(second.Tiles);
+        first.Tiles[0].Orientation = (first.Tiles[0].Orientation + 1) % 4;
+        first.Tiles[0].Orientation.Should().NotBe(second.Tiles[0].Orientation);
+    }
+
+    [TestCase(1, 1)]
+    [TestCase(100, 100)]
+    [TestCase(101, 1)]
+    [TestCase(982451653, 53)]
+    public void LegacySelection_MapsToAStableBoardNumber(int selection, int expected)
+    {
+        Slicing.MapSelectionToBoardNumber(1, selection).Should().Be(expected);
+    }
+
+    [Test]
+    public void Catalog_RejectsUnknownTiersAndBoardNumbers()
+    {
+        var invalidTier = () => Slicing.GetBoard(0, 1);
+        var belowRange = () => Slicing.GetBoard(1, 0);
+        var aboveRange = () => Slicing.GetBoard(1, 101);
+
+        invalidTier.Should().Throw<ArgumentOutOfRangeException>();
+        belowRange.Should().Throw<ArgumentOutOfRangeException>();
+        aboveRange.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Test]
@@ -96,7 +141,7 @@ public class SlicingTests
     [Test]
     public void SwapAdjacent_MovesRevealMetadataWithTheTile()
     {
-        var board = Slicing.BuildBoard(2, 982451653);
+        var board = Slicing.GetBoard(2, 53);
         var swap = board.SolutionSwaps.Single();
         board.Tiles[swap.FirstIndex].IsRouteRevealed = true;
         board.Tiles[swap.FirstIndex].IsOrientationRevealed = true;
@@ -113,7 +158,7 @@ public class SlicingTests
     [Test]
     public void FixedEndpoints_CannotRotate()
     {
-        var board = Slicing.BuildBoard(1, 982451653);
+        var board = Slicing.GetBoard(1, 53);
         var entry = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Entry);
         var core = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Core);
         var entryOrientation = board.Tiles[entry].Orientation;
@@ -183,7 +228,7 @@ public class SlicingTests
     [Test]
     public void RevealOrientation_RejectsDecoysAndMarksRouteTiles()
     {
-        var board = Slicing.BuildBoard(2, 982451653);
+        var board = Slicing.GetBoard(2, 53);
         var session = new SlicingSession.ActiveSlicingSession { Board = board };
         var decoyIndex = board.Tiles.FindIndex(tile => tile.SolutionIndex < 0);
         var routeIndex = board.Tiles.FindIndex(tile => tile.SolutionIndex >= 0);
@@ -274,13 +319,20 @@ public class SlicingTests
             .Should().BeLessThan(swap.IndexOf("GetActionCost", StringComparison.Ordinal));
         rotate.IndexOf("START and GOAL sockets are fixed", StringComparison.Ordinal)
             .Should().BeLessThan(rotate.IndexOf("GetActionCost", StringComparison.Ordinal));
+        source.Should().Contain("Slicing.GetBoard(tier, boardNumber)");
+        source.Should().NotContain("SlicingBoardAuthoring",
+            "live sessions must load checked-in entries rather than generating boards");
+        source.Should().Contain("BoardNumberVariable");
+        source.Should().Contain("Slicing.MapSelectionToBoardNumber(tier, selection)");
+        source.Should().Contain("completed {session.Source} slicing board {session.Board.BoardId}");
+        source.Should().Contain("failed {session.Source} slicing board {session.Board.BoardId}");
     }
 
-    private static IEnumerable<TestCaseData> TiersAndSeeds()
+    private static IEnumerable<TestCaseData> TiersAndBoardNumbers()
     {
         for (var tier = 1; tier <= 5; tier++)
-        for (var seed = 1; seed <= 100; seed++)
-            yield return new TestCaseData(tier, seed);
+        for (var boardNumber = 1; boardNumber <= 100; boardNumber++)
+            yield return new TestCaseData(tier, boardNumber);
     }
 
     private static T InvokeSessionMethod<T>(string name, params object[] arguments)

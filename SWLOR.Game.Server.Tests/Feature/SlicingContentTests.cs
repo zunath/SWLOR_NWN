@@ -315,6 +315,7 @@ public class SlicingContentTests
 
         definition.Should().Contain(".SetText(\"?\")");
         definition.Should().Contain(".BindOnClicked(model => model.OnHelp())");
+        definition.Should().Contain(".BindText(model => model.BoardText)");
         definition.Should().Contain("amber START / Entry tile to the magenta GOAL / Core tile");
         definition.Should().Contain("bright diamond outline");
         definition.Should().Contain("Click the selected tile again to rotate it clockwise. This costs 1 Trace.");
@@ -328,6 +329,9 @@ public class SlicingContentTests
         definition.Should().Contain(".BindOnClicked(model => model.OnCloseHelp())");
 
         viewModel.Should().Contain("public const string HelpPartial = \"SLICING_HELP\";");
+        viewModel.Should().Contain("BOARD ID: {session.Board.BoardId}");
+        viewModel.Should().Contain("include this ID when reporting unexpected board behavior");
+        typeof(SlicingViewModel).GetProperty(nameof(SlicingViewModel.BoardText)).Should().NotBeNull();
         viewModel.Should().Contain("ChangeView(HelpPartial)");
         viewModel.Should().Contain("ChangeView(\"%%WINDOW_MAIN%%\")");
         viewModel.Should().Contain("UpdatePropertyFromClient(nameof(Geometry));");
@@ -337,7 +341,7 @@ public class SlicingContentTests
     [Test]
     public void SlicingSelection_RemainsVisibleWhenIntegrityUsesDamagedArt()
     {
-        var board = Slicing.BuildBoard(1, 982451653);
+        var board = Slicing.GetBoard(1, 53);
         var session = new SlicingSession.ActiveSlicingSession
         {
             Source = SlicingSourceType.Lockbox,
@@ -354,7 +358,7 @@ public class SlicingContentTests
     [Test]
     public void SlicingEndpoints_UseExplicitStartAndGoalArt()
     {
-        var board = Slicing.BuildBoard(1, 982451653);
+        var board = Slicing.GetBoard(1, 53);
         var entry = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Entry);
         var core = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Core);
         var route = board.Tiles.FindIndex(tile =>

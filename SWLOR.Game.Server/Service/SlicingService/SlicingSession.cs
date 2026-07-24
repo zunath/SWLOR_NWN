@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
 {
     public static class SlicingSession
     {
+        public const string BoardNumberVariable = "SLICING_BOARD";
+        // Retained only to map targets created before the checked-in board catalog.
         public const string SeedVariable = "SLICING_SEED";
         public const string FailuresVariable = "SLICING_FAILURES";
         public const string IntegrityVariable = "SLICING_INTEGRITY";
@@ -86,17 +88,24 @@ namespace SWLOR.Game.Server.Service.SlicingService
             if (!TryClaim(player, target, source, tier, out error))
                 return false;
 
-            var seed = GetLocalInt(target, SeedVariable);
-            if (seed == 0)
+            var boardCount = Slicing.GetBoardCount(tier);
+            var boardNumber = GetLocalInt(target, BoardNumberVariable);
+            if (boardNumber < 1 || boardNumber > boardCount)
             {
-                seed = Random.Next(1, int.MaxValue);
-                SetLocalInt(target, SeedVariable, seed);
+                var legacySeed = GetLocalInt(target, SeedVariable);
+                var selection = legacySeed != 0
+                    ? legacySeed
+                    : boardNumber != 0
+                        ? boardNumber
+                        : Random.Next(1, boardCount + 1);
+                boardNumber = Slicing.MapSelectionToBoardNumber(tier, selection);
+                SetLocalInt(target, BoardNumberVariable, boardNumber);
             }
 
             if (GetLocalInt(target, IntegrityVariable) <= 0)
                 SetLocalInt(target, IntegrityVariable, 100);
 
-            var board = Slicing.BuildBoard(tier, seed);
+            var board = Slicing.GetBoard(tier, boardNumber);
             var lockpicking = Stat.GetStatAdjustment(player, StatType.Lockpicking);
             var perception = Math.Max(0, GetAbilityModifier(AbilityType.Perception, player));
             var slicingRank = Perk.GetPerkLevel(player, PerkType.Slicing);
@@ -562,7 +571,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
 
             var playerId = GetObjectUUID(session.Player);
             Log.Write(LogGroup.Crafting,
-                $"Player '{GetName(session.Player)}' ({playerId}) completed {session.Source} slicing tier {session.Tier} and received {reward.Quantity}x '{reward.Resref}'.");
+                $"Player '{GetName(session.Player)}' ({playerId}) completed {session.Source} slicing board {session.Board.BoardId} and received {reward.Quantity}x '{reward.Resref}'.");
             SendMessageToPC(session.Player, $"You recover {reward.Quantity}x {Cache.GetItemNameByResref(reward.Resref)}.");
 
             Release(session);
@@ -586,7 +595,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             }
 
             Log.Write(LogGroup.Crafting,
-                $"Player '{GetName(session.Player)}' ({GetObjectUUID(session.Player)}) failed {session.Source} slicing tier {session.Tier} (failure {failures}, destroyed={destroyed}).");
+                $"Player '{GetName(session.Player)}' ({GetObjectUUID(session.Player)}) failed {session.Source} slicing board {session.Board.BoardId} (failure {failures}, destroyed={destroyed}).");
             Release(session);
         }
 

@@ -154,29 +154,39 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 var activatorStatAdjustmentsBefore = behaviorCase.ExpectedActivatorStatAdjustments
                     .ToDictionary(pair => pair.Key, pair => Stat.GetStatAdjustment(caster, pair.Key));
 
-                // A creature can be briefly uncommandable right after equip actions, and
-                // commands assigned in that window are dropped silently.
-                await ctx.WaitUntilAsync(
-                    () => GetCommandable(caster),
-                    5f,
-                    "the caster to become commandable before activation");
-
                 // The activation must run in the CASTER's script context, exactly like the real
                 // feat-use event: DelayCommand(activationDelay, CompleteActivation) schedules
                 // against OBJECT_SELF, and the engine evaluates line-of-sight in OBJECT_SELF's
                 // area. Called directly from the async runner (module context), casted impacts
-                // never fire and every LOS check fails.
+                // never fire and every LOS check fails. Commands assigned while the creature is
+                // briefly uncommandable (e.g. right after equips) are dropped silently, and the
+                // window can reopen between a check and execution - so the assignment retries.
                 var used = false;
                 var activationAttempted = false;
-                AssignCommand(caster, () =>
+                for (var attempt = 0; attempt < 3 && !activationAttempted; attempt++)
                 {
-                    used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
-                    activationAttempted = true;
-                });
-                await ctx.WaitUntilAsync(
-                    () => activationAttempted,
-                    5f,
-                    "the assigned activation command to execute in the caster's context");
+                    await ctx.WaitUntilAsync(
+                        () => GetCommandable(caster),
+                        5f,
+                        "the caster to become commandable before activation");
+
+                    AssignCommand(caster, () =>
+                    {
+                        used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+                        activationAttempted = true;
+                    });
+
+                    var deadline = DateTime.UtcNow.AddSeconds(2);
+                    while (!activationAttempted && DateTime.UtcNow < deadline)
+                    {
+                        await NwTask.Delay(TimeSpan.FromMilliseconds(100), ctx.CancellationToken);
+                        ctx.CancellationToken.ThrowIfCancellationRequested();
+                    }
+                }
+
+                ctx.Assert(
+                    activationAttempted,
+                    "the assigned activation command never executed in the caster's context after 3 attempts");
 
                 if (!used)
                 {

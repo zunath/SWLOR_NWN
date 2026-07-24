@@ -18,8 +18,12 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
         {
             ctx.SeedRandom(Seed);
 
-            var attacker = ctx.SpawnCreature("nw_bandit001", -2f, 0f);
-            var target = ctx.SpawnCreature("nw_rat001", 2f, 0f);
+            // Tight spawn geometry, matching the behavior executor: the attacker starts within
+            // melee reach, so no pathing is needed. Wider splits left the attacker stuck in
+            // AttackObject at a constant ~3.5m across runs - walkmesh pathing at the arena
+            // anchor never brought it into range.
+            var attacker = ctx.SpawnCreature("nw_bandit001", -0.5f, 0f);
+            var target = ctx.SpawnCreature("nw_rat001", 1.0f, 0f);
             ctx.MakeHostile(target);
 
             // A large temporary-HP buffer keeps the 5-HP rat alive even if arena bystanders

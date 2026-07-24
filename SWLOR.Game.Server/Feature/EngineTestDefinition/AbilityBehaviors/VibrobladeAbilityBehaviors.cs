@@ -19,27 +19,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
-                // HackingBladeAbilityDefinition - ConfigureWeapon: queued weapon ability, hostile.
-                new()
-                {
-                    Feat = FeatType.HackingBlade1,
-                    Target = AbilityTargetKind.HostileCreature,
-                    EquipMainHandResref = VibrobladeResref,
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                    Notes = "Weapon-queued; BleedStatusEffect(3s) is a conditional on-hit rider, not asserted.",
-                    SkipReason = "PRODUCT BUG (found by this suite): PerkType.HackingBlade has no perk definition, so Perk.GetPerkLevel throws KeyNotFoundException for any NPC activator. Un-skip once the perk is registered."
-                },
-                new()
-                {
-                    Feat = FeatType.HackingBlade2,
-                    Target = AbilityTargetKind.HostileCreature,
-                    EquipMainHandResref = VibrobladeResref,
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                    Notes = "Weapon-queued; BleedStatusEffect(4s) is a conditional on-hit rider, not asserted.",
-                    SkipReason = "PRODUCT BUG (found by this suite): PerkType.HackingBlade has no perk definition; see HackingBlade1."
-                },
+                // HackingBlade was legacy pre-combat-upgrade content: the _22 migration refunds
+                // its perk from players and the Bible's Vibroblade tree replaced it (Rending
+                // Strike is the queued weapon ability). Its leftover ability definition
+                // registered feats no perk granted and crashed NPC perk-level lookups - found
+                // by this suite and deleted; no cases exist for it by design.
 
                 // BerserkerStanceAbilityDefinition - ConfigureToggle: self stance.
                 new()

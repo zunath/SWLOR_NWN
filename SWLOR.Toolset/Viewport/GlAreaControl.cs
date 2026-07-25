@@ -2860,7 +2860,7 @@ void main()
                     return (0, 0f);
 
                 var texId = UploadTexture(image.Width, image.Height, image.Pixels);
-                return (texId, ResolveAlphaCutoff(resolvedName));
+                return (texId, ResolveAlphaCutoff(resolvedName, image));
             }
             catch (Exception)
             {
@@ -2869,12 +2869,19 @@ void main()
         }
 
         /// <summary>
-        /// Cheap subset of TXI transparency honoring: a punch-through
-        /// texture gets a hard alpha cutoff in the fragment shader; every other case (additive,
-        /// no hint, unparseable/missing TXI) draws fully opaque. Full alpha sorting/blending is
-        /// explicitly out of scope.
+        /// The alpha cutoff a texture should be drawn with: a TXI punch-through hint when there is
+        /// one, otherwise whatever the texture's own alpha channel says. Zero means draw opaque.
+        /// Full alpha sorting/blending remains out of scope; this is a hard cutoff.
         /// </summary>
-        private float ResolveAlphaCutoff(string resolvedTextureName)
+        /// <remarks>
+        /// Reading the alpha channel matters because most textures that need it carry no TXI at all.
+        /// A tileset's floor gratings are the case that exposed it: cz220shipbreakin lays 62 tiles of
+        /// zsf01_d05_01, whose floor is a see-through grating (zsf01_bridge - 32% of its texels fully
+        /// transparent) suspended 1.5m above a solid floor. Drawn opaque, the transparent texels come
+        /// out the colour the DXT block happens to hold there, which is black - so every one of those
+        /// tiles rendered as a solid black square instead of a grating you can see the floor through.
+        /// </remarks>
+        private float ResolveAlphaCutoff(string resolvedTextureName, TextureImage? image)
         {
             if (ResourceIndex == null)
                 return 0f;
@@ -2882,20 +2889,25 @@ void main()
             try
             {
                 var identity = new ResourceIdentity(resolvedTextureName, ResourceIdentity.TypeFromExtension("txi"));
-                if (!ResourceIndex.TryLookup(identity, out var handle))
-                    return 0f;
-
-                var bytes = handle.GetBytes();
-                if (bytes.Length == 0)
-                    return 0f;
-
-                var txi = TxiInfo.Parse(System.Text.Encoding.ASCII.GetString(bytes));
-                return txi.Blending == TxiBlendMode.PunchThrough ? 0.5f : 0f;
+                if (ResourceIndex.TryLookup(identity, out var handle))
+                {
+                    var bytes = handle.GetBytes();
+                    if (bytes.Length > 0)
+                    {
+                        var txi = TxiInfo.Parse(System.Text.Encoding.ASCII.GetString(bytes));
+                        if (txi.Blending == TxiBlendMode.PunchThrough)
+                            return TextureAlphaPolicy.PunchThroughCutoff;
+                    }
+                }
             }
             catch (Exception)
             {
-                return 0f;
+                // An unreadable TXI is not a reason to ignore the alpha channel below.
             }
+
+            return TextureAlphaPolicy.RequiresCutoff(image)
+                ? TextureAlphaPolicy.PunchThroughCutoff
+                : 0f;
         }
 
         /// <summary>

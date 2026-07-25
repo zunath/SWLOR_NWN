@@ -261,6 +261,10 @@ namespace SWLOR.Toolset.Domain.Documents
         {
             return type switch
             {
+                // A loose item in an area is the whole .uti serialized inline under struct id 0,
+                // rather than a slim instance pointing at a blueprint - which is why it also carries
+                // its own PropertiesList and StackSize.
+                ResourceType.Uti => 0,
                 ResourceType.Utt => 1,
                 ResourceType.Utc => 4,
                 ResourceType.Utw => 5,
@@ -279,7 +283,8 @@ namespace SWLOR.Toolset.Domain.Documents
             {
                 ResourceType.Utm => StoreExcludedBlueprintFields,
                 ResourceType.Utc or ResourceType.Utw or ResourceType.Uts
-                    or ResourceType.Utt or ResourceType.Utd or ResourceType.Utp => DefaultExcludedBlueprintFields,
+                    or ResourceType.Utt or ResourceType.Utd or ResourceType.Utp
+                    or ResourceType.Uti => DefaultExcludedBlueprintFields,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(type), type, $"{type} is not a supported placed-instance list type.")
             };
@@ -294,6 +299,7 @@ namespace SWLOR.Toolset.Domain.Documents
                 case ResourceType.Utc:
                 case ResourceType.Utw:
                 case ResourceType.Utm:
+                case ResourceType.Uti:
                     instance.SetSingle("XPosition", (float)x);
                     instance.SetSingle("YPosition", (float)y);
                     instance.SetSingle("ZPosition", (float)z);

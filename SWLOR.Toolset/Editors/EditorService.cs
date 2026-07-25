@@ -23,6 +23,7 @@ namespace SWLOR.Toolset.Editors
     {
         private readonly WorkspaceContext _workspaceContext;
         private readonly LookupOptionProvider _lookups;
+        private readonly Domain.GameData.Tlk.TlkService? _tlkService;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
@@ -52,7 +53,8 @@ namespace SWLOR.Toolset.Editors
             ResourceIndex? resourceIndex = null,
             PlaceableAppearanceService? placeableAppearances = null,
             DoorTypeService? doorTypes = null,
-            TileWalkmeshCache? tileWalkmeshCache = null)
+            TileWalkmeshCache? tileWalkmeshCache = null,
+            Domain.GameData.Tlk.TlkService? tlkService = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -67,6 +69,7 @@ namespace SWLOR.Toolset.Editors
             _placeableAppearances = placeableAppearances;
             _doorTypes = doorTypes;
             _tileWalkmeshCache = tileWalkmeshCache;
+            _tlkService = tlkService;
             _factory.ActiveDocumentChanged += document =>
             {
                 if (document is BlueprintEditorViewModel editor)
@@ -135,6 +138,25 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Whether <paramref name="resRef"/> is open in an editor right now.
+        /// </summary>
+        /// <remarks>
+        /// Deleting a file out from under an open editor leaves that editor holding a live
+        /// DocumentSession: the next save sees the missing file as an external change, and Overwrite
+        /// recreates the blueprint that was supposedly deleted while Reload fails outright. Callers
+        /// check this and refuse instead.
+        /// </remarks>
+        public bool IsOpen(ResourceType type, string resRef)
+        {
+            if (type == ResourceType.Area)
+                return _openAreaEditors.ContainsKey(resRef);
+
+            var workspace = _workspaceContext.Workspace;
+            return workspace != null &&
+                   _openEditors.ContainsKey(workspace.GetResourcePath(type, resRef));
         }
 
         /// <summary>
@@ -207,8 +229,9 @@ namespace SWLOR.Toolset.Editors
                     resRef, workspace, _lookups, _gameCodeIndex, _log,
                     _tilesetCatalog, _tileModelCache, _resourceIndex,
                     _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
-                    ResolveBlueprintName, TryOpenEditor);
+                    ResolveBlueprintName, TryOpenEditor, _tlkService != null ? _tlkService.GetString : null);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
+                editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);

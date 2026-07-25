@@ -621,6 +621,15 @@ namespace SWLOR.Toolset.Shell.Panels
             var path = workspace.GetResourcePath(SelectedType, tile.ResRef);
             var kind = SelectedType.SingularDisplayName().ToLowerInvariant();
 
+            // Refused rather than handled: an open editor holds a session on this file, and once the
+            // file is gone that editor's next save either recreates the blueprint (Overwrite) or fails
+            // outright (Reload). Closing it first is the builder's call, not something to do silently.
+            if (_editorService?.Invoke().IsOpen(SelectedType, tile.ResRef) == true)
+            {
+                StatusMessage = $"'{tile.Name}' is open in an editor - close that tab first.";
+                return;
+            }
+
             var confirmed = await _prompts.ConfirmDestructiveAsync(
                 $"Delete the {kind} '{tile.Name}'?",
                 $"This deletes {Path.GetFileName(path)} from the module. Any area that already placed " +
@@ -839,6 +848,15 @@ namespace SWLOR.Toolset.Shell.Panels
             if (folder.MembersIncludingDescendants.Any())
             {
                 StatusMessage = $"'{folder.Name}' still holds blueprints - empty it first.";
+                return;
+            }
+
+            // Child categories count as contents too. Without this, a branch of empty-but-organised
+            // categories has no members, so the check above passes and the whole subtree goes with the
+            // parent - the opposite of what the prompt promises, and there is no undo for it.
+            if (folder.Children.Count > 0)
+            {
+                StatusMessage = $"'{folder.Name}' still holds sub-categories - remove them first.";
                 return;
             }
 

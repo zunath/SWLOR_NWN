@@ -87,21 +87,27 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        /// <summary>The entries of one named category, or an empty list when it was not built.</summary>
+        private static IReadOnlyList<TilePaletteEntry> CategoryOf(TilePalette palette, string name) =>
+            palette.Categories.FirstOrDefault(category => category.Name == name)?.Entries
+            ?? Array.Empty<TilePaletteEntry>();
+
         /// <summary>
         /// Measured floors, rounded down: shp02 44 groups / 579 tiles, ttd01 53 / 388.
         /// </summary>
         [Test]
         [TestCase("shp02", 40, 570)]
         [TestCase("ttd01", 50, 380)]
-        public void A_Real_Tileset_Yields_Both_Categories(string resref, int minimumGroups, int minimumTiles)
+        public void A_Real_Tileset_Yields_Its_Categories(string resref, int minimumGroups, int minimumTiles)
         {
             var (palette, _) = Data.Build(resref);
 
             palette.IsEmpty.Should().BeFalse();
-            palette.Categories.Select(category => category.Name).Should().Equal("Groups", "All tiles");
+            palette.Categories.Select(category => category.Name)
+                .Should().Equal("Terrain", "Groups", "All tiles");
 
-            var groups = palette.Categories[0].Entries;
-            var tiles = palette.Categories[1].Entries;
+            var groups = CategoryOf(palette, TilePaletteBuilder.GroupsCategoryName);
+            var tiles = CategoryOf(palette, TilePaletteBuilder.AllTilesCategoryName);
 
             groups.Count.Should().BeGreaterThanOrEqualTo(minimumGroups);
             tiles.Count.Should().BeGreaterThanOrEqualTo(minimumTiles);
@@ -109,6 +115,57 @@ namespace SWLOR.Toolset.Tests
             groups.Should().OnlyContain(entry => entry.Label.Length > 0);
             groups.Should().OnlyContain(entry => entry.TileIds.Count == entry.Rows * entry.Columns);
             tiles.Should().OnlyContain(entry => entry.Rows == 1 && entry.Columns == 1);
+        }
+
+        /// <summary>
+        /// The Terrain category is the brush half of this palette, so every entry it offers must be
+        /// one the painter can actually resolve: a terrain the .set declares, backed by a real tile.
+        /// An entry that named a terrain with no solid tile would arm a brush whose every click did
+        /// nothing at all.
+        /// </summary>
+        [Test]
+        [TestCase("shp02")]
+        [TestCase("ttd01")]
+        public void Terrain_Entries_Name_A_Terrain_The_Tileset_Declares(string resref)
+        {
+            var (palette, _) = Data.Build(resref);
+            Data.Tilesets.TryGetTileset(resref, out var tileset).Should().BeTrue();
+
+            var terrains = CategoryOf(palette, TilePaletteBuilder.TerrainCategoryName);
+            terrains.Should().NotBeEmpty(because: $"'{resref}' declares {tileset.Terrains.Count} terrains");
+
+            var declared = tileset.Terrains.Select(terrain => terrain.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            terrains.Should().OnlyContain(entry => entry.Terrain != null && declared.Contains(entry.Terrain!));
+            terrains.Should().OnlyContain(entry => entry.Rows == 1 && entry.Columns == 1);
+            terrains.Should().OnlyContain(entry => entry.TileIds.Count == 1);
+        }
+
+        /// <summary>
+        /// A terrain brush's representative tile is what its thumbnail renders, and it has to be the
+        /// solid form of that terrain - four matching corners, no edge crossers - or the palette
+        /// would advertise the brush with a picture of a wall.
+        /// </summary>
+        [Test]
+        [TestCase("shp02")]
+        [TestCase("ttd01")]
+        public void A_Terrain_Entry_Points_At_A_Solid_Tile(string resref)
+        {
+            var (palette, _) = Data.Build(resref);
+            Data.Tilesets.TryGetTileset(resref, out var tileset).Should().BeTrue();
+
+            foreach (var entry in CategoryOf(palette, TilePaletteBuilder.TerrainCategoryName))
+            {
+                var tile = tileset.Tiles[entry.TileIds[0]];
+
+                tile.TopLeft.Should().BeEquivalentTo(entry.Terrain);
+                tile.TopRight.Should().BeEquivalentTo(entry.Terrain);
+                tile.BottomLeft.Should().BeEquivalentTo(entry.Terrain);
+                tile.BottomRight.Should().BeEquivalentTo(entry.Terrain);
+
+                new[] { tile.Top, tile.Right, tile.Bottom, tile.Left }
+                    .Should().OnlyContain(crosser => crosser.Length == 0,
+                        because: $"'{entry.Label}' is meant to fill a cell, not carry a feature across it");
+            }
         }
 
         /// <summary>
@@ -170,8 +227,10 @@ namespace SWLOR.Toolset.Tests
             Data.Tilesets.TryGetTileset("tmi", out var tileset).Should().BeTrue();
             var withoutTlk = TilePaletteBuilder.Build(tileset);
 
-            var a = withTlk.Categories[0].Entries.Select(entry => entry.Label).ToList();
-            var b = withoutTlk.Categories[0].Entries.Select(entry => entry.Label).ToList();
+            var a = CategoryOf(withTlk, TilePaletteBuilder.GroupsCategoryName)
+                .Select(entry => entry.Label).ToList();
+            var b = CategoryOf(withoutTlk, TilePaletteBuilder.GroupsCategoryName)
+                .Select(entry => entry.Label).ToList();
 
             a.Should().Equal(b, "the .set's own names decide the label, with or without a TLK");
             a.Should().Contain("AverageFrontDoor").And.NotContain("Barbarians");
@@ -235,7 +294,7 @@ namespace SWLOR.Toolset.Tests
                 palette.IsEmpty.Should().BeFalse(because: $"'{resref}' declares {tileset.TileCount} tiles");
                 if (tileset.Groups.Count > 0)
                 {
-                    palette.Categories[0].Entries.Count.Should().Be(
+                    CategoryOf(palette, TilePaletteBuilder.GroupsCategoryName).Count.Should().Be(
                         tileset.Groups.Count - perTileset.Count,
                         because: $"every '{resref}' group is either emitted or explained");
                 }

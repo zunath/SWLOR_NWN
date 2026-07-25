@@ -167,11 +167,6 @@
                       <StackPanel Orientation="Horizontal" Spacing="6">
                         <Button Content="Place" Command="{Binding ChooseCommand}" />
                         <Button Content="Cancel" Command="{Binding CancelCommand}" />
-                        <Separator Width="12" />
-                        <TextBox Text="{Binding RenameText, Mode=TwoWay}" Watermark="Category name" MinWidth="140" />
-                        <Button Content="Rename" Command="{Binding RenameCategoryCommand}" />
-                        <Button Content="Delete Empty" Command="{Binding DeleteCategoryCommand}" />
-                        <Button Content="Save Palette" Command="{Binding SavePaletteCommand}" />
                       </StackPanel>
                       <TextBlock Text="{Binding StatusMessage}" Foreground="Orange"
                                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

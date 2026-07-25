@@ -76,6 +76,9 @@ namespace SWLOR.Toolset.Editors
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
+
+        /// <summary>Resolves the STRREF labels the module's palettes use instead of inline names.</summary>
+        private readonly Func<uint, string?>? _resolveStrRef;
         private bool _isLoadingDetail;
 
         public string Title { get; }
@@ -124,7 +127,8 @@ namespace SWLOR.Toolset.Editors
             Func<string, Action, bool> runEdit,
             IGameCodeIndex? gameCodeIndex,
             OutputLogService log,
-            IEditorPromptService prompts)
+            IEditorPromptService prompts,
+            Func<uint, string?>? resolveStrRef = null)
         {
             Title = title;
             _listFieldName = listFieldName;
@@ -135,6 +139,7 @@ namespace SWLOR.Toolset.Editors
             _gameCodeIndex = gameCodeIndex;
             _log = log;
             _prompts = prompts;
+            _resolveStrRef = resolveStrRef;
 
             RefreshFromDocument();
         }
@@ -313,20 +318,11 @@ namespace SWLOR.Toolset.Editors
                 complete,
                 cancel,
                 _log,
-                _prompts);
+                _resolveStrRef);
         }
 
-        /// <summary>Saves the nested palette editor when one is open.</summary>
-        internal Task<bool> TrySavePaletteAsync() =>
-            ActivePaletteBrowser?.TrySaveAsync() ?? Task.FromResult(true);
-
-        /// <summary>Disposes the nested palette session after the area close was approved.</summary>
-        internal void ClosePaletteForOwner()
-        {
-            var browser = ActivePaletteBrowser;
-            ActivePaletteBrowser = null;
-            browser?.DiscardAndClose();
-        }
+        /// <summary>Dismisses the palette picker, if one is open.</summary>
+        internal void ClosePalette() => ActivePaletteBrowser = null;
 
         private void AddFromPalette(string resRef) => AddInstanceAt(resRef, 0f, 0f, 0f);
 
@@ -463,6 +459,7 @@ namespace SWLOR.Toolset.Editors
                 ResourceType.Utm => "storepalcus.itp.json",
                 ResourceType.Uts => "soundpalcus.itp.json",
                 ResourceType.Utt => "triggerpalcus.itp.json",
+                ResourceType.Uti => "itempalcus.itp.json",
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "No palette file mapping for this type.")
             };
         }

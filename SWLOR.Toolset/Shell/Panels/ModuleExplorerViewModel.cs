@@ -416,12 +416,16 @@ namespace SWLOR.Toolset.Shell.Panels
             if (section == null || SelectedRow?.Folder is not { } folder || _prompts == null)
                 return;
 
+            // Sub-folders are named separately, because an empty branch of folders has no members at
+            // all: without saying so, deleting it looks like a no-op right up until the arrangement is
+            // gone, and the sidecar has no undo.
             var count = folder.MembersIncludingDescendants.Count();
-            if (count > 0)
+            var subFolders = folder.Children.Count;
+            if (count > 0 || subFolders > 0)
             {
                 var confirmed = await _prompts.ConfirmDestructiveAsync(
                     $"Delete '{folder.Name}'?",
-                    $"{count} item(s) move back to Unsorted. Nothing is deleted from the module.",
+                    DeleteFolderDetail(count, subFolders),
                     "Delete folder");
 
                 if (!confirmed)
@@ -432,6 +436,17 @@ namespace SWLOR.Toolset.Shell.Panels
             SaveCategories();
             SelectedRow = null;
             Refresh();
+        }
+
+        private static string DeleteFolderDetail(int members, int subFolders)
+        {
+            var parts = new List<string>();
+            if (subFolders > 0)
+                parts.Add($"{subFolders} sub-folder(s) are removed with it");
+            if (members > 0)
+                parts.Add($"{members} item(s) move back to Unsorted");
+
+            return string.Join(", ", parts) + ". Nothing is deleted from the module.";
         }
 
         /// <summary>Every folder of the current tab, as "Move to" destinations.</summary>

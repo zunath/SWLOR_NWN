@@ -18,10 +18,18 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// first non-hole tile's model rather than a composite: a thumbnail only has to be
     /// recognizable, and every corpus group's first real tile is a distinctive piece of it.
     /// </param>
+    /// <param name="Terrain">
+    /// The terrain this entry paints, or null when it is a fixed stamp. A terrain entry does not
+    /// write <paramref name="TileIds"/> literally: it hands the clicked cell to
+    /// <see cref="TilePainter.PaintTerrain"/>, which fills it and re-blends the eight neighbours so
+    /// the edges match. <paramref name="TileIds"/> then holds only a representative tile, used for
+    /// the thumbnail.
+    /// </param>
     public sealed record TilePaletteEntry(
         string Label,
         IReadOnlyList<int> TileIds,
         int Columns,
         int Rows,
-        string PreviewModelResRef);
+        string PreviewModelResRef,
+        string? Terrain = null);
 }

@@ -44,7 +44,9 @@ namespace SWLOR.Toolset.Editors
             ("Waypoints", "WaypointList", ResourceType.Utw),
             ("Stores", "StoreList", ResourceType.Utm),
             ("Sounds", "SoundList", ResourceType.Uts),
-            ("Triggers", "TriggerList", ResourceType.Utt)
+            ("Triggers", "TriggerList", ResourceType.Utt),
+            // Loose items on the ground. The GIT calls this one just "List".
+            ("Items", "List", ResourceType.Uti)
         };
 
         private readonly DocumentSession _areSession;
@@ -66,12 +68,19 @@ namespace SWLOR.Toolset.Editors
         private readonly Action<ResourceType, string>? _openBlueprint;
 
         /// <summary>
-        /// Whichever of the two sessions this tab touched most recently (by edit, undo, or redo).
-        /// The toolbar keeps a dedicated button pair per session, but the shell's single Edit-menu
-        /// Undo/Redo has to pick one, and "the history you were just working in" is the choice that
-        /// matches what the user expects Ctrl+Z to take back.
+        /// Which session each still-undoable edit went to, oldest first.
         /// </summary>
-        private DocumentSession? _lastHistorySession;
+        /// <remarks>
+        /// The toolbar keeps a dedicated button pair per session; only the shell's single Edit-menu
+        /// Undo/Redo collapses the two into one, and it has to walk them in the order the edits were
+        /// actually made. Remembering only the session touched last got that wrong as soon as the two
+        /// interleaved: after GIT, ARE, GIT, two undos both came out of the GIT history and skipped
+        /// the ARE edit that happened between them.
+        /// </remarks>
+        private readonly List<DocumentSession> _editOrder = new();
+
+        /// <summary>Undone edits, newest first - the redo side of <see cref="_editOrder"/>.</summary>
+        private readonly List<DocumentSession> _undoneOrder = new();
 
         private bool _sceneBuildRequested;
         private long _sceneBuildGeneration;
@@ -88,8 +97,7 @@ namespace SWLOR.Toolset.Editors
 
         public bool IsDirty =>
             _areSession.UndoStack.IsDirty ||
-            _gitSession.UndoStack.IsDirty ||
-            Sections.Any(section => section.ActivePaletteBrowser?.IsDirty == true);
+            _gitSession.UndoStack.IsDirty;
 
         /// <summary>Resource index used by the 3D View tab to resolve mesh/tile textures; null when game data services aren't loaded.</summary>
         public ResourceIndex? ResourceIndex { get; }
@@ -329,12 +337,12 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// Maps a 3D-view instance's kind to the blueprint type of the section that lists it, or
-        /// null when this editor has no section for that kind (the Item list has no
-        /// InstanceListSectionViewModel - see InstanceListConfigs above).
+        /// null when this editor has no section for that kind.
         /// </summary>
         private static ResourceType? MapKindToSectionType(InstanceMarkerKind kind) => kind switch
         {
             InstanceMarkerKind.Creature => ResourceType.Utc,
+            InstanceMarkerKind.Item => ResourceType.Uti,
             InstanceMarkerKind.Placeable => ResourceType.Utp,
             InstanceMarkerKind.Door => ResourceType.Utd,
             InstanceMarkerKind.Waypoint => ResourceType.Utw,
@@ -347,6 +355,7 @@ namespace SWLOR.Toolset.Editors
         private static InstanceMarkerKind? MapSectionTypeToKind(ResourceType type) => type switch
         {
             ResourceType.Utc => InstanceMarkerKind.Creature,
+            ResourceType.Uti => InstanceMarkerKind.Item,
             ResourceType.Utp => InstanceMarkerKind.Placeable,
             ResourceType.Utd => InstanceMarkerKind.Door,
             ResourceType.Utw => InstanceMarkerKind.Waypoint,
@@ -450,7 +459,7 @@ namespace SWLOR.Toolset.Editors
         private int IndexWithinKind(InstanceMarker instance) =>
             AreaScene != null ? AreaScene.Instances.Where(i => i.Kind == instance.Kind).ToList().IndexOf(instance) : -1;
 
-        /// <summary>The instance-list section covering <paramref name="kind"/>, or null when this editor has no section for it (Item).</summary>
+        /// <summary>The instance-list section covering <paramref name="kind"/>, or null when this editor has no section for it.</summary>
         private InstanceListSectionViewModel? SectionForKind(InstanceMarkerKind kind)
         {
             var type = MapKindToSectionType(kind);
@@ -468,7 +477,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>3D-view status line while a placement is pending, or empty otherwise.</summary>
         public string PlacementStatus =>
             IsPlacementPending ? $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
-            : _pendingTile is { } tile ? $"Click a cell to place {tile.Label}... (Esc or right-click to cancel)"
+            : _pendingTile is { } tile
+                ? CanRotatePendingTile
+                    ? $"Click a cell to place {tile.Label} facing {PendingTileFacing}... " +
+                      "(R to rotate, Esc or right-click to cancel)"
+                    : $"Click a cell to place {tile.Label}... (Esc or right-click to cancel)"
             : string.Empty;
 
         /// <summary>This area's tileset resref, which is what the Tiles palette lists tiles from.</summary>
@@ -483,6 +496,42 @@ namespace SWLOR.Toolset.Editors
         public (int Columns, int Rows) TilePlacementFootprint =>
             _pendingTile is { } entry ? (entry.Columns, entry.Rows) : (1, 1);
 
+        /// <summary>Quarter turns the armed tile will be stamped with, 0-3.</summary>
+        private int _pendingTileOrientation;
+
+        /// <summary>
+        /// Whether the armed stamp can be turned. A single tile can; a multi-cell group cannot,
+        /// because its cells are authored as a fixed arrangement and turning it would mean
+        /// re-deriving which tile belongs in which cell, not just setting an angle. A terrain brush
+        /// cannot either - it does not stamp a tile, it solves for one, and the solver chooses the
+        /// facing that matches the neighbours.
+        /// </summary>
+        public bool CanRotatePendingTile => _pendingTile is { Columns: 1, Rows: 1, Terrain: null };
+
+        /// <summary>The armed tile's facing, as the compass label the status line shows.</summary>
+        public string PendingTileFacing => _pendingTileOrientation switch
+        {
+            1 => "90 degrees",
+            2 => "180 degrees",
+            3 => "270 degrees",
+            _ => "0 degrees"
+        };
+
+        /// <summary>
+        /// Turns the armed tile a quarter turn. NWN stores tile facing as Tile_Orientation 0-3, so
+        /// this is the whole range - asymmetric pieces (doors, wall ends, transitions) need it, and
+        /// without it every stamp went in facing the tileset's default direction.
+        /// </summary>
+        public void RotatePendingTile()
+        {
+            if (!CanRotatePendingTile)
+                return;
+
+            _pendingTileOrientation = (_pendingTileOrientation + 1) % 4;
+            OnPropertyChanged(nameof(PendingTileFacing));
+            OnPropertyChanged(nameof(PlacementStatus));
+        }
+
         /// <summary>
         /// Arms a tile stamp chosen in the Palette panel. The next map click writes it into the grid.
         /// </summary>
@@ -496,8 +545,11 @@ namespace SWLOR.Toolset.Editors
             CancelPlacement();
 
             _pendingTile = entry;
+            _pendingTileOrientation = 0;
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementFootprint));
+            OnPropertyChanged(nameof(CanRotatePendingTile));
+            OnPropertyChanged(nameof(PendingTileFacing));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
             return true;
@@ -519,10 +571,11 @@ namespace SWLOR.Toolset.Editors
         /// Writes the armed stamp into the grid at the clicked anchor cell, as ONE undo step.
         /// </summary>
         /// <remarks>
-        /// Deliberately a raw write, not the terrain-matching brush: Aurora's tile palette places the
-        /// tile you picked and leaves edge matching to its separate terrain tool, so a builder who chose
-        /// a specific piece gets that piece. Group cells carrying -1 are holes in the rectangle and are
-        /// skipped, leaving whatever the area already had there.
+        /// A specific tile or group is a raw write, not an edge-matched one: Aurora's tile palette
+        /// places the piece you picked, and a builder who chose a doorway wants that doorway. Group
+        /// cells carrying -1 are holes in the rectangle and are skipped, leaving whatever the area
+        /// already had there. The Terrain category is the other half of that split - see
+        /// <see cref="CommitTerrainPaint"/>.
         /// </remarks>
         public void CommitTilePlacement(int anchorColumn, int anchorRow)
         {
@@ -535,10 +588,17 @@ namespace SWLOR.Toolset.Editors
             if (entry == null)
                 return;
 
+            if (entry.Terrain is { Length: > 0 } terrain)
+            {
+                CommitTerrainPaint(anchorColumn, anchorRow, entry, terrain);
+                return;
+            }
+
             var are = new AreDocument(_areSession.Document);
             var width = AreaTiles.Width(are);
             var height = AreaTiles.Height(are);
 
+            var orientation = CanRotatePendingTile ? _pendingTileOrientation : 0;
             var writes = new List<(int Column, int Row, int TileId)>();
             for (var row = 0; row < entry.Rows; row++)
             {
@@ -570,10 +630,59 @@ namespace SWLOR.Toolset.Editors
             RunAreEdit(label, () =>
             {
                 foreach (var (column, row, tileId) in writes)
-                    AreaTiles.SetTile(are, column, row, tileId, orientation: 0);
+                    AreaTiles.SetTile(are, column, row, tileId, orientation);
             });
         }
 
+
+        /// <summary>
+        /// Fills the clicked cell with a terrain and re-blends its eight neighbours, as ONE undo step.
+        /// </summary>
+        /// <remarks>
+        /// This is the brush half of the Tiles palette: <see cref="TilePainter.PaintTerrain"/> picks
+        /// tiles whose corners and edge crossers agree with what is already around the cell, which is
+        /// what makes a hand-laid area read as continuous ground rather than a patchwork. It can
+        /// legitimately decline - a boundary whose neighbours cannot all be solved has no answer - and
+        /// says so rather than writing a partial blend.
+        /// </remarks>
+        private void CommitTerrainPaint(int column, int row, TilePaletteEntry entry, string terrain)
+        {
+            if (_tilesetCatalog == null)
+            {
+                SceneStatus = "Terrain painting is unavailable (tileset data not loaded).";
+                return;
+            }
+
+            var tilesetResRef = TilesetResRef;
+            if (string.IsNullOrWhiteSpace(tilesetResRef) ||
+                !_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
+            {
+                SceneStatus = "Terrain painting is unavailable (this area's tileset could not be read).";
+                return;
+            }
+
+            var are = new AreDocument(_areSession.Document);
+            var changes = TilePainter.PaintTerrain(
+                tileset,
+                AreaTiles.Width(are),
+                AreaTiles.Height(are),
+                AreaTiles.Reader(are),
+                column,
+                row,
+                terrain);
+
+            if (changes.Count == 0)
+            {
+                SceneStatus = $"'{entry.Label}' does not fit at ({column},{row}).";
+                return;
+            }
+
+            RunAreEdit($"Paint {entry.Label} at ({column},{row})", () =>
+            {
+                foreach (var change in changes)
+                    AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);
+            });
+        }
         /// <summary>
         /// Arms placement for a blueprint chosen in the Palette panel: the object then follows the
         /// cursor across the map as a translucent ghost until a click puts it down (Esc or a
@@ -760,7 +869,8 @@ namespace SWLOR.Toolset.Editors
             TileWalkmeshCache? tileWalkmeshCache = null,
             IEditorPromptService? prompts = null,
             Func<ResourceType?, string?, string?>? resolveBlueprintName = null,
-            Action<ResourceType, string>? openBlueprint = null)
+            Action<ResourceType, string>? openBlueprint = null,
+            Func<uint, string?>? resolveStrRef = null)
         {
             _resolveBlueprintName = resolveBlueprintName;
             _openBlueprint = openBlueprint;
@@ -793,7 +903,7 @@ namespace SWLOR.Toolset.Editors
             {
                 Sections.Add(new InstanceListSectionViewModel(
                     config.Title, config.ListFieldName, config.BlueprintType,
-                    _gitSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts));
+                    _gitSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef));
             }
 
             // A row click in any section should update the 3D-view highlight
@@ -805,20 +915,6 @@ namespace SWLOR.Toolset.Editors
                     if (e.PropertyName == nameof(InstanceListSectionViewModel.SelectedRow))
                         OnSectionSelectionChanged(section);
 
-                    if (e.PropertyName == nameof(InstanceListSectionViewModel.ActivePaletteBrowser))
-                    {
-                        var browser = section.ActivePaletteBrowser;
-                        if (browser != null)
-                        {
-                            browser.PropertyChanged += (_, browserEvent) =>
-                            {
-                                if (browserEvent.PropertyName == nameof(PaletteBrowserViewModel.IsDirty))
-                                    AfterHistoryChange();
-                            };
-                        }
-
-                        AfterHistoryChange();
-                    }
                 };
             }
 
@@ -1023,7 +1119,10 @@ namespace SWLOR.Toolset.Editors
             {
                 session.Execute(description, mutation);
 
-                _lastHistorySession = session;
+                // A fresh edit invalidates the redo side of both histories, exactly as each
+                // session's own undo stack does.
+                _editOrder.Add(session);
+                _undoneOrder.Clear();
                 Interlocked.Increment(ref _sceneInputRevision);
                 RequestSceneRefresh();
                 AfterHistoryChange();
@@ -1043,21 +1142,30 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>Saves both area documents, returning false if any prompt is cancelled or write fails.</summary>
+        /// <remarks>
+        /// An area is one thing to the builder but two files on disk, so every external-change prompt is
+        /// answered before anything is written. Prompting between the two writes meant that cancelling
+        /// the second prompt still left the first file saved and its history marked clean, and no later
+        /// Discard could take that back.
+        /// </remarks>
         public async Task<bool> TrySaveAsync()
         {
             var areaCatalogEntryChanged = _areSession.UndoStack.IsDirty;
+            var tilesetBefore = TilesetResRef;
 
-            foreach (var section in Sections)
-            {
-                if (!await section.TrySavePaletteAsync().ConfigureAwait(true))
-                    return false;
-            }
+            var arePlan = await PlanSaveAsync(_areSession).ConfigureAwait(true);
+            if (arePlan == SavePlan.Cancel)
+                return false;
 
-            var areResult = await TrySaveSessionAsync(_areSession).ConfigureAwait(true);
+            var gitPlan = await PlanSaveAsync(_gitSession).ConfigureAwait(true);
+            if (gitPlan == SavePlan.Cancel)
+                return false;
+
+            var areResult = ApplySavePlan(_areSession, arePlan);
             if (!areResult.Success)
                 return false;
 
-            var gitResult = await TrySaveSessionAsync(_gitSession).ConfigureAwait(true);
+            var gitResult = ApplySavePlan(_gitSession, gitPlan);
             if (!gitResult.Success)
                 return false;
 
@@ -1068,38 +1176,77 @@ namespace SWLOR.Toolset.Editors
             if ((areResult.Reloaded || gitResult.Reloaded) && _sceneBuildRequested)
                 _ = BuildSceneAsync(CaptureReselectKey());
 
+            // Reloading the .are can bring in a different tileset, and the Tiles palette lists the
+            // front area's tileset - without this it keeps offering the previous set's tiles.
+            if (areResult.Reloaded &&
+                !string.Equals(tilesetBefore, TilesetResRef, StringComparison.OrdinalIgnoreCase))
+                TilesetChanged?.Invoke();
+
             AfterHistoryChange();
             if (areaCatalogEntryChanged || areResult.Reloaded)
                 CatalogEntryChanged?.Invoke();
             return true;
         }
 
-        private async Task<(bool Success, bool Reloaded)> TrySaveSessionAsync(DocumentSession session)
+        /// <summary>Raised when a reload replaces this area's tileset, so tile-facing UI can re-read it.</summary>
+        public event Action? TilesetChanged;
+
+        /// <summary>What a save should do with one session, once its external-change prompt is answered.</summary>
+        private enum SavePlan
+        {
+            Nothing,
+            Write,
+            Reload,
+            Cancel
+        }
+
+        /// <summary>Answers a session's external-change prompt without writing anything yet.</summary>
+        private async Task<SavePlan> PlanSaveAsync(DocumentSession session)
         {
             if (!session.UndoStack.IsDirty)
-                return (true, false);
+                return SavePlan.Nothing;
 
             try
             {
-                if (session.HasExternalChange())
-                {
-                    var choice = await _prompts.ConfirmExternalChangeAsync(session.FilePath).ConfigureAwait(true);
-                    if (choice == ExternalChangeChoice.Cancel)
-                        return (false, false);
+                if (!session.HasExternalChange())
+                    return SavePlan.Write;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Could not check {session.FilePath} for external changes: {ex.Message}");
+                return SavePlan.Cancel;
+            }
 
-                    if (choice == ExternalChangeChoice.Reload)
-                    {
+            var choice = await _prompts.ConfirmExternalChangeAsync(session.FilePath).ConfigureAwait(true);
+            return choice switch
+            {
+                ExternalChangeChoice.Cancel => SavePlan.Cancel,
+                ExternalChangeChoice.Reload => SavePlan.Reload,
+                _ => SavePlan.Write
+            };
+        }
+
+        private (bool Success, bool Reloaded) ApplySavePlan(DocumentSession session, SavePlan plan)
+        {
+            try
+            {
+                switch (plan)
+                {
+                    case SavePlan.Nothing:
+                        return (true, false);
+
+                    case SavePlan.Reload:
                         session.ReloadFromDisk();
                         _log.AppendLine($"Reloaded externally changed file {session.FilePath}.");
                         return (true, true);
-                    }
-                }
 
-                Services.SaveService.WriteAtomic(session.FilePath, session.ToBytes());
-                session.UndoStack.MarkSaved();
-                session.RecordCurrentFileState();
-                _log.AppendLine($"Saved {session.FilePath}.");
-                return (true, false);
+                    default:
+                        Services.SaveService.WriteAtomic(session.FilePath, session.ToBytes());
+                        session.UndoStack.MarkSaved();
+                        session.RecordCurrentFileState();
+                        _log.AppendLine($"Saved {session.FilePath}.");
+                        return (true, false);
+                }
             }
             catch (Exception ex)
             {
@@ -1118,7 +1265,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            _lastHistorySession = _areSession;
+            RecordUndo(_areSession);
             _areSession.Undo();
             RefreshAreaPropertyFields();
 
@@ -1135,7 +1282,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            _lastHistorySession = _areSession;
+            RecordRedo(_areSession);
             _areSession.Redo();
             RefreshAreaPropertyFields();
 
@@ -1156,7 +1303,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            _lastHistorySession = _gitSession;
+            RecordUndo(_gitSession);
             _gitSession.Undo();
             RefreshInstanceSections();
 
@@ -1173,7 +1320,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            _lastHistorySession = _gitSession;
+            RecordRedo(_gitSession);
             _gitSession.Redo();
             RefreshInstanceSections();
 
@@ -1200,9 +1347,10 @@ namespace SWLOR.Toolset.Editors
         // ----- Shell Edit menu / Ctrl+Z / Ctrl+Y -----
         //
         // Implemented explicitly so the toolbar keeps its unambiguous per-session buttons: the two
-        // histories stay separate, and only this single-command view of them collapses to one. The
-        // session touched most recently wins, falling back to whichever one still has history so a
-        // shell Undo is never a no-op while an undoable edit exists.
+        // histories stay separate, and only this single-command view of them collapses to one. That
+        // view walks the recorded edit order, so a shell Undo always takes back the newest edit
+        // whichever file it landed in, and falls back to whichever session still has history so it is
+        // never a no-op while an undoable edit exists.
 
         bool IEditorDocument.CanUndo => CanUndoInstances || CanUndoAre;
 
@@ -1210,8 +1358,11 @@ namespace SWLOR.Toolset.Editors
 
         void IEditorDocument.Undo()
         {
-            if (_lastHistorySession == _areSession && CanUndoAre)
+            var newest = LastUndoable();
+            if (newest == _areSession)
                 UndoAre();
+            else if (newest == _gitSession)
+                UndoInstances();
             else if (CanUndoInstances)
                 UndoInstances();
             else if (CanUndoAre)
@@ -1220,12 +1371,61 @@ namespace SWLOR.Toolset.Editors
 
         void IEditorDocument.Redo()
         {
-            if (_lastHistorySession == _areSession && CanRedoAre)
+            var newest = LastRedoable();
+            if (newest == _areSession)
                 RedoAre();
+            else if (newest == _gitSession)
+                RedoInstances();
             else if (CanRedoInstances)
                 RedoInstances();
             else if (CanRedoAre)
                 RedoAre();
+        }
+
+        /// <summary>The session holding the newest undoable edit, or null when the order is unknown.</summary>
+        private DocumentSession? LastUndoable()
+        {
+            for (var i = _editOrder.Count - 1; i >= 0; i--)
+            {
+                var session = _editOrder[i];
+                if (session.UndoStack.CanUndo)
+                    return session;
+            }
+
+            return null;
+        }
+
+        /// <summary>The session holding the most recently undone edit, or null when none is recorded.</summary>
+        private DocumentSession? LastRedoable()
+        {
+            for (var i = _undoneOrder.Count - 1; i >= 0; i--)
+            {
+                var session = _undoneOrder[i];
+                if (session.UndoStack.CanRedo)
+                    return session;
+            }
+
+            return null;
+        }
+
+        /// <summary>Moves one entry from the edit order to the undone order, for either undo route.</summary>
+        private void RecordUndo(DocumentSession session)
+        {
+            var index = _editOrder.LastIndexOf(session);
+            if (index >= 0)
+                _editOrder.RemoveAt(index);
+
+            _undoneOrder.Add(session);
+        }
+
+        /// <summary>The inverse of <see cref="RecordUndo"/>.</summary>
+        private void RecordRedo(DocumentSession session)
+        {
+            var index = _undoneOrder.LastIndexOf(session);
+            if (index >= 0)
+                _undoneOrder.RemoveAt(index);
+
+            _editOrder.Add(session);
         }
 
         /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
@@ -1258,7 +1458,7 @@ namespace SWLOR.Toolset.Editors
 
             _disposed = true;
             foreach (var section in Sections)
-                section.ClosePaletteForOwner();
+                section.ClosePalette();
             _areSession.Dispose();
             _gitSession.Dispose();
             Closed?.Invoke(this);

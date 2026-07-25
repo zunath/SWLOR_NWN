@@ -104,8 +104,18 @@ namespace SWLOR.Toolset.Domain.Workspace
 
             Parallel.ForEach(work, item =>
             {
+                var key = IdentityKey(item.Type, item.ResRef);
+
+                // A resource deleted while this build is still running was already enumerated into
+                // work, so removing it from the dictionary does nothing - the entry has not been added
+                // yet. Without the tombstone, the add below resurrects it and the panels list a
+                // blueprint whose file is gone until the next restart.
+                if (_removed.ContainsKey(key))
+                    return;
+
                 var entry = BuildEntry(item.Type, item.ResRef);
-                _indexedEntries.TryAdd(IdentityKey(item.Type, item.ResRef), entry);
+                if (!_removed.ContainsKey(key))
+                    _indexedEntries.TryAdd(key, entry);
                 var processed = Interlocked.Increment(ref _processedCount);
                 if (processed % publishInterval == 0)
                     PublishSnapshot();
@@ -122,8 +132,14 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// </summary>
         public CatalogEntry RefreshEntry(ResourceType type, string resRef)
         {
+            var key = IdentityKey(type, resRef);
+
+            // Recreating a resref that was deleted earlier has to lift its tombstone, or the entry
+            // would be published here and then dropped again by a still-running build.
+            _removed.TryRemove(key, out _);
+
             var entry = BuildEntry(type, resRef);
-            _indexedEntries[IdentityKey(type, resRef)] = entry;
+            _indexedEntries[key] = entry;
             PublishSnapshot();
 
             return entry;
@@ -134,9 +150,18 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// </summary>
         public void RemoveEntry(ResourceType type, string resRef)
         {
-            if (_indexedEntries.TryRemove(IdentityKey(type, resRef), out _))
+            var key = IdentityKey(type, resRef);
+            _removed[key] = true;
+
+            if (_indexedEntries.TryRemove(key, out _))
                 PublishSnapshot();
         }
+
+        /// <summary>
+        /// Resources deleted since this catalog was created. Used as a tombstone set so a delete that
+        /// races the initial build wins, rather than being undone by the in-flight enumeration.
+        /// </summary>
+        private readonly ConcurrentDictionary<string, bool> _removed = new(StringComparer.OrdinalIgnoreCase);
 
         private void PublishSnapshot()
         {

@@ -67,14 +67,16 @@ namespace SWLOR.Toolset.Shell
                 GripMode = GripMode.Hidden
             };
 
-            // The right side is the Palette and nothing else. Properties is gone: for an instance the
-            // selection bar under the map says what is selected, and for a blueprint you open the thing
-            // itself. A read-only field dump docked permanently was the panel it replaced.
+            // The right side is the Palette, with Model Preview behind it as a tab. Properties is gone:
+            // for an instance the selection bar under the map says what is selected, and for a blueprint
+            // you open the thing itself. A read-only field dump docked permanently was the panel it
+            // replaced. Model Preview stays because the palette thumbnail is a fixed square - the
+            // preview is the only place a builder can turn a model and look at it.
             var paletteDock = new ToolDock
             {
                 Id = "PaletteDock",
                 ActiveDockable = _palette,
-                VisibleDockables = CreateList<IDockable>(_palette),
+                VisibleDockables = CreateList<IDockable>(_palette, _modelPreview),
                 Alignment = Alignment.Right,
                 Proportion = 0.27,
                 // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
@@ -152,6 +154,9 @@ namespace SWLOR.Toolset.Shell
             _rootDock = rootDock;
             return rootDock;
         }
+
+        /// <summary>Re-reads the front area in the tile-facing panels, after its tileset changed.</summary>
+        public void NotifyActiveAreaChanged() => _palette.OnActiveAreaChanged();
 
         /// <summary>Docks an editor document into the Documents area and activates it.</summary>
         public void OpenDocument(Document document)

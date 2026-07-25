@@ -18,6 +18,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
     /// </remarks>
     public static class TilePaletteBuilder
     {
+        public const string TerrainCategoryName = "Terrain";
         public const string GroupsCategoryName = "Groups";
         public const string AllTilesCategoryName = "All tiles";
 
@@ -44,7 +45,14 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
 
             try
             {
-                var categories = new List<TilePaletteCategory>(2);
+                var categories = new List<TilePaletteCategory>(3);
+
+                // Terrain leads because it is the brush: a builder lays ground first and reaches for a
+                // specific piece afterwards. Only terrains the tileset can actually present as a solid
+                // full tile are offered - the rest have nothing to fill a cell with.
+                var terrains = BuildTerrainEntries(tileset, resolveStrRef);
+                if (terrains.Count > 0)
+                    categories.Add(new TilePaletteCategory(TerrainCategoryName, terrains));
 
                 var groups = BuildGroupEntries(tileset, resolveStrRef, reportProblem);
                 if (groups.Count > 0)
@@ -62,6 +70,71 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 reportProblem?.Invoke($"Could not build the tile palette for '{tileset.Name}': {ex.Message}");
                 return TilePalette.Empty;
             }
+        }
+
+        /// <summary>
+        /// One brush per terrain the tileset can fill a whole cell with.
+        /// </summary>
+        /// <remarks>
+        /// A terrain qualifies when some tile has that terrain on all four corners and no crosser on
+        /// any edge - the same "solid" test <see cref="TilePainter"/> applies when it picks the centre
+        /// tile. Offering a terrain the tileset cannot present that way would arm a brush whose every
+        /// click silently did nothing.
+        /// </remarks>
+        private static List<TilePaletteEntry> BuildTerrainEntries(
+            TilesetDefinition tileset,
+            Func<uint, string?>? resolveStrRef)
+        {
+            var representative = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            for (var id = 0; id < tileset.Tiles.Count; id++)
+            {
+                var tile = tileset.Tiles[id];
+                var corner = tile.TopLeft;
+                if (string.IsNullOrWhiteSpace(corner) ||
+                    !string.Equals(corner, tile.TopRight, StringComparison.OrdinalIgnoreCase) ||
+                    !string.Equals(corner, tile.BottomLeft, StringComparison.OrdinalIgnoreCase) ||
+                    !string.Equals(corner, tile.BottomRight, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (!string.IsNullOrWhiteSpace(tile.Top) || !string.IsNullOrWhiteSpace(tile.Right) ||
+                    !string.IsNullOrWhiteSpace(tile.Bottom) || !string.IsNullOrWhiteSpace(tile.Left))
+                    continue;
+
+                if (!representative.ContainsKey(corner))
+                    representative[corner] = id;
+            }
+
+            var entries = new List<TilePaletteEntry>();
+            foreach (var terrain in tileset.Terrains)
+            {
+                if (string.IsNullOrWhiteSpace(terrain.Name) ||
+                    !representative.TryGetValue(terrain.Name, out var tileId))
+                    continue;
+
+                entries.Add(new TilePaletteEntry(
+                    TerrainLabel(terrain, resolveStrRef),
+                    new[] { tileId },
+                    Columns: 1,
+                    Rows: 1,
+                    tileset.Tiles[tileId].Model ?? string.Empty,
+                    terrain.Name));
+            }
+
+            return entries;
+        }
+
+        /// <summary>
+        /// A terrain's own name is what the .set author wrote and what the painter matches on, so it
+        /// leads; a localized string is only used when it resolves to something.
+        /// </summary>
+        private static string TerrainLabel(TerrainDefinition terrain, Func<uint, string?>? resolveStrRef)
+        {
+            if (terrain.StrRef is { } strRef && strRef >= 0 &&
+                resolveStrRef?.Invoke((uint)strRef) is { } resolved &&
+                !string.IsNullOrWhiteSpace(resolved))
+                return resolved;
+
+            return terrain.Name;
         }
 
         private static List<TilePaletteEntry> BuildGroupEntries(

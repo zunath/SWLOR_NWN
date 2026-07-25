@@ -21,6 +21,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.PlacementCancelled += OnPlacementCancelled;
             AreaView.TileCellPicked += OnTileCellPicked;
             AreaView.TilePlacementCancelled += OnTilePlacementCancelled;
+            AreaView.TileRotateRequested += OnTileRotateRequested;
             DataContextChanged += (_, _) => AttachViewModel();
         }
 
@@ -98,6 +99,9 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>An armed tile stamp was cancelled (Esc or right-click in the viewport).</summary>
         private void OnTilePlacementCancelled() => _viewModel?.CancelTilePlacement();
+
+        /// <summary>R was pressed with a tile armed - turn it before it is stamped.</summary>
+        private void OnTileRotateRequested() => _viewModel?.RotatePendingTile();
 
         private void OnGlRenderStatusChanged(object? sender, string message)
         {

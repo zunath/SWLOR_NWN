@@ -265,6 +265,9 @@ void main()
         private float _distance = 50f;
         private float _initialDistance = 50f;
 
+        /// <summary>Whether this control has ever framed a scene - see the <c>Scene</c> setter.</summary>
+        private bool _cameraFramed;
+
         private enum DragMode { None, Orbit, Pan, Move, Rotate }
         private DragMode _dragMode = DragMode.None;
         private Point _lastPointerPos;
@@ -446,6 +449,9 @@ void main()
         /// <summary>Raised when an active tile placement is cancelled (Esc, or a right-click while it is armed). Clears <see cref="IsTilePlacementActive"/> before raising.</summary>
         public event Action? TilePlacementCancelled;
 
+        /// <summary>Raised when the builder presses R with a tile armed, to turn it a quarter turn.</summary>
+        public event Action? TileRotateRequested;
+
         /// <summary>
         /// Discards tile geometry above each tile's own base height + ~4m (interior ceilings).
         /// </summary>
@@ -507,12 +513,17 @@ void main()
             get => Volatile.Read(ref _sceneState).Scene;
             set
             {
-                var hadScene = Volatile.Read(ref _sceneState).Scene != null;
                 var version = Interlocked.Increment(ref _nextSceneVersion);
                 Volatile.Write(ref _sceneState, new SceneState(value, version));
 
-                if (value != null && !hadScene)
+                // Framed once per control, not once per non-null scene. The host clears the scene
+                // while it rebuilds, so keying off "there was no scene a moment ago" re-framed the
+                // camera after every rebuild and threw away the orbit and zoom the builder had set.
+                if (value != null && !_cameraFramed)
+                {
+                    _cameraFramed = true;
                     ResetCameraForScene(value);
+                }
 
                 RequestNextFrameRendering();
             }
@@ -1028,10 +1039,21 @@ void main()
             HandlePointerWheel(e);
         }
 
-        /// <summary>Esc cancels an in-progress manipulation drag (reverting to the instance's real position/heading), an active object placement, or an armed tile placement.</summary>
+        /// <summary>
+        /// Esc cancels an in-progress manipulation drag (reverting to the instance's real
+        /// position/heading), an active object placement, or an armed tile placement. R turns an
+        /// armed tile a quarter turn before it is stamped.
+        /// </summary>
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
+
+            if (e.Key == Key.R && _isTilePlacementActive)
+            {
+                TileRotateRequested?.Invoke();
+                e.Handled = true;
+                return;
+            }
 
             if (e.Key != Key.Escape)
                 return;

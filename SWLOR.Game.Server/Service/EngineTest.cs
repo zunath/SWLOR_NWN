@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Service
                 if (!IsValidTestMethod(method))
                 {
                     result.Outcome = EngineTestOutcome.Failed;
-                    result.Message = $"Invalid signature on {method.DeclaringType?.Name}.{method.Name}: engine tests must be public static, take a single EngineTestContext parameter, and return void or Task (async tests must return Task - async void is not observable).";
+                    result.Message = $"Invalid signature on {method.DeclaringType?.Name}.{method.Name}: engine tests must be public static, take a single EngineTestContext parameter, and return Task (synchronous void bodies run outside the cooperative timeout's reach; async void is not observable).";
                     return result;
                 }
 
@@ -380,17 +380,22 @@ namespace SWLOR.Game.Server.Service
             if (parameters.Length != 1 || parameters[0].ParameterType != typeof(EngineTestContext))
                 return false;
 
-            // async void is rejected: reflection returns at the first incomplete await with no
-            // task to observe, so the runner would mark the test passed and clean up while it
-            // was still running. Async tests must return Task.
-            if (method.ReturnType == typeof(void))
-                return method.GetCustomAttribute<AsyncStateMachineAttribute>() == null;
-
+            // Only Task-returning tests are accepted. async void is unobservable (reflection
+            // returns at the first incomplete await and the runner would clean up under a
+            // still-running test), and a synchronous void body executes entirely outside the
+            // timeout's reach - TimeoutSeconds is cooperative and can only preempt a test at
+            // an await. Requiring Task keeps every accepted test timeout-armable; sweep-style
+            // tests must additionally yield periodically inside long loops.
             return method.ReturnType == typeof(Task);
         }
 
         private static async Task InvokeTestAsync(MethodInfo method, EngineTestContext context)
         {
+            // Yield BEFORE invoking so the caller can arm its timeout task first - without
+            // this, the test body's synchronous prefix (everything up to its first incomplete
+            // await) runs to completion before the timeout task is even created.
+            await NwTask.NextFrame();
+
             var returnValue = method.Invoke(null, new object[] { context });
             if (returnValue is Task task)
             {

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.EngineTestService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -15,9 +16,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
         private const int RenewalMaxLevel = 3;
 
         [EngineTest("NPC perk level defaults to max and honors an explicit cap", Category = "Perk")]
-        public static void NpcPerkLevelDefaultsToMaxAndRespectsCap(EngineTestContext ctx)
+        public static async Task NpcPerkLevelDefaultsToMaxAndRespectsCap(EngineTestContext ctx)
         {
             var npc = ctx.SpawnCreature("nw_rat001");
+            // Lets spawn-init settle and keeps the test on the Task-only contract.
+            await ctx.WaitFrameAsync();
 
             ctx.AssertEqual(RenewalMaxLevel, Perk.GetPerkLevel(npc, PerkType.Renewal), "Uncapped NPC Renewal perk level");
 

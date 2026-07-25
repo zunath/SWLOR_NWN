@@ -38,6 +38,12 @@ services:
         environment:
             - SWLOR_ENGINE_TESTS_ENABLED=true
             - SWLOR_ENVIRONMENT=test
+            # Pin the database to THIS compose file's disposable tmpfs redis service.
+            # A deployment server home's swlor.env may point NWNX_REDIS_HOST at a
+            # shared or production Redis - without this override, DB.Load would
+            # connect there and run migrations before the suite starts, silently
+            # bypassing the isolation the tmpfs container exists to provide.
+            - NWNX_REDIS_HOST=redis
             - SWLOR_ENGINE_TEST_FILTER=${SWLOR_ENGINE_TEST_FILTER:-}
             - SWLOR_ENGINE_TEST_ARENA_RESREF=${SWLOR_ENGINE_TEST_ARENA_RESREF:-}
             - SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS=${SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS:-15}

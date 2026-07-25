@@ -18,9 +18,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
         /// a valid object living in the test's instanced arena.
         /// </summary>
         [EngineTest("Harness spawns a standard blueprint creature into the arena", Category = "Harness")]
-        public static void SpawnStandardBlueprintCreature(EngineTestContext ctx)
+        public static async Task SpawnStandardBlueprintCreature(EngineTestContext ctx)
         {
             var rat = ctx.SpawnCreature("nw_rat001");
+            // Lets spawn-init settle and keeps the test on the Task-only contract.
+            await ctx.WaitFrameAsync();
 
             ctx.Assert(GetIsObjectValid(rat), "Spawned creature should be a valid game object.");
             ctx.Assert(GetObjectType(rat) == ObjectType.Creature, "Spawned object should report as a creature.");

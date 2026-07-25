@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.EngineTestService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
@@ -353,19 +354,40 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         spawnedHitDummy = true;
                     }
 
-                    Combat.SetAutoAttackHitResolutionOverride(true);
                     try
                     {
-                        AssignCommand(caster, () => ActionAttack(hitTarget));
-                        await ctx.WaitUntilAsync(
-                            () => !UsePerkFeat.IsWeaponAbilityQueued(caster, behaviorCase.Feat),
-                            EffectWaitSeconds,
-                            "the queued weapon ability to be consumed by a landed hit");
+                        var hitTargetHPBefore = GetCurrentHitPoints(hitTarget);
+
+                        Combat.SetAutoAttackHitResolutionOverride(true);
+                        try
+                        {
+                            AssignCommand(caster, () => ActionAttack(hitTarget));
+                            await ctx.WaitUntilAsync(
+                                () => !UsePerkFeat.IsWeaponAbilityQueued(caster, behaviorCase.Feat),
+                                EffectWaitSeconds,
+                                "the queued weapon ability to be consumed by a landed hit");
+                        }
+                        finally
+                        {
+                            Combat.SetAutoAttackHitResolutionOverride(false);
+                            AssignCommand(caster, () => ClearAllActions());
+                        }
+
+                        // Declared outcomes are verified against the creature the hit actually
+                        // landed on - the on-hit impact pipeline runs against it, not the
+                        // (possibly Self) activation target. Without this, a queued ability
+                        // whose impact does nothing would still pass on queue/cost/recast alone.
+                        await AssertImpactOutcomesAsync(
+                            ctx,
+                            behaviorCase,
+                            caster,
+                            hitTarget,
+                            hitTargetHPBefore,
+                            casterHPBefore,
+                            activatorStatAdjustmentsBefore);
                     }
                     finally
                     {
-                        Combat.SetAutoAttackHitResolutionOverride(false);
-                        AssignCommand(caster, () => ClearAllActions());
                         if (spawnedHitDummy)
                         {
                             DestroyCaseActor(hitTarget);
@@ -379,67 +401,14 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     // waiting on slow delayed impacts (pulse emitters, telegraphs).
                     await AssertCastedCostsAsync(ctx, behaviorCase, caster, fpBefore, stmBefore);
 
-                    foreach (var effectType in behaviorCase.ExpectedActivatorStatusEffects)
-                    {
-                        await ctx.WaitUntilAsync(
-                            () => StatusEffect.HasStatusEffect(caster, effectType),
-                            EffectWaitSeconds,
-                            $"activator status effect {effectType.Name} after impact");
-                    }
-
-                    foreach (var effectType in behaviorCase.ExpectedTargetStatusEffects)
-                    {
-                        await ctx.WaitUntilAsync(
-                            () => StatusEffect.HasStatusEffect(target, effectType),
-                            EffectWaitSeconds,
-                            $"target status effect {effectType.Name} after impact");
-                    }
-
-                    foreach (var (statType, expectedAdjustment) in behaviorCase.ExpectedActivatorStatAdjustments)
-                    {
-                        var expectedValue = activatorStatAdjustmentsBefore[statType] + expectedAdjustment;
-                        await ctx.WaitUntilAsync(
-                            () => Stat.GetStatAdjustment(caster, statType) == expectedValue,
-                            EffectWaitSeconds,
-                            $"activator stat {statType} to change by {expectedAdjustment} after impact");
-                    }
-
-                    if (behaviorCase.ExpectsTargetDamage)
-                    {
-                        // Requiring the caster as last damager proves the damage came from this
-                        // ability rather than a placed arena creature engaging the hostile
-                        // target. Abilities whose damage arrives via a placeable (traps) may
-                        // need per-case relaxation once validated on a live server.
-                        await ctx.WaitUntilAsync(
-                            () => GetCurrentHitPoints(target) < targetHPBefore &&
-                                  GetLastDamager(target) == caster,
-                            EffectWaitSeconds,
-                            "this ability's damage (caster as last damager) to lower the target's hit points");
-                    }
-
-                    if (behaviorCase.ExpectsTargetRevived)
-                    {
-                        await ctx.WaitUntilAsync(
-                            () => !GetIsDead(target),
-                            EffectWaitSeconds,
-                            "the dead target to be revived by the impact");
-                    }
-
-                    if (behaviorCase.ExpectsActivatorTemporaryHP)
-                    {
-                        await ctx.WaitUntilAsync(
-                            () => HasEffectOfType(caster, EffectTypeScript.TemporaryHitpoints),
-                            EffectWaitSeconds,
-                            "a temporary-HP effect to be present on the activator after impact");
-                    }
-
-                    if (behaviorCase.ExpectsActivatorHealing)
-                    {
-                        await ctx.WaitUntilAsync(
-                            () => GetCurrentHitPoints(caster) > casterHPBefore,
-                            EffectWaitSeconds,
-                            "the activator's hit points to rise above their pre-activation value");
-                    }
+                    await AssertImpactOutcomesAsync(
+                        ctx,
+                        behaviorCase,
+                        caster,
+                        target,
+                        targetHPBefore,
+                        casterHPBefore,
+                        activatorStatAdjustmentsBefore);
                 }
 
                 if (behaviorCase.ExpectsRecast)
@@ -457,6 +426,84 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 if (target != caster)
                     DestroyCaseActor(target);
                 DestroyCaseActor(caster);
+            }
+        }
+
+        /// <summary>
+        /// Verifies every outcome the case declares - status effects, stat adjustments,
+        /// damage, revival, temporary HP, healing - against the creature the impact
+        /// actually ran on. Shared by both activation branches: casted impacts run on the
+        /// activation target, queued weapon impacts on the creature the consuming hit landed on.
+        /// </summary>
+        private static async Task AssertImpactOutcomesAsync(
+            EngineTestContext ctx,
+            AbilityBehaviorCase behaviorCase,
+            uint caster,
+            uint impactTarget,
+            int impactTargetHPBefore,
+            int casterHPBefore,
+            Dictionary<StatType, int> activatorStatAdjustmentsBefore)
+        {
+            foreach (var effectType in behaviorCase.ExpectedActivatorStatusEffects)
+            {
+                await ctx.WaitUntilAsync(
+                    () => StatusEffect.HasStatusEffect(caster, effectType),
+                    EffectWaitSeconds,
+                    $"activator status effect {effectType.Name} after impact");
+            }
+
+            foreach (var effectType in behaviorCase.ExpectedTargetStatusEffects)
+            {
+                await ctx.WaitUntilAsync(
+                    () => StatusEffect.HasStatusEffect(impactTarget, effectType),
+                    EffectWaitSeconds,
+                    $"target status effect {effectType.Name} after impact");
+            }
+
+            foreach (var (statType, expectedAdjustment) in behaviorCase.ExpectedActivatorStatAdjustments)
+            {
+                var expectedValue = activatorStatAdjustmentsBefore[statType] + expectedAdjustment;
+                await ctx.WaitUntilAsync(
+                    () => Stat.GetStatAdjustment(caster, statType) == expectedValue,
+                    EffectWaitSeconds,
+                    $"activator stat {statType} to change by {expectedAdjustment} after impact");
+            }
+
+            if (behaviorCase.ExpectsTargetDamage)
+            {
+                // Requiring the caster as last damager proves the damage came from this
+                // ability rather than a placed arena creature engaging the hostile
+                // target. Abilities whose damage arrives via a placeable (traps) may
+                // need per-case relaxation once validated on a live server.
+                await ctx.WaitUntilAsync(
+                    () => GetCurrentHitPoints(impactTarget) < impactTargetHPBefore &&
+                          GetLastDamager(impactTarget) == caster,
+                    EffectWaitSeconds,
+                    "this ability's damage (caster as last damager) to lower the target's hit points");
+            }
+
+            if (behaviorCase.ExpectsTargetRevived)
+            {
+                await ctx.WaitUntilAsync(
+                    () => !GetIsDead(impactTarget),
+                    EffectWaitSeconds,
+                    "the dead target to be revived by the impact");
+            }
+
+            if (behaviorCase.ExpectsActivatorTemporaryHP)
+            {
+                await ctx.WaitUntilAsync(
+                    () => HasEffectOfType(caster, EffectTypeScript.TemporaryHitpoints),
+                    EffectWaitSeconds,
+                    "a temporary-HP effect to be present on the activator after impact");
+            }
+
+            if (behaviorCase.ExpectsActivatorHealing)
+            {
+                await ctx.WaitUntilAsync(
+                    () => GetCurrentHitPoints(caster) > casterHPBefore,
+                    EffectWaitSeconds,
+                    "the activator's hit points to rise above their pre-activation value");
             }
         }
 

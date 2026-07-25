@@ -108,15 +108,23 @@ their default on a parse failure.
 
 ```csharp
 [EngineTest("Human-readable test name", Category = "MyCategory", TimeoutSeconds = 30f)]
-public static void MyTest(EngineTestContext ctx) { /* ... */ }
+public static async Task MyTest(EngineTestContext ctx) { /* ... */ }
 ```
 
 - The method must be **public static**.
 - It must take exactly **one parameter of type `EngineTestContext`**.
-- It must return **`void` or `Task`** (an `async Task` method works; `Task<T>` does not - the
-  runner's signature check (`EngineTest.IsValidTestMethod`) only accepts those two exact return
-  types). `async void` is explicitly rejected: the runner would have no task to observe, so it
-  would report a pass and clean up while the test was still running.
+- It must return **`Task`** - and only `Task` (`Task<T>` does not pass the signature check,
+  `EngineTest.IsValidTestMethod`). `void` bodies are rejected because the per-test timeout is
+  COOPERATIVE: the engine is single-threaded, so a timeout can only preempt a test at an
+  `await`, and a synchronous `void` body would run entirely outside its reach. `async void` is
+  additionally unobservable: the runner would have no task to await, so it would report a pass
+  and clean up while the test was still running.
+- **Timeout semantics**: `TimeoutSeconds` bounds a test only at its awaits. The runner yields one
+  frame before invoking the body (arming the timeout first), and the context's wait helpers honor
+  cancellation on every poll - but a synchronous segment between awaits cannot be interrupted.
+  Sweep-style tests must yield periodically inside long loops (`await NwTask.NextFrame()` every
+  N items - see `PerkSweepEngineTests`). The NWNX thread watchdog (below) is the hard backstop
+  for a segment that never returns.
 - A misplaced attribute (private or instance method, wrong parameters) is reported as a **failed**
   test with an invalid-signature message rather than silently skipped.
 - `Name` (constructor argument) is required. `Category` defaults to `"General"`. `TimeoutSeconds`

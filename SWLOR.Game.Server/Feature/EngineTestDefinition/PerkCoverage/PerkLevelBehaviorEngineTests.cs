@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.EngineTestService;
 using SWLOR.Game.Server.Service.StatService;
@@ -18,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
     public static class PerkLevelBehaviorEngineTests
     {
         [EngineTest("Every perk level's stat bonuses apply to an NPC holding that level", Category = "Perk", TimeoutSeconds = 600f)]
-        public static void AllPerkLevelStatBonusesApply(EngineTestContext ctx)
+        public static async Task AllPerkLevelStatBonusesApply(EngineTestContext ctx)
         {
             var npc = ctx.SpawnCreature("nw_rat001");
             var failures = new List<string>();
@@ -26,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
             var levelsVerified = 0;
             var bonusesVerified = 0;
             var canaryDone = false;
+            var count = 0;
 
             foreach (var (perkType, detail) in perks)
             {
@@ -43,6 +46,12 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
 
                     foreach (var stat in stats)
                     {
+                        // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout.
+                        if (++count % 50 == 0)
+                        {
+                            await NwTask.NextFrame();
+                        }
+
                         // Mirror of Perk.GetStatBonus semantics: perk-wide bonuses always
                         // apply while the level is > 0; per-level bonuses come only from the
                         // CURRENT level's list.

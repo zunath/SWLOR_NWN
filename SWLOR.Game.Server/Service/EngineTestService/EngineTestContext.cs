@@ -348,10 +348,18 @@ namespace SWLOR.Game.Server.Service.EngineTestService
                     continue;
 
                 // A fixture killed mid-test was marked non-destroyable by the death/loot
-                // pipeline; restore destroyability in its own context so the body is
-                // actually removed rather than lingering in the shared arena.
-                AssignCommand(obj, () => SetIsDestroyable(true, false, false));
-                DestroyObject(obj);
+                // pipeline. Both calls run inside ONE assigned context: SetIsDestroyable
+                // executes immediately there (it operates on OBJECT_SELF), and the
+                // deferred destruction is processed after that same context ends -
+                // guaranteeing the flag is restored first. A DestroyObject issued from
+                // THIS context instead would run before the assigned callback and leave
+                // the corpse in the shared arena.
+                var target = obj;
+                AssignCommand(target, () =>
+                {
+                    SetIsDestroyable(true, false, false);
+                    DestroyObject(target);
+                });
             }
             _trackedObjects.Clear();
 

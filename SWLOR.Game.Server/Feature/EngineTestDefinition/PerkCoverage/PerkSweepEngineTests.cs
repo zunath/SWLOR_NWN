@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.EngineTestService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -15,14 +17,21 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
     public static class PerkSweepEngineTests
     {
         [EngineTest("Every registered perk and ability perk reference resolves for NPC activators", Category = "Perk", TimeoutSeconds = 300f)]
-        public static void AllPerksResolveForNPCActivators(EngineTestContext ctx)
+        public static async Task AllPerksResolveForNPCActivators(EngineTestContext ctx)
         {
             var npc = ctx.SpawnCreature("nw_rat001");
             var failures = new List<string>();
             var perks = Perk.GetAllPerks();
+            var count = 0;
 
             foreach (var (perkType, _) in perks)
             {
+                // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout.
+                if (++count % 50 == 0)
+                {
+                    await NwTask.NextFrame();
+                }
+
                 try
                 {
                     Perk.GetPerkLevel(npc, perkType);
@@ -51,6 +60,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
 
             foreach (var (perkType, detail) in perks)
             {
+                if (++count % 50 == 0)
+                {
+                    await NwTask.NextFrame();
+                }
+
                 if (!casesByPerk.TryGetValue(perkType, out var coverageCase))
                 {
                     failures.Add($"{perkType}: no PerkCoverageCase declared");
@@ -95,6 +109,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
 
             foreach (var (feat, perkType) in referencedPerks)
             {
+                if (++count % 50 == 0)
+                {
+                    await NwTask.NextFrame();
+                }
+
                 if (!perks.ContainsKey(perkType))
                 {
                     failures.Add($"ability {feat} references unregistered perk {perkType}");

@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.EngineTestService;
@@ -12,13 +14,21 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
     public static class AbilityRegistrationEngineTests
     {
         [EngineTest("Every registered ability has a name and resolves without throwing", Category = "Ability")]
-        public static void AllRegisteredAbilitiesResolve(EngineTestContext ctx)
+        public static async Task AllRegisteredAbilitiesResolve(EngineTestContext ctx)
         {
             var abilities = Ability.GetAllAbilityDetails();
             ctx.Assert(abilities.Count > 0, "Expected at least one ability to be registered in the live engine.");
 
+            var count = 0;
+
             foreach (var (feat, detail) in abilities)
             {
+                // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout.
+                if (++count % 100 == 0)
+                {
+                    await NwTask.NextFrame();
+                }
+
                 ctx.Assert(!string.IsNullOrWhiteSpace(detail.Name), $"Ability registered to feat '{feat}' has no Name.");
 
                 AbilityDetail resolved;

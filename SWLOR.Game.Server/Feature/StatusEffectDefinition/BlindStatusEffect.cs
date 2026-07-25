@@ -32,6 +32,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
+            if (IsBeingReplaced)
+                return;
+
             Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Blindness);
         }
 

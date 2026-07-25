@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -48,6 +50,46 @@ public class NativeControlStatusEffectTests
         source.Should().NotContain($"TagEffect({nativeEffect}, Id)");
     }
 
+    [TestCase("BlindStatusEffect.cs", "Blindness")]
+    [TestCase("ConfusionStatusEffect.cs", "Confused")]
+    [TestCase("DazedStatusEffect.cs", "Dazed")]
+    [TestCase("ImmobilizedStatusEffect.cs", "Immobilized")]
+    [TestCase("KnockdownStatusEffect.cs", "Knockdown")]
+    [TestCase("StunnedStatusEffect.cs", "Stun")]
+    [TestCase("TranquilizedStatusEffect.cs", "Sleep")]
+    public void HardControlStatusEffects_StartSharedImmunityWhenRemoved(
+        string fileName,
+        string immunityType)
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            fileName));
+
+        source.Should().Contain("protected override void Remove(uint creature)");
+        source.Should().Contain("if (IsBeingReplaced)");
+        source.Should().Contain(
+            $"Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.{immunityType});");
+        source.Should().NotContain(
+            $"Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.{immunityType});",
+            "hard-control immunity begins after the status ends, not while it is active");
+    }
+
+    [Test]
+    public void StatusEffectReplacement_IsDistinguishedFromAnActualRemoval()
+    {
+        var replacement = new RemovalProbeStatusEffect();
+        replacement.RemoveEffect(0u, true);
+        replacement.WasReplacement.Should().BeTrue();
+
+        var actualRemoval = new RemovalProbeStatusEffect();
+        actualRemoval.RemoveEffect(0u);
+        actualRemoval.WasReplacement.Should().BeFalse();
+    }
+
     [Test]
     public void StatusEffectDefinitions_DoNotTagNativeEffectsWithTrackerIds()
     {
@@ -81,5 +123,17 @@ public class NativeControlStatusEffectTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private sealed class RemovalProbeStatusEffect : StatusEffectBase
+    {
+        public override string Name => "Removal Probe";
+        public override EffectIconType Icon => EffectIconType.Invalid;
+        public bool WasReplacement { get; private set; }
+
+        protected override void Remove(uint creature)
+        {
+            WasReplacement = IsBeingReplaced;
+        }
     }
 }

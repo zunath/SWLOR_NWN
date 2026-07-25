@@ -41,6 +41,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Sleep);
+
             var attackPenalty = Stat.GetStatAdjustment(Source, StatType.TranquilizeExpiredAttackPercentAdjustment);
             var duration = Stat.GetStatAdjustment(Source, StatType.TranquilizeExpiredAttackDurationSeconds);
             if (attackPenalty == 0 || duration <= 0)
@@ -58,7 +63,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var effect = TagNativeEffect(IgnoreEffectImmunity(EffectSleep()));
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Sleep);
         }
     }
 }

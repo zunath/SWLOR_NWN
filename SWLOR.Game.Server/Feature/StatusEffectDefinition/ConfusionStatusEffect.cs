@@ -30,11 +30,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplyConfusion(creature, GetDurationSeconds(DurationTicks));
         }
 
+        protected override void Remove(uint creature)
+        {
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Confused);
+        }
+
         private void ApplyConfusion(uint creature, float duration)
         {
             var effect = TagNativeEffect(EffectConfused());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Confused);
         }
     }
 }

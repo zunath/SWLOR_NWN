@@ -45,15 +45,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplyDaze(creature, GetDurationSeconds(DurationTicks));
         }
 
+        protected override void Remove(uint creature)
+        {
+            if (IsBeingReplaced)
+                return;
+
+            if (_grantsTemporaryImmunity)
+            {
+                Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Dazed);
+            }
+        }
+
         private void ApplyDaze(uint creature, float duration)
         {
             var effect = TagNativeEffect(EffectDazed());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-
-            if (_grantsTemporaryImmunity)
-            {
-                Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Dazed);
-            }
         }
 
         public override IStatusEffect Clone()

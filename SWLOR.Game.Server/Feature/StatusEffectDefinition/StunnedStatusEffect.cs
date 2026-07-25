@@ -32,11 +32,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplyStun(creature, GetDurationSeconds(DurationTicks));
         }
 
+        protected override void Remove(uint creature)
+        {
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Stun);
+        }
+
         private void ApplyStun(uint creature, float duration)
         {
             var effect = TagNativeEffect(EffectStunned());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Stun);
         }
     }
 }

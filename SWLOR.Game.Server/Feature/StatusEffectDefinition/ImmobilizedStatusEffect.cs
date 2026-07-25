@@ -28,6 +28,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
+            if (IsBeingReplaced)
+                return;
+
             if (GetIsObjectValid(creature) && !GetIsDead(creature))
             {
                 Enmity.AttackHighestEnmityTarget(creature);

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public int DurationTicks => _durationTicks;
         public virtual bool PersistsOnLogout => true;
         public virtual bool IsRemovedOnJobChange => true;
+        protected bool IsBeingReplaced { get; private set; }
         public StatGroup StatGroup { get; }
         public virtual List<Type> MorePowerfulEffectTypes { get; }
         public virtual List<Type> LessPowerfulEffectTypes { get; }
@@ -101,10 +102,18 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         }
 
         protected virtual void Remove(uint creature) { }
-        public void RemoveEffect(uint creature)
+        public void RemoveEffect(uint creature, bool isReplacement = false)
         {
-            Remove(creature);
-            RemoveNativeEffects(creature);
+            IsBeingReplaced = isReplacement;
+            try
+            {
+                Remove(creature);
+                RemoveNativeEffects(creature);
+            }
+            finally
+            {
+                IsBeingReplaced = false;
+            }
         }
 
         public void RemoveNativeEffects(uint creature)

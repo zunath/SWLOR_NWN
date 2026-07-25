@@ -1,6 +1,8 @@
 using System.Windows.Input;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Threading;
 using SWLOR.Toolset.Settings;
 
 namespace SWLOR.Toolset.Shell
@@ -10,6 +12,19 @@ namespace SWLOR.Toolset.Shell
         private bool _closeApproved;
         private bool _closePromptOpen;
         private ToolsetSettings? _settings;
+
+        /// <summary>
+        /// The geometry the window last had while it was neither maximised nor minimised - the size and
+        /// position worth restoring. Tracked continuously rather than read off the window at close time,
+        /// because by then the window may be maximised (reporting the screen's size) or minimised
+        /// (reporting a parked off-screen position), and either way what the builder actually set is gone.
+        /// </summary>
+        private WindowPlacement _restorable = WindowPlacement.Unset;
+
+        private bool _hasRestorable;
+        private bool _isMaximized;
+        private bool _isOpen;
+        private DispatcherTimer? _placementSaveTimer;
 
         public MainWindow()
         {
@@ -21,6 +36,15 @@ namespace SWLOR.Toolset.Shell
             DataContext = viewModel;
             _settings = settings;
             RestorePlacement();
+
+            // Both halves of a placement change arrive on their own event, and a maximise/restore comes
+            // through as a plain property change - so all three feed the same tracker.
+            PositionChanged += (_, _) => TrackPlacement();
+            PropertyChanged += (_, e) =>
+            {
+                if (e.Property == ClientSizeProperty || e.Property == WindowStateProperty)
+                    TrackPlacement();
+            };
 
             // File > Exit goes through Close() so it hits the same unsaved-changes prompt below
             // rather than dropping edits on the floor.
@@ -38,6 +62,12 @@ namespace SWLOR.Toolset.Shell
 
             Opened += async (_, _) =>
             {
+                // Nothing before this point is a placement worth recording: a window that has not been
+                // shown reports a size that has been set but a position that has not, and saving that
+                // pair would trade the remembered position for the origin.
+                _isOpen = true;
+                TrackPlacement();
+
                 // Startup work (module open + background catalog build) runs after the window is
                 // already showing, so the UI never blocks waiting on it.
                 await viewModel.InitializeAsync();
@@ -49,6 +79,7 @@ namespace SWLOR.Toolset.Shell
                 // it: the prompt is a window of its own, and by the time a cancelled attempt comes
                 // back around this window may have been moved by it.
                 SavePlacement();
+                viewModel.SaveLayout();
 
                 if (_closeApproved)
                     return;
@@ -91,11 +122,11 @@ namespace SWLOR.Toolset.Shell
                 Height = placement.Height;
             }
 
-            if (placement.HasPosition)
+            if (placement.HasPosition && placement.IsOnAnyScreen(CurrentScreens()))
             {
                 // Manual placement only sticks if Avalonia is not also centring the window.
                 WindowStartupLocation = WindowStartupLocation.Manual;
-                Position = new Avalonia.PixelPoint((int)placement.Left, (int)placement.Top);
+                Position = new PixelPoint((int)placement.Left, (int)placement.Top);
             }
 
             if (placement.IsMaximized)
@@ -103,24 +134,99 @@ namespace SWLOR.Toolset.Shell
         }
 
         /// <summary>
-        /// Records the window's placement. While maximised, Width/Height report the screen, so the
-        /// remembered size is left alone and only the maximised flag is updated - un-maximising after a
-        /// restart then gives back the window that was actually being worked in.
+        /// The bounds of every connected display, or an empty list when they cannot be read - which is
+        /// treated as "no reason to doubt the saved position" rather than as "nothing is on screen".
+        /// </summary>
+        private IReadOnlyList<ScreenBounds> CurrentScreens()
+        {
+            try
+            {
+                var all = Screens?.All;
+                if (all == null)
+                    return Array.Empty<ScreenBounds>();
+
+                var bounds = new List<ScreenBounds>(all.Count);
+                foreach (var screen in all)
+                {
+                    var area = screen.WorkingArea;
+                    bounds.Add(new ScreenBounds(area.X, area.Y, area.Width, area.Height));
+                }
+
+                return bounds;
+            }
+            catch (Exception)
+            {
+                // Some backends refuse to enumerate screens before the window is shown; a saved position
+                // is no worse off than it was before this check existed.
+                return Array.Empty<ScreenBounds>();
+            }
+        }
+
+        /// <summary>
+        /// Notes the window's current geometry, and queues a save. Only a normal (neither maximised nor
+        /// minimised) window contributes size and position; the other two states contribute nothing but
+        /// the maximised flag, so what is remembered stays the window the builder actually sized.
+        /// </summary>
+        private void TrackPlacement()
+        {
+            if (_settings == null || !_isOpen || WindowState == WindowState.Minimized)
+                return;
+
+            _isMaximized = WindowState == WindowState.Maximized;
+
+            if (!_isMaximized)
+            {
+                var size = ClientSize;
+
+                // A window reports a few pixels while it is being torn down or first laid out; recording
+                // that would restore a window the builder cannot find.
+                if (size.Width >= WindowPlacement.MinimumRestorableSize &&
+                    size.Height >= WindowPlacement.MinimumRestorableSize)
+                {
+                    _restorable = new WindowPlacement(
+                        size.Width, size.Height, Position.X, Position.Y, false);
+                    _hasRestorable = true;
+                }
+            }
+
+            QueuePlacementSave();
+        }
+
+        /// <summary>
+        /// Coalesces the stream of events a single drag-resize produces into one settings write, shortly
+        /// after the builder lets go. Saving as the window is dragged would write the file per frame;
+        /// saving only on close would lose everything if the process is killed rather than closed.
+        /// </summary>
+        private void QueuePlacementSave()
+        {
+            if (_placementSaveTimer == null)
+            {
+                _placementSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+                _placementSaveTimer.Tick += (_, _) =>
+                {
+                    _placementSaveTimer!.Stop();
+                    SavePlacement();
+                };
+            }
+
+            _placementSaveTimer.Stop();
+            _placementSaveTimer.Start();
+        }
+
+        /// <summary>
+        /// Writes the tracked placement out. Falls back to what is already saved when this session never
+        /// had a normal-state window (started maximised and closed maximised), so restoring a maximised
+        /// window still un-maximises to the size from the session before it.
         /// </summary>
         private void SavePlacement()
         {
             if (_settings == null)
                 return;
 
-            var maximized = WindowState == WindowState.Maximized;
-            var previous = _settings.Window;
+            _placementSaveTimer?.Stop();
 
-            var width = maximized ? previous.Width : Width;
-            var height = maximized ? previous.Height : Height;
-            var left = maximized ? previous.Left : Position.X;
-            var top = maximized ? previous.Top : Position.Y;
-
-            _settings.Window = new WindowPlacement(width, height, left, top, maximized);
+            var basis = _hasRestorable ? _restorable : _settings.Window;
+            _settings.Window = basis with { IsMaximized = _isMaximized };
         }
 
         private void Bind(Key key, KeyModifiers modifiers, ICommand command)

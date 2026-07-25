@@ -13,7 +13,7 @@
        category-related is grouped above the splitter and everything object-related below it, so the
        divider lands where the meaning changes rather than in the middle of a group. Both sides are
        star-sized: a GridSplitter between an Auto row and a star row has nothing to trade. -->
-  <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,2*,Auto,3*">
+  <Grid x:Name="PaletteRows" RowDefinitions="Auto,Auto,Auto,Auto,Auto,2*,Auto,3*">
 
     <!-- Title drawn here rather than by Dock's chrome, which pads it out with a dotted drag grip. -->
     <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
@@ -165,7 +165,8 @@
 
     <GridSplitter Grid.Row="6" Height="5" ResizeDirection="Rows"
                   Background="{DynamicResource RuleBrush}"
-                  ResizeBehavior="PreviousAndNext" />
+                  ResizeBehavior="PreviousAndNext"
+                  DragCompleted="OnCategorySplitterDragCompleted" />
 
     <!-- Objects block: where you are, the grid, and the grid's own controls. -->
     <Grid Grid.Row="7" RowDefinitions="Auto,*,Auto" MinHeight="120">

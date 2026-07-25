@@ -161,7 +161,16 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Func<Editors.EditorService>>(),
                 sp.GetService<IGameCodeIndex>(),
                 sp.GetService<ResourceIndex>()));
-            services.AddSingleton<ToolsetDockFactory>();
+            // Constructed explicitly so the settings the layout's divider positions live in are wired in
+            // rather than left to constructor selection.
+            services.AddSingleton(sp => new ToolsetDockFactory(
+                sp.GetRequiredService<ModuleExplorerViewModel>(),
+                sp.GetRequiredService<PropertiesViewModel>(),
+                sp.GetRequiredService<SearchViewModel>(),
+                sp.GetRequiredService<OutputViewModel>(),
+                sp.GetRequiredService<ValidationViewModel>(),
+                sp.GetRequiredService<PaletteViewModel>(),
+                sp.GetRequiredService<ToolsetSettings>()));
             services.AddSingleton(sp => new Viewport.ViewportDisplayOptions(
                 sp.GetRequiredService<ToolsetSettings>()));
             services.AddSingleton<ShellViewModel>();

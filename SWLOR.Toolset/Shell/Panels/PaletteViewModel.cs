@@ -129,6 +129,21 @@ namespace SWLOR.Toolset.Shell.Panels
             _ => "L"
         };
 
+        /// <summary>
+        /// Share of the panel's flexible height the category tree keeps, or 0 when that divider has not
+        /// been moved. Read once by the view when it loads and written back when the divider is let go -
+        /// it is a stored number rather than a bound one, because the Grid owns the live value.
+        /// </summary>
+        public double CategoryProportion
+        {
+            get => _settings?.PaletteCategoryProportion ?? 0;
+            set
+            {
+                if (_settings != null)
+                    _settings.PaletteCategoryProportion = value;
+            }
+        }
+
         partial void OnTileSizeChanged(double value)
         {
             OnPropertyChanged(nameof(TileSizeLabel));

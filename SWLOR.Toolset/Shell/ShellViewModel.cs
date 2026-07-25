@@ -112,10 +112,45 @@ namespace SWLOR.Toolset.Shell
             _factory = factory;
 
             factory.ActiveDocumentChanged += SetActiveEditor;
+            factory.ProportionsChanged += QueueLayoutSave;
 
             Layout = factory.CreateLayout();
             if (Layout != null)
                 factory.InitLayout(Layout);
+        }
+
+        /// <summary>
+        /// Coalesces the burst of proportion changes a single divider drag produces into one settings
+        /// write, a short moment after the builder lets go.
+        /// </summary>
+        private DispatcherTimer? _layoutSaveTimer;
+
+        private void QueueLayoutSave()
+        {
+            if (_layoutSaveTimer == null)
+            {
+                _layoutSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
+                _layoutSaveTimer.Tick += (_, _) =>
+                {
+                    _layoutSaveTimer!.Stop();
+                    SaveLayout();
+                };
+            }
+
+            // Restarting rather than letting it run means the file is written once the drag has settled,
+            // not part-way through it.
+            _layoutSaveTimer.Stop();
+            _layoutSaveTimer.Start();
+        }
+
+        /// <summary>
+        /// Writes the current divider positions out now. Called on shutdown as well as from the debounce,
+        /// so a window closed straight after a drag still remembers it.
+        /// </summary>
+        public void SaveLayout()
+        {
+            _layoutSaveTimer?.Stop();
+            _settings.SetDockProportions(_factory.CaptureProportions());
         }
 
         private void SetActiveEditor(Dock.Model.Mvvm.Controls.Document? document)

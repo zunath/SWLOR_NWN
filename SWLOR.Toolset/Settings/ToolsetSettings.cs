@@ -53,6 +53,12 @@ namespace SWLOR.Toolset.Settings
 
         [JsonPropertyName("showFog")]
         public bool ShowFog { get; set; }
+
+        [JsonPropertyName("dockProportions")]
+        public Dictionary<string, double> DockProportions { get; set; } = new();
+
+        [JsonPropertyName("paletteCategoryProportion")]
+        public double PaletteCategoryProportion { get; set; }
     }
 
     /// <summary>
@@ -82,7 +88,17 @@ namespace SWLOR.Toolset.Settings
         private string _moduleContentsTab = string.Empty;
         private bool _showAreaLighting;
         private bool _showFog;
+        private Dictionary<string, double> _dockProportions = new(StringComparer.Ordinal);
+        private double _paletteCategoryProportion;
         private bool _suppressSave;
+
+        /// <summary>The file this instance reads and writes - the default one unless a caller named another.</summary>
+        private readonly string _filePath;
+
+        private ToolsetSettings(string filePath)
+        {
+            _filePath = filePath;
+        }
 
         public static string SettingsDirectory =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SWLOR.Toolset");
@@ -244,6 +260,80 @@ namespace SWLOR.Toolset.Settings
             }
         }
 
+        /// <summary>
+        /// Where the builder last left each dock divider, keyed by the dock's Id - the fraction of its
+        /// parent that dock occupies. Empty until a layout has been recorded, which is how a first run
+        /// gets the designed layout instead of an empty one.
+        /// </summary>
+        /// <remarks>
+        /// Stored per-Id rather than as a serialized layout tree: the panels are DI-resolved singletons
+        /// wired to the rest of the app, so re-hydrating a whole layout from disk would replace them with
+        /// fresh instances nothing else is talking to. Ids that are no longer in the layout are simply
+        /// never looked up, so this survives the layout being rearranged in code.
+        /// </remarks>
+        public IReadOnlyDictionary<string, double> DockProportions => _dockProportions;
+
+        /// <summary>
+        /// Records where the dock dividers are now, replacing what was there, and saves. A no-op when
+        /// nothing actually moved, so the shell can call this on every layout change without rewriting
+        /// the file each time.
+        /// </summary>
+        public void SetDockProportions(IReadOnlyDictionary<string, double> proportions)
+        {
+            if (proportions == null)
+                return;
+
+            var sanitized = new Dictionary<string, double>(StringComparer.Ordinal);
+            foreach (var (id, proportion) in proportions)
+            {
+                // Anything outside (0,1) is not a divider position - and a NaN would take the whole
+                // settings file down with it, because System.Text.Json refuses to write one.
+                if (!string.IsNullOrEmpty(id) && proportion > 0 && proportion < 1)
+                    sanitized[id] = proportion;
+            }
+
+            if (SameProportions(_dockProportions, sanitized))
+                return;
+
+            _dockProportions = sanitized;
+            Save();
+        }
+
+        private static bool SameProportions(
+            Dictionary<string, double> left, Dictionary<string, double> right)
+        {
+            if (left.Count != right.Count)
+                return false;
+
+            foreach (var (id, proportion) in left)
+            {
+                // A divider drag lands on sub-pixel values; a difference this small is not a move a
+                // builder made, and writing the file for one would mean a write per mouse event.
+                if (!right.TryGetValue(id, out var other) || Math.Abs(proportion - other) > 0.001)
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Share of the Palette panel's flexible height the category tree keeps, or 0 when the builder
+        /// has not moved that divider yet.
+        /// </summary>
+        public double PaletteCategoryProportion
+        {
+            get => _paletteCategoryProportion;
+            set
+            {
+                var normalized = value > 0 && value < 1 ? value : 0;
+                if (Math.Abs(_paletteCategoryProportion - normalized) < 0.001)
+                    return;
+
+                _paletteCategoryProportion = normalized;
+                Save();
+            }
+        }
+
         /// <summary>Most-recently-opened module roots, most recent first.</summary>
         public IReadOnlyList<string> RecentModules => _recentModules;
 
@@ -267,15 +357,21 @@ namespace SWLOR.Toolset.Settings
         /// <see cref="ModuleRoot"/> auto-detected) if no settings file exists yet or it fails to
         /// parse. Never throws.
         /// </summary>
-        public static ToolsetSettings Load()
+        public static ToolsetSettings Load() => Load(SettingsFilePath);
+
+        /// <summary>
+        /// <see cref="Load()"/>, against a named file rather than the per-user one. Everything this
+        /// instance saves afterwards goes back to the same file.
+        /// </summary>
+        public static ToolsetSettings Load(string filePath)
         {
-            var settings = new ToolsetSettings { _suppressSave = true };
+            var settings = new ToolsetSettings(filePath) { _suppressSave = true };
 
             try
             {
-                if (File.Exists(SettingsFilePath))
+                if (File.Exists(filePath))
                 {
-                    var json = File.ReadAllText(SettingsFilePath);
+                    var json = File.ReadAllText(filePath);
                     var data = JsonSerializer.Deserialize<ToolsetSettingsData>(json);
                     if (data != null)
                     {
@@ -292,6 +388,19 @@ namespace SWLOR.Toolset.Settings
                         settings._moduleContentsTab = data.ModuleContentsTab ?? string.Empty;
                         settings._showAreaLighting = data.ShowAreaLighting;
                         settings._showFog = data.ShowFog;
+                        settings._paletteCategoryProportion =
+                            data.PaletteCategoryProportion > 0 && data.PaletteCategoryProportion < 1
+                                ? data.PaletteCategoryProportion
+                                : 0;
+
+                        if (data.DockProportions != null)
+                        {
+                            foreach (var (id, proportion) in data.DockProportions)
+                            {
+                                if (!string.IsNullOrEmpty(id) && proportion > 0 && proportion < 1)
+                                    settings._dockProportions[id] = proportion;
+                            }
+                        }
                     }
                 }
             }
@@ -338,6 +447,9 @@ namespace SWLOR.Toolset.Settings
             return null;
         }
 
+        /// <summary>The value if it is a real number, or null - the JSON writer rejects NaN and infinity.</summary>
+        private static double? Finite(double value) => double.IsFinite(value) ? value : null;
+
         private void Save()
         {
             if (_suppressSave)
@@ -345,28 +457,35 @@ namespace SWLOR.Toolset.Settings
 
             try
             {
-                Directory.CreateDirectory(SettingsDirectory);
+                var directory = Path.GetDirectoryName(_filePath);
+                if (!string.IsNullOrEmpty(directory))
+                    Directory.CreateDirectory(directory);
 
                 var data = new ToolsetSettingsData
                 {
                     ModuleRoot = _moduleRoot,
                     NwnInstallOverride = _nwnInstallOverride,
                     RecentModules = _recentModules,
-                    WindowWidth = _window.Width,
-                    WindowHeight = _window.Height,
-                    WindowLeft = double.IsNaN(_window.Left) ? null : _window.Left,
-                    WindowTop = double.IsNaN(_window.Top) ? null : _window.Top,
+                    // Every double on the way out is filtered: System.Text.Json throws on NaN and
+                    // infinity, Save() swallows that, and one bad number would take every other setting
+                    // in the file down with it silently.
+                    WindowWidth = Finite(_window.Width) ?? 0,
+                    WindowHeight = Finite(_window.Height) ?? 0,
+                    WindowLeft = Finite(_window.Left),
+                    WindowTop = Finite(_window.Top),
                     WindowMaximized = _window.IsMaximized,
-                    PalettePreviewSize = _palettePreviewSize,
+                    PalettePreviewSize = Finite(_palettePreviewSize) ?? 0,
                     PaletteSelection = _paletteSelection,
                     PaletteShowsStandard = _paletteShowsStandard,
                     ModuleContentsTab = _moduleContentsTab,
                     ShowAreaLighting = _showAreaLighting,
-                    ShowFog = _showFog
+                    ShowFog = _showFog,
+                    DockProportions = new Dictionary<string, double>(_dockProportions, StringComparer.Ordinal),
+                    PaletteCategoryProportion = Finite(_paletteCategoryProportion) ?? 0
                 };
 
                 var json = JsonSerializer.Serialize(data, JsonOptions);
-                File.WriteAllText(SettingsFilePath, json);
+                File.WriteAllText(_filePath, json);
                 LastSaveError = null;
             }
             catch (Exception ex)

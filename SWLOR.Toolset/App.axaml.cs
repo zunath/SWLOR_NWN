@@ -138,7 +138,8 @@ namespace SWLOR.Toolset
                 // The palette places into whichever area document is in front. Resolved lazily for the
                 // same construction-cycle reason as EditorService above.
                 () => sp.GetRequiredService<ToolsetDockFactory>().ActivePlacementTarget,
-                sp.GetRequiredService<ThumbnailService>()));
+                sp.GetRequiredService<ThumbnailService>(),
+                sp.GetRequiredService<Services.IEditorPromptService>()));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(

@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
@@ -45,6 +45,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly Func<Editors.EditorService>? _editorService;
         private readonly Func<IAreaPlacementTarget?>? _placementTarget;
         private readonly ThumbnailService? _thumbnails;
+        private readonly Services.IEditorPromptService? _prompts;
 
         /// <summary>Every row of the current type's tree, expanded or not, so collapsing need not re-derive counts.</summary>
         private readonly List<CategoryRowViewModel> _allRows = new();
@@ -84,9 +85,6 @@ namespace SWLOR.Toolset.Shell.Panels
 
         [ObservableProperty]
         private bool _isOrganizing;
-
-        [ObservableProperty]
-        private string _newFolderName = string.Empty;
 
         /// <summary>Tile width in pixels. Idle while tiles are glyphs; the control the grid needs the moment they become rendered models.</summary>
         [ObservableProperty]
@@ -129,9 +127,11 @@ namespace SWLOR.Toolset.Shell.Panels
             OutputLogService log,
             Func<Editors.EditorService>? editorService = null,
             Func<IAreaPlacementTarget?>? placementTarget = null,
-            ThumbnailService? thumbnails = null)
+            ThumbnailService? thumbnails = null,
+            Services.IEditorPromptService? prompts = null)
         {
             _thumbnails = thumbnails;
+            _prompts = prompts;
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _categories = categories ?? throw new ArgumentNullException(nameof(categories));
             _log = log ?? throw new ArgumentNullException(nameof(log));
@@ -257,72 +257,148 @@ namespace SWLOR.Toolset.Shell.Panels
             _editorService?.Invoke().TryOpenEditor(SelectedType, tile.ResRef);
         }
 
-        // ----- folder editing -----
+        // ----- context-menu actions -----
+        //
+        // Right-clicking a tile or a category row selects it first (see PaletteView's ContextRequested
+        // handlers), so every command below acts on the selection and the menu items need no parameter
+        // plumbing of their own.
 
+        /// <summary>
+        /// Deletes the blueprint's file from the module.
+        /// </summary>
+        /// <remarks>
+        /// The confirmation names the file and says what it cannot undo, because this is the one palette
+        /// action that destroys something outside the toolset's own sidecar: areas that placed this
+        /// blueprint keep their instances, and those instances will no longer resolve.
+        /// </remarks>
         [RelayCommand]
-        private void NewFolder()
+        private async Task DeleteTileAsync(PaletteTileViewModel? tile)
         {
-            var section = _categories.Section(SelectedType);
-            if (section == null)
+            tile ??= SelectedTile;
+            if (tile == null || _prompts == null)
                 return;
 
-            var name = string.IsNullOrWhiteSpace(NewFolderName) ? "New category" : NewFolderName.Trim();
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
 
-            // A new folder goes inside the selection when there is one, which is how a builder builds
-            // depth without a separate "nest this" gesture.
-            if (SelectedRow?.Folder is { } parent)
+            var path = workspace.GetResourcePath(SelectedType, tile.ResRef);
+            var kind = SelectedType.SingularDisplayName().ToLowerInvariant();
+
+            var confirmed = await _prompts.ConfirmDestructiveAsync(
+                $"Delete the {kind} '{tile.Name}'?",
+                $"This deletes {Path.GetFileName(path)} from the module. Any area that already placed " +
+                "it keeps its instances, and those will no longer resolve. This cannot be undone from " +
+                "the toolset.",
+                "Delete").ConfigureAwait(true);
+
+            if (!confirmed)
+                return;
+
+            try
+            {
+                if (File.Exists(path))
+                    File.Delete(path);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Could not delete {tile.ResRef}: {ex.Message}";
+                _log.AppendLine($"Deleting blueprint '{tile.ResRef}' failed: {ex.Message}");
+                return;
+            }
+
+            // Drop it from the sidecar too, or the category keeps a member that resolves to nothing.
+            if (_categories.Section(SelectedType) is { } section)
+            {
+                foreach (var folder in section.FoldersContaining(tile.ResRef).ToList())
+                    folder.RemoveMember(tile.ResRef);
+
+                _categories.SaveChanges();
+            }
+
+            SelectedTile = null;
+            Refresh();
+            StatusMessage = $"Deleted {tile.Name}.";
+            _log.AppendLine($"Deleted blueprint '{tile.ResRef}' ({path}).");
+        }
+
+        /// <summary>Adds a subcategory inside the selected one, or a top-level one when nothing is selected.</summary>
+        [RelayCommand]
+        private async Task NewCategoryAsync()
+        {
+            var section = _categories.Section(SelectedType);
+            if (section == null || _prompts == null)
+                return;
+
+            var parent = SelectedRow?.Folder;
+            var name = await _prompts.PromptForTextAsync(
+                parent == null ? "New category" : $"New category inside '{parent.Name}'",
+                "Categories are the toolset's own organisation - they are stored beside the module, not in it.",
+                string.Empty,
+                "Create").ConfigureAwait(true);
+
+            if (name == null)
+                return;
+
+            if (parent != null)
                 parent.AddChild(name);
             else
                 section.AddFolder(name);
 
-            NewFolderName = string.Empty;
             _categories.SaveChanges();
+            Refresh();
             StatusMessage = $"Added category '{name}'.";
             _log.AppendLine($"Added category '{name}' to the {SelectedType.DisplayName().ToLowerInvariant()} palette.");
         }
 
+        /// <summary>Renames the selected category, prompting with its current name.</summary>
         [RelayCommand]
-        private void RenameFolder()
+        private async Task RenameCategoryAsync()
         {
-            if (SelectedRow?.Folder is not { } folder)
-            {
-                StatusMessage = "Select a category to rename.";
+            if (SelectedRow?.Folder is not { } folder || _prompts == null)
                 return;
-            }
 
-            if (string.IsNullOrWhiteSpace(NewFolderName))
-            {
-                StatusMessage = "Type the new name first.";
+            var name = await _prompts.PromptForTextAsync(
+                $"Rename '{folder.Name}'",
+                string.Empty,
+                folder.Name,
+                "Rename").ConfigureAwait(true);
+
+            if (name == null || name == folder.Name)
                 return;
-            }
 
             var previous = folder.Name;
-            folder.Rename(NewFolderName.Trim());
-            NewFolderName = string.Empty;
+            folder.Rename(name);
             _categories.SaveChanges();
             Refresh();
             StatusMessage = $"Renamed '{previous}' to '{folder.Name}'.";
         }
 
         /// <summary>
-        /// Removes an empty category. Deleting a full one is refused rather than confirmed, because the
-        /// members would be silently unfiled and land in Unsorted with no way back.
+        /// Deletes the selected category. Refuses a category that still holds blueprints rather than
+        /// confirming it: the members would be silently unfiled into Unsorted with no way back, and
+        /// nothing about "Delete" suggests that.
         /// </summary>
         [RelayCommand]
-        private void RemoveFolder()
+        private async Task DeleteCategoryAsync()
         {
             var section = _categories.Section(SelectedType);
-            if (section == null || SelectedRow?.Folder is not { } folder)
-            {
-                StatusMessage = "Select a category to remove.";
+            if (section == null || SelectedRow?.Folder is not { } folder || _prompts == null)
                 return;
-            }
 
             if (folder.MembersIncludingDescendants.Any())
             {
-                StatusMessage = "Only an empty category can be removed.";
+                StatusMessage = $"'{folder.Name}' still holds blueprints - empty it first.";
                 return;
             }
+
+            var confirmed = await _prompts.ConfirmDestructiveAsync(
+                $"Delete the category '{folder.Name}'?",
+                "The category is removed from this palette. No blueprints are deleted.",
+                "Delete").ConfigureAwait(true);
+
+            if (!confirmed)
+                return;
 
             section.RemoveFolder(folder);
             SelectedRow = null;

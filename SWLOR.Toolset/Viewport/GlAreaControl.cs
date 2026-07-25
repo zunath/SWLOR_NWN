@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.OpenGL;
@@ -329,26 +329,30 @@ void main()
         /// <summary>Raised when an active placement is cancelled (Esc, or a right-click while placement is active). Clears <see cref="IsPlacementActive"/> before raising.</summary>
         public event Action? PlacementCancelled;
 
-        private bool _isPaintActive;
+        private InstanceMarker? _placementGhost;
 
         /// <summary>
-        /// Whether a viewport click should paint terrain instead of picking an instance.
-        /// Unlike <see cref="IsPlacementActive"/>, this is a sticky brush: it stays armed across
-        /// dabs so a user can keep painting, and is cleared by the host view (or Esc) rather than by
-        /// the first click. Camera navigation is unaffected - a left DRAG still pans and
-        /// right/middle still orbit; only a click (under the drag threshold) paints.
+        /// What to draw under the cursor while <see cref="IsPlacementActive"/>: the object about to
+        /// be placed, rendered translucently at the ground point the pointer is over. Its own
+        /// Position is ignored - the cursor supplies that - so the host sets this once when arming
+        /// placement rather than rebuilding a marker on every mouse move.
         /// </summary>
-        public bool IsPaintActive
+        public InstanceMarker? PlacementGhost
         {
-            get => _isPaintActive;
-            set => _isPaintActive = value;
+            get => _placementGhost;
+            set
+            {
+                if (ReferenceEquals(_placementGhost, value))
+                    return;
+
+                _placementGhost = value;
+                _ghostPosition = null;
+                RequestNextFrameRendering();
+            }
         }
 
-        /// <summary>Raised for each paint dab while <see cref="IsPaintActive"/>: the world-space ground point clicked (walkmesh floor when resolvable, else the Z=0 plane). Stays armed afterwards.</summary>
-        public event Action<Vector3>? PaintPointPicked;
-
-        /// <summary>Raised when paint mode is dismissed from inside the viewport (Esc), so the host view can untoggle its brush UI.</summary>
-        public event Action? PaintCancelled;
+        /// <summary>Where the ghost sits right now, or null before the pointer has been over the map.</summary>
+        private Vector3? _ghostPosition;
 
         private bool _hideCeilings;
 
@@ -503,9 +507,7 @@ void main()
             // modern editors where you left-drag an object to move it (Alt to rotate). Hit-test the
             // press against the selection first; any other press (empty space, shift, or another
             // button) falls through to the camera navigation below.
-            // Paint mode owns the plain-left click, so the move/rotate gizmo must not intercept a
-            // dab that happens to land on the current selection.
-            if (!_isPlacementActive && !_isPaintActive && props.IsLeftButtonPressed && !shift
+            if (!_isPlacementActive && props.IsLeftButtonPressed && !shift
                 && _selectedInstance != null && TryHitSelectedInstance(pos))
             {
                 BeginManipulation(_selectedInstance, alt ? DragMode.Rotate : DragMode.Move);
@@ -541,6 +543,11 @@ void main()
 
         public void HandlePointerMoved(PointerEventArgs e)
         {
+            // The ghost must track the pointer with no button held - the one case the drag-mode
+            // guard below rejects - so it is updated first and independently of it.
+            if (_isPlacementActive && _placementGhost != null)
+                UpdatePlacementGhost(e.GetPosition(this));
+
             if (_dragMode == DragMode.None)
                 return;
 
@@ -606,8 +613,6 @@ void main()
 
             if (_isPlacementActive)
                 RaisePlacementPointPicked(releasePos);
-            else if (_isPaintActive)
-                RaisePaintPointPicked(releasePos);
             else
                 RaiseInstancePicked(releasePos);
         }
@@ -750,7 +755,30 @@ void main()
                 return;
 
             _isPlacementActive = false;
+            _ghostPosition = null;
+            RequestNextFrameRendering();
             PlacementCancelled?.Invoke();
+        }
+
+        /// <summary>
+        /// Moves the ghost to the ground point under the cursor, using the same
+        /// walkmesh-then-flat-plane chain the placement click itself uses - so where the ghost
+        /// appears is where the object will actually land, elevated tiles included.
+        /// </summary>
+        private void UpdatePlacementGhost(Point screenPos)
+        {
+            var ray = TryBuildRay(screenPos);
+            if (ray == null)
+                return;
+
+            var scene = Volatile.Read(ref _sceneState).Scene;
+            var point = (scene != null ? AreaWalkmesh.RaycastGround(ray.Value, scene) : null)
+                        ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
+            if (point is not { } hit)
+                return;
+
+            _ghostPosition = hit;
+            RequestNextFrameRendering();
         }
 
         private void RaisePlacementPointPicked(Point screenPos)
@@ -769,28 +797,8 @@ void main()
                 return;
 
             _isPlacementActive = false;
+            _ghostPosition = null;
             PlacementPointPicked?.Invoke(hit);
-        }
-
-        /// <summary>
-        /// Resolves a paint dab to a ground point and raises <see cref="PaintPointPicked"/>, using
-        /// the same walkmesh-then-flat-plane chain placement uses so a click on an elevated tile
-        /// reports that tile rather than the point directly below it. Deliberately does NOT clear
-        /// <see cref="IsPaintActive"/> - the brush stays armed for the next dab.
-        /// </summary>
-        private void RaisePaintPointPicked(Point screenPos)
-        {
-            var ray = TryBuildRay(screenPos);
-            if (ray == null)
-                return;
-
-            var scene = Volatile.Read(ref _sceneState).Scene;
-            var point = (scene != null ? AreaWalkmesh.RaycastGround(ray.Value, scene) : null)
-                        ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
-            if (point is not { } hit)
-                return;
-
-            PaintPointPicked?.Invoke(hit);
         }
 
         public void HandlePointerWheel(PointerWheelEventArgs e)
@@ -849,13 +857,6 @@ void main()
                 CancelPlacement();
                 e.Handled = true;
                 return;
-            }
-
-            if (_isPaintActive)
-            {
-                _isPaintActive = false;
-                PaintCancelled?.Invoke();
-                e.Handled = true;
             }
         }
 
@@ -1191,6 +1192,7 @@ void main()
             DrawPolygonOverlays();
             DrawSelectionHighlight();
             DrawTransformGizmo();
+            DrawPlacementGhost();
 
             _gl.BindVertexArray(0);
         }
@@ -1466,6 +1468,99 @@ void main()
             SetUniformMatrix4("model", Matrix4x4.Identity); // bounds are already world-space
 
             _gl.DrawArrays(PrimitiveType.Lines, 0, 24);
+        }
+
+        /// <summary>Alpha and tint for the placement ghost - present, clearly provisional.</summary>
+        private const float PlacementGhostAlpha = 0.55f;
+
+        private static readonly Vector3 PlacementGhostColor = new(0.36f, 0.61f, 0.96f);
+
+        /// <summary>
+        /// How much larger the ghost's fallback marker is than a placed instance's marker. A blueprint
+        /// with no resolvable model has only this to show, and at the marker's own size it was lost
+        /// against the floor - which is worse than useless when the marker is the whole preview.
+        /// </summary>
+        private const float PlacementGhostMarkerScale = 2.2f;
+
+        /// <summary>
+        /// Draws the object being placed at the ground point under the cursor.
+        /// </summary>
+        /// <remarks>
+        /// Tinted and translucent rather than a faded copy of the real thing: a half-transparent
+        /// textured model is easy to mistake for one already placed, whereas a single accent colour
+        /// reads immediately as "not yet real". The model's own geometry is used where it resolved, so
+        /// the footprint and height are honest even though the surface is not.
+        /// <para>
+        /// Drawn with the depth test off, like the transform gizmo. This is a cursor, and a cursor that
+        /// disappears behind a wall or sinks into the floor has failed at its one job - which is exactly
+        /// what happened to the marker fallback, whose base sits on the walkmesh and so ended up buried
+        /// inside the floor geometry drawn above it.
+        /// </para>
+        /// </remarks>
+        private void DrawPlacementGhost()
+        {
+            if (!_isPlacementActive || _placementGhost is not { } ghost || _ghostPosition is not { } position ||
+                _gl == null)
+                return;
+
+            var placed = new InstanceMarker
+            {
+                Kind = ghost.Kind,
+                TemplateResRef = ghost.TemplateResRef,
+                Tag = ghost.Tag,
+                Position = position,
+                Orientation = ghost.Orientation,
+                VisualTransform = ghost.VisualTransform,
+                Model = ghost.Model
+            };
+
+            var transform = AreaPicking.ComputeInstanceTransform(placed);
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.DepthMask(false);
+            _gl.Disable(EnableCap.DepthTest);
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", PlacementGhostAlpha);
+            SetUniformVec3("flatColor", PlacementGhostColor);
+            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
+
+            if (DrawsAsModel(placed))
+            {
+                var buffer = GetOrBuildModelBuffer(placed.Model!);
+                _gl.BindVertexArray(buffer.Vao);
+
+                foreach (var meshRange in buffer.MeshRanges)
+                {
+                    SetUniformMatrix4("model", meshRange.MeshTransform * transform);
+
+                    unsafe
+                    {
+                        _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                            DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                    }
+                }
+            }
+            else if (_markerMeshBuffer is { } marker)
+            {
+                _gl.BindVertexArray(marker.Vao);
+                SetUniformMatrix4("model",
+                    Matrix4x4.CreateScale(PlacementGhostMarkerScale) * transform);
+
+                unsafe
+                {
+                    _gl.DrawElements(PrimitiveType.Triangles, (uint)marker.IndexCount,
+                        DrawElementsType.UnsignedInt, (void*)0);
+                }
+            }
+
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
+            SetUniformFloat("flatAlpha", 1f);
         }
 
         /// <summary>

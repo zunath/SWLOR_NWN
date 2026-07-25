@@ -12,46 +12,19 @@
        Undo prefers whichever of this editor's two histories (.git instances / .are properties) was
        touched most recently, falling back to the other. -->
   <DockPanel>
-    <TabControl x:Name="RootTabs" SelectionChanged="OnRootTabSelectionChanged">
+    <TabControl x:Name="RootTabs">
       <TabItem Header="3D View" x:Name="ViewTab3D">
         <Grid RowDefinitions="Auto,*,Auto">
 
-          <!-- One real toolbar row rather than two floating panels pinned to opposite corners of the
-               viewport: those overlapped as soon as the map got narrow, and controls that overlap are
-               controls you cannot click. It wraps instead of colliding. -->
+          <!-- What is left of the toolbar. Placement moved to the Palette panel, where the builder is
+               already choosing what to place; the scene rebuilds itself after every edit, so there is
+               nothing to press for that either. This one switch stays because models can visually bury
+               the markers you are trying to click. -->
           <Border Grid.Row="0" Background="{DynamicResource PanelBrush}"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="8,6">
-            <WrapPanel Orientation="Horizontal">
-              <ToggleButton Content="Paint" Margin="0,0,6,3" IsChecked="{Binding IsPaintMode, Mode=TwoWay}"
-                            ToolTip.Tip="Arm the tile brush: click a tile to edit it. Esc to stop." />
-              <ComboBox Margin="0,0,6,3" MinWidth="92" ItemsSource="{Binding PaintTools}"
-                        SelectedItem="{Binding SelectedPaintTool, Mode=TwoWay}"
-                        ToolTip.Tip="Which edit a click applies" />
-              <ComboBox Margin="0,0,10,3" MinWidth="116" ItemsSource="{Binding TerrainBrushes}"
-                        SelectedItem="{Binding SelectedTerrain, Mode=TwoWay}"
-                        ToolTip.Tip="Terrain painted by the Terrain tool" />
-
-              <ComboBox Margin="0,0,6,3" MinWidth="116" ItemsSource="{Binding Sections}"
-                        SelectedItem="{Binding PlacementSection, Mode=TwoWay}"
-                        ToolTip.Tip="Instance kind to place from">
-                <ComboBox.ItemTemplate>
-                  <DataTemplate DataType="editors:InstanceListSectionViewModel">
-                    <TextBlock Text="{Binding Title}" />
-                  </DataTemplate>
-                </ComboBox.ItemTemplate>
-              </ComboBox>
-              <Button Content="Place..." Margin="0,0,10,3" Command="{Binding BeginPlaceCommand}" />
-
-              <CheckBox Content="Placeable models" x:Name="PlaceableModelsCheck" IsChecked="True"
-                        Margin="0,0,10,3" IsCheckedChanged="OnPlaceableModelsChanged"
-                        ToolTip.Tip="Unchecked: placeables show their marker instead of their 3D model" />
-              <CheckBox Content="Hide ceilings" x:Name="HideCeilingsCheck" Margin="0,0,10,3"
-                        IsCheckedChanged="OnHideCeilingsChanged" />
-              <CheckBox Content="Show walkmesh" x:Name="ShowWalkmeshCheck" Margin="0,0,10,3"
-                        IsCheckedChanged="OnShowWalkmeshChanged"
-                        ToolTip.Tip="Overlay each tile's walkmesh (green walkable / red blocked)." />
-              <Button Content="Rebuild" Margin="0,0,0,3" Command="{Binding RebuildSceneCommand}" />
-            </WrapPanel>
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="10,6">
+            <CheckBox Content="Placeable models" x:Name="PlaceableModelsCheck" IsChecked="True"
+                      IsCheckedChanged="OnPlaceableModelsChanged"
+                      ToolTip.Tip="Unchecked: placeables show their marker instead of their 3D model" />
           </Border>
 
           <viewport:GlAreaControl Grid.Row="1" x:Name="AreaView" />
@@ -89,10 +62,6 @@
                          Foreground="{DynamicResource AccentBrush}"
                          TextTrimming="CharacterEllipsis" MaxWidth="480"
                          IsVisible="{Binding PlacementStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-              <TextBlock Text="{Binding PaintStatus}" Classes="mono" FontSize="10.5"
-                         Foreground="{DynamicResource GreenBrush}"
-                         TextTrimming="CharacterEllipsis" MaxWidth="480"
-                         IsVisible="{Binding PaintStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
           </Border>
 
@@ -116,35 +85,6 @@
           <Border Grid.Row="1" x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
             <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
-          </Border>
-
-          <!-- Place-from-palette. Choosing a blueprint here arms placement mode; the next
-               viewport click (or Esc/right-click to cancel) resolves it via
-               AreaEditorViewModel.CommitPlacement/CancelPlacement. -->
-          <!-- FallbackValue matters: with no kind chosen yet, PlacementSection is null and the
-               binding path can't resolve - without a fallback IsVisible would stay at its
-               default (true) and show an empty popup on area load. -->
-          <Border Grid.Row="1" IsVisible="{Binding PlacementSection.ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
-                  Background="#E0202020" BorderBrush="{DynamicResource DockThemeBorderMidBrush}" BorderThickness="1"
-                  Padding="10" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420">
-            <StackPanel Spacing="6" DataContext="{Binding PlacementSection.ActivePaletteBrowser}"
-                        x:DataType="editors:PaletteBrowserViewModel">
-              <TextBlock Text="{Binding Title, StringFormat='Choose {0} blueprint to place'}" FontWeight="Bold" Foreground="White" />
-              <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode, Mode=TwoWay}" MaxHeight="320">
-                <TreeView.ItemTemplate>
-                  <TreeDataTemplate DataType="editors:PaletteNodeViewModel" ItemsSource="{Binding Children}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                      <TextBlock Text="{Binding DisplayName}" />
-                      <TextBlock Text="{Binding ResRef}" Opacity="0.6" />
-                    </StackPanel>
-                  </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-              </TreeView>
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <Button Content="Place" Command="{Binding ChooseCommand}" />
-                <Button Content="Cancel" Command="{Binding CancelCommand}" />
-              </StackPanel>
-            </StackPanel>
           </Border>
 
           <!-- Selection bar. One row, and nothing in it is a number in a narrow box: the name a builder

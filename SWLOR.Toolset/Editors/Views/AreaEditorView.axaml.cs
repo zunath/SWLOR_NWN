@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Numerics;
 using Avalonia.Controls;
 using SWLOR.Toolset.Domain.Render;
@@ -19,8 +19,6 @@ namespace SWLOR.Toolset.Editors
             AreaView.ManipulationPreviewChanged += OnManipulationPreviewChanged;
             AreaView.PlacementPointPicked += OnPlacementPointPicked;
             AreaView.PlacementCancelled += OnPlacementCancelled;
-            AreaView.PaintPointPicked += OnPaintPointPicked;
-            AreaView.PaintCancelled += OnPaintCancelled;
             DataContextChanged += (_, _) => AttachViewModel();
         }
 
@@ -37,9 +35,13 @@ namespace SWLOR.Toolset.Editors
             AreaView.Scene = _viewModel.AreaScene;
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
-            AreaView.IsPaintActive = _viewModel.IsPaintMode;
+            AreaView.PlacementGhost = _viewModel.PlacementGhost;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
-            BuildSceneIfViewingMap();
+
+            // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
+            // (it is the first tab), and reading IsSelected here raced the TabControl's own setup - the
+            // case where a second area opened to an empty viewport that never built.
+            _viewModel.EnsureSceneBuilt();
         }
 
         private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -53,8 +55,8 @@ namespace SWLOR.Toolset.Editors
                 AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             else if (e.PropertyName == nameof(AreaEditorViewModel.IsPlacementPending))
                 AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
-            else if (e.PropertyName == nameof(AreaEditorViewModel.IsPaintMode))
-                AreaView.IsPaintActive = _viewModel.IsPaintMode;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.PlacementGhost))
+                AreaView.PlacementGhost = _viewModel.PlacementGhost;
         }
 
         /// <summary>
@@ -83,32 +85,6 @@ namespace SWLOR.Toolset.Editors
         /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();
 
-        /// <summary>A paint dab landed on a tile - apply the active brush tool there.</summary>
-        private void OnPaintPointPicked(Vector3 position) => _viewModel?.CommitPaint(position);
-
-        /// <summary>The brush was disarmed from inside the viewport (Esc) - untoggle the UI.</summary>
-        private void OnPaintCancelled() => _viewModel?.CancelPaint();
-
-        /// <summary>Builds the 3D scene lazily the first time the "3D View" tab is activated - never on area-editor open.</summary>
-        private void OnRootTabSelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            // The TabControl raises SelectionChanged while the XAML is still populating
-            // (during InitializeComponent), before named fields are assigned - guard both.
-            if (ViewTab3D?.IsSelected == true)
-                _viewModel?.EnsureSceneBuilt();
-        }
-
-        /// <summary>
-        /// The 3D view is the first tab, so it is already selected by the time a view model arrives -
-        /// too early for SelectionChanged to have found one. Building here is what makes opening an area
-        /// show the map rather than an empty viewport.
-        /// </summary>
-        private void BuildSceneIfViewingMap()
-        {
-            if (ViewTab3D?.IsSelected == true)
-                _viewModel?.EnsureSceneBuilt();
-        }
-
         private void OnGlRenderStatusChanged(object? sender, string message)
         {
             GlStatusBorder.IsVisible = !string.IsNullOrEmpty(message);
@@ -131,18 +107,6 @@ namespace SWLOR.Toolset.Editors
 
         private void OnViewportPointerWheel(object? sender, Avalonia.Input.PointerWheelEventArgs e) =>
             AreaView.HandlePointerWheel(e);
-
-        private void OnHideCeilingsChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (AreaView != null && HideCeilingsCheck != null)
-                AreaView.HideCeilings = HideCeilingsCheck.IsChecked == true;
-        }
-
-        private void OnShowWalkmeshChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (AreaView != null && ShowWalkmeshCheck != null)
-                AreaView.ShowWalkmesh = ShowWalkmeshCheck.IsChecked == true;
-        }
 
         private void OnPlaceableModelsChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {

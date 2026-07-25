@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,10 +7,13 @@
              x:Class="SWLOR.Toolset.Shell.Views.PaletteView"
              x:DataType="panels:PaletteViewModel">
 
-  <!-- Top to bottom: which type, one search box, the category tree, where you are, the grid.
-       The tree and the grid split the height with a splitter between them, because how much of each
-       you want depends on whether you are hunting for a folder or working out of one. -->
-  <Grid RowDefinitions="Auto,Auto,Auto,Auto,220,Auto,Auto,*,Auto">
+  <!-- Top to bottom: which type, one search box, the category tree, then the object grid.
+       The tree and the grid share the height through a draggable splitter, because how much of each
+       you want depends on whether you are hunting for a category or working out of one. Everything
+       category-related is grouped above the splitter and everything object-related below it, so the
+       divider lands where the meaning changes rather than in the middle of a group. Both sides are
+       star-sized: a GridSplitter between an Auto row and a star row has nothing to trade. -->
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,2*,Auto,3*">
 
     <!-- Title drawn here rather than by Dock's chrome, which pads it out with a dotted drag grip. -->
     <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
@@ -50,81 +53,98 @@
         <TextBlock Classes="count" VerticalAlignment="Center"
                    IsVisible="{Binding HasCategoryMatches}"
                    Text="{Binding CategoryMatches.Count, StringFormat='{}{0} matches'}" />
-        <Button Classes="link" Content="+ NEW" Command="{Binding NewFolderCommand}"
+        <Button Classes="link" Content="+ NEW" Command="{Binding NewCategoryCommand}"
                 ToolTip.Tip="Add a category, nested inside the selected one" />
         <ToggleButton Content="Organize" IsChecked="{Binding IsOrganizing, Mode=TwoWay}"
                       FontSize="11" Padding="8,2" />
       </StackPanel>
     </Grid>
 
-    <!-- Searching swaps the tree for flattened matches, each with the path that reaches it. -->
-    <Border Grid.Row="4" Margin="0,2" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1">
-      <Grid>
-        <ListBox IsVisible="{Binding !IsSearching}"
-                 Background="Transparent" BorderThickness="0"
-                 ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}">
-          <ListBox.ItemTemplate>
-            <DataTemplate DataType="panels:CategoryRowViewModel">
-              <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}">
-                <Button Grid.Column="0" Content="{Binding Twisty}" Width="26" MinHeight="22" Padding="0"
-                        Background="Transparent" BorderThickness="0" FontSize="11"
-                        Foreground="{DynamicResource InkTertiaryBrush}"
-                        Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).ToggleExpandCommand}"
-                        CommandParameter="{Binding}" />
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5">
-                  <TextBlock Text="&#x2605;" FontSize="10" VerticalAlignment="Center"
-                             Foreground="{DynamicResource GoldBrush}"
-                             IsVisible="{Binding IsPinned}" />
-                  <TextBlock Classes="name" Text="{Binding Name}" />
-                </StackPanel>
-                <TextBlock Grid.Column="2" Classes="count" Margin="8,0,10,0"
-                           VerticalAlignment="Center" Text="{Binding Count}" />
-              </Grid>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-
-        <ListBox IsVisible="{Binding IsSearching}"
-                 Background="Transparent" BorderThickness="0"
-                 ItemsSource="{Binding CategoryMatches}">
-          <ListBox.ItemTemplate>
-            <DataTemplate DataType="panels:CategoryMatchViewModel">
-              <Grid ColumnDefinitions="*,Auto" Margin="4,1">
-                <StackPanel Grid.Column="0" Spacing="1">
-                  <TextBlock Classes="name" Text="{Binding Name}" />
-                  <TextBlock Classes="dim" FontSize="11" Text="{Binding ParentPath}"
-                             IsVisible="{Binding HasParentPath}" TextTrimming="CharacterEllipsis" />
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
-                  <TextBlock Classes="count" VerticalAlignment="Center" Text="{Binding Count}" />
-                  <Button Content="Go" FontSize="11" Padding="7,2" VerticalAlignment="Center"
-                          Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).GoToCategoryCommand}"
+    <!-- Categories block. Searching swaps the tree for flattened matches, each with the path to it. -->
+    <Grid Grid.Row="4" RowDefinitions="*,Auto" MinHeight="90">
+      <Border Grid.Row="0" Margin="0,2" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1">
+        <Grid>
+          <ListBox IsVisible="{Binding !IsSearching}"
+                   Background="Transparent" BorderThickness="0"
+                   ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}">
+            <ListBox.ItemTemplate>
+              <DataTemplate DataType="panels:CategoryRowViewModel">
+                <!-- ContextRequested selects the row first: Avalonia does not select on right-click,
+                     and every command on this menu acts on the selection. -->
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}"
+                      Background="Transparent" ContextRequested="OnCategoryContextRequested">
+                  <Grid.ContextMenu>
+                    <ContextMenu>
+                      <MenuItem Header="New category..."
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).NewCategoryCommand}" />
+                      <MenuItem Header="Rename..."
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).RenameCategoryCommand}" />
+                      <Separator />
+                      <MenuItem Header="Delete category"
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).DeleteCategoryCommand}" />
+                    </ContextMenu>
+                  </Grid.ContextMenu>
+                  <Button Grid.Column="0" Content="{Binding Twisty}" Width="26" MinHeight="22" Padding="0"
+                          Background="Transparent" BorderThickness="0" FontSize="11"
+                          Foreground="{DynamicResource InkTertiaryBrush}"
+                          Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).ToggleExpandCommand}"
                           CommandParameter="{Binding}" />
-                </StackPanel>
-              </Grid>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-      </Grid>
-    </Border>
+                  <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5">
+                    <TextBlock Text="&#x2605;" FontSize="10" VerticalAlignment="Center"
+                               Foreground="{DynamicResource GoldBrush}"
+                               IsVisible="{Binding IsPinned}" />
+                    <TextBlock Classes="name" Text="{Binding Name}" />
+                  </StackPanel>
+                  <TextBlock Grid.Column="2" Classes="count" Margin="8,0,10,0"
+                             VerticalAlignment="Center" Text="{Binding Count}" />
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
 
-    <!-- Folder editing, only while organizing, so ordinary browsing cannot reorganize by accident. -->
-    <StackPanel Grid.Row="5" Margin="8,6" Spacing="5" IsVisible="{Binding IsOrganizing}">
-      <TextBox Text="{Binding NewFolderName}" Watermark="Category name" />
-      <WrapPanel>
-        <Button Content="New" Margin="0,0,4,4" Command="{Binding NewFolderCommand}"
-                ToolTip.Tip="Add a category, nested inside the selected one" />
-        <Button Content="Rename" Margin="0,0,4,4" Command="{Binding RenameFolderCommand}" />
-        <Button Content="Remove" Margin="0,0,4,4" Command="{Binding RemoveFolderCommand}"
-                ToolTip.Tip="Only an empty category can be removed" />
-        <Button Content="Pin" Margin="0,0,4,4" Command="{Binding TogglePinCommand}" />
+          <ListBox IsVisible="{Binding IsSearching}"
+                   Background="Transparent" BorderThickness="0"
+                   ItemsSource="{Binding CategoryMatches}">
+            <ListBox.ItemTemplate>
+              <DataTemplate DataType="panels:CategoryMatchViewModel">
+                <Grid ColumnDefinitions="*,Auto" Margin="4,1">
+                  <StackPanel Grid.Column="0" Spacing="1">
+                    <TextBlock Classes="name" Text="{Binding Name}" />
+                    <TextBlock Classes="dim" FontSize="11" Text="{Binding ParentPath}"
+                               IsVisible="{Binding HasParentPath}" TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                    <TextBlock Classes="count" VerticalAlignment="Center" Text="{Binding Count}" />
+                    <Button Content="Go" FontSize="11" Padding="7,2" VerticalAlignment="Center"
+                            Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).GoToCategoryCommand}"
+                            CommandParameter="{Binding}" />
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </Border>
+
+      <!-- Filing and pinning, only while organizing, so ordinary browsing cannot reorganize by
+           accident. Naming lives in the right-click menu now, which is why there is no name box. -->
+      <WrapPanel Grid.Row="1" Margin="8,6" IsVisible="{Binding IsOrganizing}">
+        <Button Content="Pin" Margin="0,0,4,4" Command="{Binding TogglePinCommand}"
+                ToolTip.Tip="Keep this category at the top of the tree" />
         <Button Content="File here" Margin="0,0,4,4" Command="{Binding FileSelectedTileCommand}"
                 ToolTip.Tip="Move the selected blueprint into the selected category" />
       </WrapPanel>
-    </StackPanel>
+    </Grid>
+
+    <GridSplitter Grid.Row="5" Height="5" ResizeDirection="Rows"
+                  Background="{DynamicResource RuleBrush}"
+                  ResizeBehavior="PreviousAndNext" />
+
+    <!-- Objects block: where you are, the grid, and the grid's own controls. -->
+    <Grid Grid.Row="6" RowDefinitions="Auto,*,Auto" MinHeight="120">
 
     <!-- Where you are, and whether the grid reaches into subcategories. -->
-    <Grid Grid.Row="6" ColumnDefinitions="*,Auto" Margin="10,6,10,4">
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="10,6,10,4">
       <TextBlock Grid.Column="0" Classes="dim" FontSize="11.5" Text="{Binding Breadcrumb}"
                  TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
       <CheckBox Grid.Column="1" Content="incl. sub" FontSize="11"
@@ -133,7 +153,7 @@
                 ToolTip.Tip="Show everything beneath this category too" />
     </Grid>
 
-    <ListBox Grid.Row="7" ItemsSource="{Binding Tiles}" SelectedItem="{Binding SelectedTile}"
+    <ListBox Grid.Row="1" ItemsSource="{Binding Tiles}" SelectedItem="{Binding SelectedTile}"
              Background="Transparent" BorderThickness="0" Padding="6">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
@@ -154,7 +174,7 @@
           <Border Width="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).TileSize}"
                   CornerRadius="4" Background="{DynamicResource PanelRaisedBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
-                  Tapped="OnTileTapped">
+                  Tapped="OnTileTapped" ContextRequested="OnTileContextRequested">
             <Border.ContextMenu>
               <ContextMenu>
                 <MenuItem Header="Place in area"
@@ -162,6 +182,10 @@
                           CommandParameter="{Binding}" />
                 <MenuItem Header="Edit blueprint..."
                           Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).EditCommand}"
+                          CommandParameter="{Binding}" />
+                <Separator />
+                <MenuItem Header="Delete blueprint..."
+                          Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).DeleteTileCommand}"
                           CommandParameter="{Binding}" />
               </ContextMenu>
             </Border.ContextMenu>
@@ -198,7 +222,7 @@
       </ListBox.ItemTemplate>
     </ListBox>
 
-    <StackPanel Grid.Row="8">
+    <StackPanel Grid.Row="2">
       <!-- Preview size: how big the artwork gets. Small fits far more of a large category on screen,
            large is what a builder wants when they are picking between similar models. -->
       <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,6" ColumnSpacing="9"
@@ -215,5 +239,6 @@
                  Text="{Binding StatusMessage}"
                  IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
     </StackPanel>
+    </Grid>
   </Grid>
 </UserControl>

@@ -27,11 +27,15 @@ namespace SWLOR.Toolset.Shell.Views
         private void OnCancelClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             Close(EditorDialogChoice.Cancel);
 
+        /// <param name="secondaryLabel">
+        /// Null for a two-button prompt (act or cancel) - the middle button is hidden rather than given
+        /// a filler label, because a confirm-or-cancel question with three buttons reads as a trap.
+        /// </param>
         public static Task<EditorDialogChoice> ShowAsync(
             string headline,
             string message,
             string primaryLabel,
-            string secondaryLabel)
+            string? secondaryLabel)
         {
             try
             {
@@ -45,6 +49,7 @@ namespace SWLOR.Toolset.Shell.Views
                 dialog.MessageText.Text = message;
                 dialog.PrimaryButton.Content = primaryLabel;
                 dialog.SecondaryButton.Content = secondaryLabel;
+                dialog.SecondaryButton.IsVisible = secondaryLabel != null;
                 return dialog.ShowDialog<EditorDialogChoice>(owner);
             }
             catch

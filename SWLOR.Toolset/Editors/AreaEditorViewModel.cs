@@ -1,5 +1,4 @@
-using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Numerics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -97,7 +96,7 @@ namespace SWLOR.Toolset.Editors
 
         private AreaScene? _areaScene;
 
-        /// <summary>The most recently built 3D scene for this area, or null before the first build. Rebuilt only on tab activation or an explicit <see cref="RebuildSceneCommand"/>.</summary>
+        /// <summary>The most recently built 3D scene for this area, or null before the first build. Built when the editor opens and refreshed automatically after every edit.</summary>
         public AreaScene? AreaScene
         {
             get => _areaScene;
@@ -120,7 +119,7 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        private string _sceneStatus = "Switch to this tab to build the 3D view.";
+        private string _sceneStatus = string.Empty;
 
         public string SceneStatus
         {
@@ -437,22 +436,6 @@ namespace SWLOR.Toolset.Editors
 
         // ----- 3D-view move/rotate gizmo and place-from-palette -----
 
-        private InstanceListSectionViewModel? _placementSection;
-
-        /// <summary>Which instance-list section (blueprint type/palette) the 3D-view "Place..." button pulls from - bound to a picker in the 3D View tab; defaults to the first section the first time "Place..." is used.</summary>
-        public InstanceListSectionViewModel? PlacementSection
-        {
-            get => _placementSection;
-            set
-            {
-                if (ReferenceEquals(_placementSection, value))
-                    return;
-
-                _placementSection = value;
-                OnPropertyChanged(nameof(PlacementSection));
-            }
-        }
-
         private InstanceListSectionViewModel? _pendingPlacementSection;
         private string? _pendingPlacementResRef;
 
@@ -465,37 +448,10 @@ namespace SWLOR.Toolset.Editors
             : string.Empty;
 
         /// <summary>
-        /// Opens <see cref="PlacementSection"/>'s palette browser (falling back to the first
-        /// section) - the same InstanceListSectionViewModel.OpenPaletteBrowser flow that section's
-        /// own "Add..." button uses. Choosing a blueprint arms placement mode; the next viewport
-        /// click (routed here via <see cref="CommitPlacement"/>) creates the instance there.
-        /// </summary>
-        [RelayCommand]
-        private void BeginPlace()
-        {
-            var section = PlacementSection ?? Sections.FirstOrDefault();
-            if (section == null)
-            {
-                _log.AppendLine("No instance-list section available to place from.");
-                return;
-            }
-
-            PlacementSection = section;
-
-            section.OpenPaletteBrowser(
-                resRef =>
-                {
-                    _pendingPlacementSection = section;
-                    _pendingPlacementResRef = resRef;
-                    OnPropertyChanged(nameof(IsPlacementPending));
-                    OnPropertyChanged(nameof(PlacementStatus));
-                },
-                () => { });
-        }
-
-        /// <summary>
-        /// Arms placement for a blueprint chosen in the Palette panel, bypassing this editor's own popup
-        /// browser. Same pending state either way, so the next viewport click resolves it identically.
+        /// Arms placement for a blueprint chosen in the Palette panel: the object then follows the
+        /// cursor across the map as a translucent ghost until a click puts it down (Esc or a
+        /// right-click cancels). This is the only way to place an instance - the editor no longer
+        /// carries its own blueprint picker, because the Palette panel is already one.
         /// </summary>
         public bool ArmPlacement(ResourceType type, string resRef)
         {
@@ -503,12 +459,75 @@ namespace SWLOR.Toolset.Editors
             if (section == null || string.IsNullOrWhiteSpace(resRef))
                 return false;
 
-            PlacementSection = section;
             _pendingPlacementSection = section;
             _pendingPlacementResRef = resRef;
+            PlacementGhost = BuildPlacementGhost(type, resRef);
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
             return true;
+        }
+
+        private InstanceMarker? _placementGhost;
+
+        /// <summary>
+        /// The object to draw under the cursor while a placement is armed, or null when nothing is
+        /// armed. Only its geometry and kind are used; the viewport supplies the position from the
+        /// pointer, so this is built once when placement is armed rather than per mouse move.
+        /// </summary>
+        public InstanceMarker? PlacementGhost
+        {
+            get => _placementGhost;
+            private set
+            {
+                if (ReferenceEquals(_placementGhost, value))
+                    return;
+
+                _placementGhost = value;
+                OnPropertyChanged(nameof(PlacementGhost));
+            }
+        }
+
+        /// <summary>
+        /// Resolves the armed blueprint's model so the ghost looks like what is about to be placed.
+        /// A blueprint whose model cannot be resolved still gets a ghost - it just draws as the
+        /// kind's marker, the same fallback the placed instance itself would use.
+        /// </summary>
+        private InstanceMarker? BuildPlacementGhost(ResourceType type, string resRef)
+        {
+            var kind = MapSectionTypeToKind(type);
+            if (kind == null)
+                return null;
+
+            RenderModel? model = null;
+            if (_tileModelCache != null)
+            {
+                try
+                {
+                    var reference = BlueprintModelResolver.Resolve(
+                        type,
+                        _workspace.LoadBlueprint(type, resRef).Fields,
+                        appearances: null,
+                        _placeableAppearances,
+                        _doorTypes);
+
+                    if (reference.Kind == BlueprintModelKind.Simple && reference.ModelResRef != null)
+                        model = _tileModelCache.GetOrBuild(reference.ModelResRef);
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine($"Placement preview for '{resRef}' fell back to a marker: {ex.Message}");
+                }
+            }
+
+            return new InstanceMarker
+            {
+                Kind = kind.Value,
+                TemplateResRef = resRef,
+                Tag = resRef,
+                Position = Vector3.Zero,
+                Orientation = new Vector2(1f, 0f),
+                Model = model
+            };
         }
 
         /// <summary>
@@ -523,6 +542,7 @@ namespace SWLOR.Toolset.Editors
             var resRef = _pendingPlacementResRef;
             _pendingPlacementSection = null;
             _pendingPlacementResRef = null;
+            PlacementGhost = null;
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
 
@@ -545,6 +565,7 @@ namespace SWLOR.Toolset.Editors
 
             _pendingPlacementSection = null;
             _pendingPlacementResRef = null;
+            PlacementGhost = null;
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
         }
@@ -591,271 +612,6 @@ namespace SWLOR.Toolset.Editors
         /// .are in the module, so without this every area editor opened would repeat it for the same
         /// tileset. Shared across editors because the answer depends only on what is on disk.
         /// </summary>
-        private static readonly ConcurrentDictionary<string, Func<int, int>> TileRankCache = new();
-
-        private TilesetDefinition? _paintTileset;
-        private Func<int, int>? _tileRank;
-        private bool _tileRankRequested;
-
-        /// <summary>The terrains of this area's tileset that can fill a whole tile - the paint palette.</summary>
-        public ObservableCollection<string> TerrainBrushes { get; } = new();
-
-        private string? _selectedTerrain;
-
-        /// <summary>The terrain the Terrain tool paints. Defaults to the tileset's floor terrain.</summary>
-        public string? SelectedTerrain
-        {
-            get => _selectedTerrain;
-            set
-            {
-                if (_selectedTerrain == value)
-                    return;
-
-                _selectedTerrain = value;
-                OnPropertyChanged(nameof(SelectedTerrain));
-                OnPropertyChanged(nameof(PaintStatus));
-            }
-        }
-
-        /// <summary>The available brush tools, for the 3D view's tool picker.</summary>
-        public IReadOnlyList<AreaPaintTool> PaintTools { get; } =
-            new[] { AreaPaintTool.Terrain, AreaPaintTool.Rotate, AreaPaintTool.Raise, AreaPaintTool.Lower };
-
-        private AreaPaintTool _selectedPaintTool = AreaPaintTool.Terrain;
-
-        public AreaPaintTool SelectedPaintTool
-        {
-            get => _selectedPaintTool;
-            set
-            {
-                if (_selectedPaintTool == value)
-                    return;
-
-                _selectedPaintTool = value;
-                OnPropertyChanged(nameof(SelectedPaintTool));
-                OnPropertyChanged(nameof(PaintStatus));
-            }
-        }
-
-        private bool _isPaintMode;
-
-        /// <summary>
-        /// True while the brush is armed: a viewport CLICK edits the tile under the cursor. Camera
-        /// navigation is untouched (a left drag still pans, right/middle still orbit), so this can
-        /// stay on while the user moves around. Sticky, unlike the one-shot placement mode.
-        /// </summary>
-        public bool IsPaintMode
-        {
-            get => _isPaintMode;
-            set
-            {
-                if (_isPaintMode == value)
-                    return;
-
-                _isPaintMode = value;
-                if (value)
-                    EnsureTileRankRequested();
-
-                OnPropertyChanged(nameof(IsPaintMode));
-                OnPropertyChanged(nameof(PaintStatus));
-            }
-        }
-
-        /// <summary>
-        /// 3D-view status line: what the armed brush will do, or - even before arming - why painting
-        /// is not possible here, so an empty palette is explained rather than just looking broken.
-        /// </summary>
-        public string PaintStatus
-        {
-            get
-            {
-                // Reported regardless of arm state: with no tileset there is nothing to paint with,
-                // and the user should not have to click Paint to discover that.
-                if (_paintTileset == null && _sceneBuildRequested)
-                    return "Paint unavailable: this area's tileset could not be resolved.";
-
-                if (!IsPaintMode)
-                    return string.Empty;
-
-                return SelectedPaintTool switch
-                {
-                    AreaPaintTool.Terrain => string.IsNullOrWhiteSpace(SelectedTerrain)
-                        ? "Choose a terrain to paint."
-                        : $"Painting \"{SelectedTerrain}\" - click a tile to fill it (Esc to stop).",
-                    AreaPaintTool.Rotate => "Click a tile to rotate it a quarter turn (Esc to stop).",
-                    AreaPaintTool.Raise or AreaPaintTool.Lower
-                        when _paintTileset is { HasHeightTransition: false } =>
-                        "Height painting unavailable: this tileset has no height transitions.",
-                    AreaPaintTool.Raise => "Click a tile to raise it one height step (Esc to stop).",
-                    _ => "Click a tile to lower it one height step (Esc to stop)."
-                };
-            }
-        }
-
-        [RelayCommand]
-        private void TogglePaintMode() => IsPaintMode = !IsPaintMode;
-
-        /// <summary>Called by the view when paint mode is dismissed from inside the viewport (Esc).</summary>
-        public void CancelPaint() => IsPaintMode = false;
-
-        /// <summary>
-        /// Resolves this area's tileset and fills the terrain palette from the terrains it can
-        /// actually fill a tile with. Cheap (the tileset is already parsed and cached by the scene
-        /// build), and deliberately NOT gated on the brush being armed: a palette that only appears
-        /// after arming reads as a broken, greyed-out control, so the terrain can be chosen first
-        /// and the brush armed second - in either order.
-        /// </summary>
-        private void EnsurePaintPaletteLoaded()
-        {
-            if (_paintTileset != null || _tilesetCatalog == null)
-                return;
-
-            var tilesetResRef = new AreDocument(_areSession.Document).Tileset ?? string.Empty;
-            if (!_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
-            {
-                _log.AppendLine($"Paint unavailable for {_areResRef}: tileset '{tilesetResRef}' could not be resolved.");
-                OnPropertyChanged(nameof(PaintStatus));
-                return;
-            }
-
-            _paintTileset = tileset;
-
-            TerrainBrushes.Clear();
-            foreach (var terrain in TilePainter.FillableTerrains(tileset))
-                TerrainBrushes.Add(terrain);
-
-            SelectedTerrain ??= TilePainter.DefaultFillTerrain(tileset) ?? TerrainBrushes.FirstOrDefault();
-            OnPropertyChanged(nameof(PaintStatus));
-        }
-
-        /// <summary>
-        /// Kicks off the corpus tile-frequency scan in the background. Deferred until the brush is
-        /// actually armed, because it reads every area in the module - too much work to spend on
-        /// merely opening a 3D view. Until it lands, candidate tie-breaks fall back to lowest tile
-        /// id, so painting works immediately either way.
-        /// </summary>
-        private void EnsureTileRankRequested()
-        {
-            EnsurePaintPaletteLoaded();
-
-            if (_tileRankRequested || _paintTileset == null)
-                return;
-
-            _tileRankRequested = true;
-            var resRef = new AreDocument(_areSession.Document).Tileset ?? string.Empty;
-            var workspace = _workspace;
-            var cacheKey = workspace.ModuleRoot + "|" + resRef;
-
-            if (TileRankCache.TryGetValue(cacheKey, out var cached))
-            {
-                _tileRank = cached;
-                return;
-            }
-
-            _ = Task.Run(() =>
-            {
-                try
-                {
-                    var counts = TileUsageStatistics.CountTiles(workspace, resRef);
-                    if (counts.Count == 0)
-                        return;
-
-                    var rank = TileUsageStatistics.RankByUsage(counts);
-                    TileRankCache[cacheKey] = rank;
-                    _tileRank = rank;
-                }
-                catch (Exception ex)
-                {
-                    _log.AppendLine($"Tile usage scan failed for tileset '{resRef}': {ex.Message}");
-                }
-            });
-        }
-
-        /// <summary>
-        /// Called by the view for each paint dab (GlAreaControl.PaintPointPicked): maps the clicked
-        /// ground point to a grid cell and applies the active tool as ONE .are transaction, then
-        /// refreshes the 3D view. A dab that would change nothing (e.g. repainting a tile that
-        /// already carries the terrain) commits nothing, so it costs no undo step.
-        /// </summary>
-        public void CommitPaint(Vector3 point)
-        {
-            if (!IsPaintMode)
-                return;
-
-            var are = new AreDocument(_areSession.Document);
-            var width = AreaTiles.Width(are);
-            var height = AreaTiles.Height(are);
-
-            var col = (int)Math.Floor(point.X / AreaSceneBuilder.TileSize);
-            var row = (int)Math.Floor(point.Y / AreaSceneBuilder.TileSize);
-            if (col < 0 || row < 0 || col >= width || row >= height)
-                return;
-
-            var applied = SelectedPaintTool switch
-            {
-                AreaPaintTool.Terrain => PaintTerrainAt(are, width, height, col, row),
-                AreaPaintTool.Rotate => RotateTileAt(are, col, row),
-                AreaPaintTool.Raise => ChangeHeightAt(are, col, row, +1),
-                _ => ChangeHeightAt(are, col, row, -1)
-            };
-
-            if (applied)
-                _ = BuildSceneAsync(CaptureReselectKey());
-        }
-
-        private bool PaintTerrainAt(AreDocument are, int width, int height, int col, int row)
-        {
-            if (_paintTileset is not { } tileset || SelectedTerrain is not { } terrain || string.IsNullOrWhiteSpace(terrain))
-                return false;
-
-            var changes = TilePainter.PaintTerrain(
-                tileset, width, height, AreaTiles.Reader(are), col, row, terrain, _tileRank);
-
-            if (changes.Count == 0)
-                return false;
-
-            return RunAreEdit($"Paint {terrain} at ({col},{row})", () =>
-            {
-                foreach (var change in changes)
-                    AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);
-            });
-        }
-
-        private bool RotateTileAt(AreDocument are, int col, int row)
-        {
-            if (_paintTileset is not { } tileset || AreaTiles.At(are, col, row) is not { } placed)
-                return false;
-
-            var orientation = (placed.Orientation + 1) % 4;
-            if (!TilePainter.CanRotateTile(tileset, AreaTiles.Reader(are), col, row, orientation))
-            {
-                SceneStatus = "Rotation rejected: the tile would no longer match its neighbours.";
-                return false;
-            }
-
-            return RunAreEdit($"Rotate tile ({col},{row})", () => AreaTiles.SetOrientation(are, col, row, orientation));
-        }
-
-        private bool ChangeHeightAt(AreDocument are, int col, int row, int delta)
-        {
-            if (_paintTileset == null)
-                return false;
-
-            if (!_paintTileset.HasHeightTransition)
-            {
-                SceneStatus = "Height painting rejected: this tileset has no height transitions.";
-                return false;
-            }
-
-            var current = AreaTiles.HeightLevelOf(are, col, row);
-            var updated = Math.Max(0, current + delta);
-            if (updated == current)
-                return false;
-
-            var label = delta > 0 ? "Raise" : "Lower";
-            return RunAreEdit($"{label} tile ({col},{row})", () => AreaTiles.SetHeightLevel(are, col, row, updated));
-        }
-
         public AreaEditorViewModel(
             string areResRef,
             ModuleWorkspace workspace,
@@ -936,20 +692,14 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Called by the view when the 3D View tab is activated. Builds the scene lazily on first
-        /// use and rebuilds it after an ARE/GIT edit made from the Properties tab. Safe to call
-        /// multiple times or before game-data services are available.
+        /// Builds the 3D scene. Called by the view as soon as the editor has a document, so opening
+        /// an area shows its map rather than an empty viewport. Safe to call repeatedly and before
+        /// game-data services are available.
         /// </summary>
         public void EnsureSceneBuilt()
         {
-            var inputRevision = Volatile.Read(ref _sceneInputRevision);
-            if (_sceneBuildRequested &&
-                (Volatile.Read(ref _builtSceneInputRevision) == inputRevision ||
-                 IsBuildingScene &&
-                 Volatile.Read(ref _buildingSceneInputRevision) == inputRevision))
-            {
+            if (IsSceneCurrent())
                 return;
-            }
 
             var reselect = CaptureReselectKey();
             if (_sceneBuildRequested && AreaScene != null)
@@ -958,11 +708,69 @@ namespace SWLOR.Toolset.Editors
             _ = BuildSceneAsync(reselect);
         }
 
-        /// <summary>Manual refresh for the 3D view after edits outside the live viewport-edit paths.</summary>
-        [RelayCommand]
-        private async Task RebuildScene()
+        /// <summary>
+        /// True when the scene already reflects the current documents, or a build for them is in
+        /// flight - the guard that keeps repeated refresh requests from queueing duplicate builds.
+        /// </summary>
+        private bool IsSceneCurrent()
         {
-            await BuildSceneAsync();
+            if (!_sceneBuildRequested)
+                return false;
+
+            var inputRevision = Volatile.Read(ref _sceneInputRevision);
+            return Volatile.Read(ref _builtSceneInputRevision) == inputRevision ||
+                   (IsBuildingScene && Volatile.Read(ref _buildingSceneInputRevision) == inputRevision);
+        }
+
+        /// <summary>
+        /// How long an edit waits before the 3D view catches up. Long enough that dragging a
+        /// NumericUpDown or holding Ctrl+Z does not queue a rebuild per keystroke, short enough that
+        /// the map feels like it is tracking the edit.
+        /// </summary>
+        private static readonly TimeSpan SceneRefreshDelay = TimeSpan.FromMilliseconds(220);
+
+        private CancellationTokenSource? _sceneRefreshCts;
+
+        /// <summary>
+        /// Brings the 3D view back in line with the documents after an edit, debounced.
+        /// </summary>
+        /// <remarks>
+        /// This is what replaced the Rebuild button. Edits made anywhere - an instance's coordinates
+        /// on the Properties tab, a local variable, an area property, undo/redo - all funnel through
+        /// <see cref="RunEdit"/>, so hooking the refresh there covers every path instead of asking
+        /// each command to remember. Paths that already rebuild explicitly (placement and the
+        /// gizmos, which also need to reselect what they touched) are not double-served: by the time
+        /// the delay elapses their build has either finished or is in flight for the same revision,
+        /// and <see cref="IsSceneCurrent"/> drops the duplicate.
+        /// </remarks>
+        private void RequestSceneRefresh()
+        {
+            if (!_sceneBuildRequested || _disposed)
+                return;
+
+            _sceneRefreshCts?.Cancel();
+            _sceneRefreshCts?.Dispose();
+            var cts = new CancellationTokenSource();
+            _sceneRefreshCts = cts;
+
+            _ = RefreshSceneAfterDelayAsync(cts.Token);
+        }
+
+        private async Task RefreshSceneAfterDelayAsync(CancellationToken token)
+        {
+            try
+            {
+                await Task.Delay(SceneRefreshDelay, token).ConfigureAwait(true);
+            }
+            catch (OperationCanceledException)
+            {
+                return; // Superseded by a later edit; that one owns the rebuild.
+            }
+
+            if (token.IsCancellationRequested || _disposed || IsSceneCurrent())
+                return;
+
+            _ = BuildSceneAsync(CaptureReselectKey());
         }
 
         /// <summary>
@@ -1014,10 +822,6 @@ namespace SWLOR.Toolset.Editors
 
                 Volatile.Write(ref _builtSceneInputRevision, inputRevision);
                 AreaScene = scene;
-
-                // The scene build has just resolved (and cached) this area's tileset, so the terrain
-                // palette can be filled now - before the user reaches for the brush.
-                EnsurePaintPaletteLoaded();
 
                 InstanceMarker? toSelect = null;
                 if (reselect is { } key)
@@ -1086,6 +890,7 @@ namespace SWLOR.Toolset.Editors
 
                 _lastHistorySession = session;
                 Interlocked.Increment(ref _sceneInputRevision);
+                RequestSceneRefresh();
                 AfterHistoryChange();
                 return true;
             }

@@ -22,6 +22,18 @@ namespace SWLOR.Toolset.Services
         Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath);
 
         Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle);
+
+        /// <summary>
+        /// Confirms an action that destroys something. Returns false for anything but an explicit yes,
+        /// including a prompt that could not be shown.
+        /// </summary>
+        /// <param name="message">Must name exactly what will be destroyed, and what will not survive it.</param>
+        Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel);
+
+        /// <summary>
+        /// Asks for a single line of text. Returns null when cancelled or left blank.
+        /// </summary>
+        Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel);
     }
 
     public sealed class EditorPromptService : IEditorPromptService
@@ -58,5 +70,18 @@ namespace SWLOR.Toolset.Services
                 _ => UnsavedChangesChoice.Cancel
             };
         }
+
+        public async Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel)
+        {
+            var choice = await EditorChoiceDialog
+                .ShowAsync(headline, message, confirmLabel, secondaryLabel: null)
+                .ConfigureAwait(true);
+
+            return choice == EditorDialogChoice.Primary;
+        }
+
+        public Task<string?> PromptForTextAsync(
+            string headline, string message, string initialValue, string confirmLabel) =>
+            TextPromptDialog.ShowAsync(headline, message, initialValue, confirmLabel);
     }
 }

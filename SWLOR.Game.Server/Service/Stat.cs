@@ -1455,7 +1455,9 @@ namespace SWLOR.Game.Server.Service
 
             return ApplyNPCDetectionCap(
                 detection,
-                !GetIsPC(creature) && !GetIsDM(creature));
+                !GetIsPC(creature) &&
+                !GetIsDM(creature) &&
+                !GetIsDMPossessed(creature));
         }
 
         public static int CalculateDetectionRating(

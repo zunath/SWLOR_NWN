@@ -52,6 +52,14 @@ public class EspionageSystemTests
                 maximumRankFourStealth)
             .Should()
             .Be(0m, "even the strongest NPC must not automatically pierce maximum committed Stealth");
+
+        var statSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "Stat.cs"));
+        statSource.Should().Contain("!GetIsDMPossessed(creature)",
+            "DM-possessed creatures must retain uncapped staff Detection");
     }
 
     [Test]

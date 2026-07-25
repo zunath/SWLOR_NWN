@@ -25,8 +25,21 @@ public class CrossSkillPerkInteractionSafetyTests
 
         var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
         var beginAbilityImpact = ExtractMethod(ability, "public static void BeginAbilityImpact(");
-        beginAbilityImpact.Should().Contain("ConsumeStatusAppliedNextAttackDamageBonus");
+        beginAbilityImpact.Should().Contain("GetStatusAppliedNextAttackDamageBonus");
+        beginAbilityImpact.Should().NotContain("ConsumeStatusAppliedNextAttackDamageBonus",
+            "a miss or zero-damage hostile ability must preserve Charged Blows");
         beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
+        var hostileImpact = ExtractMethod(ability, "public static int ApplyHostileCombatImpact(");
+        hostileImpact.Should().Contain("if (damage > 0)");
+        hostileImpact.Should().Contain("trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);");
+        hostileImpact.IndexOf(
+                "trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);",
+                StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(hostileImpact.IndexOf("ApplyCombatImpactStatusEffect(", StringComparison.Ordinal),
+                "an area control ability must consume the old proc before it can grant the next one");
+        ability.Should().Contain("_statusAppliedNextAttackDamageBonusConsumed",
+            "an area ability must not consume a newly granted proc on each additional target");
 
         var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
         var nextAttackBonusIndex = nativeDamage.IndexOf(
@@ -302,8 +315,10 @@ public class CrossSkillPerkInteractionSafetyTests
             abilitySource,
             "private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(");
         delayedImpact.Should().Contain("int nextAttackEnmityBonus");
-        delayedImpact.Should().Contain("nextAttackEnmityBonus);",
+        delayedImpact.Should().Contain("nextAttackEnmityBonus,",
             "the reconstructed tracked impact must retain the guarded-hit Enmity bonus");
+        delayedImpact.Should().Contain("statusAppliedNextAttackDamageBonus);",
+            "a delayed damaging impact must retain the pending Charged Blows bonus");
 
         var nativeAttackSource = Read(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
         nativeAttackSource.Should().Contain("ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf)",

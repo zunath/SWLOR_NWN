@@ -91,6 +91,35 @@ public class NativeControlStatusEffectTests
     }
 
     [Test]
+    public void RepeatedHardControlRemovals_RestartTheSharedImmunityWindow()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs"));
+        var methodStart = abilitySource.IndexOf(
+            "private static void ApplyTemporaryImmunitySingle(",
+            StringComparison.Ordinal);
+        var methodEnd = abilitySource.IndexOf(
+            "public static bool HasTemporaryImmunity(",
+            methodStart,
+            StringComparison.Ordinal);
+        methodStart.Should().BeGreaterThanOrEqualTo(0);
+        methodEnd.Should().BeGreaterThan(methodStart);
+
+        var method = abilitySource[methodStart..methodEnd];
+        method.Should().Contain("GetTemporaryImmunityDurationRemaining(target, effectTag)");
+        method.Should().Contain("RemoveEffectByTag(target, effectTag);");
+        method.Should().NotContain("if (HasTemporaryImmunity(target, immunity))",
+            "each actual hard-control removal must restart the 20-second shared immunity");
+        method.IndexOf("RemoveEffectByTag(target, effectTag);", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(method.IndexOf("ApplyEffectToObject(", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void StatusEffectDefinitions_DoNotTagNativeEffectsWithTrackerIds()
     {
         var root = FindRepositoryRoot();

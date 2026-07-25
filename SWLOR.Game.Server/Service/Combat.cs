@@ -7828,6 +7828,14 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextAttackStatusAppliedDMGBonus);
         }
 
+        public static int GetStatusAppliedNextAttackDamageBonus(uint creature)
+        {
+            return TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextAttackStatusAppliedDMGBonus,
+                StatType.NextAttackStatusAppliedDMGBonus);
+        }
+
         public static void ApplyNextAttackGuardedHitEnmityBonus(
             uint attacker,
             uint defender,

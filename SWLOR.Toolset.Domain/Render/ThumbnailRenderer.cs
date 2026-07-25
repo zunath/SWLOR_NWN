@@ -53,13 +53,12 @@ namespace SWLOR.Toolset.Domain.Render
         /// feet, and from +Y shows its shoulder blades and heels - so a camera on the +Y side was looking
         /// at the back of every creature in the palette. The -Z puts it above rather than below.
         /// <para>
-        /// The drop is set so the camera sits about 39 degrees above the ground plane. Compared side by
-        /// side across a creature, a statue, a waypoint flag and a tile: at 31 degrees a tile is read
-        /// nearly edge-on, and by 49 a creature's head has foreshortened into its shoulders. 39 keeps a
-        /// face legible while showing a footprint from above.
+        /// The drop puts the camera about 51 degrees above the ground plane - a high three-quarter, not
+        /// a plan view. Lower angles read a tile nearly edge-on and hide the top of anything flat; a true
+        /// overhead would lose the silhouette that makes a crate a crate.
         /// </para>
         /// </remarks>
-        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(-0.7f, 1f, -1f));
+        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(-0.7f, 1f, -1.5f));
 
         /// <summary>
         /// Keyed to the same side as the camera, so the faces being looked at are the faces being lit.

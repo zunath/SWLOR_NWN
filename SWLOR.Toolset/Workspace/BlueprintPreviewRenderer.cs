@@ -22,11 +22,11 @@ namespace SWLOR.Toolset.Workspace
     /// <list type="bullet">
     /// <item><b>Items</b> use their inventory icon. There is no world model worth previewing, and the icon
     /// is the picture a builder already knows the item by. All 7,651 resolve.</item>
-    /// <item><b>Creatures</b> use their portrait first, then their model. 922 of 938 have a portrait and
-    /// 282 distinct ones are in use, so they are set deliberately and they are painted artwork - far
-    /// easier to tell apart than the same humanoid silhouette flat-shaded 900 times, and about twenty
-    /// times cheaper than composing eighteen body-part models. The model path still covers the rest,
-    /// including the 209 dynamic-appearance NPCs whose body parts are all zero.</item>
+    /// <item><b>Creatures</b> use their model, composed from body parts and textured, with their
+    /// portrait as the fallback. A palette is for picking the thing you are about to place, and what gets
+    /// placed is the model - a portrait shows a face the world never renders. Composition is the
+    /// expensive path (eighteen part models against one TGA) but it runs once per blueprint into the disk
+    /// cache. The portrait still covers the creatures whose parts do not resolve.</item>
     /// <item><b>Placeables and doors</b> use their model, which is the only thing they have. Their
     /// PortraitId fields are default data, not chosen artwork, so they are deliberately ignored - a
     /// stranger's face on a park bench is worse than no picture at all.</item>
@@ -49,6 +49,9 @@ namespace SWLOR.Toolset.Workspace
         private readonly DoorTypeService? _doors;
         private readonly BaseItemIconService? _baseItems;
         private readonly PortraitService? _portraits;
+
+        /// <summary>Authored part textures for the compose run in flight; guarded by _composerGate.</summary>
+        private readonly Domain.Render.ComposedPartTextures _partTextures = new();
 
         private readonly MdlPartComposer? _partComposer;
 
@@ -124,7 +127,7 @@ namespace SWLOR.Toolset.Workspace
             return type switch
             {
                 ResourceType.Uti => RenderItemIcon(root),
-                ResourceType.Utc => RenderPortrait(root) ?? RenderModel(type, root),
+                ResourceType.Utc => RenderModel(type, root) ?? RenderPortrait(root),
                 ResourceType.Utp or ResourceType.Utd => RenderModel(type, root),
                 _ => null
             };
@@ -263,9 +266,34 @@ namespace SWLOR.Toolset.Workspace
 
             MdlModel? composed;
             lock (_composerGate)
+            {
+                // _partTextures is filled by LoadComposerModel as the composer pulls each part in, so it
+                // has to be cleared and read inside the same lock that owns the compose run.
+                _partTextures.Clear();
                 composed = _partComposer.Compose(reference.SkeletonResRef, parts, adjustSeams: true);
+                if (composed != null)
+                    _partTextures.Restore(composed, TextureExists);
+            }
 
             return composed == null ? null : MdlMeshBuilder.Build(composed);
+        }
+
+        /// <summary>Whether a texture name resolves to a real resource, in any of NWN's texture formats.</summary>
+        private bool TextureExists(string name)
+        {
+            if (_resourceIndex == null)
+                return false;
+
+            foreach (var extension in new[] { ".plt", ".tga", ".dds" })
+            {
+                if (_resourceIndex.TryLookup(
+                        Domain.GameData.Resources.ResourceIdentity.FromFileName(name + extension), out _))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -295,17 +323,20 @@ namespace SWLOR.Toolset.Workspace
         /// distinguishes.
         /// </summary>
         /// <remarks>
-        /// Unlike the GL model preview, this does not undo the composer's habit of overwriting each part
-        /// mesh's texture name with the part's resref. That override is right for BioWare parts and wrong
-        /// for the SWLOR custom parts that name their texture differently, so those meshes simply render
-        /// in the flat tone. It is worth almost nothing to fix here: creatures preview as their portrait,
-        /// so composition only runs for the handful with none.
+        /// Each part's authored texture names are recorded on the way in so
+        /// <see cref="ComposedPartTextures"/> can undo the composer's resref override afterwards. Without
+        /// that, the SWLOR custom parts which name their texture differently from their resref render
+        /// white - which did not matter while creatures previewed as portraits, and matters now that they
+        /// preview as models.
         /// </remarks>
         private MdlModel? LoadComposerModel(string resRef, bool withSupermodelAnims)
         {
             var model = LoadMdl(resRef, withSupermodelAnims);
             if (model != null && !withSupermodelAnims)
+            {
                 MdlGeometryFlattener.FlattenNodeTransforms(model);
+                _partTextures.Record(resRef, model);
+            }
 
             return model;
         }

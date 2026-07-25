@@ -277,4 +277,22 @@
   <Style Selector="TextBlock.dim">
     <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
   </Style>
+  <!-- Tab close button. Dock's Fluent theme draws this with a glyph from an icon font that is not
+       installed here, so it rendered as an empty box - the "missing glyph" square. Drawn as a vector
+       instead, which depends on no font at all. The same style covers document tabs, tool tabs and any
+       other PART_CloseButton the docking chrome creates. -->
+  <Style Selector="Button#PART_CloseButton">
+    <Setter Property="ContentTemplate">
+      <DataTemplate>
+        <Path Width="8" Height="8" Stretch="None"
+              Stroke="{DynamicResource InkSecondaryBrush}" StrokeThickness="1.2"
+              Data="M 0,0 L 8,8 M 8,0 L 0,8" />
+      </DataTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="Button#PART_CloseButton:pointerover /template/ ContentPresenter Path">
+    <Setter Property="Stroke" Value="{DynamicResource InkBrush}" />
+  </Style>
+
 </Styles>

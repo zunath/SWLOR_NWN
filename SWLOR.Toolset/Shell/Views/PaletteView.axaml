@@ -188,8 +188,6 @@
                 <TextBlock Grid.Column="1" Classes="count" VerticalAlignment="Center"
                            Text="{Binding TileSizeLabel}" />
               </Grid>
-              <TextBlock Classes="dim" FontSize="11" TextWrapping="Wrap"
-                         Text="Small fits more of a large category on screen; large is for telling similar models apart." />
             </StackPanel>
           </Flyout>
         </Button.Flyout>

@@ -1095,10 +1095,11 @@ namespace SWLOR.Toolset.Shell.Panels
             if (SelectedRow.IsUnsorted)
                 return section.UnsortedResRefs(_existing);
 
-            // This category only, never its descendants. A subcategory is a row of its own in the tree
-            // above, and searching already spans every category, so folding children in here was a third
-            // way to ask a question the panel already answers twice.
-            return SelectedRow.Folder!.Members.Where(_existing.Contains);
+            // Descendants included, always. The count on a category row has always counted them, so
+            // showing only direct members made a parent read "NPCs 368" over an empty grid - which is
+            // what selecting a parent category did after the incl. sub toggle was removed. Including them
+            // is also the answer the toggle was left on for.
+            return SelectedRow.Folder!.MembersIncludingDescendants.Where(_existing.Contains);
         }
 
         private string BreadcrumbFor(CategorySection section)

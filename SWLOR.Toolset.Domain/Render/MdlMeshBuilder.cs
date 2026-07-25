@@ -81,6 +81,27 @@ namespace SWLOR.Toolset.Domain.Render
         /// descendant's <see cref="RenderMesh.Transform"/> (transform composition walks the plain
         /// node/parent chain regardless of node type).
         /// </summary>
+        /// <summary>
+        /// Node names BioWare uses for geometry that is not artwork, and which must not be drawn.
+        /// </summary>
+        /// <remarks>
+        /// These are placeholders that carry real, sizeable geometry and are flagged render=1, so nothing
+        /// else here filters them. Drawing them puts a large untextured slab over the model: every base
+        /// door model carries a <c>sam</c> node, and in TTU_udoor_06 it is 42 of the model's 196
+        /// triangles - which is exactly the blank white panel that appeared across the palette's doors.
+        /// <para>
+        /// Matched by name rather than by "has no texture", because untextured is not the same as
+        /// placeholder. Measured over 4,000 models in the resource stack, only 121 have any untextured
+        /// rendered mesh, and those include real artwork - a gargoyle's wing parts among them - so
+        /// dropping every untextured mesh would delete geometry that belongs on screen.
+        /// </para>
+        /// </remarks>
+        private static readonly HashSet<string> PlaceholderNodeNames =
+            new(StringComparer.OrdinalIgnoreCase) { "sam", "rootdummy" };
+
+        private static bool IsPlaceholderNode(MdlTrimeshNode trimesh) =>
+            PlaceholderNodeNames.Contains(trimesh.Name ?? string.Empty);
+
         public static RenderModel Build(MdlModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
@@ -95,6 +116,9 @@ namespace SWLOR.Toolset.Domain.Render
                         continue; // Non-trimesh nodes (dummy, light, emitter, reference, ...) contribute no geometry.
 
                     if (!trimesh.Render)
+                        continue;
+
+                    if (IsPlaceholderNode(trimesh))
                         continue;
 
                     if (trimesh.Vertices.Length == 0 || trimesh.Faces.Length == 0)

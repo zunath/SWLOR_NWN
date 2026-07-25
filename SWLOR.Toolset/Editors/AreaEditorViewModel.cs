@@ -33,7 +33,7 @@ namespace SWLOR.Toolset.Editors
     /// screen is mostly used for. Save writes whichever session(s) are dirty; the title's dirty
     /// marker reflects either session being dirty.
     /// </remarks>
-    public partial class AreaEditorViewModel : Document, IEditorDocument
+    public partial class AreaEditorViewModel : Document, IEditorDocument, IDocumentStatusSource
     {
         private static readonly (string Title, string ListFieldName, ResourceType BlueprintType)[] InstanceListConfigs =
         {
@@ -57,6 +57,12 @@ namespace SWLOR.Toolset.Editors
         private readonly DoorTypeService? _doorTypes;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly IEditorPromptService _prompts;
+
+        /// <summary>Resolves a blueprint's display name from the catalog, so the selection bar can lead with it.</summary>
+        private readonly Func<ResourceType?, string?, string?>? _resolveBlueprintName;
+
+        /// <summary>Opens a blueprint in its own editor tab - the selection bar's one action.</summary>
+        private readonly Action<ResourceType, string>? _openBlueprint;
 
         /// <summary>
         /// Whichever of the two sessions this tab touched most recently (by edit, undo, or redo).
@@ -150,6 +156,14 @@ namespace SWLOR.Toolset.Editors
                 _selectedSceneInstance = value;
                 OnPropertyChanged(nameof(SelectedSceneInstance));
                 OnPropertyChanged(nameof(SelectionStatus));
+                OnPropertyChanged(nameof(HasSceneSelection));
+                OnPropertyChanged(nameof(SelectionName));
+                OnPropertyChanged(nameof(SelectionResRef));
+                OnPropertyChanged(nameof(SelectionKindLabel));
+                OnPropertyChanged(nameof(SelectionGlyph));
+                OnPropertyChanged(nameof(SelectionCoordinates));
+                OnPropertyChanged(nameof(IDocumentStatusSource.StatusDetail));
+                EditSelectedBlueprintCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -158,6 +172,85 @@ namespace SWLOR.Toolset.Editors
             ? $"Selected: {instance.Kind} \"{instance.Tag}\"" +
               (string.IsNullOrEmpty(instance.TemplateResRef) ? string.Empty : $" ({instance.TemplateResRef})")
             : string.Empty;
+
+        // ----- selection bar -----
+        //
+        // The bar under the map answers one question - what have I got selected - so these are the
+        // structured pieces of that answer rather than one concatenated status string. Position is not
+        // among them: it belongs to the gizmo while you drag and to the status bar the rest of the time,
+        // because a coordinate box in the chrome is never wide enough to label.
+
+        public bool HasSceneSelection => SelectedSceneInstance != null;
+
+        /// <summary>
+        /// The selected instance's blueprint name, resolved through the catalog so the bar shows
+        /// "Work Station, Droid Repair" rather than "_mdrn_pl_conso08". Falls back to the tag, then the
+        /// resref, so the bar is never blank while something is selected.
+        /// </summary>
+        public string SelectionName
+        {
+            get
+            {
+                if (SelectedSceneInstance is not { } instance)
+                    return string.Empty;
+
+                var resolved = _resolveBlueprintName?.Invoke(
+                    MapKindToSectionType(instance.Kind), instance.TemplateResRef);
+
+                if (!string.IsNullOrWhiteSpace(resolved))
+                    return resolved;
+
+                if (!string.IsNullOrWhiteSpace(instance.Tag))
+                    return instance.Tag;
+
+                return instance.TemplateResRef ?? instance.Kind.ToString();
+            }
+        }
+
+        public string SelectionResRef => SelectedSceneInstance?.TemplateResRef ?? string.Empty;
+
+        /// <summary>The friendly singular kind ("Placeable"), not the enum name.</summary>
+        public string SelectionKindLabel => SelectedSceneInstance is { } instance
+            ? MapKindToSectionType(instance.Kind)?.SingularDisplayName() ?? instance.Kind.ToString()
+            : string.Empty;
+
+        /// <summary>Where the selection stands, for the status bar - Aurora put coordinates there too.</summary>
+        public string SelectionCoordinates => SelectedSceneInstance is { } instance
+            ? $"x {instance.Position.X:0.00}  y {instance.Position.Y:0.00}  z {instance.Position.Z:0.00}"
+            : string.Empty;
+
+        /// <summary>A one-letter stand-in for the selection's icon until blueprint thumbnails exist.</summary>
+        public string SelectionGlyph
+        {
+            get
+            {
+                var label = SelectionKindLabel;
+                return label.Length == 0 ? "?" : label[..1];
+            }
+        }
+
+        /// <summary>Feeds the shell status bar, which shows where the selection stands.</summary>
+        string IDocumentStatusSource.StatusDetail => SelectionCoordinates;
+
+        /// <summary>
+        /// Opens the blueprint the selection was placed from. The door out of the map and into the
+        /// thing itself, which is the only edit the bar offers.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanEditSelectedBlueprint))]
+        private void EditSelectedBlueprint()
+        {
+            if (SelectedSceneInstance is not { } instance ||
+                string.IsNullOrWhiteSpace(instance.TemplateResRef) ||
+                MapKindToSectionType(instance.Kind) is not { } type)
+                return;
+
+            _openBlueprint?.Invoke(type, instance.TemplateResRef);
+        }
+
+        private bool CanEditSelectedBlueprint() =>
+            SelectedSceneInstance is { TemplateResRef: not null } instance &&
+            MapKindToSectionType(instance.Kind) != null &&
+            _openBlueprint != null;
 
         /// <summary>
         /// Maps a 3D-view instance's kind to the blueprint type of the section that lists it, or
@@ -704,8 +797,12 @@ namespace SWLOR.Toolset.Editors
             PlaceableAppearanceService? placeableAppearances = null,
             DoorTypeService? doorTypes = null,
             TileWalkmeshCache? tileWalkmeshCache = null,
-            IEditorPromptService? prompts = null)
+            IEditorPromptService? prompts = null,
+            Func<ResourceType?, string?, string?>? resolveBlueprintName = null,
+            Action<ResourceType, string>? openBlueprint = null)
         {
+            _resolveBlueprintName = resolveBlueprintName;
+            _openBlueprint = openBlueprint;
             _log = log;
             _workspace = workspace;
             _areResRef = areResRef;

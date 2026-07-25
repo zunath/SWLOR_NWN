@@ -50,6 +50,8 @@ namespace SWLOR.Toolset.Shell
 
         private INotifyPropertyChanged? _activeEditorNotifier;
 
+        private IDocumentStatusSource? _activeStatusSource;
+
         /// <summary>Raised when the File menu's Exit item asks the window to close (which still runs the unsaved-changes prompt).</summary>
         public event Action? ExitRequested;
 
@@ -99,19 +101,30 @@ namespace SWLOR.Toolset.Shell
                 _activeEditorNotifier.PropertyChanged -= OnActiveEditorPropertyChanged;
 
             _activeEditor = document as IEditorDocument;
+            _activeStatusSource = document as IDocumentStatusSource;
             _activeEditorNotifier = document as INotifyPropertyChanged;
 
             if (_activeEditorNotifier != null)
                 _activeEditorNotifier.PropertyChanged += OnActiveEditorPropertyChanged;
 
             NotifyActiveEditorCommandsChanged();
+            OnPropertyChanged(nameof(StatusDetail));
         }
+
+        /// <summary>
+        /// The active document's own status contribution - the area editor puts the selection's
+        /// coordinates here, which is where Aurora kept them too.
+        /// </summary>
+        public string StatusDetail => _activeStatusSource?.StatusDetail ?? string.Empty;
 
         // Any property change on an editor may have moved its undo history (the editors raise their
         // own Can*Undo/Redo notifications), so re-evaluate rather than matching property names that
         // differ between the blueprint and area editors.
         private void OnActiveEditorPropertyChanged(object? sender, PropertyChangedEventArgs e)
-            => NotifyActiveEditorCommandsChanged();
+        {
+            NotifyActiveEditorCommandsChanged();
+            OnPropertyChanged(nameof(StatusDetail));
+        }
 
         private void NotifyActiveEditorCommandsChanged()
         {

@@ -41,6 +41,9 @@
         <TextBlock Text="&#x25CF;" FontSize="9" VerticalAlignment="Center"
                    Foreground="{DynamicResource GreenBrush}" />
         <TextBlock Text="{Binding StatusText}" Classes="mono" TextTrimming="CharacterEllipsis" />
+        <TextBlock Text="{Binding StatusDetail}" Classes="mono"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   IsVisible="{Binding StatusDetail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       </StackPanel>
     </Border>
   </Grid>

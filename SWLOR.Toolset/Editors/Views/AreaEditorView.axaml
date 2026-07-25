@@ -145,7 +145,7 @@
       </TabItem>
 
       <TabItem Header="3D View" x:Name="ViewTab3D">
-        <Grid>
+        <Grid RowDefinitions="*,Auto">
           <viewport:GlAreaControl x:Name="AreaView" />
 
           <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it
@@ -164,21 +164,25 @@
             <TextBlock Text="{Binding SceneStatus}" Foreground="White" />
           </Border>
 
-          <Border Background="#B0202020" CornerRadius="4" Padding="8,4"
-                  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8"
+          <!-- Viewport HUD. What the selection *is* moved down to the selection bar; this keeps only
+               what belongs to the map itself - scene size, and the transient placement/paint prompts. -->
+          <Border Background="#D00C1017" CornerRadius="3" Padding="9,5"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"
                   IsVisible="{Binding !IsBuildingScene}">
-            <StackPanel Spacing="2">
-              <TextBlock Text="{Binding SceneStatus}" Foreground="White"
+            <StackPanel Spacing="3">
+              <TextBlock Text="{Binding SceneStatus}" Classes="mono" FontSize="10.5"
                          TextTrimming="CharacterEllipsis" MaxWidth="480" />
-              <TextBlock Text="{Binding SelectionStatus}" Foreground="#FFDD88"
-                         TextTrimming="CharacterEllipsis" MaxWidth="480"
-                         IsVisible="{Binding SelectionStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-              <TextBlock Text="Drag: move | Alt+drag: rotate | Ctrl: snap 0.5m" Foreground="#AAAAAA" FontSize="11"
-                         IsVisible="{Binding SelectionStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-              <TextBlock Text="{Binding PlacementStatus}" Foreground="#88CCFF"
+              <TextBlock Text="Drag to move &#x00B7; Alt+drag to turn &#x00B7; Ctrl snaps 0.5 m"
+                         Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource InkTertiaryBrush}"
+                         IsVisible="{Binding HasSceneSelection}" />
+              <TextBlock Text="{Binding PlacementStatus}" Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource AccentBrush}"
                          TextTrimming="CharacterEllipsis" MaxWidth="480"
                          IsVisible="{Binding PlacementStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-              <TextBlock Text="{Binding PaintStatus}" Foreground="#AAFFAA"
+              <TextBlock Text="{Binding PaintStatus}" Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource GreenBrush}"
                          TextTrimming="CharacterEllipsis" MaxWidth="480"
                          IsVisible="{Binding PaintStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
@@ -255,6 +259,36 @@
                       Background="#B0202020" Padding="6,2" />
             <Button Content="Rebuild" Command="{Binding RebuildSceneCommand}" />
           </StackPanel>
+
+          <!-- Selection bar. One row, and nothing in it is a number in a narrow box: the name a builder
+               recognises, the resref underneath it for anyone scripting against it, the kind, and the one
+               action worth offering from here - open the thing itself. Coordinates deliberately live on
+               the gizmo while dragging and in the status bar otherwise. -->
+          <Border Grid.Row="1" Background="{DynamicResource PanelBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+                  Padding="12,8" IsVisible="{Binding HasSceneSelection}">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="14">
+              <Border Grid.Column="0" Width="38" Height="38" CornerRadius="3"
+                      Background="{DynamicResource FieldBrush}"
+                      BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+                <TextBlock Text="{Binding SelectionGlyph}" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" FontSize="16"
+                           Foreground="{DynamicResource AccentBrush}" />
+              </Border>
+
+              <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center" MinWidth="180">
+                <TextBlock Classes="name" FontSize="13" Text="{Binding SelectionName}" />
+                <TextBlock Classes="resref" Text="{Binding SelectionResRef}" />
+              </StackPanel>
+
+              <TextBlock Grid.Column="2" Classes="dim" VerticalAlignment="Center"
+                         Text="{Binding SelectionKindLabel}" />
+
+              <Button Grid.Column="3" Content="Edit object..." VerticalAlignment="Center"
+                      Command="{Binding EditSelectedBlueprintCommand}"
+                      ToolTip.Tip="Open the blueprint this was placed from" />
+            </Grid>
+          </Border>
         </Grid>
       </TabItem>
     </TabControl>

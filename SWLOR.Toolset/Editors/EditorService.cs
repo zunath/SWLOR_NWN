@@ -206,7 +206,8 @@ namespace SWLOR.Toolset.Editors
                 var editor = new AreaEditorViewModel(
                     resRef, workspace, _lookups, _gameCodeIndex, _log,
                     _tilesetCatalog, _tileModelCache, _resourceIndex,
-                    _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts);
+                    _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
+                    ResolveBlueprintName, TryOpenEditor);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -218,6 +219,24 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open area editor for {resRef}: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// A blueprint's display name from the background catalog, or null while the catalog is still
+        /// building or when the resref isn't indexed (hak-provided blueprints are not). Callers fall
+        /// back to the resref, which is why this returns null rather than inventing a label.
+        /// </summary>
+        private string? ResolveBlueprintName(ResourceType? type, string? resRef)
+        {
+            if (type == null || string.IsNullOrWhiteSpace(resRef))
+                return null;
+
+            var entry = _workspaceContext.Catalog?.Entries
+                .FirstOrDefault(candidate =>
+                    candidate.ResourceType == type &&
+                    string.Equals(candidate.ResRef, resRef, StringComparison.OrdinalIgnoreCase));
+
+            return string.IsNullOrWhiteSpace(entry?.Name) ? null : entry.Name;
         }
 
         /// <summary>

@@ -13,6 +13,171 @@
        touched most recently, falling back to the other. -->
   <DockPanel>
     <TabControl x:Name="RootTabs" SelectionChanged="OnRootTabSelectionChanged">
+      <TabItem Header="3D View" x:Name="ViewTab3D">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+          <!-- One real toolbar row rather than two floating panels pinned to opposite corners of the
+               viewport: those overlapped as soon as the map got narrow, and controls that overlap are
+               controls you cannot click. It wraps instead of colliding. -->
+          <Border Grid.Row="0" Background="{DynamicResource PanelBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="8,6">
+            <WrapPanel Orientation="Horizontal">
+              <ToggleButton Content="Paint" Margin="0,0,6,3" IsChecked="{Binding IsPaintMode, Mode=TwoWay}"
+                            ToolTip.Tip="Arm the tile brush: click a tile to edit it. Esc to stop." />
+              <ComboBox Margin="0,0,6,3" MinWidth="92" ItemsSource="{Binding PaintTools}"
+                        SelectedItem="{Binding SelectedPaintTool, Mode=TwoWay}"
+                        ToolTip.Tip="Which edit a click applies" />
+              <ComboBox Margin="0,0,10,3" MinWidth="116" ItemsSource="{Binding TerrainBrushes}"
+                        SelectedItem="{Binding SelectedTerrain, Mode=TwoWay}"
+                        ToolTip.Tip="Terrain painted by the Terrain tool" />
+
+              <ComboBox Margin="0,0,6,3" MinWidth="116" ItemsSource="{Binding Sections}"
+                        SelectedItem="{Binding PlacementSection, Mode=TwoWay}"
+                        ToolTip.Tip="Instance kind to place from">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate DataType="editors:InstanceListSectionViewModel">
+                    <TextBlock Text="{Binding Title}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <Button Content="Place..." Margin="0,0,10,3" Command="{Binding BeginPlaceCommand}" />
+
+              <CheckBox Content="Placeable models" x:Name="PlaceableModelsCheck" IsChecked="True"
+                        Margin="0,0,10,3" IsCheckedChanged="OnPlaceableModelsChanged"
+                        ToolTip.Tip="Unchecked: placeables show their marker instead of their 3D model" />
+              <CheckBox Content="Hide ceilings" x:Name="HideCeilingsCheck" Margin="0,0,10,3"
+                        IsCheckedChanged="OnHideCeilingsChanged" />
+              <CheckBox Content="Show walkmesh" x:Name="ShowWalkmeshCheck" Margin="0,0,10,3"
+                        IsCheckedChanged="OnShowWalkmeshChanged"
+                        ToolTip.Tip="Overlay each tile's walkmesh (green walkable / red blocked)." />
+              <Button Content="Rebuild" Margin="0,0,0,3" Command="{Binding RebuildSceneCommand}" />
+            </WrapPanel>
+          </Border>
+
+          <viewport:GlAreaControl Grid.Row="1" x:Name="AreaView" />
+
+          <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it
+               (same Avalonia limitation Radoub's ModelPreviewGLControl documents). This transparent
+               overlay captures camera input and forwards it to the control; toolbar elements below
+               sit ABOVE it in z-order and keep receiving their own clicks. -->
+          <Border Grid.Row="1" x:Name="ViewportInput" Background="Transparent"
+                  PointerPressed="OnViewportPointerPressed"
+                  PointerMoved="OnViewportPointerMoved"
+                  PointerReleased="OnViewportPointerReleased"
+                  PointerWheelChanged="OnViewportPointerWheel" />
+
+          <Border Grid.Row="1" Background="#B0202020" CornerRadius="4" Padding="10,6"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding IsBuildingScene}">
+            <TextBlock Text="{Binding SceneStatus}" Foreground="White" />
+          </Border>
+
+          <!-- Viewport HUD. What the selection *is* moved down to the selection bar; this keeps only
+               what belongs to the map itself - scene size, and the transient placement/paint prompts. -->
+          <Border Grid.Row="1" Background="#D00C1017" CornerRadius="3" Padding="9,5"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"
+                  IsVisible="{Binding !IsBuildingScene}">
+            <StackPanel Spacing="3">
+              <TextBlock Text="{Binding SceneStatus}" Classes="mono" FontSize="10.5"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480" />
+              <TextBlock Text="Drag to move &#x00B7; Alt+drag to turn &#x00B7; Ctrl snaps 0.5 m"
+                         Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource InkTertiaryBrush}"
+                         IsVisible="{Binding HasSceneSelection}" />
+              <TextBlock Text="{Binding PlacementStatus}" Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource AccentBrush}"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480"
+                         IsVisible="{Binding PlacementStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              <TextBlock Text="{Binding PaintStatus}" Classes="mono" FontSize="10.5"
+                         Foreground="{DynamicResource GreenBrush}"
+                         TextTrimming="CharacterEllipsis" MaxWidth="480"
+                         IsVisible="{Binding PaintStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+          </Border>
+
+          <!-- Drag readout. Present only while a drag is in flight, showing where the thing is now and
+               how far it has come - the second half being what a static coordinate box cannot tell you. -->
+          <Border Grid.Row="1" Background="#F00C1017" CornerRadius="3" Padding="10,7"
+                  BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
+                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="18"
+                  IsVisible="{Binding IsDragging}">
+            <StackPanel Spacing="3">
+              <TextBlock Text="{Binding DragPosition}" Classes="mono" FontSize="11.5"
+                         Foreground="{DynamicResource AccentInkBrush}" />
+              <TextBlock Text="{Binding DragFacing}" Classes="mono" FontSize="11.5"
+                         Foreground="{DynamicResource AccentInkBrush}" />
+              <TextBlock Text="{Binding DragDelta}" Classes="mono" FontSize="11"
+                         Foreground="{DynamicResource AmberBrush}"
+                         IsVisible="{Binding DragDelta, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+          </Border>
+
+          <Border Grid.Row="1" x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
+                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
+            <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
+          </Border>
+
+          <!-- Place-from-palette. Choosing a blueprint here arms placement mode; the next
+               viewport click (or Esc/right-click to cancel) resolves it via
+               AreaEditorViewModel.CommitPlacement/CancelPlacement. -->
+          <!-- FallbackValue matters: with no kind chosen yet, PlacementSection is null and the
+               binding path can't resolve - without a fallback IsVisible would stay at its
+               default (true) and show an empty popup on area load. -->
+          <Border Grid.Row="1" IsVisible="{Binding PlacementSection.ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
+                  Background="#E0202020" BorderBrush="{DynamicResource DockThemeBorderMidBrush}" BorderThickness="1"
+                  Padding="10" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420">
+            <StackPanel Spacing="6" DataContext="{Binding PlacementSection.ActivePaletteBrowser}"
+                        x:DataType="editors:PaletteBrowserViewModel">
+              <TextBlock Text="{Binding Title, StringFormat='Choose {0} blueprint to place'}" FontWeight="Bold" Foreground="White" />
+              <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode, Mode=TwoWay}" MaxHeight="320">
+                <TreeView.ItemTemplate>
+                  <TreeDataTemplate DataType="editors:PaletteNodeViewModel" ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <TextBlock Text="{Binding DisplayName}" />
+                      <TextBlock Text="{Binding ResRef}" Opacity="0.6" />
+                    </StackPanel>
+                  </TreeDataTemplate>
+                </TreeView.ItemTemplate>
+              </TreeView>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Content="Place" Command="{Binding ChooseCommand}" />
+                <Button Content="Cancel" Command="{Binding CancelCommand}" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- Selection bar. One row, and nothing in it is a number in a narrow box: the name a builder
+               recognises, the resref underneath it for anyone scripting against it, the kind, and the one
+               action worth offering from here - open the thing itself. Coordinates deliberately live on
+               the gizmo while dragging and in the status bar otherwise. -->
+          <Border Grid.Row="2" Background="{DynamicResource PanelBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+                  Padding="12,8" IsVisible="{Binding HasSceneSelection}">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="14">
+              <Border Grid.Column="0" Width="38" Height="38" CornerRadius="3"
+                      Background="{DynamicResource FieldBrush}"
+                      BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+                <TextBlock Text="{Binding SelectionGlyph}" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" FontSize="16"
+                           Foreground="{DynamicResource AccentBrush}" />
+              </Border>
+
+              <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center" MinWidth="180">
+                <TextBlock Classes="name" FontSize="13" Text="{Binding SelectionName}" />
+                <TextBlock Classes="resref" Text="{Binding SelectionResRef}" />
+              </StackPanel>
+
+              <TextBlock Grid.Column="2" Classes="dim" VerticalAlignment="Center"
+                         Text="{Binding SelectionKindLabel}" />
+
+              <Button Grid.Column="3" Content="Edit object..." VerticalAlignment="Center"
+                      Command="{Binding EditSelectedBlueprintCommand}"
+                      ToolTip.Tip="Open the blueprint this was placed from" />
+            </Grid>
+          </Border>
+        </Grid>
+      </TabItem>
       <TabItem Header="Properties">
     <ScrollViewer>
       <StackPanel Margin="8" Spacing="6">
@@ -144,170 +309,6 @@
     </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="3D View" x:Name="ViewTab3D">
-        <Grid RowDefinitions="*,Auto">
-          <viewport:GlAreaControl x:Name="AreaView" />
-
-          <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it
-               (same Avalonia limitation Radoub's ModelPreviewGLControl documents). This transparent
-               overlay captures camera input and forwards it to the control; toolbar elements below
-               sit ABOVE it in z-order and keep receiving their own clicks. -->
-          <Border x:Name="ViewportInput" Background="Transparent"
-                  PointerPressed="OnViewportPointerPressed"
-                  PointerMoved="OnViewportPointerMoved"
-                  PointerReleased="OnViewportPointerReleased"
-                  PointerWheelChanged="OnViewportPointerWheel" />
-
-          <Border Background="#B0202020" CornerRadius="4" Padding="10,6"
-                  HorizontalAlignment="Center" VerticalAlignment="Center"
-                  IsVisible="{Binding IsBuildingScene}">
-            <TextBlock Text="{Binding SceneStatus}" Foreground="White" />
-          </Border>
-
-          <!-- Viewport HUD. What the selection *is* moved down to the selection bar; this keeps only
-               what belongs to the map itself - scene size, and the transient placement/paint prompts. -->
-          <Border Background="#D00C1017" CornerRadius="3" Padding="9,5"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
-                  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"
-                  IsVisible="{Binding !IsBuildingScene}">
-            <StackPanel Spacing="3">
-              <TextBlock Text="{Binding SceneStatus}" Classes="mono" FontSize="10.5"
-                         TextTrimming="CharacterEllipsis" MaxWidth="480" />
-              <TextBlock Text="Drag to move &#x00B7; Alt+drag to turn &#x00B7; Ctrl snaps 0.5 m"
-                         Classes="mono" FontSize="10.5"
-                         Foreground="{DynamicResource InkTertiaryBrush}"
-                         IsVisible="{Binding HasSceneSelection}" />
-              <TextBlock Text="{Binding PlacementStatus}" Classes="mono" FontSize="10.5"
-                         Foreground="{DynamicResource AccentBrush}"
-                         TextTrimming="CharacterEllipsis" MaxWidth="480"
-                         IsVisible="{Binding PlacementStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-              <TextBlock Text="{Binding PaintStatus}" Classes="mono" FontSize="10.5"
-                         Foreground="{DynamicResource GreenBrush}"
-                         TextTrimming="CharacterEllipsis" MaxWidth="480"
-                         IsVisible="{Binding PaintStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            </StackPanel>
-          </Border>
-
-          <!-- Drag readout. Present only while a drag is in flight, showing where the thing is now and
-               how far it has come - the second half being what a static coordinate box cannot tell you. -->
-          <Border Background="#F00C1017" CornerRadius="3" Padding="10,7"
-                  BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
-                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="18"
-                  IsVisible="{Binding IsDragging}">
-            <StackPanel Spacing="3">
-              <TextBlock Text="{Binding DragPosition}" Classes="mono" FontSize="11.5"
-                         Foreground="{DynamicResource AccentInkBrush}" />
-              <TextBlock Text="{Binding DragFacing}" Classes="mono" FontSize="11.5"
-                         Foreground="{DynamicResource AccentInkBrush}" />
-              <TextBlock Text="{Binding DragDelta}" Classes="mono" FontSize="11"
-                         Foreground="{DynamicResource AmberBrush}"
-                         IsVisible="{Binding DragDelta, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            </StackPanel>
-          </Border>
-
-          <Border x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
-                  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
-            <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
-          </Border>
-
-          <!-- Place-from-palette. Choosing a blueprint here arms placement mode; the next
-               viewport click (or Esc/right-click to cancel) resolves it via
-               AreaEditorViewModel.CommitPlacement/CancelPlacement. -->
-          <!-- FallbackValue matters: with no kind chosen yet, PlacementSection is null and the
-               binding path can't resolve - without a fallback IsVisible would stay at its
-               default (true) and show an empty popup on area load. -->
-          <Border IsVisible="{Binding PlacementSection.ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
-                  Background="#E0202020" BorderBrush="{DynamicResource DockThemeBorderMidBrush}" BorderThickness="1"
-                  Padding="10" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420">
-            <StackPanel Spacing="6" DataContext="{Binding PlacementSection.ActivePaletteBrowser}"
-                        x:DataType="editors:PaletteBrowserViewModel">
-              <TextBlock Text="{Binding Title, StringFormat='Choose {0} blueprint to place'}" FontWeight="Bold" Foreground="White" />
-              <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode, Mode=TwoWay}" MaxHeight="320">
-                <TreeView.ItemTemplate>
-                  <TreeDataTemplate DataType="editors:PaletteNodeViewModel" ItemsSource="{Binding Children}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                      <TextBlock Text="{Binding DisplayName}" />
-                      <TextBlock Text="{Binding ResRef}" Opacity="0.6" />
-                    </StackPanel>
-                  </TreeDataTemplate>
-                </TreeView.ItemTemplate>
-              </TreeView>
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <Button Content="Place" Command="{Binding ChooseCommand}" />
-                <Button Content="Cancel" Command="{Binding CancelCommand}" />
-              </StackPanel>
-            </StackPanel>
-          </Border>
-
-          <!-- Tile brush. Toggling "Paint" arms a sticky brush: a viewport CLICK edits the
-               tile under the cursor while drags/orbit still drive the camera. Esc (handled in the
-               viewport) disarms it. -->
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"
-                      Margin="8" Spacing="6" Background="#B0202020">
-            <ToggleButton Content="Paint" IsChecked="{Binding IsPaintMode, Mode=TwoWay}"
-                          ToolTip.Tip="Arm the tile brush: click a tile to edit it. Esc to stop." />
-            <ComboBox ItemsSource="{Binding PaintTools}" SelectedItem="{Binding SelectedPaintTool, Mode=TwoWay}"
-                      MinWidth="90" ToolTip.Tip="Which edit a click applies" />
-            <ComboBox ItemsSource="{Binding TerrainBrushes}" SelectedItem="{Binding SelectedTerrain, Mode=TwoWay}"
-                      MinWidth="120" ToolTip.Tip="Terrain painted by the Terrain tool" />
-          </StackPanel>
-
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
-                      Margin="8" Spacing="10">
-            <ComboBox ItemsSource="{Binding Sections}" SelectedItem="{Binding PlacementSection, Mode=TwoWay}"
-                      MinWidth="120" ToolTip.Tip="Instance kind to place from">
-              <ComboBox.ItemTemplate>
-                <DataTemplate DataType="editors:InstanceListSectionViewModel">
-                  <TextBlock Text="{Binding Title}" />
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
-            <Button Content="Place..." Command="{Binding BeginPlaceCommand}" />
-            <CheckBox Content="Placeable models" x:Name="PlaceableModelsCheck" IsChecked="True"
-                      IsCheckedChanged="OnPlaceableModelsChanged"
-                      ToolTip.Tip="Unchecked: placeables show their blue pyramid marker instead of their 3D model"
-                      Background="#B0202020" Padding="6,2" />
-            <CheckBox Content="Hide ceilings" x:Name="HideCeilingsCheck"
-                      IsCheckedChanged="OnHideCeilingsChanged"
-                      Background="#B0202020" Padding="6,2" />
-            <CheckBox Content="Show walkmesh" x:Name="ShowWalkmeshCheck"
-                      IsCheckedChanged="OnShowWalkmeshChanged"
-                      ToolTip.Tip="Overlay each tile's walkmesh (green walkable / red blocked). Placed instances snap to this floor's height."
-                      Background="#B0202020" Padding="6,2" />
-            <Button Content="Rebuild" Command="{Binding RebuildSceneCommand}" />
-          </StackPanel>
-
-          <!-- Selection bar. One row, and nothing in it is a number in a narrow box: the name a builder
-               recognises, the resref underneath it for anyone scripting against it, the kind, and the one
-               action worth offering from here - open the thing itself. Coordinates deliberately live on
-               the gizmo while dragging and in the status bar otherwise. -->
-          <Border Grid.Row="1" Background="{DynamicResource PanelBrush}"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
-                  Padding="12,8" IsVisible="{Binding HasSceneSelection}">
-            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="14">
-              <Border Grid.Column="0" Width="38" Height="38" CornerRadius="3"
-                      Background="{DynamicResource FieldBrush}"
-                      BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
-                <TextBlock Text="{Binding SelectionGlyph}" HorizontalAlignment="Center"
-                           VerticalAlignment="Center" FontSize="16"
-                           Foreground="{DynamicResource AccentBrush}" />
-              </Border>
-
-              <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center" MinWidth="180">
-                <TextBlock Classes="name" FontSize="13" Text="{Binding SelectionName}" />
-                <TextBlock Classes="resref" Text="{Binding SelectionResRef}" />
-              </StackPanel>
-
-              <TextBlock Grid.Column="2" Classes="dim" VerticalAlignment="Center"
-                         Text="{Binding SelectionKindLabel}" />
-
-              <Button Grid.Column="3" Content="Edit object..." VerticalAlignment="Center"
-                      Command="{Binding EditSelectedBlueprintCommand}"
-                      ToolTip.Tip="Open the blueprint this was placed from" />
-            </Grid>
-          </Border>
-        </Grid>
-      </TabItem>
     </TabControl>
   </DockPanel>
 </UserControl>

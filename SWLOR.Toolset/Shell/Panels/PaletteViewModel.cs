@@ -44,6 +44,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly OutputLogService _log;
         private readonly Func<Editors.EditorService>? _editorService;
         private readonly Func<IAreaPlacementTarget?>? _placementTarget;
+        private readonly ThumbnailService? _thumbnails;
 
         /// <summary>Every row of the current type's tree, expanded or not, so collapsing need not re-derive counts.</summary>
         private readonly List<CategoryRowViewModel> _allRows = new();
@@ -106,7 +107,11 @@ namespace SWLOR.Toolset.Shell.Panels
             _ => "L"
         };
 
-        partial void OnTileSizeChanged(double value) => OnPropertyChanged(nameof(TileSizeLabel));
+        partial void OnTileSizeChanged(double value)
+        {
+            OnPropertyChanged(nameof(TileSizeLabel));
+            OnPropertyChanged(nameof(PreviewHeight));
+        }
 
         partial void OnShowAllTypesChanged(bool value) => PublishTypeChips();
 
@@ -123,8 +128,10 @@ namespace SWLOR.Toolset.Shell.Panels
             CategoryService categories,
             OutputLogService log,
             Func<Editors.EditorService>? editorService = null,
-            Func<IAreaPlacementTarget?>? placementTarget = null)
+            Func<IAreaPlacementTarget?>? placementTarget = null,
+            ThumbnailService? thumbnails = null)
         {
+            _thumbnails = thumbnails;
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _categories = categories ?? throw new ArgumentNullException(nameof(categories));
             _log = log ?? throw new ArgumentNullException(nameof(log));
@@ -508,7 +515,7 @@ namespace SWLOR.Toolset.Shell.Panels
             Breadcrumb = BreadcrumbFor(section);
 
             foreach (var resRef in resRefs.OrderBy(NameFor, StringComparer.CurrentCultureIgnoreCase))
-                Tiles.Add(new PaletteTileViewModel(resRef, NameFor(resRef), null));
+                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), null));
         }
 
         private void RebuildSearchTiles(CategorySection section)
@@ -525,13 +532,34 @@ namespace SWLOR.Toolset.Shell.Panels
             foreach (var resRef in matches)
             {
                 var folder = section.FoldersContaining(resRef).FirstOrDefault();
-                Tiles.Add(new PaletteTileViewModel(resRef, NameFor(resRef), folder?.Name));
+                AddTile(new PaletteTileViewModel(resRef, NameFor(resRef), folder?.Name));
             }
 
             Breadcrumb = matches.Count >= MaxSearchResults
                 ? $"First {MaxSearchResults} of many matches"
                 : $"{matches.Count} match{(matches.Count == 1 ? string.Empty : "es")} across all categories";
         }
+
+        /// <summary>
+        /// Publishes a tile and asks for its thumbnail. The grid appears immediately and fills in as
+        /// renders complete, rather than the panel stalling while thousands of models load.
+        /// </summary>
+        private void AddTile(PaletteTileViewModel tile)
+        {
+            Tiles.Add(tile);
+
+            var cached = _thumbnails?.Cached(SelectedType, tile.ResRef);
+            if (cached != null)
+            {
+                tile.Preview = cached;
+                return;
+            }
+
+            _thumbnails?.RequestAsync(SelectedType, tile.ResRef, bitmap => tile.Preview = bitmap);
+        }
+
+        /// <summary>The preview box scales with the tile, keeping every tile the same proportions.</summary>
+        public double PreviewHeight => Math.Round(TileSize * 0.46);
 
         private IEnumerable<string> ResRefsForSelectedRow(CategorySection section)
         {

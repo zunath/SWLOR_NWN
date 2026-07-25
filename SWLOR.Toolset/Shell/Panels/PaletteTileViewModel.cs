@@ -1,3 +1,6 @@
+using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
@@ -5,15 +8,36 @@ namespace SWLOR.Toolset.Shell.Panels
     /// showing search results rather than one folder - which category it came from.
     /// </summary>
     /// <remarks>
-    /// The name is the primary text and the resref sits under it in monospace, the same pairing the
-    /// explorer rows use. <see cref="CategoryPath"/> is only populated for search results, where knowing
-    /// where a hit lives is half the answer and doubles as learning the tree.
+    /// Observable rather than a record because the preview arrives later: tiles are published
+    /// immediately and their thumbnails render on a background thread, so the grid appears at once and
+    /// fills in rather than blocking on thousands of model loads.
     /// </remarks>
-    public sealed record PaletteTileViewModel(string ResRef, string Name, string? CategoryPath)
+    public partial class PaletteTileViewModel : ObservableObject
     {
+        public PaletteTileViewModel(string resRef, string name, string? categoryPath)
+        {
+            ResRef = resRef;
+            Name = name;
+            CategoryPath = categoryPath;
+        }
+
+        public string ResRef { get; }
+
+        public string Name { get; }
+
+        public string? CategoryPath { get; }
+
         public bool HasCategoryPath => !string.IsNullOrEmpty(CategoryPath);
 
-        /// <summary>Shown until blueprint thumbnails exist; the first letter of the name reads better than a generic box.</summary>
+        /// <summary>The rendered model, or null until it arrives - or forever, if it cannot be resolved.</summary>
+        [ObservableProperty]
+        private Bitmap? _preview;
+
+        public bool HasPreview => Preview != null;
+
+        partial void OnPreviewChanged(Bitmap? value) => OnPropertyChanged(nameof(HasPreview));
+
+        /// <summary>Shown until a thumbnail arrives; the first letter reads better than a generic box.</summary>
         public string Glyph => string.IsNullOrWhiteSpace(Name) ? "?" : Name.Trim()[..1].ToUpperInvariant();
     }
 }

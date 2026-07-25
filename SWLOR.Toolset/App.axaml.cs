@@ -115,6 +115,12 @@ namespace SWLOR.Toolset
                 // Optional: the base-game palettes name their categories by TLK reference, so without
                 // the TLK they import as renameable placeholders rather than real names.
                 sp.GetService<TlkService>()));
+            services.AddSingleton(sp => new ThumbnailService(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetService<Domain.Render.TileModelCache>(),
+                sp.GetService<AppearanceService>(),
+                sp.GetService<PlaceableAppearanceService>(),
+                sp.GetService<DoorTypeService>()));
             services.AddSingleton(sp => new PaletteViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<CategoryService>(),
@@ -122,7 +128,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Func<Editors.EditorService>>(),
                 // The palette places into whichever area document is in front. Resolved lazily for the
                 // same construction-cycle reason as EditorService above.
-                () => sp.GetRequiredService<ToolsetDockFactory>().ActivePlacementTarget));
+                () => sp.GetRequiredService<ToolsetDockFactory>().ActivePlacementTarget,
+                sp.GetRequiredService<ThumbnailService>()));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(

@@ -60,8 +60,10 @@
         <ListBox.ItemTemplate>
           <DataTemplate DataType="panels:ExplorerNodeViewModel">
             <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}">
-              <Button Grid.Column="0" Content="{Binding Twisty}" Width="15" Padding="0"
-                      Background="Transparent" BorderThickness="0" FontSize="9"
+              <!-- A wide, tall hit box around a small glyph: the arrow is the thing you aim at most in
+                   this panel and a 15px target is a miss waiting to happen. -->
+              <Button Grid.Column="0" Content="{Binding Twisty}" Width="26" MinHeight="22" Padding="0"
+                      Background="Transparent" BorderThickness="0" FontSize="11"
                       Foreground="{DynamicResource InkTertiaryBrush}"
                       Command="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).ToggleCommand}"
                       CommandParameter="{Binding}" />

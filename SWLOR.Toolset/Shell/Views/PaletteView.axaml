@@ -66,8 +66,8 @@
           <ListBox.ItemTemplate>
             <DataTemplate DataType="panels:CategoryRowViewModel">
               <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}">
-                <Button Grid.Column="0" Content="{Binding Twisty}" Width="16" Padding="0"
-                        Background="Transparent" BorderThickness="0" FontSize="9"
+                <Button Grid.Column="0" Content="{Binding Twisty}" Width="26" MinHeight="22" Padding="0"
+                        Background="Transparent" BorderThickness="0" FontSize="11"
                         Foreground="{DynamicResource InkTertiaryBrush}"
                         Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).ToggleExpandCommand}"
                         CommandParameter="{Binding}" />
@@ -148,31 +148,50 @@
       </ListBox.Styles>
       <ListBox.ItemTemplate>
         <DataTemplate DataType="panels:PaletteTileViewModel">
-          <Border Width="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).TileSize}" CornerRadius="4" Background="{DynamicResource PanelRaisedBrush}"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+          <!-- Placing is the default action: clicking a tile arms placement, which is what a builder
+               does with a palette nine times in ten. Editing lives behind the ellipsis and the right-click
+               menu, so the common action needs no aim and the rare one is still one click away. -->
+          <Border Width="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).TileSize}"
+                  CornerRadius="4" Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                  Tapped="OnTileTapped">
+            <Border.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="Place in area"
+                          Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).PlaceCommand}"
+                          CommandParameter="{Binding}" />
+                <MenuItem Header="Edit blueprint..."
+                          Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).EditCommand}"
+                          CommandParameter="{Binding}" />
+              </ContextMenu>
+            </Border.ContextMenu>
             <StackPanel>
-              <!-- Stands in for the rendered model until the thumbnail cache exists. -->
-              <Border Height="58" CornerRadius="3,3,0,0" Background="{DynamicResource FieldBrush}">
-                <TextBlock Text="{Binding Glyph}" FontSize="22" HorizontalAlignment="Center"
-                           VerticalAlignment="Center" Foreground="{DynamicResource AccentBrush}" />
-              </Border>
-              <StackPanel Margin="7,5" Spacing="1">
+              <Panel>
+                <Border Height="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).PreviewHeight}"
+                        CornerRadius="3,3,0,0" Background="{DynamicResource FieldBrush}">
+                  <Panel>
+                    <TextBlock Text="{Binding Glyph}" FontSize="22" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Foreground="{DynamicResource AccentBrush}"
+                               IsVisible="{Binding !HasPreview}" />
+                    <Image Source="{Binding Preview}" Stretch="Uniform" Margin="4"
+                           IsVisible="{Binding HasPreview}" />
+                  </Panel>
+                </Border>
+
+                <Button Classes="link" Content="&#x22EF;" FontSize="15" Padding="7,1"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,1,1,0"
+                        Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).EditCommand}"
+                        CommandParameter="{Binding}"
+                        ToolTip.Tip="Edit this blueprint" />
+              </Panel>
+
+              <StackPanel Margin="8,6,8,8" Spacing="2">
                 <TextBlock Classes="name" Text="{Binding Name}" MaxLines="2"
                            TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
                 <TextBlock Classes="resref" Text="{Binding ResRef}" />
                 <TextBlock Classes="dim" FontSize="10" Text="{Binding CategoryPath, StringFormat='in {0}'}"
                            IsVisible="{Binding HasCategoryPath}" TextTrimming="CharacterEllipsis" />
               </StackPanel>
-              <Grid ColumnDefinitions="*,*" Margin="5,0,5,6" ColumnSpacing="4">
-                <Button Grid.Column="0" Content="Place" FontSize="11" Padding="0,3" Classes="primary"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                        Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).PlaceCommand}"
-                        CommandParameter="{Binding}" />
-                <Button Grid.Column="1" Content="Edit" FontSize="11" Padding="0,3"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                        Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).EditCommand}"
-                        CommandParameter="{Binding}" />
-              </Grid>
             </StackPanel>
           </Border>
         </DataTemplate>

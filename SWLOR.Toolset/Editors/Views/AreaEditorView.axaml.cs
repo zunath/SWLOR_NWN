@@ -39,6 +39,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.IsPaintActive = _viewModel.IsPaintMode;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+            BuildSceneIfViewingMap();
         }
 
         private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -93,6 +94,17 @@ namespace SWLOR.Toolset.Editors
         {
             // The TabControl raises SelectionChanged while the XAML is still populating
             // (during InitializeComponent), before named fields are assigned - guard both.
+            if (ViewTab3D?.IsSelected == true)
+                _viewModel?.EnsureSceneBuilt();
+        }
+
+        /// <summary>
+        /// The 3D view is the first tab, so it is already selected by the time a view model arrives -
+        /// too early for SelectionChanged to have found one. Building here is what makes opening an area
+        /// show the map rather than an empty viewport.
+        /// </summary>
+        private void BuildSceneIfViewingMap()
+        {
             if (ViewTab3D?.IsSelected == true)
                 _viewModel?.EnsureSceneBuilt();
         }

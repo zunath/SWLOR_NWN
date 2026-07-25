@@ -142,9 +142,16 @@ Write-Section "Running engine tests via docker compose (server home: $ServerHome
 $previousFilter = $env:SWLOR_ENGINE_TEST_FILTER
 $previousArenaResref = $env:SWLOR_ENGINE_TEST_ARENA_RESREF
 $previousHakDir = $env:SWLOR_ENGINE_TEST_HAK_DIR
+$previousHome = $env:SWLOR_ENGINE_TEST_HOME
 try {
     $env:SWLOR_ENGINE_TEST_FILTER = $Filter
     $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
+
+    # The compose file's mounts interpolate SWLOR_ENGINE_TEST_HOME rather than PWD:
+    # native Windows PowerShell never exports a PWD environment variable (Push-Location
+    # only updates the automatic $PWD), so ${PWD}-based interpolation would silently
+    # mount the compose-file directory instead of the selected server home.
+    $env:SWLOR_ENGINE_TEST_HOME = $ServerHome
 
     # Share the dev server's hak set via a dedicated Docker mount when the test home has
     # none of its own - NTFS junctions do not survive Docker bind mounts, so this is the
@@ -198,6 +205,7 @@ finally {
     $env:SWLOR_ENGINE_TEST_FILTER = $previousFilter
     $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $previousArenaResref
     $env:SWLOR_ENGINE_TEST_HAK_DIR = $previousHakDir
+    $env:SWLOR_ENGINE_TEST_HOME = $previousHome
 }
 
 Write-Host "docker compose exit code: $composeExitCode"

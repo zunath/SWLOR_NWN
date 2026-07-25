@@ -8,9 +8,11 @@
 #       SWLOR_ENGINE_TESTS_ENABLED / SWLOR_ENVIRONMENT to turn the suite on,
 #       NWNX_METRICS_INFLUXDB_SKIP because no influxdb service exists in this file
 #
-# Run from the SERVER HOME directory (so ${PWD-.} resolves to it, matching /nwn/home) -
-# on a dev machine that's the repo's debugserver/ folder; in CI it's this Docker/ folder
-# after the workflow stages assets into it. This file lives here because it's tracked
+# The server home is passed explicitly as SWLOR_ENGINE_TEST_HOME (set by the runner
+# scripts) rather than relying on ${PWD}: native Windows PowerShell does not export a
+# PWD environment variable, so Compose's ${PWD} interpolation would silently fall back
+# and mount the wrong directory. The '.' fallback only serves direct `docker compose`
+# invocations run FROM the server home. This file lives here because it's tracked
 # solution configuration; the directory it sits in is not inherently the runtime home.
 # Use the runner scripts, which resolve the home and pass a dedicated compose project
 # name (-p swlor-engine-tests) so these containers never collide with the dev stack:
@@ -32,7 +34,7 @@ services:
           context: .
           dockerfile: Dockerfile
         image: zunath/nwn-dotnet:8193.37.15-2
-        env_file: ${PWD-.}/swlor.env
+        env_file: ${SWLOR_ENGINE_TEST_HOME:-.}/swlor.env
         # These override the values loaded from swlor.env above (Compose gives
         # `environment:` precedence over `env_file:`).
         environment:
@@ -69,11 +71,11 @@ services:
         links:
             - "redis:redis"
         volumes:
-            - ${PWD-.}/logs:/nwn/run/logs.0
-            - ${PWD-.}/:/nwn/home
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/logs:/nwn/run/logs.0
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/:/nwn/home
             # The hak set can be shared from another server home (e.g. the dev server's)
             # without duplicating ~13GB on disk: NTFS junctions do NOT survive Docker bind
             # mounts, so the share happens here as its own mount instead. Defaults to the
             # server home's own hak directory. The runner scripts set this automatically.
-            - ${SWLOR_ENGINE_TEST_HAK_DIR:-${PWD-.}/hak}:/nwn/home/hak
-            - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0
+            - ${SWLOR_ENGINE_TEST_HAK_DIR:-${SWLOR_ENGINE_TEST_HOME:-.}/hak}:/nwn/home/hak
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/logs:/nwn/data/bin/linux-x86/logs.0

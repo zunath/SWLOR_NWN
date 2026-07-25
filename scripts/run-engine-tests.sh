@@ -145,6 +145,10 @@ fi
 section "Running engine tests via docker compose (server home: $SERVER_HOME)"
 export SWLOR_ENGINE_TEST_FILTER="$FILTER"
 export SWLOR_ENGINE_TEST_ARENA_RESREF="$ARENA_RESREF"
+# The compose file's mounts interpolate SWLOR_ENGINE_TEST_HOME rather than PWD -
+# an explicit variable works identically across bash and Windows PowerShell (which
+# never exports a PWD environment variable for Compose to consume).
+export SWLOR_ENGINE_TEST_HOME="$SERVER_HOME"
 
 # Share the dev server's hak set via a dedicated Docker mount when the test home has
 # none of its own - NTFS junctions do not survive Docker bind mounts, so this is the
@@ -167,7 +171,7 @@ if [ -z "${SWLOR_ENGINE_TEST_HAK_DIR:-}" ]; then
     fi
 fi
 
-# Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
+# Run from the server home so any '.'-fallback interpolation still resolves to it.
 pushd "$SERVER_HOME" > /dev/null
 
 # Remove anything a previously interrupted run left behind before starting fresh.

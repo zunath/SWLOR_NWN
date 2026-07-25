@@ -129,6 +129,15 @@ namespace SWLOR.Toolset.Domain.Workspace
             return entry;
         }
 
+        /// <summary>
+        /// Drops a resource that no longer exists, so panels stop listing a file that has been deleted.
+        /// </summary>
+        public void RemoveEntry(ResourceType type, string resRef)
+        {
+            if (_indexedEntries.TryRemove(IdentityKey(type, resRef), out _))
+                PublishSnapshot();
+        }
+
         private void PublishSnapshot()
         {
             // Serialize snapshot publication so a slower, older publication can never replace a

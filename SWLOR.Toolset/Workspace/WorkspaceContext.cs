@@ -82,5 +82,16 @@ namespace SWLOR.Toolset.Workspace
             Catalog?.RefreshEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
         }
+
+        /// <summary>
+        /// Drops one deleted resource from the catalog and tells catalog-backed panels to refresh.
+        /// Without this, Explorer and Search keep offering a resource whose file is gone, and opening
+        /// that row fails against the missing file.
+        /// </summary>
+        public void RemoveCatalogEntry(ResourceType type, string resRef)
+        {
+            Catalog?.RemoveEntry(type, resRef);
+            CatalogEntryRefreshed?.Invoke(type, resRef);
+        }
     }
 }

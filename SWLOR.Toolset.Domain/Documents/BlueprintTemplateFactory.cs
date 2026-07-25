@@ -198,7 +198,16 @@ namespace SWLOR.Toolset.Domain.Documents
             root.SetInt("Stolen", GffFieldType.Byte, 0);
             root.SetInt("Cursed", GffFieldType.Byte, 0);
             root.SetInt("PaletteID", GffFieldType.Byte, 0);
+
+            // A brand-new item has no loot table, recipe, store or any other way for a player to get it.
+            // Item.IsEconomyRestricted treats an unflagged item as searchable, so without this it would
+            // appear on player-facing economy surfaces as something nobody can obtain. Clear the flag
+            // once a real source is wired - see the economy rules in AGENTS.md.
+            new VarTable(root).SetInt(NoEconomyVariable, 1);
         }
+
+        /// <summary>Local variable marking an item as outside the player economy.</summary>
+        public const string NoEconomyVariable = "NO_ECONOMY";
 
         private static void PopulatePlaceable(JsonGffStruct root, string resRef, string name)
         {

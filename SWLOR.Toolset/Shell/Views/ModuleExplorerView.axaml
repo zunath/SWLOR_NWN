@@ -79,7 +79,7 @@
                   <Separator IsVisible="{Binding IsResource}" />
                   <MenuItem Header="Open"
                             Command="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).OpenSelectedCommand}"
-                            IsVisible="{Binding IsResource}" />
+                            IsVisible="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).CanOpenSelectedType}" />
                   <!-- A submenu of folders rather than a modal picker: the tree the builder is looking
                        at is already the list of choices. -->
                   <MenuItem Header="Move to"

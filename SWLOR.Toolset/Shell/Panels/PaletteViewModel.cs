@@ -643,6 +643,10 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
+            // Out of the catalog, or Explorer and Search keep listing a resource whose file is gone and
+            // opening that row fails against the missing file.
+            _workspaceContext.RemoveCatalogEntry(SelectedType, tile.ResRef);
+
             // Drop it from the sidecar too, or the category keeps a member that resolves to nothing.
             if (_categories.Section(SelectedType) is { } section)
             {
@@ -719,6 +723,11 @@ namespace SWLOR.Toolset.Shell.Panels
                 _log.AppendLine($"Creating {SelectedType.Extension()} blueprint '{resRef}' failed: {ex.Message}");
                 return;
             }
+
+            // Into the catalog straight away. It is a persistent snapshot, so without this the new
+            // blueprint is missing from Explorer and Search, and the palette shows its resref instead of
+            // the name that was just typed - opening the clean editor raises nothing on its own.
+            _workspaceContext.RefreshCatalogEntry(SelectedType, resRef);
 
             // Filed where the builder asked for it, which is the whole reason this lives on the category's
             // menu rather than a global New button.

@@ -230,13 +230,14 @@ namespace SWLOR.Toolset.Shell.Panels
                 tab.IsSelected = tab.Type == value;
 
             OnPropertyChanged(nameof(NewItemLabel));
+            OnPropertyChanged(nameof(CanOpenSelectedType));
             SelectedRow = null;
             StatusMessage = null;
             Refresh();
         }
 
         private int CountFor(ResourceType type) =>
-            _catalogByType != null && _catalogByType.TryGetValue(type, out var entries)
+            IsCatalogIndexed(type) && _catalogByType != null && _catalogByType.TryGetValue(type, out var entries)
                 ? entries.Count
                 : _workspaceContext.Workspace?.EnumerateResRefs(type).Count ?? 0;
 
@@ -303,8 +304,15 @@ namespace SWLOR.Toolset.Shell.Panels
             _workspaceContext.RefreshCatalogEntry(SelectedType, resRef);
             Refresh();
 
-            StatusMessage = $"Created '{resRef}'.";
-            _editorService?.Invoke().TryOpenEditor(SelectedType, resRef);
+            // Said plainly rather than left to be discovered: the toolset writes .nss source and does
+            // not compile it, and NWN runs the compiled .ncs. A new script is a real file in the module
+            // but it does nothing until the build pipeline compiles it.
+            StatusMessage = SelectedType == ResourceType.Nss
+                ? $"Created '{resRef}'. It must be compiled to .ncs by the build before the game will run it."
+                : $"Created '{resRef}'.";
+
+            if (CanOpenSelectedType)
+                _editorService?.Invoke().TryOpenEditor(SelectedType, resRef);
         }
 
         private void NewArea()
@@ -339,8 +347,10 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </summary>
         private static string ToResRef(string name)
         {
+            // ASCII only: a resref is a NWN resource identifier, and char.IsLetterOrDigit would happily
+            // keep the accented letter in "Café" and write a filename the game cannot address.
             var characters = name.Trim().ToLowerInvariant()
-                .Select(character => char.IsLetterOrDigit(character) ? character : '_')
+                .Select(character => char.IsAsciiLetterOrDigit(character) ? character : '_')
                 .ToArray();
 
             return new string(characters).Trim('_').Replace("__", "_") is { Length: > 0 } cleaned
@@ -480,6 +490,13 @@ namespace SWLOR.Toolset.Shell.Panels
 
         // ----- browsing -----
 
+        /// <summary>
+        /// Whether the selected tab's resources can actually be opened. Only areas can: EditorService
+        /// has schemas for the blueprint types and a special path for areas, so a dialog or script would
+        /// only ever log "No editor available yet". An action that cannot succeed should not be offered.
+        /// </summary>
+        public bool CanOpenSelectedType => SelectedType == ResourceType.Area;
+
         /// <summary>The context menu's Open, which is the double-click by another route.</summary>
         [RelayCommand]
         private void OpenSelected() => OpenSelectedItem();
@@ -493,6 +510,12 @@ namespace SWLOR.Toolset.Shell.Panels
             if (row.IsBranch)
             {
                 Toggle(row);
+                return;
+            }
+
+            if (!CanOpenSelectedType)
+            {
+                StatusMessage = $"{SelectedType.DisplayName()} cannot be edited in the toolset yet.";
                 return;
             }
 
@@ -650,13 +673,29 @@ namespace SWLOR.Toolset.Shell.Panels
             if (workspace == null)
                 return Array.Empty<ExplorerItem>();
 
-            if (_catalogByType != null && _catalogByType.TryGetValue(type, out var entries))
+            if (IsCatalogIndexed(type) &&
+                _catalogByType != null &&
+                _catalogByType.TryGetValue(type, out var entries))
+            {
                 return entries.Select(entry => new ExplorerItem(entry.ResRef, entry.Name, entry.Tag)).ToList();
+            }
 
             return workspace.EnumerateResRefs(type)
                 .Select(resRef => new ExplorerItem(resRef, null, null))
                 .ToList();
         }
+
+        /// <summary>
+        /// Whether the background catalog indexes this type at all.
+        /// </summary>
+        /// <remarks>
+        /// It indexes areas and the blueprint types, and nothing else. Dialogs and scripts have to stay
+        /// enumeration-backed, because creating one calls RefreshCatalogEntry and that single insert
+        /// would otherwise make the type look catalog-backed - at which point the list is that one new
+        /// resource and every pre-existing dialog or script disappears until restart.
+        /// </remarks>
+        private static bool IsCatalogIndexed(ResourceType type) =>
+            type == ResourceType.Area || ModuleWorkspace.BlueprintTypes.Contains(type);
 
         private static string SortKey(ExplorerItem item) => item.PrimaryText;
 

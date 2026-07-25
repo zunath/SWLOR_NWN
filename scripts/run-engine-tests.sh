@@ -14,9 +14,14 @@
 # Usage:
 #   scripts/run-engine-tests.sh [--skip-build] [--filter <substring>]
 #                                [--arena-resref <resref>] [--configuration <cfg>]
-#                                [--server-home <dir>]
+#                                [--server-home <dir>] [--timeout-minutes <n>]
 #
-# Requires: dotnet SDK (unless --skip-build), docker compose, jq
+# --timeout-minutes is a hard wall-clock limit on the containerized run (default
+# 90; a full sweep takes roughly 45). It is the backstop against a server that
+# never finishes on its own - e.g. one that boots healthy but schedules no tests,
+# which stays responsive and therefore never trips the NWNX thread watchdog.
+#
+# Requires: dotnet SDK (unless --skip-build), docker compose, jq, timeout
 #
 # Functionally identical to run-engine-tests.ps1 - keep both in sync.
 
@@ -27,6 +32,7 @@ FILTER=""
 ARENA_RESREF=""
 CONFIGURATION="Release"
 SERVER_HOME="${SWLOR_ENGINE_TEST_SERVER_HOME:-}"
+TIMEOUT_MINUTES=90
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -50,6 +56,10 @@ while [ $# -gt 0 ]; do
             SERVER_HOME="$2"
             shift 2
             ;;
+        --timeout-minutes)
+            TIMEOUT_MINUTES="$2"
+            shift 2
+            ;;
         *)
             echo "Unknown argument: $1" >&2
             exit 2
@@ -59,7 +69,11 @@ done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SERVER_PROJECT="$REPO_ROOT/SWLOR.Game.Server/SWLOR.Game.Server.csproj"
+# Build/stage the ENGINE TEST project, not the game project: it carries the game
+# assembly along as a project reference, so its output directory contains both. The
+# game project's own output deliberately excludes the test assembly, which is what
+# keeps test code out of a production deploy.
+SERVER_PROJECT="$REPO_ROOT/SWLOR.Game.Server.EngineTests/SWLOR.Game.Server.EngineTests.csproj"
 
 # The server home is the directory mounted as /nwn/home: it holds modules/, hak/,
 # tlk/, dotnet/, swlor.env, and receives app_logs/. SWLOR.Game.Server/Docker only
@@ -106,11 +120,19 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
         exit 1
     fi
 
-    BUILD_OUTPUT_DIR="$REPO_ROOT/SWLOR.Game.Server/bin/$CONFIGURATION/net10.0"
-    if [ ! -d "$BUILD_OUTPUT_DIR" ]; then
-        echo "Expected build output directory not found: $BUILD_OUTPUT_DIR" >&2
-        exit 1
-    fi
+    # BOTH outputs are staged, game project first. A referenced project's DLL is copied into
+    # the referencing project's output, but its runtimeconfig.json/deps.json are NOT - and
+    # NWNX_DotNET boots the host by the GAME assembly's name, so it needs
+    # SWLOR.Game.Server.runtimeconfig.json specifically. The engine-test output is layered on
+    # top to add the test assembly.
+    GAME_OUTPUT_DIR="$REPO_ROOT/SWLOR.Game.Server/bin/$CONFIGURATION/net10.0"
+    ENGINE_TEST_OUTPUT_DIR="$REPO_ROOT/SWLOR.Game.Server.EngineTests/bin/$CONFIGURATION/net10.0"
+    for dir in "$GAME_OUTPUT_DIR" "$ENGINE_TEST_OUTPUT_DIR"; do
+        if [ ! -d "$dir" ]; then
+            echo "Expected build output directory not found: $dir" >&2
+            exit 1
+        fi
+    done
 
     section "Deploying build output to $DOTNET_OUTPUT_DIR"
     # Every staging step is checked: silently running the test container against a stale
@@ -123,11 +145,24 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
         echo "Failed to create staging directory $DOTNET_OUTPUT_DIR" >&2
         exit 1
     fi
-    if ! cp -r "$BUILD_OUTPUT_DIR"/. "$DOTNET_OUTPUT_DIR"/; then
-        echo "Failed to stage build output into $DOTNET_OUTPUT_DIR" >&2
+    for dir in "$GAME_OUTPUT_DIR" "$ENGINE_TEST_OUTPUT_DIR"; do
+        if ! cp -r "$dir"/. "$DOTNET_OUTPUT_DIR"/; then
+            echo "Failed to stage build output into $DOTNET_OUTPUT_DIR" >&2
+            exit 1
+        fi
+        echo "Copied $dir -> $DOTNET_OUTPUT_DIR"
+    done
+
+    # The whole point of the separate project: fail loudly rather than silently running a
+    # suite with no tests in it.
+    if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.EngineTests.dll" ]; then
+        echo "Staging did not produce SWLOR.Game.Server.EngineTests.dll - no engine tests would run." >&2
         exit 1
     fi
-    echo "Copied $BUILD_OUTPUT_DIR -> $DOTNET_OUTPUT_DIR"
+    if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.runtimeconfig.json" ]; then
+        echo "Staging did not produce SWLOR.Game.Server.runtimeconfig.json - the NWNX .NET host cannot boot." >&2
+        exit 1
+    fi
 else
     section "Skipping build (assuming $DOTNET_OUTPUT_DIR is already current)"
 fi
@@ -177,8 +212,18 @@ pushd "$SERVER_HOME" > /dev/null
 # Remove anything a previously interrupted run left behind before starting fresh.
 docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" down --volumes --remove-orphans
 
-docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" up --abort-on-container-exit --exit-code-from swlor-server
+# HARD WALL CLOCK. `up --abort-on-container-exit` blocks until a container exits, and a
+# server that never schedules its tests (missing harness, bad filter) idles happily forever -
+# it is responsive, so the NWNX thread watchdog never fires either. Without this, such a run
+# hangs until someone notices.
+TIMEOUT_SECONDS=$((TIMEOUT_MINUTES * 60))
+timeout --foreground "${TIMEOUT_SECONDS}s" \
+    docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" up --abort-on-container-exit --exit-code-from swlor-server
 COMPOSE_EXIT_CODE=$?
+
+if [ "$COMPOSE_EXIT_CODE" -eq 124 ]; then
+    echo "TIMED OUT after ${TIMEOUT_MINUTES} minute(s) - the run was killed. The server never finished (look for 'ENGINE TEST HARNESS MISSING' or a stalled test above)." >&2
+fi
 
 section "Tearing down containers"
 docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" down --volumes

@@ -144,18 +144,25 @@ jobs:
           mkdir -p ../SWLOR.Game.Server/Docker/modules
           cp "./$MOD_FILE_NAME" "../SWLOR.Game.Server/Docker/modules/$MOD_FILE_NAME"
 
-      - name: Stage server assembly
-        # The "Build server and CLI" step already produced
-        # SWLOR.Game.Server/bin/Release/net10.0 as a transitive output; stage it
-        # into the server home's dotnet/ directory ourselves and run the script
-        # with --skip-build so the server isn't compiled a second time.
+      - name: Stage server and engine-test assemblies
+        # Build the engine-test project (it pulls in SWLOR.Game.Server as a project
+        # reference, so its output holds both assemblies) and stage that into the
+        # server home's dotnet/ directory, then run the script with --skip-build so
+        # nothing is compiled twice. The game project's own output deliberately
+        # excludes the test assembly - that is what keeps test code out of a
+        # production deploy.
         run: |
           set -euo pipefail
-          BUILD_OUTPUT_DIR="SWLOR.Game.Server/bin/Release/net10.0"
-          test -d "$BUILD_OUTPUT_DIR"
+          dotnet build SWLOR.Game.Server.EngineTests/SWLOR.Game.Server.EngineTests.csproj -c Release -p:OS=Unix -p:RunPostBuildEvent=Never
           rm -rf SWLOR.Game.Server/Docker/dotnet
           mkdir -p SWLOR.Game.Server/Docker/dotnet
-          cp -r "$BUILD_OUTPUT_DIR"/. SWLOR.Game.Server/Docker/dotnet/
+          # Game output first: a referenced project's DLL is copied into the referencing
+          # project's output but its runtimeconfig.json/deps.json are not, and the NWNX .NET
+          # host boots by the GAME assembly's name. The engine-test output layers on top.
+          cp -r SWLOR.Game.Server/bin/Release/net10.0/. SWLOR.Game.Server/Docker/dotnet/
+          cp -r SWLOR.Game.Server.EngineTests/bin/Release/net10.0/. SWLOR.Game.Server/Docker/dotnet/
+          test -f SWLOR.Game.Server/Docker/dotnet/SWLOR.Game.Server.EngineTests.dll
+          test -f SWLOR.Game.Server/Docker/dotnet/SWLOR.Game.Server.runtimeconfig.json
 
       - name: Run engine tests
         # The dispatch input goes through env rather than direct ${{ }} shell

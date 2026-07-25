@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage;
+using SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage;
 
 namespace SWLOR.Game.Server.Tests.Feature
 {

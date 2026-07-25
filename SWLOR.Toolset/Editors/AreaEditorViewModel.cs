@@ -116,11 +116,16 @@ namespace SWLOR.Toolset.Editors
             {
                 _isBuildingScene = value;
                 OnPropertyChanged(nameof(IsBuildingScene));
+                OnPropertyChanged(nameof(HasViewportHud));
             }
         }
 
         private string _sceneStatus = string.Empty;
 
+        /// <summary>
+        /// A transient message about the map: build progress, a build failure, or a placement that would
+        /// not fit. Empty the rest of the time - which is most of the time.
+        /// </summary>
         public string SceneStatus
         {
             get => _sceneStatus;
@@ -128,8 +133,25 @@ namespace SWLOR.Toolset.Editors
             {
                 _sceneStatus = value;
                 OnPropertyChanged(nameof(SceneStatus));
+                OnPropertyChanged(nameof(HasSceneStatus));
+                OnPropertyChanged(nameof(HasViewportHud));
             }
         }
+
+        public bool HasSceneStatus => !string.IsNullOrEmpty(SceneStatus);
+
+        /// <summary>
+        /// Whether the overlay in the corner of the map has anything to say. It is hidden outright when it
+        /// does not, rather than sitting there empty: an overlay covers the map it is drawn on, so it has
+        /// to earn the space every time it appears.
+        /// </summary>
+        /// <remarks>
+        /// Suppressed while a build is running, because that state has its own centred notice and two
+        /// overlays saying "Building scene..." at once is one too many.
+        /// </remarks>
+        public bool HasViewportHud =>
+            !IsBuildingScene &&
+            (HasSceneStatus || HasSceneSelection || !string.IsNullOrEmpty(PlacementStatus));
 
         // ----- 3D-view <-> instance-list selection sync -----
 
@@ -158,6 +180,7 @@ namespace SWLOR.Toolset.Editors
                 OnPropertyChanged(nameof(SelectedSceneInstance));
                 OnPropertyChanged(nameof(SelectionStatus));
                 OnPropertyChanged(nameof(HasSceneSelection));
+                OnPropertyChanged(nameof(HasViewportHud));
                 OnPropertyChanged(nameof(SelectionName));
                 OnPropertyChanged(nameof(SelectionResRef));
                 OnPropertyChanged(nameof(SelectionKindLabel));
@@ -448,69 +471,6 @@ namespace SWLOR.Toolset.Editors
             : _pendingTile is { } tile ? $"Click a cell to place {tile.Label}... (Esc or right-click to cancel)"
             : string.Empty;
 
-        /// <summary>
-        /// What this area is, for the caption under the map.
-        /// </summary>
-        /// <remarks>
-        /// It used to read "6 tiles, 59 instances", which is a count of the renderer's own workload and
-        /// answers nothing a builder would ask. What is worth a permanent line is what the area IS - the
-        /// tileset it is built from and how big its grid is, neither of which is visible anywhere else in
-        /// the editor - then what is actually placed in it, broken down by kind rather than totalled,
-        /// because "59 instances" and "30 placeables, 12 creatures, 8 doors" cost the same room.
-        /// <para>
-        /// Tiles with no model stay reported. That number is not workload, it is missing content: those
-        /// cells are drawn as flat placeholders, so an area quietly showing 40 of them is a broken hak
-        /// rather than a design choice.
-        /// </para>
-        /// </remarks>
-        private string DescribeArea(AreaScene scene)
-        {
-            var are = new AreDocument(_areSession.Document);
-            var parts = new List<string>();
-
-            var tileset = are.Tileset;
-            if (!string.IsNullOrWhiteSpace(tileset))
-            {
-                parts.Add(_tilesetCatalog != null
-                    ? _tilesetCatalog.GetDisplayName(tileset)
-                    : tileset);
-            }
-
-            parts.Add($"{AreaTiles.Width(are)}x{AreaTiles.Height(are)} tiles");
-
-            var placed = scene.Instances
-                .GroupBy(instance => instance.Kind)
-                .OrderByDescending(group => group.Count())
-                .Select(group => $"{group.Count()} {KindLabel(group.Key, group.Count())}")
-                .ToList();
-
-            parts.Add(placed.Count == 0 ? "nothing placed yet" : string.Join(", ", placed));
-
-            if (scene.Diagnostics.MissingModels.Count > 0)
-                parts.Add($"{scene.Diagnostics.MissingModels.Count} tiles missing their model");
-
-            return string.Join("  ·  ", parts);
-        }
-
-        /// <summary>A marker kind as a builder would say it, pluralised.</summary>
-        private static string KindLabel(InstanceMarkerKind kind, int count)
-        {
-            var singular = kind switch
-            {
-                InstanceMarkerKind.Creature => "creature",
-                InstanceMarkerKind.Door => "door",
-                InstanceMarkerKind.Item => "item",
-                InstanceMarkerKind.Placeable => "placeable",
-                InstanceMarkerKind.Sound => "sound",
-                InstanceMarkerKind.Store => "merchant",
-                InstanceMarkerKind.Trigger => "trigger",
-                InstanceMarkerKind.Waypoint => "waypoint",
-                _ => kind.ToString().ToLowerInvariant()
-            };
-
-            return count == 1 ? singular : singular + "s";
-        }
-
         /// <summary>This area's tileset resref, which is what the Tiles palette lists tiles from.</summary>
         public string? TilesetResRef => new AreDocument(_areSession.Document).Tileset;
 
@@ -539,6 +499,7 @@ namespace SWLOR.Toolset.Editors
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementFootprint));
             OnPropertyChanged(nameof(PlacementStatus));
+            OnPropertyChanged(nameof(HasViewportHud));
             return true;
         }
 
@@ -551,6 +512,7 @@ namespace SWLOR.Toolset.Editors
             _pendingTile = null;
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
+            OnPropertyChanged(nameof(HasViewportHud));
         }
 
         /// <summary>
@@ -568,6 +530,7 @@ namespace SWLOR.Toolset.Editors
             _pendingTile = null;
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
+            OnPropertyChanged(nameof(HasViewportHud));
 
             if (entry == null)
                 return;
@@ -632,6 +595,7 @@ namespace SWLOR.Toolset.Editors
             PlacementGhost = BuildPlacementGhost(type, resRef);
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
+            OnPropertyChanged(nameof(HasViewportHud));
             return true;
         }
 
@@ -713,6 +677,7 @@ namespace SWLOR.Toolset.Editors
             PlacementGhost = null;
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
+            OnPropertyChanged(nameof(HasViewportHud));
 
             if (section == null || resRef == null)
                 return;
@@ -736,6 +701,7 @@ namespace SWLOR.Toolset.Editors
             PlacementGhost = null;
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
+            OnPropertyChanged(nameof(HasViewportHud));
         }
 
         /// <summary>
@@ -1011,7 +977,10 @@ namespace SWLOR.Toolset.Editors
                 // resolves) must be dropped rather than left pointing at objects no longer in this
                 // scene.
                 ApplySelection(toSelect);
-                SceneStatus = DescribeArea(scene);
+                // Nothing to say when a build succeeds. The caption used to describe the area here, and
+                // before that to count the renderer's tiles and instances; neither was worth a permanent
+                // strip across the map. What the area is belongs on the Properties tab, which has it.
+                SceneStatus = string.Empty;
             }
             catch (Exception ex)
             {

@@ -38,15 +38,18 @@
             <TextBlock Text="{Binding SceneStatus}" Foreground="White" />
           </Border>
 
-          <!-- Viewport HUD. What the selection *is* moved down to the selection bar; this keeps only
-               what belongs to the map itself - scene size, and the transient placement/paint prompts. -->
+          <!-- Viewport HUD. Only present when it has something to say: a failure, a drag hint while
+               something is selected, or a placement prompt. There is deliberately no standing caption
+               describing the area - what the area is belongs on the Properties tab, and an overlay that
+               is always there is an overlay permanently covering part of the map. -->
           <Border Grid.Row="0" Background="#D00C1017" CornerRadius="3" Padding="9,5"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"
-                  IsVisible="{Binding !IsBuildingScene}">
+                  IsVisible="{Binding HasViewportHud}">
             <StackPanel Spacing="3">
               <TextBlock Text="{Binding SceneStatus}" Classes="mono" FontSize="10.5"
-                         TextTrimming="CharacterEllipsis" MaxWidth="480" />
+                         TextTrimming="CharacterEllipsis" MaxWidth="480"
+                         IsVisible="{Binding HasSceneStatus}" />
               <TextBlock Text="Drag to move &#x00B7; Alt+drag to turn &#x00B7; Ctrl snaps 0.5 m"
                          Classes="mono" FontSize="10.5"
                          Foreground="{DynamicResource InkTertiaryBrush}"

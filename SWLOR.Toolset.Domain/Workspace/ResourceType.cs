@@ -34,6 +34,22 @@ namespace SWLOR.Toolset.Domain.Workspace
     /// </summary>
     public static class ResourceTypeExtensions
     {
+        /// <summary>
+        /// The blueprint types a palette offers, in the Aurora toolset's own order.
+        /// </summary>
+        /// <remarks>
+        /// Alphabetical by plural name, which is how Aurora listed them and therefore where a builder's
+        /// hand already goes. Two entries of Aurora's list are missing and their absence is real rather
+        /// than an ordering slip: Tiles, because tile placement is not built yet, and Encounters, because
+        /// there is no <c>Ute</c> resource type here - SWLOR's module carries no encounter blueprints and
+        /// uses its own spawn system instead.
+        /// </remarks>
+        public static readonly IReadOnlyList<ResourceType> PaletteOrder = new[]
+        {
+            ResourceType.Utc, ResourceType.Utd, ResourceType.Uti, ResourceType.Utm,
+            ResourceType.Utp, ResourceType.Uts, ResourceType.Utt, ResourceType.Utw
+        };
+
         public static string Extension(this ResourceType type)
         {
             return type switch
@@ -102,7 +118,9 @@ namespace SWLOR.Toolset.Domain.Workspace
                 ResourceType.Utd => "Doors",
                 ResourceType.Utm => "Merchants",
                 ResourceType.Utt => "Triggers",
-                ResourceType.Uts => "Sound Sets",
+                // "Sounds", not "Sound Sets": a .uts is a placed ambient sound. The thing actually called
+                // a sound set is a creature's SoundSetFile, a soundset.2da row, and is not a blueprint.
+                ResourceType.Uts => "Sounds",
                 ResourceType.Utw => "Waypoints",
                 ResourceType.Dlg => "Conversations",
                 ResourceType.Nss => "Scripts",
@@ -125,7 +143,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                 ResourceType.Utd => "Door",
                 ResourceType.Utm => "Merchant",
                 ResourceType.Utt => "Trigger",
-                ResourceType.Uts => "Sound Set",
+                ResourceType.Uts => "Sound",
                 ResourceType.Utw => "Waypoint",
                 ResourceType.Dlg => "Conversation",
                 ResourceType.Nss => "Script",

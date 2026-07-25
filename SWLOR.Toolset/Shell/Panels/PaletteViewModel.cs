@@ -29,12 +29,11 @@ namespace SWLOR.Toolset.Shell.Panels
     /// </remarks>
     public partial class PaletteViewModel : Tool
     {
-        /// <summary>Types offered, in the order a builder reaches for them when dressing an area.</summary>
-        private static readonly ResourceType[] OfferedTypes =
-        {
-            ResourceType.Utp, ResourceType.Utc, ResourceType.Utd, ResourceType.Utm,
-            ResourceType.Utw, ResourceType.Uti, ResourceType.Utt, ResourceType.Uts
-        };
+        /// <summary>
+        /// Types offered, in Aurora's palette order - see <see cref="ResourceTypeExtensions.PaletteOrder"/>,
+        /// which owns the order so it can be pinned by a test.
+        /// </summary>
+        private static IReadOnlyList<ResourceType> OfferedTypes => ResourceTypeExtensions.PaletteOrder;
 
         private const int MaxSearchResults = 200;
 

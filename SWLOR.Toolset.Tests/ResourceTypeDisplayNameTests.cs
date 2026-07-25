@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -20,7 +20,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase(ResourceType.Utd, "Doors")]
         [TestCase(ResourceType.Utm, "Merchants")]
         [TestCase(ResourceType.Utt, "Triggers")]
-        [TestCase(ResourceType.Uts, "Sound Sets")]
+        [TestCase(ResourceType.Uts, "Sounds")]
         [TestCase(ResourceType.Utw, "Waypoints")]
         public void DisplayName_Names_The_Collection(ResourceType type, string expected)
         {
@@ -34,7 +34,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase(ResourceType.Utd, "Door")]
         [TestCase(ResourceType.Utm, "Merchant")]
         [TestCase(ResourceType.Utt, "Trigger")]
-        [TestCase(ResourceType.Uts, "Sound Set")]
+        [TestCase(ResourceType.Uts, "Sound")]
         [TestCase(ResourceType.Utw, "Waypoint")]
         public void SingularDisplayName_Names_One_Resource(ResourceType type, string expected)
         {
@@ -80,6 +80,33 @@ namespace SWLOR.Toolset.Tests
 
             foreach (var type in Enum.GetValues<ResourceType>().Where(type => type != ResourceType.Nss))
                 type.IsJsonEncoded().Should().BeTrue(because: $"{type} is unpacked as nwn_gff JSON");
+        }
+
+        /// <summary>
+        /// The palette's type order is Aurora's, so a builder's hand goes where it already went. Pinned by
+        /// name rather than by enum order, because the enum is grouped by file format and the two have no
+        /// reason to agree.
+        /// </summary>
+        [Test]
+        public void The_Palette_Offers_Types_In_The_Aurora_Toolset_Order()
+        {
+            ResourceTypeExtensions.PaletteOrder
+                .Select(type => type.DisplayName())
+                .Should()
+                .Equal("Creatures", "Doors", "Items", "Merchants", "Placeables", "Sounds", "Triggers", "Waypoints");
+        }
+
+        /// <summary>
+        /// Aurora also lists Tiles and Encounters. Neither has a <see cref="ResourceType"/> here, and this
+        /// asserts that on purpose: if one is ever added, the palette order above needs revisiting rather
+        /// than silently ending up alphabetically wrong.
+        /// </summary>
+        [Test]
+        public void The_Palette_Order_Covers_Every_Blueprint_Type_There_Is()
+        {
+            var blueprintTypes = ModuleWorkspace.BlueprintTypes.ToHashSet();
+
+            ResourceTypeExtensions.PaletteOrder.Should().BeEquivalentTo(blueprintTypes);
         }
 
         [Test]

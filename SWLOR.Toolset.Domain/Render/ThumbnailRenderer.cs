@@ -53,12 +53,18 @@ namespace SWLOR.Toolset.Domain.Render
         /// feet, and from +Y shows its shoulder blades and heels - so a camera on the +Y side was looking
         /// at the back of every creature in the palette. The -Z puts it above rather than below.
         /// <para>
-        /// The drop puts the camera about 51 degrees above the ground plane - a high three-quarter, not
-        /// a plan view. Lower angles read a tile nearly edge-on and hide the top of anything flat; a true
-        /// overhead would lose the silhouette that makes a crate a crate.
+        /// The camera is tilted 15 degrees off straight-down - near plan view, kept just off vertical so
+        /// a model still shows one lit side and reads as a solid rather than a flat outline. The drop is
+        /// the tangent of that against the bearing's own length (|(-0.7, 1)| = 1.2207), so the tilt stays
+        /// what it says it is if the bearing is ever changed.
         /// </para>
         /// </remarks>
-        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(-0.7f, 1f, -1.5f));
+        private const float TiltOffVerticalDegrees = 15f;
+
+        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(
+            -0.7f,
+            1f,
+            -MathF.Sqrt(0.7f * 0.7f + 1f) * MathF.Tan((90f - TiltOffVerticalDegrees) * MathF.PI / 180f)));
 
         /// <summary>
         /// Keyed to the same side as the camera, so the faces being looked at are the faces being lit.

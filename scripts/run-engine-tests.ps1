@@ -33,10 +33,19 @@
     receives dotnet/ and app_logs/). Defaults to SWLOR_ENGINE_TEST_SERVER_HOME,
     then the repo's debugserver/ directory if present, then SWLOR.Game.Server/Docker.
 
+.PARAMETER TimeoutMinutes
+    Hard wall-clock limit for the containerized run. On expiry the stack is torn
+    down and the run is reported as failed. This is a backstop against a server
+    that never finishes on its own - e.g. one that boots healthy but schedules no
+    tests, which stays responsive and therefore never trips the NWNX thread
+    watchdog. Defaults to 90 (a full sweep takes roughly 45).
+
 .EXAMPLE
     ./scripts/run-engine-tests.ps1
 .EXAMPLE
     ./scripts/run-engine-tests.ps1 -SkipBuild -Filter Combat
+.EXAMPLE
+    ./scripts/run-engine-tests.ps1 -Filter Harness -TimeoutMinutes 10
 #>
 [CmdletBinding()]
 param(
@@ -44,13 +53,18 @@ param(
     [string]$Filter = "",
     [string]$ArenaResref = "",
     [string]$Configuration = "Release",
-    [string]$ServerHome = ""
+    [string]$ServerHome = "",
+    [int]$TimeoutMinutes = 90
 )
 
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
-$ServerProject = Join-Path $RepoRoot "SWLOR.Game.Server\SWLOR.Game.Server.csproj"
+# Build/stage the ENGINE TEST project, not the game project: it carries the game
+# assembly along as a project reference, so its output directory contains both. The
+# game project's own output deliberately excludes the test assembly, which is what
+# keeps test code out of a production deploy.
+$ServerProject = Join-Path $RepoRoot "SWLOR.Game.Server.EngineTests\SWLOR.Game.Server.EngineTests.csproj"
 
 # The server home is the directory mounted as /nwn/home: it holds modules/, hak/,
 # tlk/, dotnet/, swlor.env, and receives app_logs/. SWLOR.Game.Server/Docker only
@@ -105,9 +119,17 @@ if (-not $SkipBuild) {
         throw "dotnet build failed with exit code $LASTEXITCODE"
     }
 
-    $buildOutputDir = Join-Path $RepoRoot "SWLOR.Game.Server\bin\$Configuration\net10.0"
-    if (-not (Test-Path $buildOutputDir)) {
-        throw "Expected build output directory not found: $buildOutputDir"
+    # BOTH outputs are staged, game project first. A referenced project's DLL is copied
+    # into the referencing project's output, but its runtimeconfig.json/deps.json are NOT -
+    # and NWNX_DotNET boots the host by the GAME assembly's name, so it needs
+    # SWLOR.Game.Server.runtimeconfig.json specifically. The engine-test output is layered
+    # on top to add the test assembly.
+    $gameOutputDir = Join-Path $RepoRoot "SWLOR.Game.Server\bin\$Configuration\net10.0"
+    $engineTestOutputDir = Join-Path $RepoRoot "SWLOR.Game.Server.EngineTests\bin\$Configuration\net10.0"
+    foreach ($dir in @($gameOutputDir, $engineTestOutputDir)) {
+        if (-not (Test-Path $dir)) {
+            throw "Expected build output directory not found: $dir"
+        }
     }
 
     Write-Section "Deploying build output to $DotnetOutputDir"
@@ -115,11 +137,30 @@ if (-not $SkipBuild) {
         Remove-Item $DotnetOutputDir -Recurse -Force
     }
     New-Item -ItemType Directory -Path $DotnetOutputDir -Force | Out-Null
-    Copy-Item (Join-Path $buildOutputDir "*") $DotnetOutputDir -Recurse -Force
-    Write-Host "Copied $buildOutputDir -> $DotnetOutputDir"
+    foreach ($dir in @($gameOutputDir, $engineTestOutputDir)) {
+        Copy-Item (Join-Path $dir "*") $DotnetOutputDir -Recurse -Force
+        Write-Host "Copied $dir -> $DotnetOutputDir"
+    }
+
 }
 else {
     Write-Section "Skipping build (assuming $DotnetOutputDir is already current)"
+}
+
+# Checked for BOTH paths, not just after a build: with -SkipBuild against a stale
+# game-only staging directory (exactly the state left behind by older revisions of
+# this script, before the harness was its own assembly) the server would boot,
+# schedule nothing, and burn the entire wall clock before failing. Fail here in a
+# second instead.
+$stagedTestAssembly = Join-Path $DotnetOutputDir "SWLOR.Game.Server.EngineTests.dll"
+$stagedRuntimeConfig = Join-Path $DotnetOutputDir "SWLOR.Game.Server.runtimeconfig.json"
+if (-not (Test-Path $stagedTestAssembly)) {
+    Write-Host "$DotnetOutputDir is missing SWLOR.Game.Server.EngineTests.dll - no engine tests would run. Re-run without -SkipBuild to stage it." -ForegroundColor Red
+    exit 1
+}
+if (-not (Test-Path $stagedRuntimeConfig)) {
+    Write-Host "$DotnetOutputDir is missing SWLOR.Game.Server.runtimeconfig.json - the NWNX .NET host cannot boot. Re-run without -SkipBuild to stage it." -ForegroundColor Red
+    exit 1
 }
 
 # Stale report from a previous run must not be mistaken for this run's result.
@@ -190,8 +231,35 @@ try {
         # Remove anything a previously interrupted run left behind before starting fresh.
         & docker compose -p $ComposeProject -f $ComposeFile down --volumes --remove-orphans 2>&1 | ForEach-Object { "$_" } | Write-Host
 
-        & docker compose -p $ComposeProject -f $ComposeFile up --abort-on-container-exit --exit-code-from swlor-server 2>&1 | ForEach-Object { "$_" } | Write-Host
-        $composeExitCode = $LASTEXITCODE
+        # HARD WALL CLOCK. `up --abort-on-container-exit` blocks until a container exits, and
+        # a server that never schedules its tests (missing harness, bad filter) idles happily
+        # forever - it is responsive, so the NWNX thread watchdog never fires either. Without
+        # this, such a run hangs until someone notices. A watchdog job force-downs the stack
+        # after the deadline, which makes `up` return.
+        $timeoutSeconds = [int]($TimeoutMinutes * 60)
+        $timedOutMarker = Join-Path ([System.IO.Path]::GetTempPath()) "swlor-engine-tests-timeout-$PID.marker"
+        Remove-Item $timedOutMarker -Force -ErrorAction SilentlyContinue
+        $watchdog = Start-Job -ScriptBlock {
+            param($seconds, $project, $file, $marker)
+            Start-Sleep -Seconds $seconds
+            New-Item -ItemType File -Path $marker -Force | Out-Null
+            & docker compose -p $project -f $file down --volumes --remove-orphans 2>&1 | Out-Null
+        } -ArgumentList $timeoutSeconds, $ComposeProject, $ComposeFile, $timedOutMarker
+
+        try {
+            & docker compose -p $ComposeProject -f $ComposeFile up --abort-on-container-exit --exit-code-from swlor-server 2>&1 | ForEach-Object { "$_" } | Write-Host
+            $composeExitCode = $LASTEXITCODE
+        }
+        finally {
+            Stop-Job $watchdog -ErrorAction SilentlyContinue
+            Remove-Job $watchdog -Force -ErrorAction SilentlyContinue
+        }
+
+        if (Test-Path $timedOutMarker) {
+            Remove-Item $timedOutMarker -Force -ErrorAction SilentlyContinue
+            Write-Host "TIMED OUT after $TimeoutMinutes minute(s) - the run was killed. The server never finished (look for 'ENGINE TEST HARNESS MISSING' or a stalled test above)." -ForegroundColor Red
+            $composeExitCode = 124
+        }
 
         Write-Section "Tearing down containers"
         & docker compose -p $ComposeProject -f $ComposeFile down --volumes 2>&1 | ForEach-Object { "$_" } | Write-Host

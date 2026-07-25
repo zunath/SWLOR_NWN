@@ -128,12 +128,37 @@ namespace SWLOR.Toolset.Tests
             delta.Z.Should().BeApproximately(0f, 0.0001f);
         }
 
+        /// <summary>
+        /// Vertical panning travels forward across the ground, never up into the air.
+        /// </summary>
+        /// <remarks>
+        /// Raising the camera shifts the view vertically too, so the two look alike for a moment - but
+        /// altitude changes how much of the map is in shot and eventually flies the camera off the
+        /// scene, whereas a builder panning up means "show me further on". This test exists because
+        /// the pan really did move along world +Z until it was corrected.
+        /// </remarks>
         [Test]
-        public void PanDelta_VerticalDragMovesAlongWorldUp()
+        public void PanDelta_VerticalDragTravelsForwardOnTheGround_NotUpwards()
         {
             var delta = AreaCameraMath.PanDelta(azimuthRadians: 0.9f, dxPixels: 0f, dyPixels: 10f, worldPerPixel: 2f);
 
-            delta.Should().Be(new Vector3(0f, 0f, 20f));
+            delta.Z.Should().Be(0f, because: "panning must never change the camera's altitude");
+
+            // At azimuth 0.9 the eye sits along (cos, sin) from the target, so the camera looks along
+            // (-cos, -sin) - and a positive dy carries it forward along exactly that.
+            var forward = new Vector3(-MathF.Cos(0.9f), -MathF.Sin(0.9f), 0f);
+            delta.X.Should().BeApproximately(forward.X * 20f, 0.0001f);
+            delta.Y.Should().BeApproximately(forward.Y * 20f, 0.0001f);
+        }
+
+        /// <summary>The two pan axes stay independent: neither leaks into the other.</summary>
+        [Test]
+        public void PanDelta_HorizontalAndVerticalAxesArePerpendicular()
+        {
+            var across = AreaCameraMath.PanDelta(0.9f, dxPixels: 10f, dyPixels: 0f, worldPerPixel: 1f);
+            var along = AreaCameraMath.PanDelta(0.9f, dxPixels: 0f, dyPixels: 10f, worldPerPixel: 1f);
+
+            Vector3.Dot(across, along).Should().BeApproximately(0f, 0.0001f);
         }
 
         [Test]

@@ -101,16 +101,16 @@ namespace SWLOR.Toolset.Editors
         // ----- Camera pad. The object-rotate buttons bind straight to the view model; these four
         // groups drive the control's own camera, which the view model does not own. -----
 
+        // The arrows move the camera, so the scene travels the other way - Aurora's left arrow sends
+        // the scene right, its up arrow sends the scene down. Up and down travel forward and back
+        // across the ground rather than changing altitude.
         private void OnPanLeft(object? sender, RoutedEventArgs e) => AreaView.NudgePan(-1f, 0f);
 
         private void OnPanRight(object? sender, RoutedEventArgs e) => AreaView.NudgePan(1f, 0f);
 
-        // Inverted against the horizontal pair on purpose. Measured in Aurora, its up arrow slides the
-        // scene up the screen and its down arrow slides it down - the camera moving the opposite way -
-        // and NudgePan's vertical argument is expressed as camera movement.
-        private void OnPanUp(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, -1f);
+        private void OnPanUp(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, 1f);
 
-        private void OnPanDown(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, 1f);
+        private void OnPanDown(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, -1f);
 
         private void OnOrbitLeft(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(-1f, 0f);
 

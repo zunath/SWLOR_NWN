@@ -48,13 +48,13 @@ namespace SWLOR.Toolset.Viewport
         /// about 3.3 degrees per sample, which at its redraw rate lands near this figure - and matches
         /// its own rotate button, measured at 196 deg/s.
         /// </remarks>
-        private const float OrbitYawDegreesPerSecond = 196f;
+        private const float OrbitYawDegreesPerSecond = 247f;
 
         /// <summary>
         /// The same idea for pitch, which Aurora turns far more slowly - about 0.72 degrees per motion
         /// sample against yaw's 3.3, measured as 17 degrees of elevation over a 150px vertical drag.
         /// </summary>
-        private const float OrbitPitchDegreesPerSecond = 43f;
+        private const float OrbitPitchDegreesPerSecond = 48f;
 
         /// <summary>Timestamp of the last orbit step, so the rate above is per second and not per event.</summary>
         private long _lastOrbitTicks;
@@ -1140,43 +1140,71 @@ void main()
         /// One frame of camera-button motion, fired about sixty times a second while a button is held.
         /// </summary>
         /// <remarks>
-        /// Per-frame amounts at the pad's ~60Hz repeat, chosen so the products match what Aurora's own
-        /// buttons do: 2025 px/s of pan (measured over a 150ms press), 196 deg/s of rotation (over
-        /// 300ms), and 2.7x of zoom per second. Pan is sized in screen terms rather than world units so
-        /// it feels the same zoomed into a doorway or looking at the whole area.
+        /// Rates, not per-press amounts, and integrated against the clock rather than counted per
+        /// repeat: a RepeatButton set to a 16ms interval actually delivers nearer 43 a second, which
+        /// left the pad panning at 1440 px/s when it was meant to do 2025. Driving it from elapsed
+        /// time makes the figure below what the camera really does. All three measured off Aurora's
+        /// own buttons - 2025 px/s over a 150ms press, 196 deg/s over 300ms, 2.7x per second of zoom.
+        /// Pan is sized in screen terms rather than world units so it feels the same zoomed into a
+        /// doorway or looking at the whole area.
         /// </remarks>
-        private const float PanStepPixels = 2025f / PadStepsPerSecond;
+        private const float PanPixelsPerSecond = 2025f;
 
-        private const float OrbitStepRadians = 196f * DegreesToRadians / PadStepsPerSecond;
+        private const float OrbitDegreesPerSecondPad = 196f;
 
         /// <summary>
         /// Aurora's zoom button is not a constant rate: a 150ms press gives 1.415x and a 300ms press
         /// 1.640x, which fits an initial 1.22x on press followed by about 2.7x per second held.
         /// </summary>
-        private const float ZoomStepFactor = 1.0161f;   // 2.7^(1/60)
+        private const float ZoomFactorPerSecond = 2.7f;
 
         private const float ZoomPressFactor = 1.22f;
 
-        /// <summary>Matches the RepeatButton interval in the theme.</summary>
-        private const float PadStepsPerSecond = 60f;
-
         private const float DegreesToRadians = MathF.PI / 180f;
 
-        /// <summary>Slides the view across the ground plane, in units of <see cref="PanStepPixels"/>.</summary>
-        public void NudgePan(float rightSteps, float upSteps)
+        /// <summary>Clock for the pad, so a held button moves by time rather than by repeat count.</summary>
+        private long _lastPadTicks;
+
+        /// <summary>
+        /// Seconds since the previous pad step. A first step, or one after a gap, counts as a single
+        /// 60Hz frame so a lone click still does something; a stall cannot bank up into a jump.
+        /// </summary>
+        private float PadStepSeconds()
         {
+            var now = System.Diagnostics.Stopwatch.GetTimestamp();
+            var seconds = _lastPadTicks == 0
+                ? 1.0 / 60.0
+                : (now - _lastPadTicks) / (double)System.Diagnostics.Stopwatch.Frequency;
+            _lastPadTicks = now;
+
+            return (float)Math.Clamp(seconds, 1.0 / 240.0, 0.1);
+        }
+
+        /// <summary>
+        /// Slides the view across the ground plane at <see cref="PanPixelsPerSecond"/>.
+        /// </summary>
+        /// <remarks>
+        /// The arguments move the CAMERA, which is the opposite of how the scene appears to move -
+        /// Aurora's left arrow carries the camera left, so the scene travels right. Measured: its left
+        /// arrow moves the scene right by 372px, its up arrow moves the scene down by 372px.
+        /// <paramref name="cameraForward"/> travels along the ground, not up into the air.
+        /// </remarks>
+        public void NudgePan(float cameraRight, float cameraForward)
+        {
+            var pixels = PanPixelsPerSecond * PadStepSeconds();
             var worldPerPixel = AreaCameraMath.WorldUnitsPerPixel(_distance, VerticalFovRadians, _viewportHeight);
             _target += AreaCameraMath.PanDelta(
-                _azimuth, rightSteps * PanStepPixels, upSteps * PanStepPixels, worldPerPixel);
+                _azimuth, -cameraRight * pixels, cameraForward * pixels, worldPerPixel);
 
             RequestNextFrameRendering();
         }
 
-        /// <summary>Turns the view around the point it is looking at.</summary>
-        public void NudgeOrbit(float azimuthSteps, float elevationSteps)
+        /// <summary>Turns the view around the point it is looking at, at <see cref="OrbitDegreesPerSecondPad"/>.</summary>
+        public void NudgeOrbit(float azimuthDirection, float elevationDirection)
         {
-            _azimuth += azimuthSteps * OrbitStepRadians;
-            _elevation = AreaCameraMath.ClampElevation(_elevation + elevationSteps * OrbitStepRadians);
+            var radians = OrbitDegreesPerSecondPad * DegreesToRadians * PadStepSeconds();
+            _azimuth += azimuthDirection * radians;
+            _elevation = AreaCameraMath.ClampElevation(_elevation + elevationDirection * radians);
 
             RequestNextFrameRendering();
         }
@@ -1198,9 +1226,11 @@ void main()
                 : (now - _lastZoomTicks) / (double)System.Diagnostics.Stopwatch.Frequency;
             _lastZoomTicks = now;
 
-            var perStep = gap > 0.15 ? ZoomPressFactor : ZoomStepFactor;
+            var factor = gap > 0.15
+                ? ZoomPressFactor
+                : MathF.Pow(ZoomFactorPerSecond, (float)Math.Clamp(gap, 1.0 / 240.0, 0.1));
             _distance = AreaCameraMath.ClampDistance(
-                _distance * MathF.Pow(perStep, -steps), _initialDistance);
+                _distance * MathF.Pow(factor, -steps), _initialDistance);
 
             RequestNextFrameRendering();
         }

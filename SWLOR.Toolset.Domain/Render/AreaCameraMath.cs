@@ -110,17 +110,27 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// World-space pan delta for a screen-pixel drag: moves the orbit target along the
-        /// camera's own ground-plane right/up axes (derived from azimuth only, so pan feels
-        /// screen-relative regardless of the current elevation), scaled by
-        /// <paramref name="worldPerPixel"/>. The "up" axis is always world +Z since the ground-plane
-        /// focus never rolls.
+        /// World-space pan delta for a screen-pixel drag: slides the orbit target across the ground
+        /// plane along the camera's own right and forward axes (derived from azimuth only, so panning
+        /// feels screen-relative whatever the elevation), scaled by <paramref name="worldPerPixel"/>.
         /// </summary>
+        /// <remarks>
+        /// Vertical panning travels FORWARD along the ground, not up into the air. Raising the camera
+        /// shifts the view vertically too, so the two look similar for a moment, but altitude changes
+        /// how much of the map is in shot and eventually flies the camera off the scene, whereas a
+        /// builder panning up means "show me further on". Forward is the eye offset's ground-plane
+        /// projection reversed - <see cref="OrbitEyeOffset"/> puts the eye at (cos, sin) from the
+        /// target, so the camera looks along (-cos, -sin).
+        /// </remarks>
         public static Vector3 PanDelta(float azimuthRadians, float dxPixels, float dyPixels, float worldPerPixel)
         {
             var right = new Vector3(-MathF.Sin(azimuthRadians), MathF.Cos(azimuthRadians), 0f);
-            var up = Vector3.UnitZ;
-            return right * (-dxPixels * worldPerPixel) + up * (dyPixels * worldPerPixel);
+            var forward = new Vector3(-MathF.Cos(azimuthRadians), -MathF.Sin(azimuthRadians), 0f);
+
+            // Positive dy carries the camera FORWARD, which slides the scene down the screen. That is
+            // the direction a downward grab-drag has to produce for the ground to stay under the
+            // cursor, and it is also what the pad's up arrow wants.
+            return right * (-dxPixels * worldPerPixel) + forward * (dyPixels * worldPerPixel);
         }
 
         /// <summary>

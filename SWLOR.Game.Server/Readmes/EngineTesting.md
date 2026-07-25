@@ -25,10 +25,43 @@ real spawned creatures in an instanced arena and exercise the real systems direc
 This is the intended venue for integration-testing new combat-upgrade perks and abilities
 end-to-end, in addition to their NUnit coverage.
 
+## Project Layout and Isolation
+
+All engine-test code lives in its own project, **`SWLOR.Game.Server.EngineTests`**, which
+references the game project - never the other way round. Nothing in `SWLOR.Game.Server` references
+a test type.
+
+```
+SWLOR.Game.Server.EngineTests/
+  EngineTest.cs            the runner
+  Framework/               EngineTestContext, [EngineTest], result/report/exception types
+  Definitions/             hand-written suites
+    AbilityBehaviors/      per-tree ability behavior cases
+    PerkCoverage/          per-perk coverage cases
+```
+
+**Test code cannot reach production.** The production deploy stages only the game project's
+output, which does not contain `SWLOR.Game.Server.EngineTests.dll` (the test project deliberately
+omits the game project's post-build deploy target). The engine-test runner scripts stage the
+*test* project's output instead - it carries the game assembly along as a project reference, so
+that one directory holds everything the server needs.
+
+Because nothing references it, the test assembly is never loaded implicitly. `ServerBootstrapper`
+loads it explicitly - only when `SWLOR_ENGINE_TESTS_ENABLED` is set, and only if the file exists
+(so it is a silent no-op in production) - just before `LoadScripts()`, so the script registry's
+assembly scan finds its `[NWNEventHandler]` methods. It is loaded into the game assembly's own
+`AssemblyLoadContext`; a plain `Assembly.LoadFrom` would land in the default context and hand the
+test code a second, incompatible copy of every game type it references.
+
+What *does* live in game code is a small set of public observability/determinism seams the tests
+consume: `Combat.SetAbilityHitResolutionOverride` / `SetAutoAttackHitResolutionOverride`,
+`Ability.GetLastCompletedAbilityImpactSummary`, `Ability.GetLastActivationDenialReason`, and
+`Stat.SuppressNaturalRegenVariable`.
+
 ## Architecture Overview
 
-The runner lives in `SWLOR.Game.Server/Service/EngineTest.cs`, with its supporting types in
-`SWLOR.Game.Server/Service/EngineTestService/`.
+The runner lives in `SWLOR.Game.Server.EngineTests/EngineTest.cs`, with its supporting types in
+`SWLOR.Game.Server.EngineTests/Framework/`.
 
 1. **Trigger** - `EngineTest.ScheduleEngineTests` is an `[NWNEventHandler(ScriptName.OnModuleLoad)]`
    handler. It checks `ApplicationSettings.EngineTestsEnabled`; if false, it does nothing. If the
@@ -187,7 +220,7 @@ two, but still poll rather than assume synchronous application.
 
 ### Worked example
 
-This is `AbilityActivationEngineTests` (`SWLOR.Game.Server/Feature/EngineTestDefinition/AbilityActivationEngineTests.cs`)
+This is `AbilityActivationEngineTests` (`SWLOR.Game.Server.EngineTests/Definitions/AbilityActivationEngineTests.cs`)
 in full - it drives a real ability through `UsePerkFeat.TryUseAbility` and verifies both the FP
 spend and the resulting status effect. Note that all NWScript functions (`GetLocation`,
 `GetIsObjectValid`, `AssignCommand`, ...) are available unqualified inside test methods - the
@@ -224,7 +257,7 @@ public static class AbilityActivationEngineTests
 ### The ability behavior coverage program
 
 Beyond hand-written suites, per-ability coverage is data-driven. Each ability tree has an
-`IAbilityBehaviorSource` in `Feature/EngineTestDefinition/AbilityBehaviors/` declaring one
+`IAbilityBehaviorSource` in `Definitions/AbilityBehaviors/` declaring one
 `AbilityBehaviorCase` per registered `FeatType`: who the ability targets, what weapon (if any) must
 be equipped, and which observable outcomes to assert (status effects on activator/target, target
 damage, FP/Stamina cost, recast). The shared `AbilityBehaviorExecutor` turns every case into a live
@@ -321,7 +354,7 @@ is minutes long and intended for nightly/CI rather than every local iteration.
 ### The perk coverage program
 
 Every registered perk (462 across all trees, including Beast) has a `PerkCoverageCase` in
-`Feature/EngineTestDefinition/PerkCoverage/` declaring its structure: level count, per-level SP
+`Definitions/PerkCoverage/` declaring its structure: level count, per-level SP
 prices, and granted feats in order. Enforcement is split by where each check can actually run
 (PerkBuilder.Build() reads 2DAs, so perks cannot be built in plain NUnit):
 
@@ -339,7 +372,7 @@ Active perks' behavior is covered transitively: their granted feats flow through
 behavior cases above. To cover a new perk: add one `PerkCoverageCase` to its tree's
 `*PerkCoverage.cs` - the ratchet fails until you do.
 
-New hand-written tests belong in `SWLOR.Game.Server/Feature/EngineTestDefinition/`, one file per suite,
+New hand-written tests belong in `SWLOR.Game.Server.EngineTests/Definitions/`, one file per suite,
 following the same shape: `SpawnCreature`, drive the real system under test, assert on the real
 resulting state via `WaitUntilAsync` where a delay or tick is involved. The current suites (see
 that directory) also cover harness sanity (`HarnessSanityEngineTests`), ability registration
@@ -360,7 +393,7 @@ dev-machine convention used by the normal `SWLOR.Runner` flow), and finally
 
 1. Build `SWLOR.Game.Server` in `Release` (unless skipped) with `-p:RunPostBuildEvent=Never` (so
    the normal Windows-only CLI post-build deploy step doesn't run), then copy the build output from
-   `SWLOR.Game.Server/bin/{Configuration}/net10.0` into `<server home>/dotnet`.
+   `SWLOR.Game.Server.EngineTests/bin/{Configuration}/net10.0` into `<server home>/dotnet`.
 2. Delete any stale `engine-test-results.json` from a previous run.
 3. Run `docker compose -p swlor-engine-tests -f <repo>/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml
    up --abort-on-container-exit --exit-code-from swlor-server` from the server home (the dedicated
@@ -407,7 +440,15 @@ data directory so every run starts against a fresh, empty database, there are no
 `swlor.env` points `SWLOR_APP_LOG_DIRECTORY`), and `NWNX_METRICS_INFLUXDB_SKIP=y` (no InfluxDB
 service exists in this compose file) on top of the normal `swlor.env` defaults.
 
-**Hung-run backstop**: the compose file force-enables the NWNX thread watchdog
+**Hard wall clock**: both runner scripts enforce a timeout on the containerized run
+(`-TimeoutMinutes` / `--timeout-minutes`, default 90; a full sweep takes roughly 45). On expiry
+the stack is torn down and the run is reported as failed. This exists because
+`docker compose up --abort-on-container-exit` blocks until a container exits, and a server that
+boots healthy but schedules no tests - a missing harness assembly, a filter matching nothing -
+idles forever without exiting. Such a server is fully responsive, so the thread watchdog below
+does NOT catch it; only the wall clock does.
+
+**Blocked-main-loop backstop**: the compose file force-enables the NWNX thread watchdog
 (`NWNX_THREADWATCHDOG_SKIP=n`, 30s check period, 20 missed checks) - per-test timeouts are
 cooperative (`CancellationToken` polled between frames), so a test or product bug that hard-blocks
 the server's main thread would otherwise hang the container until the CI job timeout. The watchdog

@@ -13,5 +13,8 @@ namespace SWLOR.Toolset.Domain.Categories.Json
 
         [JsonPropertyName("folders")]
         public List<CategoryFolderDto>? Folders { get; set; }
+
+        [JsonPropertyName("seeded")]
+        public bool Seeded { get; set; }
     }
 }

@@ -284,7 +284,11 @@ namespace SWLOR.Toolset.Domain.Render
             if (doorTypes == null)
                 return null;
 
-            foreach (var field in new[] { "GenericType_New", "Appearance" })
+            // Appearance first. It records what was actually placed, while GenericType_New comes from
+            // the template - and the corpus diverges: nashadaa_czlabin's NS_CZLAB_FLOOR1 door is generic
+            // type 113 (TCN_UDoor_03) but appearance 146 (tmx_door_01), so leading with the template
+            // rendered the wrong door.
+            foreach (var field in new[] { "Appearance", "GenericType_New" })
             {
                 var id = instance.GetIntOrNull(field) ?? -1;
                 if (id <= 0)

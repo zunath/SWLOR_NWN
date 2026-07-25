@@ -653,7 +653,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 foreach (var folder in section.FoldersContaining(tile.ResRef).ToList())
                     folder.RemoveMember(tile.ResRef);
 
-                _categories.SaveChanges();
+                SaveCategories();
             }
 
             SelectedTile = null;
@@ -734,7 +734,7 @@ namespace SWLOR.Toolset.Shell.Panels
             if (SelectedRow?.Folder is { } folder)
             {
                 folder.AddMember(resRef);
-                _categories.SaveChanges();
+                SaveCategories();
             }
 
             Refresh();
@@ -787,7 +787,7 @@ namespace SWLOR.Toolset.Shell.Panels
             else
                 section.AddFolder(name);
 
-            _categories.SaveChanges();
+            SaveCategories();
             Refresh();
             StatusMessage = $"Added category '{name}'.";
             _log.AppendLine($"Added category '{name}' to the {SelectedType.DisplayName().ToLowerInvariant()} palette.");
@@ -810,8 +810,16 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
 
             var previous = folder.Name;
+
+            // A rename changes this folder's path and every descendant's, so any pin naming them has to
+            // move with it or it silently stops resolving.
+            var section = CurrentSection();
+            var oldPathKey = section?.PathKey(folder);
             folder.Rename(name);
-            _categories.SaveChanges();
+            if (section != null && oldPathKey != null)
+                section.RepathPins(oldPathKey, section.PathKey(folder));
+
+            SaveCategories();
             Refresh();
             StatusMessage = $"Renamed '{previous}' to '{folder.Name}'.";
         }
@@ -844,7 +852,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             section.RemoveFolder(folder);
             SelectedRow = null;
-            _categories.SaveChanges();
+            SaveCategories();
             Refresh();
             StatusMessage = $"Removed category '{folder.Name}'.";
         }
@@ -872,15 +880,38 @@ namespace SWLOR.Toolset.Shell.Panels
             if (section == null)
                 return;
 
+            // Captured before saving. SaveChanges raises Changed, Refresh clears Tiles, and the bound
+            // ListBox nulls SelectedTile - so reading it after the save dereferences null.
+            var resRef = SelectedTile.ResRef;
+            var label = SelectedTile.Name;
+
             // Filing is a move, not a copy: the same resref sitting in two folders is legal but is not
             // what a drag onto a folder means.
-            foreach (var previous in section.FoldersContaining(SelectedTile.ResRef).ToList())
-                previous.RemoveMember(SelectedTile.ResRef);
+            foreach (var previous in section.FoldersContaining(resRef).ToList())
+                previous.RemoveMember(resRef);
 
-            folder.AddMember(SelectedTile.ResRef);
-            _categories.SaveChanges();
+            folder.AddMember(resRef);
+            SaveCategories();
             Refresh();
-            StatusMessage = $"Filed {SelectedTile.Name} into '{folder.Name}'.";
+            StatusMessage = $"Filed {label} into '{folder.Name}'.";
+        }
+
+
+        /// <summary>
+        /// Writes the category sidecar and reports a refusal in the status line.
+        /// </summary>
+        /// <remarks>
+        /// The sidecar can legitimately decline a write - it is read-only when a newer Toolset wrote it,
+        /// and it will not clobber an edit made outside the app. Every command here has already told the
+        /// builder what it did, so a silent refusal would leave them believing it.
+        /// </remarks>
+        private bool SaveCategories()
+        {
+            var result = _categories.SaveChanges();
+            if (!result.Saved)
+                StatusMessage = result.Problem;
+
+            return result.Saved;
         }
 
         [RelayCommand]
@@ -890,12 +921,15 @@ namespace SWLOR.Toolset.Shell.Panels
             if (section == null || SelectedRow?.Folder is not { } folder)
                 return;
 
-            if (section.Pinned.Contains(folder.Name, StringComparer.OrdinalIgnoreCase))
-                section.Unpin(folder.Name);
+            // By path, not by name: two branches may hold folders of the same name, and pinning by name
+            // showed one while unpinning the other.
+            var pathKey = section.PathKey(folder);
+            if (section.Pinned.Contains(pathKey, StringComparer.OrdinalIgnoreCase))
+                section.Unpin(pathKey);
             else
-                section.Pin(folder.Name);
+                section.Pin(pathKey);
 
-            _categories.SaveChanges();
+            SaveCategories();
             Refresh();
         }
 
@@ -908,10 +942,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
             if (section != null)
             {
-                foreach (var name in section.Pinned)
+                foreach (var pathKey in section.Pinned)
                 {
-                    var pinned = section.AllFolders()
-                        .FirstOrDefault(folder => string.Equals(folder.Name, name, StringComparison.OrdinalIgnoreCase));
+                    var pinned = section.FindByPathKey(pathKey);
                     if (pinned != null)
                         _allRows.Add(new CategoryRowViewModel(pinned, 0, section.CountIn(pinned, _existing), false)
                         {
@@ -1123,18 +1156,44 @@ namespace SWLOR.Toolset.Shell.Panels
             return path.Count == 0 ? SelectedRow.Name : string.Join(" › ", path);
         }
 
+        /// <summary>Resref to display name for the current type, rebuilt when the catalog changes.</summary>
+        private Dictionary<string, string>? _namesForType;
+
+        /// <summary>The catalog snapshot <see cref="_namesForType"/> was built from.</summary>
+        private object? _namesBuiltFrom;
+
+        private ResourceType _namesBuiltForType;
+
         /// <summary>
-        /// A blueprint's display name from the background catalog, falling back to its resref while the
-        /// catalog is still building or for blueprints the module does not index.
+        /// A blueprint's display name, falling back to its resref while the catalog is still building or
+        /// for blueprints the module does not index.
         /// </summary>
+        /// <remarks>
+        /// Backed by a per-type dictionary rather than a scan of the whole catalog. Search calls this for
+        /// every candidate resref and again while sorting, so against ~17,900 catalog entries and 8,355
+        /// placeables a linear scan meant tens of millions of comparisons on the UI thread per keystroke.
+        /// The dictionary is rebuilt only when the catalog publishes a new snapshot or the type changes.
+        /// </remarks>
         private string NameFor(string resRef)
         {
-            var entry = _workspaceContext.Catalog?.Entries
-                .FirstOrDefault(candidate =>
-                    candidate.ResourceType == SelectedType &&
-                    string.Equals(candidate.ResRef, resRef, StringComparison.OrdinalIgnoreCase));
+            var entries = _workspaceContext.Catalog?.Entries;
+            if (entries == null)
+                return resRef;
 
-            return string.IsNullOrWhiteSpace(entry?.Name) ? resRef : entry.Name!;
+            if (!ReferenceEquals(entries, _namesBuiltFrom) || _namesBuiltForType != SelectedType || _namesForType == null)
+            {
+                _namesForType = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var entry in entries)
+                {
+                    if (entry.ResourceType == SelectedType && !string.IsNullOrWhiteSpace(entry.Name))
+                        _namesForType[entry.ResRef] = entry.Name!;
+                }
+
+                _namesBuiltFrom = entries;
+                _namesBuiltForType = SelectedType;
+            }
+
+            return _namesForType.TryGetValue(resRef, out var name) ? name : resRef;
         }
     }
 }

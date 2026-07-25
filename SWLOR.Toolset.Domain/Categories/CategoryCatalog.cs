@@ -49,6 +49,12 @@ namespace SWLOR.Toolset.Domain.Categories
         public bool IsDirty { get; private set; }
 
         /// <summary>
+        /// True when the file on disk is a version this build must not rewrite. Saving is refused rather
+        /// than silently downgrading it.
+        /// </summary>
+        public bool IsReadOnly { get; private set; }
+
+        /// <summary>
         /// The sidecar's conventional location for a module: a <c>toolset</c> folder beside the module
         /// directory, so it sits in the repository but outside anything pack, unpack or the game touches.
         /// </summary>
@@ -88,7 +94,21 @@ namespace SWLOR.Toolset.Domain.Categories
                 return catalog;
             }
 
-            if (document?.Sections == null)
+            if (document == null)
+                return catalog;
+
+            // A sidecar from a newer, incompatible Toolset must not be read as v1 and then rewritten as
+            // v1 - that silently discards whatever this build does not understand. Left read-only instead.
+            if (document.Version > CurrentVersion)
+            {
+                warning =
+                    $"'{path}' was written by a newer Toolset (version {document.Version}; this build " +
+                    $"understands {CurrentVersion}). Categories are shown as loaded but will not be saved.";
+                catalog.IsReadOnly = true;
+                return catalog;
+            }
+
+            if (document.Sections == null)
                 return catalog;
 
             foreach (var (key, sectionDto) in document.Sections)
@@ -131,6 +151,12 @@ namespace SWLOR.Toolset.Domain.Categories
         /// </summary>
         public void Save(string? path = null)
         {
+            if (IsReadOnly)
+            {
+                throw new InvalidOperationException(
+                    "This category sidecar was written by a newer Toolset and will not be overwritten.");
+            }
+
             var target = path ?? FilePath
                 ?? throw new InvalidOperationException("No path to save the category sidecar to.");
 
@@ -156,11 +182,13 @@ namespace SWLOR.Toolset.Domain.Categories
             {
                 if (section.Folders.Count == 0 &&
                     section.Pinned.Count == 0 &&
+                    !section.IsSeeded &&
                     section.Grouping == CategoryGrouping.Automatic)
                     continue;
 
                 sections[type.Extension()] = new CategorySectionDto
                 {
+                    Seeded = section.IsSeeded,
                     GroupBy = section.Grouping.ToString().ToLowerInvariant(),
                     Pinned = section.Pinned.Count == 0 ? null : section.Pinned.ToList(),
                     Folders = section.Folders.Count == 0 ? null : section.Folders.Select(ToDto).ToList()
@@ -183,7 +211,11 @@ namespace SWLOR.Toolset.Domain.Categories
             {
                 Grouping = Enum.TryParse<CategoryGrouping>(dto.GroupBy, ignoreCase: true, out var grouping)
                     ? grouping
-                    : CategoryGrouping.Automatic
+                    : CategoryGrouping.Automatic,
+
+                // Sidecars written before the flag existed carry folders but no marker; treating those as
+                // seeded is right, and is what stops them being re-imported on the next launch.
+                IsSeeded = dto.Seeded || (dto.Folders?.Count ?? 0) > 0
             };
 
             foreach (var name in dto.Pinned ?? new List<string>())

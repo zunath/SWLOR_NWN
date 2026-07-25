@@ -76,6 +76,7 @@ namespace SWLOR.Toolset.Workspace
                 var path = CategoryCatalog.DefaultPathFor(moduleRoot);
                 _catalog = CategoryCatalog.Load(path, out var warning);
                 _loadedForModuleRoot = moduleRoot;
+                _sidecarWrittenUtc = LastWriteUtc(path);
                 _seeded.Clear();
 
                 if (warning != null)
@@ -96,13 +97,18 @@ namespace SWLOR.Toolset.Workspace
                 return null;
 
             var section = catalog.Section(type);
-            if (!_seeded.Add(type) || section.Folders.Count > 0)
+
+            // IsSeeded, not "has folders". A builder who deliberately empties a section and restarts was
+            // otherwise handed the imported hierarchy straight back, with no way to keep it empty.
+            if (!_seeded.Add(type) || section.IsSeeded)
             {
                 RepairPlaceholderNames(section);
                 return section;
             }
 
             SeedFromPalette(type, section);
+            section.IsSeeded = true;
+            SaveChanges();
             return section;
         }
 
@@ -182,22 +188,80 @@ namespace SWLOR.Toolset.Workspace
             return resRefs.ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
-        /// <summary>Records a change and writes the sidecar. Saving eagerly keeps a crash from losing an arrangement.</summary>
-        public void SaveChanges()
+        /// <summary>
+        /// Records a change and writes the sidecar, reporting whether the write actually happened.
+        /// </summary>
+        /// <remarks>
+        /// Returns a result rather than swallowing the failure. A locked or unwritable sidecar used to be
+        /// logged and nothing else, so the palette reported that a category had been added, renamed or
+        /// filed while it existed only in memory - and shutdown had no idea anything was unsaved.
+        /// <para>
+        /// The file is also re-checked before writing. Nothing watches the sidecar (ModuleFileWatcher
+        /// covers the module directory next door), so a git pull while the toolset is open would
+        /// otherwise be overwritten by whatever this session happened to be holding.
+        /// </para>
+        /// </remarks>
+        public CategorySaveResult SaveChanges()
         {
             var catalog = Catalog;
             if (catalog == null)
-                return;
+                return CategorySaveResult.Ok();
+
+            if (catalog.IsReadOnly)
+            {
+                var refusal = "These categories were written by a newer Toolset and will not be overwritten.";
+                _log.AppendLine(refusal);
+                return CategorySaveResult.Failed(refusal);
+            }
+
+            if (HasExternalChange(catalog))
+            {
+                var conflict =
+                    $"'{catalog.FilePath}' changed outside the toolset; the change was not saved. " +
+                    "Reopen the module to pick up the external version.";
+                _log.AppendLine(conflict);
+                return CategorySaveResult.Failed(conflict);
+            }
 
             try
             {
                 catalog.MarkDirty();
                 catalog.Save();
+                _sidecarWrittenUtc = LastWriteUtc(catalog.FilePath);
                 Changed?.Invoke();
+                return CategorySaveResult.Ok();
             }
             catch (Exception ex)
             {
                 _log.AppendLine($"Could not save categories: {ex.Message}");
+                return CategorySaveResult.Failed($"Could not save categories: {ex.Message}");
+            }
+        }
+
+        /// <summary>When this session last read or wrote the sidecar; null when it has never existed.</summary>
+        private DateTime? _sidecarWrittenUtc;
+
+        private bool HasExternalChange(CategoryCatalog catalog)
+        {
+            var current = LastWriteUtc(catalog.FilePath);
+
+            // Never seen before (first save of a new file) is not a conflict.
+            if (_sidecarWrittenUtc == null || current == null)
+                return false;
+
+            return current != _sidecarWrittenUtc;
+        }
+
+        private static DateTime? LastWriteUtc(string? path)
+        {
+            try
+            {
+                return path != null && File.Exists(path) ? File.GetLastWriteTimeUtc(path) : null;
+            }
+            catch (Exception)
+            {
+                // An unreadable timestamp is not evidence of a conflict.
+                return null;
             }
         }
 

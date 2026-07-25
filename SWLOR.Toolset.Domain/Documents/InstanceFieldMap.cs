@@ -159,10 +159,26 @@ namespace SWLOR.Toolset.Domain.Documents
                     // Ambient sounds have no heading; nothing to set.
                     break;
                 default:
-                    instance.SetSingle("XOrientation", xOrientation);
-                    instance.SetSingle("YOrientation", yOrientation);
+                    var (x, y) = NormalizeHeading(xOrientation, yOrientation);
+                    instance.SetSingle("XOrientation", x);
+                    instance.SetSingle("YOrientation", y);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Forces a heading to the (cos, sin) unit vector the rest of the pipeline assumes.
+        /// </summary>
+        /// <remarks>
+        /// The Facing X/Y controls take two free numbers, and the viewport hides a bad one because atan2
+        /// gives the same direction whatever the magnitude - so (1, 1) or (0, 0) looked fine here and
+        /// reached the engine as a non-unit or degenerate heading. A zero vector has no direction to
+        /// preserve, so it becomes due east, which is NWN's own default facing.
+        /// </remarks>
+        public static (float X, float Y) NormalizeHeading(float x, float y)
+        {
+            var length = MathF.Sqrt((x * x) + (y * y));
+            return length < 1e-6f ? (1f, 0f) : (x / length, y / length);
         }
 
         /// <summary>
@@ -171,30 +187,55 @@ namespace SWLOR.Toolset.Domain.Documents
         /// mean 0. The returned matrix is local to the instance and must be composed before its
         /// heading and world-position transforms.
         /// </summary>
+        /// <remarks>
+        /// Two storage shapes, both in the checked-in corpus. <c>VisualTransform</c> holds the components
+        /// as plain floats. <c>VisTransformList</c> holds the same component names as structs, each with
+        /// the value under <c>ValueTo</c> - the enhanced edition's animatable form. Reading only the first
+        /// left 1,700+ placed objects at identity: dan_wildplain's _mdrn_pl_wdfence is scaled about 3.07
+        /// through the list form alone, and rendered, picked and bounded at normal size.
+        /// </remarks>
         public static Matrix4x4 GetVisualTransform(JsonGffStruct instance)
         {
-            if (instance.GetOrNull("VisualTransform")?.Struct is not { } transform)
+            var component = ComponentReader(instance);
+            if (component == null)
                 return Matrix4x4.Identity;
 
             const float degreesToRadians = MathF.PI / 180f;
             var scale = new Vector3(
-                transform.GetSingleOrNull("ScaleX") ?? 1f,
-                transform.GetSingleOrNull("ScaleY") ?? 1f,
-                transform.GetSingleOrNull("ScaleZ") ?? 1f);
+                component("ScaleX") ?? 1f,
+                component("ScaleY") ?? 1f,
+                component("ScaleZ") ?? 1f);
             var rotation = new Vector3(
-                (transform.GetSingleOrNull("RotateX") ?? 0f) * degreesToRadians,
-                (transform.GetSingleOrNull("RotateY") ?? 0f) * degreesToRadians,
-                (transform.GetSingleOrNull("RotateZ") ?? 0f) * degreesToRadians);
+                (component("RotateX") ?? 0f) * degreesToRadians,
+                (component("RotateY") ?? 0f) * degreesToRadians,
+                (component("RotateZ") ?? 0f) * degreesToRadians);
             var translation = new Vector3(
-                transform.GetSingleOrNull("TranslateX") ?? 0f,
-                transform.GetSingleOrNull("TranslateY") ?? 0f,
-                transform.GetSingleOrNull("TranslateZ") ?? 0f);
+                component("TranslateX") ?? 0f,
+                component("TranslateY") ?? 0f,
+                component("TranslateZ") ?? 0f);
 
             return Matrix4x4.CreateScale(scale) *
                    Matrix4x4.CreateRotationX(rotation.X) *
                    Matrix4x4.CreateRotationY(rotation.Y) *
                    Matrix4x4.CreateRotationZ(rotation.Z) *
                    Matrix4x4.CreateTranslation(translation);
+        }
+
+        /// <summary>
+        /// A reader for one transform component, whichever shape the instance stores, or null when it
+        /// stores no transform at all.
+        /// </summary>
+        private static Func<string, float?>? ComponentReader(JsonGffStruct instance)
+        {
+            if (instance.GetOrNull("VisualTransform")?.Struct is { } transform)
+                return name => transform.GetSingleOrNull(name);
+
+            var animated = instance.GetOrNull("VisTransformList")?.Elements?.FirstOrDefault();
+            if (animated == null)
+                return null;
+
+            // Each component is a struct; the value that matters here is the one it settles on.
+            return name => animated.GetOrNull(name)?.Struct?.GetSingleOrNull("ValueTo");
         }
 
         private static (string X, string Y, string Z) PositionFieldNames(ResourceType type)

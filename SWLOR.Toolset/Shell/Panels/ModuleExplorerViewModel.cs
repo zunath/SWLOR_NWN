@@ -297,7 +297,7 @@ namespace SWLOR.Toolset.Shell.Panels
             if (SelectedRow?.Folder is { } folder)
             {
                 folder.AddMember(resRef);
-                _categories.SaveChanges();
+                SaveCategories();
             }
 
             _log.AppendLine($"Created {SelectedType.SingularDisplayName().ToLowerInvariant()} '{resRef}'.");
@@ -331,7 +331,7 @@ namespace SWLOR.Toolset.Shell.Panels
                     if (SelectedRow?.Folder is { } folder)
                     {
                         folder.AddMember(resRef);
-                        _categories.SaveChanges();
+                        SaveCategories();
                     }
 
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
@@ -385,7 +385,7 @@ namespace SWLOR.Toolset.Shell.Panels
             else
                 parent.AddChild(name.Trim());
 
-            _categories.SaveChanges();
+            SaveCategories();
             Refresh();
         }
 
@@ -401,7 +401,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
 
             folder.Rename(name.Trim());
-            _categories.SaveChanges();
+            SaveCategories();
             Refresh();
         }
 
@@ -429,7 +429,7 @@ namespace SWLOR.Toolset.Shell.Panels
             }
 
             section.RemoveFolder(folder);
-            _categories.SaveChanges();
+            SaveCategories();
             SelectedRow = null;
             Refresh();
         }
@@ -465,7 +465,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 folder.RemoveMember(item.ResRef);
 
             target.AddMember(item.ResRef);
-            _categories.SaveChanges();
+            SaveCategories();
             Refresh();
         }
 
@@ -484,8 +484,26 @@ namespace SWLOR.Toolset.Shell.Panels
             if (!removed)
                 return;
 
-            _categories.SaveChanges();
+            SaveCategories();
             Refresh();
+        }
+
+
+        /// <summary>
+        /// Writes the category sidecar and reports a refusal in the status line.
+        /// </summary>
+        /// <remarks>
+        /// The sidecar can legitimately decline a write - it is read-only when a newer Toolset wrote it,
+        /// and it will not clobber an edit made outside the app. Every command here has already told the
+        /// builder what it did, so a silent refusal would leave them believing it.
+        /// </remarks>
+        private bool SaveCategories()
+        {
+            var result = _categories.SaveChanges();
+            if (!result.Saved)
+                StatusMessage = result.Problem;
+
+            return result.Saved;
         }
 
         // ----- browsing -----
@@ -661,7 +679,7 @@ namespace SWLOR.Toolset.Shell.Panels
             if (seeded == 0)
                 return;
 
-            _categories.SaveChanges();
+            SaveCategories();
             _log.AppendLine(
                 $"Organised {SelectedType.DisplayName().ToLowerInvariant()} into {seeded} folder(s). " +
                 "Rename, nest or refile them from the right-click menu.");

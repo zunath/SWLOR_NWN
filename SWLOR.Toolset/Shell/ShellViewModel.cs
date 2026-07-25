@@ -408,12 +408,23 @@ namespace SWLOR.Toolset.Shell
             };
             _progressTimer.Start();
 
-            _ = catalog.BuildTask.ContinueWith(_ =>
+            _ = catalog.BuildTask.ContinueWith(task =>
             {
                 Dispatcher.UIThread.Post(() =>
                 {
                     _progressTimer?.Stop();
                     _progressTimer = null;
+
+                    // ContinueWith runs on failure too. Announcing "Catalog ready" over a faulted build
+                    // invites the builder to trust search and Explorer results that are missing whatever
+                    // the fault skipped.
+                    if (task.IsFaulted)
+                    {
+                        var reason = task.Exception?.GetBaseException().Message ?? "unknown error";
+                        StatusText = $"Catalog build failed: {reason}. Search and Module Contents may be incomplete.";
+                        _log.AppendLine($"Catalog build failed: {reason}");
+                        return;
+                    }
                     _explorer.RefreshFromCatalog(catalog);
                     _search.Refresh();
                     // Names for the palette tiles come from the catalog, so it only reads properly

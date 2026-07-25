@@ -145,8 +145,39 @@ namespace SWLOR.Toolset.Domain.Render
 
         private static float? PickMarkerInstance(PickRay ray, InstanceMarker instance)
         {
-            var (min, max) = ComputeMarkerWorldBounds(instance);
-            return RayAabbIntersect(ray, min, max);
+            // A trigger's outline is what is drawn and what a builder aims at. Without this the only
+            // clickable part is the 0.8m anchor pyramid, which for the 306 checked-in trigger polygons
+            // wider than 10m - some over 200m - means hunting for a speck or giving up and using the
+            // instance list.
+            var polygon = PickPolygon(ray, instance);
+            var marker = RayAabbIntersect(ray, ComputeMarkerWorldBounds(instance).Min,
+                ComputeMarkerWorldBounds(instance).Max);
+
+            return polygon == null ? marker
+                : marker == null ? polygon
+                : Math.Min(polygon.Value, marker.Value);
+        }
+
+        /// <summary>
+        /// Hit-tests the instance's drawn geometry polygon, as a fan of triangles about its first point.
+        /// Null when it has none. The polygon is flat, so a fan is exact for the convex case and close
+        /// enough for the concave ones a builder still expects to be able to click.
+        /// </summary>
+        private static float? PickPolygon(PickRay ray, InstanceMarker instance)
+        {
+            var points = instance.Geometry;
+            if (points == null || points.Count < 3)
+                return null;
+
+            float? closest = null;
+            for (var i = 1; i + 1 < points.Count; i++)
+            {
+                var hit = RayTriangleIntersect(ray, points[0], points[i], points[i + 1]);
+                if (hit is { } distance && (closest == null || distance < closest))
+                    closest = distance;
+            }
+
+            return closest;
         }
 
         private static float? PickModelInstance(PickRay ray, InstanceMarker instance)

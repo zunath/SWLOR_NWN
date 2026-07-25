@@ -20,10 +20,66 @@ namespace SWLOR.Toolset.Domain.Categories
 
         public CategoryGrouping Grouping { get; set; } = CategoryGrouping.Automatic;
 
+        /// <summary>
+        /// True once this section has been given its starting folders, whatever became of them since.
+        /// </summary>
+        /// <remarks>
+        /// Persisted, because "has it been seeded" and "is it empty" are different questions and only the
+        /// first one is the right test. A builder who deliberately deletes every folder and restarts was
+        /// otherwise handed the imported hierarchy back, with no way to keep a section empty.
+        /// </remarks>
+        public bool IsSeeded { get; set; }
+
         public IReadOnlyList<CategoryFolder> Folders => _folders;
 
-        /// <summary>Names of folders the user pinned to the top, in their chosen order.</summary>
+        /// <summary>
+        /// Paths of folders the user pinned to the top, in their chosen order, joined by
+        /// <see cref="PathSeparator"/>.
+        /// </summary>
+        /// <remarks>
+        /// A path, not a bare name. Two branches may legally hold folders of the same name, and a bare
+        /// name resolved to whichever came first depth-first - so pinning one could show the other, and
+        /// pinning the second could unpin the first. A top-level folder's path is just its name, which is
+        /// what every pin written before this change was, so old sidecars keep working.
+        /// </remarks>
         public IReadOnlyList<string> Pinned => _pinned;
+
+        /// <summary>Separator between path segments in a stored pin. Chosen because a folder name cannot contain it.</summary>
+        public const string PathSeparator = "/";
+
+        /// <summary>The stored form of a folder's identity: its full path from the section root.</summary>
+        public string PathKey(CategoryFolder folder) => string.Join(PathSeparator, PathTo(folder));
+
+        /// <summary>The folder a stored pin refers to, or null when it no longer exists.</summary>
+        public CategoryFolder? FindByPathKey(string pathKey)
+        {
+            if (string.IsNullOrWhiteSpace(pathKey))
+                return null;
+
+            return Find(pathKey.Split(PathSeparator, StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        /// <summary>
+        /// Repoints every pin that referred to <paramref name="oldPathKey"/> or anything beneath it.
+        /// Called after a rename, which changes the path of a folder and of all its descendants.
+        /// </summary>
+        public void RepathPins(string oldPathKey, string newPathKey)
+        {
+            if (string.IsNullOrWhiteSpace(oldPathKey) || oldPathKey == newPathKey)
+                return;
+
+            for (var i = 0; i < _pinned.Count; i++)
+            {
+                if (string.Equals(_pinned[i], oldPathKey, StringComparison.OrdinalIgnoreCase))
+                {
+                    _pinned[i] = newPathKey;
+                }
+                else if (_pinned[i].StartsWith(oldPathKey + PathSeparator, StringComparison.OrdinalIgnoreCase))
+                {
+                    _pinned[i] = newPathKey + _pinned[i][oldPathKey.Length..];
+                }
+            }
+        }
 
         public CategoryFolder AddFolder(string name)
         {

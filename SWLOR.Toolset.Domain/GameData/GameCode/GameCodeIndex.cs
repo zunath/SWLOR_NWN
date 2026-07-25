@@ -44,15 +44,23 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             var questDirectory = CombineIfUsable(gameServerSourceRoot, QuestDefinitionRelativePath);
             var spawnDirectory = CombineIfUsable(gameServerSourceRoot, SpawnDefinitionRelativePath);
 
-            IsSourceScanAvailable = questDirectory != null && spawnDirectory != null;
+            var questComplete = false;
+            var spawnComplete = false;
 
             _questIds = questDirectory != null
-                ? SourceIdScanner.ScanBuilderCreateIds(questDirectory)
+                ? SourceIdScanner.ScanBuilderCreateIds(questDirectory, out questComplete)
                 : new HashSet<string>(StringComparer.Ordinal);
 
             _spawnTableIds = spawnDirectory != null
-                ? SourceIdScanner.ScanBuilderCreateIds(spawnDirectory)
+                ? SourceIdScanner.ScanBuilderCreateIds(spawnDirectory, out spawnComplete)
                 : new HashSet<string>(StringComparer.Ordinal);
+
+            // "Available" has to mean the scan actually read everything, not merely that the directories
+            // exist. A denied enumeration or an unreadable file yields a partial set, and callers treat
+            // an available scan as authoritative - so validation would report real quest and spawn-table
+            // ids as unknown.
+            IsSourceScanAvailable = questDirectory != null && spawnDirectory != null &&
+                                    questComplete && spawnComplete;
         }
 
         public bool IsValidNpcGroup(int npcGroupValue) => NpcGroups.ContainsKey(npcGroupValue);

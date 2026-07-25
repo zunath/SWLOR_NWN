@@ -69,6 +69,20 @@ namespace SWLOR.Toolset.Workspace
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+
+            // A saved blueprint may look different. The memory cache is consulted before the disk
+            // cache's timestamp check, so without this an edited appearance or icon kept showing the old
+            // picture - including a cached "no artwork" symbol - for the rest of the session.
+            _workspaceContext.CatalogEntryRefreshed += Invalidate;
+        }
+
+        /// <summary>Forgets a blueprint's cached preview, so the next request re-renders it.</summary>
+        public void Invalidate(ResourceType type, string resRef)
+        {
+            if (string.IsNullOrWhiteSpace(resRef))
+                return;
+
+            _memory.Remove(Key(type, resRef));
         }
 
         /// <summary>True when game data is loaded well enough to produce any preview at all.</summary>

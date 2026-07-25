@@ -42,9 +42,22 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
         /// Scans every *.cs file under <paramref name="directoryPath"/> for builder.Create() IDs.
         /// Returns an empty set (never throws) if the directory is missing or unreadable.
         /// </summary>
-        public static HashSet<string> ScanBuilderCreateIds(string directoryPath)
+        public static HashSet<string> ScanBuilderCreateIds(string directoryPath) =>
+            ScanBuilderCreateIds(directoryPath, out _);
+
+        /// <summary>
+        /// Scans a source tree for builder-created ids, reporting whether every file was actually read.
+        /// </summary>
+        /// <remarks>
+        /// <paramref name="complete"/> matters because callers use the result to decide what is valid: a
+        /// partial scan silently drops real ids, and validation then flags legitimate
+        /// CREATURE_SPAWN_TABLE_ID values as unknown. A caller that cannot tell a partial scan from an
+        /// empty tree reports those false errors with full confidence.
+        /// </remarks>
+        public static HashSet<string> ScanBuilderCreateIds(string directoryPath, out bool complete)
         {
             var ids = new HashSet<string>(StringComparer.Ordinal);
+            complete = true;
 
             IEnumerable<string> files;
             try
@@ -53,18 +66,20 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
             {
+                complete = false;
                 return ids;
             }
 
             foreach (var file in files)
             {
-                ScanFile(file, ids);
+                if (!ScanFile(file, ids))
+                    complete = false;
             }
 
             return ids;
         }
 
-        private static void ScanFile(string filePath, HashSet<string> ids)
+        private static bool ScanFile(string filePath, HashSet<string> ids)
         {
             string text;
             try
@@ -73,7 +88,7 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
-                return;
+                return false;
             }
 
             var constants = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -97,6 +112,8 @@ namespace SWLOR.Toolset.Domain.GameData.GameCode
                     ids.Add(resolved);
                 }
             }
+
+            return true;
         }
     }
 }

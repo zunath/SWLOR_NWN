@@ -86,6 +86,19 @@ namespace SWLOR.Toolset.Workspace
             }
         }
 
+        /// <summary>Forgets one key, so the next request for it re-renders rather than reusing a stale image.</summary>
+        public void Remove(string key)
+        {
+            lock (_gate)
+            {
+                if (!_entries.TryGetValue(key, out var node))
+                    return;
+
+                _order.Remove(node);
+                _entries.Remove(key);
+            }
+        }
+
         public void Clear()
         {
             lock (_gate)

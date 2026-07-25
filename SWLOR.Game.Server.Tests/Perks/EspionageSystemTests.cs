@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -151,13 +152,13 @@ public class EspionageSystemTests
     }
 
     [Test]
-    public void SlicingRanksReduceLockboxUseDelayAtTheDocumentedBands()
+    public void SlicingRanksGrantTheDocumentedTraceBonuses()
     {
-        LockboxItemDefinition.CalculateUseDelaySeconds(0).Should().BeApproximately(2f, 0.001f);
-        LockboxItemDefinition.CalculateUseDelaySeconds(2).Should().BeApproximately(2f, 0.001f);
-        LockboxItemDefinition.CalculateUseDelaySeconds(3).Should().BeApproximately(1.6f, 0.001f);
-        LockboxItemDefinition.CalculateUseDelaySeconds(4).Should().BeApproximately(1.4f, 0.001f);
-        LockboxItemDefinition.CalculateUseDelaySeconds(5).Should().BeApproximately(1.2f, 0.001f);
+        Slicing.GetTraceBonus(0, 0, 0).Should().Be(0);
+        Slicing.GetTraceBonus(2, 0, 0).Should().Be(0);
+        Slicing.GetTraceBonus(3, 0, 0).Should().Be(1);
+        Slicing.GetTraceBonus(4, 0, 0).Should().Be(2);
+        Slicing.GetTraceBonus(5, 0, 0).Should().Be(3);
     }
 
     [Test]
@@ -288,7 +289,7 @@ public class EspionageSystemTests
     }
 
     [Test]
-    public void SlicingFirstIteration_IsConsumedOnlyByLockboxes()
+    public void SlicingRankGate_IsCentralizedForLockboxesAndTerminals()
     {
         var root = FindRepositoryRoot();
         var references = Directory
@@ -303,9 +304,9 @@ public class EspionageSystemTests
 
         references.Should().Equal(Path.Combine(
             "SWLOR.Game.Server",
-            "Feature",
-            "ItemDefinition",
-            "LockboxItemDefinition.cs"));
+            "Service",
+            "SlicingService",
+            "SlicingSession.cs"));
     }
 
     [Test]

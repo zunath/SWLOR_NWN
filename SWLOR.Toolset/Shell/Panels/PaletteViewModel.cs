@@ -168,13 +168,6 @@ namespace SWLOR.Toolset.Shell.Panels
         public bool HasReadOnlyNotice => ReadOnlyNotice != null;
 
         /// <summary>
-        /// The search box explains its own scope, which differs by mode: blueprint search spans every
-        /// category, tile search narrows the open one.
-        /// </summary>
-        public string SearchWatermark =>
-            IsTileMode ? "Search tiles in this category..." : "Search categories and objects...";
-
-        /// <summary>
         /// The "incl. sub" toggle only has something to do in the blueprint tree: a tileset's categories
         /// are flat, and a search already reaches across all of them.
         /// </summary>
@@ -303,13 +296,41 @@ namespace SWLOR.Toolset.Shell.Panels
 
             PublishVisibleRows();
             SelectedRow = _allRows[0];
+            RebuildTileGrid();
             StatusMessage = $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a tile, then click a cell.";
         }
 
-        /// <summary>Publishes the grid for the picked tile category, filtered by the search box.</summary>
+        /// <summary>
+        /// Publishes the tile grid: the picked category, or every match in the tileset while searching.
+        /// </summary>
+        /// <remarks>
+        /// Search ignores which category is open, the same way blueprint search does. A builder looking
+        /// for "door" does not know whether the answer is a single tile or one of the tileset's groups,
+        /// and answering from only the open category would silently hide half the tileset. Matches carry
+        /// the category they came from so the two are still told apart.
+        /// </remarks>
         private void RebuildTileGrid()
         {
             Tiles.Clear();
+            var query = Query.Trim();
+
+            if (query.Length > 0)
+            {
+                var matches = _tiles.Categories
+                    .SelectMany(category => category.Entries
+                        .Where(entry => entry.Label.Contains(query, StringComparison.OrdinalIgnoreCase))
+                        .Select(entry => (Category: category.Name, Entry: entry)))
+                    .OrderBy(match => match.Entry.Label, StringComparer.CurrentCultureIgnoreCase)
+                    .ToList();
+
+                foreach (var match in matches.Take(MaxSearchResults))
+                    AddTile(new PaletteTileViewModel(match.Entry, match.Category));
+
+                Breadcrumb = matches.Count > MaxSearchResults
+                    ? $"First {MaxSearchResults} of {matches.Count} matches"
+                    : $"{matches.Count} match{(matches.Count == 1 ? string.Empty : "es")} in this tileset";
+                return;
+            }
 
             if (_selectedTileCategory is not { } category)
             {
@@ -317,19 +338,12 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            var query = Query.Trim();
-            var entries = query.Length == 0
-                ? category.Entries
-                : category.Entries
-                    .Where(entry => entry.Label.Contains(query, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-
-            foreach (var entry in entries.Take(MaxSearchResults))
+            foreach (var entry in category.Entries.Take(MaxSearchResults))
                 AddTile(new PaletteTileViewModel(entry));
 
-            Breadcrumb = entries.Count > MaxSearchResults
-                ? $"{category.Name} - first {MaxSearchResults} of {entries.Count}"
-                : $"{category.Name} - {entries.Count} tiles";
+            Breadcrumb = category.Entries.Count > MaxSearchResults
+                ? $"{category.Name} - first {MaxSearchResults} of {category.Entries.Count}"
+                : $"{category.Name} - {category.Entries.Count} tiles";
         }
 
         [RelayCommand]
@@ -392,7 +406,6 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(CanWrite));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
-            OnPropertyChanged(nameof(SearchWatermark));
             OnPropertyChanged(nameof(ShowsIncludeSubcategories));
             SelectedRow = null;
             SelectedTile = null;

@@ -41,11 +41,28 @@ namespace SWLOR.Toolset.Viewport
         private const float FallbackCubeHeight = 1.5f;
 
         /// <summary>
-        /// With "hide ceilings" on, tile fragments higher than this above their own tile's base
-        /// height are discarded — removes interior ceilings (walls top out around 5m) while
-        /// staying correct per height level in multi-elevation areas.
+        /// With "hide ceilings" on, DOWNWARD-FACING tile fragments higher than this above their own
+        /// tile's base height are discarded. Per-tile rather than absolute so it stays correct in
+        /// multi-elevation areas.
         /// </summary>
-        private const float CeilingClipHeight = 4.0f;
+        /// <remarks>
+        /// A plain height cut cannot do this job, which is what a 4m cut got wrong: measured over the
+        /// corpus, shp02's ceiling planes sit at 3.0-3.5m while its walls top out at 3.5-4.0m, so no
+        /// threshold separates the two. Cutting at 4m therefore kept the ceilings, and an area read
+        /// as a field of blank grey plates - the ceilings seen from above, with the walls and floors
+        /// sealed underneath them.
+        ///
+        /// Facing is the signal that actually distinguishes them: a ceiling faces down, a wall faces
+        /// sideways, a floor or a roof faces up. So only down-facing fragments are cut, which leaves
+        /// every wall standing at any height and leaves exterior terrain and building roofs
+        /// (up-facing) intact - hiding those would gut an outdoor map. What else goes is the
+        /// underside of overhangs, archways and catwalks, which a camera looking down cannot see.
+        ///
+        /// 2m rather than something taller because walls no longer need the headroom, and shp02's
+        /// lowest ceiling geometry starts at 3.0m. Measured cut share: 17% of triangles for shp02,
+        /// 6% for tin01, 10% for tno01, 1% for the ttd01 desert exterior.
+        /// </remarks>
+        private const float CeilingClipHeight = 2.0f;
         private const float CeilingClipDisabled = 1e9f;
         private const float MarkerHalfWidth = 0.4f;
         private const float MarkerHeight = 1.2f;
@@ -132,9 +149,10 @@ uniform vec3 ambientColor;
 
 void main()
 {
-    // Hide-ceilings support: fragments above the per-draw clip height are discarded
-    // (set to a huge value when the toggle is off).
-    if (WorldPos.z > ceilingClipZ)
+    // Hide-ceilings support: DOWN-FACING fragments above the per-draw clip height are discarded
+    // (the height is a huge value when the toggle is off). Walls and floors survive because they do
+    // not face down; see CeilingClipHeight for why facing, not height alone, is the test.
+    if (WorldPos.z > ceilingClipZ && normalize(Normal).z < -0.5)
         discard;
 
     vec4 texColor = hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);

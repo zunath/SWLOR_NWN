@@ -106,10 +106,13 @@ namespace SWLOR.Toolset
             services.AddSingleton(sp => new ModuleExplorerViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<PropertiesViewModel>(),
+                sp.GetRequiredService<CategoryService>(),
+                sp.GetRequiredService<OutputLogService>(),
                 sp.GetRequiredService<Func<Editors.EditorService>>(),
                 // Optional: only registered when the repo layout resolved, and the new-area wizard
                 // degrades to "no tilesets available" without it.
-                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>()));
+                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
+                sp.GetRequiredService<Services.IEditorPromptService>()));
             services.AddSingleton(sp => new CategoryService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Shell.Panels
@@ -7,13 +8,13 @@ namespace SWLOR.Toolset.Shell.Panels
     /// <summary>What a row in the Module Contents tree stands for.</summary>
     public enum ExplorerNodeKind
     {
-        /// <summary>A resource type: Areas, Creatures, Placeables.</summary>
+        /// <summary>A resource type: Areas, Conversations, Scripts. A tab rather than a row now.</summary>
         Type,
 
-        /// <summary>A group inside a type - a planet, or a user folder.</summary>
+        /// <summary>A folder from the category sidecar, or the synthetic Unsorted bucket.</summary>
         Group,
 
-        /// <summary>One area or blueprint.</summary>
+        /// <summary>One area, conversation or script.</summary>
         Resource
     }
 
@@ -46,11 +47,21 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>Set for resource nodes only.</summary>
         public ExplorerItem? Item { get; init; }
 
+        /// <summary>
+        /// The sidecar folder this row shows. Null on a resource row, and null on the Unsorted row -
+        /// Unsorted is generated from what is filed nowhere, so there is nothing there to rename or
+        /// delete, which is why the folder commands test this rather than the kind.
+        /// </summary>
+        public CategoryFolder? Folder { get; init; }
+
         public string ResRef => Item?.ResRef ?? string.Empty;
 
         public bool IsResource => Kind == ExplorerNodeKind.Resource;
 
         public bool IsBranch => Kind != ExplorerNodeKind.Resource;
+
+        /// <summary>True for a real, editable folder row.</summary>
+        public bool IsFolder => Folder != null;
 
         public ObservableCollection<ExplorerNodeViewModel> Children { get; } = new();
 

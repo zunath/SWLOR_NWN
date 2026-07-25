@@ -15,5 +15,18 @@ namespace SWLOR.Toolset.Shell.Views
         {
             (DataContext as ModuleExplorerViewModel)?.OpenSelectedItem();
         }
+
+        /// <summary>
+        /// Selects the row that was right-clicked. Avalonia does not select on right-click, and every
+        /// command on the row's menu acts on the selection.
+        /// </summary>
+        private void OnRowContextRequested(object? sender, ContextRequestedEventArgs e)
+        {
+            if (DataContext is ModuleExplorerViewModel viewModel &&
+                sender is Control { DataContext: ExplorerNodeViewModel row })
+            {
+                viewModel.SelectedRow = row;
+            }
+        }
     }
 }

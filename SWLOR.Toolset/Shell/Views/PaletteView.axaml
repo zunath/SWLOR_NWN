@@ -62,7 +62,7 @@
     </ItemsControl>
 
     <TextBox Grid.Row="3" Margin="8,4" Text="{Binding Query}"
-             Watermark="{Binding SearchWatermark}" />
+             Watermark="Search..." />
 
     <!-- Category header. No action buttons: everything you can do to a category is on its own
          right-click menu, which is where you already are when you have decided which category to do it

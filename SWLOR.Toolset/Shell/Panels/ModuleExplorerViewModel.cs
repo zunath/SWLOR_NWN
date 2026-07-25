@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Categories;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
@@ -10,7 +11,7 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
-    /// Module Contents: the module's areas, conversations and scripts.
+    /// Module Contents: the module's areas, conversations and scripts, one tab each.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -20,23 +21,43 @@ namespace SWLOR.Toolset.Shell.Panels
     /// separate from its palette for the same reason: areas, conversations, scripts.
     /// </para>
     /// <para>
-    /// Rows are published as one flat, virtualized list rather than a real TreeView, and a branch builds
+    /// Tabs rather than three expandable roots. Only one of the three is ever being worked in, and as
+    /// roots they cost a row of screen height each plus a level of indentation on every row beneath -
+    /// with the tab bar, folders start at the left edge and the New button can name what it makes.
+    /// </para>
+    /// <para>
+    /// Folders come from the category sidecar, the same store the Palette's categories live in, so a
+    /// builder's arrangement survives a restart without anything being written into the module. Areas
+    /// are seeded from the "Planet - Place" naming rule the first time they are shown, which turns what
+    /// used to be a fixed automatic grouping into a starting point that can then be edited.
+    /// </para>
+    /// <para>
+    /// Rows are published as one flat, virtualized list rather than a real TreeView, and a folder builds
     /// its children the first time it is expanded - 609 conversations would otherwise realise a
-    /// container each at startup for a section nobody opened.
+    /// container each for a folder nobody opened.
     /// </para>
     /// </remarks>
     public partial class ModuleExplorerViewModel : Tool
     {
         private readonly WorkspaceContext _workspaceContext;
         private readonly PropertiesViewModel _properties;
+        private readonly CategoryService _categories;
+        private readonly OutputLogService _log;
         private readonly Func<Editors.EditorService>? _editorService;
         private readonly TilesetCatalog? _tilesetCatalog;
+        private readonly Services.IEditorPromptService? _prompts;
 
         private readonly List<ExplorerNodeViewModel> _roots = new();
         private Dictionary<ResourceType, List<CatalogEntry>>? _catalogByType;
 
+        /// <summary>Types whose sidecar section has already been seeded this session.</summary>
+        private readonly HashSet<ResourceType> _seeded = new();
+
         /// <summary>The visible rows: every node whose ancestors are all expanded.</summary>
         public ObservableCollection<ExplorerNodeViewModel> Rows { get; } = new();
+
+        /// <summary>The three tabs, in Aurora's order.</summary>
+        public ObservableCollection<ExplorerTabViewModel> Tabs { get; } = new();
 
         [ObservableProperty]
         private ExplorerNodeViewModel? _selectedRow;
@@ -51,19 +72,31 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private NewAreaViewModel? _activeNewArea;
 
+        /// <summary>Which tab is showing. Everything else in the panel is scoped to it.</summary>
+        [ObservableProperty]
+        private ResourceType _selectedType = ResourceType.Area;
+
         public ModuleExplorerViewModel(
             WorkspaceContext workspaceContext,
             PropertiesViewModel properties,
+            CategoryService categories,
+            OutputLogService log,
             Func<Editors.EditorService>? editorService = null,
-            TilesetCatalog? tilesetCatalog = null)
+            TilesetCatalog? tilesetCatalog = null,
+            Services.IEditorPromptService? prompts = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
+            _categories = categories ?? throw new ArgumentNullException(nameof(categories));
+            _log = log ?? throw new ArgumentNullException(nameof(log));
             _editorService = editorService;
             _tilesetCatalog = tilesetCatalog;
+            _prompts = prompts;
 
             Id = "ModuleExplorer";
             Title = "Module Contents";
+
+            PublishTabs();
 
             _workspaceContext.CatalogEntryRefreshed += (_, _) =>
             {
@@ -76,35 +109,22 @@ namespace SWLOR.Toolset.Shell.Panels
         /// The sections, in the order Aurora listed them. Each one is a resource kind that lives in the
         /// module and is not a blueprint.
         /// </summary>
-        private static readonly ResourceType[] Sections =
+        public static readonly IReadOnlyList<ResourceType> Sections = new[]
         {
             ResourceType.Area,
             ResourceType.Dlg,
             ResourceType.Nss
         };
 
-        /// <summary>Builds the section rows. Cheap - nothing beneath them is loaded until expanded.</summary>
+        /// <summary>What the New button says, which follows the tab - "New Area...", "New Script...".</summary>
+        public string NewItemLabel => $"New {SelectedType.SingularDisplayName()}...";
+
+        /// <summary>Builds the tree for the selected tab.</summary>
         public void Initialize()
         {
             _catalogByType = null;
-            _roots.Clear();
-            Rows.Clear();
-
-            var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
-                return;
-
-            foreach (var type in Sections)
-                AddRoot(type, workspace.EnumerateResRefs(type).Count);
-
-            PublishVisibleRows();
+            Refresh();
         }
-
-        private void AddRoot(ResourceType type, int count) =>
-            _roots.Add(new ExplorerNodeViewModel(ExplorerNodeKind.Type, type, type.DisplayName(), 0)
-            {
-                Count = count
-            });
 
         /// <summary>Called once the background catalog publishes names, so rows can lead with them.</summary>
         public void RefreshFromCatalog(BlueprintCatalog catalog)
@@ -113,20 +133,166 @@ namespace SWLOR.Toolset.Shell.Panels
                 .GroupBy(entry => entry.ResourceType)
                 .ToDictionary(group => group.Key, group => group.ToList());
 
-            // Anything already open is rebuilt in place, so names replace resrefs without the tree
-            // collapsing under the user mid-browse.
-            foreach (var root in _roots)
-            {
-                if (_catalogByType.TryGetValue(root.Type, out var entries))
-                    root.Count = entries.Count;
+            Refresh();
+        }
 
-                Reload(root);
+        /// <summary>
+        /// Rebuilds the tree, keeping which folders were open. Expansion is restored by folder name
+        /// rather than by node, because every node is new after a rebuild.
+        /// </summary>
+        public void Refresh()
+        {
+            var expanded = _roots
+                .SelectMany(Flatten)
+                .Where(node => node.IsExpanded)
+                .Select(node => node.Name)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var selectedResRef = SelectedRow?.Item?.ResRef;
+
+            _roots.Clear();
+            Rows.Clear();
+
+            foreach (var tab in Tabs)
+                tab.Count = CountFor(tab.Type);
+
+            var section = _categories.Section(SelectedType);
+            if (section == null)
+            {
+                PublishVisibleRows();
+                return;
             }
 
+            var items = LoadItems(SelectedType);
+            SeedIfNeeded(section, items);
+
+            var byResRef = Filtered(items)
+                .GroupBy(item => item.ResRef, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+
+            foreach (var folder in Ordered(section.Folders))
+                _roots.Add(BuildFolderNode(folder, byResRef, depth: 0));
+
+            var unsorted = section
+                .UnsortedResRefs(byResRef.Keys)
+                .Select(resRef => byResRef[resRef])
+                .ToList();
+
+            if (unsorted.Count > 0)
+                _roots.Add(BuildUnsortedNode(unsorted));
+
+            foreach (var node in _roots.SelectMany(Flatten))
+                node.IsExpanded = expanded.Contains(node.Name);
+
+            PublishMoveTargets(section);
             PublishVisibleRows();
+
+            if (selectedResRef != null)
+                SelectedRow = Rows.FirstOrDefault(row =>
+                    string.Equals(row.Item?.ResRef, selectedResRef, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // ----- tabs -----
+
+        private void PublishTabs()
+        {
+            Tabs.Clear();
+            foreach (var type in Sections)
+                Tabs.Add(new ExplorerTabViewModel(type) { IsSelected = type == SelectedType });
         }
 
         [RelayCommand]
+        private void SelectTab(ExplorerTabViewModel? tab)
+        {
+            if (tab == null || tab.Type == SelectedType)
+                return;
+
+            SelectedType = tab.Type;
+        }
+
+        partial void OnSelectedTypeChanged(ResourceType value)
+        {
+            foreach (var tab in Tabs)
+                tab.IsSelected = tab.Type == value;
+
+            OnPropertyChanged(nameof(NewItemLabel));
+            SelectedRow = null;
+            StatusMessage = null;
+            Refresh();
+        }
+
+        private int CountFor(ResourceType type) =>
+            _catalogByType != null && _catalogByType.TryGetValue(type, out var entries)
+                ? entries.Count
+                : _workspaceContext.Workspace?.EnumerateResRefs(type).Count ?? 0;
+
+        // ----- creating -----
+
+        /// <summary>Creates a resource of the selected type: the area wizard, or a prompt plus a template.</summary>
+        [RelayCommand]
+        private async Task NewItemAsync()
+        {
+            if (SelectedType == ResourceType.Area)
+            {
+                NewArea();
+                return;
+            }
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || _prompts == null)
+                return;
+
+            var name = await _prompts.PromptForTextAsync(
+                NewItemLabel.TrimEnd('.'),
+                $"Name for the new {SelectedType.SingularDisplayName().ToLowerInvariant()}. Its resref is derived from this.",
+                string.Empty,
+                "Create");
+
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+            var resRef = ToResRef(name);
+            if (resRef.Length == 0)
+            {
+                StatusMessage = "That name has no letters or digits to make a resref from.";
+                return;
+            }
+
+            var path = workspace.GetResourcePath(SelectedType, resRef);
+            if (File.Exists(path))
+            {
+                StatusMessage = $"'{resRef}' already exists.";
+                return;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                File.WriteAllBytes(
+                    path, ModuleResourceTemplateFactory.CreateFileContent(SelectedType, resRef, name.Trim()));
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Could not create '{resRef}': {ex.Message}";
+                return;
+            }
+
+            // Filed straight into the folder that was selected, so creating inside a folder puts it
+            // there rather than dropping it in Unsorted for the builder to move.
+            if (SelectedRow?.Folder is { } folder)
+            {
+                folder.AddMember(resRef);
+                _categories.SaveChanges();
+            }
+
+            _log.AppendLine($"Created {SelectedType.SingularDisplayName().ToLowerInvariant()} '{resRef}'.");
+            _workspaceContext.RefreshCatalogEntry(SelectedType, resRef);
+            Refresh();
+
+            StatusMessage = $"Created '{resRef}'.";
+            _editorService?.Invoke().TryOpenEditor(SelectedType, resRef);
+        }
+
         private void NewArea()
         {
             var workspace = _workspaceContext.Workspace;
@@ -139,14 +305,172 @@ namespace SWLOR.Toolset.Shell.Panels
                 resRef =>
                 {
                     ActiveNewArea = null;
-                    Initialize();
+
+                    if (SelectedRow?.Folder is { } folder)
+                    {
+                        folder.AddMember(resRef);
+                        _categories.SaveChanges();
+                    }
+
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
+                    Refresh();
                     _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);
                 },
                 () => ActiveNewArea = null);
         }
 
-        /// <summary>Double-click: open a resource, or expand a branch.</summary>
+        /// <summary>
+        /// A resref from a display name: lowercase, alphanumeric and underscore, 16 characters. Same
+        /// rule the Palette's New-blueprint action uses, so the two never disagree about a name.
+        /// </summary>
+        private static string ToResRef(string name)
+        {
+            var characters = name.Trim().ToLowerInvariant()
+                .Select(character => char.IsLetterOrDigit(character) ? character : '_')
+                .ToArray();
+
+            return new string(characters).Trim('_').Replace("__", "_") is { Length: > 0 } cleaned
+                ? cleaned[..Math.Min(16, cleaned.Length)]
+                : string.Empty;
+        }
+
+        // ----- folders -----
+
+        /// <summary>True while a real folder is selected, which is what rename and delete need.</summary>
+        public bool HasFolderSelected => SelectedRow?.Folder != null;
+
+        [RelayCommand]
+        private async Task NewFolderAsync()
+        {
+            var section = _categories.Section(SelectedType);
+            if (section == null || _prompts == null)
+                return;
+
+            var parent = SelectedRow?.Folder;
+            var name = await _prompts.PromptForTextAsync(
+                parent == null ? "New folder" : $"New folder in '{parent.Name}'",
+                "Folder name",
+                string.Empty,
+                "Create");
+
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+            if (parent == null)
+                section.AddFolder(name.Trim());
+            else
+                parent.AddChild(name.Trim());
+
+            _categories.SaveChanges();
+            Refresh();
+        }
+
+        [RelayCommand]
+        private async Task RenameFolderAsync()
+        {
+            if (SelectedRow?.Folder is not { } folder || _prompts == null)
+                return;
+
+            var name = await _prompts.PromptForTextAsync(
+                $"Rename '{folder.Name}'", "Folder name", folder.Name, "Rename");
+            if (string.IsNullOrWhiteSpace(name) || name.Trim() == folder.Name)
+                return;
+
+            folder.Rename(name.Trim());
+            _categories.SaveChanges();
+            Refresh();
+        }
+
+        /// <summary>
+        /// Deletes a folder. Its contents are not: the members go back to Unsorted, because the sidecar
+        /// only records an arrangement and deleting an arrangement must never delete a resource.
+        /// </summary>
+        [RelayCommand]
+        private async Task DeleteFolderAsync()
+        {
+            var section = _categories.Section(SelectedType);
+            if (section == null || SelectedRow?.Folder is not { } folder || _prompts == null)
+                return;
+
+            var count = folder.MembersIncludingDescendants.Count();
+            if (count > 0)
+            {
+                var confirmed = await _prompts.ConfirmDestructiveAsync(
+                    $"Delete '{folder.Name}'?",
+                    $"{count} item(s) move back to Unsorted. Nothing is deleted from the module.",
+                    "Delete folder");
+
+                if (!confirmed)
+                    return;
+            }
+
+            section.RemoveFolder(folder);
+            _categories.SaveChanges();
+            SelectedRow = null;
+            Refresh();
+        }
+
+        /// <summary>Every folder of the current tab, as "Move to" destinations.</summary>
+        public ObservableCollection<FolderTargetViewModel> MoveTargets { get; } = new();
+
+        public bool HasMoveTargets => MoveTargets.Count > 0;
+
+        private void PublishMoveTargets(CategorySection? section)
+        {
+            MoveTargets.Clear();
+            if (section != null)
+            {
+                foreach (var folder in section.AllFolders())
+                    MoveTargets.Add(new FolderTargetViewModel(
+                        folder, string.Join(" / ", section.PathTo(folder)), MoveSelectedInto));
+            }
+
+            OnPropertyChanged(nameof(HasMoveTargets));
+        }
+
+        /// <summary>Files the selected resource into a folder, which is how a builder organises by hand.</summary>
+        private void MoveSelectedInto(CategoryFolder target)
+        {
+            var section = _categories.Section(SelectedType);
+            if (section == null || SelectedRow?.Item is not { } item)
+                return;
+
+            // Out of wherever it was first: a resref may legally sit in several folders, but a move the
+            // builder asked for means one destination, not an extra one.
+            foreach (var folder in section.AllFolders())
+                folder.RemoveMember(item.ResRef);
+
+            target.AddMember(item.ResRef);
+            _categories.SaveChanges();
+            Refresh();
+        }
+
+        /// <summary>Takes the selected resource out of every folder, back to Unsorted.</summary>
+        [RelayCommand]
+        private void RemoveFromFolder()
+        {
+            var section = _categories.Section(SelectedType);
+            if (section == null || SelectedRow?.Item is not { } item)
+                return;
+
+            var removed = false;
+            foreach (var folder in section.AllFolders())
+                removed |= folder.RemoveMember(item.ResRef);
+
+            if (!removed)
+                return;
+
+            _categories.SaveChanges();
+            Refresh();
+        }
+
+        // ----- browsing -----
+
+        /// <summary>The context menu's Open, which is the double-click by another route.</summary>
+        [RelayCommand]
+        private void OpenSelected() => OpenSelectedItem();
+
+        /// <summary>Double-click: open a resource, or expand a folder.</summary>
         public void OpenSelectedItem()
         {
             if (SelectedRow is not { } row)
@@ -168,16 +492,15 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
 
             row.IsExpanded = !row.IsExpanded;
-            if (row.IsExpanded)
-                EnsureLoaded(row);
-
             PublishVisibleRows();
         }
 
-        partial void OnFilterChanged(string value) => RebuildLoadedBranches();
+        partial void OnFilterChanged(string value) => Refresh();
 
         partial void OnSelectedRowChanged(ExplorerNodeViewModel? value)
         {
+            OnPropertyChanged(nameof(HasFolderSelected));
+
             if (value?.Item == null)
                 return;
 
@@ -191,88 +514,131 @@ namespace SWLOR.Toolset.Shell.Panels
 
         // ----- tree assembly -----
 
-        private void RebuildLoadedBranches()
+        private IReadOnlyList<ExplorerItem> Filtered(IReadOnlyList<ExplorerItem> items)
         {
-            foreach (var root in _roots)
-                Reload(root);
+            if (string.IsNullOrWhiteSpace(Filter))
+                return items;
 
-            PublishVisibleRows();
+            var needle = Filter.Trim();
+            return items
+                .Where(item =>
+                    item.ResRef.Contains(needle, StringComparison.OrdinalIgnoreCase) ||
+                    (item.Name?.Contains(needle, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
         }
 
-        private void Reload(ExplorerNodeViewModel root)
+        private ExplorerNodeViewModel BuildFolderNode(
+            CategoryFolder folder, IReadOnlyDictionary<string, ExplorerItem> items, int depth)
         {
-            if (!root.IsLoaded)
-                return;
+            var node = new ExplorerNodeViewModel(ExplorerNodeKind.Group, SelectedType, folder.Name, depth)
+            {
+                Folder = folder,
+                IsLoaded = true
+            };
 
-            root.IsLoaded = false;
-            root.Children.Clear();
-            if (root.IsExpanded)
-                EnsureLoaded(root);
+            foreach (var child in Ordered(folder.Children))
+                node.Children.Add(BuildFolderNode(child, items, depth + 1));
+
+            var members = folder.Members
+                .Where(items.ContainsKey)
+                .Select(resRef => items[resRef])
+                .OrderBy(SortKey, StringComparer.CurrentCultureIgnoreCase);
+
+            foreach (var item in members)
+                node.Children.Add(ResourceNode(item, LabelFor(item, insideFolder: true), depth + 1));
+
+            // The count is what this folder and everything under it will actually show, so it never
+            // promises rows a filter has already removed.
+            node.Count = node.Children.Sum(child => child.IsResource ? 1 : child.Count);
+            return node;
         }
 
-        private void EnsureLoaded(ExplorerNodeViewModel node)
+        private ExplorerNodeViewModel BuildUnsortedNode(IReadOnlyList<ExplorerItem> items)
         {
-            if (node.IsLoaded || node.Kind != ExplorerNodeKind.Type)
-                return;
-
-            node.IsLoaded = true;
-
-            var items = LoadItems(node.Type);
-            if (!string.IsNullOrWhiteSpace(Filter))
+            var node = new ExplorerNodeViewModel(
+                ExplorerNodeKind.Group, SelectedType, CategorySection.UnsortedFolderName, 0)
             {
-                var needle = Filter.Trim();
-                items = items
-                    .Where(item =>
-                        item.ResRef.Contains(needle, StringComparison.OrdinalIgnoreCase) ||
-                        (item.Name?.Contains(needle, StringComparison.OrdinalIgnoreCase) ?? false))
-                    .ToList();
-            }
-
-            // Grouping is a property of the content, not a setting. Area names carry their own folder
-            // structure in the "Planet - Place" convention, so they group by it; conversation and script
-            // names carry nothing to group on, and grouping them anyway produced one "Unsorted" folder
-            // wrapping the entire list.
-            if (GroupsByName(node.Type))
-            {
-                BuildAutomaticGroups(node, items);
-                return;
-            }
+                IsLoaded = true,
+                Count = items.Count
+            };
 
             foreach (var item in items.OrderBy(SortKey, StringComparer.CurrentCultureIgnoreCase))
-                node.Children.Add(ResourceNode(node.Type, item, item.PrimaryText, 1));
+                node.Children.Add(ResourceNode(item, LabelFor(item, insideFolder: false), 1));
+
+            return node;
         }
 
-        private static bool GroupsByName(ResourceType type) => type == ResourceType.Area;
-
-        private static ExplorerNodeViewModel ResourceNode(
-            ResourceType type, ExplorerItem item, string label, int depth) =>
-            new(ExplorerNodeKind.Resource, type, label, depth) { Item = item };
-
-        /// <summary>Groups on the part of a name before its first dash - see <see cref="AutomaticGrouping"/>.</summary>
-        private static void BuildAutomaticGroups(ExplorerNodeViewModel parent, IReadOnlyList<ExplorerItem> items)
+        /// <summary>
+        /// What a row reads as. Inside a folder an area drops the prefix its folder already says -
+        /// "Veles" under Viscara, not "Viscara - Veles" - which is only right for the naming convention
+        /// areas follow, so conversations and scripts keep their whole name.
+        /// </summary>
+        private string LabelFor(ExplorerItem item, bool insideFolder)
         {
-            var groups = items
-                .GroupBy(item => AutomaticGrouping.GroupNameFor(item.Name) ?? CategorySection.UnsortedFolderName)
-                .OrderBy(group => group.Key == CategorySection.UnsortedFolderName ? 1 : 0)
-                .ThenBy(group => group.Key, StringComparer.CurrentCultureIgnoreCase);
+            if (!insideFolder || SelectedType != ResourceType.Area)
+                return item.PrimaryText;
 
+            var label = AutomaticGrouping.LeafLabelFor(item.Name);
+            return label.Length > 0 ? label : item.PrimaryText;
+        }
+
+        private ExplorerNodeViewModel ResourceNode(ExplorerItem item, string label, int depth) =>
+            new(ExplorerNodeKind.Resource, SelectedType, label, depth) { Item = item };
+
+        /// <summary>Pinned folders first, then alphabetical - the order the Palette's tree uses.</summary>
+        private IEnumerable<CategoryFolder> Ordered(IReadOnlyList<CategoryFolder> folders)
+        {
+            var pinned = _categories.Section(SelectedType)?.Pinned ?? Array.Empty<string>();
+            return folders
+                .OrderBy(folder => pinned.Contains(folder.Name, StringComparer.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(folder => folder.Name, StringComparer.CurrentCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Gives areas their starting folders from the "Planet - Place" naming rule.
+        /// </summary>
+        /// <remarks>
+        /// This grouping used to be computed on every build and was therefore not editable. Writing it
+        /// into the sidecar once turns it into a starting point: the tree opens looking exactly as it did
+        /// before, and a builder can then rename, nest and refile. Only areas are seeded - conversation
+        /// and script names carry nothing to group on, so seeding them would produce one folder per name.
+        /// Seeded from the unfiltered list, so what a search happens to be showing cannot decide it.
+        /// </remarks>
+        private void SeedIfNeeded(CategorySection section, IReadOnlyList<ExplorerItem> items)
+        {
+            if (SelectedType != ResourceType.Area || !_seeded.Add(SelectedType))
+                return;
+
+            if (section.Folders.Count > 0 || items.Count == 0)
+                return;
+
+            // Names arrive with the background catalog; seeding off bare resrefs would file everything
+            // in Unsorted and then never try again.
+            if (_catalogByType == null)
+            {
+                _seeded.Remove(SelectedType);
+                return;
+            }
+
+            var groups = items
+                .GroupBy(item => AutomaticGrouping.GroupNameFor(item.Name))
+                .Where(group => group.Key != null);
+
+            var seeded = 0;
             foreach (var group in groups)
             {
-                var node = new ExplorerNodeViewModel(ExplorerNodeKind.Group, parent.Type, group.Key, 1)
-                {
-                    Count = group.Count(),
-                    IsLoaded = true
-                };
+                var folder = section.AddFolder(group.Key!);
+                foreach (var item in group)
+                    folder.AddMember(item.ResRef);
 
-                foreach (var item in group.OrderBy(SortKey, StringComparer.CurrentCultureIgnoreCase))
-                {
-                    var label = AutomaticGrouping.LeafLabelFor(item.Name);
-                    node.Children.Add(ResourceNode(
-                        parent.Type, item, label.Length > 0 ? label : item.PrimaryText, 2));
-                }
-
-                parent.Children.Add(node);
+                seeded++;
             }
+
+            if (seeded == 0)
+                return;
+
+            _categories.SaveChanges();
+            _log.AppendLine($"Seeded {seeded} area folder(s) from the '{AutomaticGrouping.Separator.Trim()}' naming rule.");
         }
 
         private IReadOnlyList<ExplorerItem> LoadItems(ResourceType type)
@@ -290,6 +656,9 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         private static string SortKey(ExplorerItem item) => item.PrimaryText;
+
+        private static IEnumerable<ExplorerNodeViewModel> Flatten(ExplorerNodeViewModel node) =>
+            new[] { node }.Concat(node.Children.SelectMany(Flatten));
 
         private void PublishVisibleRows()
         {

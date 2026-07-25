@@ -108,6 +108,20 @@ namespace SWLOR.Toolset
                 // Optional: only registered when the repo layout resolved, and the new-area wizard
                 // degrades to "no tilesets available" without it.
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>()));
+            services.AddSingleton(sp => new CategoryService(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetRequiredService<OutputLogService>(),
+                // Optional: the base-game palettes name their categories by TLK reference, so without
+                // the TLK they import as renameable placeholders rather than real names.
+                sp.GetService<TlkService>()));
+            services.AddSingleton(sp => new PaletteViewModel(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetRequiredService<CategoryService>(),
+                sp.GetRequiredService<OutputLogService>(),
+                sp.GetRequiredService<Func<Editors.EditorService>>(),
+                // The palette places into whichever area document is in front. Resolved lazily for the
+                // same construction-cycle reason as EditorService above.
+                () => sp.GetRequiredService<ToolsetDockFactory>().ActivePlacementTarget));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(

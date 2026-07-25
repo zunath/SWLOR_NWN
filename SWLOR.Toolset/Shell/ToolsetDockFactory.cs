@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Shell
         private readonly OutputViewModel _output;
         private readonly ValidationViewModel _validation;
         private readonly ModelPreviewViewModel _modelPreview;
+        private readonly PaletteViewModel _palette;
         private IRootDock? _rootDock;
         private DocumentDock? _documentDock;
 
@@ -33,7 +34,8 @@ namespace SWLOR.Toolset.Shell
             SearchViewModel search,
             OutputViewModel output,
             ValidationViewModel validation,
-            ModelPreviewViewModel modelPreview)
+            ModelPreviewViewModel modelPreview,
+            PaletteViewModel palette)
         {
             _explorer = explorer;
             _properties = properties;
@@ -41,7 +43,15 @@ namespace SWLOR.Toolset.Shell
             _output = output;
             _validation = validation;
             _modelPreview = modelPreview;
+            _palette = palette;
         }
+
+        /// <summary>
+        /// The area document in front, when it can accept a placement - what the Palette's Place button
+        /// acts on. Null when the active tab is a blueprint editor or nothing is open.
+        /// </summary>
+        public IAreaPlacementTarget? ActivePlacementTarget =>
+            _documentDock?.ActiveDockable as IAreaPlacementTarget;
 
         public override IRootDock CreateLayout()
         {
@@ -54,13 +64,15 @@ namespace SWLOR.Toolset.Shell
                 Proportion = 0.28
             };
 
+            // The Palette leads on the right - it is the panel a builder works out of - with Properties
+            // and Model Preview behind it as reference tabs.
             var propertiesDock = new ToolDock
             {
                 Id = "PropertiesDock",
-                ActiveDockable = _properties,
-                VisibleDockables = CreateList<IDockable>(_properties, _modelPreview),
+                ActiveDockable = _palette,
+                VisibleDockables = CreateList<IDockable>(_palette, _properties, _modelPreview),
                 Alignment = Alignment.Right,
-                Proportion = 0.25
+                Proportion = 0.27
             };
 
             _documentDock = new DocumentDock
@@ -166,7 +178,8 @@ namespace SWLOR.Toolset.Shell
                 [_search.Id] = () => _search,
                 [_output.Id] = () => _output,
                 [_validation.Id] = () => _validation,
-                [_modelPreview.Id] = () => _modelPreview
+                [_modelPreview.Id] = () => _modelPreview,
+                [_palette.Id] = () => _palette
             };
 
             DockableLocator = new Dictionary<string, Func<IDockable?>>

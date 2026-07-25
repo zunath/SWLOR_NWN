@@ -25,6 +25,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ModuleFileWatcher _fileWatcher;
         private readonly ModuleExplorerViewModel _explorer;
         private readonly SearchViewModel _search;
+        private readonly PaletteViewModel _palette;
         private DispatcherTimer? _progressTimer;
 
         [ObservableProperty]
@@ -65,6 +66,7 @@ namespace SWLOR.Toolset.Shell
             ModuleFileWatcher fileWatcher,
             ModuleExplorerViewModel explorer,
             SearchViewModel search,
+            PaletteViewModel palette,
             ToolsetDockFactory factory,
             Editors.EditorService editorService,
             PackService packService,
@@ -76,6 +78,7 @@ namespace SWLOR.Toolset.Shell
             _fileWatcher = fileWatcher ?? throw new ArgumentNullException(nameof(fileWatcher));
             _explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
             _search = search ?? throw new ArgumentNullException(nameof(search));
+            _palette = palette ?? throw new ArgumentNullException(nameof(palette));
             _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
             _packService = packService ?? throw new ArgumentNullException(nameof(packService));
             ArgumentNullException.ThrowIfNull(validation);
@@ -270,6 +273,7 @@ namespace SWLOR.Toolset.Shell
 
             _settings.AddRecentModule(moduleRoot);
             _explorer.Initialize();
+            _palette.Refresh();
             _fileWatcher.Watch(moduleRoot);
 
             var catalog = _workspaceContext.Catalog;
@@ -293,6 +297,9 @@ namespace SWLOR.Toolset.Shell
                     _progressTimer = null;
                     _explorer.RefreshFromCatalog(catalog);
                     _search.Refresh();
+                    // Names for the palette tiles come from the catalog, so it only reads properly
+                    // once the background build has published them.
+                    _palette.Refresh();
                     StatusText = $"Catalog ready: {catalog.Entries.Count} entries indexed.";
                 });
             });

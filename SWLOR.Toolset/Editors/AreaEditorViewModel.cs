@@ -33,7 +33,8 @@ namespace SWLOR.Toolset.Editors
     /// screen is mostly used for. Save writes whichever session(s) are dirty; the title's dirty
     /// marker reflects either session being dirty.
     /// </remarks>
-    public partial class AreaEditorViewModel : Document, IEditorDocument, IDocumentStatusSource
+    public partial class AreaEditorViewModel
+        : Document, IEditorDocument, IDocumentStatusSource, Shell.Panels.IAreaPlacementTarget
     {
         private static readonly (string Title, string ListFieldName, ResourceType BlueprintType)[] InstanceListConfigs =
         {
@@ -438,6 +439,24 @@ namespace SWLOR.Toolset.Editors
                     OnPropertyChanged(nameof(PlacementStatus));
                 },
                 () => { });
+        }
+
+        /// <summary>
+        /// Arms placement for a blueprint chosen in the Palette panel, bypassing this editor's own popup
+        /// browser. Same pending state either way, so the next viewport click resolves it identically.
+        /// </summary>
+        public bool ArmPlacement(ResourceType type, string resRef)
+        {
+            var section = Sections.FirstOrDefault(candidate => candidate.BlueprintType == type);
+            if (section == null || string.IsNullOrWhiteSpace(resRef))
+                return false;
+
+            PlacementSection = section;
+            _pendingPlacementSection = section;
+            _pendingPlacementResRef = resRef;
+            OnPropertyChanged(nameof(IsPlacementPending));
+            OnPropertyChanged(nameof(PlacementStatus));
+            return true;
         }
 
         /// <summary>

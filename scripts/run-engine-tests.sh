@@ -153,18 +153,22 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
         echo "Copied $dir -> $DOTNET_OUTPUT_DIR"
     done
 
-    # The whole point of the separate project: fail loudly rather than silently running a
-    # suite with no tests in it.
-    if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.EngineTests.dll" ]; then
-        echo "Staging did not produce SWLOR.Game.Server.EngineTests.dll - no engine tests would run." >&2
-        exit 1
-    fi
-    if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.runtimeconfig.json" ]; then
-        echo "Staging did not produce SWLOR.Game.Server.runtimeconfig.json - the NWNX .NET host cannot boot." >&2
-        exit 1
-    fi
 else
     section "Skipping build (assuming $DOTNET_OUTPUT_DIR is already current)"
+fi
+
+# Checked for BOTH paths, not just after a build: with --skip-build against a
+# stale game-only staging directory (exactly the state left behind by older
+# revisions of this script, before the harness was its own assembly) the server
+# would boot, schedule nothing, and burn the entire wall clock before failing.
+# Fail here in a second instead.
+if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.EngineTests.dll" ]; then
+    echo "$DOTNET_OUTPUT_DIR is missing SWLOR.Game.Server.EngineTests.dll - no engine tests would run. Re-run without --skip-build to stage it." >&2
+    exit 1
+fi
+if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.runtimeconfig.json" ]; then
+    echo "$DOTNET_OUTPUT_DIR is missing SWLOR.Game.Server.runtimeconfig.json - the NWNX .NET host cannot boot. Re-run without --skip-build to stage it." >&2
+    exit 1
 fi
 
 # Stale report from a previous run must not be mistaken for this run's result.

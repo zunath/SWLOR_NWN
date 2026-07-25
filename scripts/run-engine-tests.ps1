@@ -142,19 +142,25 @@ if (-not $SkipBuild) {
         Write-Host "Copied $dir -> $DotnetOutputDir"
     }
 
-    # The whole point of the separate project: fail loudly rather than silently running a
-    # suite with no tests in it.
-    $stagedTestAssembly = Join-Path $DotnetOutputDir "SWLOR.Game.Server.EngineTests.dll"
-    $stagedRuntimeConfig = Join-Path $DotnetOutputDir "SWLOR.Game.Server.runtimeconfig.json"
-    if (-not (Test-Path $stagedTestAssembly)) {
-        throw "Staging did not produce $stagedTestAssembly - no engine tests would run."
-    }
-    if (-not (Test-Path $stagedRuntimeConfig)) {
-        throw "Staging did not produce $stagedRuntimeConfig - the NWNX .NET host cannot boot."
-    }
 }
 else {
     Write-Section "Skipping build (assuming $DotnetOutputDir is already current)"
+}
+
+# Checked for BOTH paths, not just after a build: with -SkipBuild against a stale
+# game-only staging directory (exactly the state left behind by older revisions of
+# this script, before the harness was its own assembly) the server would boot,
+# schedule nothing, and burn the entire wall clock before failing. Fail here in a
+# second instead.
+$stagedTestAssembly = Join-Path $DotnetOutputDir "SWLOR.Game.Server.EngineTests.dll"
+$stagedRuntimeConfig = Join-Path $DotnetOutputDir "SWLOR.Game.Server.runtimeconfig.json"
+if (-not (Test-Path $stagedTestAssembly)) {
+    Write-Host "$DotnetOutputDir is missing SWLOR.Game.Server.EngineTests.dll - no engine tests would run. Re-run without -SkipBuild to stage it." -ForegroundColor Red
+    exit 1
+}
+if (-not (Test-Path $stagedRuntimeConfig)) {
+    Write-Host "$DotnetOutputDir is missing SWLOR.Game.Server.runtimeconfig.json - the NWNX .NET host cannot boot. Re-run without -SkipBuild to stage it." -ForegroundColor Red
+    exit 1
 }
 
 # Stale report from a previous run must not be mistaken for this run's result.

@@ -46,6 +46,9 @@ on:
       - feature/combat-upgrade
     paths:
       - "SWLOR.Game.Server/**"
+      # The engine tests themselves: a PR touching only test code must still
+      # compile and run them.
+      - "SWLOR.Game.Server.EngineTests/**"
       - "SWLOR.NWN.API/**"
       - "SWLOR.CLI/**"
       - "Module/**"
@@ -73,7 +76,10 @@ jobs:
     runs-on: ubuntu-latest
     # Generous timeout: submodule checkout, hak packing, and the module pack
     # over ~443 areas + ~2000 blueprints are all slow on a cold runner.
-    timeout-minutes: 60
+    # Must stay comfortably ABOVE the runner script's own --timeout-minutes below.
+    # If GitHub cancels the job first, the script never tears the stack down or
+    # prints its timeout diagnosis, and a hang looks like an unexplained job kill.
+    timeout-minutes: 120
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -171,7 +177,10 @@ jobs:
           ENGINE_TEST_FILTER: ${{ inputs.filter }}
         run: |
           set -euo pipefail
-          scripts/run-engine-tests.sh --skip-build --filter "${ENGINE_TEST_FILTER:-}"
+          # Inner timeout well below the job's 120-minute limit, leaving room for the
+          # checkout/build/pack steps that precede this one - so the script's own
+          # teardown and timeout diagnosis win the race against a job cancellation.
+          scripts/run-engine-tests.sh --skip-build --timeout-minutes 75 --filter "${ENGINE_TEST_FILTER:-}"
 
       - name: Upload engine test results
         uses: actions/upload-artifact@v4

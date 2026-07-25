@@ -67,6 +67,18 @@ namespace SWLOR.Toolset.Domain.Documents
             set => Root.SetUInt("SunDiffuseColor", GffFieldType.Dword, value ?? 0);
         }
 
+        /// <summary>Packed fog colour used by day; see <see cref="SunAmbientColor"/> for the format.</summary>
+        public uint? SunFogColor
+        {
+            get => Root.TryGet("SunFogColor", out var f) ? (uint)f.GetInteger() : null;
+        }
+
+        /// <summary>Packed fog colour used at night.</summary>
+        public uint? MoonFogColor
+        {
+            get => Root.TryGet("MoonFogColor", out var f) ? (uint)f.GetInteger() : null;
+        }
+
         public int? SunFogAmount
         {
             get => Root.GetIntOrNull("SunFogAmount");

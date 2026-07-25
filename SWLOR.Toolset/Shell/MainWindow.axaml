@@ -10,7 +10,7 @@
         Icon="/Assets/swlor-logo.png"
         Width="1280" Height="800"
         WindowStartupLocation="CenterScreen">
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
     <!-- InputGesture only draws the shortcut next to the item; the shortcuts themselves are
          registered as window KeyBindings in the code-behind (MenuItem.HotKey would not do, because
          a submenu item is not attached to a tree that reaches this window until its popup has been
@@ -44,9 +44,54 @@
         <MenuItem Header="About SWLOR Toolset" Command="{Binding AboutCommand}" />
       </MenuItem>
     </Menu>
-    <DockControl Grid.Row="1" Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />
+    <!-- Quick-access bar: the handful of actions a builder reaches for constantly, so they are one
+         click away rather than two menus deep. Icon-only with tooltips, in two groups - what changes
+         the module on the left, what changes how it is drawn on the right. -->
+    <Border Grid.Row="1"
+            Padding="6,3"
+            Background="{DynamicResource ChromeBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
+            BorderThickness="0,1,0,1">
+      <StackPanel Orientation="Horizontal" Spacing="2">
+        <Button Classes="tool" Command="{Binding SaveCommand}" ToolTip.Tip="Save (Ctrl+S)">
+          <Path Data="M4,4 H16 L20,8 V20 H4 Z M8,4 V10 H15 V4 M7,20 V14 H17 V20" />
+        </Button>
+        <Button Classes="tool" Command="{Binding SaveAllCommand}" ToolTip.Tip="Save all (Ctrl+Shift+S)">
+          <Path Data="M8,7 H18 L22,11 V22 H8 Z M11,7 V12 H17 V7 M10,22 V17 H20 V22 M4,18 V3 H15 L17,5" />
+        </Button>
+
+        <Border Width="1" Margin="5,3" Background="{DynamicResource RuleBrush}" />
+
+        <Button Classes="tool" Command="{Binding UndoCommand}" ToolTip.Tip="Undo (Ctrl+Z)">
+          <Path Data="M8,6 L3,11 L8,16 M3,11 H14 A6,6 0 0 1 14,23 H10" />
+        </Button>
+        <Button Classes="tool" Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Y)">
+          <Path Data="M16,6 L21,11 L16,16 M21,11 H10 A6,6 0 0 0 10,23 H14" />
+        </Button>
+
+        <Border Width="1" Margin="5,3" Background="{DynamicResource RuleBrush}" />
+
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowShadows}"
+                      IsEnabled="{Binding Display.CanShowShadows}"
+                      ToolTip.Tip="Display shadows - the viewport renderer has no shadow pass yet">
+          <Path Data="M4,4 H14 V14 H4 Z M8,8 H20 V20 H8 Z" />
+        </ToggleButton>
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowFog, Mode=TwoWay}"
+                      ToolTip.Tip="Display fog - draw the area's distance fog, which hides far geometry">
+          <Path Data="M3,7 H19 M5,11 H21 M3,15 H16 M7,19 H21" />
+        </ToggleButton>
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowAreaLighting, Mode=TwoWay}"
+                      ToolTip.Tip="Display area lighting - light the scene with the area's own sun/moon colours instead of neutral editor light">
+          <Path Data="M8,12 A4,4 0 1 0 16,12 A4,4 0 1 0 8,12 Z M12,2 V4 M12,20 V22 M2,12 H4 M20,12 H22 M5.5,5.5 L7,7 M17,17 L18.5,18.5 M18.5,5.5 L17,7 M7,17 L5.5,18.5" />
+        </ToggleButton>
+      </StackPanel>
+    </Border>
+    <DockControl Grid.Row="2" Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />
     <!-- Status bar: monospace, because everything that lands here is a count, a path or a coordinate. -->
-    <Border Grid.Row="2"
+    <Border Grid.Row="3"
             Padding="12,5"
             Background="{DynamicResource ChromeBrush}"
             BorderBrush="{DynamicResource RuleBrush}"

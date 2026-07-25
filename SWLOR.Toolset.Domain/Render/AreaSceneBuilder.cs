@@ -87,7 +87,12 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 AmbientColor = ambientPacked is { } a ? AreaLighting.DecodeColor(a) : AreaLighting.Default.AmbientColor,
                 DiffuseColor = diffusePacked is { } d ? AreaLighting.DecodeColor(d) : AreaLighting.Default.DiffuseColor,
-                IsNight = isNight
+                IsNight = isNight,
+                FogColor = (isNight ? are.MoonFogColor : are.SunFogColor) is { } f
+                    ? AreaLighting.DecodeColor(f)
+                    : Vector3.Zero,
+                FogDensity = AreaLighting.DecodeFogDensity(
+                    (isNight ? are.MoonFogAmount : are.SunFogAmount) ?? 0)
             };
         }
 

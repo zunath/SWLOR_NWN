@@ -97,6 +97,15 @@ namespace SWLOR.Toolset.Viewport
         // but authored night colors are near-black - too dark to edit in - so each channel is
         // lifted from a floor toward its true value (raw 0 -> floor, raw 1 -> unchanged). Tunable;
         // the human gate calibrates the feel.
+        /// <summary>
+        /// The light used when the area's own is switched off: a flat white key plus generous fill, so
+        /// every surface reads at close to its texture's own colour. This is what makes the viewport
+        /// match Aurora's, which lights its preview the same way rather than through the area.
+        /// </summary>
+        private static readonly Vector3 NeutralAmbient = new(0.62f, 0.62f, 0.62f);
+
+        private static readonly Vector3 NeutralDiffuse = new(0.55f, 0.55f, 0.55f);
+
         private const float AmbientLightFloor = 0.25f;
         private const float DiffuseLightFloor = 0.20f;
         private static readonly Vector3 UntexturedTileColor = new(0.6f, 0.6f, 0.6f);
@@ -166,6 +175,9 @@ uniform float ceilingClipZ;
 uniform vec3 lightDir;
 uniform vec3 lightColor;
 uniform vec3 ambientColor;
+uniform vec3 fogColor;
+uniform float fogDensity;
+uniform vec3 cameraPos;
 
 void main()
 {
@@ -192,6 +204,13 @@ void main()
     // Two-sided lighting (abs, not max) - NWN tile/prop meshes have inconsistent winding.
     float diff = abs(dot(norm, lightDir));
     vec3 result = (ambientColor + diff * lightColor) * texColor.rgb;
+
+    if (fogDensity > 0.0)
+    {
+        float depth = length(WorldPos - cameraPos);
+        result = mix(result, fogColor, clamp(1.0 - exp(-fogDensity * depth), 0.0, 1.0));
+    }
+
     FragColor = vec4(result, 1.0);
 }
 ";
@@ -507,6 +526,50 @@ void main()
                     return;
 
                 _hideCeilings = value;
+                RequestNextFrameRendering();
+            }
+        }
+
+        private bool _showAreaLighting;
+
+        /// <summary>
+        /// Whether to light the scene with the area's own sun/moon colours.
+        /// </summary>
+        /// <remarks>
+        /// Off by default, which is what Aurora does and why its viewport looks so much brighter than
+        /// ours did. A night area carries genuinely dark authored light - cz220shipbreakin is
+        /// ambient RGB(45,45,45) over diffuse RGB(135,138,98) - and rendering through that buries the
+        /// textures under an olive cast and makes colours impossible to judge. Turning it on is for
+        /// checking what the area will actually look like; editing wants neutral light.
+        /// </remarks>
+        public bool ShowAreaLighting
+        {
+            get => _showAreaLighting;
+            set
+            {
+                if (_showAreaLighting == value)
+                    return;
+
+                _showAreaLighting = value;
+                RequestNextFrameRendering();
+            }
+        }
+
+        private bool _showFog;
+
+        /// <summary>
+        /// Whether to apply the area's distance fog. Off by default, for the same reason as the
+        /// lighting: fog hides exactly the far geometry a builder is trying to place.
+        /// </summary>
+        public bool ShowFog
+        {
+            get => _showFog;
+            set
+            {
+                if (_showFog == value)
+                    return;
+
+                _showFog = value;
                 RequestNextFrameRendering();
             }
         }
@@ -1651,10 +1714,16 @@ void main()
             _gl!.UseProgram(_shaderProgram);
             SetUniformMatrix4("view", view);
             SetUniformMatrix4("projection", projection);
-            var (ambient, diffuse) = EditorSceneLighting(scene);
+            // Neutral unless the builder asks for the area's own light - see ShowAreaLighting.
+            var (ambient, diffuse) = _showAreaLighting
+                ? EditorSceneLighting(scene)
+                : (NeutralAmbient, NeutralDiffuse);
+            SetUniformVec3("cameraPos", eye);
             SetUniformVec3("lightDir", LightDir);
             SetUniformVec3("lightColor", diffuse);
             SetUniformVec3("ambientColor", ambient);
+            SetUniformVec3("fogColor", scene.Lighting.FogColor);
+            SetUniformFloat("fogDensity", _showFog ? scene.Lighting.FogDensity : 0f);
             SetUniformInt("diffuseTexture", 0);
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 
@@ -2614,13 +2683,17 @@ void main()
             }
         }
 
+        /// <summary>
+        /// Uploads decoded RGBA pixels as a 2D texture, flipping the rows on the way in so that
+        /// v = 0 lands on the last decoded row - see <see cref="TextureOrientation"/>.
+        /// </summary>
         private uint UploadTexture(int width, int height, byte[] rgba)
         {
             var texId = _gl!.GenTexture();
             _gl.BindTexture(TextureTarget.Texture2D, texId);
 
             _gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8, (uint)width, (uint)height, 0,
-                PixelFormat.Rgba, PixelType.UnsignedByte, new ReadOnlySpan<byte>(rgba));
+                PixelFormat.Rgba, PixelType.UnsignedByte, new ReadOnlySpan<byte>(TextureOrientation.FlipRows(width, height, rgba)));
 
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);

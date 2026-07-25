@@ -29,6 +29,9 @@ namespace SWLOR.Toolset.Shell
         private readonly ModuleExplorerViewModel _explorer;
         private readonly SearchViewModel _search;
         private readonly PaletteViewModel _palette;
+
+        /// <summary>Display switches for the quick-access bar; shared by every area viewport.</summary>
+        public Viewport.ViewportDisplayOptions Display { get; }
         private readonly ThumbnailService _thumbnails;
         private DispatcherTimer? _progressTimer;
 
@@ -74,6 +77,7 @@ namespace SWLOR.Toolset.Shell
             ModuleExplorerViewModel explorer,
             SearchViewModel search,
             PaletteViewModel palette,
+            Viewport.ViewportDisplayOptions display,
             ToolsetDockFactory factory,
             Editors.EditorService editorService,
             PackService packService,
@@ -91,6 +95,7 @@ namespace SWLOR.Toolset.Shell
             _explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
             _search = search ?? throw new ArgumentNullException(nameof(search));
             _palette = palette ?? throw new ArgumentNullException(nameof(palette));
+            Display = display ?? throw new ArgumentNullException(nameof(display));
             _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
             _packService = packService ?? throw new ArgumentNullException(nameof(packService));
             _output = output ?? throw new ArgumentNullException(nameof(output));

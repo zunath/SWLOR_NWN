@@ -24,6 +24,28 @@ namespace SWLOR.Toolset.Editors
             AreaView.TilePlacementCancelled += OnTilePlacementCancelled;
             AreaView.TileRotateRequested += OnTileRotateRequested;
             DataContextChanged += (_, _) => AttachViewModel();
+
+            // Display switches are global, not per-area (Aurora treats them the same way), so the
+            // view takes them straight from the shared options object rather than through its own
+            // view model - two open areas disagreeing about fog would only be confusing.
+            _display = Avalonia.Application.Current is App app ? app.Services?.GetService(
+                typeof(Viewport.ViewportDisplayOptions)) as Viewport.ViewportDisplayOptions : null;
+            if (_display != null)
+            {
+                _display.PropertyChanged += (_, _) => ApplyDisplayOptions();
+                ApplyDisplayOptions();
+            }
+        }
+
+        private readonly Viewport.ViewportDisplayOptions? _display;
+
+        private void ApplyDisplayOptions()
+        {
+            if (_display == null)
+                return;
+
+            AreaView.ShowAreaLighting = _display.ShowAreaLighting;
+            AreaView.ShowFog = _display.ShowFog;
         }
 
         private void AttachViewModel()

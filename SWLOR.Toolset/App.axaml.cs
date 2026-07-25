@@ -19,6 +19,12 @@ namespace SWLOR.Toolset
     {
         private ServiceProvider? _serviceProvider;
 
+        /// <summary>
+        /// The composed container, for the few views that need a shared service the view model does
+        /// not carry - see <see cref="Viewport.ViewportDisplayOptions"/>. Null before startup finishes.
+        /// </summary>
+        public IServiceProvider? Services => _serviceProvider;
+
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -155,6 +161,8 @@ namespace SWLOR.Toolset
                 sp.GetService<IGameCodeIndex>(),
                 sp.GetService<ResourceIndex>()));
             services.AddSingleton<ToolsetDockFactory>();
+            services.AddSingleton(sp => new Viewport.ViewportDisplayOptions(
+                sp.GetRequiredService<ToolsetSettings>()));
             services.AddSingleton<ShellViewModel>();
         }
 

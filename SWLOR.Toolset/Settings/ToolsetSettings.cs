@@ -47,6 +47,12 @@ namespace SWLOR.Toolset.Settings
 
         [JsonPropertyName("moduleContentsTab")]
         public string ModuleContentsTab { get; set; } = string.Empty;
+
+        [JsonPropertyName("showAreaLighting")]
+        public bool ShowAreaLighting { get; set; }
+
+        [JsonPropertyName("showFog")]
+        public bool ShowFog { get; set; }
     }
 
     /// <summary>
@@ -74,6 +80,8 @@ namespace SWLOR.Toolset.Settings
         private string _paletteSelection = string.Empty;
         private bool _paletteShowsStandard;
         private string _moduleContentsTab = string.Empty;
+        private bool _showAreaLighting;
+        private bool _showFog;
         private bool _suppressSave;
 
         public static string SettingsDirectory =>
@@ -191,6 +199,34 @@ namespace SWLOR.Toolset.Settings
             }
         }
 
+        /// <summary>Whether the viewport lights areas with their own sun/moon colours.</summary>
+        public bool ShowAreaLighting
+        {
+            get => _showAreaLighting;
+            set
+            {
+                if (_showAreaLighting == value)
+                    return;
+
+                _showAreaLighting = value;
+                Save();
+            }
+        }
+
+        /// <summary>Whether the viewport applies the area's distance fog.</summary>
+        public bool ShowFog
+        {
+            get => _showFog;
+            set
+            {
+                if (_showFog == value)
+                    return;
+
+                _showFog = value;
+                Save();
+            }
+        }
+
         /// <summary>
         /// Which Module Contents tab was open, as a resource extension; empty when none was saved.
         /// </summary>
@@ -254,6 +290,8 @@ namespace SWLOR.Toolset.Settings
                         settings._paletteSelection = data.PaletteSelection ?? string.Empty;
                         settings._paletteShowsStandard = data.PaletteShowsStandard;
                         settings._moduleContentsTab = data.ModuleContentsTab ?? string.Empty;
+                        settings._showAreaLighting = data.ShowAreaLighting;
+                        settings._showFog = data.ShowFog;
                     }
                 }
             }
@@ -322,7 +360,9 @@ namespace SWLOR.Toolset.Settings
                     PalettePreviewSize = _palettePreviewSize,
                     PaletteSelection = _paletteSelection,
                     PaletteShowsStandard = _paletteShowsStandard,
-                    ModuleContentsTab = _moduleContentsTab
+                    ModuleContentsTab = _moduleContentsTab,
+                    ShowAreaLighting = _showAreaLighting,
+                    ShowFog = _showFog
                 };
 
                 var json = JsonSerializer.Serialize(data, JsonOptions);

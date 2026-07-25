@@ -194,7 +194,24 @@
       </Button>
     </Grid>
 
+    <!-- Shown in place of the grid when Tiles is picked with no area open. Sized and centred like a
+         state rather than a status line: the grid behind it is empty, so a dim line at the foot of the
+         panel read as a caption on nothing. -->
+    <Border Grid.Row="1" IsVisible="{Binding NeedsOpenArea}" Padding="24"
+            HorizontalAlignment="Center" VerticalAlignment="Center">
+      <StackPanel Spacing="8" MaxWidth="260">
+        <TextBlock Text="&#x25A6;" FontSize="30" HorizontalAlignment="Center"
+                   Foreground="{DynamicResource InkTertiaryBrush}" />
+        <TextBlock Text="No area open" FontSize="15" FontWeight="SemiBold"
+                   HorizontalAlignment="Center" Foreground="{DynamicResource InkBrush}" />
+        <TextBlock Text="Tiles come from the tileset of the area in front. Open an area to see the tiles it offers."
+                   FontSize="12" TextWrapping="Wrap" TextAlignment="Center"
+                   Foreground="{DynamicResource InkSecondaryBrush}" />
+      </StackPanel>
+    </Border>
+
     <ListBox Grid.Row="1" ItemsSource="{Binding Tiles}" SelectedItem="{Binding SelectedTile}"
+             IsVisible="{Binding !NeedsOpenArea}"
              Background="Transparent" BorderThickness="0" Padding="6">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>

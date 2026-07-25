@@ -276,6 +276,20 @@ namespace SWLOR.Toolset.Shell.Panels
         private CategorySection? CurrentSection() =>
             IsCustomSource ? _categories.Section(SelectedType) : _categories.StandardSection(SelectedType);
 
+        /// <summary>
+        /// Whether the panel should show its "no area open" state: Tiles is the selected type, and
+        /// there is no area in front to take a tileset from.
+        /// </summary>
+        /// <remarks>
+        /// A state rather than a status line. The message used to go to <see cref="StatusMessage"/>,
+        /// which is a dim footnote at the bottom of the panel - easy to miss when the grid above it is
+        /// simply empty, and it stayed on screen after switching to a blueprint type, where it was no
+        /// longer true. Tiles is the only type this can apply to: every other one lists the module's
+        /// own content, which does not depend on which tab has focus.
+        /// </remarks>
+        [ObservableProperty]
+        private bool _needsOpenArea;
+
         /// <summary>Rebuilds the tree and grid for the current type. Safe to call whenever the module changes.</summary>
         public void Refresh()
         {
@@ -284,6 +298,8 @@ namespace SWLOR.Toolset.Shell.Panels
                 RefreshTiles();
                 return;
             }
+
+            NeedsOpenArea = false;
 
             _existing = IsCustomSource
                 ? _categories.ExistingResRefs(SelectedType)
@@ -325,9 +341,10 @@ namespace SWLOR.Toolset.Shell.Panels
             Breadcrumb = string.Empty;
 
             var tilesetResRef = _placementTarget?.Invoke()?.TilesetResRef;
-            if (string.IsNullOrWhiteSpace(tilesetResRef))
+            NeedsOpenArea = string.IsNullOrWhiteSpace(tilesetResRef);
+            if (NeedsOpenArea)
             {
-                StatusMessage = "Open an area to see the tiles its tileset offers.";
+                StatusMessage = string.Empty;
                 return;
             }
 

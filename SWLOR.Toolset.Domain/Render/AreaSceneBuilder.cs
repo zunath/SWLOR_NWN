@@ -274,9 +274,10 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
-        /// Door instances carry two candidate doortypes.2da indices — GenericType_New and Appearance —
-        /// and the corpus uses either (e.g. GenericType_New=0 with Appearance=24). Take the first
-        /// whose row yields a real model.
+        /// Door instances carry three candidate doortypes.2da indices — Appearance, GenericType_New
+        /// and GenericType — and the corpus uses any of them (e.g. GenericType_New=0 with
+        /// Appearance=24, or a base-game door with only the older byte-sized GenericType). Take the
+        /// first whose row yields a real model.
         /// </summary>
         private static RenderModel? ResolveDoorModel(
             JsonGffStruct instance, DoorTypeService? doorTypes, TileModelCache modelCache)
@@ -288,7 +289,7 @@ namespace SWLOR.Toolset.Domain.Render
             // the template - and the corpus diverges: nashadaa_czlabin's NS_CZLAB_FLOOR1 door is generic
             // type 113 (TCN_UDoor_03) but appearance 146 (tmx_door_01), so leading with the template
             // rendered the wrong door.
-            foreach (var field in new[] { "Appearance", "GenericType_New" })
+            foreach (var field in new[] { "Appearance", "GenericType_New", "GenericType" })
             {
                 var id = instance.GetIntOrNull(field) ?? -1;
                 if (id <= 0)

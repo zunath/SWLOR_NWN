@@ -286,8 +286,13 @@ namespace SWLOR.Toolset.Domain.Render
             if (doors == null)
                 return BlueprintModelReference.NoneWith("Door preview unavailable (door-type data not loaded).");
 
-            // The corpus 'Appearance' field is always 0 for doors; the real door type is GenericType_New.
-            var genericType = root.GetIntOrNull("GenericType_New") ?? -1;
+            // 'Appearance' is always 0 for doors. The door type lives in GenericType_New (word) on
+            // anything the module authored, and in GenericType (byte) on the base game's own doors -
+            // BioWare added the wider field once the byte ran out of door types, and old blueprints kept
+            // the old one. Reading only GenericType_New left all 86 base-game doors resolving nothing.
+            var genericType = root.GetIntOrNull("GenericType_New")
+                              ?? root.GetIntOrNull("GenericType")
+                              ?? -1;
             var row = doors.GetAll().FirstOrDefault(r => r.Id == genericType);
             if (row == null)
                 return BlueprintModelReference.NoneWith($"Unknown door type {genericType}.");

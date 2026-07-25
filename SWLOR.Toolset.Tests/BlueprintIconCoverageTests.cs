@@ -80,7 +80,7 @@ namespace SWLOR.Toolset.Tests
                 return new Fixture
                 {
                     Index = index,
-                    Workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory),
+                    Workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory, index),
                     BaseItems = new BaseItemIconService(twoDa),
                     Portraits = new PortraitService(twoDa),
                     Appearances = new AppearanceService(twoDa, tlk),
@@ -201,6 +201,59 @@ namespace SWLOR.Toolset.Tests
             var variants = PortraitService.GetTgaVariants(row.BaseResRef);
             return Data.HasTexture(variants.Medium) || Data.HasTexture(variants.Large) ||
                    Data.HasTexture(variants.Small) || Data.HasTexture(variants.Huge);
+        }
+
+        /// <summary>
+        /// Resrefs of one type that exist only in the base game or a hak - what the palette's Standard
+        /// group lists, and what the module's own enumeration never sees.
+        /// </summary>
+        private static IReadOnlyList<string> IndexOnlyResRefs(ResourceType type)
+        {
+            var inModule = Data.Workspace.EnumerateResRefs(type).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return Data.Index
+                .EnumerateResources(ResourceIdentity.TypeFromExtension(type.Extension()))
+                .Select(identity => identity.ResRef)
+                .Where(resRef => !inModule.Contains(resRef))
+                .ToList();
+        }
+
+        /// <summary>
+        /// The base game's doors declare their type in the byte-sized <c>GenericType</c>; only blueprints
+        /// the module authored use the wider <c>GenericType_New</c>. Reading just the latter resolved a
+        /// model for none of the 86, so every Standard door in the palette showed the door type-symbol.
+        /// </summary>
+        /// <remarks>
+        /// The floor is 40, not 86: 44 of them point at a doortypes.2da row whose Model is blank - a
+        /// "Generic" door takes its tileset's own door at placement time and has no model of its own -
+        /// and 2 name a row the table does not have. Those legitimately preview as the type symbol.
+        /// </remarks>
+        [Test]
+        public void Base_Game_Doors_Resolve_Their_Model()
+        {
+            var indexOnly = IndexOnlyResRefs(ResourceType.Utd);
+            indexOnly.Should().NotBeEmpty(because: "the base game ships doors the module does not override");
+
+            var resolved = indexOnly.Count(resRef => ResolvesModel(
+                ResourceType.Utd, Data.Workspace.LoadBlueprint(ResourceType.Utd, resRef).Fields));
+
+            resolved.Should().BeGreaterThanOrEqualTo(40,
+                because: "40 of the 86 base-game doors name a doortypes.2da row that has a model");
+        }
+
+        /// <summary>
+        /// Creatures and placeables outside the module have to preview too - they are most of what the
+        /// Standard palette lists.
+        /// </summary>
+        [TestCase(ResourceType.Utc, 1500)]
+        [TestCase(ResourceType.Utp, 990)]
+        public void Base_Game_Blueprints_Resolve_Their_Model(ResourceType type, int floor)
+        {
+            var resolved = IndexOnlyResRefs(type)
+                .Count(resRef => ResolvesModel(type, Data.Workspace.LoadBlueprint(type, resRef).Fields));
+
+            resolved.Should().BeGreaterThanOrEqualTo(floor,
+                because: $"measured {type} coverage outside the module was above this when written");
         }
 
         private static bool ResolvesModel(ResourceType type, Domain.Gff.JsonGffStruct root)

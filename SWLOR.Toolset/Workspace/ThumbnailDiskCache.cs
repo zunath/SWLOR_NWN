@@ -32,7 +32,13 @@ namespace SWLOR.Toolset.Workspace
         /// input. Superseded versions are not migrated - they are regenerable - but they are deleted by
         /// <see cref="PruneSupersededVersions"/> so the cache does not accumulate a folder per release.
         /// </summary>
-        private const string FormatVersion = "v2";
+        /// <remarks>
+        /// v3: base-game doors resolve a model now that the resolver reads GenericType as well as
+        /// GenericType_New. Bumping is what un-sticks them: a blueprint that lives in the base game or a
+        /// hak has no file for <see cref="FreshnessThreshold"/> to compare against, so a "no artwork"
+        /// marker written by an older pipeline would otherwise be believed forever.
+        /// </remarks>
+        private const string FormatVersion = "v3";
 
         private const string MissingArtworkExtension = ".none";
 

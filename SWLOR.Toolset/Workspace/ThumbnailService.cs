@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -279,10 +280,15 @@ namespace SWLOR.Toolset.Workspace
             _tileChipIcon ??= ToBitmap(TypeIconRenderer.Render(ResourceType.Area, TypeChipIconSize));
 
         /// <summary>
-        /// Renders and stores every missing preview for the open module, reporting progress as it goes.
-        /// Deliberately does not populate the in-memory cache: this walks the whole module, and holding
-        /// its output would defeat the point of bounding that cache.
+        /// Renders and stores every missing preview the palette can show, reporting progress as it goes.
+        /// Deliberately does not populate the in-memory cache: this walks tens of thousands of
+        /// blueprints, and holding its output would defeat the point of bounding that cache.
         /// </summary>
+        /// <remarks>
+        /// Covers the module's own blueprints and the base game's and haks' - the palette's Standard
+        /// group lists the latter, and warming only the module left every Standard tile rendering on
+        /// demand or, worse, sitting on its type glyph.
+        /// </remarks>
         public async Task<PreviewCacheProgress> WarmAsync(
             IProgress<PreviewCacheProgress>? progress = null,
             CancellationToken cancellationToken = default)
@@ -294,8 +300,24 @@ namespace SWLOR.Toolset.Workspace
             var work = new List<(ResourceType Type, string ResRef)>();
             foreach (var type in ModuleWorkspace.BlueprintTypes.Where(BlueprintPreviewRenderer.IsSupported))
             {
+                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var resRef in workspace.EnumerateResRefs(type))
-                    work.Add((type, resRef));
+                {
+                    if (seen.Add(resRef))
+                        work.Add((type, resRef));
+                }
+
+                // The base game and the haks, minus anything the module overrides - LoadBlueprint
+                // prefers the module's copy, so those are already queued above.
+                if (workspace.ResourceIndex is not { } index)
+                    continue;
+
+                foreach (var identity in index.EnumerateResources(
+                             ResourceIdentity.TypeFromExtension(type.Extension())))
+                {
+                    if (seen.Add(identity.ResRef))
+                        work.Add((type, identity.ResRef));
+                }
             }
 
             var disk = Disk;

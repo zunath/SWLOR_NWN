@@ -44,12 +44,22 @@ namespace SWLOR.Toolset.Domain.Render
         public const int MaxTriangles = 120_000;
 
         /// <summary>
-        /// The view direction. A three-quarter view from above reads as an object rather than a
-        /// silhouette, and matches how the area viewport presents the same models.
+        /// The direction the camera looks along. A three-quarter view from above reads as an object
+        /// rather than a silhouette, and matches how the area viewport presents the same models.
         /// </summary>
-        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(-0.7f, -1f, 0.75f));
+        /// <remarks>
+        /// The +Y here is what puts the camera on the model's front. An Aurora model faces -Y - verified
+        /// against the corpus, where a creature rendered from -Y shows its face and the fronts of its
+        /// feet, and from +Y shows its shoulder blades and heels - so a camera on the +Y side was looking
+        /// at the back of every creature in the palette. The -Z puts it above rather than below.
+        /// </remarks>
+        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(-0.7f, 1f, -0.75f));
 
-        private static readonly Vector3 LightDirection = Vector3.Normalize(new Vector3(-0.4f, -0.6f, 1f));
+        /// <summary>
+        /// Keyed to the same side as the camera, so the faces being looked at are the faces being lit.
+        /// Moving the camera without moving this leaves every model in its own shadow.
+        /// </summary>
+        private static readonly Vector3 LightDirection = Vector3.Normalize(new Vector3(-0.4f, 0.6f, 1f));
 
         /// <summary>Texels below this alpha are treated as cut out rather than blended.</summary>
         private const byte AlphaCutoff = 96;

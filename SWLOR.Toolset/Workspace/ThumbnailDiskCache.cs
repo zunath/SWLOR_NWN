@@ -33,12 +33,17 @@ namespace SWLOR.Toolset.Workspace
         /// <see cref="PruneSupersededVersions"/> so the cache does not accumulate a folder per release.
         /// </summary>
         /// <remarks>
+        /// <para>
         /// v3: base-game doors resolve a model now that the resolver reads GenericType as well as
         /// GenericType_New. Bumping is what un-sticks them: a blueprint that lives in the base game or a
         /// hak has no file for <see cref="FreshnessThreshold"/> to compare against, so a "no artwork"
         /// marker written by an older pipeline would otherwise be believed forever.
+        /// </para>
+        /// <para>
+        /// v4: the thumbnail camera moved to the front of the model. Every cached image is of a back.
+        /// </para>
         /// </remarks>
-        private const string FormatVersion = "v3";
+        private const string FormatVersion = "v4";
 
         private const string MissingArtworkExtension = ".none";
 

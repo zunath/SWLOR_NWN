@@ -42,6 +42,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
             AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
+            AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
@@ -67,6 +68,8 @@ namespace SWLOR.Toolset.Editors
                 AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementFootprint))
                 AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementModels))
+                AreaView.TilePlacementModels = _viewModel.TilePlacementModels;
         }
 
         /// <summary>

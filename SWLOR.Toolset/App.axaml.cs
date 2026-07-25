@@ -86,7 +86,8 @@ namespace SWLOR.Toolset
                 sp.GetService<PlaceableAppearanceService>(),
                 sp.GetService<DoorTypeService>(),
                 sp.GetService<Domain.Render.TileWalkmeshCache>(),
-                sp.GetService<TlkService>()));
+                sp.GetService<TlkService>(),
+                sp.GetService<WaypointAppearanceService>()));
 
             // The explorer needs to open editors, but EditorService depends on the dock factory,
             // which depends on the explorer — a Func breaks the construction cycle.
@@ -124,6 +125,7 @@ namespace SWLOR.Toolset
                 sp.GetService<AppearanceService>(),
                 sp.GetService<PlaceableAppearanceService>(),
                 sp.GetService<DoorTypeService>(),
+                sp.GetService<WaypointAppearanceService>(),
                 sp.GetService<BaseItemIconService>(),
                 sp.GetService<PortraitService>(),
                 sp.GetService<TwoDaService>(),
@@ -243,6 +245,8 @@ namespace SWLOR.Toolset
                     new PlaceableAppearanceService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
                 services.AddSingleton(sp =>
                     new DoorTypeService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
+                services.AddSingleton(sp =>
+                    new WaypointAppearanceService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
                 services.AddSingleton(sp =>
                     new SoundService(sp.GetRequiredService<TwoDaService>(), sp.GetRequiredService<TlkService>()));
                 services.AddSingleton(sp =>

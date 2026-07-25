@@ -31,6 +31,7 @@ namespace SWLOR.Toolset.Editors
         private readonly ResourceIndex? _resourceIndex;
         private readonly PlaceableAppearanceService? _placeableAppearances;
         private readonly DoorTypeService? _doorTypes;
+        private readonly WaypointAppearanceService? _waypointAppearances;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -48,7 +49,8 @@ namespace SWLOR.Toolset.Editors
             PlaceableAppearanceService? placeableAppearances = null,
             DoorTypeService? doorTypes = null,
             TileWalkmeshCache? tileWalkmeshCache = null,
-            Domain.GameData.Tlk.TlkService? tlkService = null)
+            Domain.GameData.Tlk.TlkService? tlkService = null,
+            WaypointAppearanceService? waypointAppearances = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -63,6 +65,7 @@ namespace SWLOR.Toolset.Editors
             _doorTypes = doorTypes;
             _tileWalkmeshCache = tileWalkmeshCache;
             _tlkService = tlkService;
+            _waypointAppearances = waypointAppearances;
         }
 
         public void TryOpenEditor(ResourceType type, string resRef)
@@ -206,7 +209,8 @@ namespace SWLOR.Toolset.Editors
                     resRef, workspace, _lookups, _gameCodeIndex, _log,
                     _tilesetCatalog, _tileModelCache, _resourceIndex,
                     _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
-                    ResolveBlueprintName, TryOpenEditor, _tlkService != null ? _tlkService.GetString : null);
+                    ResolveBlueprintName, TryOpenEditor,
+                    _tlkService != null ? _tlkService.GetString : null, _waypointAppearances);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

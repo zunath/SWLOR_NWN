@@ -223,7 +223,6 @@ void main()
 
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
-        private StaticMeshBuffer? _waypointMeshBuffer;
 
         private uint _polygonVao;
         private uint _polygonVbo;
@@ -446,6 +445,22 @@ void main()
         /// has no way to tell a rejected stamp from a legal one.
         /// </summary>
         public event Action<int, int>? TileCellPicked;
+
+        private IReadOnlyList<RenderModel?> _tilePlacementModels = Array.Empty<RenderModel?>();
+
+        /// <summary>
+        /// The armed stamp's tile models, row-major over <see cref="TilePlacementFootprint"/>. Empty
+        /// (or a null slot) falls back to the plain cell outline for that cell.
+        /// </summary>
+        public IReadOnlyList<RenderModel?> TilePlacementModels
+        {
+            get => _tilePlacementModels;
+            set
+            {
+                _tilePlacementModels = value ?? Array.Empty<RenderModel?>();
+                RequestNextFrameRendering();
+            }
+        }
 
         /// <summary>Raised when an active tile placement is cancelled (Esc, or a right-click while it is armed). Clears <see cref="IsTilePlacementActive"/> before raising.</summary>
         public event Action? TilePlacementCancelled;
@@ -1669,39 +1684,29 @@ void main()
                 }
             }
 
-            // Pass 2: everything else draws its kind-colored marker - the arrow for a waypoint,
-            // the pyramid for everything else.
+            // Pass 2: everything without resolved geometry draws its kind-colored pyramid marker.
             if (_markerMeshBuffer is not { } marker)
                 return;
 
+            _gl!.BindVertexArray(marker.Vao);
             SetUniformBool("hasTexture", false);
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", 1f);
 
-            var boundVao = 0u;
             foreach (var raw in scene.Instances)
             {
                 if (DrawsAsModel(raw))
                     continue;
 
                 var instance = Displayed(raw);
-                var mesh = instance.Kind == InstanceMarkerKind.Waypoint && _waypointMeshBuffer is { } arrow
-                    ? arrow
-                    : marker;
-
-                if (mesh.Vao != boundVao)
-                {
-                    _gl!.BindVertexArray(mesh.Vao);
-                    boundVao = mesh.Vao;
-                }
 
                 SetUniformMatrix4("model", AreaPicking.ComputeInstanceTransform(instance));
                 SetUniformVec3("flatColor", MarkerColor(instance.Kind));
 
                 unsafe
                 {
-                    _gl!.DrawElements(PrimitiveType.Triangles, (uint)mesh.IndexCount,
+                    _gl.DrawElements(PrimitiveType.Triangles, (uint)marker.IndexCount,
                         DrawElementsType.UnsignedInt, (void*)0);
                 }
             }
@@ -1805,6 +1810,12 @@ void main()
         private const float PlacementGhostAlpha = 0.55f;
 
         private static readonly Vector3 PlacementGhostColor = new(0.36f, 0.61f, 0.96f);
+
+        /// <summary>
+        /// Fainter than the object ghost. A tile fills a whole 10m cell, so at the object ghost's
+        /// opacity it blots out the area underneath it rather than previewing against it.
+        /// </summary>
+        private const float TileGhostAlpha = 0.35f;
 
         /// <summary>
         /// How much larger the ghost's fallback marker is than a placed instance's marker. A blueprint
@@ -1961,10 +1972,73 @@ void main()
 
             _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint)(vertices.Length / FloatsPerVertex));
 
+            DrawTileGhostModels(scene, anchor.Column, anchor.Row);
+
             _gl.Enable(EnableCap.DepthTest);
             _gl.DepthMask(true);
             _gl.Disable(EnableCap.Blend);
             SetUniformFloat("flatAlpha", 1f);
+        }
+
+        /// <summary>
+        /// Draws the armed stamp's own tile models over the highlighted cells.
+        /// </summary>
+        /// <remarks>
+        /// A tile is chosen for its shape - a doorway, a stair, a corner, a bridge - and an outlined
+        /// cell shows none of it, so a builder had to stamp one to find out what it was. Drawn tinted
+        /// and translucent for the same reason the object ghost is: a textured copy of the real thing
+        /// would be indistinguishable from a tile already laid. Called from inside
+        /// <see cref="DrawTileCellHighlight"/>, which has already set up blending and turned the depth
+        /// test off, and which leaves the outline underneath as the fits/does-not-fit signal.
+        /// </remarks>
+        private void DrawTileGhostModels(AreaScene scene, int anchorColumn, int anchorRow)
+        {
+            if (_gl == null || _tilePlacementModels.Count == 0)
+                return;
+
+            var (columns, rows) = _tilePlacementFootprint;
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("flatAlpha", TileGhostAlpha);
+            SetUniformVec3("flatColor", FootprintFitsGrid(scene, anchorColumn, anchorRow)
+                ? TileCellHighlightColor
+                : TileCellRejectedColor);
+
+            for (var row = 0; row < rows; row++)
+            for (var column = 0; column < columns; column++)
+            {
+                var slot = row * columns + column;
+                if (slot >= _tilePlacementModels.Count || _tilePlacementModels[slot] is not { } model)
+                    continue;
+
+                var targetColumn = anchorColumn + column;
+                var targetRow = anchorRow + row;
+                if (targetColumn < 0 || targetRow < 0 ||
+                    targetColumn >= scene.Width || targetRow >= scene.Height)
+                    continue;
+
+                // Tile models are authored about their own centre, which is where the scene's own tile
+                // transform puts them; the ghost has to agree or it would sit a half-tile off.
+                var transform = Matrix4x4.CreateTranslation(
+                    (targetColumn + 0.5f) * AreaSceneBuilder.TileSize,
+                    (targetRow + 0.5f) * AreaSceneBuilder.TileSize,
+                    CellFloorHeight(scene, targetColumn, targetRow));
+
+                var buffer = GetOrBuildModelBuffer(model);
+                _gl.BindVertexArray(buffer.Vao);
+
+                foreach (var meshRange in buffer.MeshRanges)
+                {
+                    SetUniformMatrix4("model", meshRange.MeshTransform * transform);
+
+                    unsafe
+                    {
+                        _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                            DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -2198,9 +2272,7 @@ void main()
             InstanceMarkerKind.Sound => new Vector3(0.2f, 0.8f, 0.8f),
             InstanceMarkerKind.Store => new Vector3(0.2f, 0.8f, 0.3f),
             InstanceMarkerKind.Trigger => new Vector3(0.95f, 0.55f, 0.15f),
-            // Aurora's waypoint yellow. A waypoint is the one marker a builder scans a map for -
-            // it is invisible in game and only ever exists to be found here - so it gets the colour
-            // nothing else uses.
+            // Aurora's waypoint yellow, for a waypoint whose appearance row names no model.
             InstanceMarkerKind.Waypoint => new Vector3(0.98f, 0.80f, 0.10f),
             _ => new Vector3(0.7f, 0.7f, 0.7f)
         };
@@ -2411,9 +2483,6 @@ void main()
 
             var (markerVertices, markerIndices) = BuildMarkerPyramidMesh();
             _markerMeshBuffer = UploadStaticMesh(markerVertices, markerIndices);
-
-            var (waypointVertices, waypointIndices) = BuildWaypointArrowMesh();
-            _waypointMeshBuffer = UploadStaticMesh(waypointVertices, waypointIndices);
         }
 
         private StaticMeshBuffer UploadStaticMesh(float[] vertices, uint[] indices)
@@ -2433,62 +2502,6 @@ void main()
             _gl.BindVertexArray(0);
 
             return new StaticMeshBuffer(vao, vbo, ebo, indices.Length);
-        }
-
-        /// <summary>
-        /// The waypoint marker: a flat arrow lying on the ground, pointing along local +X.
-        /// </summary>
-        /// <remarks>
-        /// A waypoint has no model and no presence in the game - it is a named spot with a facing -
-        /// so what the marker has to show is the facing, which the generic pyramid could not. Local
-        /// +X is the heading axis, so the instance transform aims the arrow with no extra work. Drawn
-        /// as a solid with a little height rather than a flat triangle so it stays readable when the
-        /// camera comes down near the ground plane.
-        /// </remarks>
-        private static (float[] Vertices, uint[] Indices) BuildWaypointArrowMesh()
-        {
-            const float length = 1.4f;
-            const float halfWidth = 0.85f;
-            const float tailHalf = 0.28f;
-            const float tailBack = 0.9f;
-            const float z = MarkerGroundOffset;
-            const float thickness = 0.12f;
-
-            // Seven points of a chevron, anticlockwise from the tip.
-            var outline = new[]
-            {
-                new Vector3(length, 0f, 0f),
-                new Vector3(-0.1f, halfWidth, 0f),
-                new Vector3(-0.1f, tailHalf, 0f),
-                new Vector3(-tailBack, tailHalf, 0f),
-                new Vector3(-tailBack, -tailHalf, 0f),
-                new Vector3(-0.1f, -tailHalf, 0f),
-                new Vector3(-0.1f, -halfWidth, 0f)
-            };
-
-            var builder = new BoxMeshBuilder();
-
-            Vector3 At(int index, float height) =>
-                outline[index] + new Vector3(0f, 0f, z + height);
-
-            // Top and bottom faces as a fan from the tip, then a skirt joining them.
-            for (var i = 1; i < outline.Length - 1; i++)
-            {
-                builder.AddTriangle(At(0, thickness), At(i, thickness), At(i + 1, thickness),
-                    new Vector3(0, 0, 1));
-                builder.AddTriangle(At(0, 0f), At(i + 1, 0f), At(i, 0f),
-                    new Vector3(0, 0, -1));
-            }
-
-            for (var i = 0; i < outline.Length; i++)
-            {
-                var next = (i + 1) % outline.Length;
-                var edge = outline[next] - outline[i];
-                var normal = Vector3.Normalize(new Vector3(edge.Y, -edge.X, 0f));
-                builder.AddQuad(At(i, 0f), At(next, 0f), At(next, thickness), At(i, thickness), normal);
-            }
-
-            return builder.Build();
         }
 
         /// <summary>

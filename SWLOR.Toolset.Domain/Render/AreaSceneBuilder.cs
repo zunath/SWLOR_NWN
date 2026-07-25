@@ -33,7 +33,8 @@ namespace SWLOR.Toolset.Domain.Render
             TileModelCache modelCache,
             PlaceableAppearanceService? placeableAppearances = null,
             DoorTypeService? doorTypes = null,
-            TileWalkmeshCache? walkmeshes = null)
+            TileWalkmeshCache? walkmeshes = null,
+            WaypointAppearanceService? waypointAppearances = null)
         {
             ArgumentNullException.ThrowIfNull(are);
             ArgumentNullException.ThrowIfNull(git);
@@ -57,7 +58,7 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics, walkmeshes);
-            var instances = BuildInstances(git, modelCache, placeableAppearances, doorTypes);
+            var instances = BuildInstances(git, modelCache, placeableAppearances, doorTypes, waypointAppearances);
 
             return new AreaScene
             {
@@ -206,7 +207,8 @@ namespace SWLOR.Toolset.Domain.Render
             GitDocument git,
             TileModelCache modelCache,
             PlaceableAppearanceService? placeableAppearances,
-            DoorTypeService? doorTypes)
+            DoorTypeService? doorTypes,
+            WaypointAppearanceService? waypointAppearances)
         {
             var markers = new List<InstanceMarker>();
 
@@ -219,7 +221,8 @@ namespace SWLOR.Toolset.Domain.Render
             AddMarkers(markers, git.Sounds, InstanceMarkerKind.Sound, ResourceType.Uts);
             AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm);
             AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true);
-            AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw);
+            AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw,
+                resolveModel: instance => ResolveWaypointModel(instance, waypointAppearances, modelCache));
 
             return markers;
         }
@@ -271,6 +274,29 @@ namespace SWLOR.Toolset.Domain.Render
                 return null;
 
             return string.IsNullOrWhiteSpace(row.ModelName) ? null : modelCache.GetOrBuild(row.ModelName);
+        }
+
+        /// <summary>
+        /// A waypoint instance's marker model, from waypoint.2da.
+        /// </summary>
+        /// <remarks>
+        /// Waypoints are invisible in game, so it is easy to assume they have no artwork - but
+        /// waypoint.2da holds 76 marker models (coloured flags, letters, treasure, mapnote, ...) and
+        /// every placed waypoint names one. Drawing the real marker is what tells two waypoints apart
+        /// on a map that may hold dozens.
+        /// </remarks>
+        private static RenderModel? ResolveWaypointModel(
+            JsonGffStruct instance, WaypointAppearanceService? waypointAppearances, TileModelCache modelCache)
+        {
+            if (waypointAppearances == null)
+                return null;
+
+            var appearanceId = instance.GetIntOrNull("Appearance") ?? -1;
+            if (!waypointAppearances.TryGet(appearanceId, out var row) ||
+                string.IsNullOrWhiteSpace(row.ModelName))
+                return null;
+
+            return modelCache.GetOrBuild(row.ModelName);
         }
 
         /// <summary>

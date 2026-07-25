@@ -47,6 +47,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly AppearanceService? _appearances;
         private readonly PlaceableAppearanceService? _placeables;
         private readonly DoorTypeService? _doors;
+        private readonly WaypointAppearanceService? _waypoints;
         private readonly BaseItemIconService? _baseItems;
         private readonly PortraitService? _portraits;
 
@@ -71,6 +72,7 @@ namespace SWLOR.Toolset.Workspace
             AppearanceService? appearances = null,
             PlaceableAppearanceService? placeables = null,
             DoorTypeService? doors = null,
+            WaypointAppearanceService? waypoints = null,
             BaseItemIconService? baseItems = null,
             PortraitService? portraits = null,
             TwoDaService? twoDa = null,
@@ -81,6 +83,7 @@ namespace SWLOR.Toolset.Workspace
             _appearances = appearances;
             _placeables = placeables;
             _doors = doors;
+            _waypoints = waypoints;
             _baseItems = baseItems;
             _portraits = portraits;
 
@@ -128,7 +131,7 @@ namespace SWLOR.Toolset.Workspace
             {
                 ResourceType.Uti => RenderItemIcon(root),
                 ResourceType.Utc => RenderModel(type, root) ?? RenderPortrait(root),
-                ResourceType.Utp or ResourceType.Utd => RenderModel(type, root),
+                ResourceType.Utp or ResourceType.Utd or ResourceType.Utw => RenderModel(type, root),
                 _ => null
             };
         }
@@ -205,7 +208,8 @@ namespace SWLOR.Toolset.Workspace
         private IconImage? RenderModel(ResourceType type, Domain.Gff.JsonGffStruct root)
         {
             var reference = BlueprintModelResolver.Resolve(
-                type, root, _appearances, _placeables, _doors, LoadItemBlueprintRoot, PartModelExists);
+                type, root, _appearances, _placeables, _doors, LoadItemBlueprintRoot, PartModelExists,
+                _waypoints);
 
             var model = reference.Kind switch
             {

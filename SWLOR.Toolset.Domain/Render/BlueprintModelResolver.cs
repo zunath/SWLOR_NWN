@@ -126,7 +126,8 @@ namespace SWLOR.Toolset.Domain.Render
             PlaceableAppearanceService? placeables,
             DoorTypeService? doors,
             Func<string, JsonGffStruct?>? itemBlueprintLoader = null,
-            Func<string, bool>? partModelExists = null)
+            Func<string, bool>? partModelExists = null,
+            WaypointAppearanceService? waypoints = null)
         {
             ArgumentNullException.ThrowIfNull(root);
 
@@ -135,6 +136,7 @@ namespace SWLOR.Toolset.Domain.Render
                 ResourceType.Utc => ResolveCreature(root, appearances, itemBlueprintLoader, partModelExists),
                 ResourceType.Utp => ResolvePlaceable(root, placeables),
                 ResourceType.Utd => ResolveDoor(root, doors),
+                ResourceType.Utw => ResolveWaypoint(root, waypoints),
                 _ => BlueprintModelReference.NoneWith("No model preview for this blueprint type.")
             };
         }
@@ -272,6 +274,33 @@ namespace SWLOR.Toolset.Domain.Render
 
             if (string.IsNullOrWhiteSpace(row.ModelName))
                 return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model in placeables.2da.");
+
+            return new BlueprintModelReference
+            {
+                Kind = BlueprintModelKind.Simple,
+                Status = $"{row.DisplayName} ({row.ModelName}.mdl)",
+                ModelResRef = row.ModelName
+            };
+        }
+
+        /// <summary>
+        /// A waypoint's marker model, from waypoint.2da.
+        /// </summary>
+        /// <remarks>
+        /// Unlike placeables.2da there is no separate model column - the row's RESREF is the model.
+        /// </remarks>
+        private static BlueprintModelReference ResolveWaypoint(
+            JsonGffStruct root, WaypointAppearanceService? waypoints)
+        {
+            if (waypoints == null)
+                return BlueprintModelReference.NoneWith("Waypoint preview unavailable (waypoint data not loaded).");
+
+            var appearanceId = root.GetIntOrNull("Appearance") ?? -1;
+            if (!waypoints.TryGet(appearanceId, out var row))
+                return BlueprintModelReference.NoneWith($"Unknown waypoint appearance {appearanceId}.");
+
+            if (string.IsNullOrWhiteSpace(row.ModelName))
+                return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model in waypoint.2da.");
 
             return new BlueprintModelReference
             {

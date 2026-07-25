@@ -58,6 +58,7 @@ namespace SWLOR.Toolset.Editors
         private readonly TileModelCache? _tileModelCache;
         private readonly PlaceableAppearanceService? _placeableAppearances;
         private readonly DoorTypeService? _doorTypes;
+        private readonly WaypointAppearanceService? _waypointAppearances;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly IEditorPromptService _prompts;
 
@@ -497,6 +498,42 @@ namespace SWLOR.Toolset.Editors
         public (int Columns, int Rows) TilePlacementFootprint =>
             _pendingTile is { } entry ? (entry.Columns, entry.Rows) : (1, 1);
 
+        private IReadOnlyList<RenderModel?> _tilePlacementModels = Array.Empty<RenderModel?>();
+
+        /// <summary>
+        /// The armed stamp's tile models, row-major over its footprint - what the viewport draws under
+        /// the cursor. A null slot is a hole in the group's rectangle, or a tile whose model is missing.
+        /// </summary>
+        /// <remarks>
+        /// A tile is the one thing in this palette whose shape is the whole point of choosing it - a
+        /// doorway, a stair, a corner - and an outlined cell shows none of that. The models are resolved
+        /// once when the stamp is armed rather than per frame: the cache has them parsed already, but the
+        /// tileset lookup is not free and the answer does not change while the stamp follows the cursor.
+        /// </remarks>
+        public IReadOnlyList<RenderModel?> TilePlacementModels => _tilePlacementModels;
+
+        private IReadOnlyList<RenderModel?> ResolveTileModels(TilePaletteEntry entry)
+        {
+            if (_tileModelCache == null || _tilesetCatalog == null ||
+                TilesetResRef is not { Length: > 0 } tilesetResRef ||
+                !_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
+                return Array.Empty<RenderModel?>();
+
+            var models = new RenderModel?[entry.TileIds.Count];
+            for (var i = 0; i < entry.TileIds.Count; i++)
+            {
+                var tileId = entry.TileIds[i];
+                if (tileId < 0 || tileId >= tileset.Tiles.Count)
+                    continue;
+
+                var modelResRef = tileset.Tiles[tileId].Model;
+                if (!string.IsNullOrWhiteSpace(modelResRef))
+                    models[i] = _tileModelCache.GetOrBuild(modelResRef);
+            }
+
+            return models;
+        }
+
         /// <summary>Quarter turns the armed tile will be stamped with, 0-3.</summary>
         private int _pendingTileOrientation;
 
@@ -547,8 +584,10 @@ namespace SWLOR.Toolset.Editors
 
             _pendingTile = entry;
             _pendingTileOrientation = 0;
+            _tilePlacementModels = ResolveTileModels(entry);
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementFootprint));
+            OnPropertyChanged(nameof(TilePlacementModels));
             OnPropertyChanged(nameof(CanRotatePendingTile));
             OnPropertyChanged(nameof(PendingTileFacing));
             OnPropertyChanged(nameof(PlacementStatus));
@@ -563,7 +602,9 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             _pendingTile = null;
+            _tilePlacementModels = Array.Empty<RenderModel?>();
             OnPropertyChanged(nameof(IsTilePlacementPending));
+            OnPropertyChanged(nameof(TilePlacementModels));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
         }
@@ -910,8 +951,10 @@ namespace SWLOR.Toolset.Editors
             IEditorPromptService? prompts = null,
             Func<ResourceType?, string?, string?>? resolveBlueprintName = null,
             Action<ResourceType, string>? openBlueprint = null,
-            Func<uint, string?>? resolveStrRef = null)
+            Func<uint, string?>? resolveStrRef = null,
+            WaypointAppearanceService? waypointAppearances = null)
         {
+            _waypointAppearances = waypointAppearances;
             _resolveBlueprintName = resolveBlueprintName;
             _openBlueprint = openBlueprint;
             _log = log;
@@ -1076,7 +1119,8 @@ namespace SWLOR.Toolset.Editors
                     var snapshots = DocumentSession.CaptureSnapshots(_areSession, _gitSession);
                     return AreaSceneBuilder.Build(
                         AreDocument.Parse(snapshots[0]), GitDocument.Parse(snapshots[1]),
-                        tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache);
+                        tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache,
+                        _waypointAppearances);
                 });
 
                 if (generation != Volatile.Read(ref _sceneBuildGeneration))

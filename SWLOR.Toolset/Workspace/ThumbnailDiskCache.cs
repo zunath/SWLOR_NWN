@@ -42,8 +42,11 @@ namespace SWLOR.Toolset.Workspace
         /// <para>
         /// v4: the thumbnail camera moved to the front of the model. Every cached image is of a back.
         /// </para>
+        /// <para>
+        /// v5: waypoints resolve their waypoint.2da model, so their "no artwork" markers are stale.
+        /// </para>
         /// </remarks>
-        private const string FormatVersion = "v4";
+        private const string FormatVersion = "v5";
 
         private const string MissingArtworkExtension = ".none";
 

@@ -165,7 +165,10 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.ForceIntercept1,
                     Target = AbilityTargetKind.FriendlyCreature,
-                    Notes = "ValidateFriendlyTarget with allowSelf:false - cast on a spawned same-faction ally.",
+                    ExpectedTargetStatusEffects = new[] { typeof(ForceIntercept1StatusEffect) },
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                    Notes = "ValidateFriendlyTarget with allowSelf:false - cast on a spawned same-faction ally. Impact jumps the caster to the ally and applies ForceIntercept1StatusEffect to them; 5 FP / 24s recast per the definition.",
                 },
 
                 // ForceJudgmentAbilityDefinition - hostile direct/area damage with an unconditional

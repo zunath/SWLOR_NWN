@@ -76,6 +76,14 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         public bool ExpectsActivatorTemporaryHP { get; set; }
 
         /// <summary>
+        /// Expect a temporary-hit-point effect on the TARGET after impact - for ally-shield
+        /// abilities that grant raw EffectTemporaryHitpoints to their friendly target. Only
+        /// meaningful for friendly targets: hostile fixtures already carry the executor's
+        /// blanket temp-HP damage buffer, which would satisfy this trivially.
+        /// </summary>
+        public bool ExpectsTargetTemporaryHP { get; set; }
+
+        /// <summary>
         /// Expect the ACTIVATOR's hit points to rise above their pre-activation value. The
         /// executor wounds the caster before activation so the heal is observable.
         /// </summary>

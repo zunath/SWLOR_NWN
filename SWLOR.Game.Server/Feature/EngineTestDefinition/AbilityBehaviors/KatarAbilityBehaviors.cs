@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Service.EngineTestService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
@@ -202,7 +203,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Target = AbilityTargetKind.FriendlyCreature,
                     TargetJoinsCasterParty = true,
                     TargetSetupStatusEffectFactory = () => new GuardedStatusEffect(50, 5.0f),
-                    Notes = "Requires an already-Guarded ally; the fixture pre-applies GuardedStatusEffect to the spawned ally.",
+                    ExpectsTargetTemporaryHP = true,
+                    ExpectedActivatorStatAdjustments = new() { [StatType.Guard] = 20 },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                    Notes = "Requires an already-Guarded ally; the fixture pre-applies GuardedStatusEffect to the spawned ally. Impact grants the guarded ally 15% max HP as temporary HP and the caster +20 Guard for 30s; 8 STM / 18s recast per the definition.",
                 },
 
                 // WhirlingGuardAbilityDefinition - self status path (not hostile/friendly, statusEffect set).

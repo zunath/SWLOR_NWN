@@ -498,6 +498,14 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     "a temporary-HP effect to be present on the activator after impact");
             }
 
+            if (behaviorCase.ExpectsTargetTemporaryHP)
+            {
+                await ctx.WaitUntilAsync(
+                    () => HasEffectOfType(impactTarget, EffectTypeScript.TemporaryHitpoints),
+                    EffectWaitSeconds,
+                    "a temporary-HP effect to be present on the target after impact");
+            }
+
             if (behaviorCase.ExpectsActivatorHealing)
             {
                 await ctx.WaitUntilAsync(

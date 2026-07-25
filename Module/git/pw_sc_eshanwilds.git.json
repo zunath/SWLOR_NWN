@@ -38619,11 +38619,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": ""
+          "value": "eshan_shimmercaves_enter"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LoadScreenID": {
           "type": "word",
@@ -38789,6 +38789,65 @@
         "ZPosition": {
           "type": "float",
           "value": 5.010000228881836
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "WP_eshan_shatter_caves"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.9951847195625305
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 18.42418479919434
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0980171337723732
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 74.99346923828125
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.999996185302734
         }
       }
     ]

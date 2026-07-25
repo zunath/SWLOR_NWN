@@ -107,11 +107,5 @@ namespace SWLOR.Toolset.Editors
 
         private void OnViewportPointerWheel(object? sender, Avalonia.Input.PointerWheelEventArgs e) =>
             AreaView.HandlePointerWheel(e);
-
-        private void OnPlaceableModelsChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (AreaView != null && PlaceableModelsCheck != null)
-                AreaView.ShowPlaceableModels = PlaceableModelsCheck.IsChecked == true;
-        }
     }
 }

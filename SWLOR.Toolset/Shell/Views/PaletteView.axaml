@@ -13,7 +13,7 @@
        category-related is grouped above the splitter and everything object-related below it, so the
        divider lands where the meaning changes rather than in the middle of a group. Both sides are
        star-sized: a GridSplitter between an Auto row and a star row has nothing to trade. -->
-  <Grid RowDefinitions="Auto,Auto,Auto,Auto,2*,Auto,3*">
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,2*,Auto,3*">
 
     <!-- Title drawn here rather than by Dock's chrome, which pads it out with a dotted drag grip. -->
     <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
@@ -21,48 +21,61 @@
       <TextBlock Classes="title" Text="PALETTE" />
     </Border>
 
-    <!-- Type chips. No counts: "8,355 placeables" answers a question nobody asks. -->
-    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,10,10,4" Spacing="5">
-      <ItemsControl ItemsSource="{Binding Types}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <StackPanel Orientation="Horizontal" Spacing="5" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="panels:PaletteTypeChipViewModel">
-            <Button Content="{Binding Label}" CornerRadius="12" Padding="11,4" FontSize="11.5"
-                    Classes.primary="{Binding IsSelected}"
-                    Command="{Binding $parent[ItemsControl].((panels:PaletteViewModel)DataContext).SelectTypeCommand}"
-                    CommandParameter="{Binding}" />
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-      <Button Content="More..." CornerRadius="12" Padding="11,4" FontSize="11.5"
-              IsVisible="{Binding HasMoreTypes}" Command="{Binding ShowMoreTypesCommand}"
-              ToolTip.Tip="Items, waypoints, triggers and sound sets" />
+    <!-- Custom or Standard. Two buttons rather than a dropdown because there are exactly two and the
+         answer changes what every other control in the panel means - that deserves to be visible, not
+         folded away. Custom is first and selected by default. -->
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,8,10,0" Spacing="0">
+      <Button Content="Custom" CornerRadius="4,0,0,4" Padding="14,4" FontSize="11.5"
+              Classes.primary="{Binding IsCustomSource}" Command="{Binding ShowCustomCommand}"
+              ToolTip.Tip="Blueprints that live in this module" />
+      <Button Content="Standard" CornerRadius="0,4,4,0" Padding="14,4" FontSize="11.5"
+              Classes.primary="{Binding IsStandardSource}" Command="{Binding ShowStandardCommand}"
+              ToolTip.Tip="Blueprints the base game ships. Place them, but they cannot be edited here." />
     </StackPanel>
 
-    <TextBox Grid.Row="2" Margin="8,4" Text="{Binding Query}"
+    <!-- Type row: one icon per type, all of them, wrapping if the panel is ever narrower than eight.
+         No counts ("8,355 placeables" answers a question nobody asks) and no labels - the tooltip names
+         the type, which is what buys the room to show every type at once. -->
+    <ItemsControl Grid.Row="2" ItemsSource="{Binding Types}" Margin="10,10,10,4">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="panels:PaletteTypeChipViewModel">
+          <Button CornerRadius="5" Padding="6,4" Margin="0,0,4,4" MinWidth="32"
+                  Classes.primary="{Binding IsSelected}"
+                  ToolTip.Tip="{Binding Label}"
+                  Command="{Binding $parent[ItemsControl].((panels:PaletteViewModel)DataContext).SelectTypeCommand}"
+                  CommandParameter="{Binding}">
+            <Panel>
+              <Image Source="{Binding Icon}" Width="20" Height="20"
+                     IsVisible="{Binding HasIcon}" />
+              <TextBlock Text="{Binding Initial}" FontSize="12" IsVisible="{Binding !HasIcon}"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Panel>
+          </Button>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+    <TextBox Grid.Row="3" Margin="8,4" Text="{Binding Query}"
              Watermark="Search categories and objects..." />
 
-    <!-- Category header carries the one action that belongs to the tree as a whole. -->
-    <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="10,6,8,3">
+    <!-- Category header. No action buttons: everything you can do to a category is on its own
+         right-click menu, which is where you already are when you have decided which category to do it
+         to. An Organize mode gating the same commands was one state too many. -->
+    <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="10,6,10,3">
       <TextBlock Grid.Column="0" Classes="label" VerticalAlignment="Center" Text="CATEGORIES" />
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
-        <TextBlock Classes="count" VerticalAlignment="Center"
-                   IsVisible="{Binding HasCategoryMatches}"
-                   Text="{Binding CategoryMatches.Count, StringFormat='{}{0} matches'}" />
-        <Button Classes="link" Content="+ NEW" Command="{Binding NewCategoryCommand}"
-                ToolTip.Tip="Add a category, nested inside the selected one" />
-        <ToggleButton Content="Organize" IsChecked="{Binding IsOrganizing, Mode=TwoWay}"
-                      FontSize="11" Padding="8,2" />
-      </StackPanel>
+      <TextBlock Grid.Column="1" Classes="count" VerticalAlignment="Center"
+                 IsVisible="{Binding HasCategoryMatches}"
+                 Text="{Binding CategoryMatches.Count, StringFormat='{}{0} matches'}" />
     </Grid>
 
     <!-- Categories block. Searching swaps the tree for flattened matches, each with the path to it. -->
-    <Grid Grid.Row="4" RowDefinitions="*,Auto" MinHeight="90">
-      <Border Grid.Row="0" Margin="0,2" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1">
+    <Border Grid.Row="5" MinHeight="90" Margin="0,2"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1">
         <Grid>
           <ListBox IsVisible="{Binding !IsSearching}"
                    Background="Transparent" BorderThickness="0"
@@ -74,14 +87,33 @@
                 <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}"
                       Background="Transparent" ContextRequested="OnCategoryContextRequested">
                   <Grid.ContextMenu>
+                    <!-- Creating the thing the palette is FOR comes first, and names it: "New Placeable"
+                         beats "New" when eight types share one panel. Below it, the operations on the
+                         category itself. -->
                     <ContextMenu>
+                      <MenuItem Header="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).NewBlueprintLabel}"
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).NewBlueprintCommand}"
+                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
+                      <Separator IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
                       <MenuItem Header="New category..."
-                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).NewCategoryCommand}" />
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).NewCategoryCommand}"
+                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
                       <MenuItem Header="Rename..."
-                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).RenameCategoryCommand}" />
-                      <Separator />
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).RenameCategoryCommand}"
+                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
                       <MenuItem Header="Delete category"
-                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).DeleteCategoryCommand}" />
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).DeleteCategoryCommand}"
+                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
+                      <Separator IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
+                      <MenuItem Header="Pin to top"
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).TogglePinCommand}"
+                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
+                      <MenuItem Header="Move selected object here"
+                                Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).FileSelectedTileCommand}"
+                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
+                      <!-- Standard is the base game's own palette: there is nothing here a builder owns. -->
+                      <MenuItem Header="Base game content - read-only" IsEnabled="False"
+                                IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsStandardSource}" />
                     </ContextMenu>
                   </Grid.ContextMenu>
                   <Button Grid.Column="0" Content="{Binding Twisty}" Width="26" MinHeight="22" Padding="0"
@@ -124,24 +156,14 @@
             </ListBox.ItemTemplate>
           </ListBox>
         </Grid>
-      </Border>
+    </Border>
 
-      <!-- Filing and pinning, only while organizing, so ordinary browsing cannot reorganize by
-           accident. Naming lives in the right-click menu now, which is why there is no name box. -->
-      <WrapPanel Grid.Row="1" Margin="8,6" IsVisible="{Binding IsOrganizing}">
-        <Button Content="Pin" Margin="0,0,4,4" Command="{Binding TogglePinCommand}"
-                ToolTip.Tip="Keep this category at the top of the tree" />
-        <Button Content="File here" Margin="0,0,4,4" Command="{Binding FileSelectedTileCommand}"
-                ToolTip.Tip="Move the selected blueprint into the selected category" />
-      </WrapPanel>
-    </Grid>
-
-    <GridSplitter Grid.Row="5" Height="5" ResizeDirection="Rows"
+    <GridSplitter Grid.Row="6" Height="5" ResizeDirection="Rows"
                   Background="{DynamicResource RuleBrush}"
                   ResizeBehavior="PreviousAndNext" />
 
     <!-- Objects block: where you are, the grid, and the grid's own controls. -->
-    <Grid Grid.Row="6" RowDefinitions="Auto,*,Auto" MinHeight="120">
+    <Grid Grid.Row="7" RowDefinitions="Auto,*,Auto" MinHeight="120">
 
     <!-- Where you are, and whether the grid reaches into subcategories. -->
     <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="10,6,10,4">
@@ -176,17 +198,20 @@
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                   Tapped="OnTileTapped" ContextRequested="OnTileContextRequested">
             <Border.ContextMenu>
+              <!-- Only this object's own actions. Creating things belongs to the category menu, and
+                   placing is what a plain click already does - repeating it here would be the one item
+                   on the menu that is not about the object you right-clicked. -->
               <ContextMenu>
-                <MenuItem Header="Place in area"
-                          Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).PlaceCommand}"
-                          CommandParameter="{Binding}" />
                 <MenuItem Header="Edit blueprint..."
                           Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).EditCommand}"
-                          CommandParameter="{Binding}" />
-                <Separator />
+                          CommandParameter="{Binding}"
+                          IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
                 <MenuItem Header="Delete blueprint..."
                           Command="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).DeleteTileCommand}"
-                          CommandParameter="{Binding}" />
+                          CommandParameter="{Binding}"
+                          IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsCustomSource}" />
+                <MenuItem Header="Base game content - read-only" IsEnabled="False"
+                          IsVisible="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).IsStandardSource}" />
               </ContextMenu>
             </Border.ContextMenu>
             <StackPanel>

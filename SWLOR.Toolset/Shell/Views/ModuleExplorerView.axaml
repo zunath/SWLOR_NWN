@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,9 +7,10 @@
              x:Class="SWLOR.Toolset.Shell.Views.ModuleExplorerView"
              x:DataType="panels:ModuleExplorerViewModel">
 
-  <!-- One tree: type, then group, then resource. Search lives in the panel it searches, which is why
-       there is no separate Search dock across the top of the window any more. -->
-  <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+  <!-- Areas, conversations, scripts. Search lives in the panel it searches, which is why there is no
+       separate Search dock across the top of the window any more. There is no Group by control: how a
+       section groups follows from whether its names carry a structure, which is not a preference. -->
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
 
     <!-- The panel title is drawn here rather than by Dock's chrome, which pads it out with a dotted
          drag grip. Small-caps monospace sets furniture apart from every name and value on screen. -->
@@ -18,37 +19,12 @@
       <TextBlock Classes="title" Text="MODULE CONTENTS" />
     </Border>
 
-    <!-- Group by, with its label inside the control so the row reads as a sentence. -->
-    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="8,8,8,4" ColumnSpacing="6">
-      <Border Grid.Column="0" Background="{DynamicResource FieldBrush}" CornerRadius="3"
-              BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1" Padding="8,0">
-        <Grid ColumnDefinitions="Auto,*">
-          <TextBlock Grid.Column="0" Text="Group by" Classes="dim" FontSize="11.5"
-                     VerticalAlignment="Center" Margin="0,0,8,0" />
-          <ComboBox Grid.Column="1" ItemsSource="{Binding GroupingChoices}"
-                    SelectedItem="{Binding SelectedGroupingChoice}" Background="Transparent"
-                    BorderThickness="0" Padding="0,4" HorizontalAlignment="Stretch"
-                    ToolTip.Tip="Automatic groups on the part of the name before the first dash" />
-        </Grid>
-      </Border>
-      <ToggleButton Grid.Column="1" Content="Organize" IsChecked="{Binding IsOrganizing, Mode=TwoWay}"
-                    FontSize="11.5" Padding="9,4" />
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="8,8,8,6" ColumnSpacing="6">
+      <TextBox Grid.Column="0" Text="{Binding Filter}" Watermark="Search contents..." />
+      <Button Grid.Column="1" Content="New Area..." Command="{Binding NewAreaCommand}" />
     </Grid>
 
-    <TextBox Grid.Row="2" Margin="8,0,8,6" Text="{Binding Filter}" Watermark="Search areas..." />
-
-    <!-- Folder tools appear only while organizing, so browsing cannot rearrange by accident. -->
-    <StackPanel Grid.Row="3" Margin="8,0,8,6" Spacing="5" IsVisible="{Binding IsOrganizing}">
-      <TextBox Text="{Binding NewFolderName}" Watermark="Folder name" />
-      <StackPanel Orientation="Horizontal" Spacing="5">
-        <Button Content="New Area..." Command="{Binding NewAreaCommand}" />
-        <Button Content="New folder" Command="{Binding NewFolderCommand}" />
-        <Button Content="File here" Command="{Binding FileSelectedCommand}"
-                ToolTip.Tip="Move the selected resource into the named folder" />
-      </StackPanel>
-    </StackPanel>
-
-    <Grid Grid.Row="4">
+    <Grid Grid.Row="2">
       <ListBox Background="Transparent" BorderThickness="0"
                ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
                DoubleTapped="OnItemsDoubleTapped">
@@ -120,7 +96,7 @@
       </Border>
     </Grid>
 
-    <TextBlock Grid.Row="5" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
+    <TextBlock Grid.Row="3" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
                Text="{Binding StatusMessage}"
                IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
   </Grid>

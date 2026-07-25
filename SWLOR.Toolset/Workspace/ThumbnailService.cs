@@ -33,8 +33,11 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         private const int MemoryCacheCapacity = 1024;
 
-        /// <summary>Square size the type symbols are drawn at.</summary>
+        /// <summary>Square size the type symbols are drawn at for a tile's fallback image.</summary>
         private const int TypeIconSize = 128;
+
+        /// <summary>Square size for the palette's type-row chips.</summary>
+        private const int TypeChipIconSize = 20;
 
         /// <summary>Upper bound on concurrent renders during a cache build, regardless of core count.</summary>
         private const int MaxBuildWorkers = 4;
@@ -45,6 +48,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly BitmapMemoryCache _memory = new(MemoryCacheCapacity);
         private readonly ConcurrentDictionary<string, byte> _inFlight = new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeIcons = new();
+        private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeChipIcons = new();
 
         private readonly object _diskGate = new();
         private ThumbnailDiskCache _disk = new(null);
@@ -128,6 +132,14 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public Bitmap TypeIcon(ResourceType type) =>
             _typeIcons.GetOrAdd(type, key => ToBitmap(TypeIconRenderer.Render(key, TypeIconSize)));
+
+        /// <summary>
+        /// The same symbol at the palette type row's size. Rendered at the size it is shown at rather
+        /// than scaled down from the tile version: at 20px the difference between a drawn-for-20px
+        /// symbol and a downscaled 128px one is the difference between legible and mud.
+        /// </summary>
+        public Bitmap TypeChipIcon(ResourceType type) =>
+            _typeChipIcons.GetOrAdd(type, key => ToBitmap(TypeIconRenderer.Render(key, TypeChipIconSize)));
 
         /// <summary>
         /// Renders and stores every missing preview for the open module, reporting progress as it goes.

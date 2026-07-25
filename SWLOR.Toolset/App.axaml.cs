@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,7 +53,10 @@ namespace SWLOR.Toolset
 
             services.AddSingleton<OutputLogService>();
             services.AddSingleton<Services.IEditorPromptService, Services.EditorPromptService>();
-            services.AddSingleton<Func<string, ModuleWorkspace>>(_ => path => new ModuleWorkspace(path));
+            // The index is what lets a workspace hand back a base-game blueprint the module has no file
+            // of its own for - the palette's Standard group depends on it.
+            services.AddSingleton<Func<string, ModuleWorkspace>>(sp =>
+                path => new ModuleWorkspace(path, sp.GetService<ResourceIndex>()));
             services.AddSingleton<WorkspaceContext>();
             services.AddSingleton<ModuleFileWatcher>();
 
@@ -104,17 +107,18 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<PropertiesViewModel>(),
                 sp.GetRequiredService<Func<Editors.EditorService>>(),
-                sp.GetRequiredService<ModelPreviewViewModel>(),
                 // Optional: only registered when the repo layout resolved, and the new-area wizard
                 // degrades to "no tilesets available" without it.
-                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
-                sp.GetRequiredService<CategoryService>()));
+                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>()));
             services.AddSingleton(sp => new CategoryService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),
                 // Optional: the base-game palettes name their categories by TLK reference, so without
                 // the TLK they import as renameable placeholders rather than real names.
-                sp.GetService<TlkService>()));
+                sp.GetService<TlkService>(),
+                // Optional: the source of the Standard palette. Without it the palette shows the module's
+                // own content only, which is what it did before the split existed.
+                sp.GetService<ResourceIndex>()));
             // Every game-data dependency here is optional: without a resolved repo layout the renderer
             // reports itself unavailable and the palette falls back to letter glyphs rather than failing.
             services.AddSingleton(sp => new BlueprintPreviewRenderer(
@@ -172,8 +176,25 @@ namespace SWLOR.Toolset
             if (hasTwoDa)
                 services.AddSingleton(new TwoDaService(sw2DaDirectory));
 
+            // Located once and reused: both the resource index and the base TLK below need it.
+            string? nwnInstallPath = null;
+            try
+            {
+                nwnInstallPath = NwnInstallLocator.Locate(settings.NwnInstallOverride);
+            }
+            catch (Exception)
+            {
+                // A broken or absent install must not stop the toolset; hak layers still work.
+            }
+
             if (hasTlk)
-                services.AddSingleton(TlkService.Load(swTlkJsonPath));
+            {
+                // The base game's dialog.tlk as well as SWLOR's own, because the base-game palettes name
+                // their categories by strref into it - without this the Standard palette's folders read
+                // as "Category 6782" instead of "Containers & Switches". It lives under lang/<code>/data,
+                // not the data folder the resource index uses.
+                services.AddSingleton(TlkService.Load(swTlkJsonPath, FindBaseTlk(nwnInstallPath)));
+            }
 
             if (File.Exists(hakBuilderConfigPath) && Directory.Exists(swlorHaksRoot))
             {
@@ -182,9 +203,8 @@ namespace SWLOR.Toolset
                 KeyBifCatalog? baseLayer = null;
                 try
                 {
-                    var installPath = NwnInstallLocator.Locate(settings.NwnInstallOverride);
-                    if (installPath != null)
-                        baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+                    if (nwnInstallPath != null)
+                        baseLayer = KeyBifCatalog.Load(Path.Combine(nwnInstallPath, "data"));
                 }
                 catch (Exception)
                 {
@@ -231,6 +251,30 @@ namespace SWLOR.Toolset
                 services.AddSingleton(sp =>
                     new BaseItemIconService(sp.GetRequiredService<TwoDaService>()));
             }
+        }
+
+        /// <summary>
+        /// The base game's dialog.tlk, or null when there is no install or no localized copy of it.
+        /// </summary>
+        /// <remarks>
+        /// Not in the install's data folder with everything else - it sits under lang/&lt;code&gt;/data, one
+        /// per language. English first because that is what this module authors in; the rest are tried so
+        /// a non-English install still resolves names rather than silently showing strref numbers.
+        /// </remarks>
+        private static string? FindBaseTlk(string? installPath)
+        {
+            if (installPath == null)
+                return null;
+
+            var languages = new[] { "en", "fr", "de", "it", "es", "pl" };
+            foreach (var language in languages)
+            {
+                var candidate = Path.Combine(installPath, "lang", language, "data", "dialog.tlk");
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+
+            return null;
         }
 
         /// <summary>

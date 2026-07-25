@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -25,15 +26,33 @@ namespace SWLOR.Toolset.Workspace
         /// imported category reads "Category 16810847" - legible and renameable, but useless.
         /// </summary>
         private readonly TlkService? _tlk;
+
+        /// <summary>Supplies the base game's own palettes and blueprints for the Standard group.</summary>
+        private readonly ResourceIndex? _resourceIndex;
+
         private readonly HashSet<ResourceType> _seeded = new();
+
+        /// <summary>
+        /// The standard palettes, cached per type. Held here rather than in <see cref="Catalog"/> on
+        /// purpose: <see cref="SaveChanges"/> writes the catalog, and base-game content must never end up
+        /// in the sidecar. Not keyed by module either, because what the base game ships does not change
+        /// when a different module is opened.
+        /// </summary>
+        private readonly Dictionary<ResourceType, StandardPalette> _standardPalettes = new();
+
         private CategoryCatalog? _catalog;
         private string? _loadedForModuleRoot;
 
-        public CategoryService(WorkspaceContext workspaceContext, OutputLogService log, TlkService? tlk = null)
+        public CategoryService(
+            WorkspaceContext workspaceContext,
+            OutputLogService log,
+            TlkService? tlk = null,
+            ResourceIndex? resourceIndex = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _tlk = tlk;
+            _resourceIndex = resourceIndex;
         }
 
         /// <summary>Raised after categories change, so open views can re-read the tree.</summary>
@@ -78,11 +97,76 @@ namespace SWLOR.Toolset.Workspace
 
             var section = catalog.Section(type);
             if (!_seeded.Add(type) || section.Folders.Count > 0)
+            {
+                RepairPlaceholderNames(section);
                 return section;
+            }
 
             SeedFromPalette(type, section);
             return section;
         }
+
+        /// <summary>
+        /// Placeholder folder names left in the sidecar match <c>Category 1234</c> and nothing else a
+        /// person would type.
+        /// </summary>
+        private static readonly System.Text.RegularExpressions.Regex PlaceholderName =
+            new(@"^Category (\d+)$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        /// <summary>
+        /// Renames categories that were imported before their TLK was available.
+        /// </summary>
+        /// <remarks>
+        /// Category names are resolved once, at import, and then persisted - so a module first opened
+        /// without the base game's dialog.tlk has "Category 6782" written into its sidecar permanently,
+        /// and simply supplying the TLK later fixes nothing. Repairing on load is preferable to bumping
+        /// the sidecar version and re-seeding, which would also discard every category a builder made.
+        /// Names that are not placeholders are never touched, so a deliberate "Category 7" survives.
+        /// </remarks>
+        private void RepairPlaceholderNames(CategorySection section)
+        {
+            if (_tlk == null)
+                return;
+
+            var repaired = 0;
+            foreach (var folder in section.AllFolders().ToList())
+            {
+                var match = PlaceholderName.Match(folder.Name);
+                if (!match.Success || !uint.TryParse(match.Groups[1].Value, out var strRef))
+                    continue;
+
+                var resolved = ResolveCategoryName(strRef);
+                if (string.IsNullOrWhiteSpace(resolved))
+                    continue;
+
+                folder.Rename(resolved.Trim());
+                repaired++;
+            }
+
+            if (repaired == 0)
+                return;
+
+            _log.AppendLine($"Resolved {repaired} category name(s) that were imported before the TLK was available.");
+            SaveChanges();
+        }
+
+        /// <summary>
+        /// The base game's own category tree for a type - the Standard half of the palette, next to the
+        /// module's Custom content. Never null and never throws: without a base game, or for a type the
+        /// game ships no palette for, this is an empty section.
+        /// </summary>
+        /// <remarks>
+        /// Read-only by construction. This section is not part of <see cref="Catalog"/>, so no amount of
+        /// editing it can reach the sidecar <see cref="SaveChanges"/> writes.
+        /// </remarks>
+        public CategorySection StandardSection(ResourceType type) => StandardPaletteFor(type).Section;
+
+        /// <summary>
+        /// Every resref the Standard section can actually offer for a type: what its palette lists,
+        /// filtered to what really resolves in the resource index. The counterpart of
+        /// <see cref="ExistingResRefs"/> for base-game content.
+        /// </summary>
+        public IReadOnlySet<string> StandardResRefs(ResourceType type) => StandardPaletteFor(type).ResRefs;
 
         /// <summary>Every resref of a type that actually exists in the module, for counts and Unsorted.</summary>
         public IReadOnlySet<string> ExistingResRefs(ResourceType type)
@@ -119,6 +203,22 @@ namespace SWLOR.Toolset.Workspace
 
         /// <summary>Re-reads the tree in open views without writing anything.</summary>
         public void NotifyChanged() => Changed?.Invoke();
+
+        private StandardPalette StandardPaletteFor(ResourceType type)
+        {
+            if (_standardPalettes.TryGetValue(type, out var cached))
+                return cached;
+
+            var palette = StandardPaletteLoader.Load(_resourceIndex, type, ResolveCategoryName, _log.AppendLine);
+            _standardPalettes[type] = palette;
+
+            if (!palette.IsEmpty)
+                _log.AppendLine(
+                    $"Loaded {palette.Section.AllFolders().Count()} standard " +
+                    $"{type.DisplayName().ToLowerInvariant()} categories ({palette.ResRefs.Count} blueprints).");
+
+            return palette;
+        }
 
         private void SeedFromPalette(ResourceType type, CategorySection section)
         {

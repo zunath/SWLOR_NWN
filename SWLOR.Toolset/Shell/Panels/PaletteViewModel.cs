@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Categories;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -36,9 +38,6 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private const int MaxSearchResults = 200;
 
-        /// <summary>How many type chips show before More... - enough for one row at the panel's width.</summary>
-        private const int PrimaryTypeCount = 3;
-
         private readonly WorkspaceContext _workspaceContext;
         private readonly CategoryService _categories;
         private readonly OutputLogService _log;
@@ -65,6 +64,16 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private ResourceType _selectedType = ResourceType.Utp;
 
+        /// <summary>
+        /// Whether the tree and grid show the module's own blueprints or the base game's.
+        /// </summary>
+        /// <remarks>
+        /// Custom by default: it is where a builder spends effectively all their time, and it is what this
+        /// panel showed before the split existed, so nobody's habits change on upgrade.
+        /// </remarks>
+        [ObservableProperty]
+        private PaletteSource _source = PaletteSource.Custom;
+
         [ObservableProperty]
         private string _query = string.Empty;
 
@@ -83,19 +92,9 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private string? _statusMessage;
 
-        [ObservableProperty]
-        private bool _isOrganizing;
-
         /// <summary>Tile width in pixels. Idle while tiles are glyphs; the control the grid needs the moment they become rendered models.</summary>
         [ObservableProperty]
         private double _tileSize = 136;
-
-        /// <summary>
-        /// True once More... has been pressed. Only the four types a builder reaches for when dressing
-        /// an area are shown up front, so the chip row stays one line instead of wrapping to two.
-        /// </summary>
-        [ObservableProperty]
-        private bool _showAllTypes;
 
         /// <summary>A size, not a pixel count - the number means nothing to the person dragging it.</summary>
         public string TileSizeLabel => TileSize switch
@@ -111,11 +110,29 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(PreviewHeight));
         }
 
-        partial void OnShowAllTypesChanged(bool value) => PublishTypeChips();
+        /// <summary>
+        /// False while the Standard palette is showing. The base game's content is not ours to rename,
+        /// delete, refile or add to, so every command that would write is hidden rather than disabled -
+        /// a menu of greyed-out items invites a builder to work out why, and the answer never changes.
+        /// </summary>
+        public bool IsCustomSource => Source == PaletteSource.Custom;
 
-        /// <summary>Reveals the types behind More...</summary>
+        partial void OnSourceChanged(PaletteSource value)
+        {
+            OnPropertyChanged(nameof(IsCustomSource));
+            OnPropertyChanged(nameof(IsStandardSource));
+            SelectedRow = null;
+            SelectedTile = null;
+            Refresh();
+        }
+
+        public bool IsStandardSource => !IsCustomSource;
+
         [RelayCommand]
-        private void ShowMoreTypes() => ShowAllTypes = true;
+        private void ShowCustom() => Source = PaletteSource.Custom;
+
+        [RelayCommand]
+        private void ShowStandard() => Source = PaletteSource.Standard;
 
         public bool IsSearching => !string.IsNullOrWhiteSpace(Query);
 
@@ -146,10 +163,19 @@ namespace SWLOR.Toolset.Shell.Panels
             _categories.Changed += Refresh;
         }
 
+        /// <summary>
+        /// The category tree currently in play. Null only when the module has no section for this type;
+        /// the standard side always returns a section, empty when the base game is unavailable.
+        /// </summary>
+        private CategorySection? CurrentSection() =>
+            IsCustomSource ? _categories.Section(SelectedType) : _categories.StandardSection(SelectedType);
+
         /// <summary>Rebuilds the tree and grid for the current type. Safe to call whenever the module changes.</summary>
         public void Refresh()
         {
-            _existing = _categories.ExistingResRefs(SelectedType);
+            _existing = IsCustomSource
+                ? _categories.ExistingResRefs(SelectedType)
+                : _categories.StandardResRefs(SelectedType);
             RebuildTree();
             RebuildTiles();
         }
@@ -163,29 +189,28 @@ namespace SWLOR.Toolset.Shell.Panels
             SelectedType = chip.Type;
         }
 
-        /// <summary>The four primary types, plus the rest once More... has been pressed.</summary>
+        /// <summary>
+        /// Every type, always. As icons they all fit one row of a narrow panel, which is what removed the
+        /// need for the More... overflow - and an overflow was the wrong shape for this anyway: it made
+        /// half the types cost an extra click to reach and expanded the row past the panel's edge.
+        /// </summary>
         private void PublishTypeChips()
         {
             Types.Clear();
-            var offered = ShowAllTypes ? OfferedTypes : OfferedTypes.Take(PrimaryTypeCount);
 
-            foreach (var type in offered)
-                Types.Add(new PaletteTypeChipViewModel(type) { IsSelected = type == SelectedType });
-
-            // A hidden selection would leave no chip lit, so it joins the row regardless.
-            if (!ShowAllTypes && Types.All(chip => chip.Type != SelectedType))
-                Types.Add(new PaletteTypeChipViewModel(SelectedType) { IsSelected = true });
-
-            OnPropertyChanged(nameof(HasMoreTypes));
+            foreach (var type in OfferedTypes)
+                Types.Add(new PaletteTypeChipViewModel(type, _thumbnails?.TypeChipIcon(type))
+                {
+                    IsSelected = type == SelectedType
+                });
         }
-
-        public bool HasMoreTypes => !ShowAllTypes;
 
         partial void OnSelectedTypeChanged(ResourceType value)
         {
             foreach (var chip in Types)
                 chip.IsSelected = chip.Type == value;
 
+            OnPropertyChanged(nameof(NewBlueprintLabel));
             SelectedRow = null;
             Refresh();
         }
@@ -320,6 +345,103 @@ namespace SWLOR.Toolset.Shell.Panels
             Refresh();
             StatusMessage = $"Deleted {tile.Name}.";
             _log.AppendLine($"Deleted blueprint '{tile.ResRef}' ({path}).");
+        }
+
+        /// <summary>The label for the type-specific create action, e.g. "New Placeable...".</summary>
+        public string NewBlueprintLabel => $"New {SelectedType.SingularDisplayName()}...";
+
+        /// <summary>
+        /// Creates a blueprint of the active type and files it into the right-clicked category.
+        /// </summary>
+        /// <remarks>
+        /// The new blueprint is built from the type's editor schema plus whatever else every real
+        /// blueprint of that type carries (see <see cref="BlueprintTemplateFactory"/>), so it opens in the
+        /// editor as a complete, valid object with defaults rather than a stub the editor cannot show. It
+        /// opens straight away: nobody creates a blueprint in order to leave it alone.
+        /// </remarks>
+        [RelayCommand]
+        private async Task NewBlueprintAsync()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || _prompts == null)
+                return;
+
+            if (!BlueprintTemplateFactory.Supports(SelectedType))
+            {
+                StatusMessage = $"{SelectedType.DisplayName()} cannot be created here yet.";
+                return;
+            }
+
+            var kind = SelectedType.SingularDisplayName();
+            var name = await _prompts.PromptForTextAsync(
+                $"New {kind}",
+                "The resref is derived from this name: lowercase, no spaces, 16 characters at most - " +
+                "NWN's own limit.",
+                string.Empty,
+                "Create").ConfigureAwait(true);
+
+            if (name == null)
+                return;
+
+            var resRef = ToResRef(name);
+            if (resRef.Length == 0)
+            {
+                StatusMessage = "That name has no letters or digits to build a resref from.";
+                return;
+            }
+
+            var path = workspace.GetResourcePath(SelectedType, resRef);
+            if (File.Exists(path))
+            {
+                StatusMessage = $"A {kind.ToLowerInvariant()} called '{resRef}' already exists.";
+                return;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                File.WriteAllBytes(path, BlueprintTemplateFactory.CreateFileContent(SelectedType, resRef, name));
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Could not create {resRef}: {ex.Message}";
+                _log.AppendLine($"Creating {SelectedType.Extension()} blueprint '{resRef}' failed: {ex.Message}");
+                return;
+            }
+
+            // Filed where the builder asked for it, which is the whole reason this lives on the category's
+            // menu rather than a global New button.
+            if (SelectedRow?.Folder is { } folder)
+            {
+                folder.AddMember(resRef);
+                _categories.SaveChanges();
+            }
+
+            Refresh();
+            StatusMessage = $"Created {name}.";
+            _log.AppendLine($"Created {SelectedType.Extension()} blueprint '{resRef}' ({path}).");
+            _editorService?.Invoke().TryOpenEditor(SelectedType, resRef);
+        }
+
+        /// <summary>
+        /// Reduces a display name to a legal NWN resref: lowercase, alphanumerics and underscores, 16
+        /// characters. Anything else is dropped rather than substituted, so the result stays readable.
+        /// </summary>
+        private static string ToResRef(string name)
+        {
+            var builder = new StringBuilder(name.Length);
+            foreach (var character in name)
+            {
+                if (char.IsAsciiLetterOrDigit(character))
+                    builder.Append(char.ToLowerInvariant(character));
+                else if (character is ' ' or '_' or '-' && builder.Length > 0 && builder[^1] != '_')
+                    builder.Append('_');
+
+                if (builder.Length == 16)
+                    break;
+            }
+
+            return builder.ToString().TrimEnd('_');
         }
 
         /// <summary>Adds a subcategory inside the selected one, or a top-level one when nothing is selected.</summary>
@@ -459,7 +581,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private void RebuildTree()
         {
             _allRows.Clear();
-            var section = _categories.Section(SelectedType);
+            var section = CurrentSection();
 
             if (section != null)
             {
@@ -541,7 +663,7 @@ namespace SWLOR.Toolset.Shell.Panels
         {
             CategoryMatches.Clear();
 
-            var section = _categories.Section(SelectedType);
+            var section = CurrentSection();
             if (section == null || !IsSearching)
             {
                 OnPropertyChanged(nameof(HasCategoryMatches));
@@ -574,7 +696,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private void RebuildTiles()
         {
             Tiles.Clear();
-            var section = _categories.Section(SelectedType);
+            var section = CurrentSection();
             if (section == null)
             {
                 Breadcrumb = string.Empty;

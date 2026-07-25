@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:viewport="using:SWLOR.Toolset.Viewport"
@@ -14,32 +14,25 @@
   <DockPanel>
     <TabControl x:Name="RootTabs">
       <TabItem Header="3D View" x:Name="ViewTab3D">
-        <Grid RowDefinitions="Auto,*,Auto">
+        <!-- No toolbar at all now. Placement comes from the Palette panel, the scene rebuilds itself
+             after every edit, and the view options that were here either had no audience or are simply
+             the right default (ceilings hidden, placeables drawn as their models). The map gets the
+             whole tab. -->
+        <Grid RowDefinitions="*,Auto">
 
-          <!-- What is left of the toolbar. Placement moved to the Palette panel, where the builder is
-               already choosing what to place; the scene rebuilds itself after every edit, so there is
-               nothing to press for that either. This one switch stays because models can visually bury
-               the markers you are trying to click. -->
-          <Border Grid.Row="0" Background="{DynamicResource PanelBrush}"
-                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="10,6">
-            <CheckBox Content="Placeable models" x:Name="PlaceableModelsCheck" IsChecked="True"
-                      IsCheckedChanged="OnPlaceableModelsChanged"
-                      ToolTip.Tip="Unchecked: placeables show their marker instead of their 3D model" />
-          </Border>
-
-          <viewport:GlAreaControl Grid.Row="1" x:Name="AreaView" />
+          <viewport:GlAreaControl Grid.Row="0" x:Name="AreaView" />
 
           <!-- OpenGlControlBase has no Background brush, so pointer events never hit-test to it
                (same Avalonia limitation Radoub's ModelPreviewGLControl documents). This transparent
-               overlay captures camera input and forwards it to the control; toolbar elements below
-               sit ABOVE it in z-order and keep receiving their own clicks. -->
-          <Border Grid.Row="1" x:Name="ViewportInput" Background="Transparent"
+               overlay captures camera input and forwards it to the control; the HUD overlays declared
+               after it sit ABOVE it in z-order and keep receiving their own clicks. -->
+          <Border Grid.Row="0" x:Name="ViewportInput" Background="Transparent"
                   PointerPressed="OnViewportPointerPressed"
                   PointerMoved="OnViewportPointerMoved"
                   PointerReleased="OnViewportPointerReleased"
                   PointerWheelChanged="OnViewportPointerWheel" />
 
-          <Border Grid.Row="1" Background="#B0202020" CornerRadius="4" Padding="10,6"
+          <Border Grid.Row="0" Background="#B0202020" CornerRadius="4" Padding="10,6"
                   HorizontalAlignment="Center" VerticalAlignment="Center"
                   IsVisible="{Binding IsBuildingScene}">
             <TextBlock Text="{Binding SceneStatus}" Foreground="White" />
@@ -47,7 +40,7 @@
 
           <!-- Viewport HUD. What the selection *is* moved down to the selection bar; this keeps only
                what belongs to the map itself - scene size, and the transient placement/paint prompts. -->
-          <Border Grid.Row="1" Background="#D00C1017" CornerRadius="3" Padding="9,5"
+          <Border Grid.Row="0" Background="#D00C1017" CornerRadius="3" Padding="9,5"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                   HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10"
                   IsVisible="{Binding !IsBuildingScene}">
@@ -67,7 +60,7 @@
 
           <!-- Drag readout. Present only while a drag is in flight, showing where the thing is now and
                how far it has come - the second half being what a static coordinate box cannot tell you. -->
-          <Border Grid.Row="1" Background="#F00C1017" CornerRadius="3" Padding="10,7"
+          <Border Grid.Row="0" Background="#F00C1017" CornerRadius="3" Padding="10,7"
                   BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="18"
                   IsVisible="{Binding IsDragging}">
@@ -82,7 +75,7 @@
             </StackPanel>
           </Border>
 
-          <Border Grid.Row="1" x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
+          <Border Grid.Row="0" x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
             <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />
           </Border>
@@ -91,7 +84,7 @@
                recognises, the resref underneath it for anyone scripting against it, the kind, and the one
                action worth offering from here - open the thing itself. Coordinates deliberately live on
                the gizmo while dragging and in the status bar otherwise. -->
-          <Border Grid.Row="2" Background="{DynamicResource PanelBrush}"
+          <Border Grid.Row="1" Background="{DynamicResource PanelBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
                   Padding="12,8" IsVisible="{Binding HasSceneSelection}">
             <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="14">

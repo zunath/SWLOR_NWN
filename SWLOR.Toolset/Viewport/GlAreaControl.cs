@@ -354,9 +354,16 @@ void main()
         /// <summary>Where the ghost sits right now, or null before the pointer has been over the map.</summary>
         private Vector3? _ghostPosition;
 
-        private bool _hideCeilings;
+        /// <summary>
+        /// Discards tile geometry above each tile's own base height + ~4m (interior ceilings).
+        /// </summary>
+        /// <remarks>
+        /// On by default. An interior tileset's ceiling sits between the camera and everything a builder
+        /// came to edit, so the first thing anyone did with the old toggle was turn it on - which makes it
+        /// the default, not an option. There is no UI for it now; the value is what the editor wants.
+        /// </remarks>
+        private bool _hideCeilings = true;
 
-        /// <summary>Discards tile geometry above each tile's own base height + ~4m (interior ceilings).</summary>
         public bool HideCeilings
         {
             get => _hideCeilings;
@@ -366,27 +373,6 @@ void main()
                     return;
 
                 _hideCeilings = value;
-                RequestNextFrameRendering();
-            }
-        }
-
-        private bool _showPlaceableModels = true;
-
-        /// <summary>
-        /// When true (default), placeable instances with resolved geometry render their actual 3D
-        /// model; when false they fall back to their kind-colored pyramid marker (useful when
-        /// models visually bury the editing markers). The same switch is planned for creatures
-        /// once creature appearance models render in the area view.
-        /// </summary>
-        public bool ShowPlaceableModels
-        {
-            get => _showPlaceableModels;
-            set
-            {
-                if (_showPlaceableModels == value)
-                    return;
-
-                _showPlaceableModels = value;
                 RequestNextFrameRendering();
             }
         }
@@ -412,9 +398,7 @@ void main()
         }
 
         /// <summary>True when this instance should draw its resolved model rather than a marker.</summary>
-        private bool DrawsAsModel(InstanceMarker instance) =>
-            instance.Model != null &&
-            (_showPlaceableModels || instance.Kind != InstanceMarkerKind.Placeable);
+        private static bool DrawsAsModel(InstanceMarker instance) => instance.Model != null;
 
         /// <summary>Layered resource index used to resolve tile/mesh textures and MTR materials. Null degrades every mesh to a flat gray fallback.</summary>
         public ResourceIndex? ResourceIndex { get; set; }
@@ -636,7 +620,9 @@ void main()
                 new Vector2((float)screenPos.X, (float)screenPos.Y),
                 _viewportWidth, _viewportHeight, _lastView, _lastProjection);
 
-            var hit = AreaPicking.PickClosestInstance(ray, scene, _showPlaceableModels);
+            // Always true now that the marker-instead-of-model switch is gone: picking has to agree with
+            // drawing, and everything with geometry draws as its model.
+            var hit = AreaPicking.PickClosestInstance(ray, scene, showPlaceableModels: true);
             InstancePicked?.Invoke(hit);
         }
 

@@ -1,4 +1,7 @@
+using Radoub.Formats.Gff;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Workspace
 {
@@ -21,7 +24,14 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// <summary>The resolved, absolute module root directory (the folder containing "are", "utc", ...).</summary>
         public string ModuleRoot { get; }
 
-        public ModuleWorkspace(string moduleRoot)
+        /// <summary>
+        /// The layered game-resource view (base-game KEY/BIF plus the hak stack), when one is available.
+        /// Only <see cref="LoadBlueprint"/> uses it, and only as a fallback: it is what lets the palette's
+        /// Standard group hand back a blueprint the module has no file of its own for.
+        /// </summary>
+        public ResourceIndex? ResourceIndex { get; }
+
+        public ModuleWorkspace(string moduleRoot, ResourceIndex? resourceIndex = null)
         {
             if (string.IsNullOrWhiteSpace(moduleRoot))
                 throw new ArgumentException("Module root path must be provided.", nameof(moduleRoot));
@@ -37,6 +47,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
 
             ModuleRoot = fullPath;
+            ResourceIndex = resourceIndex;
         }
 
         /// <summary>
@@ -52,9 +63,16 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// <summary>The subfolder for a resource type (e.g. ".../Module/utc").</summary>
         public string GetResourceFolder(ResourceType type) => Path.Combine(ModuleRoot, type.Extension());
 
-        /// <summary>The on-disk path for one resource (e.g. ".../Module/utc/mynpc.utc.json").</summary>
+        /// <summary>
+        /// The on-disk path for one resource (e.g. ".../Module/utc/mynpc.utc.json", or
+        /// ".../Module/nss/myscript.nss" for the one type that is not JSON-encoded).
+        /// </summary>
         public string GetResourcePath(ResourceType type, string resRef) =>
-            Path.Combine(GetResourceFolder(type), resRef + "." + type.Extension() + ".json");
+            Path.Combine(GetResourceFolder(type), resRef + FileSuffix(type));
+
+        /// <summary>The filename suffix a resource of this type carries, leading dot included.</summary>
+        private static string FileSuffix(ResourceType type) =>
+            type.IsJsonEncoded() ? "." + type.Extension() + ".json" : "." + type.Extension();
 
         /// <summary>
         /// Enumerates every resref present for a resource type by listing the folder - no file is
@@ -66,7 +84,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             if (!Directory.Exists(folder))
                 return Array.Empty<string>();
 
-            var suffix = "." + type.Extension() + ".json";
+            var suffix = FileSuffix(type);
             var results = new List<string>();
 
             foreach (var file in Directory.EnumerateFiles(folder, "*" + suffix))
@@ -104,25 +122,70 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// Loads a single blueprint document by type and resref. <paramref name="type"/> must be
         /// one of <see cref="BlueprintTypes"/> (use <see cref="LoadArea"/> for areas).
         /// </summary>
+        /// <remarks>
+        /// The module's own unpacked JSON always wins, so a resref the module overrides reads as the
+        /// module authored it. Only a miss reaches <see cref="ResourceIndex"/>, which is how the palette's
+        /// Standard group can open and place a base-game blueprint that exists nowhere in the module.
+        /// </remarks>
         public GffDocumentBase LoadBlueprint(ResourceType type, string resRef)
         {
             if (string.IsNullOrWhiteSpace(resRef))
                 throw new ArgumentException("ResRef must be provided.", nameof(resRef));
 
-            var path = GetResourcePath(type, resRef);
-            var bytes = File.ReadAllBytes(path);
+            if (type == ResourceType.Area)
+                throw new ArgumentException("Use LoadArea for area resources.", nameof(type));
 
+            // Rejected before any I/O: a conversation or a script is not a blueprint, and reading one
+            // first would surface a parse failure instead of the actual mistake.
+            if (!BlueprintTypes.Contains(type))
+                throw new ArgumentOutOfRangeException(nameof(type), type, "Not a blueprint resource type.");
+
+            var path = GetResourcePath(type, resRef);
+            if (File.Exists(path))
+                return Wrap(type, JsonGffDocument.Parse(File.ReadAllBytes(path)));
+
+            if (TryLoadFromResourceIndex(type, resRef, out var indexed))
+                return Wrap(type, indexed);
+
+            throw new FileNotFoundException(
+                $"Blueprint '{resRef}.{type.Extension()}' was not found in the module at '{path}'" +
+                (ResourceIndex == null
+                    ? ", and no game resource index is available to fall back to."
+                    : ", nor in the base game / hak resource index."),
+                path);
+        }
+
+        /// <summary>
+        /// Resolves a blueprint through the layered resource index and bridges the binary GFF the game
+        /// ships into the same JSON document model the module's files parse to, so everything downstream
+        /// (editors, previews, placement) cannot tell the two apart.
+        /// </summary>
+        private bool TryLoadFromResourceIndex(ResourceType type, string resRef, out JsonGffDocument document)
+        {
+            document = null!;
+            if (ResourceIndex == null)
+                return false;
+
+            var identity = new ResourceIdentity(resRef, ResourceIdentity.TypeFromExtension(type.Extension()));
+            if (!ResourceIndex.TryLookup(identity, out var handle))
+                return false;
+
+            document = GffJsonBridge.ToJsonDocument(GffReader.Read(handle.GetBytes()));
+            return true;
+        }
+
+        private static GffDocumentBase Wrap(ResourceType type, JsonGffDocument document)
+        {
             return type switch
             {
-                ResourceType.Utc => UtcDocument.Parse(bytes),
-                ResourceType.Uti => UtiDocument.Parse(bytes),
-                ResourceType.Utp => UtpDocument.Parse(bytes),
-                ResourceType.Utd => UtdDocument.Parse(bytes),
-                ResourceType.Utm => UtmDocument.Parse(bytes),
-                ResourceType.Utt => UttDocument.Parse(bytes),
-                ResourceType.Uts => UtsDocument.Parse(bytes),
-                ResourceType.Utw => UtwDocument.Parse(bytes),
-                ResourceType.Area => throw new ArgumentException("Use LoadArea for area resources.", nameof(type)),
+                ResourceType.Utc => new UtcDocument(document),
+                ResourceType.Uti => new UtiDocument(document),
+                ResourceType.Utp => new UtpDocument(document),
+                ResourceType.Utd => new UtdDocument(document),
+                ResourceType.Utm => new UtmDocument(document),
+                ResourceType.Utt => new UttDocument(document),
+                ResourceType.Uts => new UtsDocument(document),
+                ResourceType.Utw => new UtwDocument(document),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.")
             };
         }

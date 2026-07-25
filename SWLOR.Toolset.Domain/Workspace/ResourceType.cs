@@ -2,7 +2,7 @@ namespace SWLOR.Toolset.Domain.Workspace
 {
     /// <summary>
     /// The module resource kinds a <see cref="ModuleWorkspace"/> knows how to enumerate and load:
-    /// areas (.are, paired with .git/.gic) and every blueprint type this package supports.
+    /// areas (.are, paired with .git/.gic), the blueprint types, conversations, and scripts.
     /// </summary>
     public enum ResourceType
     {
@@ -14,13 +14,23 @@ namespace SWLOR.Toolset.Domain.Workspace
         Utm,
         Utt,
         Uts,
-        Utw
+        Utw,
+
+        /// <summary>A conversation (.dlg). Stored like the blueprints - nwn_gff JSON under Module/dlg.</summary>
+        Dlg,
+
+        /// <summary>
+        /// A NWScript source file (.nss). The one type that is NOT nwn_gff JSON: these are plain text,
+        /// so they live at Module/nss/&lt;resref&gt;.nss with no second extension.
+        /// </summary>
+        Nss
     }
 
     /// <summary>
-    /// File-naming conventions for <see cref="ResourceType"/>: the module subfolder name and the
-    /// blueprint/area file extension are identical for every type this package supports (e.g.
-    /// "utc" folder holds "*.utc.json" files), so one string covers both.
+    /// File-naming conventions for <see cref="ResourceType"/>: the module subfolder name matches the
+    /// resource extension for every type (e.g. the "utc" folder holds "utc" resources), so one string
+    /// covers both. Whether a file carries a further ".json" suffix is a separate question -
+    /// see <see cref="IsJsonEncoded"/>.
     /// </summary>
     public static class ResourceTypeExtensions
     {
@@ -37,9 +47,23 @@ namespace SWLOR.Toolset.Domain.Workspace
                 ResourceType.Utt => "utt",
                 ResourceType.Uts => "uts",
                 ResourceType.Utw => "utw",
+                ResourceType.Dlg => "dlg",
+                ResourceType.Nss => "nss",
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.")
             };
         }
+
+        /// <summary>
+        /// Whether this resource is stored as unpacked nwn_gff JSON (so the file is
+        /// "&lt;resref&gt;.&lt;ext&gt;.json") rather than in its own native format.
+        /// </summary>
+        /// <remarks>
+        /// Everything in an unpacked module is GFF and therefore JSON, except NWScript source, which is
+        /// text and was never GFF to begin with. Callers that read or write module files must ask this
+        /// rather than assuming the double extension - assuming it is how a scripts folder ends up
+        /// looking empty.
+        /// </remarks>
+        public static bool IsJsonEncoded(this ResourceType type) => type != ResourceType.Nss;
 
         /// <summary>
         /// The inverse of <see cref="Extension"/>, for reading a resource type back out of a file that
@@ -80,6 +104,8 @@ namespace SWLOR.Toolset.Domain.Workspace
                 ResourceType.Utt => "Triggers",
                 ResourceType.Uts => "Sound Sets",
                 ResourceType.Utw => "Waypoints",
+                ResourceType.Dlg => "Conversations",
+                ResourceType.Nss => "Scripts",
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.")
             };
         }
@@ -101,6 +127,8 @@ namespace SWLOR.Toolset.Domain.Workspace
                 ResourceType.Utt => "Trigger",
                 ResourceType.Uts => "Sound Set",
                 ResourceType.Utw => "Waypoint",
+                ResourceType.Dlg => "Conversation",
+                ResourceType.Nss => "Script",
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.")
             };
         }

@@ -1,75 +1,103 @@
 using System.Collections.Concurrent;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using SWLOR.Toolset.Domain.GameData.Lookups;
-using SWLOR.Toolset.Domain.Render;
+using Avalonia.Threading;
+using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Workspace
 {
     /// <summary>
-    /// Produces and caches blueprint thumbnails for the palette.
+    /// Supplies palette tiles with their preview images, and owns the two caches that keep that cheap.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Rendering happens off the UI thread through <see cref="ThumbnailRenderer"/>, which is a software
-    /// rasterizer precisely so this can run on a thread pool while the builder keeps working. Results
-    /// are cached in memory by resref; a module has thousands of blueprints but a builder only ever
-    /// looks at a few hundred in one sitting.
+    /// Three layers, in order: a bounded in-memory cache of decoded bitmaps, a persistent PNG cache on
+    /// disk, and - only when both miss - an actual render on a thread-pool thread. The module has some
+    /// 17,000 blueprints, so the disk layer is what makes previews feel instant on the second launch and
+    /// the memory bound is what stops the first one from turning a gigabyte of pixels into a resident
+    /// set.
     /// </para>
     /// <para>
-    /// Everything here degrades to null rather than throwing. A blueprint whose model cannot be resolved
-    /// - most often because it lives in a hak this install has not indexed - simply keeps the palette's
-    /// letter placeholder, which is a worse tile but not a broken one.
+    /// Every tile gets an image. Blueprints with no artwork of their own - merchants, triggers, sound
+    /// sets, waypoints, and the placeables whose 2DA appearance row is blank - resolve to their type's
+    /// symbol, which is drawn once and shared, so the grid never falls back to a bare letter while game
+    /// data is loaded.
     /// </para>
     /// </remarks>
     public sealed class ThumbnailService
     {
-        /// <summary>Rendered at a fixed size and scaled by the view, so changing the size slider costs nothing.</summary>
-        public const int RenderSize = 128;
+        /// <summary>
+        /// Decoded bitmaps held at once. A palette shows at most a couple of hundred tiles, so this is
+        /// several screens of history; at 128px square it is roughly 65 MB worst case.
+        /// </summary>
+        private const int MemoryCacheCapacity = 1024;
+
+        /// <summary>Square size the type symbols are drawn at.</summary>
+        private const int TypeIconSize = 128;
+
+        /// <summary>Upper bound on concurrent renders during a cache build, regardless of core count.</summary>
+        private const int MaxBuildWorkers = 4;
 
         private readonly WorkspaceContext _workspaceContext;
-        private readonly TileModelCache? _models;
-        private readonly AppearanceService? _appearances;
-        private readonly PlaceableAppearanceService? _placeables;
-        private readonly DoorTypeService? _doors;
+        private readonly BlueprintPreviewRenderer _renderer;
 
-        private readonly ConcurrentDictionary<string, Bitmap?> _cache = new(StringComparer.OrdinalIgnoreCase);
+        private readonly BitmapMemoryCache _memory = new(MemoryCacheCapacity);
         private readonly ConcurrentDictionary<string, byte> _inFlight = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeIcons = new();
 
-        public ThumbnailService(
-            WorkspaceContext workspaceContext,
-            TileModelCache? models = null,
-            AppearanceService? appearances = null,
-            PlaceableAppearanceService? placeables = null,
-            DoorTypeService? doors = null)
+        private readonly object _diskGate = new();
+        private ThumbnailDiskCache _disk = new(null);
+        private string? _diskModuleRoot;
+
+        public ThumbnailService(WorkspaceContext workspaceContext, BlueprintPreviewRenderer renderer)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
-            _models = models;
-            _appearances = appearances;
-            _placeables = placeables;
-            _doors = doors;
+            _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         }
 
-        /// <summary>True when the game data needed to resolve models is available at all.</summary>
-        public bool IsAvailable => _models != null;
+        /// <summary>True when game data is loaded well enough to produce any preview at all.</summary>
+        public bool IsAvailable => _renderer.IsAvailable;
 
-        /// <summary>The cached thumbnail, or null when it has not been rendered yet.</summary>
-        public Bitmap? Cached(ResourceType type, string resRef) =>
-            _cache.TryGetValue(Key(type, resRef), out var bitmap) ? bitmap : null;
+        /// <summary>Where previews are cached on disk, for the Output log; null when caching is off.</summary>
+        public string? CachePath => Disk.RootPath;
 
         /// <summary>
-        /// Renders a thumbnail off the UI thread, calling <paramref name="onReady"/> on completion when
-        /// one was produced. Requests already cached or already running are dropped, so a palette that
-        /// re-publishes its tiles on every keystroke does not queue the same work repeatedly.
+        /// The preview for a blueprint if it is already decoded in memory, else null. Callers use this to
+        /// fill a tile without a round trip through the thread pool.
+        /// </summary>
+        public Bitmap? Cached(ResourceType type, string resRef)
+        {
+            if (!IsAvailable)
+                return null;
+
+            return _memory.TryGet(Key(type, resRef), out var bitmap)
+                ? bitmap ?? TypeIcon(type)
+                : null;
+        }
+
+        /// <summary>
+        /// Resolves a preview off the UI thread and calls <paramref name="onReady"/> on the UI thread with
+        /// the result - real artwork when there is any, the type symbol when there is not. Requests
+        /// already running are dropped, so a palette that republishes its tiles on every keystroke does
+        /// not queue the same work repeatedly.
         /// </summary>
         public void RequestAsync(ResourceType type, string resRef, Action<Bitmap> onReady)
         {
+            ArgumentNullException.ThrowIfNull(onReady);
+
             if (!IsAvailable || string.IsNullOrWhiteSpace(resRef))
                 return;
 
             var key = Key(type, resRef);
-            if (_cache.ContainsKey(key) || !_inFlight.TryAdd(key, 0))
+            if (_memory.TryGet(key, out var known))
+            {
+                var resolved = known ?? TypeIcon(type);
+                Dispatcher.UIThread.Post(() => onReady(resolved));
+                return;
+            }
+
+            if (!_inFlight.TryAdd(key, 0))
                 return;
 
             Task.Run(() =>
@@ -77,52 +105,203 @@ namespace SWLOR.Toolset.Workspace
                 Bitmap? bitmap = null;
                 try
                 {
-                    bitmap = Render(type, resRef);
+                    bitmap = Resolve(type, resRef);
                 }
-                catch
+                catch (Exception)
                 {
-                    // A single unreadable model must not take the batch - the tile keeps its placeholder.
+                    // One bad blueprint must not stop the rest of the grid from filling in.
                 }
                 finally
                 {
-                    _cache[key] = bitmap;
+                    _memory.Set(key, bitmap);
                     _inFlight.TryRemove(key, out _);
                 }
 
-                if (bitmap != null)
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() => onReady(bitmap));
+                var resolved = bitmap ?? TypeIcon(type);
+                Dispatcher.UIThread.Post(() => onReady(resolved));
             });
         }
 
-        private Bitmap? Render(ResourceType type, string resRef)
+        /// <summary>
+        /// The shared symbol for a blueprint type, drawn on first use. Shared rather than per-blueprint
+        /// because thousands of tiles can want the same one and they are all identical.
+        /// </summary>
+        public Bitmap TypeIcon(ResourceType type) =>
+            _typeIcons.GetOrAdd(type, key => ToBitmap(TypeIconRenderer.Render(key, TypeIconSize)));
+
+        /// <summary>
+        /// Renders and stores every missing preview for the open module, reporting progress as it goes.
+        /// Deliberately does not populate the in-memory cache: this walks the whole module, and holding
+        /// its output would defeat the point of bounding that cache.
+        /// </summary>
+        public async Task<PreviewCacheProgress> WarmAsync(
+            IProgress<PreviewCacheProgress>? progress = null,
+            CancellationToken cancellationToken = default)
         {
             var workspace = _workspaceContext.Workspace;
-            if (workspace == null || _models == null)
-                return null;
+            if (workspace == null || !IsAvailable)
+                return new PreviewCacheProgress(0, 0, 0, 0, 0);
 
-            var document = workspace.LoadBlueprint(type, resRef);
-            var reference = BlueprintModelResolver.Resolve(
-                type, document.Fields, _appearances, _placeables, _doors);
+            var work = new List<(ResourceType Type, string ResRef)>();
+            foreach (var type in ModuleWorkspace.BlueprintTypes.Where(BlueprintPreviewRenderer.IsSupported))
+            {
+                foreach (var resRef in workspace.EnumerateResRefs(type))
+                    work.Add((type, resRef));
+            }
 
-            // Segmented creatures need their parts composed, which is the GL preview's job; only the
-            // single-model kinds are rendered here rather than half-drawing a body.
-            if (reference.Kind != BlueprintModelKind.Simple || reference.ModelResRef == null)
-                return null;
+            var disk = Disk;
+            var total = work.Count;
+            var processed = 0;
+            var rendered = 0;
+            var reused = 0;
+            var withoutArtwork = 0;
+            var failed = 0;
+            var lastReportedPercent = -1;
 
-            var pixels = ThumbnailRenderer.Render(_models.GetOrBuild(reference.ModelResRef), RenderSize);
-            return pixels == null ? null : ToBitmap(pixels);
+            // Capped low on purpose, and not scaled to core count. Each worker can hold a fully expanded
+            // model mesh while it rasterizes, so parallelism here buys throughput in units of tens of
+            // megabytes - and this runs while the builder is working, where a preview build that makes the
+            // editor stutter is worse than one that takes a little longer.
+            var options = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount - 1, 1, MaxBuildWorkers),
+                CancellationToken = cancellationToken
+            };
+
+            await Parallel.ForEachAsync(work, options, (item, _) =>
+            {
+                try
+                {
+                    if (disk.Contains(item.Type, item.ResRef, workspace.GetResourcePath(item.Type, item.ResRef)))
+                    {
+                        Interlocked.Increment(ref reused);
+                    }
+                    else
+                    {
+                        var image = _renderer.Render(item.Type, item.ResRef);
+                        if (image == null)
+                        {
+                            disk.StoreNoArtwork(item.Type, item.ResRef);
+                            Interlocked.Increment(ref withoutArtwork);
+                        }
+                        else
+                        {
+                            // Disposed immediately: it exists only to be encoded, and 17,000 live
+                            // bitmaps is exactly what this cache is designed to avoid.
+                            using var bitmap = ToBitmap(image);
+                            disk.Store(item.Type, item.ResRef, bitmap);
+                            Interlocked.Increment(ref rendered);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    // Counted as processed but deliberately not marked: a failure here is a failure to
+                    // render, not proof that there is nothing to render, so the next build tries again.
+                    Interlocked.Increment(ref failed);
+                }
+
+                var done = Interlocked.Increment(ref processed);
+                if (progress != null)
+                {
+                    var percent = (int)(done * 100L / Math.Max(1, total));
+                    if (percent != Volatile.Read(ref lastReportedPercent) && percent % 5 == 0)
+                    {
+                        Volatile.Write(ref lastReportedPercent, percent);
+                        progress.Report(new PreviewCacheProgress(
+                            done, total, Volatile.Read(ref rendered),
+                            Volatile.Read(ref reused), Volatile.Read(ref withoutArtwork),
+                            Volatile.Read(ref failed)));
+                    }
+                }
+
+                return ValueTask.CompletedTask;
+            }).ConfigureAwait(false);
+
+            return new PreviewCacheProgress(processed, total, rendered, reused, withoutArtwork, failed);
         }
 
-        private static Bitmap ToBitmap(byte[] pixels)
+        /// <summary>Drops every cached preview, in memory and on disk, so the next build redoes them.</summary>
+        public int ClearCache()
+        {
+            _memory.Clear();
+            return Disk.Clear();
+        }
+
+        /// <summary>Deletes cache folders left by an older render pipeline. Returns the number removed.</summary>
+        public int PruneSupersededCaches() => Disk.PruneSupersededVersions();
+
+        /// <summary>Disk hit, then render. Null means "no artwork" - the caller substitutes a type symbol.</summary>
+        private Bitmap? Resolve(ResourceType type, string resRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            var blueprintPath = workspace?.GetResourcePath(type, resRef);
+            var disk = Disk;
+
+            switch (disk.TryLoad(type, resRef, blueprintPath, out var cached))
+            {
+                case ThumbnailDiskCache.Lookup.Image:
+                    return cached;
+                case ThumbnailDiskCache.Lookup.NoArtwork:
+                    return null;
+            }
+
+            var image = _renderer.Render(type, resRef);
+            if (image == null)
+            {
+                disk.StoreNoArtwork(type, resRef);
+                return null;
+            }
+
+            var bitmap = ToBitmap(image);
+            disk.Store(type, resRef, bitmap);
+            return bitmap;
+        }
+
+        /// <summary>
+        /// The disk cache for whichever module is open, rebuilt when that changes - the service is a
+        /// singleton but the module root is only known after startup, and can be reopened elsewhere.
+        /// </summary>
+        private ThumbnailDiskCache Disk
+        {
+            get
+            {
+                var moduleRoot = _workspaceContext.Workspace?.ModuleRoot;
+                lock (_diskGate)
+                {
+                    if (!string.Equals(moduleRoot, _diskModuleRoot, StringComparison.OrdinalIgnoreCase))
+                    {
+                        _diskModuleRoot = moduleRoot;
+                        _disk = new ThumbnailDiskCache(moduleRoot);
+                    }
+
+                    return _disk;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Copies straight-alpha BGRA into a bitmap row by row, because a locked framebuffer's stride is
+        /// allowed to exceed its row width and a single block copy would shear the image when it does.
+        /// </summary>
+        private static Bitmap ToBitmap(IconImage image)
         {
             var bitmap = new WriteableBitmap(
-                new Avalonia.PixelSize(RenderSize, RenderSize),
+                new Avalonia.PixelSize(image.Width, image.Height),
                 new Avalonia.Vector(96, 96),
                 PixelFormat.Bgra8888,
                 AlphaFormat.Unpremul);
 
             using var buffer = bitmap.Lock();
-            System.Runtime.InteropServices.Marshal.Copy(pixels, 0, buffer.Address, pixels.Length);
+            for (var y = 0; y < image.Height; y++)
+            {
+                System.Runtime.InteropServices.Marshal.Copy(
+                    image.Bgra,
+                    y * image.Stride,
+                    buffer.Address + y * buffer.RowBytes,
+                    image.Stride);
+            }
+
             return bitmap;
         }
 

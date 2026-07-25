@@ -15,15 +15,33 @@ namespace SWLOR.Toolset.Domain.Render
     /// what decides whether a builder recognises a crate.
     /// </para>
     /// <para>
-    /// Painter's algorithm: triangles are sorted back to front and filled flat, lit by a single fixed
-    /// key light. No z-buffer, because sorting per triangle is enough at this size and costs less
-    /// memory per concurrent render.
+    /// Painter's algorithm: triangles are sorted back to front and filled, lit by a single fixed key
+    /// light. No z-buffer, because sorting per triangle is enough at this size and costs less memory per
+    /// concurrent render.
+    /// </para>
+    /// <para>
+    /// Meshes are textured when the caller supplies a texture resolver, sampling the diffuse map at each
+    /// covered pixel's interpolated UV; a mesh whose texture cannot be resolved falls back to the
+    /// palette's flat tone, so a partly-resolvable model still renders whole. Texels the artwork marks
+    /// transparent are skipped, which is what keeps foliage and grating meshes from reading as solid
+    /// slabs - the one place the missing z-buffer would otherwise show.
     /// </para>
     /// </remarks>
     public static class ThumbnailRenderer
     {
         /// <summary>Bytes per pixel in the BGRA output.</summary>
         public const int BytesPerPixel = 4;
+
+        /// <summary>
+        /// Triangles collected before the rest of a model is ignored.
+        /// </summary>
+        /// <remarks>
+        /// A 128px tile cannot show detail past a few thousand triangles, and thumbnails are rendered in
+        /// parallel across a whole module - so the cap is really about bounding memory on the handful of
+        /// enormous models in the corpus, not about drawing quality. Framing uses whatever was collected,
+        /// which for a truncated model is the first meshes in file order: still a recognisable silhouette.
+        /// </remarks>
+        public const int MaxTriangles = 120_000;
 
         /// <summary>
         /// The view direction. A three-quarter view from above reads as an object rather than a
@@ -33,18 +51,30 @@ namespace SWLOR.Toolset.Domain.Render
 
         private static readonly Vector3 LightDirection = Vector3.Normalize(new Vector3(-0.4f, -0.6f, 1f));
 
+        /// <summary>Texels below this alpha are treated as cut out rather than blended.</summary>
+        private const byte AlphaCutoff = 96;
+
         /// <summary>
         /// Renders to a BGRA pixel buffer of <paramref name="size"/> squared, or null when the model has
         /// no triangles to draw - callers fall back to their placeholder rather than showing an empty box.
         /// </summary>
-        public static byte[]? Render(RenderModel? model, int size, ThumbnailPalette? palette = null)
+        /// <param name="resolveTexture">
+        /// Resolves a mesh's texture name to decoded pixels. Optional: without it every mesh renders in
+        /// the palette's flat tone, which is how the pipeline behaves when no resource index is loaded.
+        /// The callback is invoked at most once per distinct texture per render.
+        /// </param>
+        public static byte[]? Render(
+            RenderModel? model,
+            int size,
+            ThumbnailPalette? palette = null,
+            Func<string, TextureImage?>? resolveTexture = null)
         {
             if (model == null || size <= 0)
                 return null;
 
             palette ??= ThumbnailPalette.Default;
 
-            var triangles = CollectTriangles(model);
+            var triangles = CollectTriangles(model, resolveTexture);
             if (triangles.Count == 0)
                 return null;
 
@@ -65,27 +95,90 @@ namespace SWLOR.Toolset.Domain.Render
             return pixels;
         }
 
-        private static List<(Vector3 A, Vector3 B, Vector3 C)> CollectTriangles(RenderModel model)
+        private static List<SourceTriangle> CollectTriangles(
+            RenderModel model, Func<string, TextureImage?>? resolveTexture)
         {
-            var triangles = new List<(Vector3, Vector3, Vector3)>();
+            var triangles = new List<SourceTriangle>();
+
+            // Meshes routinely share a texture, and decoding one is far dearer than sampling it.
+            var decoded = new Dictionary<string, TextureImage?>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var mesh in model.Meshes)
             {
                 if (mesh.Indices.Length < 3 || mesh.Positions.Length < 9)
                     continue;
 
+                var texture = ResolveMeshTexture(mesh, resolveTexture, decoded);
+                var hasUvs = texture != null && mesh.TexCoords.Length * 3 >= mesh.Positions.Length * 2;
+
                 for (var i = 0; i + 2 < mesh.Indices.Length; i += 3)
                 {
-                    if (!TryVertex(mesh, mesh.Indices[i], out var a) ||
-                        !TryVertex(mesh, mesh.Indices[i + 1], out var b) ||
-                        !TryVertex(mesh, mesh.Indices[i + 2], out var c))
+                    if (triangles.Count >= MaxTriangles)
+                        return triangles;
+
+                    var first = mesh.Indices[i];
+                    var second = mesh.Indices[i + 1];
+                    var third = mesh.Indices[i + 2];
+
+                    if (!TryVertex(mesh, first, out var a) ||
+                        !TryVertex(mesh, second, out var b) ||
+                        !TryVertex(mesh, third, out var c))
                         continue;
 
-                    triangles.Add((a, b, c));
+                    triangles.Add(new SourceTriangle
+                    {
+                        A = a,
+                        B = b,
+                        C = c,
+                        Texture = hasUvs ? texture : null,
+                        UvA = hasUvs ? Uv(mesh, first) : Vector2.Zero,
+                        UvB = hasUvs ? Uv(mesh, second) : Vector2.Zero,
+                        UvC = hasUvs ? Uv(mesh, third) : Vector2.Zero
+                    });
                 }
             }
 
             return triangles;
+        }
+
+        /// <summary>
+        /// The mesh's decoded diffuse texture, or null when it has none, it cannot be resolved, or no
+        /// resolver was supplied. Failures are remembered so an unresolvable name is only attempted once.
+        /// </summary>
+        private static TextureImage? ResolveMeshTexture(
+            RenderMesh mesh,
+            Func<string, TextureImage?>? resolveTexture,
+            Dictionary<string, TextureImage?> decoded)
+        {
+            if (resolveTexture == null || string.IsNullOrWhiteSpace(mesh.TextureName))
+                return null;
+
+            if (decoded.TryGetValue(mesh.TextureName, out var cached))
+                return cached;
+
+            TextureImage? texture = null;
+            try
+            {
+                texture = resolveTexture(mesh.TextureName);
+            }
+            catch (Exception)
+            {
+                // An unreadable texture just means this mesh renders in the flat tone.
+            }
+
+            if (texture != null && texture.Pixels.Length < texture.Width * texture.Height * 4)
+                texture = null;
+
+            decoded[mesh.TextureName] = texture;
+            return texture;
+        }
+
+        private static Vector2 Uv(RenderMesh mesh, int index)
+        {
+            var offset = index * 2;
+            return offset + 1 < mesh.TexCoords.Length
+                ? new Vector2(mesh.TexCoords[offset], mesh.TexCoords[offset + 1])
+                : Vector2.Zero;
         }
 
         private static bool TryVertex(RenderMesh mesh, int index, out Vector3 vertex)
@@ -111,7 +204,7 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         private static List<ProjectedTriangle> Project(
-            List<(Vector3 A, Vector3 B, Vector3 C)> triangles,
+            List<SourceTriangle> triangles,
             (Vector3 Right, Vector3 Up, Vector3 Forward) view,
             int size,
             out bool any)
@@ -119,17 +212,21 @@ namespace SWLOR.Toolset.Domain.Render
             var minX = float.MaxValue; var maxX = float.MinValue;
             var minY = float.MaxValue; var maxY = float.MinValue;
 
-            var viewSpace = new List<(Vector2 A, Vector2 B, Vector2 C, float Depth, Vector3 Normal)>(triangles.Count);
+            var viewSpace = new List<(Vector2 A, Vector2 B, Vector2 C, float Depth, Vector3 Normal, SourceTriangle Source)>(
+                triangles.Count);
 
-            foreach (var (a, b, c) in triangles)
+            foreach (var triangle in triangles)
             {
+                var a = triangle.A; var b = triangle.B; var c = triangle.C;
                 var pa = ToView(a, view); var pb = ToView(b, view); var pc = ToView(c, view);
                 var normal = Vector3.Cross(b - a, c - a);
                 if (normal.LengthSquared() > 0)
                     normal = Vector3.Normalize(normal);
 
                 var depth = (pa.Z + pb.Z + pc.Z) / 3f;
-                viewSpace.Add((new Vector2(pa.X, pa.Y), new Vector2(pb.X, pb.Y), new Vector2(pc.X, pc.Y), depth, normal));
+                viewSpace.Add((
+                    new Vector2(pa.X, pa.Y), new Vector2(pb.X, pb.Y), new Vector2(pc.X, pc.Y),
+                    depth, normal, triangle));
 
                 minX = MathF.Min(minX, MathF.Min(pa.X, MathF.Min(pb.X, pc.X)));
                 maxX = MathF.Max(maxX, MathF.Max(pa.X, MathF.Max(pb.X, pc.X)));
@@ -152,7 +249,7 @@ namespace SWLOR.Toolset.Domain.Render
             var offsetY = size / 2f - (minY + height / 2f) * scale;
 
             var projected = new List<ProjectedTriangle>(viewSpace.Count);
-            foreach (var (a, b, c, depth, normal) in viewSpace)
+            foreach (var (a, b, c, depth, normal, source) in viewSpace)
             {
                 projected.Add(new ProjectedTriangle
                 {
@@ -161,7 +258,11 @@ namespace SWLOR.Toolset.Domain.Render
                     B = new Vector2(b.X * scale + offsetX, size - (b.Y * scale + offsetY)),
                     C = new Vector2(c.X * scale + offsetX, size - (c.Y * scale + offsetY)),
                     Depth = depth,
-                    Shade = Math.Clamp(Vector3.Dot(normal, LightDirection), 0f, 1f)
+                    Shade = Math.Clamp(Vector3.Dot(normal, LightDirection), 0f, 1f),
+                    Texture = source.Texture,
+                    UvA = source.UvA,
+                    UvB = source.UvB,
+                    UvC = source.UvC
                 });
             }
 
@@ -194,9 +295,9 @@ namespace SWLOR.Toolset.Domain.Render
                 return;
 
             var shade = palette.Ambient + (1f - palette.Ambient) * triangle.Shade;
-            var b = (byte)Math.Clamp(palette.BaseB * shade, 0, 255);
-            var g = (byte)Math.Clamp(palette.BaseG * shade, 0, 255);
-            var r = (byte)Math.Clamp(palette.BaseR * shade, 0, 255);
+            var flatB = (byte)Math.Clamp(palette.BaseB * shade, 0, 255);
+            var flatG = (byte)Math.Clamp(palette.BaseG * shade, 0, 255);
+            var flatR = (byte)Math.Clamp(palette.BaseR * shade, 0, 255);
 
             for (var y = minY; y <= maxY; y++)
             {
@@ -210,6 +311,17 @@ namespace SWLOR.Toolset.Domain.Render
                     if (w0 < 0 || w1 < 0 || w2 < 0)
                         continue;
 
+                    byte b = flatB, g = flatG, r = flatR;
+                    if (triangle.Texture != null)
+                    {
+                        // Affine UV interpolation: at 128px the perspective error over one triangle is
+                        // far below a pixel, so the divide a correct implementation would need buys
+                        // nothing here.
+                        var uv = triangle.UvA * w0 + triangle.UvB * w1 + triangle.UvC * w2;
+                        if (!TrySample(triangle.Texture, uv, shade, out r, out g, out b))
+                            continue; // Cut-out texel: leave whatever is behind it showing.
+                    }
+
                     var offset = (y * size + x) * BytesPerPixel;
                     pixels[offset] = b;
                     pixels[offset + 1] = g;
@@ -219,8 +331,52 @@ namespace SWLOR.Toolset.Domain.Render
             }
         }
 
+        /// <summary>
+        /// Point-samples a wrapped UV and applies the key light. Returns false for a texel the artwork
+        /// marks transparent, which the caller treats as not covered at all.
+        /// </summary>
+        private static bool TrySample(
+            TextureImage texture, Vector2 uv, float shade, out byte r, out byte g, out byte b)
+        {
+            r = g = b = 0;
+
+            var u = uv.X - MathF.Floor(uv.X);
+            var v = uv.Y - MathF.Floor(uv.Y);
+            if (!float.IsFinite(u) || !float.IsFinite(v))
+                return false;
+
+            var x = Math.Clamp((int)(u * texture.Width), 0, texture.Width - 1);
+
+            // NWN UVs run bottom-up; the decoded pixel rows run top-down.
+            var y = Math.Clamp((int)((1f - v) * texture.Height), 0, texture.Height - 1);
+
+            var offset = (y * texture.Width + x) * 4;
+            if (texture.Pixels[offset + 3] < AlphaCutoff)
+                return false;
+
+            r = (byte)Math.Clamp(texture.Pixels[offset] * shade, 0, 255);
+            g = (byte)Math.Clamp(texture.Pixels[offset + 1] * shade, 0, 255);
+            b = (byte)Math.Clamp(texture.Pixels[offset + 2] * shade, 0, 255);
+            return true;
+        }
+
         private static float EdgeFunction(Vector2 a, Vector2 b, Vector2 c) =>
             (c.X - a.X) * (b.Y - a.Y) - (c.Y - a.Y) * (b.X - a.X);
+
+        /// <summary>A triangle in model space, with the texture and UVs it should be filled from.</summary>
+        private struct SourceTriangle
+        {
+            public Vector3 A;
+            public Vector3 B;
+            public Vector3 C;
+
+            /// <summary>Null when this triangle's mesh has no resolvable texture and fills flat.</summary>
+            public TextureImage? Texture;
+
+            public Vector2 UvA;
+            public Vector2 UvB;
+            public Vector2 UvC;
+        }
 
         private struct ProjectedTriangle
         {
@@ -229,6 +385,10 @@ namespace SWLOR.Toolset.Domain.Render
             public Vector2 C;
             public float Depth;
             public float Shade;
+            public TextureImage? Texture;
+            public Vector2 UvA;
+            public Vector2 UvB;
+            public Vector2 UvC;
         }
     }
 }

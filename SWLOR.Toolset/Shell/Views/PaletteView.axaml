@@ -199,8 +199,8 @@
     </ListBox>
 
     <StackPanel Grid.Row="8">
-      <!-- Preview size. Meaningless while tiles are letter glyphs, and the control the grid needs the
-           moment they become rendered models. -->
+      <!-- Preview size: how big the artwork gets. Small fits far more of a large category on screen,
+           large is what a builder wants when they are picking between similar models. -->
       <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,6" ColumnSpacing="9"
             Background="Transparent">
         <TextBlock Grid.Column="0" Classes="dim" FontSize="11" VerticalAlignment="Center"

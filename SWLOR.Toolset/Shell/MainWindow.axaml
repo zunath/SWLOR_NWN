@@ -36,6 +36,9 @@
       </MenuItem>
       <MenuItem Header="_Tools">
         <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
+        <Separator />
+        <MenuItem Header="Build _Preview Cache" Command="{Binding BuildPreviewCacheCommand}" />
+        <MenuItem Header="Rebuild Preview Cache from Scratch" Command="{Binding RebuildPreviewCacheCommand}" />
       </MenuItem>
       <MenuItem Header="_Help">
         <MenuItem Header="About SWLOR Toolset" Command="{Binding AboutCommand}" />

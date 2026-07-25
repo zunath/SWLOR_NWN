@@ -558,8 +558,13 @@ namespace SWLOR.Toolset.Shell.Panels
             _thumbnails?.RequestAsync(SelectedType, tile.ResRef, bitmap => tile.Preview = bitmap);
         }
 
-        /// <summary>The preview box scales with the tile, keeping every tile the same proportions.</summary>
-        public double PreviewHeight => Math.Round(TileSize * 0.46);
+        /// <summary>
+        /// The preview box scales with the tile, keeping every tile the same proportions. Close to square
+        /// on purpose: model thumbnails are rendered square and inventory icons are as tall as the
+        /// inventory slot they were drawn for (a rifle is 32x96), so a wide letterbox wasted most of the
+        /// tile on both.
+        /// </summary>
+        public double PreviewHeight => Math.Round(TileSize * 0.72);
 
         private IEnumerable<string> ResRefsForSelectedRow(CategorySection section)
         {

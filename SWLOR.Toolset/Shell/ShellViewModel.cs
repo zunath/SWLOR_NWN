@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ModuleExplorerViewModel _explorer;
         private readonly SearchViewModel _search;
         private readonly PaletteViewModel _palette;
+        private readonly ThumbnailService _thumbnails;
         private DispatcherTimer? _progressTimer;
 
         [ObservableProperty]
@@ -74,8 +75,10 @@ namespace SWLOR.Toolset.Shell
             Editors.EditorService editorService,
             PackService packService,
             OutputViewModel output,
-            ValidationViewModel validation)
+            ValidationViewModel validation,
+            ThumbnailService thumbnails)
         {
+            _thumbnails = thumbnails ?? throw new ArgumentNullException(nameof(thumbnails));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _log = log ?? throw new ArgumentNullException(nameof(log));
@@ -194,6 +197,83 @@ namespace SWLOR.Toolset.Shell
         [RelayCommand]
         private void About() =>
             StatusText = "SWLOR Toolset - an Aurora replacement for area, instance and blueprint editing.";
+
+        /// <summary>
+        /// True while previews are being rendered. Deliberately not part of
+        /// <see cref="IsModuleMutationLocked"/>: the build only reads blueprints, so the builder keeps
+        /// working through it - it just must not be started twice at once.
+        /// </summary>
+        [ObservableProperty]
+        private bool _isBuildingPreviewCache;
+
+        [RelayCommand(CanExecute = nameof(CanBuildPreviewCache))]
+        private Task BuildPreviewCacheAsync() => RunPreviewCacheBuildAsync(fromScratch: false);
+
+        [RelayCommand(CanExecute = nameof(CanBuildPreviewCache))]
+        private Task RebuildPreviewCacheAsync() => RunPreviewCacheBuildAsync(fromScratch: true);
+
+        private bool CanBuildPreviewCache() => !IsBuildingPreviewCache && _thumbnails.IsAvailable;
+
+        partial void OnIsBuildingPreviewCacheChanged(bool value)
+        {
+            BuildPreviewCacheCommand.NotifyCanExecuteChanged();
+            RebuildPreviewCacheCommand.NotifyCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Renders every missing palette preview and stores it on disk. Runs in the background with
+        /// progress in the Output pane, the same way the catalog build reports itself.
+        /// </summary>
+        private async Task RunPreviewCacheBuildAsync(bool fromScratch)
+        {
+            if (IsBuildingPreviewCache)
+                return;
+
+            if (!_thumbnails.IsAvailable)
+            {
+                _log.AppendLine("Preview cache: skipped (game data is not loaded, so no artwork can be resolved).");
+                return;
+            }
+
+            IsBuildingPreviewCache = true;
+            try
+            {
+                if (fromScratch)
+                {
+                    var removed = await Task.Run(_thumbnails.ClearCache).ConfigureAwait(true);
+                    _log.AppendLine($"Preview cache: cleared {removed} cached file(s).");
+                }
+
+                var pruned = await Task.Run(_thumbnails.PruneSupersededCaches).ConfigureAwait(true);
+                if (pruned > 0)
+                    _log.AppendLine($"Preview cache: removed {pruned} folder(s) from an older render version.");
+
+                _log.AppendLine($"Preview cache: building in '{_thumbnails.CachePath ?? "(memory only)"}'.");
+
+                var progress = new Progress<PreviewCacheProgress>(report =>
+                    _log.AppendLine(
+                        $"Preview cache: {report.Processed}/{report.Total} ({report.PercentComplete}%)."));
+
+                var result = await _thumbnails.WarmAsync(progress).ConfigureAwait(true);
+
+                _log.AppendLine(
+                    $"Preview cache complete: {result.Rendered} rendered, {result.Reused} already cached, " +
+                    $"{result.WithoutArtwork} with no artwork (shown as type symbols).");
+                if (result.Failed > 0)
+                    _log.AppendLine($"Preview cache: {result.Failed} blueprint(s) failed to render and will be retried.");
+                StatusText = $"Preview cache ready: {result.Rendered + result.Reused} previews available.";
+                _palette.Refresh();
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Preview cache build failed: {ex.Message}");
+                StatusText = "Preview cache build failed - see Output.";
+            }
+            finally
+            {
+                IsBuildingPreviewCache = false;
+            }
+        }
 
         /// <summary>Closes the application, going through the window's normal unsaved-changes prompt.</summary>
         [RelayCommand]
@@ -332,6 +412,10 @@ namespace SWLOR.Toolset.Shell
                     // once the background build has published them.
                     _palette.Refresh();
                     StatusText = $"Catalog ready: {catalog.Entries.Count} entries indexed.";
+
+                    // Previews last: it is the longest job and the only one the builder can work
+                    // through, so it starts once everything they might click is already usable.
+                    _ = RunPreviewCacheBuildAsync(fromScratch: false);
                 });
             });
         }

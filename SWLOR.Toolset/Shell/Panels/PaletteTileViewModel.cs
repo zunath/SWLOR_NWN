@@ -37,7 +37,11 @@ namespace SWLOR.Toolset.Shell.Panels
 
         partial void OnPreviewChanged(Bitmap? value) => OnPropertyChanged(nameof(HasPreview));
 
-        /// <summary>Shown until a thumbnail arrives; the first letter reads better than a generic box.</summary>
+        /// <summary>
+        /// Shown while a preview is still resolving, and permanently only when game data is not loaded at
+        /// all (no NWN install or hak sources found) - with game data every tile ends up with an image,
+        /// either real artwork or its type's symbol.
+        /// </summary>
         public string Glyph => string.IsNullOrWhiteSpace(Name) ? "?" : Name.Trim()[..1].ToUpperInvariant();
     }
 }

@@ -162,5 +162,192 @@ namespace SWLOR.Toolset.Tests
             OpaquePixels(wide).Should().BeLessThan(OpaquePixels(square),
                 because: "a long thin model should letterbox inside the tile, not fill it");
         }
+
+        // ---- Textured rendering ----
+
+        /// <summary>A textured version of <see cref="Box"/>: same quad, with a full 0..1 UV set.</summary>
+        private static RenderModel TexturedQuad(string textureName) =>
+            new()
+            {
+                Name = "textured",
+                Meshes = new[]
+                {
+                    new RenderMesh
+                    {
+                        NodeName = "quad",
+                        TextureName = textureName,
+                        Positions = new[] { 0f, 0f, 0f, 1f, 0f, 0f, 1f, 1f, 1f, 0f, 1f, 1f },
+                        Normals = Array.Empty<float>(),
+                        TexCoords = new[] { 0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f },
+                        Indices = new[] { 0, 1, 2, 0, 2, 3 },
+                        Transform = Matrix4x4.Identity
+                    }
+                }
+            };
+
+        private static TextureImage SolidTexture(byte r, byte g, byte b, byte a = 255, int size = 4)
+        {
+            var pixels = new byte[size * size * 4];
+            for (var i = 0; i < pixels.Length; i += 4)
+            {
+                pixels[i] = r;
+                pixels[i + 1] = g;
+                pixels[i + 2] = b;
+                pixels[i + 3] = a;
+            }
+
+            return new TextureImage
+            {
+                Width = size,
+                Height = size,
+                Pixels = pixels,
+                SourceFormat = TextureSourceFormat.Tga
+            };
+        }
+
+        private static (byte B, byte G, byte R) Brightest(byte[] pixels)
+        {
+            (byte B, byte G, byte R) best = (0, 0, 0);
+            var bestSum = -1;
+            for (var i = 0; i < pixels.Length; i += ThumbnailRenderer.BytesPerPixel)
+            {
+                if (pixels[i + 3] == 0)
+                    continue;
+
+                var sum = pixels[i] + pixels[i + 1] + pixels[i + 2];
+                if (sum > bestSum)
+                {
+                    bestSum = sum;
+                    best = (pixels[i], pixels[i + 1], pixels[i + 2]);
+                }
+            }
+
+            return best;
+        }
+
+        [Test]
+        public void A_Textured_Mesh_Takes_Its_Colour_From_The_Texture()
+        {
+            var pixels = ThumbnailRenderer.Render(
+                TexturedQuad("wall"), Size, palette: null,
+                resolveTexture: _ => SolidTexture(r: 200, g: 30, b: 30))!;
+
+            var brightest = Brightest(pixels);
+            brightest.R.Should().BeGreaterThan(brightest.B,
+                because: "the quad should read as the texture's red, not the palette's blue");
+        }
+
+        [Test]
+        public void A_Mesh_Whose_Texture_Does_Not_Resolve_Still_Renders_Flat()
+        {
+            var pixels = ThumbnailRenderer.Render(
+                TexturedQuad("missing"), Size, palette: null, resolveTexture: _ => null)!;
+
+            OpaquePixels(pixels).Should().BeGreaterThan(Size,
+                because: "an unresolvable texture must not blank the model out");
+        }
+
+        [Test]
+        public void A_Mesh_With_No_Texture_Name_Is_Not_Looked_Up_At_All()
+        {
+            var lookups = 0;
+
+            ThumbnailRenderer.Render(Box(), Size, palette: null, resolveTexture: _ =>
+            {
+                lookups++;
+                return null;
+            });
+
+            lookups.Should().Be(0);
+        }
+
+        [Test]
+        public void A_Texture_Is_Only_Resolved_Once_Per_Render()
+        {
+            var lookups = 0;
+            var model = new RenderModel
+            {
+                Name = "twoMeshes",
+                Meshes = new[] { TexturedQuad("shared").Meshes[0], TexturedQuad("shared").Meshes[0] }
+            };
+
+            ThumbnailRenderer.Render(model, Size, palette: null, resolveTexture: _ =>
+            {
+                lookups++;
+                return SolidTexture(10, 10, 10);
+            });
+
+            lookups.Should().Be(1);
+        }
+
+        [Test]
+        public void Fully_Transparent_Texels_Are_Cut_Out_Rather_Than_Drawn()
+        {
+            var opaque = ThumbnailRenderer.Render(
+                TexturedQuad("leaf"), Size, palette: null, resolveTexture: _ => SolidTexture(9, 9, 9))!;
+            var cutOut = ThumbnailRenderer.Render(
+                TexturedQuad("leaf"), Size, palette: null, resolveTexture: _ => SolidTexture(9, 9, 9, a: 0))!;
+
+            OpaquePixels(cutOut).Should().Be(0);
+            OpaquePixels(opaque).Should().BeGreaterThan(0);
+        }
+
+        [Test]
+        public void A_Texture_Shorter_Than_Its_Declared_Size_Is_Ignored_Rather_Than_Fatal()
+        {
+            var truncated = new TextureImage
+            {
+                Width = 64,
+                Height = 64,
+                Pixels = new byte[16],
+                SourceFormat = TextureSourceFormat.Tga
+            };
+
+            var act = () => ThumbnailRenderer.Render(
+                TexturedQuad("bad"), Size, palette: null, resolveTexture: _ => truncated);
+
+            act.Should().NotThrow();
+            OpaquePixels(act()!).Should().BeGreaterThan(0, because: "it falls back to the flat tone");
+        }
+
+        [Test]
+        public void A_Throwing_Texture_Resolver_Does_Not_Take_The_Render_Down()
+        {
+            var act = () => ThumbnailRenderer.Render(
+                TexturedQuad("boom"), Size, palette: null,
+                resolveTexture: _ => throw new InvalidOperationException("resource layer exploded"));
+
+            act.Should().NotThrow();
+            OpaquePixels(act()!).Should().BeGreaterThan(0);
+        }
+
+        [Test]
+        public void A_Mesh_With_No_Uvs_Falls_Back_To_Flat_Shading()
+        {
+            var noUvs = new RenderModel
+            {
+                Name = "noUvs",
+                Meshes = new[]
+                {
+                    new RenderMesh
+                    {
+                        NodeName = "quad",
+                        TextureName = "wall",
+                        Positions = new[] { 0f, 0f, 0f, 1f, 0f, 0f, 1f, 1f, 1f, 0f, 1f, 1f },
+                        Normals = Array.Empty<float>(),
+                        TexCoords = Array.Empty<float>(),
+                        Indices = new[] { 0, 1, 2, 0, 2, 3 },
+                        Transform = Matrix4x4.Identity
+                    }
+                }
+            };
+
+            var pixels = ThumbnailRenderer.Render(
+                noUvs, Size, palette: null, resolveTexture: _ => SolidTexture(200, 30, 30))!;
+
+            var brightest = Brightest(pixels);
+            brightest.B.Should().BeGreaterThan(brightest.R,
+                because: "with no UVs to sample, the palette's blue is the only honest answer");
+        }
     }
 }

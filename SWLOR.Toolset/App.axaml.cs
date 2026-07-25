@@ -115,12 +115,21 @@ namespace SWLOR.Toolset
                 // Optional: the base-game palettes name their categories by TLK reference, so without
                 // the TLK they import as renameable placeholders rather than real names.
                 sp.GetService<TlkService>()));
-            services.AddSingleton(sp => new ThumbnailService(
+            // Every game-data dependency here is optional: without a resolved repo layout the renderer
+            // reports itself unavailable and the palette falls back to letter glyphs rather than failing.
+            services.AddSingleton(sp => new BlueprintPreviewRenderer(
                 sp.GetRequiredService<WorkspaceContext>(),
-                sp.GetService<Domain.Render.TileModelCache>(),
+                sp.GetService<ResourceIndex>(),
                 sp.GetService<AppearanceService>(),
                 sp.GetService<PlaceableAppearanceService>(),
-                sp.GetService<DoorTypeService>()));
+                sp.GetService<DoorTypeService>(),
+                sp.GetService<BaseItemIconService>(),
+                sp.GetService<PortraitService>(),
+                sp.GetService<TwoDaService>(),
+                sp.GetService<TlkService>()));
+            services.AddSingleton(sp => new ThumbnailService(
+                sp.GetRequiredService<WorkspaceContext>(),
+                sp.GetRequiredService<BlueprintPreviewRenderer>()));
             services.AddSingleton(sp => new PaletteViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<CategoryService>(),
@@ -218,6 +227,8 @@ namespace SWLOR.Toolset
             {
                 services.AddSingleton(sp =>
                     new PortraitService(sp.GetRequiredService<TwoDaService>()));
+                services.AddSingleton(sp =>
+                    new BaseItemIconService(sp.GetRequiredService<TwoDaService>()));
             }
         }
 

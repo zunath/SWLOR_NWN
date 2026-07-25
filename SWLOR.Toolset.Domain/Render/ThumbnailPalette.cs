@@ -1,10 +1,14 @@
 namespace SWLOR.Toolset.Domain.Render
 {
     /// <summary>
-    /// The colours a thumbnail is drawn with. Untextured, because a flat-shaded solid in the
-    /// interface's own palette reads as a catalogue entry, while a half-lit textured render at 128px
-    /// mostly reads as noise.
+    /// The tone a thumbnail falls back to for meshes with no resolvable texture, and the background the
+    /// rest is drawn over.
     /// </summary>
+    /// <remarks>
+    /// Deliberately a cool interface grey rather than anything trying to look like material: it has to sit
+    /// beside textured meshes in the same render without reading as a different object, which a saturated
+    /// stand-in colour would.
+    /// </remarks>
     public sealed record ThumbnailPalette(uint Background, byte BaseR, byte BaseG, byte BaseB, float Ambient)
     {
         /// <summary>Matches the palette tile's own field background and accent-leaning material.</summary>

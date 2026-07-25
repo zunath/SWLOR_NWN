@@ -816,6 +816,11 @@ namespace SWLOR.Toolset.Editors
                 Tag = resRef,
                 Position = Vector3.Zero,
                 Orientation = new Vector2(1f, 0f),
+                // The ghost has to be turned the same way the placed marker will be, or a waypoint
+                // would swing a quarter turn the instant it was committed.
+                VisualTransform = kind.Value == InstanceMarkerKind.Waypoint
+                    ? WaypointMarkerModel.ForwardCorrection
+                    : Matrix4x4.Identity,
                 Model = model
             };
         }

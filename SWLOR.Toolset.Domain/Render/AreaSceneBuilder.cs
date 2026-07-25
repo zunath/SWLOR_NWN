@@ -229,7 +229,8 @@ namespace SWLOR.Toolset.Domain.Render
             AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm);
             AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true);
             AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw,
-                resolveModel: instance => ResolveWaypointModel(instance, waypointAppearances, modelCache));
+                resolveModel: instance => ResolveWaypointModel(instance, waypointAppearances, modelCache),
+                modelCorrection: WaypointMarkerModel.ForwardCorrection);
 
             return markers;
         }
@@ -240,7 +241,8 @@ namespace SWLOR.Toolset.Domain.Render
             InstanceMarkerKind kind,
             ResourceType type,
             bool includeGeometry = false,
-            Func<JsonGffStruct, RenderModel?>? resolveModel = null)
+            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            Matrix4x4? modelCorrection = null)
         {
             foreach (var instance in instances)
             {
@@ -262,7 +264,11 @@ namespace SWLOR.Toolset.Domain.Render
                     Tag = tag,
                     Position = position,
                     Orientation = new Vector2(xo, yo),
-                    VisualTransform = InstanceFieldMap.GetVisualTransform(instance),
+                    // A model-space correction composes before the instance's own EE visual
+                    // transform, which is itself instance-local - see WaypointMarkerModel.
+                    VisualTransform = modelCorrection is { } correction
+                        ? correction * InstanceFieldMap.GetVisualTransform(instance)
+                        : InstanceFieldMap.GetVisualTransform(instance),
                     Geometry = geometry,
                     Model = resolveModel?.Invoke(instance)
                 });

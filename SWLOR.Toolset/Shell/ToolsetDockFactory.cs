@@ -61,7 +61,10 @@ namespace SWLOR.Toolset.Shell
                 ActiveDockable = _explorer,
                 VisibleDockables = CreateList<IDockable>(_explorer),
                 Alignment = Alignment.Left,
-                Proportion = 0.28
+                Proportion = 0.28,
+                // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
+                // buttons that appear nowhere in the design.
+                GripMode = GripMode.Hidden
             };
 
             // The right side is the Palette and nothing else. Properties is gone: for an instance the
@@ -73,7 +76,10 @@ namespace SWLOR.Toolset.Shell
                 ActiveDockable = _palette,
                 VisibleDockables = CreateList<IDockable>(_palette),
                 Alignment = Alignment.Right,
-                Proportion = 0.27
+                Proportion = 0.27,
+                // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
+                // buttons that appear nowhere in the design.
+                GripMode = GripMode.Hidden
             };
 
             _documentDock = new DocumentDock
@@ -112,7 +118,10 @@ namespace SWLOR.Toolset.Shell
                 ActiveDockable = _output,
                 VisibleDockables = CreateList<IDockable>(_output, _validation),
                 Alignment = Alignment.Bottom,
-                Proportion = 0.20
+                Proportion = 0.20,
+                // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
+                // buttons that appear nowhere in the design.
+                GripMode = GripMode.Hidden
             };
 
             var mainLayout = new ProportionalDock
@@ -156,6 +165,14 @@ namespace SWLOR.Toolset.Shell
 
             SetActiveDockable(document);
             SetFocusedDockable(_documentDock, document);
+        }
+
+        /// <summary>Brings a tool panel to the front - what the View and Tools menus act on.</summary>
+        public void Focus(IDockable dockable)
+        {
+            SetActiveDockable(dockable);
+            if (dockable.Owner is IDock owner)
+                SetFocusedDockable(owner, dockable);
         }
 
         /// <summary>Requests that Dock close a document after the editor has approved any prompt.</summary>

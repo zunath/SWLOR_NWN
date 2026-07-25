@@ -40,14 +40,22 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>The visible rows: every node whose ancestors are all expanded.</summary>
         public ObservableCollection<ExplorerNodeViewModel> Rows { get; } = new();
 
-        public IReadOnlyList<CategoryGrouping> GroupingChoices { get; } =
-            new[] { CategoryGrouping.Automatic, CategoryGrouping.Folders, CategoryGrouping.Flat };
+        public IReadOnlyList<GroupingChoiceViewModel> GroupingChoices { get; } = new[]
+        {
+            new GroupingChoiceViewModel(CategoryGrouping.Automatic, "Planet"),
+            new GroupingChoiceViewModel(CategoryGrouping.Folders, "My folders"),
+            new GroupingChoiceViewModel(CategoryGrouping.Flat, "Flat A-Z")
+        };
 
         [ObservableProperty]
         private ExplorerNodeViewModel? _selectedRow;
 
         [ObservableProperty]
         private CategoryGrouping _grouping = CategoryGrouping.Automatic;
+
+        /// <summary>What the Group by control is bound to; mirrors <see cref="Grouping"/>.</summary>
+        [ObservableProperty]
+        private GroupingChoiceViewModel? _selectedGroupingChoice;
 
         [ObservableProperty]
         private string _filter = string.Empty;
@@ -82,6 +90,7 @@ namespace SWLOR.Toolset.Shell.Panels
 
             Id = "ModuleExplorer";
             Title = "Module Contents";
+            SelectedGroupingChoice = GroupingChoices[0];
 
             _workspaceContext.CatalogEntryRefreshed += (_, _) =>
             {
@@ -182,8 +191,18 @@ namespace SWLOR.Toolset.Shell.Panels
             PublishVisibleRows();
         }
 
+        partial void OnSelectedGroupingChoiceChanged(GroupingChoiceViewModel? value)
+        {
+            if (value != null)
+                Grouping = value.Value;
+        }
+
         partial void OnGroupingChanged(CategoryGrouping value)
         {
+            var choice = GroupingChoices.FirstOrDefault(candidate => candidate.Value == value);
+            if (choice != null && !ReferenceEquals(choice, SelectedGroupingChoice))
+                SelectedGroupingChoice = choice;
+
             if (SelectedRow?.Type is { } type && _categories?.Section(type) is { } section)
             {
                 section.Grouping = value;

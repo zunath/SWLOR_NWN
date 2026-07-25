@@ -56,6 +56,9 @@ namespace SWLOR.Toolset.Shell
         /// <summary>Raised when the File menu's Exit item asks the window to close (which still runs the unsaved-changes prompt).</summary>
         public event Action? ExitRequested;
 
+        private readonly ToolsetDockFactory _factory;
+        private readonly OutputViewModel _output;
+        private readonly ValidationViewModel _validation;
         private readonly Editors.EditorService _editorService;
         private readonly PackService _packService;
 
@@ -70,6 +73,7 @@ namespace SWLOR.Toolset.Shell
             ToolsetDockFactory factory,
             Editors.EditorService editorService,
             PackService packService,
+            OutputViewModel output,
             ValidationViewModel validation)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -81,6 +85,8 @@ namespace SWLOR.Toolset.Shell
             _palette = palette ?? throw new ArgumentNullException(nameof(palette));
             _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
             _packService = packService ?? throw new ArgumentNullException(nameof(packService));
+            _output = output ?? throw new ArgumentNullException(nameof(output));
+            _validation = validation ?? throw new ArgumentNullException(nameof(validation));
             ArgumentNullException.ThrowIfNull(validation);
             IsValidationRunning = validation.IsRunning;
             validation.PropertyChanged += (_, e) =>
@@ -90,6 +96,7 @@ namespace SWLOR.Toolset.Shell
             };
 
             if (factory == null) throw new ArgumentNullException(nameof(factory));
+            _factory = factory;
 
             factory.ActiveDocumentChanged += SetActiveEditor;
 
@@ -164,6 +171,29 @@ namespace SWLOR.Toolset.Shell
         private void Redo() => _activeEditor?.Redo();
 
         private bool CanRedo() => !IsModuleMutationLocked && _activeEditor?.CanRedo == true;
+
+        /// <summary>
+        /// The window title, which names the module rather than just the program - a builder often has
+        /// more than one module checked out and the title bar is the only place that distinguishes them.
+        /// </summary>
+        [ObservableProperty]
+        private string _windowTitle = "SWLOR Toolset";
+
+        [RelayCommand]
+        private void FocusExplorer() => _factory.Focus(_explorer);
+
+        [RelayCommand]
+        private void FocusPalette() => _factory.Focus(_palette);
+
+        [RelayCommand]
+        private void FocusOutput() => _factory.Focus(_output);
+
+        [RelayCommand]
+        private void FocusValidation() => _factory.Focus(_validation);
+
+        [RelayCommand]
+        private void About() =>
+            StatusText = "SWLOR Toolset - an Aurora replacement for area, instance and blueprint editing.";
 
         /// <summary>Closes the application, going through the window's normal unsaved-changes prompt.</summary>
         [RelayCommand]
@@ -272,6 +302,7 @@ namespace SWLOR.Toolset.Shell
             }
 
             _settings.AddRecentModule(moduleRoot);
+            WindowTitle = $"SWLOR Toolset - {Path.GetFileName(Path.GetDirectoryName(moduleRoot)) ?? "Module"}";
             _explorer.Initialize();
             _palette.Refresh();
             _fileWatcher.Watch(moduleRoot);

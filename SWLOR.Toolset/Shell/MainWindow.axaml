@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         x:Class="SWLOR.Toolset.Shell.MainWindow"
         x:DataType="shell:ShellViewModel"
-        Title="SWLOR Toolset"
+        Title="{Binding WindowTitle}"
         Icon="/Assets/swlor-logo.png"
         Width="1280" Height="800"
         WindowStartupLocation="CenterScreen">
@@ -26,8 +26,19 @@
         <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z" />
         <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y" />
       </MenuItem>
+      <MenuItem Header="_View">
+        <MenuItem Header="Module Contents" Command="{Binding FocusExplorerCommand}" />
+        <MenuItem Header="Palette" Command="{Binding FocusPaletteCommand}" />
+        <MenuItem Header="Output" Command="{Binding FocusOutputCommand}" />
+      </MenuItem>
       <MenuItem Header="_Build">
         <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
+      </MenuItem>
+      <MenuItem Header="_Tools">
+        <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
+      </MenuItem>
+      <MenuItem Header="_Help">
+        <MenuItem Header="About SWLOR Toolset" Command="{Binding AboutCommand}" />
       </MenuItem>
     </Menu>
     <DockControl Grid.Row="1" Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />

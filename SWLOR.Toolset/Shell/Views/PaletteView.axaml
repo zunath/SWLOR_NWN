@@ -13,25 +13,32 @@
   <Grid RowDefinitions="Auto,Auto,Auto,Auto,220,Auto,Auto,*,Auto">
 
     <!-- Title drawn here rather than by Dock's chrome, which pads it out with a dotted drag grip. -->
-    <!-- Dock draws this panel's title in its own chrome. -->
+    <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="14,9">
+      <TextBlock Classes="title" Text="PALETTE" />
+    </Border>
 
     <!-- Type chips. No counts: "8,355 placeables" answers a question nobody asks. -->
-    <ItemsControl Grid.Row="1" ItemsSource="{Binding Types}" Margin="8,8,8,4">
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <WrapPanel />
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
-      <ItemsControl.ItemTemplate>
-        <DataTemplate DataType="panels:PaletteTypeChipViewModel">
-          <Button Content="{Binding Label}" Margin="0,0,4,4" CornerRadius="11" Padding="9,3"
-                  FontSize="11"
-                  Classes.primary="{Binding IsSelected}"
-                  Command="{Binding $parent[ItemsControl].((panels:PaletteViewModel)DataContext).SelectTypeCommand}"
-                  CommandParameter="{Binding}" />
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,10,10,4" Spacing="5">
+      <ItemsControl ItemsSource="{Binding Types}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="5" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="panels:PaletteTypeChipViewModel">
+            <Button Content="{Binding Label}" CornerRadius="12" Padding="11,4" FontSize="11.5"
+                    Classes.primary="{Binding IsSelected}"
+                    Command="{Binding $parent[ItemsControl].((panels:PaletteViewModel)DataContext).SelectTypeCommand}"
+                    CommandParameter="{Binding}" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <Button Content="More..." CornerRadius="12" Padding="11,4" FontSize="11.5"
+              IsVisible="{Binding HasMoreTypes}" Command="{Binding ShowMoreTypesCommand}"
+              ToolTip.Tip="Items, waypoints, triggers and sound sets" />
+    </StackPanel>
 
     <TextBox Grid.Row="2" Margin="8,4" Text="{Binding Query}"
              Watermark="Search categories and objects..." />
@@ -39,13 +46,11 @@
     <!-- Category header carries the one action that belongs to the tree as a whole. -->
     <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="10,6,8,3">
       <TextBlock Grid.Column="0" Classes="label" VerticalAlignment="Center" Text="CATEGORIES" />
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
         <TextBlock Classes="count" VerticalAlignment="Center"
                    IsVisible="{Binding HasCategoryMatches}"
                    Text="{Binding CategoryMatches.Count, StringFormat='{}{0} matches'}" />
-        <Button Content="+ New" FontSize="11" Padding="8,2" Background="Transparent"
-                BorderThickness="0" Foreground="{DynamicResource AccentBrush}"
-                Command="{Binding NewFolderCommand}"
+        <Button Classes="link" Content="+ NEW" Command="{Binding NewFolderCommand}"
                 ToolTip.Tip="Add a category, nested inside the selected one" />
         <ToggleButton Content="Organize" IsChecked="{Binding IsOrganizing, Mode=TwoWay}"
                       FontSize="11" Padding="8,2" />
@@ -184,7 +189,7 @@
         <Slider Grid.Column="1" Minimum="96" Maximum="200" Value="{Binding TileSize}"
                 VerticalAlignment="Center" />
         <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center"
-                   Text="{Binding TileSize, StringFormat='{}{0:0}'}" />
+                   Text="{Binding TileSizeLabel}" />
       </Grid>
 
       <TextBlock Margin="10,0,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"

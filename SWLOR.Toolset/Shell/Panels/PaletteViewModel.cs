@@ -36,6 +36,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private const int MaxSearchResults = 200;
 
+        /// <summary>How many type chips show before More... - enough for one row at the panel's width.</summary>
+        private const int PrimaryTypeCount = 3;
+
         private readonly WorkspaceContext _workspaceContext;
         private readonly CategoryService _categories;
         private readonly OutputLogService _log;
@@ -88,6 +91,29 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private double _tileSize = 136;
 
+        /// <summary>
+        /// True once More... has been pressed. Only the four types a builder reaches for when dressing
+        /// an area are shown up front, so the chip row stays one line instead of wrapping to two.
+        /// </summary>
+        [ObservableProperty]
+        private bool _showAllTypes;
+
+        /// <summary>A size, not a pixel count - the number means nothing to the person dragging it.</summary>
+        public string TileSizeLabel => TileSize switch
+        {
+            < 120 => "S",
+            < 165 => "M",
+            _ => "L"
+        };
+
+        partial void OnTileSizeChanged(double value) => OnPropertyChanged(nameof(TileSizeLabel));
+
+        partial void OnShowAllTypesChanged(bool value) => PublishTypeChips();
+
+        /// <summary>Reveals the types behind More...</summary>
+        [RelayCommand]
+        private void ShowMoreTypes() => ShowAllTypes = true;
+
         public bool IsSearching => !string.IsNullOrWhiteSpace(Query);
 
         public bool HasCategoryMatches => CategoryMatches.Count > 0;
@@ -108,8 +134,7 @@ namespace SWLOR.Toolset.Shell.Panels
             Id = "Palette";
             Title = "Palette";
 
-            foreach (var type in OfferedTypes)
-                Types.Add(new PaletteTypeChipViewModel(type) { IsSelected = type == SelectedType });
+            PublishTypeChips();
 
             _categories.Changed += Refresh;
         }
@@ -130,6 +155,24 @@ namespace SWLOR.Toolset.Shell.Panels
 
             SelectedType = chip.Type;
         }
+
+        /// <summary>The four primary types, plus the rest once More... has been pressed.</summary>
+        private void PublishTypeChips()
+        {
+            Types.Clear();
+            var offered = ShowAllTypes ? OfferedTypes : OfferedTypes.Take(PrimaryTypeCount);
+
+            foreach (var type in offered)
+                Types.Add(new PaletteTypeChipViewModel(type) { IsSelected = type == SelectedType });
+
+            // A hidden selection would leave no chip lit, so it joins the row regardless.
+            if (!ShowAllTypes && Types.All(chip => chip.Type != SelectedType))
+                Types.Add(new PaletteTypeChipViewModel(SelectedType) { IsSelected = true });
+
+            OnPropertyChanged(nameof(HasMoreTypes));
+        }
+
+        public bool HasMoreTypes => !ShowAllTypes;
 
         partial void OnSelectedTypeChanged(ResourceType value)
         {

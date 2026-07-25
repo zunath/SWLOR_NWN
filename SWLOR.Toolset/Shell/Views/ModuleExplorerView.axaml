@@ -13,7 +13,10 @@
 
     <!-- The panel title is drawn here rather than by Dock's chrome, which pads it out with a dotted
          drag grip. Small-caps monospace sets furniture apart from every name and value on screen. -->
-    <!-- Dock draws this panel's title in its own chrome. -->
+    <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="14,9">
+      <TextBlock Classes="title" Text="MODULE CONTENTS" />
+    </Border>
 
     <!-- Group by, with its label inside the control so the row reads as a sentence. -->
     <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="8,8,8,4" ColumnSpacing="6">
@@ -23,7 +26,7 @@
           <TextBlock Grid.Column="0" Text="Group by" Classes="dim" FontSize="11.5"
                      VerticalAlignment="Center" Margin="0,0,8,0" />
           <ComboBox Grid.Column="1" ItemsSource="{Binding GroupingChoices}"
-                    SelectedItem="{Binding Grouping}" Background="Transparent"
+                    SelectedItem="{Binding SelectedGroupingChoice}" Background="Transparent"
                     BorderThickness="0" Padding="0,4" HorizontalAlignment="Stretch"
                     ToolTip.Tip="Automatic groups on the part of the name before the first dash" />
         </Grid>
@@ -32,7 +35,7 @@
                     FontSize="11.5" Padding="9,4" />
     </Grid>
 
-    <TextBox Grid.Row="2" Margin="8,0,8,6" Text="{Binding Filter}" Watermark="Filter..." />
+    <TextBox Grid.Row="2" Margin="8,0,8,6" Text="{Binding Filter}" Watermark="Search areas..." />
 
     <!-- Folder tools appear only while organizing, so browsing cannot rearrange by accident. -->
     <StackPanel Grid.Row="3" Margin="8,0,8,6" Spacing="5" IsVisible="{Binding IsOrganizing}">
@@ -67,12 +70,18 @@
               <TextBlock Grid.Column="1" Classes="name" Text="{Binding Name}"
                          FontWeight="{Binding Weight}" VerticalAlignment="Center"
                          IsVisible="{Binding IsBranch}" />
-              <StackPanel Grid.Column="1" Spacing="0" IsVisible="{Binding IsResource}">
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="7"
+                          IsVisible="{Binding IsResource}">
+                <TextBlock Text="&#x25A1;" FontSize="10" VerticalAlignment="Center"
+                           Foreground="{DynamicResource InkTertiaryBrush}" />
                 <TextBlock Classes="name" Text="{Binding Name}" />
-                <TextBlock Classes="resref" Text="{Binding ResRef}" />
               </StackPanel>
 
-              <TextBlock Grid.Column="2" Classes="count" Margin="8,0,10,0" VerticalAlignment="Center"
+              <!-- The resref sits at the end of the row rather than under the name: one line per
+                   resource keeps a 443-area tree scannable, and the monospace still separates it. -->
+              <TextBlock Grid.Column="2" Classes="resref" Margin="12,0,12,0" VerticalAlignment="Center"
+                         Text="{Binding ResRef}" IsVisible="{Binding IsResource}" />
+              <TextBlock Grid.Column="2" Classes="count" Margin="8,0,12,0" VerticalAlignment="Center"
                          Text="{Binding Count}" IsVisible="{Binding IsBranch}" />
             </Grid>
           </DataTemplate>

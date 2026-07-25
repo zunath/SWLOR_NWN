@@ -250,6 +250,30 @@
     <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
   </Style>
 
+  <!-- Panel titles. Letter-spaced small-caps monospace, because a title names the furniture rather
+       than the content and should not compete with the names inside the panel. -->
+  <Style Selector="TextBlock.title">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+    <Setter Property="LetterSpacing" Value="1.4" />
+  </Style>
+
+  <!-- A text action with no button chrome, for the one command a panel header carries. -->
+  <Style Selector="Button.link">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="2,0" />
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+  </Style>
+
+  <Style Selector="Button.link:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="TextBlock.Foreground" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
   <Style Selector="TextBlock.dim">
     <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
   </Style>

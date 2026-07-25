@@ -965,6 +965,7 @@ def description_stat_entries(row, base):
             stacks = 5
         add_stat(stats, "MeleeRepeatedTargetDamageBonusPerHit", damage)
         add_stat(stats, "MeleeRepeatedTargetDamageBonusMax", damage * (stacks or 5))
+        add_stat(stats, "MeleeRepeatedTargetDamageStatusEffectIcon", "(int)EffectIconType.RundownStatusEffect")
 
     if base == "Follow-Through":
         add_stat(stats, "MeleeAutoAttackCycleRequiredCount", 3)

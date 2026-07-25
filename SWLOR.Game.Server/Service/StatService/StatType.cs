@@ -5614,6 +5614,12 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         MeleeRepeatedTargetDamageBonusMax = 975,
 
+        /// <summary>
+        /// Effect icon displayed while the consecutive melee auto-attack bonus is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        MeleeRepeatedTargetDamageStatusEffectIcon = 976,
+
     }
 
     public class StatTypeAttribute : Attribute

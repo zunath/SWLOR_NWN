@@ -250,6 +250,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Each consecutive melee attack against the same target grants Rundown, giving +1 DMG to auto-attack against that target, up to five stacks.")
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 1)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 5)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 8)
 
@@ -257,6 +258,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Each consecutive melee attack against the same target grants Rundown, giving +2 DMG to auto-attack against that target, up to five stacks.")
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 2)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 10)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 22)
 
@@ -264,6 +266,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Each consecutive melee attack against the same target grants Rundown, giving +3 DMG to auto-attack against that target, up to five stacks.")
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 3)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 15)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 45);
         }

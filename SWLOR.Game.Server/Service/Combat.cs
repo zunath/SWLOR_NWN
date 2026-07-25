@@ -4046,13 +4046,16 @@ namespace SWLOR.Game.Server.Service
 
             var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.MeleeRepeatedTargetDamageBonusPerHit);
             var maxBonus = Stat.GetStatAdjustment(attacker, StatType.MeleeRepeatedTargetDamageBonusMax);
+            var statusEffectIcon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.MeleeRepeatedTargetDamageStatusEffectIcon));
             if (isAbilityDamage ||
                 !IsMeleeWeaponSkill(skillType) ||
                 bonusPerHit <= 0 ||
                 maxBonus <= 0)
             {
                 _meleeRepeatedTargetDamageStates.Remove(attacker);
-                RundownStatusEffect.Refresh(attacker, 0);
+                MeleeRepeatedTargetDamageStatusEffect.Refresh(attacker, 0, statusEffectIcon);
                 return damage;
             }
 
@@ -4067,7 +4070,7 @@ namespace SWLOR.Game.Server.Service
             state.LastHit = DateTime.UtcNow;
             _meleeRepeatedTargetDamageStates[attacker] = state;
 
-            RundownStatusEffect.Refresh(attacker, state.Stacks);
+            MeleeRepeatedTargetDamageStatusEffect.Refresh(attacker, state.Stacks, statusEffectIcon);
             return damage + Math.Min(maxBonus, state.Stacks * bonusPerHit);
         }
 
@@ -4501,6 +4504,8 @@ namespace SWLOR.Game.Server.Service
 
             _attackSwingDebts.Remove(creature);
             _repeatedTargetDamageStates.Remove(creature);
+            _meleeRepeatedTargetDamageStates.Remove(creature);
+            _meleeAutoAttackCycleCounts.Remove(creature);
             ClearSameTargetPressureState(creature);
             foreach (var pressureState in _sameTargetPressureStates.Where(x => x.Value.Target == creature).Select(x => x.Key).ToList())
             {
@@ -8898,6 +8903,13 @@ namespace SWLOR.Game.Server.Service
             return value > 0
                 ? (StatusEffectCategory)value
                 : 0;
+        }
+
+        private static EffectIconType GetEffectIconTypeFromStat(int value)
+        {
+            return value > 0 && Enum.IsDefined(typeof(EffectIconType), value)
+                ? (EffectIconType)value
+                : EffectIconType.Invalid;
         }
 
         private static CombatDamageType GetCombatDamageTypeFromStat(int value)

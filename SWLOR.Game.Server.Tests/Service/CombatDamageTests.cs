@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NativeDamageType = NWN.Native.API.DamageType;
 using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
@@ -254,6 +255,29 @@ public class CombatDamageTests
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.MeleeRepeatedTargetDamageBonusMax)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.MeleeRepeatedTargetDamageStatusEffectIcon)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+    }
+
+    [Test]
+    public void MeleeRepeatedTargetDamage_UsesGenericPresentationAndClearsPerCreatureState()
+    {
+        var statusEffect = new MeleeRepeatedTargetDamageStatusEffect(
+            3,
+            EffectIconType.RundownStatusEffect);
+        statusEffect.Name.Should().Be("Melee Repeated Target Damage");
+        statusEffect.Icon.Should().Be(EffectIconType.RundownStatusEffect);
+        statusEffect.Stacks.Should().Be(3);
+
+        var clone = statusEffect.Clone().Should().BeOfType<MeleeRepeatedTargetDamageStatusEffect>().Subject;
+        clone.Icon.Should().Be(EffectIconType.RundownStatusEffect);
+        clone.Stacks.Should().Be(3);
+
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatSource.Should().Contain("_meleeRepeatedTargetDamageStates.Remove(creature);");
+        combatSource.Should().Contain("_meleeAutoAttackCycleCounts.Remove(creature);");
+        combatSource.Should().NotContain("RundownStatusEffect");
     }
 
     [Test]

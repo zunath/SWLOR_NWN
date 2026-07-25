@@ -1290,9 +1290,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "GuardedAllyHitNextSkillAbilityWindowSeconds", parse_count(r"last (\d+) seconds longer", description))
     if base == "Charged Blows":
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
-        add_stat(stats, "StatusAppliedNextSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "StatusAppliedNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
-        add_stat(stats, "StatusAppliedNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
+        add_stat(stats, "StatusAppliedNextAttackDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "StatusAppliedNextAttackWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Break Posture":
         add_stat(stats, "AbilityTargetStatusRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "AbilityTargetStatusPhysicalDefensePercentAdjustment", -parse_percent(r"Physical Defense by (\d+)%", description))

@@ -108,10 +108,16 @@ namespace SWLOR.Game.Server.Service
             var guardedHitBonuses = ability.IsHostileAbility
                 ? Combat.ConsumeNextAttackGuardedHitBonuses(activator)
                 : (DMGBonus: 0, CriticalRatePercentAdjustment: 0, EnmityBonus: 0);
+            var statusAppliedNextAttackDamageBonus = ability.IsHostileAbility
+                ? Combat.ConsumeStatusAppliedNextAttackDamageBonus(activator)
+                : 0;
             BeginAbilityImpact(
                 activator,
                 ability,
-                nextAbilityDamageBonus + nextSkillAbilityBonuses.DamageBonus + guardedHitBonuses.DMGBonus,
+                nextAbilityDamageBonus +
+                nextSkillAbilityBonuses.DamageBonus +
+                guardedHitBonuses.DMGBonus +
+                statusAppliedNextAttackDamageBonus,
                 nextSkillAbilityBonuses.CriticalRatePercentAdjustment + guardedHitBonuses.CriticalRatePercentAdjustment,
                 nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
                 guardedHitBonuses.EnmityBonus);

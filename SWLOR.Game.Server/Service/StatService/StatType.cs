@@ -5620,6 +5620,25 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         MeleeRepeatedTargetDamageStatusEffectIcon = 976,
 
+        /// <summary>
+        /// Flat DMG granted to the next hostile ability or landed auto attack after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedNextAttackDamageBonus = 977,
+
+        /// <summary>
+        /// Duration in seconds of the status-applied next-attack bonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StatusAppliedNextAttackWindowSeconds = 978,
+
+        /// <summary>
+        /// Internal temporary DMG consumed by the next hostile ability or landed auto attack
+        /// after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        NextAttackStatusAppliedDMGBonus = 979,
+
     }
 
     public class StatTypeAttribute : Attribute

@@ -10,6 +10,37 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class CrossSkillPerkInteractionSafetyTests
 {
     [Test]
+    public void ChargedBlows_NextAttackBonusSupportsAbilitiesAndAutoAttacks()
+    {
+        var root = FindRepositoryRoot();
+        var staff = Read(root, "SWLOR.Game.Server", "Feature", "PerkDefinition", "StaffPerkDefinition.cs");
+        staff.Should().Contain("StatType.StatusAppliedNextAttackDamageBonus");
+        staff.Should().Contain("StatType.StatusAppliedNextAttackWindowSeconds");
+        staff.Should().NotContain("StatType.StatusAppliedNextSkillAbilitySkillType",
+            "Charged Blows says next attack, not next Staff ability");
+
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");
+        statusApplied.Should().Contain("GrantStatusAppliedNextAttackDamageBonus");
+
+        var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+        var beginAbilityImpact = ExtractMethod(ability, "public static void BeginAbilityImpact(");
+        beginAbilityImpact.Should().Contain("ConsumeStatusAppliedNextAttackDamageBonus");
+        beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
+
+        var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var nextAttackBonusIndex = nativeDamage.IndexOf(
+            "Combat.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)",
+            StringComparison.Ordinal);
+        var formulaIndex = nativeDamage.IndexOf("CalculateDamageWithCriticalMitigation", StringComparison.Ordinal);
+        nextAttackBonusIndex.Should().BeGreaterThanOrEqualTo(0);
+        nextAttackBonusIndex.Should().BeLessThan(formulaIndex,
+            "Charged Blows DMG must enter the attack-versus-defense formula");
+        nativeDamage.Should().Contain("isLandedAttack",
+            "a missed auto attack must not consume Charged Blows");
+    }
+
+    [Test]
     public void SecondaryDamage_CannotReenterDirectDamageProcOrReflectionChains()
     {
         var root = FindRepositoryRoot();

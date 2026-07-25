@@ -44,27 +44,33 @@ namespace SWLOR.Toolset.Domain.Render
         public const int MaxTriangles = 120_000;
 
         /// <summary>
-        /// The direction the camera looks along. A three-quarter view from above reads as an object
-        /// rather than a silhouette, and matches how the area viewport presents the same models.
+        /// Where the camera sits, as a direction from the model toward it.
         /// </summary>
         /// <remarks>
-        /// The +Y here is what puts the camera on the model's front. An Aurora model faces -Y - verified
-        /// against the corpus, where a creature rendered from -Y shows its face and the fronts of its
-        /// feet, and from +Y shows its shoulder blades and heels - so a camera on the +Y side was looking
-        /// at the back of every creature in the palette. The -Z puts it above rather than below.
         /// <para>
-        /// The camera is tilted 15 degrees off straight-down - near plan view, kept just off vertical so
-        /// a model still shows one lit side and reads as a solid rather than a flat outline. The drop is
-        /// the tangent of that against the bearing's own length (|(-0.7, 1)| = 1.2207), so the tilt stays
-        /// what it says it is if the bearing is ever changed.
+        /// NOT the direction the camera looks along - the opposite. <see cref="Project"/> takes
+        /// <c>Depth = dot(point, Forward)</c> and paints in ascending order, so the smallest value has to
+        /// be the farthest point, which only holds if this vector points back at the viewer. Reading it
+        /// as a look direction inverts both axes: a positive Z reads as "above" but puts the camera
+        /// underneath, and the model is drawn from below.
+        /// </para>
+        /// <para>
+        /// +Y is the model's front. Verified against the corpus: a creature rendered from +Y shows its
+        /// face and the fronts of its feet, from -Y its shoulder blades and heels.
+        /// </para>
+        /// <para>
+        /// +Z is above, tilted <see cref="TiltOffVerticalDegrees"/> off straight-down - near plan view,
+        /// kept just off vertical so a model still shows one lit side and reads as a solid rather than a
+        /// flat outline. The height is the tangent of that against the bearing's own length, so the tilt
+        /// stays what it says it is if the bearing is ever changed.
         /// </para>
         /// </remarks>
         private const float TiltOffVerticalDegrees = 15f;
 
-        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(
+        private static readonly Vector3 ToCameraDirection = Vector3.Normalize(new Vector3(
             -0.7f,
             1f,
-            -MathF.Sqrt(0.7f * 0.7f + 1f) * MathF.Tan((90f - TiltOffVerticalDegrees) * MathF.PI / 180f)));
+            MathF.Sqrt(0.7f * 0.7f + 1f) * MathF.Tan((90f - TiltOffVerticalDegrees) * MathF.PI / 180f)));
 
         /// <summary>
         /// Keyed to the same side as the camera, so the faces being looked at are the faces being lit.
@@ -214,10 +220,12 @@ namespace SWLOR.Toolset.Domain.Render
             return true;
         }
 
-        /// <summary>An orthonormal basis looking along <see cref="ViewDirection"/>, Z-up.</summary>
+        /// <summary>An orthonormal basis about <see cref="ToCameraDirection"/>, Z-up.</summary>
         private static (Vector3 Right, Vector3 Up, Vector3 Forward) BuildViewBasis()
         {
-            var forward = ViewDirection;
+            // Named Forward for the basis it forms, but it points at the camera, not away from it -
+            // see the remarks on ToCameraDirection.
+            var forward = ToCameraDirection;
             var worldUp = new Vector3(0, 0, 1);
             var right = Vector3.Normalize(Vector3.Cross(worldUp, forward));
             var up = Vector3.Cross(forward, right);

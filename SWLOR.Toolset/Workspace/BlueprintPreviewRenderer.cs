@@ -136,6 +136,39 @@ namespace SWLOR.Toolset.Workspace
             };
         }
 
+        /// <summary>
+        /// Builds a blueprint's geometry as a <see cref="RenderModel"/> rather than a thumbnail, for
+        /// callers that draw the model themselves - the area editor's placement ghost.
+        /// </summary>
+        /// <remarks>
+        /// Shares the resolver and the segmented-creature composer with the thumbnail path, which is
+        /// the point: a ghost built any other way drifts from the preview the builder just clicked.
+        /// Composition is not cheap, so callers are expected to hold the result for as long as the
+        /// blueprint stays armed rather than rebuild it per frame - and, per the note on
+        /// <see cref="RenderModel(ResourceType, Domain.Gff.JsonGffStruct)"/>, nothing here is cached:
+        /// caching every blueprint's expanded meshes is what once reached a 37 GB working set.
+        /// </remarks>
+        public RenderModel? BuildModel(ResourceType type, string resRef)
+        {
+            if (!IsAvailable || string.IsNullOrWhiteSpace(resRef))
+                return null;
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return null;
+
+            var reference = BlueprintModelResolver.Resolve(
+                type, workspace.LoadBlueprint(type, resRef).Fields, _appearances, _placeables, _doors,
+                LoadItemBlueprintRoot, PartModelExists, _waypoints);
+
+            return reference.Kind switch
+            {
+                BlueprintModelKind.Simple when reference.ModelResRef != null => BuildRenderModel(reference.ModelResRef),
+                BlueprintModelKind.Segmented => ComposeSegmented(reference),
+                _ => null
+            };
+        }
+
         private IconImage? RenderItemIcon(Domain.Gff.JsonGffStruct root)
         {
             if (_baseItems == null || _resourceIndex == null)

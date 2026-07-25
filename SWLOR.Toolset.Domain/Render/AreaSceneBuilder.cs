@@ -59,6 +59,7 @@ namespace SWLOR.Toolset.Domain.Render
 
             var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics, walkmeshes);
             var instances = BuildInstances(git, modelCache, placeableAppearances, doorTypes, waypointAppearances);
+            var doorAnchors = BuildDoorAnchors(tiles, tileset);
 
             return new AreaScene
             {
@@ -67,6 +68,7 @@ namespace SWLOR.Toolset.Domain.Render
                 Height = height,
                 Tiles = tiles,
                 Instances = instances,
+                DoorAnchors = doorAnchors,
                 Diagnostics = diagnostics,
                 Lighting = ComputeLighting(are)
             };
@@ -279,6 +281,57 @@ namespace SWLOR.Toolset.Domain.Render
                 return null;
 
             return string.IsNullOrWhiteSpace(row.ModelName) ? null : modelCache.GetOrBuild(row.ModelName);
+        }
+
+        /// <summary>
+        /// Resolves every placed tile's door nodes into world space.
+        /// </summary>
+        /// <remarks>
+        /// The .set stores a door node in tile-local coordinates about the tile's own centre, which is
+        /// exactly the space <see cref="TilePlacement.Transform"/> maps into the world - so the node
+        /// rides through the same rotation and cell offset its tile did, and a doorway on a tile turned
+        /// three times lands on the turned wall rather than the original one. The node's own
+        /// orientation is in degrees and adds to the tile's quarter turns.
+        /// <para>
+        /// A tile whose model would not resolve still contributes its doorways. The nodes come from the
+        /// .set, not from the geometry, so they are known whether or not the artwork loaded - and a
+        /// corpus door proved the point: ar_scor_kvalinte's CryptExit hangs in a zdc01 tile that draws
+        /// as a fallback here, and skipping it stranded a door Aurora had placed correctly.
+        /// </para>
+        /// </remarks>
+        private static IReadOnlyList<TileDoorAnchor> BuildDoorAnchors(
+            IReadOnlyList<TilePlacement> tiles, TilesetDefinition? tileset)
+        {
+            if (tileset == null)
+                return Array.Empty<TileDoorAnchor>();
+
+            var anchors = new List<TileDoorAnchor>();
+
+            foreach (var placement in tiles)
+            {
+                if (placement.TileId < 0 || placement.TileId >= tileset.Tiles.Count)
+                    continue;
+
+                var doors = tileset.Tiles[placement.TileId].Doors;
+                for (var doorIndex = 0; doorIndex < doors.Count; doorIndex++)
+                {
+                    var door = doors[doorIndex];
+                    var local = new Vector3((float)door.X, (float)door.Y, (float)door.Z);
+                    var heading =
+                        (float)(door.Orientation * Math.PI / 180.0) + placement.Orientation * (float)(Math.PI / 2.0);
+
+                    anchors.Add(new TileDoorAnchor
+                    {
+                        TileIndex = placement.TileIndex,
+                        DoorIndex = doorIndex,
+                        Type = door.Type,
+                        Position = Vector3.Transform(local, placement.Transform),
+                        Orientation = new Vector2(MathF.Cos(heading), MathF.Sin(heading))
+                    });
+                }
+            }
+
+            return anchors;
         }
 
         /// <summary>

@@ -115,13 +115,44 @@ namespace SWLOR.Toolset.Editors
             _viewModel?.RotateSelectedInstance(instance, newOrientation);
 
         /// <summary>A pending placement resolved to a viewport click.</summary>
-        private void OnPlacementPointPicked(Vector3 position) => _viewModel?.CommitPlacement(position);
+        private void OnPlacementPointPicked(Viewport.PlacementPick pick) =>
+            _viewModel?.CommitPlacement(pick.Position, pick.Orientation);
 
         /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();
 
-        // ----- Camera pad. The object-rotate buttons bind straight to the view model; these four
-        // groups drive the control's own camera, which the view model does not own. -----
+        // ----- Object rotate. Held, these spin the selection continuously; a tap turns one step.
+        // Both go through the viewport's live preview, so the scene is not rebuilt per tick and the
+        // whole turn is a single undo entry - see GlAreaControl.NudgeSelectedRotation. -----
+
+        /// <summary>Whether this press has repeated yet - the first tick is the tap step, the rest are the glide.</summary>
+        private bool _rotateHasRepeated;
+
+        private void OnRotateSelectionClockwise(object? sender, RoutedEventArgs e) => RotateSelectionTick(-1f);
+
+        private void OnRotateSelectionAnticlockwise(object? sender, RoutedEventArgs e) => RotateSelectionTick(1f);
+
+        private void RotateSelectionTick(float direction)
+        {
+            AreaView.NudgeSelectedRotation(direction, isFirstStep: !_rotateHasRepeated);
+            _rotateHasRepeated = true;
+        }
+
+        private void OnRotateSelectionReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e) => EndRotateSelection();
+
+        /// <summary>
+        /// Losing the pointer capture ends the rotation too. Without it a press dragged off the button
+        /// never releases on it, and the turn would sit uncommitted until something else flushed it.
+        /// </summary>
+        private void OnRotateSelectionCaptureLost(object? sender, Avalonia.Input.PointerCaptureLostEventArgs e) => EndRotateSelection();
+
+        private void EndRotateSelection()
+        {
+            _rotateHasRepeated = false;
+            AreaView.CommitSelectedRotation();
+        }
+
+        // ----- Camera pad. These drive the control's own camera, which the view model does not own. -----
 
         // The arrows move the camera, so the scene travels the other way - Aurora's left arrow sends
         // the scene right, its up arrow sends the scene down. Up and down travel forward and back

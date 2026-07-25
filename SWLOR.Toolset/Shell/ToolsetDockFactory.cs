@@ -58,7 +58,7 @@ namespace SWLOR.Toolset.Shell
                 ActiveDockable = _explorer,
                 VisibleDockables = CreateList<IDockable>(_explorer),
                 Alignment = Alignment.Left,
-                Proportion = 0.28,
+                Proportion = 0.26,
                 // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
                 // buttons that appear nowhere in the design.
                 GripMode = GripMode.Hidden
@@ -73,7 +73,7 @@ namespace SWLOR.Toolset.Shell
                 ActiveDockable = _palette,
                 VisibleDockables = CreateList<IDockable>(_palette),
                 Alignment = Alignment.Right,
-                Proportion = 0.27,
+                Proportion = 0.25,
                 // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
                 // buttons that appear nowhere in the design.
                 GripMode = GripMode.Hidden
@@ -103,9 +103,10 @@ namespace SWLOR.Toolset.Shell
             {
                 Id = "MiddleLayout",
                 Orientation = Orientation.Horizontal,
-                // Proportions deliberately leave slack rather than summing to exactly 1: the splitters
-                // between children take real width, and if the children claim all of it the last one is
-                // squeezed to nothing - which reads as a missing panel, not a narrow one.
+                // Proportions must leave slack rather than summing to 1: the splitters between children
+                // take real width, and if the children claim all of it the last one is squeezed to
+                // nothing - which reads as a missing panel, not a narrow one. These summed to 1.02
+                // despite the comment claiming otherwise; 0.26 + 0.47 + 0.25 = 0.98 leaves the room.
                 Proportion = 0.72,
                 VisibleDockables = CreateList<IDockable>(
                     explorerDock,

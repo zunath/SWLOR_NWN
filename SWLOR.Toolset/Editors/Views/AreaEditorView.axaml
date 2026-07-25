@@ -110,12 +110,18 @@
 
               <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
 
-              <Button Classes="pad" Content="&#x27F2;" ToolTip.Tip="Turn the selection anticlockwise"
-                      Command="{Binding RotateSelectionCounterClockwiseCommand}"
-                      IsEnabled="{Binding CanRotateSelection}" />
-              <Button Classes="pad" Content="&#x27F3;" ToolTip.Tip="Turn the selection clockwise"
-                      Command="{Binding RotateSelectionClockwiseCommand}"
-                      IsEnabled="{Binding CanRotateSelection}" />
+              <!-- Rotate repeats and previews while held (see RotateSelectionTick); the document edit
+                   lands once, on release. -->
+              <RepeatButton Classes="pad" Content="&#x27F2;" ToolTip.Tip="Turn the selection anticlockwise"
+                            Click="OnRotateSelectionAnticlockwise"
+                            PointerReleased="OnRotateSelectionReleased"
+                            PointerCaptureLost="OnRotateSelectionCaptureLost"
+                            IsEnabled="{Binding CanRotateSelection}" />
+              <RepeatButton Classes="pad" Content="&#x27F3;" ToolTip.Tip="Turn the selection clockwise"
+                            Click="OnRotateSelectionClockwise"
+                            PointerReleased="OnRotateSelectionReleased"
+                            PointerCaptureLost="OnRotateSelectionCaptureLost"
+                            IsEnabled="{Binding CanRotateSelection}" />
               <Button Classes="pad" Content="&#x21AF;" ToolTip.Tip="Turn the selection to a random angle"
                       Command="{Binding RotateSelectionRandomlyCommand}"
                       IsEnabled="{Binding CanRotateSelection}" />

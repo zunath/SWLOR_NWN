@@ -32,6 +32,9 @@ namespace SWLOR.Toolset.Editors
         private readonly PlaceableAppearanceService? _placeableAppearances;
         private readonly DoorTypeService? _doorTypes;
         private readonly WaypointAppearanceService? _waypointAppearances;
+
+        /// <summary>Supplies the area editor its placement-ghost geometry; null degrades the ghost to a marker.</summary>
+        private readonly Workspace.BlueprintPreviewRenderer? _previewRenderer;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -50,7 +53,8 @@ namespace SWLOR.Toolset.Editors
             DoorTypeService? doorTypes = null,
             TileWalkmeshCache? tileWalkmeshCache = null,
             Domain.GameData.Tlk.TlkService? tlkService = null,
-            WaypointAppearanceService? waypointAppearances = null)
+            WaypointAppearanceService? waypointAppearances = null,
+            Workspace.BlueprintPreviewRenderer? previewRenderer = null)
         {
             _workspaceContext = workspaceContext;
             _lookups = lookups;
@@ -66,6 +70,7 @@ namespace SWLOR.Toolset.Editors
             _tileWalkmeshCache = tileWalkmeshCache;
             _tlkService = tlkService;
             _waypointAppearances = waypointAppearances;
+            _previewRenderer = previewRenderer;
         }
 
         public void TryOpenEditor(ResourceType type, string resRef)
@@ -210,7 +215,8 @@ namespace SWLOR.Toolset.Editors
                     _tilesetCatalog, _tileModelCache, _resourceIndex,
                     _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
                     ResolveBlueprintName, TryOpenEditor,
-                    _tlkService != null ? _tlkService.GetString : null, _waypointAppearances);
+                    _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
+                    _previewRenderer != null ? _previewRenderer.BuildModel : null);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

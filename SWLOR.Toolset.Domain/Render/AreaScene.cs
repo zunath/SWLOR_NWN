@@ -149,6 +149,13 @@ namespace SWLOR.Toolset.Domain.Render
         public required AreaSceneDiagnostics Diagnostics { get; init; }
 
         /// <summary>
+        /// Every doorway the placed tiles declare, in world space - the only positions a door may be
+        /// hung at. Empty for an area whose tileset would not resolve, or one laid entirely with
+        /// tiles that carry no door nodes.
+        /// </summary>
+        public IReadOnlyList<TileDoorAnchor> DoorAnchors { get; init; } = Array.Empty<TileDoorAnchor>();
+
+        /// <summary>
         /// The area's decoded ambient/diffuse lighting, from its .are sun colors by day or
         /// moon colors at night. Defaults to a neutral mid-gray when not set (e.g. synthetic test
         /// scenes) so existing callers that build an <see cref="AreaScene"/> directly still compile.

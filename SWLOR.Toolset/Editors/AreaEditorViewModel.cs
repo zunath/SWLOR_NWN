@@ -59,6 +59,9 @@ namespace SWLOR.Toolset.Editors
         private readonly PlaceableAppearanceService? _placeableAppearances;
         private readonly DoorTypeService? _doorTypes;
         private readonly WaypointAppearanceService? _waypointAppearances;
+
+        /// <summary>Builds an armed blueprint's geometry for the placement ghost. Null degrades the ghost to a marker.</summary>
+        private readonly Func<ResourceType, string, RenderModel?>? _resolveBlueprintModel;
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly IEditorPromptService _prompts;
 
@@ -737,6 +740,16 @@ namespace SWLOR.Toolset.Editors
             if (section == null || string.IsNullOrWhiteSpace(resRef))
                 return false;
 
+            // A door is hung in a doorway the tile declares, never on open floor, so an area laid
+            // entirely with doorless tiles has nowhere to put one - and arming a placement that can
+            // never resolve would leave the builder clicking at a map that refuses every click.
+            if (type == ResourceType.Utd && AreaScene is { } scene && scene.DoorAnchors.Count == 0)
+            {
+                _log.AppendLine(
+                    $"'{resRef}' cannot be placed: no tile in this area declares a doorway to hang a door in.");
+                return false;
+            }
+
             // The other half of the exclusion in ArmTilePlacement: only one thing follows the cursor, so a
             // builder always knows what the next click resolves.
             CancelTilePlacement();
@@ -782,24 +795,18 @@ namespace SWLOR.Toolset.Editors
                 return null;
 
             RenderModel? model = null;
-            if (_tileModelCache != null)
+            try
             {
-                try
-                {
-                    var reference = BlueprintModelResolver.Resolve(
-                        type,
-                        _workspace.LoadBlueprint(type, resRef).Fields,
-                        appearances: null,
-                        _placeableAppearances,
-                        _doorTypes);
-
-                    if (reference.Kind == BlueprintModelKind.Simple && reference.ModelResRef != null)
-                        model = _tileModelCache.GetOrBuild(reference.ModelResRef);
-                }
-                catch (Exception ex)
-                {
-                    _log.AppendLine($"Placement preview for '{resRef}' fell back to a marker: {ex.Message}");
-                }
+                // Built through the same path as the palette thumbnail the builder just clicked, so
+                // the two agree - including for segmented creatures, whose body parts have to be
+                // composed and which an earlier local resolve could not produce at all (it passed no
+                // appearance service and handled only the single-resref case, so every creature
+                // ghosted as a bare marker).
+                model = _resolveBlueprintModel?.Invoke(type, resRef);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Placement preview for '{resRef}' fell back to a marker: {ex.Message}");
             }
 
             return new InstanceMarker
@@ -819,7 +826,11 @@ namespace SWLOR.Toolset.Editors
         /// position through the pending section's InstanceFieldMap-based Add path (one RunGitEdit
         /// transaction), then rebuilds the scene and selects the new instance.
         /// </summary>
-        public void CommitPlacement(Vector3 position)
+        /// <param name="orientation">
+        /// The heading to hang the new instance at, when the viewport chose one - a door takes the
+        /// heading of the doorway it snapped into. Null leaves the blueprint's own default.
+        /// </param>
+        public void CommitPlacement(Vector3 position, Vector2? orientation = null)
         {
             var section = _pendingPlacementSection;
             var resRef = _pendingPlacementResRef;
@@ -833,7 +844,10 @@ namespace SWLOR.Toolset.Editors
             if (section == null || resRef == null)
                 return;
 
-            if (!section.AddInstanceAt(resRef, position.X, position.Y, position.Z))
+            // Orientation goes in with the add rather than as a follow-up edit, so hanging a door in a
+            // doorway is one undo step and not two.
+            var facing = orientation ?? new Vector2(1f, 0f);
+            if (!section.AddInstanceAt(resRef, position.X, position.Y, position.Z, facing.X, facing.Y))
                 return;
 
             var kind = MapSectionTypeToKind(section.BlueprintType);
@@ -952,8 +966,10 @@ namespace SWLOR.Toolset.Editors
             Func<ResourceType?, string?, string?>? resolveBlueprintName = null,
             Action<ResourceType, string>? openBlueprint = null,
             Func<uint, string?>? resolveStrRef = null,
-            WaypointAppearanceService? waypointAppearances = null)
+            WaypointAppearanceService? waypointAppearances = null,
+            Func<ResourceType, string, RenderModel?>? resolveBlueprintModel = null)
         {
+            _resolveBlueprintModel = resolveBlueprintModel;
             _waypointAppearances = waypointAppearances;
             _resolveBlueprintName = resolveBlueprintName;
             _openBlueprint = openBlueprint;

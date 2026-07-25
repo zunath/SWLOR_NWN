@@ -211,7 +211,9 @@ void main()
         result = mix(result, fogColor, clamp(1.0 - exp(-fogDensity * depth), 0.0, 1.0));
     }
 
-    FragColor = vec4(result, 1.0);
+    // flatAlpha is 1.0 for every ordinary draw; the placement ghosts lower it so the scene reads
+    // through the object about to be placed.
+    FragColor = vec4(result, flatAlpha);
 }
 ";
 
@@ -384,7 +386,7 @@ void main()
         }
 
         /// <summary>Raised when placement mode is active and a plain click (not a camera drag) lands in the viewport: the world-space ground point (ray intersected with the Z=0 plane). Clears <see cref="IsPlacementActive"/> before raising.</summary>
-        public event Action<Vector3>? PlacementPointPicked;
+        public event Action<PlacementPick>? PlacementPointPicked;
 
         /// <summary>Raised when an active placement is cancelled (Esc, or a right-click while placement is active). Clears <see cref="IsPlacementActive"/> before raising.</summary>
         public event Action? PlacementCancelled;
@@ -413,6 +415,12 @@ void main()
 
         /// <summary>Where the ghost sits right now, or null before the pointer has been over the map.</summary>
         private Vector3? _ghostPosition;
+
+        /// <summary>
+        /// The doorway the ghost has snapped itself to, for a door placement; null for everything else,
+        /// and for a door in an area whose tiles declare no doorways at all.
+        /// </summary>
+        private TileDoorAnchor? _snappedDoorAnchor;
 
         // ----- Paint-tiles-from-palette -----
         //
@@ -1060,6 +1068,69 @@ void main()
                 InstanceRotated?.Invoke(original, preview.Orientation);
         }
 
+        /// <summary>
+        /// How far one press of a rotate button turns the selection before the repeat takes over. A
+        /// sixteenth of a turn: coarse enough to square something up in a couple of taps, fine enough
+        /// to angle a chair.
+        /// </summary>
+        private const float RotateTapRadians = MathF.PI / 8f;
+
+        /// <summary>
+        /// How fast a held rotate button turns the selection - a full turn in about three seconds,
+        /// slow enough to stop on a heading by eye and fast enough not to wait for the far side.
+        /// Driven off the same <see cref="PadStepSeconds"/> clock as the camera pad, so the speed is
+        /// a speed rather than a function of how fast the repeat happens to fire.
+        /// </summary>
+        private const float RotateHeldRadiansPerSecond = MathF.Tau / 3f;
+
+        /// <summary>
+        /// Turns the selected instance as a live preview, opening a rotation if one is not already
+        /// open. <paramref name="isFirstStep"/> turns the fixed tap step; every step after it glides at
+        /// <see cref="RotateHeldRadiansPerSecond"/>. Nothing is written until
+        /// <see cref="CommitSelectedRotation"/>.
+        /// </summary>
+        /// <remarks>
+        /// This is what makes the rotate buttons feel like Aurora's rather than like a series of
+        /// separate decisions. Each press used to be a document edit and an async scene rebuild, so a
+        /// held button could not turn the object faster than the scene could be reassembled, and a
+        /// quarter turn cost eight undo entries. Rotating the preview instead costs a redraw, and the
+        /// single edit lands on release.
+        /// <para>
+        /// It borrows the drag machinery deliberately: the preview, the readout and the commit all
+        /// already exist for the rotate gizmo, and a button-driven rotation is the same operation
+        /// started a different way. The pointer is over the button while this runs, so it cannot also
+        /// be starting a drag in the viewport.
+        /// </para>
+        /// </remarks>
+        public void NudgeSelectedRotation(float direction, bool isFirstStep)
+        {
+            if (SelectedInstance is not { } selected)
+                return;
+
+            if (_dragMode != DragMode.Rotate || _manipulationOriginal == null)
+                BeginManipulation(selected, DragMode.Rotate);
+
+            var step = isFirstStep
+                ? RotateTapRadians
+                : RotateHeldRadiansPerSecond * PadStepSeconds();
+
+            _manipulationHeadingRadians += direction * step;
+            var orientation = AreaManipulation.HeadingToOrientation(_manipulationHeadingRadians);
+            _manipulationPreview = ClonePreview(_manipulationOriginal!, _manipulationOriginal!.Position, orientation);
+            ManipulationPreviewChanged?.Invoke(_manipulationOriginal, _manipulationPreview);
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// Ends a rotation started by <see cref="NudgeSelectedRotation"/>, raising
+        /// <see cref="InstanceRotated"/> once for the whole turn. Safe to call when none is open.
+        /// </summary>
+        public void CommitSelectedRotation()
+        {
+            if (_dragMode == DragMode.Rotate && _manipulationOriginal != null)
+                CommitManipulation();
+        }
+
         /// <summary>The instance actually rendered/highlighted for <paramref name="instance"/> right now - its live manipulation preview while a drag is in progress on it, otherwise itself.</summary>
         private InstanceMarker Displayed(InstanceMarker instance) =>
             _manipulationPreview != null && ReferenceEquals(instance, _manipulationOriginal) ? _manipulationPreview : instance;
@@ -1068,6 +1139,7 @@ void main()
 
         private void CancelPlacement()
         {
+            _snappedDoorAnchor = null;
             if (!_isPlacementActive)
                 return;
 
@@ -1094,8 +1166,56 @@ void main()
             if (point is not { } hit)
                 return;
 
-            _ghostPosition = hit;
+            if (SnapsToDoorAnchors)
+            {
+                _snappedDoorAnchor = NearestDoorAnchor(hit);
+                _ghostPosition = _snappedDoorAnchor?.Position;
+            }
+            else
+            {
+                _snappedDoorAnchor = null;
+                _ghostPosition = hit;
+            }
+
             RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// True while the armed placement is a door, which may only be hung in a doorway a tile
+        /// declares - see <see cref="TileDoorAnchor"/>.
+        /// </summary>
+        private bool SnapsToDoorAnchors => _placementGhost?.Kind == InstanceMarkerKind.Door;
+
+        /// <summary>
+        /// The doorway nearest a ground point, measured on the floor plane so a doorway is not
+        /// preferred merely for being on a lower storey. Null when the scene declares none.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately unbounded: there is no radius past which the click is refused instead. A door
+        /// has to go somewhere, the set of somewheres is small and drawn on screen, and "nothing
+        /// happened" is a worse answer to a click than "it went to the doorway you were nearest".
+        /// </remarks>
+        private TileDoorAnchor? NearestDoorAnchor(Vector3 groundPoint)
+        {
+            if (Volatile.Read(ref _sceneState).Scene is not { } scene)
+                return null;
+
+            TileDoorAnchor? best = null;
+            var bestDistance = float.MaxValue;
+
+            foreach (var anchor in scene.DoorAnchors)
+            {
+                var dx = anchor.Position.X - groundPoint.X;
+                var dy = anchor.Position.Y - groundPoint.Y;
+                var distance = dx * dx + dy * dy;
+                if (distance >= bestDistance)
+                    continue;
+
+                bestDistance = distance;
+                best = anchor;
+            }
+
+            return best;
         }
 
         private void RaisePlacementPointPicked(Point screenPos)
@@ -1113,9 +1233,23 @@ void main()
             if (point is not { } hit)
                 return;
 
+            if (SnapsToDoorAnchors)
+            {
+                // A door that has not found a doorway has nowhere to go, so the click is ignored and the
+                // placement stays armed rather than dropping the door on open floor.
+                if (NearestDoorAnchor(hit) is not { } anchor)
+                    return;
+
+                _isPlacementActive = false;
+                _ghostPosition = null;
+                _snappedDoorAnchor = null;
+                PlacementPointPicked?.Invoke(new PlacementPick(anchor.Position, anchor.Orientation));
+                return;
+            }
+
             _isPlacementActive = false;
             _ghostPosition = null;
-            PlacementPointPicked?.Invoke(hit);
+            PlacementPointPicked?.Invoke(new PlacementPick(hit, null));
         }
 
         // ----- Paint-tiles-from-palette -----
@@ -1736,6 +1870,7 @@ void main()
             DrawPolygonOverlays();
             DrawSelectionHighlight();
             DrawTransformGizmo();
+            DrawDoorAnchors();
             DrawPlacementGhost();
             DrawTileCellHighlight(scene);
 
@@ -2033,16 +2168,20 @@ void main()
             _gl.DrawArrays(PrimitiveType.Lines, 0, 24);
         }
 
-        /// <summary>Alpha and tint for the placement ghost - present, clearly provisional.</summary>
-        private const float PlacementGhostAlpha = 0.55f;
+        /// <summary>
+        /// How solid the placement ghost draws. High enough that the model's own textures read as
+        /// themselves, low enough that the floor beneath still shows through and says "not yet placed".
+        /// </summary>
+        private const float PlacementGhostAlpha = 0.78f;
 
+        /// <summary>Tint for a ghost with no model, and for a tile stamp the grid will refuse.</summary>
         private static readonly Vector3 PlacementGhostColor = new(0.36f, 0.61f, 0.96f);
 
         /// <summary>
         /// Fainter than the object ghost. A tile fills a whole 10m cell, so at the object ghost's
         /// opacity it blots out the area underneath it rather than previewing against it.
         /// </summary>
-        private const float TileGhostAlpha = 0.35f;
+        private const float TileGhostAlpha = 0.6f;
 
         /// <summary>
         /// How much larger the ghost's fallback marker is than a placed instance's marker. A blueprint
@@ -2055,10 +2194,10 @@ void main()
         /// Draws the object being placed at the ground point under the cursor.
         /// </summary>
         /// <remarks>
-        /// Tinted and translucent rather than a faded copy of the real thing: a half-transparent
-        /// textured model is easy to mistake for one already placed, whereas a single accent colour
-        /// reads immediately as "not yet real". The model's own geometry is used where it resolved, so
-        /// the footprint and height are honest even though the surface is not.
+        /// Drawn with its own textures and lighting, because the one question a ghost exists to answer
+        /// is "is this the thing I meant to place?" - and a flat silhouette cannot answer it when the
+        /// palette offers forty variations on the same crate. Translucency, not colour, is what marks
+        /// it provisional. A blueprint whose model would not resolve still ghosts, as the kind's marker.
         /// <para>
         /// Drawn with the depth test off, like the transform gizmo. This is a cursor, and a cursor that
         /// disappears behind a wall or sinks into the floor has failed at its one job - which is exactly
@@ -2078,7 +2217,7 @@ void main()
                 TemplateResRef = ghost.TemplateResRef,
                 Tag = ghost.Tag,
                 Position = position,
-                Orientation = ghost.Orientation,
+                Orientation = _snappedDoorAnchor?.Orientation ?? ghost.Orientation,
                 VisualTransform = ghost.VisualTransform,
                 Model = ghost.Model
             };
@@ -2090,11 +2229,7 @@ void main()
             _gl.DepthMask(false);
             _gl.Disable(EnableCap.DepthTest);
 
-            SetUniformBool("hasTexture", false);
-            SetUniformBool("unlit", true);
-            SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", PlacementGhostAlpha);
-            SetUniformVec3("flatColor", PlacementGhostColor);
             SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
 
             if (DrawsAsModel(placed))
@@ -2105,6 +2240,7 @@ void main()
                 foreach (var meshRange in buffer.MeshRanges)
                 {
                     SetUniformMatrix4("model", meshRange.MeshTransform * transform);
+                    BindMeshTexture(meshRange.TextureName);
 
                     unsafe
                     {
@@ -2115,9 +2251,82 @@ void main()
             }
             else if (_markerMeshBuffer is { } marker)
             {
+                SetUniformBool("hasTexture", false);
+                SetUniformBool("unlit", true);
+                SetUniformFloat("alphaCutoff", 0f);
+                SetUniformVec3("flatColor", PlacementGhostColor);
                 _gl.BindVertexArray(marker.Vao);
                 SetUniformMatrix4("model",
                     Matrix4x4.CreateScale(PlacementGhostMarkerScale) * transform);
+
+                unsafe
+                {
+                    _gl.DrawElements(PrimitiveType.Triangles, (uint)marker.IndexCount,
+                        DrawElementsType.UnsignedInt, (void*)0);
+                }
+            }
+
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
+            SetUniformFloat("flatAlpha", 1f);
+        }
+
+        /// <summary>Size of a doorway marker relative to the kind markers, and how far it floats off the floor.</summary>
+        private const float DoorAnchorMarkerScale = 0.9f;
+
+        private const float DoorAnchorMarkerLift = 0.4f;
+
+        /// <summary>The doorway the ghost is not currently in - available, but not the one about to be filled.</summary>
+        private static readonly Vector3 DoorAnchorColor = new(0.94f, 0.78f, 0.22f);
+
+        private const float DoorAnchorAlpha = 0.65f;
+
+        /// <summary>
+        /// While a door is armed, marks every doorway the area's tiles declare.
+        /// </summary>
+        /// <remarks>
+        /// A door cannot be placed anywhere else, so the builder needs to see where "anywhere else" is
+        /// not - otherwise a click that snaps several metres away looks like a bug rather than the rule
+        /// it is. Only drawn during a door placement: the rest of the time these are noise, and there
+        /// can be dozens of them in a corridor tileset. The snapped one is left to the ghost, which is
+        /// standing in it.
+        /// </remarks>
+        private void DrawDoorAnchors()
+        {
+            if (!_isPlacementActive || !SnapsToDoorAnchors || _gl == null ||
+                _markerMeshBuffer is not { } marker ||
+                Volatile.Read(ref _sceneState).Scene is not { } scene ||
+                scene.DoorAnchors.Count == 0)
+            {
+                return;
+            }
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.DepthMask(false);
+            _gl.Disable(EnableCap.DepthTest);
+
+            _gl.BindVertexArray(marker.Vao);
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", DoorAnchorAlpha);
+            SetUniformVec3("flatColor", DoorAnchorColor);
+            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
+
+            foreach (var anchor in scene.DoorAnchors)
+            {
+                if (_snappedDoorAnchor is { } snapped &&
+                    snapped.TileIndex == anchor.TileIndex && snapped.DoorIndex == anchor.DoorIndex)
+                {
+                    continue;
+                }
+
+                SetUniformMatrix4("model",
+                    Matrix4x4.CreateScale(DoorAnchorMarkerScale) *
+                    Matrix4x4.CreateTranslation(
+                        anchor.Position.X, anchor.Position.Y, anchor.Position.Z + DoorAnchorMarkerLift));
 
                 unsafe
                 {
@@ -2212,9 +2421,10 @@ void main()
         /// </summary>
         /// <remarks>
         /// A tile is chosen for its shape - a doorway, a stair, a corner, a bridge - and an outlined
-        /// cell shows none of it, so a builder had to stamp one to find out what it was. Drawn tinted
-        /// and translucent for the same reason the object ghost is: a textured copy of the real thing
-        /// would be indistinguishable from a tile already laid. Called from inside
+        /// cell shows none of it, so a builder had to stamp one to find out what it was. Drawn with its
+        /// own textures, translucently, so the choice can be made on the artwork rather than on a
+        /// silhouette; a stamp the grid will refuse drops to a flat red instead, the one case where the
+        /// warning matters more than the picture. Called from inside
         /// <see cref="DrawTileCellHighlight"/>, which has already set up blending and turned the depth
         /// test off, and which leaves the outline underneath as the fits/does-not-fit signal.
         /// </remarks>
@@ -2224,13 +2434,16 @@ void main()
                 return;
 
             var (columns, rows) = _tilePlacementFootprint;
+            var fits = FootprintFitsGrid(scene, anchorColumn, anchorRow);
 
-            SetUniformBool("hasTexture", false);
-            SetUniformBool("unlit", true);
             SetUniformFloat("flatAlpha", TileGhostAlpha);
-            SetUniformVec3("flatColor", FootprintFitsGrid(scene, anchorColumn, anchorRow)
-                ? TileCellHighlightColor
-                : TileCellRejectedColor);
+            if (!fits)
+            {
+                SetUniformBool("hasTexture", false);
+                SetUniformBool("unlit", true);
+                SetUniformFloat("alphaCutoff", 0f);
+                SetUniformVec3("flatColor", TileCellRejectedColor);
+            }
 
             for (var row = 0; row < rows; row++)
             for (var column = 0; column < columns; column++)
@@ -2258,6 +2471,8 @@ void main()
                 foreach (var meshRange in buffer.MeshRanges)
                 {
                     SetUniformMatrix4("model", meshRange.MeshTransform * transform);
+                    if (fits)
+                        BindMeshTexture(meshRange.TextureName);
 
                     unsafe
                     {

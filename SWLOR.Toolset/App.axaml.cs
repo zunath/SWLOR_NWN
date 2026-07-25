@@ -93,7 +93,8 @@ namespace SWLOR.Toolset
                 sp.GetService<DoorTypeService>(),
                 sp.GetService<Domain.Render.TileWalkmeshCache>(),
                 sp.GetService<TlkService>(),
-                sp.GetService<WaypointAppearanceService>()));
+                sp.GetService<WaypointAppearanceService>(),
+                sp.GetRequiredService<Workspace.BlueprintPreviewRenderer>()));
 
             // The explorer needs to open editors, but EditorService depends on the dock factory,
             // which depends on the explorer — a Func breaks the construction cycle.

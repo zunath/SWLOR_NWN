@@ -606,9 +606,9 @@ void main()
             // tile) suspends the grab: while something is waiting to be placed, the left button
             // belongs to placing it, and the gizmo comes back untouched the moment nothing is armed.
             if (!_isPlacementActive && !_isTilePlacementActive && props.IsLeftButtonPressed && !shift
-                && _selectedInstance != null && TryHitSelectedInstance(pos))
+                && _selectedInstance != null && TryHitSelection(pos, alt) is { } grabbed)
             {
-                BeginManipulation(_selectedInstance, alt ? DragMode.Rotate : DragMode.Move);
+                BeginManipulation(_selectedInstance, grabbed);
                 _lastPointerPos = pos;
                 _pressStartPos = pos;
                 _isClickCandidate = false;
@@ -758,19 +758,51 @@ void main()
                 new Vector2((float)screenPos.X, (float)screenPos.Y), _viewportWidth, _viewportHeight, _lastView, _lastProjection);
         }
 
-        /// <summary>Whether a press at <paramref name="screenPos"/> lands on <see cref="_selectedInstance"/> specifically (not the whole scene), using the same marker-vs-model rule everything else here uses.</summary>
-        private bool TryHitSelectedInstance(Point screenPos)
+        /// <summary>
+        /// What a press at <paramref name="screenPos"/> grabs on the current selection: an axis arm
+        /// moves, the rotation ring turns, and the object's own body does whichever
+        /// <paramref name="alt"/> asks for. Null when the press missed all three.
+        /// </summary>
+        /// <remarks>
+        /// The handles are tested first and on their own geometry. They are drawn well outside most
+        /// objects' bounds, so testing only the body meant a press on a visible arm or ring fell
+        /// through to camera panning - the gizmo could be seen but not grabbed.
+        /// </remarks>
+        private DragMode? TryHitSelection(Point screenPos, bool alt)
         {
             if (Volatile.Read(ref _sceneState).Scene == null ||
                 _selectedInstance is not { } selected)
-                return false;
+                return null;
 
             var ray = TryBuildRay(screenPos);
             if (ray == null)
-                return false;
+                return null;
 
-            return AreaPicking.PickInstance(ray.Value, selected, DrawsAsModel(selected)) != null;
+            switch (GizmoPicking.Pick(
+                        ray.Value, Displayed(selected).Position,
+                        GizmoArmLength, GizmoRingRadius, GizmoGrabTolerance()))
+            {
+                case GizmoHandle.Axis:
+                    return DragMode.Move;
+                case GizmoHandle.Ring:
+                    return DragMode.Rotate;
+            }
+
+            return AreaPicking.PickInstance(ray.Value, selected, DrawsAsModel(selected)) != null
+                ? alt ? DragMode.Rotate : DragMode.Move
+                : null;
         }
+
+        /// <summary>
+        /// How near a press has to pass a handle, in world units.
+        /// </summary>
+        /// <remarks>
+        /// Scaled with camera distance because the handles are a fixed world size: at a wide zoom an
+        /// arm covers a couple of pixels, and a fixed world tolerance would make it effectively
+        /// impossible to hit. Clamped at both ends so it never shrinks below a usable grab or grows
+        /// wide enough to swallow presses meant for the object itself.
+        /// </remarks>
+        private float GizmoGrabTolerance() => Math.Clamp(_distance * 0.02f, 0.15f, 1.0f);
 
         private void BeginManipulation(InstanceMarker selected, DragMode mode)
         {
@@ -2023,15 +2055,18 @@ void main()
         /// <summary>A closed ring in the ground plane, for the rotate handle.</summary>
         private static float[] BuildRotationRingVertices(Vector3 origin, float radius)
         {
-            const int segments = 36;
+            // Segment count and ground offset come from GizmoPicking so the ring a press is tested
+            // against is exactly the ring on screen.
+            const int segments = GizmoPicking.RingSegments;
+            const float groundOffset = GizmoPicking.RingGroundOffset;
             var points = new List<Vector3>(segments * 2);
 
             for (var i = 0; i < segments; i++)
             {
                 var a = i / (float)segments * MathF.Tau;
                 var b = (i + 1) / (float)segments * MathF.Tau;
-                points.Add(origin + new Vector3(MathF.Cos(a) * radius, MathF.Sin(a) * radius, 0.05f));
-                points.Add(origin + new Vector3(MathF.Cos(b) * radius, MathF.Sin(b) * radius, 0.05f));
+                points.Add(origin + new Vector3(MathF.Cos(a) * radius, MathF.Sin(a) * radius, groundOffset));
+                points.Add(origin + new Vector3(MathF.Cos(b) * radius, MathF.Sin(b) * radius, groundOffset));
             }
 
             return BuildLineVertices(points);

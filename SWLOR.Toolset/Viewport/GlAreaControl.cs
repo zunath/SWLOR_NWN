@@ -37,7 +37,27 @@ namespace SWLOR.Toolset.Viewport
         private const float NearPlane = 0.1f;
         private const int FloatsPerVertex = 8; // position(3) + normal(3) + texcoord(2)
         private const float PolygonHeightOffset = 0.05f; // lift trigger outlines slightly above the tile floor
-        private const float OrbitSensitivity = 0.01f; // radians per pixel
+        /// <summary>
+        /// How fast a held middle-drag turns the view, in degrees per second.
+        /// </summary>
+        /// <remarks>
+        /// A rate, not a per-pixel sensitivity, because Aurora's is not proportional to how far the
+        /// mouse moves. Measured: a 100px drag and a 400px drag delivering the same number of motion
+        /// samples rotate by the same amount (-17.7 vs -15.8 degrees), and so do a 1px-per-sample and
+        /// a 10px-per-sample drag. What drives it is how long the mouse keeps moving. Aurora turns
+        /// about 3.3 degrees per sample, which at its redraw rate lands near this figure - and matches
+        /// its own rotate button, measured at 196 deg/s.
+        /// </remarks>
+        private const float OrbitYawDegreesPerSecond = 196f;
+
+        /// <summary>
+        /// The same idea for pitch, which Aurora turns far more slowly - about 0.72 degrees per motion
+        /// sample against yaw's 3.3, measured as 17 degrees of elevation over a 150px vertical drag.
+        /// </summary>
+        private const float OrbitPitchDegreesPerSecond = 43f;
+
+        /// <summary>Timestamp of the last orbit step, so the rate above is per second and not per event.</summary>
+        private long _lastOrbitTicks;
         private const float FallbackCubeHeight = 1.5f;
 
         /// <summary>
@@ -712,16 +732,34 @@ void main()
             switch (_dragMode)
             {
                 case DragMode.Orbit:
-                    _azimuth += dx * OrbitSensitivity;
-                    _elevation = AreaCameraMath.ClampElevation(_elevation - dy * OrbitSensitivity);
+                {
+                    // Only the direction of the movement is read, never its size - see
+                    // OrbitYawDegreesPerSecond. The elapsed time carries the magnitude, so the turn
+                    // rate is the same whatever rate the pointer events arrive at.
+                    var now = System.Diagnostics.Stopwatch.GetTimestamp();
+                    var seconds = _lastOrbitTicks == 0
+                        ? 0.0
+                        : (now - _lastOrbitTicks) / (double)System.Diagnostics.Stopwatch.Frequency;
+                    _lastOrbitTicks = now;
+
+                    // A stalled frame must not bank up into one huge jump.
+                    var step = (float)Math.Clamp(seconds, 0.0, 0.05);
+
+                    if (dx != 0f)
+                        _azimuth += MathF.Sign(dx) * OrbitYawDegreesPerSecond * DegreesToRadians * step;
+                    if (dy != 0f)
+                        _elevation = AreaCameraMath.ClampElevation(
+                            _elevation - MathF.Sign(dy) * OrbitPitchDegreesPerSecond * DegreesToRadians * step);
                     break;
+                }
 
                 case DragMode.Pan:
-                    // Subtracted, not added: measured in Aurora, the scene moves opposite the cursor
-                    // one-for-one - drag right and the camera goes right, so the world slides left.
-                    // PanDelta is written the other way round, for the pad's "shift the view" buttons.
+                    // Grab and drag: the scene follows the cursor one-for-one, so whatever is under the
+                    // pointer stays under it. Confirmed both ways in Aurora - by eye, watching a grass
+                    // patch travel right with a rightward drag, and by measurement, 200px of cursor
+                    // moving the scene 0.93-1.10 screen px per cursor px across several trials.
                     var worldPerPixel = AreaCameraMath.WorldUnitsPerPixel(_distance, VerticalFovRadians, _viewportHeight);
-                    _target -= AreaCameraMath.PanDelta(_azimuth, dx, dy, worldPerPixel);
+                    _target += AreaCameraMath.PanDelta(_azimuth, dx, dy, worldPerPixel);
                     break;
 
                 case DragMode.Move:
@@ -757,6 +795,7 @@ void main()
             var wasClickCandidate = _isClickCandidate;
 
             _dragMode = DragMode.None;
+            _lastOrbitTicks = 0;
             _isClickCandidate = false;
             e.Pointer.Capture(null);
             e.Handled = true;
@@ -1101,17 +1140,27 @@ void main()
         /// One frame of camera-button motion, fired about sixty times a second while a button is held.
         /// </summary>
         /// <remarks>
-        /// A step, not a jump: the buttons are a velocity control, so these are per-frame amounts and
-        /// the numbers that matter are the products - roughly 1250 px/s of pan, 60 deg/s of orbit, and
-        /// 2.5x of zoom per second. Aurora measured about 3400 px/s of pan, which crosses the viewport
-        /// in under a second; this is deliberately calmer. Pan is sized in screen terms rather than
-        /// world units so it feels the same zoomed into a doorway or looking at the whole area.
+        /// Per-frame amounts at the pad's ~60Hz repeat, chosen so the products match what Aurora's own
+        /// buttons do: 2025 px/s of pan (measured over a 150ms press), 196 deg/s of rotation (over
+        /// 300ms), and 2.7x of zoom per second. Pan is sized in screen terms rather than world units so
+        /// it feels the same zoomed into a doorway or looking at the whole area.
         /// </remarks>
-        private const float PanStepPixels = 20f;
+        private const float PanStepPixels = 2025f / PadStepsPerSecond;
 
-        private const float OrbitStepRadians = MathF.PI / 180f;
+        private const float OrbitStepRadians = 196f * DegreesToRadians / PadStepsPerSecond;
 
-        private const float ZoomStepFactor = 1.015f;
+        /// <summary>
+        /// Aurora's zoom button is not a constant rate: a 150ms press gives 1.415x and a 300ms press
+        /// 1.640x, which fits an initial 1.22x on press followed by about 2.7x per second held.
+        /// </summary>
+        private const float ZoomStepFactor = 1.0161f;   // 2.7^(1/60)
+
+        private const float ZoomPressFactor = 1.22f;
+
+        /// <summary>Matches the RepeatButton interval in the theme.</summary>
+        private const float PadStepsPerSecond = 60f;
+
+        private const float DegreesToRadians = MathF.PI / 180f;
 
         /// <summary>Slides the view across the ground plane, in units of <see cref="PanStepPixels"/>.</summary>
         public void NudgePan(float rightSteps, float upSteps)
@@ -1132,19 +1181,40 @@ void main()
             RequestNextFrameRendering();
         }
 
+        private long _lastZoomTicks;
+
         /// <summary>Moves the view closer (positive) or further away (negative).</summary>
+        /// <remarks>
+        /// The first step of a press is the larger <see cref="ZoomPressFactor"/>, the rest the held
+        /// rate - Aurora's own button behaves that way, and it is what makes a single click do
+        /// something visible instead of nothing. A new press is recognised by the gap since the last
+        /// step, which needs no cooperation from the button itself.
+        /// </remarks>
         public void NudgeZoom(int steps)
         {
-            var factor = MathF.Pow(ZoomStepFactor, -steps);
-            _distance = AreaCameraMath.ClampDistance(_distance * factor, _initialDistance);
+            var now = System.Diagnostics.Stopwatch.GetTimestamp();
+            var gap = _lastZoomTicks == 0
+                ? double.MaxValue
+                : (now - _lastZoomTicks) / (double)System.Diagnostics.Stopwatch.Frequency;
+            _lastZoomTicks = now;
+
+            var perStep = gap > 0.15 ? ZoomPressFactor : ZoomStepFactor;
+            _distance = AreaCameraMath.ClampDistance(
+                _distance * MathF.Pow(perStep, -steps), _initialDistance);
 
             RequestNextFrameRendering();
         }
 
+        /// <summary>
+        /// Zoom per wheel notch. Aurora is aggressive here - measured 3.31x over two notches, so 1.82
+        /// each; four notches take a whole area to a close-up.
+        /// </summary>
+        private const float WheelZoomPerNotch = 1.82f;
+
         public void HandlePointerWheel(PointerWheelEventArgs e)
         {
             // Wheel up (positive delta) zooms IN (shrinks distance) per common convention.
-            var factor = (float)Math.Pow(1.1, -e.Delta.Y);
+            var factor = (float)Math.Pow(WheelZoomPerNotch, -e.Delta.Y);
             _distance = AreaCameraMath.ClampDistance(_distance * factor, _initialDistance);
 
             RequestNextFrameRendering();

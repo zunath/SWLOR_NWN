@@ -56,7 +56,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Feat = FeatType.ForceLink1,
                     Target = AbilityTargetKind.FriendlyCreature,
                     EquipMainHandResref = LightsaberResref,
-                    Notes = "ValidateFriendlyTarget with allowSelf:false - cast on a spawned same-faction ally."
+                    ExpectedTargetStatusEffects = new[] { typeof(WardBondStatusEffect) },
+                    ExpectsFPCost = true,
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                    Notes = "ValidateFriendlyTarget with allowSelf:false - cast on a spawned same-faction ally. Impact applies WardBondStatusEffect to the ally (FriendlyTargetStatusEffectFactory); 3 FP / 4 STM / 24s recast per the definition."
                 },
 
                 // ForceSheathAbilityDefinition - queued weapon ability, Force damage on next landed hit.

@@ -179,6 +179,14 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         () => GetIsDead(target),
                         5f,
                         "the target to be dead before activation");
+
+                    // The death event's Loot.ProcessCorpse spawns an untracked "corpse"
+                    // placeable with a 360s lifetime beside the body; left alone, one
+                    // accumulates at the shared spawn point per revival case and outlives
+                    // the whole sweep. Destroying it early is safe - the scheduled corpse
+                    // cleanup no-ops on an already-destroyed placeable.
+                    await NwTask.NextFrame();
+                    DestroyCorpsePlaceable(target);
                 }
 
                 if (behaviorCase.TargetJoinsCasterParty)
@@ -449,6 +457,27 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 if (target != caster)
                     DestroyCaseActor(target);
                 DestroyCaseActor(caster);
+            }
+        }
+
+        /// <summary>
+        /// Destroys the loot-corpse placeable Loot.ProcessCorpse spawned for a killed
+        /// fixture. Matched by the CORPSE_BODY back-reference rather than proximity alone
+        /// so a neighboring case's corpse can never be swept up by mistake.
+        /// </summary>
+        private static void DestroyCorpsePlaceable(uint body)
+        {
+            for (var nth = 1; ; nth++)
+            {
+                var placeable = GetNearestObject(ObjectType.Placeable, body, nth);
+                if (!GetIsObjectValid(placeable) || GetDistanceBetween(body, placeable) > 10f)
+                    break;
+
+                if (GetLocalObject(placeable, Loot.CorpseBodyVariable) == body)
+                {
+                    DestroyObject(placeable);
+                    break;
+                }
             }
         }
 

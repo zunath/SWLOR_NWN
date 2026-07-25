@@ -70,11 +70,12 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
             Action<string>? reportProblem)
         {
             var entries = new List<TilePaletteEntry>(tileset.Groups.Count);
+            var used = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
             for (var index = 0; index < tileset.Groups.Count; index++)
             {
                 var group = tileset.Groups[index];
-                var label = GroupLabel(group, index, resolveStrRef);
+                var label = Disambiguate(GroupLabel(group, index, resolveStrRef), used);
 
                 if (group.TileIndices.Count == 0)
                 {
@@ -143,14 +144,68 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
         }
 
         /// <summary>
-        /// The group's localized name when its strref resolves, otherwise the raw name from the .set.
-        /// Localized names are worth preferring even though most corpus groups have none: ttd01
-        /// carries strrefs on 39 of its 53 groups, and those read as "Ruined Building" rather than
-        /// "Ruin01_2x2".
+        /// Numbers a label that a previous group in the same tileset already used.
         /// </summary>
+        /// <remarks>
+        /// The .set files repeat names: tbx78 has three groups all called "room2x1". Distinguishing them
+        /// is the whole point of a label, and this is a palette a builder picks from, so the copies get
+        /// counted rather than left identical. Case-insensitive, because "Room2x1" and "room2x1" would
+        /// read as the same label on screen.
+        /// </remarks>
+        private static string Disambiguate(string label, Dictionary<string, int> used)
+        {
+            if (!used.TryGetValue(label, out var seen))
+            {
+                used[label] = 1;
+                return label;
+            }
+
+            // Keep counting from the first collision, and guard against a name that already looks
+            // numbered colliding with the number we would add.
+            string candidate;
+            do
+            {
+                seen++;
+                candidate = $"{label} ({seen})";
+            }
+            while (used.ContainsKey(candidate));
+
+            used[label] = seen;
+            used[candidate] = 1;
+            return candidate;
+        }
+
+        /// <summary>
+        /// The group's own name from the .set, falling back to its strref and then to a numbered
+        /// placeholder.
+        /// </summary>
+        /// <remarks>
+        /// <b>Name first, strref second</b> - the opposite of what a localized label usually deserves,
+        /// because in this corpus the strrefs on custom tilesets are stale and the names are not.
+        /// Measured on sw_t_modint2's tmi.set, whose first groups are AverageTwoWide, AverageFrontDoor,
+        /// AverageElevator, PoorTwoWide, PoorFrontDoor, PoorElevator - and whose strrefs are 63552, 1, 2,
+        /// 63552, 1, 2. Resolving those against the base dialog.tlk yields "Bath", "Barbarians", "Bard",
+        /// "Bath", "Barbarians", "Bard": wrong for every one of them, and duplicated, because a copied
+        /// .set brought another tileset's pointers with it. 64 of the 70 hak tilesets carry no group
+        /// strref at all, so the name is the normal source anyway.
+        /// <para>
+        /// Adding the custom-TLK offset (16777216) would not rescue these - it is the right rule for a
+        /// SWLOR strref, but these are not SWLOR strrefs. sw_tlk entry 1 is "Tough", entry 2 is "Tough
+        /// Heroes", and 63552 is past the end of a 22,284-entry file, so the offset trades one set of
+        /// wrong labels for another. The strrefs are simply not meant to be followed.
+        /// </para>
+        /// <para>
+        /// The cost is that a base-game tileset shows its terse internal token - "Ruin01_2x2" rather than
+        /// ttd01's localized "Ruined Building". That is a real loss, and the right trade: a terse label
+        /// still identifies one group, while six groups all reading "Bath" identify none.
+        /// </para>
+        /// </remarks>
         private static string GroupLabel(
             TileGroupDefinition group, int index, Func<uint, string?>? resolveStrRef)
         {
+            if (!string.IsNullOrWhiteSpace(group.Name))
+                return group.Name.Trim();
+
             var strRef = group.StrRef;
             if (resolveStrRef != null && strRef.HasValue && strRef.Value >= 0)
             {
@@ -161,14 +216,14 @@ namespace SWLOR.Toolset.Domain.GameData.Tilesets
                 }
                 catch
                 {
-                    // A TLK that cannot answer just means we fall through to the .set's own name.
+                    // A TLK that cannot answer just means we fall through to the placeholder.
                 }
 
                 if (!string.IsNullOrWhiteSpace(resolved))
                     return resolved.Trim();
             }
 
-            return string.IsNullOrWhiteSpace(group.Name) ? $"Group {index}" : group.Name.Trim();
+            return $"Group {index}";
         }
 
         /// <summary>

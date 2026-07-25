@@ -51,32 +51,89 @@ namespace SWLOR.Toolset.Tests
                     "the tileset's own named groups are the meaningful axis and lead the palette");
         }
 
+        /// <summary>
+        /// The .set's own name wins over its strref, which is the opposite of the usual preference for a
+        /// localized label. See <see cref="TilePaletteBuilder"/> for the measurement behind it: custom
+        /// tilesets carry strrefs copied in from another tileset, so following them renamed six distinct
+        /// groups of sw_t_modint2 to "Bath", "Barbarians", "Bard", "Bath", "Barbarians", "Bard".
+        /// </summary>
         [Test]
-        public void A_Group_Label_Prefers_A_Resolved_StrRef_Over_The_Raw_Name()
+        public void A_Group_Label_Prefers_Its_Own_Name_Over_A_Resolved_StrRef()
         {
             var palette = TilePaletteBuilder.Build(
-                FourTiles(new TileGroupDefinition("Ruin01_2x2", 1, 1, 63655, new[] { 0 })),
-                strRef => strRef == 63655 ? "Ruined Building" : null);
+                FourTiles(new TileGroupDefinition("AverageFrontDoor", 1, 1, 1, new[] { 0 })),
+                strRef => strRef == 1 ? "Barbarians" : null);
 
-            CategoryNamed(palette, "Groups").Entries.Single().Label.Should().Be("Ruined Building");
+            CategoryNamed(palette, "Groups").Entries.Single().Label.Should().Be("AverageFrontDoor");
         }
 
+        /// <summary>
+        /// A stale strref is not merely ignored - it must not be able to collapse distinct groups onto one
+        /// label, which is the failure a builder actually saw.
+        /// </summary>
         [Test]
-        public void A_Group_Label_Falls_Back_To_The_Raw_Name_When_The_StrRef_Does_Not_Resolve()
+        public void Groups_Sharing_A_Stale_StrRef_Keep_Their_Distinct_Names()
         {
             var groups = new[]
             {
-                new TileGroupDefinition("HasNoStrRef", 1, 1, null, new[] { 0 }),
-                new TileGroupDefinition("StrRefIsBlank", 1, 1, 63655, new[] { 1 }),
-                new TileGroupDefinition("TlkThrows", 1, 1, 63656, new[] { 2 })
+                new TileGroupDefinition("AverageTwoWide", 1, 1, 63552, new[] { 0 }),
+                new TileGroupDefinition("PoorTwoWide", 1, 1, 63552, new[] { 1 }),
+                new TileGroupDefinition("RichTwoWide", 1, 1, 63552, new[] { 2 })
+            };
+
+            var palette = TilePaletteBuilder.Build(FourTiles(groups), _ => "Bath");
+
+            CategoryNamed(palette, "Groups").Entries.Select(entry => entry.Label)
+                .Should().Equal("AverageTwoWide", "PoorTwoWide", "RichTwoWide");
+        }
+
+        /// <summary>
+        /// The .set files repeat group names - tbx78 has three "room2x1" - and a palette a builder picks
+        /// from cannot show three identical entries.
+        /// </summary>
+        [Test]
+        public void Groups_Sharing_A_Name_Are_Numbered()
+        {
+            var groups = new[]
+            {
+                new TileGroupDefinition("room2x1", 1, 1, null, new[] { 0 }),
+                new TileGroupDefinition("room2x1", 1, 1, null, new[] { 1 }),
+                new TileGroupDefinition("ROOM2X1", 1, 1, null, new[] { 2 })
+            };
+
+            var palette = TilePaletteBuilder.Build(FourTiles(groups));
+
+            // The counter is shared case-insensitively, but each label keeps the casing its author used -
+            // renaming someone's "ROOM2X1" to lower case would be a second, unasked-for change.
+            CategoryNamed(palette, "Groups").Entries.Select(entry => entry.Label)
+                .Should().Equal("room2x1", "room2x1 (2)", "ROOM2X1 (3)");
+        }
+
+        /// <summary>
+        /// The strref is still the fallback for a group with no name of its own, and a TLK that throws or
+        /// answers blank must not take the label down with it.
+        /// </summary>
+        [Test]
+        public void A_Nameless_Group_Falls_Back_To_Its_StrRef()
+        {
+            var groups = new[]
+            {
+                new TileGroupDefinition("", 1, 1, 63655, new[] { 0 }),
+                new TileGroupDefinition("", 1, 1, 63656, new[] { 1 }),
+                new TileGroupDefinition("", 1, 1, 63657, new[] { 2 })
             };
 
             var palette = TilePaletteBuilder.Build(
                 FourTiles(groups),
-                strRef => strRef == 63656 ? throw new InvalidOperationException("no tlk") : "   ");
+                strRef => strRef switch
+                {
+                    63655 => "Ruined Building",
+                    63656 => "   ",
+                    _ => throw new InvalidOperationException("no tlk")
+                });
 
             CategoryNamed(palette, "Groups").Entries.Select(entry => entry.Label)
-                .Should().Equal("HasNoStrRef", "StrRefIsBlank", "TlkThrows");
+                .Should().Equal("Ruined Building", "Group 1", "Group 2");
         }
 
         [Test]

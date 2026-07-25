@@ -155,23 +155,59 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// ttd01 carries strrefs on 39 of its 53 groups, so with a TLK supplied its labels must read
-        /// as localized names rather than as the .set's internal identifiers ("Ruin01_2x2").
+        /// A group's label is its own name from the .set, so supplying a TLK cannot change it.
+        /// </summary>
+        /// <remarks>
+        /// Asserted on tmi (sw_t_modint2) because tmi is the tileset that broke: its first six groups are
+        /// AverageTwoWide/AverageFrontDoor/AverageElevator/PoorTwoWide/PoorFrontDoor/PoorElevator and its
+        /// strrefs are 63552/1/2/63552/1/2 - pointers copied in from another tileset. Following them
+        /// renamed all six to "Bath"/"Barbarians"/"Bard" twice over.
+        /// </remarks>
+        [Test]
+        public void Group_Labels_Come_From_The_Set_And_A_Tlk_Cannot_Change_Them()
+        {
+            var (withTlk, _) = Data.Build("tmi");
+            Data.Tilesets.TryGetTileset("tmi", out var tileset).Should().BeTrue();
+            var withoutTlk = TilePaletteBuilder.Build(tileset);
+
+            var a = withTlk.Categories[0].Entries.Select(entry => entry.Label).ToList();
+            var b = withoutTlk.Categories[0].Entries.Select(entry => entry.Label).ToList();
+
+            a.Should().Equal(b, "the .set's own names decide the label, with or without a TLK");
+            a.Should().Contain("AverageFrontDoor").And.NotContain("Barbarians");
+        }
+
+        /// <summary>
+        /// No two groups of a tileset may share a label. This is the property the failure actually
+        /// violated - six distinct groups all reading "Bath" identify none of them - and it holds across
+        /// the whole corpus, so a future change to the label rule cannot quietly reintroduce it.
         /// </summary>
         [Test]
-        public void Group_Labels_Use_The_Tlk_When_The_Tileset_Supplies_StrRefs()
+        public void No_Tileset_Has_Two_Groups_With_The_Same_Label()
         {
-            var (localized, _) = Data.Build("ttd01");
-            Data.Tilesets.TryGetTileset("ttd01", out var tileset).Should().BeTrue();
-            var raw = TilePaletteBuilder.Build(tileset);
+            var offenders = new List<string>();
 
-            var localizedLabels = localized.Categories[0].Entries.Select(entry => entry.Label).ToList();
-            var rawLabels = raw.Categories[0].Entries.Select(entry => entry.Label).ToList();
+            foreach (var name in Data.Tilesets.GetTilesetNames())
+            {
+                if (!Data.Tilesets.TryGetTileset(name, out var tileset))
+                    continue;
 
-            localizedLabels.Should().HaveSameCount(rawLabels);
-            localizedLabels.Zip(rawLabels).Count(pair => pair.First != pair.Second)
-                .Should().BeGreaterThanOrEqualTo(30,
-                    because: "39 of ttd01's 53 groups declare a strref that the base dialog.tlk resolves");
+                var groups = TilePaletteBuilder.Build(tileset).Categories
+                    .FirstOrDefault(category => category.Name == TilePaletteBuilder.GroupsCategoryName);
+
+                if (groups == null)
+                    continue;
+
+                var duplicated = groups.Entries
+                    .GroupBy(entry => entry.Label, StringComparer.OrdinalIgnoreCase)
+                    .Where(group => group.Count() > 1)
+                    .Select(group => $"{name}: '{group.Key}' x{group.Count()}")
+                    .ToList();
+
+                offenders.AddRange(duplicated);
+            }
+
+            offenders.Should().BeEmpty();
         }
 
         /// <summary>

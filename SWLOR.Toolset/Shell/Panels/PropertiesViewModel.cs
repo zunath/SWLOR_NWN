@@ -65,6 +65,14 @@ namespace SWLOR.Toolset.Shell.Panels
                         workspace.GetResourcePath(ResourceType.Area, entry.ResRef));
                     ShowAreaSummary(are);
                 }
+                else if (entry.ResourceType == ResourceType.Dlg)
+                {
+                    ShowDialogSummary(workspace.GetResourcePath(ResourceType.Dlg, entry.ResRef));
+                }
+                else if (entry.ResourceType == ResourceType.Nss)
+                {
+                    ShowScriptSummary(workspace.GetResourcePath(ResourceType.Nss, entry.ResRef));
+                }
                 else
                 {
                     var document = workspace.LoadBlueprint(entry.ResourceType, entry.ResRef);
@@ -104,6 +112,52 @@ namespace SWLOR.Toolset.Shell.Panels
             Rows.Add(new PropertyRow("Tileset", are.Tileset ?? string.Empty));
             Rows.Add(new PropertyRow("Dimensions", $"{are.Width ?? 0} x {are.Height ?? 0}"));
         }
+
+        /// <summary>
+        /// A dialog's shape: how many lines it has, how many player replies, and where it starts.
+        /// </summary>
+        /// <remarks>
+        /// Loaded directly rather than through <c>LoadBlueprint</c>, which only knows the blueprint
+        /// types and threw "Not a blueprint resource type" for every dialog a builder clicked - the
+        /// panel showed that exception where a summary belonged.
+        /// </remarks>
+        private void ShowDialogSummary(string path)
+        {
+            var root = JsonGffDocument.Load(path).Root;
+
+            Rows.Add(new PropertyRow("Lines", CountOf(root, "EntryList")));
+            Rows.Add(new PropertyRow("Player replies", CountOf(root, "ReplyList")));
+            Rows.Add(new PropertyRow("Starts at", CountOf(root, "StartingList") + " entry point(s)"));
+
+            // A dialog whose EndConversation script is set does something on exit, which is worth
+            // seeing before opening it.
+            var onEnd = root.GetOrNull("EndConversation")?.GetString();
+            if (!string.IsNullOrWhiteSpace(onEnd))
+                Rows.Add(new PropertyRow("On end", onEnd));
+        }
+
+        /// <summary>
+        /// A script's shape. Scripts are the one module resource that is plain text, so there are no
+        /// fields to list - length and the entry points it declares are what there is to say.
+        /// </summary>
+        private void ShowScriptSummary(string path)
+        {
+            var text = File.ReadAllText(path);
+            var lines = text.Split(NewLine).Length;
+
+            Rows.Add(new PropertyRow("Lines", lines.ToString(CultureInfo.InvariantCulture)));
+            Rows.Add(new PropertyRow("Size", $"{text.Length:N0} characters"));
+
+            var isInclude = !text.Contains("void main(", StringComparison.Ordinal) &&
+                            !text.Contains("int StartingConditional(", StringComparison.Ordinal);
+            Rows.Add(new PropertyRow("Kind", isInclude ? "Include (no entry point)" : "Executable"));
+        }
+
+        /// <summary>Line separator for the script line count; only the count matters, so LF alone is enough.</summary>
+        private const char NewLine = (char)10;
+
+        private static string CountOf(JsonGffStruct root, string listName) =>
+            root.GetOrNull(listName)?.Elements?.Count.ToString(CultureInfo.InvariantCulture) ?? "0";
 
         private void ShowGenericFallback(GffDocumentBase document)
         {

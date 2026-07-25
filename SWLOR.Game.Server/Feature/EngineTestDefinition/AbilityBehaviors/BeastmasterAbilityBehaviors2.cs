@@ -73,19 +73,22 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 },
 
                 // InnervateAbilityDefinition - friendly single-target heal (ValidateFriendlyTarget,
-                // allowSelf true); heal is raw EffectHeal, not a tracked status effect.
+                // allowSelf true); HealPercent applies heal via GetFriendlyTargets(activator, target,
+                // false), which resolves to the activator on a self-cast, via a raw EffectHeal.
                 new()
                 {
                     Feat = FeatType.Innervate1,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
-                    Notes = "Heals via raw EffectHeal on the resolved friendly target (self here); not a tracked status effect.",
+                    Notes = "Heals via HealPercent (raw EffectHeal) on the resolved friendly target, which is the activator itself on a self-cast.",
                 },
                 new()
                 {
                     Feat = FeatType.Innervate2,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
@@ -93,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.Innervate3,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorHealing = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },

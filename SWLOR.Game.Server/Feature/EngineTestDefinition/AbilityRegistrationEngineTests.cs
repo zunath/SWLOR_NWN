@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.EngineTestService;
@@ -23,10 +22,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition
 
             foreach (var (feat, detail) in abilities)
             {
-                // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout.
+                // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout
+                // and observes cancellation, so a timed-out sweep settles during the grace period.
                 if (++count % 100 == 0)
                 {
-                    await NwTask.NextFrame();
+                    await ctx.WaitFrameAsync();
                 }
 
                 ctx.Assert(!string.IsNullOrWhiteSpace(detail.Name), $"Ability registered to feat '{feat}' has no Name.");

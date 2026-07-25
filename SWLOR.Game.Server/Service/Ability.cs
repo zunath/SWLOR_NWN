@@ -3016,6 +3016,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(target) || damage <= 0)
                     return;
 
+                Summary.AttributedDamage += damage;
                 _pendingDamageEffects.Add(new PendingDamageEffect(target, damage, damageType));
             }
 

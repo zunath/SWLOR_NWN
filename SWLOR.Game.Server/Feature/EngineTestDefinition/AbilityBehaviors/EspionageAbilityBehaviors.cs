@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Service.EngineTestService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
@@ -18,15 +19,17 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             return new List<AbilityBehaviorCase>
             {
                 // GhostProtocolAbilityDefinition - capstone self buff. Grants an enmity reset and
-                // combat-entry stealth via TemporaryStatModifier/ActionMode, neither of which is a
-                // tracked StatusEffect type.
+                // combat-entry stealth via TemporaryStatModifier/ActionMode; the stealth ActionMode
+                // toggle isn't a tracked StatusEffect type, but the TemporaryStatModifier bonuses are
+                // observable stat adjustments and are asserted.
                 new()
                 {
                     Feat = FeatType.GhostProtocol,
                     Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatAdjustments = new() { [StatType.BackAttackCriticalRatePercentAdjustment] = 100, [StatType.BackAttackExposedPercent] = 20, [StatType.BackAttackExposedDurationSeconds] = 30 },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants TemporaryStatModifier bonuses and toggles stealth ActionMode; neither is a tracked StatusEffect type, so only cost/recast are asserted.",
+                    Notes = "Grants three TemporaryStatModifier bonuses (PrimedBackAttackCriticalRate=100, PrimedBackAttackExposedPercent=20, PrimedBackAttackExposedDurationSeconds=30) and toggles stealth ActionMode; the stat adjustments are observable and asserted, the ActionMode toggle is not a tracked StatusEffect type.",
                 },
 
                 // RazorTrapAbilityDefinition - hostile trap placed at the resolved target location
@@ -54,19 +57,23 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 },
 
                 // ShadowStepAbilityDefinition - hostile gap-closer; grants a TemporaryStatModifier
-                // evasion buff (not a tracked status effect), no damage/status.
+                // evasion buff (not a tracked status effect), no damage/status. The evasion amount is
+                // a fixed per-feat constant (not gated on any target/activator stat), so it is a
+                // deterministic, observable stat adjustment for a bare NPC and is asserted.
                 new()
                 {
                     Feat = FeatType.ShadowStep1,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatAdjustments = new() { [StatType.EvasionPercentAdjustment] = 10 },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Evasion buff is a TemporaryStatModifier, not a tracked status effect.",
+                    Notes = "Evasion buff is a TemporaryStatModifier (fixed evasionPercent=10 for this tier), not a tracked status effect, but is asserted via ExpectedActivatorStatAdjustments.",
                 },
                 new()
                 {
                     Feat = FeatType.ShadowStep2,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatAdjustments = new() { [StatType.EvasionPercentAdjustment] = 15 },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },

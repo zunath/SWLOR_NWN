@@ -223,10 +223,12 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 await NwTask.NextFrame();
                 ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
 
-                // Out-of-combat NPCs heal 10% per heartbeat tick; inside a 20s assertion
-                // window that would satisfy a healing assertion on a deliberately wounded
-                // caster even when the tested impact is broken.
-                ctx.SuppressNPCNaturalHPRegen(caster);
+                // Out-of-combat NPCs heal 10% HP and restore 1 FP/STM per heartbeat tick;
+                // inside a 20s assertion window that would satisfy a healing assertion on a
+                // deliberately wounded caster even when the tested impact is broken, and
+                // drift resource pools off the exact post-deduction values the cost
+                // assertions verify.
+                ctx.SuppressNPCNaturalRegen(caster);
 
                 foreach (var (setupPerk, setupLevel) in behaviorCase.SetupNPCPerkLevels)
                 {
@@ -345,7 +347,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         UsePerkFeat.IsWeaponAbilityQueued(caster, behaviorCase.Feat),
                         "weapon ability was not queued after activation");
 
-                    AssertCosts(ctx, behaviorCase, caster, fpBefore, stmBefore);
+                    AssertCosts(ctx, behaviorCase, ability, caster, fpBefore, stmBefore);
 
                     // Land the queued hit so the on-hit impact pipeline (impact, riders,
                     // dequeue, native hook integration) is actually exercised. The sweep-wide
@@ -393,12 +395,14 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         {
                             // The ability's damage rides the same landed hit as the weapon
                             // swing, so the HP-drop check below cannot attribute damage to
-                            // the ability. A completed impact summary with impacted targets
-                            // proves the ability's own impact pipeline dealt its damage.
+                            // the ability - and ImpactedTargetCount alone is insufficient
+                            // (the impact records targets it merely VISITED, even at zero
+                            // damage). AttributedDamage counts only damage the ability's own
+                            // impact actually queued.
                             var impactSummary = Ability.GetLastCompletedAbilityImpactSummary(caster);
                             ctx.Assert(
-                                impactSummary is { ImpactedTargetCount: > 0 },
-                                "the queued ability's completed impact to report at least one impacted target (the weapon swing alone cannot attribute damage to the ability)");
+                                impactSummary is { AttributedDamage: > 0 },
+                                $"the queued ability's completed impact to attribute damage of its own (summary: {(impactSummary == null ? "none" : $"targets={impactSummary.ImpactedTargetCount}, attributedDamage={impactSummary.AttributedDamage}")})");
                         }
 
                         // Declared outcomes are verified against the creature the hit actually
@@ -427,7 +431,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     // Costs are checked FIRST: they apply the moment activation completes,
                     // before impact effects, and small costs can be re-masked by regen while
                     // waiting on slow delayed impacts (pulse emitters, telegraphs).
-                    await AssertCastedCostsAsync(ctx, behaviorCase, caster, fpBefore, stmBefore);
+                    await AssertCastedCostsAsync(ctx, behaviorCase, ability, caster, fpBefore, stmBefore);
 
                     await AssertImpactOutcomesAsync(
                         ctx,
@@ -585,40 +589,95 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
             });
         }
 
+        /// <summary>
+        /// Computes the exact FP/STM amounts the live engine should deduct for this ability
+        /// and caster, derived from the definition's activation requirements plus the public
+        /// adjustment seams the runtime cost path consults. A fresh fixture caster carries no
+        /// transient next-cost adjustments, so these mirror the runtime deduction exactly -
+        /// verifying the AMOUNT catches a cost-application regression that a mere
+        /// pool-went-down check would miss.
+        /// </summary>
+        private static (int FP, int STM) ComputeExpectedCosts(uint caster, AbilityDetail ability)
+        {
+            var expectedFP = 0;
+            var expectedSTM = 0;
+            foreach (var requirement in ability.Requirements)
+            {
+                switch (requirement)
+                {
+                    case AbilityRequirementFP fpRequirement:
+                        expectedFP += Stat.GetAdjustedRequiredFP(caster, fpRequirement.RequiredFP);
+                        break;
+                    case AbilityRequirementStamina stmRequirement:
+                    {
+                        var percent = Stat.GetStatAdjustment(caster, StatType.AbilityStaminaCostPercentAdjustment);
+                        var cost = (int)Math.Ceiling(stmRequirement.RequiredSTM * (1 + percent / 100f));
+                        cost += Combat.GetAbilityStaminaCostFlatAdjustment(caster, ability);
+                        expectedSTM += Math.Max(0, cost);
+                        break;
+                    }
+                }
+            }
+
+            return (expectedFP, expectedSTM);
+        }
+
         private static void AssertCosts(
             EngineTestContext ctx,
             AbilityBehaviorCase behaviorCase,
+            AbilityDetail ability,
             uint caster,
             int fpBefore,
             int stmBefore)
         {
+            var (expectedFP, expectedSTM) = ComputeExpectedCosts(caster, ability);
+
             if (behaviorCase.ExpectsFPCost)
             {
-                ctx.Assert(Stat.GetCurrentFP(caster) < fpBefore, "FP cost was not deducted at queue time");
+                var currentFP = Stat.GetCurrentFP(caster);
+                ctx.Assert(
+                    expectedFP > 0,
+                    "the case declares an FP cost but the definition's requirements resolve to 0 FP");
+                ctx.Assert(
+                    currentFP == fpBefore - expectedFP,
+                    $"the exact FP cost to be deducted at queue time (before={fpBefore}, current={currentFP}, expected deduction={expectedFP})");
             }
 
             if (behaviorCase.ExpectsSTMCost)
             {
-                ctx.Assert(Stat.GetCurrentStamina(caster) < stmBefore, "Stamina cost was not deducted at queue time");
+                var currentSTM = Stat.GetCurrentStamina(caster);
+                ctx.Assert(
+                    expectedSTM > 0,
+                    "the case declares a stamina cost but the definition's requirements resolve to 0 STM");
+                ctx.Assert(
+                    currentSTM == stmBefore - expectedSTM,
+                    $"the exact stamina cost to be deducted at queue time (before={stmBefore}, current={currentSTM}, expected deduction={expectedSTM})");
             }
         }
 
         /// <summary>
-        /// Waits for casted-ability costs to be deducted. Costs apply when the activation
-        /// delay completes, so a poll window is needed; the pool sits at exact max making
-        /// regen inert, so a dip below the snapshot is unambiguous. Failure messages carry
-        /// the pool evidence (before/current/max) because cost bugs are indistinguishable
-        /// from resource-fixture bugs without it.
+        /// Waits for casted-ability costs to be deducted and verifies the exact AMOUNT: the
+        /// fixture suppresses natural FP/STM regen and starts pools at max, so after the
+        /// activation delay the pool must sit at exactly before-minus-expected. Costs apply
+        /// when the activation delay completes, so a poll window is needed. Failure messages
+        /// carry the pool evidence because cost bugs are indistinguishable from
+        /// resource-fixture bugs without it.
         /// </summary>
         private static async Task AssertCastedCostsAsync(
             EngineTestContext ctx,
             AbilityBehaviorCase behaviorCase,
+            AbilityDetail ability,
             uint caster,
             int fpBefore,
             int stmBefore)
         {
+            var (expectedFP, expectedSTM) = ComputeExpectedCosts(caster, ability);
+
             if (behaviorCase.ExpectsFPCost)
             {
+                ctx.Assert(
+                    expectedFP > 0,
+                    "the case declares an FP cost but the definition's requirements resolve to 0 FP");
                 try
                 {
                     await ctx.WaitUntilAsync(
@@ -630,10 +689,24 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     ctx.Fail($"FP cost was not deducted (before={fpBefore}, current={Stat.GetCurrentFP(caster)}, max={Stat.GetMaxFP(caster)})");
                 }
+
+                // Impact-refund abilities restore part of their own cost in the same
+                // window as the deduction (sometimes conditionally, e.g. on crit), so
+                // only the NET dip is observable for them.
+                if (!behaviorCase.ImpactRefundsCosts)
+                {
+                    var currentFP = Stat.GetCurrentFP(caster);
+                    ctx.Assert(
+                        currentFP == fpBefore - expectedFP,
+                        $"the exact FP cost to be deducted (before={fpBefore}, current={currentFP}, expected deduction={expectedFP})");
+                }
             }
 
             if (behaviorCase.ExpectsSTMCost)
             {
+                ctx.Assert(
+                    expectedSTM > 0,
+                    "the case declares a stamina cost but the definition's requirements resolve to 0 STM");
                 try
                 {
                     await ctx.WaitUntilAsync(
@@ -644,6 +717,14 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 catch (EngineTestAssertionException)
                 {
                     ctx.Fail($"Stamina cost was not deducted (before={stmBefore}, current={Stat.GetCurrentStamina(caster)}, max={Stat.GetMaxStamina(caster)})");
+                }
+
+                if (!behaviorCase.ImpactRefundsCosts)
+                {
+                    var currentSTM = Stat.GetCurrentStamina(caster);
+                    ctx.Assert(
+                        currentSTM == stmBefore - expectedSTM,
+                        $"the exact stamina cost to be deducted (before={stmBefore}, current={currentSTM}, expected deduction={expectedSTM})");
                 }
             }
         }

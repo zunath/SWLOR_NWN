@@ -64,6 +64,15 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
         public bool ExpectsRecast { get; set; }
 
         /// <summary>
+        /// The ability's impact restores part of its own cost (e.g. RestoreStaminaOnHit,
+        /// restore-on-crit riders), so the exact post-deduction pool is unobservable - the
+        /// refund lands in the same window as the deduction and may be conditional. Cost
+        /// assertions fall back to requiring a NET dip below the pre-activation snapshot.
+        /// Only set this when the definition demonstrably refunds; name the rider in Notes.
+        /// </summary>
+        public bool ImpactRefundsCosts { get; set; }
+
+        /// <summary>
         /// Expect the (dead) target to be alive again after impact - for revival abilities.
         /// Usually paired with <see cref="TargetStartsDead"/>.
         /// </summary>

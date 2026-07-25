@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Restores some stamina on hit, but net stamina change from the queue-time cost is still negative.",
+                    ImpactRefundsCosts = true,
+                    Notes = "RestoreStaminaOnHit refunds 4 STM per landed hit in the impact window, so only the net stamina dip is observable.",
                 },
                 new()
                 {
@@ -39,6 +40,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    ImpactRefundsCosts = true,
+                    Notes = "RestoreStaminaOnHit refunds 6 STM per landed hit in the impact window, so only the net stamina dip is observable.",
                 },
 
                 // CrossCutAbilityDefinition - Casted single-target, 2 hits.

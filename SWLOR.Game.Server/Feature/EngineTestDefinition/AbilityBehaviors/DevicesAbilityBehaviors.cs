@@ -194,15 +194,17 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
 
                 // EmergencyBunkerAbilityDefinition - capstone friendly zone buff; the activator counts
                 // as its own first \"friendly near location\" tick, so the zone status lands on self
-                // almost immediately (first pulse at elapsed:0).
+                // almost immediately (first pulse at elapsed:0). The same per-friendly callback
+                // (ApplyBunkerTemporaryHP) also grants raw temporary HP, so the caster receives it too.
                 new AbilityBehaviorCase
                 {
                     Feat = FeatType.EmergencyBunker1,
                     Target = AbilityTargetKind.Self,
                     ExpectedActivatorStatusEffects = new[] { typeof(EmergencyBunker1StatusEffect) },
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Also grants temporary hit points via a separate (non-status) callback; not asserted."
+                    Notes = "ApplyBunkerTemporaryHP grants raw temporary HP (TemporaryHitPointEffects.ApplyFlat, not a status effect class) to the zone's first friendly - the self-targeting caster."
                 },
 
                 // FlamethrowerAbilityDefinition - hostile cone damage; tier I applies no unconditional

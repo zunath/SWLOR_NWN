@@ -248,8 +248,22 @@ activation through `UsePerkFeat.TryUseAbility`:
   (spawning a temporary hostile dummy for self-target queued cases), and requires the queue slot
   to be consumed within the wait window (queue expiry alone takes 30s, so consumption proves a
   landed hit exercised the real on-hit impact pipeline). The override is restored to forced
-  misses in a `finally` so a timeout can't leak forced hits into subsequent cases.
+  misses in a `finally` so a timeout can't leak forced hits into subsequent cases. Because the
+  ability's damage rides the same landed hit as the weapon swing, damage-declaring queued cases
+  additionally require the ability's own completed impact summary to report
+  `AttributedDamage > 0` - damage the impact actually queued, not merely a target it visited -
+  so a queued ability that loses its damage cannot pass on the swing's HP drop.
 - **Stance** abilities assert their stance status effect on the activator.
+
+Cost assertions verify the exact AMOUNT, not just that the pool shrank: the executor derives the
+expected FP/STM deduction from the definition's activation requirements (via the same public
+adjustment seams the runtime cost path consults) and requires the post-deduction pool to equal
+before-minus-expected. This is stable because the fixture suppresses the caster's natural
+regeneration (HP, FP, and STM - `Stat.SuppressNaturalRegenVariable`), which also prevents an
+out-of-combat regen tick from satisfying a healing assertion on a deliberately wounded caster.
+The one exception is abilities whose impact refunds part of their own cost in the same window
+(RestoreStaminaOnHit and kin, sometimes conditional on crits) - their cases set
+`ImpactRefundsCosts` naming the rider in Notes, and fall back to requiring a net dip.
 
 Beyond status effects/damage, cases can assert revival of a dead target (`ExpectsTargetRevived`),
 raw temporary-HP effects on the activator (`ExpectsActivatorTemporaryHP` - for shield abilities

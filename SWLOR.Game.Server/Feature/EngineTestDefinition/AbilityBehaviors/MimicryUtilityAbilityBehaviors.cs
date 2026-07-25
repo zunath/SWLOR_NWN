@@ -110,6 +110,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectedActivatorStatusEffects = new[] { typeof(Hasten1StatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    ImpactRefundsCosts = true,
+                    Notes = "ConfigureSelfStatus's additionalAction refunds 6 STM (Stat.RestoreStamina) in the impact window, so only the net stamina dip is observable.",
                 },
 
                 // StimCanisterTechniqueAbilityDefinition - MimicryUtility ally buff; applies
@@ -132,7 +134,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     Target = AbilityTargetKind.Self,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Heals via a raw EffectHeal (percent of max HP), not a tracked status effect; nothing observable to assert beyond cost/recast.",
+                    ExpectsActivatorHealing = true,
+                    Notes = "Heals via a raw EffectHeal (percent of max HP), not a tracked status effect; with the solo harness caster, GetFriendlyTargetsNearLocation yields the activator itself as the sole ally, so activator healing is observable and asserted.",
                 },
 
                 // WardenSweepTechniqueAbilityDefinition - MimicryUtility self-buff (ConfigureSelfStatus);

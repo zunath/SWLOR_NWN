@@ -327,7 +327,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectedTargetStatusEffects = new[] { typeof(BleedStatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Deals 0 base damage by design (control-only); afterSuccessfulHit refunds some Stamina but the requirement cost still nets a decrease.",
+                    ImpactRefundsCosts = true,
+                    Notes = "Deals 0 base damage by design (control-only); afterSuccessfulHit refunds 4 STM per hit (InnateAbility.RestoreStaminaOnHit), so only the net stamina dip is observable.",
                 },
 
                 // InnerVoidTechniqueAbilityDefinition - single target, positive damage + unconditional Weakened.

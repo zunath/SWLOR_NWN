@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.EngineTestService;
 using SWLOR.Game.Server.Service.StatService;
@@ -46,10 +45,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
 
                     foreach (var stat in stats)
                     {
-                        // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout.
+                        // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout
+                        // and observes cancellation, so a timed-out sweep settles during the grace period.
                         if (++count % 50 == 0)
                         {
-                            await NwTask.NextFrame();
+                            await ctx.WaitFrameAsync();
                         }
 
                         // Mirror of Perk.GetStatBonus semantics: perk-wide bonuses always

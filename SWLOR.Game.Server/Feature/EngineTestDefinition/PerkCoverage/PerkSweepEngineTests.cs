@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.EngineTestService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -26,10 +25,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
 
             foreach (var (perkType, _) in perks)
             {
-                // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout.
+                // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout
+                // and observes cancellation, so a timed-out sweep settles during the grace period.
                 if (++count % 50 == 0)
                 {
-                    await NwTask.NextFrame();
+                    await ctx.WaitFrameAsync();
                 }
 
                 try
@@ -60,9 +60,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
 
             foreach (var (perkType, detail) in perks)
             {
+                // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout
+                // and observes cancellation, so a timed-out sweep settles during the grace period.
                 if (++count % 50 == 0)
                 {
-                    await NwTask.NextFrame();
+                    await ctx.WaitFrameAsync();
                 }
 
                 if (!casesByPerk.TryGetValue(perkType, out var coverageCase))
@@ -109,9 +111,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.PerkCoverage
 
             foreach (var (feat, perkType) in referencedPerks)
             {
+                // Yield periodically so this sweep stays preemptable by the runner's cooperative timeout
+                // and observes cancellation, so a timed-out sweep settles during the grace period.
                 if (++count % 50 == 0)
                 {
-                    await NwTask.NextFrame();
+                    await ctx.WaitFrameAsync();
                 }
 
                 if (!perks.ContainsKey(perkType))

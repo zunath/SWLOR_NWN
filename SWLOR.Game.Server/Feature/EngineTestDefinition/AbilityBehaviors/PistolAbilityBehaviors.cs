@@ -107,7 +107,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Two-hit impact; stamina restore only if a hit crits (conditional, not asserted)."
+                    ImpactRefundsCosts = true,
+                    Notes = "Two-hit impact; RestoreStaminaIfAnyCriticalHit refunds 4 STM when a hit crits, making even the net deduction nondeterministic - only the dip is asserted."
                 },
 
                 // FanTheHammerAbilityDefinition - hostile AoE (max 3 targets) damage.

@@ -220,14 +220,15 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         }
 
         /// <summary>
-        /// Disables the NPC's out-of-combat 10%-per-tick natural HP regeneration. Required
-        /// for any test that wounds a creature and asserts a specific heal: a regen tick
-        /// inside the assertion window would satisfy the healing check even when the tested
-        /// ability's impact is broken.
+        /// Disables the NPC's natural regeneration: the out-of-combat 10%-per-tick HP heal
+        /// AND the 1-per-tick FP/STM restore. Required for any test that wounds a creature
+        /// and asserts a specific heal (a regen tick would satisfy the check for a broken
+        /// impact) or verifies an exact resource cost (a regen tick would drift the pool
+        /// off the exact post-deduction value).
         /// </summary>
-        public void SuppressNPCNaturalHPRegen(uint npc)
+        public void SuppressNPCNaturalRegen(uint npc)
         {
-            SetLocalInt(npc, Stat.SuppressNaturalHPRegenVariable, 1);
+            SetLocalInt(npc, Stat.SuppressNaturalRegenVariable, 1);
         }
 
         /// <summary>

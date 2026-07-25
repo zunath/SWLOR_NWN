@@ -3,6 +3,7 @@ using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.Mvvm;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Shell.Panels;
 
 namespace SWLOR.Toolset.Shell
@@ -22,10 +23,17 @@ namespace SWLOR.Toolset.Shell
         private readonly OutputViewModel _output;
         private readonly ValidationViewModel _validation;
         private readonly PaletteViewModel _palette;
+
+        /// <summary>Where remembered divider positions come from and go, or null in a test with none.</summary>
+        private readonly ToolsetSettings? _settings;
+
         private IRootDock? _rootDock;
         private DocumentDock? _documentDock;
 
         public event Action<Document?>? ActiveDocumentChanged;
+
+        /// <summary>Raised when a divider has moved, so the shell can persist the new layout.</summary>
+        public event Action? ProportionsChanged;
 
         public ToolsetDockFactory(
             ModuleExplorerViewModel explorer,
@@ -33,7 +41,8 @@ namespace SWLOR.Toolset.Shell
             SearchViewModel search,
             OutputViewModel output,
             ValidationViewModel validation,
-            PaletteViewModel palette)
+            PaletteViewModel palette,
+            ToolsetSettings? settings = null)
         {
             _explorer = explorer;
             _properties = properties;
@@ -41,6 +50,7 @@ namespace SWLOR.Toolset.Shell
             _output = output;
             _validation = validation;
             _palette = palette;
+            _settings = settings;
         }
 
         /// <summary>
@@ -148,8 +158,18 @@ namespace SWLOR.Toolset.Shell
             rootDock.VisibleDockables = CreateList<IDockable>(mainLayout);
 
             _rootDock = rootDock;
+
+            // The proportions set above are the designed layout; anything the builder dragged last
+            // session replaces them before the layout is ever shown, so the window does not open on the
+            // defaults and then jump.
+            DockProportions.Apply(rootDock, _settings?.DockProportions);
+            DockProportions.Watch(rootDock, () => ProportionsChanged?.Invoke());
+
             return rootDock;
         }
+
+        /// <summary>Where every divider is now, keyed by dock Id.</summary>
+        public IReadOnlyDictionary<string, double> CaptureProportions() => DockProportions.Capture(_rootDock);
 
         /// <summary>Re-reads the front area in the tile-facing panels, after its tileset changed.</summary>
         public void NotifyActiveAreaChanged() => _palette.OnActiveAreaChanged();

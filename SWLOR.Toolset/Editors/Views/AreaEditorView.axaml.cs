@@ -124,6 +124,8 @@ namespace SWLOR.Toolset.Editors
 
         private void OnZoomOut(object? sender, RoutedEventArgs e) => AreaView.NudgeZoom(-1);
 
+        private void OnReorient(object? sender, RoutedEventArgs e) => AreaView.ReorientCamera();
+
         /// <summary>An armed tile stamp resolved to a grid cell - the anchor is its bottom-left corner.</summary>
         private void OnTileCellPicked(int column, int row) => _viewModel?.CommitTilePlacement(column, row);
 

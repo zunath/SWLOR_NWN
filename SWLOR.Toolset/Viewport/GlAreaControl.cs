@@ -1241,6 +1241,23 @@ void main()
         /// </summary>
         private const float WheelZoomPerNotch = 1.82f;
 
+        /// <summary>
+        /// Puts the camera back to the framing the area opened with.
+        /// </summary>
+        /// <remarks>
+        /// Aurora keeps this on its own pad, and it is the way out of a view that has been orbited
+        /// into the floor or panned off the edge of the world - which is easy to do and otherwise
+        /// takes a lot of careful dragging to undo.
+        /// </remarks>
+        public void ReorientCamera()
+        {
+            if (Volatile.Read(ref _sceneState).Scene is not { } scene)
+                return;
+
+            ResetCameraForScene(scene);
+            RequestNextFrameRendering();
+        }
+
         public void HandlePointerWheel(PointerWheelEventArgs e)
         {
             // Wheel up (positive delta) zooms IN (shrinks distance) per common convention.

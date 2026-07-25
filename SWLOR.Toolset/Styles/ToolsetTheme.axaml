@@ -142,7 +142,14 @@
 
   <!-- Camera/rotate pad over the area map: square, glyph-only, sized to sit in a row of a dozen
        without crowding the view they are drawn on top of. -->
-  <Style Selector="Button.pad">
+  <!-- The camera steps repeat while the button is held, so a builder can fly the view instead of
+       clicking twenty times. Delay is short and the interval fast: this is a nudge, not a text caret. -->
+  <Style Selector="RepeatButton.pad">
+    <Setter Property="Delay" Value="250" />
+    <Setter Property="Interval" Value="33" />
+  </Style>
+
+  <Style Selector="Button.pad, RepeatButton.pad">
     <Setter Property="Width" Value="26" />
     <Setter Property="Height" Value="24" />
     <Setter Property="Padding" Value="0" />

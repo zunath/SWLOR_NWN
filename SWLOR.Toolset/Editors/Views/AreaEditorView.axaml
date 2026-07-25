@@ -86,22 +86,22 @@
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
             <StackPanel Orientation="Horizontal" Spacing="3">
-              <Button Classes="pad" Content="&#x2190;" ToolTip.Tip="Pan left" Click="OnPanLeft" />
-              <Button Classes="pad" Content="&#x2192;" ToolTip.Tip="Pan right" Click="OnPanRight" />
-              <Button Classes="pad" Content="&#x2191;" ToolTip.Tip="Pan up" Click="OnPanUp" />
-              <Button Classes="pad" Content="&#x2193;" ToolTip.Tip="Pan down" Click="OnPanDown" />
+              <RepeatButton Classes="pad" Content="&#x2190;" ToolTip.Tip="Pan left" Click="OnPanLeft" />
+              <RepeatButton Classes="pad" Content="&#x2192;" ToolTip.Tip="Pan right" Click="OnPanRight" />
+              <RepeatButton Classes="pad" Content="&#x2191;" ToolTip.Tip="Pan up" Click="OnPanUp" />
+              <RepeatButton Classes="pad" Content="&#x2193;" ToolTip.Tip="Pan down" Click="OnPanDown" />
 
               <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
 
-              <Button Classes="pad" Content="&#x21BA;" ToolTip.Tip="Rotate view left" Click="OnOrbitLeft" />
-              <Button Classes="pad" Content="&#x21BB;" ToolTip.Tip="Rotate view right" Click="OnOrbitRight" />
-              <Button Classes="pad" Content="&#x2B71;" ToolTip.Tip="Raise the camera" Click="OnOrbitUp" />
-              <Button Classes="pad" Content="&#x2B73;" ToolTip.Tip="Lower the camera" Click="OnOrbitDown" />
+              <RepeatButton Classes="pad" Content="&#x21BA;" ToolTip.Tip="Rotate view left" Click="OnOrbitLeft" />
+              <RepeatButton Classes="pad" Content="&#x21BB;" ToolTip.Tip="Rotate view right" Click="OnOrbitRight" />
+              <RepeatButton Classes="pad" Content="&#x2B71;" ToolTip.Tip="Raise the camera" Click="OnOrbitUp" />
+              <RepeatButton Classes="pad" Content="&#x2B73;" ToolTip.Tip="Lower the camera" Click="OnOrbitDown" />
 
               <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
 
-              <Button Classes="pad" Content="+" ToolTip.Tip="Zoom in" Click="OnZoomIn" />
-              <Button Classes="pad" Content="&#x2212;" ToolTip.Tip="Zoom out" Click="OnZoomOut" />
+              <RepeatButton Classes="pad" Content="+" ToolTip.Tip="Zoom in" Click="OnZoomIn" />
+              <RepeatButton Classes="pad" Content="&#x2212;" ToolTip.Tip="Zoom out" Click="OnZoomOut" />
 
               <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
 

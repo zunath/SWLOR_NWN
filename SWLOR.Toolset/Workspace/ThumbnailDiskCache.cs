@@ -47,10 +47,10 @@ namespace SWLOR.Toolset.Workspace
         /// </para>
         /// <para>
         /// v6-v10: thumbnail camera angle. v6-v8 had it below the model looking up; v9 put it
-        /// overhead, v10 eased it back off vertical.
+        /// overhead, v10-v11 eased it back off vertical.
         /// </para>
         /// </remarks>
-        private const string FormatVersion = "v10";
+        private const string FormatVersion = "v11";
 
         private const string MissingArtworkExtension = ".none";
 

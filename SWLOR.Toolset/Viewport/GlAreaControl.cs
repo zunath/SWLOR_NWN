@@ -606,7 +606,8 @@ void main()
             }
 
             // Same bargain for an armed tile: while a stamp is pending the right button is the way
-            // out of it, not an orbit.
+            // out of it. Outside placement the right button does nothing in the viewport, matching
+            // Aurora.
             if (_isTilePlacementActive && props.IsRightButtonPressed)
             {
                 CancelTilePlacement();
@@ -634,13 +635,12 @@ void main()
                 return;
             }
 
-            // Middle drags the view around; right orbits it. The left button belongs to the objects -
-            // selecting one, grabbing its gizmo, putting down what the palette armed - so it never moves
-            // the camera on its own. Shift+left still orbits, which is the path for a trackpad with no
-            // second button.
-            if (props.IsMiddleButtonPressed)
-                _dragMode = DragMode.Pan;
-            else if (props.IsRightButtonPressed || (props.IsLeftButtonPressed && shift))
+            // Aurora's mapping, measured against the toolset itself: the middle button orbits - across
+            // for yaw, up and down for pitch - the wheel zooms, and the left button belongs entirely to
+            // the objects, selecting one or grabbing its gizmo. Nothing on the mouse pans; that is what
+            // the camera pad is for. Shift+left also orbits, which is the path for a trackpad with no
+            // middle button.
+            if (props.IsMiddleButtonPressed || (props.IsLeftButtonPressed && shift))
                 _dragMode = DragMode.Orbit;
             else if (props.IsLeftButtonPressed)
                 _dragMode = DragMode.Select;

@@ -3156,6 +3156,13 @@
           "type": "resref",
           "value": "sc_eswildlandn"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_sc_eshanwilds"
+        }
       }
     ]
   },

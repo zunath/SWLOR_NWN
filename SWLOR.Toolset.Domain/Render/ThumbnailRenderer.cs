@@ -59,13 +59,13 @@ namespace SWLOR.Toolset.Domain.Render
         /// face and the fronts of its feet, from -Y its shoulder blades and heels.
         /// </para>
         /// <para>
-        /// +Z is above, tilted <see cref="TiltOffVerticalDegrees"/> off straight-down - near plan view,
-        /// kept just off vertical so a model still shows one lit side and reads as a solid rather than a
-        /// flat outline. The height is the tangent of that against the bearing's own length, so the tilt
-        /// stays what it says it is if the bearing is ever changed.
+        /// +Z is above, tilted <see cref="TiltOffVerticalDegrees"/> off straight-down. Steeper than that
+        /// and a creature is scalp and shoulders with no face; shallower and a tile stops reading as a
+        /// footprint. The height is the tangent of the tilt against the bearing's own length, so the
+        /// angle stays what it says it is if the bearing is ever changed.
         /// </para>
         /// </remarks>
-        private const float TiltOffVerticalDegrees = 15f;
+        private const float TiltOffVerticalDegrees = 25f;
 
         private static readonly Vector3 ToCameraDirection = Vector3.Normalize(new Vector3(
             -0.7f,

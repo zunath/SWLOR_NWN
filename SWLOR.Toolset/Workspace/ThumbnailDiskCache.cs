@@ -46,10 +46,11 @@ namespace SWLOR.Toolset.Workspace
         /// v5: waypoints resolve their waypoint.2da model, so their "no artwork" markers are stale.
         /// </para>
         /// <para>
-        /// v6-v9: thumbnail camera angle. v6-v8 had it below the model looking up; v9 puts it overhead.
+        /// v6-v10: thumbnail camera angle. v6-v8 had it below the model looking up; v9 put it
+        /// overhead, v10 eased it back off vertical.
         /// </para>
         /// </remarks>
-        private const string FormatVersion = "v9";
+        private const string FormatVersion = "v10";
 
         private const string MissingArtworkExtension = ".none";
 

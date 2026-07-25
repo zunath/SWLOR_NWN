@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Numerics;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Documents;
@@ -219,6 +220,57 @@ namespace SWLOR.Toolset.Editors
         public string SelectionCoordinates => SelectedSceneInstance is { } instance
             ? $"x {instance.Position.X:0.00}  y {instance.Position.Y:0.00}  z {instance.Position.Z:0.00}"
             : string.Empty;
+
+        // ----- drag readout -----
+        //
+        // The numbers appear beside the map while a drag is in flight and disappear when it ends. Showing
+        // the delta as well as the absolute is the point: "how far have I moved this" is the question a
+        // builder is actually asking mid-drag, and it is the one a static coordinate box cannot answer.
+
+        [ObservableProperty]
+        private bool _isDragging;
+
+        [ObservableProperty]
+        private string _dragPosition = string.Empty;
+
+        [ObservableProperty]
+        private string _dragFacing = string.Empty;
+
+        [ObservableProperty]
+        private string _dragDelta = string.Empty;
+
+        /// <summary>
+        /// Called by the view as a manipulation drag updates. Both null ends the readout.
+        /// </summary>
+        public void ShowDragReadout(InstanceMarker? original, InstanceMarker? preview)
+        {
+            if (original == null || preview == null)
+            {
+                IsDragging = false;
+                return;
+            }
+
+            DragPosition =
+                $"x {preview.Position.X:0.00}   y {preview.Position.Y:0.00}   z {preview.Position.Z:0.00}";
+
+            var headingDegrees = MathF.Atan2(preview.Orientation.Y, preview.Orientation.X) * 180f / MathF.PI;
+            if (headingDegrees < 0)
+                headingDegrees += 360f;
+            DragFacing = $"facing {headingDegrees:0}°";
+
+            var moved = Vector3.Distance(preview.Position, original.Position);
+            var turned = MathF.Abs(
+                MathF.Atan2(preview.Orientation.Y, preview.Orientation.X) -
+                MathF.Atan2(original.Orientation.Y, original.Orientation.X)) * 180f / MathF.PI;
+
+            DragDelta = moved > 1e-4f
+                ? $"moved {moved:0.00} m"
+                : turned > 1e-4f
+                    ? $"turned {turned:0}°"
+                    : string.Empty;
+
+            IsDragging = true;
+        }
 
         /// <summary>A one-letter stand-in for the selection's icon until blueprint thumbnails exist.</summary>
         public string SelectionGlyph

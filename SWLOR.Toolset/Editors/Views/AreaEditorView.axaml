@@ -188,6 +188,23 @@
             </StackPanel>
           </Border>
 
+          <!-- Drag readout. Present only while a drag is in flight, showing where the thing is now and
+               how far it has come - the second half being what a static coordinate box cannot tell you. -->
+          <Border Background="#F00C1017" CornerRadius="3" Padding="10,7"
+                  BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1"
+                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="18"
+                  IsVisible="{Binding IsDragging}">
+            <StackPanel Spacing="3">
+              <TextBlock Text="{Binding DragPosition}" Classes="mono" FontSize="11.5"
+                         Foreground="{DynamicResource AccentInkBrush}" />
+              <TextBlock Text="{Binding DragFacing}" Classes="mono" FontSize="11.5"
+                         Foreground="{DynamicResource AccentInkBrush}" />
+              <TextBlock Text="{Binding DragDelta}" Classes="mono" FontSize="11"
+                         Foreground="{DynamicResource AmberBrush}"
+                         IsVisible="{Binding DragDelta, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+          </Border>
+
           <Border x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
             <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />

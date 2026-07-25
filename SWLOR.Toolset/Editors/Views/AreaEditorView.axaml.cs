@@ -16,6 +16,7 @@ namespace SWLOR.Toolset.Editors
             AreaView.InstancePicked += OnInstancePicked;
             AreaView.InstanceMoved += OnInstanceMoved;
             AreaView.InstanceRotated += OnInstanceRotated;
+            AreaView.ManipulationPreviewChanged += OnManipulationPreviewChanged;
             AreaView.PlacementPointPicked += OnPlacementPointPicked;
             AreaView.PlacementCancelled += OnPlacementCancelled;
             AreaView.PaintPointPicked += OnPaintPointPicked;
@@ -62,6 +63,10 @@ namespace SWLOR.Toolset.Editors
         /// selection directions funnel through the same re-entrancy-guarded code path.
         /// </summary>
         private void OnInstancePicked(InstanceMarker? instance) => _viewModel?.SelectSceneInstance(instance);
+
+        /// <summary>Feeds the drag readout beside the map; both null when the drag ends.</summary>
+        private void OnManipulationPreviewChanged(InstanceMarker? original, InstanceMarker? preview) =>
+            _viewModel?.ShowDragReadout(original, preview);
 
         /// <summary>The move gizmo released with a net change - commit it through the view model's InstanceFieldMap-based path.</summary>
         private void OnInstanceMoved(InstanceMarker instance, Vector3 newPosition) =>

@@ -67,6 +67,15 @@ namespace SWLOR.Toolset.Viewport
         private static readonly Vector3 PolygonOverlayColor = new(1f, 0.65f, 0.15f);
         private static readonly Vector3 SelectionHighlightColor = new(1f, 0.95f, 0.2f);
 
+        // Transform gizmo. Axis colours follow the convention every 3D tool shares (X red, Y green,
+        // Z blue) so they need no legend; the ring takes the interface accent.
+        private static readonly Vector3 GizmoAxisXColor = new(0.91f, 0.51f, 0.42f);
+        private static readonly Vector3 GizmoAxisYColor = new(0.50f, 0.82f, 0.54f);
+        private static readonly Vector3 GizmoAxisZColor = new(0.50f, 0.71f, 0.96f);
+        private static readonly Vector3 GizmoRingColor = new(0.36f, 0.61f, 0.96f);
+        private const float GizmoArmLength = 2.2f;
+        private const float GizmoRingRadius = 1.8f;
+
         // Walkmesh overlay: walkable faces green, non-walkable red, drawn translucent just
         // above the floor so the tile geometry still shows through.
         private static readonly Vector3 WalkmeshWalkableColor = new(0.25f, 0.9f, 0.35f);
@@ -295,6 +304,13 @@ void main()
 
         /// <summary>Mirrors <see cref="InstanceMoved"/> for the rotate gizmo: the instance and its final (cos,sin) heading.</summary>
         public event Action<InstanceMarker, Vector2>? InstanceRotated;
+
+        /// <summary>
+        /// Live during a manipulation drag: the instance as it stands right now, and where it started.
+        /// Both null once the drag ends or is cancelled. Drives the readout beside the map, which is
+        /// where a coordinate belongs - visible while you are changing it and gone afterwards.
+        /// </summary>
+        public event Action<InstanceMarker?, InstanceMarker?>? ManipulationPreviewChanged;
 
         /// <summary>
         /// Whether a viewport click should place a new instance instead of picking/orbiting in the
@@ -683,6 +699,7 @@ void main()
 
             var position = snap ? AreaManipulation.SnapToGridXy(hit, AreaManipulation.DefaultGridSnapMeters) : hit;
             _manipulationPreview = ClonePreview(original, new Vector3(position.X, position.Y, original.Position.Z), original.Orientation);
+            ManipulationPreviewChanged?.Invoke(original, _manipulationPreview);
         }
 
         /// <summary>Live rotate preview: accumulates heading from horizontal drag movement, matching the orbit camera's own pixel-to-radians feel.</summary>
@@ -694,6 +711,7 @@ void main()
             _manipulationHeadingRadians += dxPixels * AreaManipulation.RotateRadiansPerPixel;
             var orientation = AreaManipulation.HeadingToOrientation(_manipulationHeadingRadians);
             _manipulationPreview = ClonePreview(original, original.Position, orientation);
+            ManipulationPreviewChanged?.Invoke(original, _manipulationPreview);
         }
 
         /// <summary>Ends the active manipulation drag, raising <see cref="InstanceMoved"/>/<see cref="InstanceRotated"/> once for the net change - or nothing if the drag was cancelled (Esc) or ended with no actual change (e.g. a press+release with no motion on an already-selected instance).</summary>
@@ -708,6 +726,7 @@ void main()
             _manipulationOriginal = null;
             _manipulationPreview = null;
             _manipulationCancelled = false;
+            ManipulationPreviewChanged?.Invoke(null, null);
             RequestNextFrameRendering();
 
             if (cancelled || original == null || preview == null)
@@ -1171,6 +1190,7 @@ void main()
             DrawInstanceMarkers(scene);
             DrawPolygonOverlays();
             DrawSelectionHighlight();
+            DrawTransformGizmo();
 
             _gl.BindVertexArray(0);
         }
@@ -1446,6 +1466,117 @@ void main()
             SetUniformMatrix4("model", Matrix4x4.Identity); // bounds are already world-space
 
             _gl.DrawArrays(PrimitiveType.Lines, 0, 24);
+        }
+
+        /// <summary>
+        /// Draws the transform gizmo on the selection: one arm per axis in its conventional colour, and
+        /// a ring in the ground plane for rotation.
+        /// </summary>
+        /// <remarks>
+        /// The gizmo is what replaced the coordinate boxes in the chrome - Aurora moved things by direct
+        /// manipulation and so does this, with the numbers appearing beside the map only while a drag is
+        /// in flight. Arms are a fixed world length rather than scaled to the object, so a crate and a
+        /// building present the same handle to grab.
+        /// </remarks>
+        private void DrawTransformGizmo()
+        {
+            if (_selectedInstance is not { } instance || _gl == null)
+                return;
+
+            EnsureHighlightBuffer();
+            if (!_hasHighlightBuffer)
+                return;
+
+            var origin = Displayed(instance).Position;
+
+            // Drawn without depth testing so the handles stay grabbable when the instance sits in a
+            // hollow or behind a rock - a gizmo you cannot see is a gizmo you cannot use, and every 3D
+            // tool draws them on top for the same reason.
+            _gl.Disable(EnableCap.DepthTest);
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", 1f);
+            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
+            SetUniformMatrix4("model", Matrix4x4.Identity);
+
+            DrawGizmoLines(BuildAxisVertices(origin, new Vector3(GizmoArmLength, 0, 0)), GizmoAxisXColor);
+            DrawGizmoLines(BuildAxisVertices(origin, new Vector3(0, GizmoArmLength, 0)), GizmoAxisYColor);
+            DrawGizmoLines(BuildAxisVertices(origin, new Vector3(0, 0, GizmoArmLength)), GizmoAxisZColor);
+            DrawGizmoLines(BuildRotationRingVertices(origin, GizmoRingRadius), GizmoRingColor);
+
+            _gl.Enable(EnableCap.DepthTest);
+        }
+
+        private void DrawGizmoLines(float[] vertices, Vector3 color)
+        {
+            if (_gl == null)
+                return;
+
+            _gl.BindVertexArray(_highlightVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _highlightVbo);
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertices.Length * sizeof(float)),
+                new ReadOnlySpan<float>(vertices), BufferUsageARB.DynamicDraw);
+            SetVertexAttribPointers();
+
+            SetUniformVec3("flatColor", color);
+            _gl.DrawArrays(PrimitiveType.Lines, 0, (uint)(vertices.Length / FloatsPerVertex));
+        }
+
+        /// <summary>One axis arm plus a small arrowhead, as line segments.</summary>
+        private static float[] BuildAxisVertices(Vector3 origin, Vector3 arm)
+        {
+            var tip = origin + arm;
+
+            // The arrowhead is two short barbs in whichever plane the arm is not aligned with, which
+            // keeps it visible from the orbit camera's usual angles without needing a cone mesh.
+            var sideways = MathF.Abs(arm.Z) > 0.001f
+                ? new Vector3(1, 0, 0)
+                : new Vector3(-arm.Y, arm.X, 0);
+
+            if (sideways.LengthSquared() > 0.0001f)
+                sideways = Vector3.Normalize(sideways) * (GizmoArmLength * 0.12f);
+
+            var back = tip - Vector3.Normalize(arm) * (GizmoArmLength * 0.2f);
+
+            return BuildLineVertices(new[]
+            {
+                origin, tip,
+                tip, back + sideways,
+                tip, back - sideways
+            });
+        }
+
+        /// <summary>A closed ring in the ground plane, for the rotate handle.</summary>
+        private static float[] BuildRotationRingVertices(Vector3 origin, float radius)
+        {
+            const int segments = 36;
+            var points = new List<Vector3>(segments * 2);
+
+            for (var i = 0; i < segments; i++)
+            {
+                var a = i / (float)segments * MathF.Tau;
+                var b = (i + 1) / (float)segments * MathF.Tau;
+                points.Add(origin + new Vector3(MathF.Cos(a) * radius, MathF.Sin(a) * radius, 0.05f));
+                points.Add(origin + new Vector3(MathF.Cos(b) * radius, MathF.Sin(b) * radius, 0.05f));
+            }
+
+            return BuildLineVertices(points);
+        }
+
+        /// <summary>Packs world-space points into the shared vertex layout (normal/texcoord slots zeroed).</summary>
+        private static float[] BuildLineVertices(IReadOnlyList<Vector3> points)
+        {
+            var vertices = new float[points.Count * FloatsPerVertex];
+            for (var i = 0; i < points.Count; i++)
+            {
+                vertices[i * FloatsPerVertex] = points[i].X;
+                vertices[i * FloatsPerVertex + 1] = points[i].Y;
+                vertices[i * FloatsPerVertex + 2] = points[i].Z;
+            }
+
+            return vertices;
         }
 
         private void EnsureHighlightBuffer()

@@ -582,7 +582,7 @@ void main()
             _elevation = AreaCameraMath.DefaultElevationRadians;
         }
 
-        // ----- Pointer input: left-drag orbit, middle/right/shift-left-drag pan, wheel zoom -----
+        // ----- Pointer input: middle orbits, middle+left pans, wheel zooms -----
         //
         // OpenGlControlBase has no Background brush, so pointer events never hit-test to this
         // control directly (same Avalonia limitation Radoub's ModelPreviewGLControl documents).
@@ -615,6 +615,18 @@ void main()
                 return;
             }
 
+            // A camera drag already owns the pointer, so this press is the builder adding or
+            // swapping a button mid-drag - middle+left is pan, middle alone is orbit. Resolving it
+            // here rather than falling through matters: the left press would otherwise be read as a
+            // grab and start dragging whatever the cursor happens to be over.
+            if (_dragMode is DragMode.Orbit or DragMode.Pan)
+            {
+                _dragMode = CameraDragFor(props, shift) ?? _dragMode;
+                _lastPointerPos = pos;
+                e.Handled = true;
+                return;
+            }
+
             // For the move/rotate gizmo, a plain left press landing ON the current selection
             // starts an object-manipulation drag - the left button is the primary "grab", matching
             // modern editors where you left-drag an object to move it (Alt to rotate). Hit-test the
@@ -635,13 +647,11 @@ void main()
                 return;
             }
 
-            // Aurora's mapping, measured against the toolset itself: the middle button orbits - across
-            // for yaw, up and down for pitch - the wheel zooms, and the left button belongs entirely to
-            // the objects, selecting one or grabbing its gizmo. Nothing on the mouse pans; that is what
-            // the camera pad is for. Shift+left also orbits, which is the path for a trackpad with no
-            // middle button.
-            if (props.IsMiddleButtonPressed || (props.IsLeftButtonPressed && shift))
-                _dragMode = DragMode.Orbit;
+            // Aurora's mapping, measured against the toolset itself with each case driven from the
+            // same starting view and undone afterwards: middle alone orbits, middle and left together
+            // pan, the wheel zooms, and left alone belongs to the objects. Right does nothing.
+            if (CameraDragFor(props, shift) is { } cameraDrag)
+                _dragMode = cameraDrag;
             else if (props.IsLeftButtonPressed)
                 _dragMode = DragMode.Select;
             else
@@ -655,6 +665,21 @@ void main()
             Focus();
             e.Pointer.Capture(this);
             e.Handled = true;
+        }
+
+        /// <summary>
+        /// Which camera drag the current buttons ask for, or null when they ask for none.
+        /// </summary>
+        /// <remarks>
+        /// Middle and left together pan, middle alone orbits - Aurora's arrangement. Shift+left also
+        /// orbits, as the path for a trackpad with no middle button.
+        /// </remarks>
+        private static DragMode? CameraDragFor(Avalonia.Input.PointerPointProperties props, bool shift)
+        {
+            if (props.IsMiddleButtonPressed)
+                return props.IsLeftButtonPressed ? DragMode.Pan : DragMode.Orbit;
+
+            return props.IsLeftButtonPressed && shift ? DragMode.Orbit : null;
         }
 
         public void HandlePointerMoved(PointerEventArgs e)
@@ -671,6 +696,14 @@ void main()
             if (_dragMode == DragMode.None)
                 return;
 
+            // Re-read the buttons every move rather than trusting what the drag started as: pressing
+            // or releasing the second button part-way through a drag switches between orbit and pan,
+            // which is how it behaves in Aurora.
+            if (_dragMode is DragMode.Orbit or DragMode.Pan or DragMode.Select &&
+                CameraDragFor(e.GetCurrentPoint(this).Properties,
+                    (e.KeyModifiers & KeyModifiers.Shift) != 0) is { } liveDrag)
+                _dragMode = liveDrag;
+
             var pos = e.GetPosition(this);
             var dx = (float)(pos.X - _lastPointerPos.X);
             var dy = (float)(pos.Y - _lastPointerPos.Y);
@@ -684,8 +717,11 @@ void main()
                     break;
 
                 case DragMode.Pan:
+                    // Subtracted, not added: measured in Aurora, the scene moves opposite the cursor
+                    // one-for-one - drag right and the camera goes right, so the world slides left.
+                    // PanDelta is written the other way round, for the pad's "shift the view" buttons.
                     var worldPerPixel = AreaCameraMath.WorldUnitsPerPixel(_distance, VerticalFovRadians, _viewportHeight);
-                    _target += AreaCameraMath.PanDelta(_azimuth, dx, dy, worldPerPixel);
+                    _target -= AreaCameraMath.PanDelta(_azimuth, dx, dy, worldPerPixel);
                     break;
 
                 case DragMode.Move:

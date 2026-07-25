@@ -105,9 +105,12 @@ namespace SWLOR.Toolset.Editors
 
         private void OnPanRight(object? sender, RoutedEventArgs e) => AreaView.NudgePan(1f, 0f);
 
-        private void OnPanUp(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, 1f);
+        // Inverted against the horizontal pair on purpose. Measured in Aurora, its up arrow slides the
+        // scene up the screen and its down arrow slides it down - the camera moving the opposite way -
+        // and NudgePan's vertical argument is expressed as camera movement.
+        private void OnPanUp(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, -1f);
 
-        private void OnPanDown(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, -1f);
+        private void OnPanDown(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, 1f);
 
         private void OnOrbitLeft(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(-1f, 0f);
 

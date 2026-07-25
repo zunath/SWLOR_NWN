@@ -97,9 +97,11 @@ namespace SWLOR.Toolset.Tests
         }
 
         /// <summary>
-        /// Aurora also lists Tiles and Encounters. Neither has a <see cref="ResourceType"/> here, and this
-        /// asserts that on purpose: if one is ever added, the palette order above needs revisiting rather
-        /// than silently ending up alphabetically wrong.
+        /// Aurora also lists Tiles and Encounters. Neither has a <see cref="ResourceType"/> here - Tiles
+        /// because a tile belongs to the open area's tileset rather than to the module, Encounters because
+        /// SWLOR uses its own spawn system and ships none. This asserts that on purpose: if a type is ever
+        /// added, the palette order above needs revisiting rather than silently ending up in the wrong
+        /// place.
         /// </summary>
         [Test]
         public void The_Palette_Order_Covers_Every_Blueprint_Type_There_Is()

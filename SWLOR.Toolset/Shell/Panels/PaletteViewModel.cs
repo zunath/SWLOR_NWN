@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Categories;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
@@ -44,6 +46,8 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly Func<IAreaPlacementTarget?>? _placementTarget;
         private readonly ThumbnailService? _thumbnails;
         private readonly Services.IEditorPromptService? _prompts;
+        private readonly TilesetCatalog? _tilesets;
+        private readonly Func<uint, string?>? _resolveStrRef;
 
         /// <summary>Every row of the current type's tree, expanded or not, so collapsing need not re-derive counts.</summary>
         private readonly List<CategoryRowViewModel> _allRows = new();
@@ -72,6 +76,21 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </remarks>
         [ObservableProperty]
         private PaletteSource _source = PaletteSource.Custom;
+
+        /// <summary>
+        /// True when the Tiles entry is picked instead of a blueprint type.
+        /// </summary>
+        /// <remarks>
+        /// Tiles are the one palette entry that is not a module resource: which tiles exist is a property
+        /// of the open area's tileset, so this mode reads from the area in front rather than from the
+        /// module, has no Custom/Standard split to make, and cannot create, rename or delete anything.
+        /// </remarks>
+        [ObservableProperty]
+        private bool _isTileMode;
+
+        private TilePalette _tiles = TilePalette.Empty;
+
+        private TilePaletteCategory? _selectedTileCategory;
 
         [ObservableProperty]
         private string _query = string.Empty;
@@ -120,12 +139,46 @@ namespace SWLOR.Toolset.Shell.Panels
         {
             OnPropertyChanged(nameof(IsCustomSource));
             OnPropertyChanged(nameof(IsStandardSource));
+            OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(ReadOnlyNotice));
+            OnPropertyChanged(nameof(HasReadOnlyNotice));
             SelectedRow = null;
             SelectedTile = null;
             Refresh();
         }
 
         public bool IsStandardSource => !IsCustomSource;
+
+        /// <summary>
+        /// True only for this module's own blueprints - the one case where a palette command may write.
+        /// Base-game blueprints are not ours, and a tile is a row in a .set file rather than a resource
+        /// at all, so neither offers anything to create, rename, refile or delete.
+        /// </summary>
+        public bool CanWrite => IsCustomSource && IsBlueprintMode;
+
+        /// <summary>
+        /// Why a context menu is empty, so it never opens as a blank popup. Null when there is nothing to
+        /// explain, which is exactly when the menu has real items on it.
+        /// </summary>
+        public string? ReadOnlyNotice =>
+            IsTileMode ? "Tileset content - read-only"
+            : IsStandardSource ? "Base game content - read-only"
+            : null;
+
+        public bool HasReadOnlyNotice => ReadOnlyNotice != null;
+
+        /// <summary>
+        /// The search box explains its own scope, which differs by mode: blueprint search spans every
+        /// category, tile search narrows the open one.
+        /// </summary>
+        public string SearchWatermark =>
+            IsTileMode ? "Search tiles in this category..." : "Search categories and objects...";
+
+        /// <summary>
+        /// The "incl. sub" toggle only has something to do in the blueprint tree: a tileset's categories
+        /// are flat, and a search already reaches across all of them.
+        /// </summary>
+        public bool ShowsIncludeSubcategories => IsBlueprintMode && !IsSearching;
 
         [RelayCommand]
         private void ShowCustom() => Source = PaletteSource.Custom;
@@ -144,10 +197,14 @@ namespace SWLOR.Toolset.Shell.Panels
             Func<Editors.EditorService>? editorService = null,
             Func<IAreaPlacementTarget?>? placementTarget = null,
             ThumbnailService? thumbnails = null,
-            Services.IEditorPromptService? prompts = null)
+            Services.IEditorPromptService? prompts = null,
+            TilesetCatalog? tilesets = null,
+            Domain.GameData.Tlk.TlkService? tlk = null)
         {
             _thumbnails = thumbnails;
             _prompts = prompts;
+            _tilesets = tilesets;
+            _resolveStrRef = tlk == null ? null : tlk.GetString;
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _categories = categories ?? throw new ArgumentNullException(nameof(categories));
             _log = log ?? throw new ArgumentNullException(nameof(log));
@@ -172,6 +229,12 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>Rebuilds the tree and grid for the current type. Safe to call whenever the module changes.</summary>
         public void Refresh()
         {
+            if (IsTileMode)
+            {
+                RefreshTiles();
+                return;
+            }
+
             _existing = IsCustomSource
                 ? _categories.ExistingResRefs(SelectedType)
                 : _categories.StandardResRefs(SelectedType);
@@ -179,13 +242,116 @@ namespace SWLOR.Toolset.Shell.Panels
             RebuildTiles();
         }
 
+        /// <summary>
+        /// The area in front changed. Only Tiles mode cares: blueprints are the module's, the same
+        /// whichever tab has focus, while a tileset belongs to one area.
+        /// </summary>
+        public void OnActiveAreaChanged()
+        {
+            if (IsTileMode)
+                RefreshTiles();
+        }
+
+        // ----- Tiles mode -----
+
+        /// <summary>
+        /// Rebuilds the tile tree from the tileset of whatever area is in front.
+        /// </summary>
+        /// <remarks>
+        /// Re-read on every refresh rather than cached against the module, because the answer depends on
+        /// which area has focus: two areas on different tilesets offer different tiles, so switching tabs
+        /// has to change what this panel shows. The .set parse itself is already cached by
+        /// <see cref="TilesetCatalog"/>, so the repeat cost is the palette shaping alone.
+        /// </remarks>
+        private void RefreshTiles()
+        {
+            _allRows.Clear();
+            Rows.Clear();
+            CategoryMatches.Clear();
+            OnPropertyChanged(nameof(HasCategoryMatches));
+            Tiles.Clear();
+            _selectedTileCategory = null;
+            _tiles = TilePalette.Empty;
+            Breadcrumb = string.Empty;
+
+            var tilesetResRef = _placementTarget?.Invoke()?.TilesetResRef;
+            if (string.IsNullOrWhiteSpace(tilesetResRef))
+            {
+                StatusMessage = "Open an area to see the tiles its tileset offers.";
+                return;
+            }
+
+            if (_tilesets == null || !_tilesets.TryGetTileset(tilesetResRef, out var tileset))
+            {
+                StatusMessage = $"Tileset '{tilesetResRef}' could not be loaded.";
+                return;
+            }
+
+            _tiles = TilePaletteBuilder.Build(tileset, _resolveStrRef, _log.AppendLine);
+            if (_tiles.IsEmpty)
+            {
+                StatusMessage = $"Tileset '{tilesetResRef}' lists no tiles.";
+                return;
+            }
+
+            foreach (var category in _tiles.Categories)
+                _allRows.Add(new CategoryRowViewModel(folder: null, depth: 0, count: category.Entries.Count,
+                    hasChildren: false)
+                {
+                    SyntheticName = category.Name
+                });
+
+            PublishVisibleRows();
+            SelectedRow = _allRows[0];
+            StatusMessage = $"{_tilesets.GetDisplayName(tilesetResRef)} - pick a tile, then click a cell.";
+        }
+
+        /// <summary>Publishes the grid for the picked tile category, filtered by the search box.</summary>
+        private void RebuildTileGrid()
+        {
+            Tiles.Clear();
+
+            if (_selectedTileCategory is not { } category)
+            {
+                Breadcrumb = string.Empty;
+                return;
+            }
+
+            var query = Query.Trim();
+            var entries = query.Length == 0
+                ? category.Entries
+                : category.Entries
+                    .Where(entry => entry.Label.Contains(query, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+            foreach (var entry in entries.Take(MaxSearchResults))
+                AddTile(new PaletteTileViewModel(entry));
+
+            Breadcrumb = entries.Count > MaxSearchResults
+                ? $"{category.Name} - first {MaxSearchResults} of {entries.Count}"
+                : $"{category.Name} - {entries.Count} tiles";
+        }
+
         [RelayCommand]
         private void SelectType(PaletteTypeChipViewModel chip)
         {
-            if (chip == null || chip.Type == SelectedType)
+            if (chip == null)
                 return;
 
-            SelectedType = chip.Type;
+            if (chip.IsTiles)
+            {
+                if (IsTileMode)
+                    return;
+
+                IsTileMode = true;
+                return;
+            }
+
+            if (!IsTileMode && chip.Type == SelectedType)
+                return;
+
+            IsTileMode = false;
+            SelectedType = chip.Type!.Value;
         }
 
         /// <summary>
@@ -197,31 +363,88 @@ namespace SWLOR.Toolset.Shell.Panels
         {
             Types.Clear();
 
+            // Tiles leads, as it does in Aurora - it is the thing you reach for while the area is still
+            // a grid of nothing, before there is anything to dress it with.
+            var tiles = PaletteTypeChipViewModel.ForTiles(_thumbnails?.TileChipIcon());
+            tiles.IsSelected = IsTileMode;
+            Types.Add(tiles);
+
             foreach (var type in OfferedTypes)
                 Types.Add(new PaletteTypeChipViewModel(type, _thumbnails?.TypeChipIcon(type))
                 {
-                    IsSelected = type == SelectedType
+                    IsSelected = !IsTileMode && type == SelectedType
                 });
         }
 
         partial void OnSelectedTypeChanged(ResourceType value)
         {
-            foreach (var chip in Types)
-                chip.IsSelected = chip.Type == value;
-
+            SyncChipSelection();
             OnPropertyChanged(nameof(NewBlueprintLabel));
             SelectedRow = null;
             Refresh();
         }
 
+        partial void OnIsTileModeChanged(bool value)
+        {
+            SyncChipSelection();
+            OnPropertyChanged(nameof(IsBlueprintMode));
+            OnPropertyChanged(nameof(ShowsSourceSwitch));
+            OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(ReadOnlyNotice));
+            OnPropertyChanged(nameof(HasReadOnlyNotice));
+            OnPropertyChanged(nameof(SearchWatermark));
+            OnPropertyChanged(nameof(ShowsIncludeSubcategories));
+            SelectedRow = null;
+            SelectedTile = null;
+            Refresh();
+        }
+
+        private void SyncChipSelection()
+        {
+            foreach (var chip in Types)
+                chip.IsSelected = chip.IsTiles ? IsTileMode : !IsTileMode && chip.Type == SelectedType;
+        }
+
+        /// <summary>Everything that writes to the module or the sidecar is blueprint-only.</summary>
+        public bool IsBlueprintMode => !IsTileMode;
+
+        /// <summary>
+        /// Custom/Standard is meaningless for tiles: a tileset is game data either way, and which one is
+        /// in play is decided by the area, not by the builder.
+        /// </summary>
+        public bool ShowsSourceSwitch => !IsTileMode;
+
         partial void OnQueryChanged(string value)
         {
             OnPropertyChanged(nameof(IsSearching));
+            OnPropertyChanged(nameof(ShowsIncludeSubcategories));
+
+            // Tiles have no cross-category search: a tileset's two categories are already both visible,
+            // so the box narrows the open one rather than becoming a mode of its own.
+            if (IsTileMode)
+            {
+                RebuildTileGrid();
+                return;
+            }
+
             RebuildSearch();
             RebuildTiles();
         }
 
-        partial void OnSelectedRowChanged(CategoryRowViewModel? value) => RebuildTiles();
+        partial void OnSelectedRowChanged(CategoryRowViewModel? value)
+        {
+            if (!IsTileMode)
+            {
+                RebuildTiles();
+                return;
+            }
+
+            _selectedTileCategory = value == null
+                ? null
+                : _tiles.Categories.FirstOrDefault(category => category.Name == value.Name);
+
+            RebuildTileGrid();
+        }
 
         partial void OnIncludeSubcategoriesChanged(bool value) => RebuildTiles();
 
@@ -265,6 +488,14 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
+            if (tile.Tile is { } entry)
+            {
+                StatusMessage = target.ArmTilePlacement(entry)
+                    ? $"Click a cell to place {entry.Label}."
+                    : "This area has no tile grid to paint.";
+                return;
+            }
+
             if (target.ArmPlacement(SelectedType, tile.ResRef))
                 StatusMessage = $"Click the map to place {tile.Name}.";
             else
@@ -275,7 +506,8 @@ namespace SWLOR.Toolset.Shell.Panels
         [RelayCommand]
         private void Edit(PaletteTileViewModel? tile)
         {
-            if (tile == null)
+            // A tile is game data in a .set file, not a module resource - there is nothing to open.
+            if (tile == null || tile.IsTile)
                 return;
 
             _editorService?.Invoke().TryOpenEditor(SelectedType, tile.ResRef);
@@ -299,7 +531,9 @@ namespace SWLOR.Toolset.Shell.Panels
         private async Task DeleteTileAsync(PaletteTileViewModel? tile)
         {
             tile ??= SelectedTile;
-            if (tile == null || _prompts == null)
+
+            // A tile has no blueprint file behind it, so there is nothing here to delete.
+            if (tile == null || tile.IsTile || _prompts == null)
                 return;
 
             var workspace = _workspaceContext.Workspace;
@@ -362,7 +596,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private async Task NewBlueprintAsync()
         {
             var workspace = _workspaceContext.Workspace;
-            if (workspace == null || _prompts == null)
+            if (workspace == null || _prompts == null || !CanWrite)
                 return;
 
             if (!BlueprintTemplateFactory.Supports(SelectedType))
@@ -448,7 +682,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private async Task NewCategoryAsync()
         {
             var section = _categories.Section(SelectedType);
-            if (section == null || _prompts == null)
+            if (section == null || _prompts == null || !CanWrite)
                 return;
 
             var parent = SelectedRow?.Folder;
@@ -532,6 +766,9 @@ namespace SWLOR.Toolset.Shell.Panels
         [RelayCommand]
         private void FileSelectedTile()
         {
+            if (!CanWrite)
+                return;
+
             if (SelectedTile == null)
             {
                 StatusMessage = "Select a blueprint first.";
@@ -744,6 +981,15 @@ namespace SWLOR.Toolset.Shell.Panels
         private void AddTile(PaletteTileViewModel tile)
         {
             Tiles.Add(tile);
+
+            if (tile.IsTile)
+            {
+                tile.Preview = _thumbnails?.CachedTile(tile.ResRef);
+                if (tile.Preview == null)
+                    _thumbnails?.RequestTileAsync(tile.ResRef, bitmap => tile.Preview = bitmap);
+
+                return;
+            }
 
             var cached = _thumbnails?.Cached(SelectedType, tile.ResRef);
             if (cached != null)

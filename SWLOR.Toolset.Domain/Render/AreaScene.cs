@@ -73,7 +73,6 @@ namespace SWLOR.Toolset.Domain.Render
     {
         Creature,
         Door,
-        Encounter,
         Item,
         Placeable,
         Sound,
@@ -91,14 +90,14 @@ namespace SWLOR.Toolset.Domain.Render
     {
         public required InstanceMarkerKind Kind { get; init; }
 
-        /// <summary>The blueprint resref this instance was placed from ("TemplateResRef", or "ResRef" for stores). Null for kinds with no single blueprint resref (e.g. encounters).</summary>
+        /// <summary>The blueprint resref this instance was placed from ("TemplateResRef", or "ResRef" for stores).</summary>
         public string? TemplateResRef { get; init; }
 
         public string? Tag { get; init; }
 
         public required Vector3 Position { get; init; }
 
-        /// <summary>Heading as a (cos, sin) unit vector - XOrientation/YOrientation, or Bearing converted for placeables/doors. (1,0) when the instance carries no heading (ambient sounds, encounters).</summary>
+        /// <summary>Heading as a (cos, sin) unit vector - XOrientation/YOrientation, or Bearing converted for placeables/doors. (1,0) when the instance carries no heading (ambient sounds).</summary>
         public required Vector2 Orientation { get; init; }
 
         /// <summary>
@@ -108,7 +107,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public Matrix4x4 VisualTransform { get; init; } = Matrix4x4.Identity;
 
-        /// <summary>Polygon points (world-space) for trigger/encounter volumes; null for every other kind or when absent.</summary>
+        /// <summary>Polygon points (world-space) for a trigger's volume; null for every other kind or when absent.</summary>
         public IReadOnlyList<Vector3>? Geometry { get; init; }
 
         /// <summary>

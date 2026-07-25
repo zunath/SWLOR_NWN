@@ -17,7 +17,6 @@ namespace SWLOR.Toolset.Tests
 
             document.Creatures.Should().BeEmpty();
             document.Doors.Should().BeEmpty();
-            document.Encounters.Should().BeEmpty();
             document.Placeables.Should().HaveCount(1);
             document.Sounds.Should().BeEmpty();
             document.Stores.Should().BeEmpty();

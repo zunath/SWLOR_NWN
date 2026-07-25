@@ -306,7 +306,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// Maps a 3D-view instance's kind to the blueprint type of the section that lists it, or
-        /// null when this editor has no section for that kind (Item and Encounter lists have no
+        /// null when this editor has no section for that kind (the Item list has no
         /// InstanceListSectionViewModel - see InstanceListConfigs above).
         /// </summary>
         private static ResourceType? MapKindToSectionType(InstanceMarkerKind kind) => kind switch
@@ -427,7 +427,7 @@ namespace SWLOR.Toolset.Editors
         private int IndexWithinKind(InstanceMarker instance) =>
             AreaScene != null ? AreaScene.Instances.Where(i => i.Kind == instance.Kind).ToList().IndexOf(instance) : -1;
 
-        /// <summary>The instance-list section covering <paramref name="kind"/>, or null when this editor has no section for it (Item/Encounter).</summary>
+        /// <summary>The instance-list section covering <paramref name="kind"/>, or null when this editor has no section for it (Item).</summary>
         private InstanceListSectionViewModel? SectionForKind(InstanceMarkerKind kind)
         {
             var type = MapKindToSectionType(kind);
@@ -443,9 +443,110 @@ namespace SWLOR.Toolset.Editors
         public bool IsPlacementPending => _pendingPlacementResRef != null;
 
         /// <summary>3D-view status line while a placement is pending, or empty otherwise.</summary>
-        public string PlacementStatus => IsPlacementPending
-            ? $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
+        public string PlacementStatus =>
+            IsPlacementPending ? $"Click to place {_pendingPlacementResRef}... (Esc or right-click to cancel)"
+            : _pendingTile is { } tile ? $"Click a cell to place {tile.Label}... (Esc or right-click to cancel)"
             : string.Empty;
+
+        /// <summary>This area's tileset resref, which is what the Tiles palette lists tiles from.</summary>
+        public string? TilesetResRef => new AreDocument(_areSession.Document).Tileset;
+
+        private TilePaletteEntry? _pendingTile;
+
+        /// <summary>True while a tile or group is armed - drives GlAreaControl.IsTilePlacementActive.</summary>
+        public bool IsTilePlacementPending => _pendingTile != null;
+
+        /// <summary>The armed stamp's footprint in cells, for the viewport's cell highlight.</summary>
+        public (int Columns, int Rows) TilePlacementFootprint =>
+            _pendingTile is { } entry ? (entry.Columns, entry.Rows) : (1, 1);
+
+        /// <summary>
+        /// Arms a tile stamp chosen in the Palette panel. The next map click writes it into the grid.
+        /// </summary>
+        public bool ArmTilePlacement(TilePaletteEntry entry)
+        {
+            if (entry == null || entry.TileIds.Count == 0)
+                return false;
+
+            // Arming a tile cancels any armed object and vice versa: two ghosts following one cursor
+            // would leave the builder guessing which one a click resolves.
+            CancelPlacement();
+
+            _pendingTile = entry;
+            OnPropertyChanged(nameof(IsTilePlacementPending));
+            OnPropertyChanged(nameof(TilePlacementFootprint));
+            OnPropertyChanged(nameof(PlacementStatus));
+            return true;
+        }
+
+        /// <summary>Called by the view when a tile placement is cancelled from inside the viewport.</summary>
+        public void CancelTilePlacement()
+        {
+            if (_pendingTile == null)
+                return;
+
+            _pendingTile = null;
+            OnPropertyChanged(nameof(IsTilePlacementPending));
+            OnPropertyChanged(nameof(PlacementStatus));
+        }
+
+        /// <summary>
+        /// Writes the armed stamp into the grid at the clicked anchor cell, as ONE undo step.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately a raw write, not the terrain-matching brush: Aurora's tile palette places the
+        /// tile you picked and leaves edge matching to its separate terrain tool, so a builder who chose
+        /// a specific piece gets that piece. Group cells carrying -1 are holes in the rectangle and are
+        /// skipped, leaving whatever the area already had there.
+        /// </remarks>
+        public void CommitTilePlacement(int anchorColumn, int anchorRow)
+        {
+            var entry = _pendingTile;
+            _pendingTile = null;
+            OnPropertyChanged(nameof(IsTilePlacementPending));
+            OnPropertyChanged(nameof(PlacementStatus));
+
+            if (entry == null)
+                return;
+
+            var are = new AreDocument(_areSession.Document);
+            var width = AreaTiles.Width(are);
+            var height = AreaTiles.Height(are);
+
+            var writes = new List<(int Column, int Row, int TileId)>();
+            for (var row = 0; row < entry.Rows; row++)
+            {
+                for (var column = 0; column < entry.Columns; column++)
+                {
+                    var tileId = entry.TileIds[row * entry.Columns + column];
+                    if (tileId < 0)
+                        continue;
+
+                    var targetColumn = anchorColumn + column;
+                    var targetRow = anchorRow + row;
+                    if (targetColumn < 0 || targetRow < 0 || targetColumn >= width || targetRow >= height)
+                    {
+                        SceneStatus = $"'{entry.Label}' does not fit at ({anchorColumn},{anchorRow}).";
+                        return;
+                    }
+
+                    writes.Add((targetColumn, targetRow, tileId));
+                }
+            }
+
+            if (writes.Count == 0)
+                return;
+
+            var label = writes.Count == 1
+                ? $"Place tile at ({anchorColumn},{anchorRow})"
+                : $"Place {entry.Label} at ({anchorColumn},{anchorRow})";
+
+            RunAreEdit(label, () =>
+            {
+                foreach (var (column, row, tileId) in writes)
+                    AreaTiles.SetTile(are, column, row, tileId, orientation: 0);
+            });
+        }
 
         /// <summary>
         /// Arms placement for a blueprint chosen in the Palette panel: the object then follows the
@@ -458,6 +559,10 @@ namespace SWLOR.Toolset.Editors
             var section = Sections.FirstOrDefault(candidate => candidate.BlueprintType == type);
             if (section == null || string.IsNullOrWhiteSpace(resRef))
                 return false;
+
+            // The other half of the exclusion in ArmTilePlacement: only one thing follows the cursor, so a
+            // builder always knows what the next click resolves.
+            CancelTilePlacement();
 
             _pendingPlacementSection = section;
             _pendingPlacementResRef = resRef;

@@ -29,7 +29,24 @@ namespace SWLOR.Toolset.Shell.Panels
             Icon = icon;
         }
 
-        public ResourceType Type { get; }
+        private PaletteTypeChipViewModel(string label, Bitmap? icon)
+        {
+            Type = null;
+            Label = label;
+            Icon = icon;
+        }
+
+        /// <summary>
+        /// The Tiles chip. It carries no <see cref="ResourceType"/> because a tile is not a module
+        /// resource - it is a row in the open area's tileset - which is exactly why the palette has to
+        /// treat this entry differently from the eight blueprint types.
+        /// </summary>
+        public static PaletteTypeChipViewModel ForTiles(Bitmap? icon) => new("Tiles", icon);
+
+        /// <summary>Null for the Tiles chip; a blueprint type otherwise.</summary>
+        public ResourceType? Type { get; }
+
+        public bool IsTiles => Type == null;
 
         /// <summary>The plural name. Shown as a tooltip, since the chip itself is the icon.</summary>
         public string Label { get; }

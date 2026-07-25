@@ -25,16 +25,23 @@ namespace SWLOR.Toolset.Shell.Panels
         /// <summary>The folder this row shows, or null for the synthetic Unsorted row.</summary>
         public CategoryFolder? Folder { get; }
 
+        /// <summary>
+        /// A name for a row that has no folder behind it - the tile palette's categories, which come from
+        /// a tileset rather than the category sidecar. Leaving this null keeps the old meaning of a
+        /// folderless row: the synthetic Unsorted bucket.
+        /// </summary>
+        public string? SyntheticName { get; init; }
+
         public int Depth { get; }
 
         public bool HasChildren { get; }
 
         /// <summary>True for the synthetic Unsorted row, which is generated rather than stored.</summary>
-        public bool IsUnsorted => Folder == null;
+        public bool IsUnsorted => Folder == null && SyntheticName == null;
 
         public bool IsPinned { get; init; }
 
-        public string Name => Folder?.Name ?? CategorySection.UnsortedFolderName;
+        public string Name => Folder?.Name ?? SyntheticName ?? CategorySection.UnsortedFolderName;
 
         [ObservableProperty]
         private int _count;

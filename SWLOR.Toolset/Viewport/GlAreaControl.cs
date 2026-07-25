@@ -36,7 +36,7 @@ namespace SWLOR.Toolset.Viewport
         private const float VerticalFovRadians = MathF.PI / 4f; // 45 degrees - comfortable for open outdoor areas
         private const float NearPlane = 0.1f;
         private const int FloatsPerVertex = 8; // position(3) + normal(3) + texcoord(2)
-        private const float PolygonHeightOffset = 0.05f; // lift trigger/encounter outlines slightly above the tile floor
+        private const float PolygonHeightOffset = 0.05f; // lift trigger outlines slightly above the tile floor
         private const float OrbitSensitivity = 0.01f; // radians per pixel
         private const float FallbackCubeHeight = 1.5f;
 
@@ -354,6 +354,80 @@ void main()
         /// <summary>Where the ghost sits right now, or null before the pointer has been over the map.</summary>
         private Vector3? _ghostPosition;
 
+        // ----- Paint-tiles-from-palette -----
+        //
+        // The tile palette arms a tile (or a named multi-tile group) and the next viewport click
+        // names the grid cell to stamp it into. Only the cell travels back to the host: the tile
+        // grid itself is the area document's business, not this control's.
+        //
+        // PRECEDENCE: the two palette modes are mutually exclusive by construction (each palette tab
+        // disarms the other), but if both flags are somehow on, object placement wins everywhere -
+        // input, drawing and cancel - so the two never half-apply. That choice is arbitrary; having
+        // one is not.
+
+        private bool _isTilePlacementActive;
+        private (int Columns, int Rows) _tilePlacementFootprint = (1, 1);
+
+        /// <summary>The grid cell the pointer is over, or null before the pointer has been over the map. May be outside the grid - the highlight is what says so.</summary>
+        private (int Column, int Row)? _tileHoverCell;
+
+        /// <summary>
+        /// Whether a viewport click should report a grid cell to stamp a tile into instead of
+        /// picking an instance. The host view sets this once a palette tile/group has been chosen;
+        /// this control clears it itself once a cell is picked or the placement is cancelled.
+        /// </summary>
+        public bool IsTilePlacementActive
+        {
+            get => _isTilePlacementActive;
+            set
+            {
+                if (_isTilePlacementActive == value)
+                    return;
+
+                _isTilePlacementActive = value;
+                // Drop the stale hover cell and repaint: disarming from the palette has to take the
+                // cell highlight off the map, and re-arming must not flash the previous cursor
+                // position before the pointer moves again.
+                _tileHoverCell = null;
+                RequestNextFrameRendering();
+            }
+        }
+
+        /// <summary>
+        /// The footprint in cells that the armed palette entry will write - (1,1) for a single tile,
+        /// larger for a group. The clicked cell is the footprint's BOTTOM-LEFT corner (its lowest
+        /// column and row) and the footprint extends toward increasing column and row; the highlight
+        /// and <see cref="TileCellPicked"/> share that convention so what a builder sees painted is
+        /// exactly what the host writes.
+        /// </summary>
+        public (int Columns, int Rows) TilePlacementFootprint
+        {
+            get => _tilePlacementFootprint;
+            // A zero or negative extent would paint nothing while still reporting cells, so a
+            // malformed group definition degrades to a single cell instead of an invisible cursor.
+            set
+            {
+                var clamped = (Columns: Math.Max(1, value.Columns), Rows: Math.Max(1, value.Rows));
+                if (_tilePlacementFootprint == clamped)
+                    return;
+
+                _tilePlacementFootprint = clamped;
+                RequestNextFrameRendering();
+            }
+        }
+
+        /// <summary>
+        /// Raised when tile placement is active and a plain click (not a camera drag) lands in the
+        /// viewport: the anchor cell's column and row (the footprint's bottom-left - see
+        /// <see cref="TilePlacementFootprint"/>). Clears <see cref="IsTilePlacementActive"/> before
+        /// raising. Not raised when the footprint would not fit inside the area grid, since the host
+        /// has no way to tell a rejected stamp from a legal one.
+        /// </summary>
+        public event Action<int, int>? TileCellPicked;
+
+        /// <summary>Raised when an active tile placement is cancelled (Esc, or a right-click while it is armed). Clears <see cref="IsTilePlacementActive"/> before raising.</summary>
+        public event Action? TilePlacementCancelled;
+
         /// <summary>
         /// Discards tile geometry above each tile's own base height + ~4m (interior ceilings).
         /// </summary>
@@ -486,12 +560,23 @@ void main()
                 return;
             }
 
+            // Same bargain for an armed tile: while a stamp is pending the right button is the way
+            // out of it, not an orbit.
+            if (_isTilePlacementActive && props.IsRightButtonPressed)
+            {
+                CancelTilePlacement();
+                e.Handled = true;
+                return;
+            }
+
             // For the move/rotate gizmo, a plain left press landing ON the current selection
             // starts an object-manipulation drag - the left button is the primary "grab", matching
             // modern editors where you left-drag an object to move it (Alt to rotate). Hit-test the
             // press against the selection first; any other press (empty space, shift, or another
-            // button) falls through to the camera navigation below.
-            if (!_isPlacementActive && props.IsLeftButtonPressed && !shift
+            // button) falls through to the camera navigation below. An armed palette entry (object or
+            // tile) suspends the grab: while something is waiting to be placed, the left button
+            // belongs to placing it, and the gizmo comes back untouched the moment nothing is armed.
+            if (!_isPlacementActive && !_isTilePlacementActive && props.IsLeftButtonPressed && !shift
                 && _selectedInstance != null && TryHitSelectedInstance(pos))
             {
                 BeginManipulation(_selectedInstance, alt ? DragMode.Rotate : DragMode.Move);
@@ -531,6 +616,10 @@ void main()
             // guard below rejects - so it is updated first and independently of it.
             if (_isPlacementActive && _placementGhost != null)
                 UpdatePlacementGhost(e.GetPosition(this));
+
+            // The cell highlight is a cursor too, and tracks with no button held for the same reason.
+            if (_isTilePlacementActive && !_isPlacementActive)
+                UpdateTileHoverCell(e.GetPosition(this));
 
             if (_dragMode == DragMode.None)
                 return;
@@ -597,6 +686,8 @@ void main()
 
             if (_isPlacementActive)
                 RaisePlacementPointPicked(releasePos);
+            else if (_isTilePlacementActive)
+                RaiseTileCellPicked(releasePos);
             else
                 RaiseInstancePicked(releasePos);
         }
@@ -787,6 +878,85 @@ void main()
             PlacementPointPicked?.Invoke(hit);
         }
 
+        // ----- Paint-tiles-from-palette -----
+
+        private void CancelTilePlacement()
+        {
+            if (!_isTilePlacementActive)
+                return;
+
+            _isTilePlacementActive = false;
+            _tileHoverCell = null;
+            RequestNextFrameRendering();
+            TilePlacementCancelled?.Invoke();
+        }
+
+        /// <summary>
+        /// Moves the cell highlight to the grid cell under the cursor, resolving the ground point the
+        /// same walkmesh-then-flat-plane way the object ghost does - on an elevated tile the flat
+        /// plane is metres past the floor the builder is actually looking at, which would highlight
+        /// the wrong cell.
+        /// </summary>
+        private void UpdateTileHoverCell(Point screenPos)
+        {
+            var ray = TryBuildRay(screenPos);
+            if (ray == null)
+                return;
+
+            var scene = Volatile.Read(ref _sceneState).Scene;
+            var point = (scene != null ? AreaWalkmesh.RaycastGround(ray.Value, scene) : null)
+                        ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
+            if (point is not { } hit)
+                return;
+
+            var cell = WorldPointToCell(hit);
+            if (_tileHoverCell == cell)
+                return; // Most mouse moves stay inside the same 10m cell; only a crossing changes the picture.
+
+            _tileHoverCell = cell;
+            RequestNextFrameRendering();
+        }
+
+        private void RaiseTileCellPicked(Point screenPos)
+        {
+            var ray = TryBuildRay(screenPos);
+            if (ray == null)
+                return;
+
+            var scene = Volatile.Read(ref _sceneState).Scene;
+            if (scene == null)
+                return;
+
+            var point = AreaWalkmesh.RaycastGround(ray.Value, scene)
+                        ?? AreaManipulation.IntersectRayWithHorizontalPlane(ray.Value, 0f);
+            if (point is not { } hit)
+                return;
+
+            var (column, row) = WorldPointToCell(hit);
+
+            // A stamp that would run off the grid is refused here rather than reported: the host only
+            // learns the anchor cell, so it could not tell a clipped write from a clean one. Placement
+            // stays armed so the next click can land somewhere it fits.
+            if (!FootprintFitsGrid(scene, column, row))
+                return;
+
+            _isTilePlacementActive = false;
+            _tileHoverCell = null;
+            RequestNextFrameRendering();
+            TileCellPicked?.Invoke(column, row);
+        }
+
+        /// <summary>The grid cell containing a world point. Floor, not truncate - a point west or south of the grid origin belongs to a negative cell, and truncation would fold two cells onto index 0.</summary>
+        private static (int Column, int Row) WorldPointToCell(Vector3 world) => (
+            (int)MathF.Floor(world.X / AreaSceneBuilder.TileSize),
+            (int)MathF.Floor(world.Y / AreaSceneBuilder.TileSize));
+
+        /// <summary>Whether the armed footprint, anchored bottom-left at the given cell, lies entirely inside the area's tile grid.</summary>
+        private bool FootprintFitsGrid(AreaScene scene, int column, int row) =>
+            column >= 0 && row >= 0 &&
+            column + _tilePlacementFootprint.Columns <= scene.Width &&
+            row + _tilePlacementFootprint.Rows <= scene.Height;
+
         public void HandlePointerWheel(PointerWheelEventArgs e)
         {
             // Wheel up (positive delta) zooms IN (shrinks distance) per common convention.
@@ -821,7 +991,7 @@ void main()
             HandlePointerWheel(e);
         }
 
-        /// <summary>Esc cancels an in-progress manipulation drag (reverting to the instance's real position/heading) or an active placement.</summary>
+        /// <summary>Esc cancels an in-progress manipulation drag (reverting to the instance's real position/heading), an active object placement, or an armed tile placement.</summary>
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -841,6 +1011,13 @@ void main()
             if (_isPlacementActive)
             {
                 CancelPlacement();
+                e.Handled = true;
+                return;
+            }
+
+            if (_isTilePlacementActive)
+            {
+                CancelTilePlacement();
                 e.Handled = true;
                 return;
             }
@@ -1179,6 +1356,7 @@ void main()
             DrawSelectionHighlight();
             DrawTransformGizmo();
             DrawPlacementGhost();
+            DrawTileCellHighlight(scene);
 
             _gl.BindVertexArray(0);
         }
@@ -1423,7 +1601,7 @@ void main()
         /// bounds (<see cref="AreaPicking.ComputeInstanceWorldBounds"/> - the same model/marker
         /// bounds picking itself uses, via the same <see cref="DrawsAsModel"/> rule) as a
         /// GL_LINES box rather than a GL_LINE polygon-mode overlay: OpenGL ES has no wireframe
-        /// polygon mode, and this control already renders trigger/encounter outlines the same way
+        /// polygon mode, and this control already renders trigger outlines the same way
         /// (see <see cref="DrawPolygonOverlays"/>), so this stays portable to the same GL profiles.
         /// A no-op when nothing is selected or the GL context isn't ready.
         /// </summary>
@@ -1547,6 +1725,141 @@ void main()
             _gl.DepthMask(true);
             _gl.Disable(EnableCap.Blend);
             SetUniformFloat("flatAlpha", 1f);
+        }
+
+        /// <summary>Cell-highlight tint: the ghost's accent when the stamp fits, a warning red when it does not.</summary>
+        private static readonly Vector3 TileCellHighlightColor = PlacementGhostColor;
+
+        private static readonly Vector3 TileCellRejectedColor = new(0.92f, 0.28f, 0.22f);
+
+        /// <summary>Translucent enough to read the tile underneath - the builder is choosing between tiles, not covering one up.</summary>
+        private const float TileCellHighlightAlpha = 0.45f;
+
+        /// <summary>Lifts the highlight above the tile floor (and above the walkmesh overlay, which may be on at the same time) so it reads as painted on the ground rather than buried in it.</summary>
+        private const float TileCellHighlightHeightOffset = 0.08f;
+
+        /// <summary>
+        /// Draws a translucent quad over each grid cell the armed palette entry would write.
+        /// </summary>
+        /// <remarks>
+        /// The footprint is anchored bottom-left at the hovered cell (see
+        /// <see cref="TilePlacementFootprint"/>), and only cells actually inside the grid are painted -
+        /// so a stamp hanging off the edge visibly loses part of itself, and the whole highlight turns
+        /// red to say the click will be refused rather than clipped. A footprint entirely off the grid
+        /// paints nothing at all, which is the same message with nothing left to draw it on.
+        /// <para>
+        /// Depth test off, like the transform gizmo and the object ghost: this is a cursor, and one that
+        /// sinks into the floor it is meant to be lying on - or hides behind the wall of the cell next
+        /// door - has failed at its one job.
+        /// </para>
+        /// </remarks>
+        private void DrawTileCellHighlight(AreaScene scene)
+        {
+            // Object placement wins when both modes are somehow armed - see the precedence note on
+            // the tile-placement fields.
+            if (_isPlacementActive || !_isTilePlacementActive || _tileHoverCell is not { } anchor || _gl == null)
+                return;
+
+            var vertices = BuildFootprintQuadVertices(scene, anchor.Column, anchor.Row);
+            if (vertices.Length == 0)
+                return;
+
+            EnsureHighlightBuffer();
+            if (!_hasHighlightBuffer)
+                return;
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.DepthMask(false);
+            _gl.Disable(EnableCap.DepthTest);
+
+            _gl.BindVertexArray(_highlightVao);
+            _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _highlightVbo);
+            // Re-uploaded per frame into the shared dynamic highlight buffer (as the selection box and
+            // gizmo arms are), so a changed footprint or hovered cell simply replaces the contents
+            // instead of accumulating buffers to leak.
+            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(vertices.Length * sizeof(float)),
+                new ReadOnlySpan<float>(vertices), BufferUsageARB.DynamicDraw);
+            SetVertexAttribPointers();
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", TileCellHighlightAlpha);
+            SetUniformFloat("ceilingClipZ", CeilingClipDisabled);
+            SetUniformVec3("flatColor", FootprintFitsGrid(scene, anchor.Column, anchor.Row)
+                ? TileCellHighlightColor
+                : TileCellRejectedColor);
+            SetUniformMatrix4("model", Matrix4x4.Identity); // cell corners are already world-space
+
+            _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint)(vertices.Length / FloatsPerVertex));
+
+            _gl.Enable(EnableCap.DepthTest);
+            _gl.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
+            SetUniformFloat("flatAlpha", 1f);
+        }
+
+        /// <summary>
+        /// Two world-space triangles per in-bounds cell of the footprint anchored bottom-left at
+        /// (<paramref name="anchorColumn"/>, <paramref name="anchorRow"/>), each sitting just above
+        /// that cell's own tile floor so the highlight follows elevation changes across the footprint.
+        /// </summary>
+        private float[] BuildFootprintQuadVertices(AreaScene scene, int anchorColumn, int anchorRow)
+        {
+            var (columns, rows) = _tilePlacementFootprint;
+            var data = new List<float>(columns * rows * 6 * FloatsPerVertex);
+
+            for (var dRow = 0; dRow < rows; dRow++)
+            {
+                for (var dColumn = 0; dColumn < columns; dColumn++)
+                {
+                    var column = anchorColumn + dColumn;
+                    var row = anchorRow + dRow;
+                    if (column < 0 || row < 0 || column >= scene.Width || row >= scene.Height)
+                        continue;
+
+                    var z = CellFloorHeight(scene, column, row) + TileCellHighlightHeightOffset;
+                    var minX = column * AreaSceneBuilder.TileSize;
+                    var minY = row * AreaSceneBuilder.TileSize;
+                    var maxX = minX + AreaSceneBuilder.TileSize;
+                    var maxY = minY + AreaSceneBuilder.TileSize;
+
+                    AppendCellQuadVertex(data, minX, minY, z);
+                    AppendCellQuadVertex(data, maxX, minY, z);
+                    AppendCellQuadVertex(data, maxX, maxY, z);
+                    AppendCellQuadVertex(data, minX, minY, z);
+                    AppendCellQuadVertex(data, maxX, maxY, z);
+                    AppendCellQuadVertex(data, minX, maxY, z);
+                }
+            }
+
+            return data.ToArray();
+        }
+
+        /// <summary>Appends one highlight vertex (up-normal, zero UV) in the shared 8-float layout.</summary>
+        private static void AppendCellQuadVertex(List<float> data, float x, float y, float z)
+        {
+            data.Add(x);
+            data.Add(y);
+            data.Add(z);
+            data.Add(0f);
+            data.Add(0f);
+            data.Add(1f);
+            data.Add(0f);
+            data.Add(0f);
+        }
+
+        /// <summary>
+        /// The floor height of one grid cell, from the tile occupying it. The Tile_List is row-major
+        /// by the area format's own contract (see <see cref="TilePlacement"/>), so the index is
+        /// computable rather than searched - and a scene whose list is short of Width*Height (corrupt
+        /// input the assembler tolerates) falls back to the Z=0 floor instead of throwing.
+        /// </summary>
+        private static float CellFloorHeight(AreaScene scene, int column, int row)
+        {
+            var index = row * scene.Width + column;
+            return index >= 0 && index < scene.Tiles.Count ? scene.Tiles[index].HeightOffset : 0f;
         }
 
         /// <summary>
@@ -1710,7 +2023,6 @@ void main()
         {
             InstanceMarkerKind.Creature => new Vector3(0.85f, 0.15f, 0.15f),
             InstanceMarkerKind.Door => new Vector3(0.55f, 0.35f, 0.15f),
-            InstanceMarkerKind.Encounter => new Vector3(0.6f, 0.2f, 0.8f),
             InstanceMarkerKind.Item => new Vector3(0.9f, 0.85f, 0.2f),
             InstanceMarkerKind.Placeable => new Vector3(0.2f, 0.45f, 0.9f),
             InstanceMarkerKind.Sound => new Vector3(0.2f, 0.8f, 0.8f),
@@ -2050,7 +2362,7 @@ void main()
             public (float[] Vertices, uint[] Indices) Build() => (_vertices.ToArray(), _indices.ToArray());
         }
 
-        // ----- Trigger/encounter polygon overlays (scene-specific; rebuilt whenever the scene changes) -----
+        // ----- Trigger polygon overlays (scene-specific; rebuilt whenever the scene changes) -----
 
         /// <summary>
         /// Rebuilds the walkmesh overlay VBO from the scene's per-tile walkmeshes: each face's

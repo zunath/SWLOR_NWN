@@ -46,7 +46,18 @@ namespace SWLOR.Toolset.Workspace
         private readonly BlueprintPreviewRenderer _renderer;
 
         private readonly BitmapMemoryCache _memory = new(MemoryCacheCapacity);
-        private readonly ConcurrentDictionary<string, byte> _inFlight = new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Renders already running, each holding every caller still waiting on that key.
+        /// </summary>
+        /// <remarks>
+        /// A list of waiters rather than a bare "is running" flag, because two visible cells can want the
+        /// same image: a tileset's groups routinely share a preview model, and four groups asking for
+        /// fci01_b01_01 at once used to leave three of them permanently blank - the second request saw the
+        /// first in flight and returned without ever being called back.
+        /// </remarks>
+        private readonly ConcurrentDictionary<string, List<Action<Bitmap>>> _inFlight =
+            new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeIcons = new();
         private readonly ConcurrentDictionary<ResourceType, Bitmap> _typeChipIcons = new();
 
@@ -82,9 +93,9 @@ namespace SWLOR.Toolset.Workspace
 
         /// <summary>
         /// Resolves a preview off the UI thread and calls <paramref name="onReady"/> on the UI thread with
-        /// the result - real artwork when there is any, the type symbol when there is not. Requests
-        /// already running are dropped, so a palette that republishes its tiles on every keystroke does
-        /// not queue the same work repeatedly.
+        /// the result - real artwork when there is any, the type symbol when there is not. A request for
+        /// something already rendering joins it rather than queueing a second render, so a palette that
+        /// republishes its tiles on every keystroke does not repeat the work.
         /// </summary>
         public void RequestAsync(ResourceType type, string resRef, Action<Bitmap> onReady)
         {
@@ -101,7 +112,7 @@ namespace SWLOR.Toolset.Workspace
                 return;
             }
 
-            if (!_inFlight.TryAdd(key, 0))
+            if (!TryStartRender(key, onReady))
                 return;
 
             Task.Run(() =>
@@ -115,16 +126,118 @@ namespace SWLOR.Toolset.Workspace
                 {
                     // One bad blueprint must not stop the rest of the grid from filling in.
                 }
-                finally
-                {
-                    _memory.Set(key, bitmap);
-                    _inFlight.TryRemove(key, out _);
-                }
 
-                var resolved = bitmap ?? TypeIcon(type);
-                Dispatcher.UIThread.Post(() => onReady(resolved));
+                CompleteRender(key, bitmap, bitmap ?? TypeIcon(type));
             });
         }
+
+        /// <summary>
+        /// Resolves a thumbnail for a tile's model, calling <paramref name="onReady"/> on the UI thread.
+        /// </summary>
+        /// <remarks>
+        /// Kept separate from the blueprint path because a tile is not a module resource: its "resref" is
+        /// a model name out of a .set file, there is no file under Module\ to check a timestamp against,
+        /// and a model name could collide with a blueprint resref. So these are cached in memory only,
+        /// under their own key prefix - a tileset's few hundred models are cheap to re-render on the next
+        /// launch, and never writing them to the module's preview cache keeps that cache honest.
+        /// </remarks>
+        public void RequestTileAsync(string modelResRef, Action<Bitmap> onReady)
+        {
+            ArgumentNullException.ThrowIfNull(onReady);
+
+            if (!IsAvailable || string.IsNullOrWhiteSpace(modelResRef))
+                return;
+
+            var key = "tile:" + modelResRef;
+            if (_memory.TryGet(key, out var known))
+            {
+                if (known != null)
+                    Dispatcher.UIThread.Post(() => onReady(known));
+
+                return;
+            }
+
+            if (!TryStartRender(key, onReady))
+                return;
+
+            Task.Run(() =>
+            {
+                Bitmap? bitmap = null;
+                try
+                {
+                    var image = _renderer.RenderModel(modelResRef);
+                    if (image != null)
+                        bitmap = ToBitmap(image);
+                }
+                catch (Exception)
+                {
+                    // One unparseable tile model must not stop the rest of the grid filling in.
+                }
+
+                CompleteRender(key, bitmap, bitmap);
+            });
+        }
+
+        /// <summary>
+        /// Registers <paramref name="onReady"/> as a waiter on <paramref name="key"/>, and reports whether
+        /// this caller is the one that has to do the render.
+        /// </summary>
+        private bool TryStartRender(string key, Action<Bitmap> onReady)
+        {
+            var mine = new List<Action<Bitmap>> { onReady };
+            var waiters = _inFlight.GetOrAdd(key, mine);
+            if (ReferenceEquals(waiters, mine))
+                return true;
+
+            // Someone else is already rendering this. Join their list - but a render that finished between
+            // the GetOrAdd and this lock has already published its result and cleared its own waiters, so
+            // that case has to be answered from the cache instead of by waiting forever.
+            lock (waiters)
+            {
+                if (!_inFlight.ContainsKey(key))
+                {
+                    if (_memory.TryGet(key, out var done) && done != null)
+                        Dispatcher.UIThread.Post(() => onReady(done));
+
+                    return false;
+                }
+
+                waiters.Add(onReady);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Publishes a finished render to the cache and to every caller that asked for it.
+        /// </summary>
+        /// <param name="cached">What to store - null records "no artwork", which is a real answer.</param>
+        /// <param name="delivered">What to hand the waiters, or null to tell them nothing.</param>
+        private void CompleteRender(string key, Bitmap? cached, Bitmap? delivered)
+        {
+            _memory.Set(key, cached);
+
+            List<Action<Bitmap>>? waiters;
+            if (!_inFlight.TryRemove(key, out waiters) || waiters == null)
+                return;
+
+            Action<Bitmap>[] callbacks;
+            lock (waiters)
+                callbacks = waiters.ToArray();
+
+            if (delivered == null)
+                return;
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                foreach (var callback in callbacks)
+                    callback(delivered);
+            });
+        }
+
+        /// <summary>The cached tile thumbnail if it is already decoded, else null.</summary>
+        public Bitmap? CachedTile(string modelResRef) =>
+            _memory.TryGet("tile:" + modelResRef, out var bitmap) ? bitmap : null;
 
         /// <summary>
         /// The shared symbol for a blueprint type, drawn on first use. Shared rather than per-blueprint
@@ -140,6 +253,16 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public Bitmap TypeChipIcon(ResourceType type) =>
             _typeChipIcons.GetOrAdd(type, key => ToBitmap(TypeIconRenderer.Render(key, TypeChipIconSize)));
+
+        private Bitmap? _tileChipIcon;
+
+        /// <summary>
+        /// The Tiles chip's icon. Tiles have no <see cref="ResourceType"/>, so they cannot use the symbol
+        /// table above; the generic plate the renderer falls back to reads as "a flat piece of ground",
+        /// which is what a tile is.
+        /// </summary>
+        public Bitmap TileChipIcon() =>
+            _tileChipIcon ??= ToBitmap(TypeIconRenderer.Render(ResourceType.Area, TypeChipIconSize));
 
         /// <summary>
         /// Renders and stores every missing preview for the open module, reporting progress as it goes.

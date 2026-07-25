@@ -234,7 +234,7 @@ namespace SWLOR.Toolset.Tests
             barricade.Orientation.X.Should().BeApproximately(1f, 0.0001f);
             barricade.Orientation.Y.Should().BeApproximately(0f, 0.0001f);
 
-            barricade.Geometry.Should().BeNull("only triggers/encounters carry a Geometry polygon");
+            barricade.Geometry.Should().BeNull("only triggers carry a Geometry polygon");
         }
 
         [Test]

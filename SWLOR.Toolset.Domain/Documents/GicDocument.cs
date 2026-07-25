@@ -21,8 +21,6 @@ namespace SWLOR.Toolset.Domain.Documents
 
         public IReadOnlyList<JsonGffStruct> Doors => Root.GetListOrEmpty("Door List");
 
-        public IReadOnlyList<JsonGffStruct> Encounters => Root.GetListOrEmpty("Encounter List");
-
         public IReadOnlyList<JsonGffStruct> Items => Root.GetListOrEmpty("List");
 
         public IReadOnlyList<JsonGffStruct> Placeables => Root.GetListOrEmpty("Placeable List");

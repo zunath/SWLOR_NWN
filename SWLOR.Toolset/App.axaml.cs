@@ -143,7 +143,9 @@ namespace SWLOR.Toolset
                 // same construction-cycle reason as EditorService above.
                 () => sp.GetRequiredService<ToolsetDockFactory>().ActivePlacementTarget,
                 sp.GetRequiredService<ThumbnailService>(),
-                sp.GetRequiredService<Services.IEditorPromptService>()));
+                sp.GetRequiredService<Services.IEditorPromptService>(),
+                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
+                sp.GetService<TlkService>()));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(

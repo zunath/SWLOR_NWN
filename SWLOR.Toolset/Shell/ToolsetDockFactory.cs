@@ -92,8 +92,14 @@ namespace SWLOR.Toolset.Shell
             };
             _documentDock.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(DocumentDock.ActiveDockable))
-                    ActiveDocumentChanged?.Invoke(_documentDock.ActiveDockable as Document);
+                if (e.PropertyName != nameof(DocumentDock.ActiveDockable))
+                    return;
+
+                ActiveDocumentChanged?.Invoke(_documentDock.ActiveDockable as Document);
+
+                // The Tiles palette lists the front area's tileset, so which tab is active is part of
+                // its content - two areas on different tilesets offer different tiles.
+                _palette.OnActiveAreaChanged();
             };
 
             var middleLayout = new ProportionalDock

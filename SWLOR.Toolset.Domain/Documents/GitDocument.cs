@@ -9,7 +9,7 @@ namespace SWLOR.Toolset.Domain.Documents
     /// </summary>
     /// <remarks>
     /// Verified list key spellings against the corpus (bank.git.json and others): "Creature
-    /// List", "Door List", "Encounter List", "List" (loose item instances lying in the area —
+    /// List", "Door List", "List" (loose item instances lying in the area —
     /// NOT a sound list, despite the name), "Placeable List", "SoundList", "StoreList",
     /// "TriggerList", "WaypointList". Spacing is inconsistent between keys (some have a space,
     /// some don't) and must match exactly.
@@ -27,8 +27,6 @@ namespace SWLOR.Toolset.Domain.Documents
         public IReadOnlyList<JsonGffStruct> Creatures => Root.GetListOrEmpty("Creature List");
 
         public IReadOnlyList<JsonGffStruct> Doors => Root.GetListOrEmpty("Door List");
-
-        public IReadOnlyList<JsonGffStruct> Encounters => Root.GetListOrEmpty("Encounter List");
 
         /// <summary>Loose item instances placed directly in the area (GFF key: "List").</summary>
         public IReadOnlyList<JsonGffStruct> Items => Root.GetListOrEmpty("List");

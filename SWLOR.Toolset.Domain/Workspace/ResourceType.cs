@@ -39,10 +39,11 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// </summary>
         /// <remarks>
         /// Alphabetical by plural name, which is how Aurora listed them and therefore where a builder's
-        /// hand already goes. Two entries of Aurora's list are missing and their absence is real rather
-        /// than an ordering slip: Tiles, because tile placement is not built yet, and Encounters, because
-        /// there is no <c>Ute</c> resource type here - SWLOR's module carries no encounter blueprints and
-        /// uses its own spawn system instead.
+        /// hand already goes. Two of Aurora's entries are not in this list, for two different reasons.
+        /// Tiles leads the palette's type row but is not a <see cref="ResourceType"/> at all - a tile is a
+        /// row in the open area's tileset rather than a module resource. Encounters are gone outright:
+        /// SWLOR uses its own spawn system, so the module carries no <c>.ute</c> blueprints and no area
+        /// places an encounter.
         /// </remarks>
         public static readonly IReadOnlyList<ResourceType> PaletteOrder = new[]
         {

@@ -19,6 +19,8 @@ namespace SWLOR.Toolset.Editors
             AreaView.ManipulationPreviewChanged += OnManipulationPreviewChanged;
             AreaView.PlacementPointPicked += OnPlacementPointPicked;
             AreaView.PlacementCancelled += OnPlacementCancelled;
+            AreaView.TileCellPicked += OnTileCellPicked;
+            AreaView.TilePlacementCancelled += OnTilePlacementCancelled;
             DataContextChanged += (_, _) => AttachViewModel();
         }
 
@@ -36,6 +38,8 @@ namespace SWLOR.Toolset.Editors
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
             AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
+            AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
+            AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
             // Opening an area shows its map. Not gated on the 3D View tab being selected: it always is
@@ -57,6 +61,10 @@ namespace SWLOR.Toolset.Editors
                 AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             else if (e.PropertyName == nameof(AreaEditorViewModel.PlacementGhost))
                 AreaView.PlacementGhost = _viewModel.PlacementGhost;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.IsTilePlacementPending))
+                AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
+            else if (e.PropertyName == nameof(AreaEditorViewModel.TilePlacementFootprint))
+                AreaView.TilePlacementFootprint = _viewModel.TilePlacementFootprint;
         }
 
         /// <summary>
@@ -84,6 +92,12 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();
+
+        /// <summary>An armed tile stamp resolved to a grid cell - the anchor is its bottom-left corner.</summary>
+        private void OnTileCellPicked(int column, int row) => _viewModel?.CommitTilePlacement(column, row);
+
+        /// <summary>An armed tile stamp was cancelled (Esc or right-click in the viewport).</summary>
+        private void OnTilePlacementCancelled() => _viewModel?.CancelTilePlacement();
 
         private void OnGlRenderStatusChanged(object? sender, string message)
         {

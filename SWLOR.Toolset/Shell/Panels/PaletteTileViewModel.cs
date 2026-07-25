@@ -1,14 +1,14 @@
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SWLOR.Toolset.Domain.GameData.Tilesets;
 
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
-    /// One blueprint in the palette grid: what it is called, its resref, and - when the palette is
-    /// showing search results rather than one folder - which category it came from.
+    /// One cell of the palette grid: usually a blueprint, or - in Tiles mode - a tile or tile group.
     /// </summary>
     /// <remarks>
-    /// Observable rather than a record because the preview arrives later: tiles are published
+    /// Observable rather than a record because the preview arrives later: cells are published
     /// immediately and their thumbnails render on a background thread, so the grid appears at once and
     /// fills in rather than blocking on thousands of model loads.
     /// </remarks>
@@ -21,9 +21,42 @@ namespace SWLOR.Toolset.Shell.Panels
             CategoryPath = categoryPath;
         }
 
+        /// <summary>
+        /// A tile or tile group rather than a blueprint. Its <see cref="ResRef"/> is the model the preview
+        /// renders from, which is not a blueprint resref and must never be treated as one.
+        /// </summary>
+        public PaletteTileViewModel(TilePaletteEntry tile, string? categoryPath = null)
+            : this(tile.PreviewModelResRef, tile.Label, categoryPath)
+        {
+            Tile = tile;
+        }
+
+        /// <summary>Non-null only in Tiles mode; what a click stamps into the area's grid.</summary>
+        public TilePaletteEntry? Tile { get; }
+
+        public bool IsTile => Tile != null;
+
+        /// <summary>
+        /// For a blueprint, its resref. For a tile, the model resref its preview is rendered from - the
+        /// grid shows it under the label either way, and for a tile that model name is the only stable
+        /// identifier a builder can look up.
+        /// </summary>
         public string ResRef { get; }
 
         public string Name { get; }
+
+        /// <summary>
+        /// The line under the label: a blueprint's resref, or a tile's footprint in cells.
+        /// </summary>
+        /// <remarks>
+        /// Not the resref for a tile. <see cref="ResRef"/> holds the preview MODEL there, and groups
+        /// routinely share one - four of shp02's groups preview from fci01_b01_01 - so printing it made
+        /// four visibly different entries all claim the same name. The footprint is the thing a builder
+        /// actually needs before clicking a cell: how much of the grid this stamp will overwrite.
+        /// </remarks>
+        public string Subtitle => Tile is { } tile
+            ? tile.Columns * tile.Rows == 1 ? "1 tile" : $"{tile.Columns} x {tile.Rows} tiles"
+            : ResRef;
 
         public string? CategoryPath { get; }
 

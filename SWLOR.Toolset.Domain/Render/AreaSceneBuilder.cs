@@ -220,7 +220,6 @@ namespace SWLOR.Toolset.Domain.Render
             AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm);
             AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true);
             AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw);
-            AddEncounterMarkers(markers, git.Encounters);
 
             return markers;
         }
@@ -242,9 +241,7 @@ namespace SWLOR.Toolset.Domain.Render
                 var position = new Vector3(x, y, z);
                 var geometry = includeGeometry ? ReadGeometry(instance) : null;
 
-                // Trigger Geometry is stored as offsets from X/Y/ZPosition. Encounters are built
-                // separately below because their Geometry is already world-space and they carry
-                // no standalone position fields.
+                // Trigger Geometry is stored as offsets from X/Y/ZPosition.
                 if (geometry != null)
                     geometry = geometry.Select(point => point + position).ToArray();
 
@@ -305,35 +302,6 @@ namespace SWLOR.Toolset.Domain.Render
             return null;
         }
 
-        /// <summary>
-        /// Encounters carry no single X/Y/Z field in the Aurora GIT format - unlike every other
-        /// supported instance list, an encounter is defined by a Geometry polygon (same shape as
-        /// TriggerList's) plus a separate spawn-point list. No corpus area in this repo actually
-        /// has an Encounter List entry (corpus verification confirms zero), so this path is
-        /// unverified against real data; it is written defensively (every field read is
-        /// null-tolerant) so a future authored encounter still assembles instead of throwing. The
-        /// reported Position is the Geometry polygon's centroid when present, else the origin.
-        /// </summary>
-        private static void AddEncounterMarkers(List<InstanceMarker> markers, IReadOnlyList<JsonGffStruct> instances)
-        {
-            foreach (var instance in instances)
-            {
-                var tag = InstanceFieldMap.GetTag(instance);
-                var geometry = ReadGeometry(instance);
-                var position = geometry is { Count: > 0 } ? Centroid(geometry) : Vector3.Zero;
-
-                markers.Add(new InstanceMarker
-                {
-                    Kind = InstanceMarkerKind.Encounter,
-                    TemplateResRef = null,
-                    Tag = tag,
-                    Position = position,
-                    Orientation = new Vector2(1f, 0f),
-                    Geometry = geometry
-                });
-            }
-        }
-
         private static IReadOnlyList<Vector3>? ReadGeometry(JsonGffStruct instance)
         {
             var points = instance.GetListOrEmpty("Geometry");
@@ -352,13 +320,5 @@ namespace SWLOR.Toolset.Domain.Render
             return result;
         }
 
-        private static Vector3 Centroid(IReadOnlyList<Vector3> points)
-        {
-            var sum = Vector3.Zero;
-            foreach (var point in points)
-                sum += point;
-
-            return sum / points.Count;
-        }
     }
 }

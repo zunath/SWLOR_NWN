@@ -12,23 +12,26 @@
          before the ViewLocator catch-all. -->
     <DataTemplate DataType="editors:LocStringFieldViewModel">
       <Grid ColumnDefinitions="180,*,Auto" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                   Classes="dim" TextTrimming="CharacterEllipsis" />
         <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
-        <TextBlock Grid.Column="2" Text="{Binding StrRefDisplay}" Opacity="0.6"
+        <TextBlock Grid.Column="2" Text="{Binding StrRefDisplay}" Classes="count"
                    VerticalAlignment="Center" Margin="6,0,0,0" />
       </Grid>
     </DataTemplate>
 
     <DataTemplate DataType="editors:CheckFieldViewModel">
       <Grid ColumnDefinitions="180,*" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                   Classes="dim" TextTrimming="CharacterEllipsis" />
         <CheckBox Grid.Column="1" IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}" />
       </Grid>
     </DataTemplate>
 
     <DataTemplate DataType="editors:IntegerFieldViewModel">
       <Grid ColumnDefinitions="180,*" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                   Classes="dim" TextTrimming="CharacterEllipsis" />
         <NumericUpDown Grid.Column="1" Value="{Binding Value, Mode=TwoWay}"
                        FormatString="0" Increment="1" IsEnabled="{Binding !IsReadOnly}" />
       </Grid>
@@ -36,7 +39,8 @@
 
     <DataTemplate DataType="editors:FloatFieldViewModel">
       <Grid ColumnDefinitions="180,*" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                   Classes="dim" TextTrimming="CharacterEllipsis" />
         <NumericUpDown Grid.Column="1" Value="{Binding Value, Mode=TwoWay}"
                        Increment="0.5" IsEnabled="{Binding !IsReadOnly}" />
       </Grid>
@@ -44,7 +48,8 @@
 
     <DataTemplate DataType="editors:DropdownFieldViewModel">
       <Grid ColumnDefinitions="180,*" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                   Classes="dim" TextTrimming="CharacterEllipsis" />
         <ComboBox Grid.Column="1" IsVisible="{Binding HasOptions}"
                   ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
                   MaxDropDownHeight="400" />
@@ -55,14 +60,16 @@
 
     <DataTemplate DataType="editors:ScriptFieldViewModel">
       <Grid ColumnDefinitions="180,*" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                   Classes="dim" TextTrimming="CharacterEllipsis" />
         <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" FontFamily="Consolas,monospace" />
       </Grid>
     </DataTemplate>
 
     <DataTemplate DataType="editors:TextFieldViewModel">
       <Grid ColumnDefinitions="180,*" Margin="0,2">
-        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="0" Text="{Binding Label}" VerticalAlignment="Center"
+                   Classes="dim" TextTrimming="CharacterEllipsis" />
         <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
       </Grid>
     </DataTemplate>
@@ -81,7 +88,7 @@
   <Application.Styles>
     <FluentTheme />
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
-    <DockFluentTheme DensityStyle="Normal" />
+    <DockFluentTheme DensityStyle="Compact" />
 
     <Style Selector="ToolControl">
       <Setter Property="HeaderTemplate">
@@ -91,9 +98,8 @@
       </Setter>
     </Style>
 
-    <Style Selector="ToolChromeControl">
-      <Setter Property="Background" Value="Transparent" />
-    </Style>
+    <!-- Last, so it wins over both Fluent and the Dock preset. -->
+    <StyleInclude Source="avares://SWLOR.Toolset/Styles/ToolsetTheme.axaml" />
   </Application.Styles>
 
 </Application>

@@ -31,12 +31,17 @@
       </MenuItem>
     </Menu>
     <DockControl Grid.Row="1" Layout="{Binding Layout}" Margin="4" IsEnabled="{Binding !IsModuleMutationLocked}" />
+    <!-- Status bar: monospace, because everything that lands here is a count, a path or a coordinate. -->
     <Border Grid.Row="2"
-            Padding="8,4"
-            Background="{DynamicResource DockThemeBackgroundLowBrush}"
-            BorderBrush="{DynamicResource DockThemeBorderMidBrush}"
+            Padding="12,5"
+            Background="{DynamicResource ChromeBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
             BorderThickness="0,1,0,0">
-      <TextBlock Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" />
+      <StackPanel Orientation="Horizontal" Spacing="10">
+        <TextBlock Text="&#x25CF;" FontSize="9" VerticalAlignment="Center"
+                   Foreground="{DynamicResource GreenBrush}" />
+        <TextBlock Text="{Binding StatusText}" Classes="mono" TextTrimming="CharacterEllipsis" />
+      </StackPanel>
     </Border>
   </Grid>
 </Window>

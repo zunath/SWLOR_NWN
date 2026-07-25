@@ -12,15 +12,17 @@
              Watermark="Search resref / name / tag..."
              Text="{Binding Query}"
              Margin="4" />
-    <ListBox ItemsSource="{Binding Results}"
+    <!-- Name first and widest; the type and resref sit beside it as supporting detail. -->
+    <ListBox ItemsSource="{Binding Results}" Background="Transparent" BorderThickness="0"
              SelectedItem="{Binding SelectedResult}">
       <ListBox.ItemTemplate>
         <DataTemplate DataType="workspace:CatalogSearchResult">
-          <Grid ColumnDefinitions="90,90,200,*">
-            <TextBlock Grid.Column="0" Text="{Binding Entry.ResourceTypeDisplayName}" />
-            <TextBlock Grid.Column="1" Text="{Binding Entry.ResRef}" />
-            <TextBlock Grid.Column="2" Text="{Binding Entry.Name}" />
-            <TextBlock Grid.Column="3" Text="{Binding MatchKind}" Opacity="0.6" />
+          <Grid ColumnDefinitions="*,150,110" ColumnSpacing="12">
+            <TextBlock Grid.Column="0" Classes="name" Text="{Binding Entry.Name}" />
+            <TextBlock Grid.Column="1" Classes="resref" VerticalAlignment="Center"
+                       Text="{Binding Entry.ResRef}" />
+            <TextBlock Grid.Column="2" Classes="dim" FontSize="11.5" VerticalAlignment="Center"
+                       Text="{Binding Entry.ResourceTypeDisplayName}" />
           </Grid>
         </DataTemplate>
       </ListBox.ItemTemplate>

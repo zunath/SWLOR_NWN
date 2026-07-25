@@ -6,5 +6,15 @@
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="180"
              x:Class="SWLOR.Toolset.Shell.Views.OutputView"
              x:DataType="panels:OutputViewModel">
-  <ListBox x:Name="LinesList" ItemsSource="{Binding Lines}" FontFamily="Consolas,monospace" />
+  <!-- Everything logged here is machine output, so it is monospace throughout. -->
+  <ListBox x:Name="LinesList" ItemsSource="{Binding Lines}"
+           Background="Transparent" BorderThickness="0"
+           FontFamily="{DynamicResource MonoFont}" FontSize="11"
+           Foreground="{DynamicResource InkSecondaryBrush}">
+    <ListBox.Styles>
+      <Style Selector="ListBoxItem">
+        <Setter Property="Padding" Value="10,1" />
+      </Style>
+    </ListBox.Styles>
+  </ListBox>
 </UserControl>

@@ -42,36 +42,38 @@
     </StackPanel>
   </Border>
 
-  <Grid Grid.Row="1" ColumnDefinitions="160,*">
-    <ListBox Grid.Column="0"
+  <Grid Grid.Row="1" ColumnDefinitions="164,*">
+    <!-- Category rail: the friendly plural, with its count set apart in monospace so the two read as
+         different kinds of information rather than one run-on string. -->
+    <ListBox Grid.Column="0" Background="Transparent" BorderThickness="0"
              ItemsSource="{Binding Categories}"
              SelectedItem="{Binding SelectedCategory}">
       <ListBox.ItemTemplate>
         <DataTemplate DataType="panels:CategoryNode">
-          <TextBlock Text="{Binding Label}" />
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" Classes="name" Text="{Binding DisplayName}" />
+            <TextBlock Grid.Column="1" Classes="count" Margin="8,0,0,0"
+                       VerticalAlignment="Center" Text="{Binding Count}" />
+          </Grid>
         </DataTemplate>
       </ListBox.ItemTemplate>
-      <ListBox.Styles>
-        <Style Selector="ListBoxItem">
-          <Setter Property="Padding" Value="6,4" />
-        </Style>
-      </ListBox.Styles>
     </ListBox>
-    <GridSplitter Grid.Column="0" Width="1" HorizontalAlignment="Right" Background="Gray" />
-    <ListBox Grid.Column="1"
+    <GridSplitter Grid.Column="0" Width="1" HorizontalAlignment="Right"
+                  Background="{DynamicResource RuleBrush}" />
+
+    <!-- Item rows: name on top in the interface face, resref beneath in monospace. -->
+    <ListBox Grid.Column="1" Background="Transparent" BorderThickness="0"
              ItemsSource="{Binding Items}"
              SelectedItem="{Binding SelectedItem}"
              DoubleTapped="OnItemsDoubleTapped">
       <ListBox.ItemTemplate>
         <DataTemplate DataType="panels:ExplorerItem">
-          <TextBlock Text="{Binding DisplayText}" />
+          <StackPanel Spacing="1">
+            <TextBlock Classes="name" Text="{Binding PrimaryText}" />
+            <TextBlock Classes="resref" Text="{Binding ResRef}" />
+          </StackPanel>
         </DataTemplate>
       </ListBox.ItemTemplate>
-      <ListBox.Styles>
-        <Style Selector="ListBoxItem">
-          <Setter Property="Padding" Value="6,2" />
-        </Style>
-      </ListBox.Styles>
     </ListBox>
   </Grid>
   </Grid>

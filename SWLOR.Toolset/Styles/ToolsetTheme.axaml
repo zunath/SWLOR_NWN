@@ -1,0 +1,253 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    The toolset's visual identity, in one place.
+
+    Two decisions carry it. The palette is a cool, blue-biased dark rather than a neutral grey, so it
+    reads as chosen rather than inherited, with a single hyperspace-blue accent and amber reserved for
+    "changed". The type pairing does the real work: names are set in the interface face and resrefs,
+    counts and coordinates in monospace one step smaller and one step dimmer, so the eye sorts a row's
+    name from its resref before it reads either. That pairing is the whole answer to "names matter more
+    than resrefs" - it is a typographic problem, not a layout one.
+  -->
+  <Styles.Resources>
+    <ResourceDictionary>
+
+      <!-- grounds -->
+      <Color x:Key="ShellBackgroundColor">#0C0F14</Color>
+      <SolidColorBrush x:Key="ShellBackgroundBrush" Color="#0C0F14" />
+      <SolidColorBrush x:Key="PanelBrush" Color="#14181E" />
+      <SolidColorBrush x:Key="PanelRaisedBrush" Color="#191E26" />
+      <SolidColorBrush x:Key="PanelHeaderBrush" Color="#1B212A" />
+      <SolidColorBrush x:Key="FieldBrush" Color="#0C1017" />
+      <SolidColorBrush x:Key="ChromeBrush" Color="#10141A" />
+
+      <!-- rules -->
+      <SolidColorBrush x:Key="RuleBrush" Color="#262D38" />
+      <SolidColorBrush x:Key="RuleStrongBrush" Color="#333C4A" />
+
+      <!-- ink -->
+      <SolidColorBrush x:Key="InkBrush" Color="#DDE3EB" />
+      <SolidColorBrush x:Key="InkSecondaryBrush" Color="#98A2B0" />
+      <SolidColorBrush x:Key="InkTertiaryBrush" Color="#6C7683" />
+
+      <!-- signal: accent is hyperspace blue, amber means changed, green means fine, gold means pinned -->
+      <SolidColorBrush x:Key="AccentBrush" Color="#5B9BF5" />
+      <SolidColorBrush x:Key="AccentDimBrush" Color="#1E3350" />
+      <SolidColorBrush x:Key="AccentBorderBrush" Color="#2D4E7C" />
+      <SolidColorBrush x:Key="AccentInkBrush" Color="#D3E3FB" />
+      <SolidColorBrush x:Key="AmberBrush" Color="#D9A155" />
+      <SolidColorBrush x:Key="GreenBrush" Color="#5FBE8C" />
+      <SolidColorBrush x:Key="GoldBrush" Color="#E4CE9A" />
+
+      <!-- type: Segoe UI Variable is Win11-only, so the stack falls back to Segoe UI on Win10 -->
+      <FontFamily x:Key="UiFont">Segoe UI Variable Text, Segoe UI, Inter, sans-serif</FontFamily>
+      <FontFamily x:Key="MonoFont">Cascadia Mono, Cascadia Code, Consolas, monospace</FontFamily>
+
+      <x:Double x:Key="FontSizeNormal">12.5</x:Double>
+      <x:Double x:Key="FontSizeSmall">11.5</x:Double>
+      <x:Double x:Key="FontSizeMono">11.5</x:Double>
+      <x:Double x:Key="FontSizeLabel">10</x:Double>
+
+      <!-- Dock's IDE preset reads these; overriding them keeps the docking chrome in the same world
+           as everything below rather than leaving two competing greys on screen. -->
+      <SolidColorBrush x:Key="DockThemeBackgroundBrush" Color="#14181E" />
+      <SolidColorBrush x:Key="DockThemeBackgroundLowBrush" Color="#10141A" />
+      <SolidColorBrush x:Key="DockThemeBorderLowBrush" Color="#262D38" />
+      <SolidColorBrush x:Key="DockThemeBorderMidBrush" Color="#333C4A" />
+      <SolidColorBrush x:Key="DockThemeAccentBrush" Color="#5B9BF5" />
+      <SolidColorBrush x:Key="DockApplicationAccentBrushLow" Color="#1E3350" />
+      <SolidColorBrush x:Key="DockApplicationAccentBrushMed" Color="#2D4E7C" />
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- ===================== window & menu ===================== -->
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{DynamicResource ShellBackgroundBrush}" />
+    <Setter Property="FontFamily" Value="{DynamicResource UiFont}" />
+  </Style>
+
+  <Style Selector="Menu">
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="Padding" Value="4,0" />
+  </Style>
+
+  <Style Selector="Menu > MenuItem">
+    <Setter Property="Padding" Value="11,6" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <!-- ===================== panel chrome ===================== -->
+  <!-- Panel titles are the one place small-caps monospace earns its keep: they label the furniture
+       rather than the content, so setting them apart from every name and value on screen helps. -->
+  <Style Selector="ToolChromeControl /template/ TextBlock">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="ToolChromeControl">
+    <Setter Property="Background" Value="{DynamicResource PanelHeaderBrush}" />
+  </Style>
+
+  <!-- ===================== rows ===================== -->
+  <Style Selector="ListBoxItem">
+    <Setter Property="Padding" Value="8,3" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+  </Style>
+
+  <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+  </Style>
+
+  <Style Selector="TreeViewItem">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+
+  <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+  </Style>
+
+  <!-- ===================== controls ===================== -->
+  <Style Selector="Button">
+    <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Padding" Value="10,4" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <Style Selector="Button:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+    <Setter Property="TextBlock.Foreground" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <Style Selector="TextBox">
+    <Setter Property="Background" Value="{DynamicResource FieldBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Padding" Value="8,5" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="SelectionBrush" Value="{DynamicResource AccentBorderBrush}" />
+  </Style>
+
+  <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+  </Style>
+
+  <Style Selector="ComboBox">
+    <Setter Property="Background" Value="{DynamicResource FieldBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+  </Style>
+
+  <Style Selector="CheckBox">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+
+  <Style Selector="NumericUpDown">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeMono}" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+
+  <Style Selector="Expander">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="CornerRadius" Value="3" />
+  </Style>
+
+  <Style Selector="TabItem">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="Padding" Value="14,7" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+
+  <Style Selector="TabItem:selected">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <Style Selector="DataGrid">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="GridLinesVisibility" Value="Horizontal" />
+    <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="RowBackground" Value="Transparent" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+  </Style>
+
+  <Style Selector="DataGridColumnHeader">
+    <Setter Property="Background" Value="{DynamicResource PanelHeaderBrush}" />
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeLabel}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    <Setter Property="Padding" Value="8,5" />
+  </Style>
+
+  <!-- ===================== shared text roles ===================== -->
+  <!-- The four roles every row in the app is built from. -->
+  <Style Selector="TextBlock.name">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+
+  <Style Selector="TextBlock.resref">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+
+  <Style Selector="TextBlock.count">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.label">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeLabel}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.mono">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeMono}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.dim">
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+</Styles>

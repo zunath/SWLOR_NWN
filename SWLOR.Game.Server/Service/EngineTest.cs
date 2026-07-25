@@ -33,6 +33,23 @@ namespace SWLOR.Game.Server.Service
         private static bool _hasRun;
         private static bool _suiteAborted;
 
+        /// <summary>
+        /// Aborts the remainder of the suite after the current test finishes. For test
+        /// infrastructure that detects a SYSTEMIC failure (e.g. a behavior sweep hitting its
+        /// failure threshold - a broken shared fixture would repeat the same timed-out
+        /// failures in every remaining tree and blow the CI job budget before the report
+        /// is written). The current test still completes and reports normally.
+        /// </summary>
+        public static void RequestSuiteAbort(string reason)
+        {
+            if (_suiteAborted)
+                return;
+
+            _suiteAborted = true;
+            Console.WriteLine($"{ConsolePrefix} WARNING - suite abort requested: {reason}");
+            Log.Write(LogGroup.EngineTest, $"Suite abort requested: {reason}", true);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleEngineTests()
         {
@@ -397,10 +414,16 @@ namespace SWLOR.Game.Server.Service
             await NwTask.NextFrame();
 
             var returnValue = method.Invoke(null, new object[] { context });
-            if (returnValue is Task task)
+            if (returnValue is not Task task)
             {
-                await task;
+                // A Task-signature method that returns null (e.g. a non-async body written as
+                // `return null`) would otherwise complete this wrapper successfully and be
+                // recorded as a pass without any body having been awaited.
+                throw new EngineTestAssertionException(
+                    $"{method.DeclaringType?.Name}.{method.Name} returned {(returnValue == null ? "null" : returnValue.GetType().Name)} instead of a Task - the test body was not observed and cannot be trusted.");
             }
+
+            await task;
         }
 
         private static Exception Unwrap(Exception ex)

@@ -92,7 +92,11 @@ jobs:
         # SWLOR.NWN.API), so this single build produces every output dir we
         # need: SWLOR.CLI/bin/... for packing, SWLOR.Game.Server/bin/... for
         # the deployed assembly.
-        run: dotnet build SWLOR.CLI/SWLOR.CLI.csproj -c Release -p:OS=Unix
+        # RunPostBuildEvent=Never is the repo-required guard against the post-build
+        # deploy step; -p:OS=Unix also suppresses it today, but pass the property
+        # explicitly so a change to the OS override or target condition cannot
+        # silently reintroduce the slow deployment step.
+        run: dotnet build SWLOR.CLI/SWLOR.CLI.csproj -c Release -p:OS=Unix -p:RunPostBuildEvent=Never
 
       - name: Download neverwinter.nim tools
         # Provides Linux nwn_erf/nwn_gff/nwn_tlk. SWLOR.CLI's HakBuilder and

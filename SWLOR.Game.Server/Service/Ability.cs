@@ -143,7 +143,34 @@ namespace SWLOR.Game.Server.Service
 
             _trackedAbilityImpacts.Remove(activator);
             impact.FlushDamageEffects(activator);
+            _lastCompletedImpactSummaries[activator] = impact.Summary;
             return impact.Summary;
+        }
+
+        private static readonly Dictionary<uint, AbilityImpactSummary> _lastCompletedImpactSummaries = new();
+
+        /// <summary>
+        /// The summary of the activator's most recently COMPLETED ability impact, or null if
+        /// none completed since the last clear. Observability seam for the engine test
+        /// harness: a queued weapon ability's damage rides the same landed hit as the weapon
+        /// swing, so an HP drop alone cannot attribute damage to the ability - a completed
+        /// summary with impacted targets can.
+        /// </summary>
+        public static AbilityImpactSummary GetLastCompletedAbilityImpactSummary(uint activator)
+        {
+            return _lastCompletedImpactSummaries.TryGetValue(activator, out var summary)
+                ? summary
+                : null;
+        }
+
+        /// <summary>
+        /// Clears the activator's last completed impact summary so a subsequent
+        /// <see cref="GetLastCompletedAbilityImpactSummary"/> observation cannot match an
+        /// earlier ability's impact.
+        /// </summary>
+        public static void ClearLastCompletedAbilityImpactSummary(uint activator)
+        {
+            _lastCompletedImpactSummaries.Remove(activator);
         }
 
         /// <summary>

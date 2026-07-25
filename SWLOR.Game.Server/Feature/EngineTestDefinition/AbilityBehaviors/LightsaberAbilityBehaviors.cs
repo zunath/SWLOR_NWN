@@ -72,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsFPCost = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Weapon-queued ability; Force damage lands on the next auto-attack (not asserted here)."
+                    ExpectsTargetDamage = true,
+                    Notes = "Weapon-queued; the executor lands the consuming hit and requires the ability's own completed impact summary (impacted targets > 0) plus the HP drop, attributing the Force damage to the ability rather than the weapon swing."
                 },
                 new AbilityBehaviorCase
                 {
@@ -82,7 +83,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsFPCost = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Weapon-queued ability; Force damage lands on the next auto-attack (not asserted here)."
+                    ExpectsTargetDamage = true,
+                    Notes = "Weapon-queued; the executor lands the consuming hit and requires the ability's own completed impact summary (impacted targets > 0) plus the HP drop, attributing the Force damage to the ability rather than the weapon swing."
                 },
                 new AbilityBehaviorCase
                 {
@@ -92,7 +94,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsFPCost = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Weapon-queued ability; Force damage lands on the next auto-attack (not asserted here)."
+                    ExpectsTargetDamage = true,
+                    Notes = "Weapon-queued; the executor lands the consuming hit and requires the ability's own completed impact summary (impacted targets > 0) plus the HP drop, attributing the Force damage to the ability rather than the weapon swing."
                 },
                 new AbilityBehaviorCase
                 {
@@ -102,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsFPCost = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Weapon-queued ability; Force damage lands on the next auto-attack (not asserted here)."
+                    ExpectsTargetDamage = true,
+                    Notes = "Weapon-queued; the executor lands the consuming hit and requires the ability's own completed impact summary (impacted targets > 0) plus the HP drop, attributing the Force damage to the ability rather than the weapon swing."
                 },
 
                 // GuardiansChallengeAbilityDefinition - hostile area line taunt/damage, self-enmity is conditional.

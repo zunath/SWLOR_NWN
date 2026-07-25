@@ -104,6 +104,13 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         {
                             abortedAsSystemic = true;
                             ctx.Log($"{progress} ABORT - {failures.Count} failures reached the systemic-failure threshold ({SystemicFailureThreshold}); skipping the remaining {cases.Count - index - 1} case(s).");
+
+                            // A failure volume this high means a SHARED fixture or impact
+                            // path is broken, not this tree specifically - every remaining
+                            // tree would repeat the same 20s-per-case timed-out failures
+                            // and blow the CI job budget before the report is written.
+                            EngineTest.RequestSuiteAbort(
+                                $"behavior sweep hit {failures.Count} case failures in one tree - a shared fixture/impact regression would repeat in every remaining tree");
                             break;
                         }
                     }
@@ -215,6 +222,11 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 // reset the FP/STAMINA locals to the (unraised) max and would overwrite us.
                 await NwTask.NextFrame();
                 ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
+
+                // Out-of-combat NPCs heal 10% per heartbeat tick; inside a 20s assertion
+                // window that would satisfy a healing assertion on a deliberately wounded
+                // caster even when the tested impact is broken.
+                ctx.SuppressNPCNaturalHPRegen(caster);
 
                 foreach (var (setupPerk, setupLevel) in behaviorCase.SetupNPCPerkLevels)
                 {
@@ -358,6 +370,10 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     {
                         var hitTargetHPBefore = GetCurrentHitPoints(hitTarget);
 
+                        // Cleared so a post-consumption observation can only match THIS
+                        // ability's completed impact, never an earlier case's.
+                        Ability.ClearLastCompletedAbilityImpactSummary(caster);
+
                         Combat.SetAutoAttackHitResolutionOverride(true);
                         try
                         {
@@ -371,6 +387,18 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                         {
                             Combat.SetAutoAttackHitResolutionOverride(false);
                             AssignCommand(caster, () => ClearAllActions());
+                        }
+
+                        if (behaviorCase.ExpectsTargetDamage)
+                        {
+                            // The ability's damage rides the same landed hit as the weapon
+                            // swing, so the HP-drop check below cannot attribute damage to
+                            // the ability. A completed impact summary with impacted targets
+                            // proves the ability's own impact pipeline dealt its damage.
+                            var impactSummary = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                            ctx.Assert(
+                                impactSummary is { ImpactedTargetCount: > 0 },
+                                "the queued ability's completed impact to report at least one impacted target (the weapon swing alone cannot attribute damage to the ability)");
                         }
 
                         // Declared outcomes are verified against the creature the hit actually

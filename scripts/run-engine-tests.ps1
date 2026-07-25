@@ -134,61 +134,67 @@ if (Test-Path $ReportPath) {
 }
 
 Write-Section "Running engine tests via docker compose (server home: $ServerHome)"
-# Everything set here is restored at the end of the run: PowerShell env changes
+# Everything mutated below is restored in the outer finally: PowerShell env changes
 # outlive the script in the calling shell, and a leaked SWLOR_ENGINE_TEST_HAK_DIR
-# from an auto-share would silently redirect a later run's hak mount.
+# from an auto-share would silently redirect a later run's hak mount. The snapshot
+# happens BEFORE the try so every mutation - including the hak auto-share and its
+# failure exits - is inside the restoration scope (finally blocks run on `exit`).
 $previousFilter = $env:SWLOR_ENGINE_TEST_FILTER
 $previousArenaResref = $env:SWLOR_ENGINE_TEST_ARENA_RESREF
 $previousHakDir = $env:SWLOR_ENGINE_TEST_HAK_DIR
-$env:SWLOR_ENGINE_TEST_FILTER = $Filter
-$env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
+try {
+    $env:SWLOR_ENGINE_TEST_FILTER = $Filter
+    $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
 
-# Share the dev server's hak set via a dedicated Docker mount when the test home has
-# none of its own - NTFS junctions do not survive Docker bind mounts, so this is the
-# supported way to avoid duplicating ~13GB of haks.
-if (-not $env:SWLOR_ENGINE_TEST_HAK_DIR) {
-    $homeHakDir = Join-Path $ServerHome "hak"
-    if (-not (Test-Path (Join-Path $homeHakDir "*.hak"))) {
-        # Probe both next to the repo root and next to the server home - when running
-        # from a worktree, debugserver/ only exists beside the real server homes.
-        $devHakCandidates = @(
-            (Join-Path $RepoRoot "debugserver\hak"),
-            (Join-Path (Split-Path -Parent $ServerHome) "debugserver\hak")
-        )
-        foreach ($devHakDir in $devHakCandidates) {
-            if (Test-Path (Join-Path $devHakDir "*.hak")) {
-                $env:SWLOR_ENGINE_TEST_HAK_DIR = $devHakDir
-                Write-Host "Sharing hak set from $devHakDir (test home has no haks of its own)."
-                break
+    # Share the dev server's hak set via a dedicated Docker mount when the test home has
+    # none of its own - NTFS junctions do not survive Docker bind mounts, so this is the
+    # supported way to avoid duplicating ~13GB of haks.
+    if (-not $env:SWLOR_ENGINE_TEST_HAK_DIR) {
+        $homeHakDir = Join-Path $ServerHome "hak"
+        if (-not (Test-Path (Join-Path $homeHakDir "*.hak"))) {
+            # Probe both next to the repo root and next to the server home - when running
+            # from a worktree, debugserver/ only exists beside the real server homes.
+            $devHakCandidates = @(
+                (Join-Path $RepoRoot "debugserver\hak"),
+                (Join-Path (Split-Path -Parent $ServerHome) "debugserver\hak")
+            )
+            foreach ($devHakDir in $devHakCandidates) {
+                if (Test-Path (Join-Path $devHakDir "*.hak")) {
+                    $env:SWLOR_ENGINE_TEST_HAK_DIR = $devHakDir
+                    Write-Host "Sharing hak set from $devHakDir (test home has no haks of its own)."
+                    break
+                }
+            }
+            if (-not $env:SWLOR_ENGINE_TEST_HAK_DIR) {
+                Write-Host "Server home '$ServerHome' has no haks and no debugserver hak set was found - the module will fail to load." -ForegroundColor Red
+                exit 1
             }
         }
-        if (-not $env:SWLOR_ENGINE_TEST_HAK_DIR) {
-            Write-Host "Server home '$ServerHome' has no haks and no debugserver hak set was found - the module will fail to load." -ForegroundColor Red
-            exit 1
-        }
+    }
+
+    # Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
+    Push-Location $ServerHome
+    # docker compose writes progress to stderr; under ErrorActionPreference=Stop with
+    # redirected output (CI, transcripts, IDE consoles) every such line would become a
+    # terminating NativeCommandError. Relax it for the native compose calls only.
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        # Remove anything a previously interrupted run left behind before starting fresh.
+        & docker compose -p $ComposeProject -f $ComposeFile down --volumes --remove-orphans 2>&1 | ForEach-Object { "$_" } | Write-Host
+
+        & docker compose -p $ComposeProject -f $ComposeFile up --abort-on-container-exit --exit-code-from swlor-server 2>&1 | ForEach-Object { "$_" } | Write-Host
+        $composeExitCode = $LASTEXITCODE
+
+        Write-Section "Tearing down containers"
+        & docker compose -p $ComposeProject -f $ComposeFile down --volumes 2>&1 | ForEach-Object { "$_" } | Write-Host
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+        Pop-Location
     }
 }
-
-# Run from the server home so the compose file's ${PWD-.} mounts resolve to it.
-Push-Location $ServerHome
-# docker compose writes progress to stderr; under ErrorActionPreference=Stop with
-# redirected output (CI, transcripts, IDE consoles) every such line would become a
-# terminating NativeCommandError. Relax it for the native compose calls only.
-$previousErrorActionPreference = $ErrorActionPreference
-$ErrorActionPreference = "Continue"
-try {
-    # Remove anything a previously interrupted run left behind before starting fresh.
-    & docker compose -p $ComposeProject -f $ComposeFile down --volumes --remove-orphans 2>&1 | ForEach-Object { "$_" } | Write-Host
-
-    & docker compose -p $ComposeProject -f $ComposeFile up --abort-on-container-exit --exit-code-from swlor-server 2>&1 | ForEach-Object { "$_" } | Write-Host
-    $composeExitCode = $LASTEXITCODE
-
-    Write-Section "Tearing down containers"
-    & docker compose -p $ComposeProject -f $ComposeFile down --volumes 2>&1 | ForEach-Object { "$_" } | Write-Host
-}
 finally {
-    $ErrorActionPreference = $previousErrorActionPreference
-    Pop-Location
     $env:SWLOR_ENGINE_TEST_FILTER = $previousFilter
     $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $previousArenaResref
     $env:SWLOR_ENGINE_TEST_HAK_DIR = $previousHakDir

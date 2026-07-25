@@ -334,19 +334,21 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
 
                 // GuardianWardAbilityDefinition - grants temporary HP (raw EffectTemporaryHitpoints,
                 // not a tracked status effect) plus conditional riders gated on stat adjustments a
-                // base NPC doesn't have, so only cost/recast are asserted.
+                // base NPC doesn't have; the unconditional temp HP is asserted, the riders are not.
                 new()
                 {
                     Feat = FeatType.GuardianWard1,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants raw temporary HP, not a status effect; LightGuardianPowerSupport riders are gated on stat adjustments the NPC doesn't have.",
+                    Notes = "Grants raw temporary HP (asserted via the engine-effect scan); LightGuardianPowerSupport riders are gated on stat adjustments the NPC doesn't have.",
                 },
                 new()
                 {
                     Feat = FeatType.GuardianWard2,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
@@ -354,6 +356,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.GuardianWard3,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
@@ -361,6 +364,7 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                 {
                     Feat = FeatType.GuardianWard4,
                     Target = AbilityTargetKind.Self,
+                    ExpectsActivatorTemporaryHP = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },

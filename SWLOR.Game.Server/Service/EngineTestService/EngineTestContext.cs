@@ -220,6 +220,17 @@ namespace SWLOR.Game.Server.Service.EngineTestService
         }
 
         /// <summary>
+        /// Disables the NPC's out-of-combat 10%-per-tick natural HP regeneration. Required
+        /// for any test that wounds a creature and asserts a specific heal: a regen tick
+        /// inside the assertion window would satisfy the healing check even when the tested
+        /// ability's impact is broken.
+        /// </summary>
+        public void SuppressNPCNaturalHPRegen(uint npc)
+        {
+            SetLocalInt(npc, Stat.SuppressNaturalHPRegenVariable, 1);
+        }
+
+        /// <summary>
         /// Applies the OnHitCastSpell (Unique Power) item property the live equip pipeline
         /// adds to every player-equipped item (StandardItemConfigurations.AddOnHitProperty
         /// is PC-only). The item_on_hit script event this property fires is what consumes
@@ -310,11 +321,14 @@ namespace SWLOR.Game.Server.Service.EngineTestService
 
         /// <summary>
         /// Yields one server frame - e.g. so a freshly spawned creature's initialization
-        /// scripts run before the test configures it.
+        /// scripts run before the test configures it. Observes runner cancellation so a
+        /// timed-out test polling with repeated frame waits settles during the grace
+        /// period instead of forcing a suite abort.
         /// </summary>
         public async Task WaitFrameAsync()
         {
             await NwTask.NextFrame();
+            ThrowIfCancelled();
         }
 
         /// <summary>

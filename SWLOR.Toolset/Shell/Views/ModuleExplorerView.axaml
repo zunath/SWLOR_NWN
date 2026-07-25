@@ -7,10 +7,16 @@
              x:Class="SWLOR.Toolset.Shell.Views.ModuleExplorerView"
              x:DataType="panels:ModuleExplorerViewModel">
   <Grid RowDefinitions="Auto,*">
-  <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="6,4" Spacing="6">
-    <Button Content="New Area..." Command="{Binding NewAreaCommand}"
+  <!-- Grouping is per type and remembered, so switching between Areas and Placeables doesn't drag one
+       arrangement onto the other. Automatic derives folders from the name; My folders reads the sidecar. -->
+  <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="6,5" ColumnSpacing="6">
+    <Button Grid.Column="0" Content="New Area..." Command="{Binding NewAreaCommand}"
             ToolTip.Tip="Create a new area from the module's area template" />
-  </StackPanel>
+    <TextBox Grid.Column="1" Text="{Binding Filter}" Watermark="Filter..." />
+    <ComboBox Grid.Column="2" ItemsSource="{Binding GroupingChoices}"
+              SelectedItem="{Binding Grouping}" MinWidth="104"
+              ToolTip.Tip="Automatic groups on the part of the name before the first dash" />
+  </Grid>
 
   <!-- New-area wizard, shown inline (same overlay pattern as the palette browser). -->
   <Border Grid.Row="1" ZIndex="1"
@@ -61,17 +67,33 @@
     <GridSplitter Grid.Column="0" Width="1" HorizontalAlignment="Right"
                   Background="{DynamicResource RuleBrush}" />
 
-    <!-- Item rows: name on top in the interface face, resref beneath in monospace. -->
+    <!-- One flat, virtualized list of group headers and item rows. Item rows lead with the name in the
+         interface face and carry the resref beneath in monospace; under a group the name drops its
+         group prefix, so "Viscara - Veles" reads as "Veles" under Viscara. -->
     <ListBox Grid.Column="1" Background="Transparent" BorderThickness="0"
-             ItemsSource="{Binding Items}"
-             SelectedItem="{Binding SelectedItem}"
+             ItemsSource="{Binding Rows}"
+             SelectedItem="{Binding SelectedRow}"
              DoubleTapped="OnItemsDoubleTapped">
       <ListBox.ItemTemplate>
-        <DataTemplate DataType="panels:ExplorerItem">
-          <StackPanel Spacing="1">
-            <TextBlock Classes="name" Text="{Binding PrimaryText}" />
-            <TextBlock Classes="resref" Text="{Binding ResRef}" />
-          </StackPanel>
+        <DataTemplate DataType="panels:ExplorerRowViewModel">
+          <Grid>
+            <!-- group header -->
+            <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding IsGroup}">
+              <TextBlock Grid.Column="0" Text="{Binding Twisty}" FontSize="9" Width="14"
+                         VerticalAlignment="Center" Foreground="{DynamicResource InkTertiaryBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding GroupName}" FontWeight="SemiBold"
+                         Foreground="{DynamicResource InkSecondaryBrush}"
+                         TextTrimming="CharacterEllipsis" />
+              <TextBlock Grid.Column="2" Classes="count" Margin="8,0,4,0"
+                         VerticalAlignment="Center" Text="{Binding Count}" />
+            </Grid>
+
+            <!-- resource row -->
+            <StackPanel Spacing="1" Margin="16,0,0,0" IsVisible="{Binding IsResource}">
+              <TextBlock Classes="name" Text="{Binding Label}" />
+              <TextBlock Classes="resref" Text="{Binding ResRef}" />
+            </StackPanel>
+          </Grid>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>

@@ -107,7 +107,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<ModelPreviewViewModel>(),
                 // Optional: only registered when the repo layout resolved, and the new-area wizard
                 // degrades to "no tilesets available" without it.
-                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>()));
+                sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
+                sp.GetRequiredService<CategoryService>()));
             services.AddSingleton(sp => new CategoryService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),

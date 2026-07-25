@@ -94,7 +94,10 @@
     <Setter Property="Background" Value="{DynamicResource PanelHeaderBrush}" />
   </Style>
 
-  <!-- ===================== rows ===================== -->
+  <!-- Dock draws a dotted drag grip beside each panel title, and styling this control beyond its
+       background is not worth it: BorderThickness here collapses the docks that follow. -->
+
+<!-- ===================== rows ===================== -->
   <Style Selector="ListBoxItem">
     <Setter Property="Padding" Value="8,3" />
     <Setter Property="MinHeight" Value="0" />

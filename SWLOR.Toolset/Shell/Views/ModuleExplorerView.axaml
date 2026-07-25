@@ -3,100 +3,114 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="700"
              x:Class="SWLOR.Toolset.Shell.Views.ModuleExplorerView"
              x:DataType="panels:ModuleExplorerViewModel">
-  <Grid RowDefinitions="Auto,*">
-  <!-- Grouping is per type and remembered, so switching between Areas and Placeables doesn't drag one
-       arrangement onto the other. Automatic derives folders from the name; My folders reads the sidecar. -->
-  <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="6,5" ColumnSpacing="6">
-    <Button Grid.Column="0" Content="New Area..." Command="{Binding NewAreaCommand}"
-            ToolTip.Tip="Create a new area from the module's area template" />
-    <TextBox Grid.Column="1" Text="{Binding Filter}" Watermark="Filter..." />
-    <ComboBox Grid.Column="2" ItemsSource="{Binding GroupingChoices}"
-              SelectedItem="{Binding Grouping}" MinWidth="104"
-              ToolTip.Tip="Automatic groups on the part of the name before the first dash" />
-  </Grid>
 
-  <!-- New-area wizard, shown inline (same overlay pattern as the palette browser). -->
-  <Border Grid.Row="1" ZIndex="1"
-          IsVisible="{Binding ActiveNewArea, Converter={x:Static ObjectConverters.IsNotNull}}"
-          Background="#E0202020" BorderBrush="Gray" BorderThickness="1"
-          Padding="10" CornerRadius="4" HorizontalAlignment="Center" VerticalAlignment="Top"
-          Margin="8" MaxWidth="360">
-    <StackPanel Spacing="6" DataContext="{Binding ActiveNewArea}"
-                x:DataType="panels:NewAreaViewModel">
-      <TextBlock Text="New Area" FontWeight="Bold" Foreground="White" />
-      <TextBox Text="{Binding ResRef, Mode=TwoWay}" Watermark="Resref (lowercase, max 16)" />
-      <TextBox Text="{Binding DisplayName, Mode=TwoWay}" Watermark="Display name" />
-      <!-- Tileset only: terrain is not an area-level property (the area's blank fill comes from the
-           tileset's own [GENERAL] Floor/Default), so terrain selection lives in the paint palette. -->
-      <ComboBox ItemsSource="{Binding Tilesets}" SelectedItem="{Binding SelectedTileset, Mode=TwoWay}"
-                HorizontalAlignment="Stretch" />
-      <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="6">
-        <TextBlock Grid.Column="0" Text="Width" VerticalAlignment="Center" Foreground="White" />
-        <NumericUpDown Grid.Column="1" Value="{Binding Width, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" />
-        <TextBlock Grid.Column="2" Text="Height" VerticalAlignment="Center" Foreground="White" />
-        <NumericUpDown Grid.Column="3" Value="{Binding Height, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" />
-      </Grid>
-      <StackPanel Orientation="Horizontal" Spacing="6">
-        <Button Content="Create" Command="{Binding CreateCommand}" />
-        <Button Content="Cancel" Command="{Binding CancelCommand}" />
+  <!-- One tree: type, then group, then resource. Search lives in the panel it searches, which is why
+       there is no separate Search dock across the top of the window any more. -->
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+
+    <!-- The panel title is drawn here rather than by Dock's chrome, which pads it out with a dotted
+         drag grip. Small-caps monospace sets furniture apart from every name and value on screen. -->
+    <!-- Dock draws this panel's title in its own chrome. -->
+
+    <!-- Group by, with its label inside the control so the row reads as a sentence. -->
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="8,8,8,4" ColumnSpacing="6">
+      <Border Grid.Column="0" Background="{DynamicResource FieldBrush}" CornerRadius="3"
+              BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1" Padding="8,0">
+        <Grid ColumnDefinitions="Auto,*">
+          <TextBlock Grid.Column="0" Text="Group by" Classes="dim" FontSize="11.5"
+                     VerticalAlignment="Center" Margin="0,0,8,0" />
+          <ComboBox Grid.Column="1" ItemsSource="{Binding GroupingChoices}"
+                    SelectedItem="{Binding Grouping}" Background="Transparent"
+                    BorderThickness="0" Padding="0,4" HorizontalAlignment="Stretch"
+                    ToolTip.Tip="Automatic groups on the part of the name before the first dash" />
+        </Grid>
+      </Border>
+      <ToggleButton Grid.Column="1" Content="Organize" IsChecked="{Binding IsOrganizing, Mode=TwoWay}"
+                    FontSize="11.5" Padding="9,4" />
+    </Grid>
+
+    <TextBox Grid.Row="2" Margin="8,0,8,6" Text="{Binding Filter}" Watermark="Filter..." />
+
+    <!-- Folder tools appear only while organizing, so browsing cannot rearrange by accident. -->
+    <StackPanel Grid.Row="3" Margin="8,0,8,6" Spacing="5" IsVisible="{Binding IsOrganizing}">
+      <TextBox Text="{Binding NewFolderName}" Watermark="Folder name" />
+      <StackPanel Orientation="Horizontal" Spacing="5">
+        <Button Content="New Area..." Command="{Binding NewAreaCommand}" />
+        <Button Content="New folder" Command="{Binding NewFolderCommand}" />
+        <Button Content="File here" Command="{Binding FileSelectedCommand}"
+                ToolTip.Tip="Move the selected resource into the named folder" />
       </StackPanel>
-      <TextBlock Text="{Binding StatusMessage}" Foreground="Orange" TextWrapping="Wrap"
-                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
     </StackPanel>
-  </Border>
 
-  <Grid Grid.Row="1" ColumnDefinitions="164,*">
-    <!-- Category rail: the friendly plural, with its count set apart in monospace so the two read as
-         different kinds of information rather than one run-on string. -->
-    <ListBox Grid.Column="0" Background="Transparent" BorderThickness="0"
-             ItemsSource="{Binding Categories}"
-             SelectedItem="{Binding SelectedCategory}">
-      <ListBox.ItemTemplate>
-        <DataTemplate DataType="panels:CategoryNode">
-          <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Grid.Column="0" Classes="name" Text="{Binding DisplayName}" />
-            <TextBlock Grid.Column="1" Classes="count" Margin="8,0,0,0"
-                       VerticalAlignment="Center" Text="{Binding Count}" />
-          </Grid>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
-    <GridSplitter Grid.Column="0" Width="1" HorizontalAlignment="Right"
-                  Background="{DynamicResource RuleBrush}" />
+    <Grid Grid.Row="4">
+      <ListBox Background="Transparent" BorderThickness="0"
+               ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
+               DoubleTapped="OnItemsDoubleTapped">
+        <ListBox.Styles>
+          <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0,2" />
+          </Style>
+        </ListBox.Styles>
+        <ListBox.ItemTemplate>
+          <DataTemplate DataType="panels:ExplorerNodeViewModel">
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="{Binding Indent}">
+              <Button Grid.Column="0" Content="{Binding Twisty}" Width="15" Padding="0"
+                      Background="Transparent" BorderThickness="0" FontSize="9"
+                      Foreground="{DynamicResource InkTertiaryBrush}"
+                      Command="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).ToggleCommand}"
+                      CommandParameter="{Binding}" />
 
-    <!-- One flat, virtualized list of group headers and item rows. Item rows lead with the name in the
-         interface face and carry the resref beneath in monospace; under a group the name drops its
-         group prefix, so "Viscara - Veles" reads as "Veles" under Viscara. -->
-    <ListBox Grid.Column="1" Background="Transparent" BorderThickness="0"
-             ItemsSource="{Binding Rows}"
-             SelectedItem="{Binding SelectedRow}"
-             DoubleTapped="OnItemsDoubleTapped">
-      <ListBox.ItemTemplate>
-        <DataTemplate DataType="panels:ExplorerRowViewModel">
-          <Grid>
-            <!-- group header -->
-            <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding IsGroup}">
-              <TextBlock Grid.Column="0" Text="{Binding Twisty}" FontSize="9" Width="14"
-                         VerticalAlignment="Center" Foreground="{DynamicResource InkTertiaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding GroupName}" FontWeight="SemiBold"
-                         Foreground="{DynamicResource InkSecondaryBrush}"
-                         TextTrimming="CharacterEllipsis" />
-              <TextBlock Grid.Column="2" Classes="count" Margin="8,0,4,0"
-                         VerticalAlignment="Center" Text="{Binding Count}" />
+              <!-- Branch: name and count. Resource: name over its resref in monospace. -->
+              <TextBlock Grid.Column="1" Classes="name" Text="{Binding Name}"
+                         FontWeight="{Binding Weight}" VerticalAlignment="Center"
+                         IsVisible="{Binding IsBranch}" />
+              <StackPanel Grid.Column="1" Spacing="0" IsVisible="{Binding IsResource}">
+                <TextBlock Classes="name" Text="{Binding Name}" />
+                <TextBlock Classes="resref" Text="{Binding ResRef}" />
+              </StackPanel>
+
+              <TextBlock Grid.Column="2" Classes="count" Margin="8,0,10,0" VerticalAlignment="Center"
+                         Text="{Binding Count}" IsVisible="{Binding IsBranch}" />
             </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
 
-            <!-- resource row -->
-            <StackPanel Spacing="1" Margin="16,0,0,0" IsVisible="{Binding IsResource}">
-              <TextBlock Classes="name" Text="{Binding Label}" />
-              <TextBlock Classes="resref" Text="{Binding ResRef}" />
-            </StackPanel>
+      <!-- New-area wizard, shown inline over the tree. -->
+      <Border ZIndex="1"
+              IsVisible="{Binding ActiveNewArea, Converter={x:Static ObjectConverters.IsNotNull}}"
+              Background="{DynamicResource PanelRaisedBrush}"
+              BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1"
+              Padding="12" CornerRadius="4" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+              Margin="8">
+        <StackPanel Spacing="7" DataContext="{Binding ActiveNewArea}"
+                    x:DataType="panels:NewAreaViewModel">
+          <TextBlock Text="New Area" FontWeight="SemiBold" />
+          <TextBox Text="{Binding ResRef, Mode=TwoWay}" Watermark="Resref (lowercase, max 16)" />
+          <TextBox Text="{Binding DisplayName, Mode=TwoWay}" Watermark="Display name" />
+          <ComboBox ItemsSource="{Binding Tilesets}" SelectedItem="{Binding SelectedTileset, Mode=TwoWay}"
+                    HorizontalAlignment="Stretch" />
+          <Grid ColumnDefinitions="Auto,*,Auto,*" ColumnSpacing="6">
+            <TextBlock Grid.Column="0" Text="Width" Classes="dim" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Column="1" Value="{Binding Width, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" />
+            <TextBlock Grid.Column="2" Text="Height" Classes="dim" VerticalAlignment="Center" />
+            <NumericUpDown Grid.Column="3" Value="{Binding Height, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" />
           </Grid>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
-  </Grid>
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Button Content="Create" Classes="primary" Command="{Binding CreateCommand}" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" />
+          </StackPanel>
+          <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource AmberBrush}" TextWrapping="Wrap"
+                     IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <TextBlock Grid.Row="5" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
+               Text="{Binding StatusMessage}"
+               IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
   </Grid>
 </UserControl>

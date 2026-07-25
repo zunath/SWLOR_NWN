@@ -10,10 +10,13 @@
   <!-- Top to bottom: which type, one search box, the category tree, where you are, the grid.
        The tree and the grid split the height with a splitter between them, because how much of each
        you want depends on whether you are hunting for a folder or working out of one. -->
-  <Grid RowDefinitions="Auto,Auto,Auto,220,Auto,Auto,*,Auto">
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,220,Auto,Auto,*,Auto">
+
+    <!-- Title drawn here rather than by Dock's chrome, which pads it out with a dotted drag grip. -->
+    <!-- Dock draws this panel's title in its own chrome. -->
 
     <!-- Type chips. No counts: "8,355 placeables" answers a question nobody asks. -->
-    <ItemsControl Grid.Row="0" ItemsSource="{Binding Types}" Margin="8,8,8,4">
+    <ItemsControl Grid.Row="1" ItemsSource="{Binding Types}" Margin="8,8,8,4">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
           <WrapPanel />
@@ -21,8 +24,8 @@
       </ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate>
         <DataTemplate DataType="panels:PaletteTypeChipViewModel">
-          <Button Content="{Binding Label}" Margin="0,0,4,4" CornerRadius="11" Padding="10,3"
-                  FontSize="11.5"
+          <Button Content="{Binding Label}" Margin="0,0,4,4" CornerRadius="11" Padding="9,3"
+                  FontSize="11"
                   Classes.primary="{Binding IsSelected}"
                   Command="{Binding $parent[ItemsControl].((panels:PaletteViewModel)DataContext).SelectTypeCommand}"
                   CommandParameter="{Binding}" />
@@ -30,23 +33,27 @@
       </ItemsControl.ItemTemplate>
     </ItemsControl>
 
-    <TextBox Grid.Row="1" Margin="8,4" Text="{Binding Query}"
+    <TextBox Grid.Row="2" Margin="8,4" Text="{Binding Query}"
              Watermark="Search categories and objects..." />
 
-    <!-- Category header doubles as the folder-editing bar when organizing. -->
-    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="8,4,8,2">
+    <!-- Category header carries the one action that belongs to the tree as a whole. -->
+    <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="10,6,8,3">
       <TextBlock Grid.Column="0" Classes="label" VerticalAlignment="Center" Text="CATEGORIES" />
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-        <TextBlock Classes="count" VerticalAlignment="Center" Margin="0,0,4,0"
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+        <TextBlock Classes="count" VerticalAlignment="Center"
                    IsVisible="{Binding HasCategoryMatches}"
                    Text="{Binding CategoryMatches.Count, StringFormat='{}{0} matches'}" />
+        <Button Content="+ New" FontSize="11" Padding="8,2" Background="Transparent"
+                BorderThickness="0" Foreground="{DynamicResource AccentBrush}"
+                Command="{Binding NewFolderCommand}"
+                ToolTip.Tip="Add a category, nested inside the selected one" />
         <ToggleButton Content="Organize" IsChecked="{Binding IsOrganizing, Mode=TwoWay}"
                       FontSize="11" Padding="8,2" />
       </StackPanel>
     </Grid>
 
     <!-- Searching swaps the tree for flattened matches, each with the path that reaches it. -->
-    <Border Grid.Row="3" Margin="0,2" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1">
+    <Border Grid.Row="4" Margin="0,2" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1">
       <Grid>
         <ListBox IsVisible="{Binding !IsSearching}"
                  Background="Transparent" BorderThickness="0"
@@ -97,7 +104,7 @@
     </Border>
 
     <!-- Folder editing, only while organizing, so ordinary browsing cannot reorganize by accident. -->
-    <StackPanel Grid.Row="4" Margin="8,6" Spacing="5" IsVisible="{Binding IsOrganizing}">
+    <StackPanel Grid.Row="5" Margin="8,6" Spacing="5" IsVisible="{Binding IsOrganizing}">
       <TextBox Text="{Binding NewFolderName}" Watermark="Category name" />
       <WrapPanel>
         <Button Content="New" Margin="0,0,4,4" Command="{Binding NewFolderCommand}"
@@ -112,7 +119,7 @@
     </StackPanel>
 
     <!-- Where you are, and whether the grid reaches into subcategories. -->
-    <Grid Grid.Row="5" ColumnDefinitions="*,Auto" Margin="10,6,10,4">
+    <Grid Grid.Row="6" ColumnDefinitions="*,Auto" Margin="10,6,10,4">
       <TextBlock Grid.Column="0" Classes="dim" FontSize="11.5" Text="{Binding Breadcrumb}"
                  TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
       <CheckBox Grid.Column="1" Content="incl. sub" FontSize="11"
@@ -121,7 +128,7 @@
                 ToolTip.Tip="Show everything beneath this category too" />
     </Grid>
 
-    <ListBox Grid.Row="6" ItemsSource="{Binding Tiles}" SelectedItem="{Binding SelectedTile}"
+    <ListBox Grid.Row="7" ItemsSource="{Binding Tiles}" SelectedItem="{Binding SelectedTile}"
              Background="Transparent" BorderThickness="0" Padding="6">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
@@ -136,7 +143,7 @@
       </ListBox.Styles>
       <ListBox.ItemTemplate>
         <DataTemplate DataType="panels:PaletteTileViewModel">
-          <Border Width="136" CornerRadius="4" Background="{DynamicResource PanelRaisedBrush}"
+          <Border Width="{Binding $parent[ListBox].((panels:PaletteViewModel)DataContext).TileSize}" CornerRadius="4" Background="{DynamicResource PanelRaisedBrush}"
                   BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
             <StackPanel>
               <!-- Stands in for the rendered model until the thumbnail cache exists. -->
@@ -167,8 +174,22 @@
       </ListBox.ItemTemplate>
     </ListBox>
 
-    <TextBlock Grid.Row="7" Margin="10,4,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
-               Text="{Binding StatusMessage}"
-               IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    <StackPanel Grid.Row="8">
+      <!-- Preview size. Meaningless while tiles are letter glyphs, and the control the grid needs the
+           moment they become rendered models. -->
+      <Grid ColumnDefinitions="Auto,*,Auto" Margin="10,6" ColumnSpacing="9"
+            Background="Transparent">
+        <TextBlock Grid.Column="0" Classes="dim" FontSize="11" VerticalAlignment="Center"
+                   Text="Preview size" />
+        <Slider Grid.Column="1" Minimum="96" Maximum="200" Value="{Binding TileSize}"
+                VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center"
+                   Text="{Binding TileSize, StringFormat='{}{0:0}'}" />
+      </Grid>
+
+      <TextBlock Margin="10,0,10,8" Classes="dim" FontSize="11.5" TextWrapping="Wrap"
+                 Text="{Binding StatusMessage}"
+                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    </StackPanel>
   </Grid>
 </UserControl>

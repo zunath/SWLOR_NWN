@@ -64,13 +64,14 @@ namespace SWLOR.Toolset.Shell
                 Proportion = 0.28
             };
 
-            // The Palette leads on the right - it is the panel a builder works out of - with Properties
-            // and Model Preview behind it as reference tabs.
-            var propertiesDock = new ToolDock
+            // The right side is the Palette and nothing else. Properties is gone: for an instance the
+            // selection bar under the map says what is selected, and for a blueprint you open the thing
+            // itself. A read-only field dump docked permanently was the panel it replaced.
+            var paletteDock = new ToolDock
             {
-                Id = "PropertiesDock",
+                Id = "PaletteDock",
                 ActiveDockable = _palette,
-                VisibleDockables = CreateList<IDockable>(_palette, _properties, _modelPreview),
+                VisibleDockables = CreateList<IDockable>(_palette),
                 Alignment = Alignment.Right,
                 Proportion = 0.27
             };
@@ -93,22 +94,16 @@ namespace SWLOR.Toolset.Shell
             {
                 Id = "MiddleLayout",
                 Orientation = Orientation.Horizontal,
+                // Proportions deliberately leave slack rather than summing to exactly 1: the splitters
+                // between children take real width, and if the children claim all of it the last one is
+                // squeezed to nothing - which reads as a missing panel, not a narrow one.
                 Proportion = 0.72,
                 VisibleDockables = CreateList<IDockable>(
                     explorerDock,
                     new ProportionalDockSplitter(),
                     _documentDock,
                     new ProportionalDockSplitter(),
-                    propertiesDock)
-            };
-
-            var searchDock = new ToolDock
-            {
-                Id = "SearchDock",
-                ActiveDockable = _search,
-                VisibleDockables = CreateList<IDockable>(_search),
-                Alignment = Alignment.Top,
-                Proportion = 0.08
+                    paletteDock)
             };
 
             var outputDock = new ToolDock
@@ -124,9 +119,9 @@ namespace SWLOR.Toolset.Shell
             {
                 Id = "MainLayout",
                 Orientation = Orientation.Vertical,
+                // No Search dock across the top: it spanned the whole window to serve one panel, and
+                // both panels that needed it now have their own box. That row of height goes to the map.
                 VisibleDockables = CreateList<IDockable>(
-                    searchDock,
-                    new ProportionalDockSplitter(),
                     middleLayout,
                     new ProportionalDockSplitter(),
                     outputDock)

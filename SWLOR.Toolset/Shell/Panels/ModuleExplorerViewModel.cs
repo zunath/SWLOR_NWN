@@ -10,13 +10,21 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
-    /// The Module Explorer panel: a category list (Areas, plus one node per blueprint type with
-    /// its count) and, for whichever category is selected, a virtualized list of its items.
-    /// Deliberately two-level rather than a single deep tree - expanding a node with (for example)
-    /// 8341 utp entries into individual TreeViewItems would not be virtualized in Avalonia's
-    /// default TreeView, so a category ListBox + item ListBox (both virtualized via the default
-    /// ListBox ItemsPanel) keeps the UI responsive over the full corpus.
+    /// Module Contents: one tree over everything in the module - a row per resource type, its groups
+    /// beneath it, and resources beneath those.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// One tree rather than the category rail plus flat item list this panel used to be. A builder
+    /// thinks "the Veles area", not "the Areas category, then find veles_exterior among 443 in resref
+    /// order", and a tree is what the Aurora toolset trained them on.
+    /// </para>
+    /// <para>
+    /// Rows are published as one flat, virtualized list rather than a real TreeView, and a branch builds
+    /// its children the first time it is expanded. Both for the same reason: 8,355 placeables and 7,651
+    /// items would otherwise realise a container each, at startup, for types nobody opened.
+    /// </para>
+    /// </remarks>
     public partial class ModuleExplorerViewModel : Tool
     {
         private readonly WorkspaceContext _workspaceContext;
@@ -26,31 +34,32 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly CategoryService? _categories;
 
-        /// <summary>Every row for the selected category, expanded or not, so collapsing needn't regroup.</summary>
-        private readonly List<ExplorerRowViewModel> _allRows = new();
-
+        private readonly List<ExplorerNodeViewModel> _roots = new();
         private Dictionary<ResourceType, List<CatalogEntry>>? _catalogByType;
 
-        public ObservableCollection<CategoryNode> Categories { get; } = new();
+        /// <summary>The visible rows: every node whose ancestors are all expanded.</summary>
+        public ObservableCollection<ExplorerNodeViewModel> Rows { get; } = new();
 
-        /// <summary>The visible rows - group headers plus the items under expanded groups.</summary>
-        public ObservableCollection<ExplorerRowViewModel> Rows { get; } = new();
-
-        /// <summary>How the selected category's items are grouped. Persisted per type in the sidecar.</summary>
         public IReadOnlyList<CategoryGrouping> GroupingChoices { get; } =
             new[] { CategoryGrouping.Automatic, CategoryGrouping.Folders, CategoryGrouping.Flat };
 
         [ObservableProperty]
-        private CategoryNode? _selectedCategory;
-
-        [ObservableProperty]
-        private ExplorerRowViewModel? _selectedRow;
+        private ExplorerNodeViewModel? _selectedRow;
 
         [ObservableProperty]
         private CategoryGrouping _grouping = CategoryGrouping.Automatic;
 
         [ObservableProperty]
         private string _filter = string.Empty;
+
+        [ObservableProperty]
+        private bool _isOrganizing;
+
+        [ObservableProperty]
+        private string _newFolderName = string.Empty;
+
+        [ObservableProperty]
+        private string? _statusMessage;
 
         /// <summary>The new-area wizard while it is open, or null - the view shows it as an overlay.</summary>
         [ObservableProperty]
@@ -64,14 +73,16 @@ namespace SWLOR.Toolset.Shell.Panels
             TilesetCatalog? tilesetCatalog = null,
             CategoryService? categories = null)
         {
-            _categories = categories;
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
             _editorService = editorService;
             _modelPreview = modelPreview;
             _tilesetCatalog = tilesetCatalog;
+            _categories = categories;
+
             Id = "ModuleExplorer";
-            Title = "Module Explorer";
+            Title = "Module Contents";
+
             _workspaceContext.CatalogEntryRefreshed += (_, _) =>
             {
                 if (_workspaceContext.Catalog is { } catalog)
@@ -79,10 +90,50 @@ namespace SWLOR.Toolset.Shell.Panels
             };
         }
 
-        /// <summary>
-        /// Opens the new-area wizard. On success the explorer re-enumerates (so the new area
-        /// shows up in the Areas category) and the area opens in its editor, ready to paint.
-        /// </summary>
+        /// <summary>Builds the type rows. Cheap - nothing beneath them is loaded until expanded.</summary>
+        public void Initialize()
+        {
+            _catalogByType = null;
+            _roots.Clear();
+            Rows.Clear();
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
+
+            AddRoot(ResourceType.Area, workspace.EnumerateAreaResRefs().Count);
+            foreach (var type in ModuleWorkspace.BlueprintTypes)
+                AddRoot(type, workspace.EnumerateResRefs(type).Count);
+
+            PublishVisibleRows();
+        }
+
+        private void AddRoot(ResourceType type, int count) =>
+            _roots.Add(new ExplorerNodeViewModel(ExplorerNodeKind.Type, type, type.DisplayName(), 0)
+            {
+                Count = count
+            });
+
+        /// <summary>Called once the background catalog publishes names, so rows can lead with them.</summary>
+        public void RefreshFromCatalog(BlueprintCatalog catalog)
+        {
+            _catalogByType = catalog.Entries
+                .GroupBy(entry => entry.ResourceType)
+                .ToDictionary(group => group.Key, group => group.ToList());
+
+            // Anything already open is rebuilt in place, so names replace resrefs without the tree
+            // collapsing under the user mid-browse.
+            foreach (var root in _roots)
+            {
+                if (_catalogByType.TryGetValue(root.Type, out var entries))
+                    root.Count = entries.Count;
+
+                Reload(root);
+            }
+
+            PublishVisibleRows();
+        }
+
         [RelayCommand]
         private void NewArea()
         {
@@ -98,129 +149,142 @@ namespace SWLOR.Toolset.Shell.Panels
                     ActiveNewArea = null;
                     Initialize();
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
-
-                    SelectedCategory = Categories.FirstOrDefault(c => c.Type == ResourceType.Area);
                     _editorService?.Invoke().TryOpenEditor(ResourceType.Area, resRef);
                 },
                 () => ActiveNewArea = null);
         }
 
-        /// <summary>Opens the selected item in its editor (double-click). Group rows toggle instead.</summary>
+        /// <summary>Double-click: open a resource, or expand a branch.</summary>
         public void OpenSelectedItem()
         {
-            if (SelectedCategory == null || SelectedRow == null)
+            if (SelectedRow is not { } row)
                 return;
 
-            if (SelectedRow.IsGroup)
+            if (row.IsBranch)
             {
-                ToggleGroup(SelectedRow);
+                Toggle(row);
                 return;
             }
 
-            _editorService?.Invoke().TryOpenEditor(SelectedCategory.Type, SelectedRow.ResRef);
+            _editorService?.Invoke().TryOpenEditor(row.Type, row.ResRef);
         }
 
-        /// <summary>Expands or collapses a group header, re-publishing the flat list.</summary>
         [RelayCommand]
-        private void ToggleGroup(ExplorerRowViewModel? row)
+        private void Toggle(ExplorerNodeViewModel? row)
         {
-            if (row is not { IsGroup: true })
+            if (row is not { IsBranch: true })
                 return;
 
             row.IsExpanded = !row.IsExpanded;
+            if (row.IsExpanded)
+                EnsureLoaded(row);
+
             PublishVisibleRows();
-        }
-
-        /// <summary>Populates the category list from the workspace's (unparsed) resref enumeration. Cheap - safe to call as soon as a workspace is open.</summary>
-        public void Initialize()
-        {
-            _catalogByType = null;
-            Categories.Clear();
-            _allRows.Clear();
-            Rows.Clear();
-
-            var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
-                return;
-
-            Categories.Add(new CategoryNode(
-                ResourceType.Area, ResourceType.Area.DisplayName(), workspace.EnumerateAreaResRefs().Count));
-            foreach (var type in ModuleWorkspace.BlueprintTypes)
-                Categories.Add(new CategoryNode(type, type.DisplayName(), workspace.EnumerateResRefs(type).Count));
-        }
-
-        /// <summary>Called once the background <see cref="BlueprintCatalog"/> build completes, to enrich item display with parsed Name/Tag. Must be called on the UI thread.</summary>
-        public void RefreshFromCatalog(BlueprintCatalog catalog)
-        {
-            _catalogByType = catalog.Entries
-                .GroupBy(entry => entry.ResourceType)
-                .ToDictionary(group => group.Key, group => group.ToList());
-
-            for (var i = 0; i < Categories.Count; i++)
-            {
-                var category = Categories[i];
-                if (_catalogByType.TryGetValue(category.Type, out var entries))
-                    Categories[i] = category with { Count = entries.Count };
-            }
-
-            if (SelectedCategory != null)
-                PopulateItems(SelectedCategory);
-        }
-
-        partial void OnSelectedCategoryChanged(CategoryNode? value)
-        {
-            if (value == null)
-            {
-                _allRows.Clear();
-                Rows.Clear();
-                return;
-            }
-
-            // Each type remembers its own grouping, so switching between Areas and Placeables does not
-            // drag one's arrangement onto the other.
-            var stored = _categories?.Section(value.Type)?.Grouping;
-            if (stored != null && stored != Grouping)
-            {
-                _grouping = stored.Value;
-                OnPropertyChanged(nameof(Grouping));
-            }
-
-            PopulateItems(value);
         }
 
         partial void OnGroupingChanged(CategoryGrouping value)
         {
-            if (SelectedCategory is { } category && _categories?.Section(category.Type) is { } section)
+            if (SelectedRow?.Type is { } type && _categories?.Section(type) is { } section)
             {
                 section.Grouping = value;
                 _categories.SaveChanges();
             }
 
-            if (SelectedCategory != null)
-                PopulateItems(SelectedCategory);
+            RebuildLoadedBranches();
         }
 
-        partial void OnFilterChanged(string value)
-        {
-            if (SelectedCategory != null)
-                PopulateItems(SelectedCategory);
-        }
+        partial void OnFilterChanged(string value) => RebuildLoadedBranches();
 
-        partial void OnSelectedRowChanged(ExplorerRowViewModel? value)
+        partial void OnSelectedRowChanged(ExplorerNodeViewModel? value)
         {
-            if (value?.Item == null || SelectedCategory == null)
+            if (value?.Item == null)
                 return;
 
             var item = value.Item;
-            _properties.ShowEntry(new CatalogEntry(SelectedCategory.Type, item.ResRef, item.Name, item.Tag, string.Empty));
-            _modelPreview?.ShowFor(SelectedCategory.Type, item.ResRef);
+            _properties.ShowEntry(new CatalogEntry(value.Type, item.ResRef, item.Name, item.Tag, string.Empty));
+            _modelPreview?.ShowFor(value.Type, item.ResRef);
         }
 
-        private void PopulateItems(CategoryNode category)
-        {
-            _allRows.Clear();
+        // ----- folder editing, shown only in the Organize state -----
 
-            var items = LoadItems(category);
+        [RelayCommand]
+        private void NewFolder()
+        {
+            if (SelectedRow?.Type is not { } type || _categories?.Section(type) is not { } section)
+            {
+                StatusMessage = "Select something first, so the folder knows where it belongs.";
+                return;
+            }
+
+            var name = string.IsNullOrWhiteSpace(NewFolderName) ? "New folder" : NewFolderName.Trim();
+            section.AddFolder(name);
+            section.Grouping = CategoryGrouping.Folders;
+            NewFolderName = string.Empty;
+            _categories.SaveChanges();
+
+            Grouping = CategoryGrouping.Folders;
+            RebuildLoadedBranches();
+            StatusMessage = $"Added folder '{name}'.";
+        }
+
+        /// <summary>Moves the selected resource into the named folder - filing is a move, not a copy.</summary>
+        [RelayCommand]
+        private void FileSelected()
+        {
+            if (SelectedRow is not { IsResource: true } row ||
+                _categories?.Section(row.Type) is not { } section)
+            {
+                StatusMessage = "Select a resource to file.";
+                return;
+            }
+
+            var folder = section.AllFolders().FirstOrDefault(candidate =>
+                string.Equals(candidate.Name, NewFolderName.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            if (folder == null)
+            {
+                StatusMessage = "Type the name of an existing folder to file it into.";
+                return;
+            }
+
+            foreach (var previous in section.FoldersContaining(row.ResRef).ToList())
+                previous.RemoveMember(row.ResRef);
+
+            folder.AddMember(row.ResRef);
+            _categories.SaveChanges();
+            RebuildLoadedBranches();
+            StatusMessage = $"Filed {row.Name} into '{folder.Name}'.";
+        }
+
+        // ----- tree assembly -----
+
+        private void RebuildLoadedBranches()
+        {
+            foreach (var root in _roots)
+                Reload(root);
+
+            PublishVisibleRows();
+        }
+
+        private void Reload(ExplorerNodeViewModel root)
+        {
+            if (!root.IsLoaded)
+                return;
+
+            root.IsLoaded = false;
+            root.Children.Clear();
+            if (root.IsExpanded)
+                EnsureLoaded(root);
+        }
+
+        private void EnsureLoaded(ExplorerNodeViewModel node)
+        {
+            if (node.IsLoaded || node.Kind != ExplorerNodeKind.Type)
+                return;
+
+            node.IsLoaded = true;
+
+            var items = LoadItems(node.Type);
             if (!string.IsNullOrWhiteSpace(Filter))
             {
                 var needle = Filter.Trim();
@@ -235,42 +299,25 @@ namespace SWLOR.Toolset.Shell.Panels
             {
                 case CategoryGrouping.Flat:
                     foreach (var item in items.OrderBy(SortKey, StringComparer.CurrentCultureIgnoreCase))
-                        _allRows.Add(ExplorerRowViewModel.Resource(item, item.PrimaryText));
+                        node.Children.Add(ResourceNode(node.Type, item, item.PrimaryText, 1));
                     break;
 
                 case CategoryGrouping.Folders:
-                    BuildFolderRows(category, items);
+                    BuildFolderGroups(node, items);
                     break;
 
                 default:
-                    BuildAutomaticRows(items);
+                    BuildAutomaticGroups(node, items);
                     break;
             }
-
-            PublishVisibleRows();
         }
 
-        private IReadOnlyList<ExplorerItem> LoadItems(CategoryNode category)
-        {
-            var workspace = _workspaceContext.Workspace;
-            if (workspace == null)
-                return Array.Empty<ExplorerItem>();
+        private static ExplorerNodeViewModel ResourceNode(
+            ResourceType type, ExplorerItem item, string label, int depth) =>
+            new(ExplorerNodeKind.Resource, type, label, depth) { Item = item };
 
-            if (_catalogByType != null && _catalogByType.TryGetValue(category.Type, out var entries))
-                return entries.Select(entry => new ExplorerItem(entry.ResRef, entry.Name, entry.Tag)).ToList();
-
-            var resRefs = category.Type == ResourceType.Area
-                ? workspace.EnumerateAreaResRefs()
-                : workspace.EnumerateResRefs(category.Type);
-
-            return resRefs.Select(resRef => new ExplorerItem(resRef, null, null)).ToList();
-        }
-
-        /// <summary>
-        /// Groups on the part of the name before its first dash - see <see cref="AutomaticGrouping"/>.
-        /// Anything without a separator lands in Unsorted, which sorts last and is always shown.
-        /// </summary>
-        private void BuildAutomaticRows(IReadOnlyList<ExplorerItem> items)
+        /// <summary>Groups on the part of a name before its first dash - see <see cref="AutomaticGrouping"/>.</summary>
+        private static void BuildAutomaticGroups(ExplorerNodeViewModel parent, IReadOnlyList<ExplorerItem> items)
         {
             var groups = items
                 .GroupBy(item => AutomaticGrouping.GroupNameFor(item.Name) ?? CategorySection.UnsortedFolderName)
@@ -279,23 +326,30 @@ namespace SWLOR.Toolset.Shell.Panels
 
             foreach (var group in groups)
             {
-                _allRows.Add(ExplorerRowViewModel.Group(group.Key, group.Count()));
+                var node = new ExplorerNodeViewModel(ExplorerNodeKind.Group, parent.Type, group.Key, 1)
+                {
+                    Count = group.Count(),
+                    IsLoaded = true
+                };
+
                 foreach (var item in group.OrderBy(SortKey, StringComparer.CurrentCultureIgnoreCase))
                 {
                     var label = AutomaticGrouping.LeafLabelFor(item.Name);
-                    _allRows.Add(ExplorerRowViewModel.Resource(
-                        item, label.Length > 0 ? label : item.PrimaryText));
+                    node.Children.Add(ResourceNode(
+                        parent.Type, item, label.Length > 0 ? label : item.PrimaryText, 2));
                 }
+
+                parent.Children.Add(node);
             }
         }
 
-        /// <summary>Groups by the user's own folders from the sidecar, top level only in this panel.</summary>
-        private void BuildFolderRows(CategoryNode category, IReadOnlyList<ExplorerItem> items)
+        /// <summary>Groups by the user's own folders from the sidecar.</summary>
+        private void BuildFolderGroups(ExplorerNodeViewModel parent, IReadOnlyList<ExplorerItem> items)
         {
-            var section = _categories?.Section(category.Type);
+            var section = _categories?.Section(parent.Type);
             if (section == null)
             {
-                BuildAutomaticRows(items);
+                BuildAutomaticGroups(parent, items);
                 return;
             }
 
@@ -313,15 +367,19 @@ namespace SWLOR.Toolset.Shell.Panels
                     .OrderBy(SortKey, StringComparer.CurrentCultureIgnoreCase)
                     .ToList();
 
-                if (members.Count == 0)
-                    continue;
+                var node = new ExplorerNodeViewModel(ExplorerNodeKind.Group, parent.Type, folder.Name, 1)
+                {
+                    Count = members.Count,
+                    IsLoaded = true
+                };
 
-                _allRows.Add(ExplorerRowViewModel.Group(folder.Name, members.Count));
                 foreach (var item in members)
                 {
                     filed.Add(item.ResRef);
-                    _allRows.Add(ExplorerRowViewModel.Resource(item, item.PrimaryText));
+                    node.Children.Add(ResourceNode(parent.Type, item, item.PrimaryText, 2));
                 }
+
+                parent.Children.Add(node);
             }
 
             var unsorted = items
@@ -332,31 +390,52 @@ namespace SWLOR.Toolset.Shell.Panels
             if (unsorted.Count == 0)
                 return;
 
-            _allRows.Add(ExplorerRowViewModel.Group(CategorySection.UnsortedFolderName, unsorted.Count));
+            var unsortedNode = new ExplorerNodeViewModel(
+                ExplorerNodeKind.Group, parent.Type, CategorySection.UnsortedFolderName, 1)
+            {
+                Count = unsorted.Count,
+                IsLoaded = true
+            };
+
             foreach (var item in unsorted)
-                _allRows.Add(ExplorerRowViewModel.Resource(item, item.PrimaryText));
+                unsortedNode.Children.Add(ResourceNode(parent.Type, item, item.PrimaryText, 2));
+
+            parent.Children.Add(unsortedNode);
+        }
+
+        private IReadOnlyList<ExplorerItem> LoadItems(ResourceType type)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<ExplorerItem>();
+
+            if (_catalogByType != null && _catalogByType.TryGetValue(type, out var entries))
+                return entries.Select(entry => new ExplorerItem(entry.ResRef, entry.Name, entry.Tag)).ToList();
+
+            var resRefs = type == ResourceType.Area
+                ? workspace.EnumerateAreaResRefs()
+                : workspace.EnumerateResRefs(type);
+
+            return resRefs.Select(resRef => new ExplorerItem(resRef, null, null)).ToList();
         }
 
         private static string SortKey(ExplorerItem item) => item.PrimaryText;
 
-        /// <summary>Publishes group headers plus the items under expanded groups only.</summary>
         private void PublishVisibleRows()
         {
             Rows.Clear();
-            var visible = true;
+            foreach (var root in _roots)
+                Publish(root);
+        }
 
-            foreach (var row in _allRows)
-            {
-                if (row.IsGroup)
-                {
-                    visible = row.IsExpanded;
-                    Rows.Add(row);
-                    continue;
-                }
+        private void Publish(ExplorerNodeViewModel node)
+        {
+            Rows.Add(node);
+            if (!node.IsExpanded)
+                return;
 
-                if (visible)
-                    Rows.Add(row);
-            }
+            foreach (var child in node.Children)
+                Publish(child);
         }
     }
 }

@@ -84,6 +84,10 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private string _newFolderName = string.Empty;
 
+        /// <summary>Tile width in pixels. Idle while tiles are glyphs; the control the grid needs the moment they become rendered models.</summary>
+        [ObservableProperty]
+        private double _tileSize = 136;
+
         public bool IsSearching => !string.IsNullOrWhiteSpace(Query);
 
         public bool HasCategoryMatches => CategoryMatches.Count > 0;

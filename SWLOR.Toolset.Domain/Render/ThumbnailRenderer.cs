@@ -52,8 +52,14 @@ namespace SWLOR.Toolset.Domain.Render
         /// against the corpus, where a creature rendered from -Y shows its face and the fronts of its
         /// feet, and from +Y shows its shoulder blades and heels - so a camera on the +Y side was looking
         /// at the back of every creature in the palette. The -Z puts it above rather than below.
+        /// <para>
+        /// The drop is set so the camera sits about 39 degrees above the ground plane. Compared side by
+        /// side across a creature, a statue, a waypoint flag and a tile: at 31 degrees a tile is read
+        /// nearly edge-on, and by 49 a creature's head has foreshortened into its shoulders. 39 keeps a
+        /// face legible while showing a footprint from above.
+        /// </para>
         /// </remarks>
-        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(-0.7f, 1f, -0.75f));
+        private static readonly Vector3 ViewDirection = Vector3.Normalize(new Vector3(-0.7f, 1f, -1f));
 
         /// <summary>
         /// Keyed to the same side as the camera, so the faces being looked at are the faces being lit.

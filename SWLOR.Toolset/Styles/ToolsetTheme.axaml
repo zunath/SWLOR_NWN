@@ -142,11 +142,13 @@
 
   <!-- Camera/rotate pad over the area map: square, glyph-only, sized to sit in a row of a dozen
        without crowding the view they are drawn on top of. -->
-  <!-- The camera steps repeat while the button is held, so a builder can fly the view instead of
-       clicking twenty times. Delay is short and the interval fast: this is a nudge, not a text caret. -->
+  <!-- Held buttons glide the camera rather than stepping it. Measured against Aurora, whose nav pad
+       moves at a constant velocity from the instant of the press with no initial pause - so Delay is
+       one frame, not the usual pre-repeat wait, which is what made the motion stutter before it
+       smoothed out. -->
   <Style Selector="RepeatButton.pad">
-    <Setter Property="Delay" Value="250" />
-    <Setter Property="Interval" Value="33" />
+    <Setter Property="Delay" Value="16" />
+    <Setter Property="Interval" Value="16" />
   </Style>
 
   <Style Selector="Button.pad, RepeatButton.pad">

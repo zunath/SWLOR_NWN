@@ -1062,17 +1062,20 @@ void main()
         // ----- Button-driven camera nudges -----
 
         /// <summary>
-        /// One step of the on-screen camera buttons. Small, because the buttons repeat about thirty
-        /// times a second while held - the step is a frame of continuous motion, not a jump. Sized in
-        /// screen terms rather than world units so it feels the same whether the builder is zoomed into
-        /// a doorway or looking at the whole area.
+        /// One frame of camera-button motion, fired about sixty times a second while a button is held.
         /// </summary>
-        private const float PanStepPixels = 12f;
+        /// <remarks>
+        /// A step, not a jump: the buttons are a velocity control, so these are per-frame amounts and
+        /// the numbers that matter are the products - roughly 1250 px/s of pan, 60 deg/s of orbit, and
+        /// 2.5x of zoom per second. Aurora measured about 3400 px/s of pan, which crosses the viewport
+        /// in under a second; this is deliberately calmer. Pan is sized in screen terms rather than
+        /// world units so it feels the same zoomed into a doorway or looking at the whole area.
+        /// </remarks>
+        private const float PanStepPixels = 20f;
 
-        /// <summary>Two degrees a step, so a held button sweeps roughly sixty degrees a second.</summary>
-        private const float OrbitStepRadians = MathF.PI / 90f;
+        private const float OrbitStepRadians = MathF.PI / 180f;
 
-        private const float ZoomStepFactor = 1.03f;
+        private const float ZoomStepFactor = 1.015f;
 
         /// <summary>Slides the view across the ground plane, in units of <see cref="PanStepPixels"/>.</summary>
         public void NudgePan(float rightSteps, float upSteps)

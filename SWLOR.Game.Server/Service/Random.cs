@@ -2,7 +2,27 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Random
     {
-        private static readonly System.Random _random = new();
+        private static System.Random _random = new();
+
+        /// <summary>
+        /// Replaces the shared RNG with a seeded instance so subsequent rolls are deterministic.
+        /// Intended for in-engine integration tests only - do not call from gameplay code.
+        /// </summary>
+        /// <param name="seed">The seed to initialize the RNG with.</param>
+        public static void SetSeed(int seed)
+        {
+            _random = new System.Random(seed);
+        }
+
+        /// <summary>
+        /// Restores the shared RNG to a fresh, time-seeded instance. Called by the engine test
+        /// runner after a test that seeded the RNG, so determinism does not leak into later
+        /// tests or into a server kept running after the suite.
+        /// </summary>
+        public static void ResetSeed()
+        {
+            _random = new System.Random();
+        }
 
         /// <summary>
         /// Retrieves the next random integer value.

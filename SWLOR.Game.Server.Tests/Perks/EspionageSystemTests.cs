@@ -296,6 +296,8 @@ public class EspionageSystemTests
             .EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
             .Where(file => !file.EndsWith("EspionagePerkDefinition.cs", StringComparison.Ordinal))
             .Where(file => !file.EndsWith("PerkType.cs", StringComparison.Ordinal))
+            // Engine-test coverage data enumerates every perk by design; it is not a consumer.
+            .Where(file => !file.Contains(Path.Combine("Feature", "EngineTestDefinition"), StringComparison.Ordinal))
             .Where(file => File.ReadAllText(file).Contains("PerkType.Slicing", StringComparison.Ordinal))
             .Select(file => Path.GetRelativePath(root, file))
             .ToArray();

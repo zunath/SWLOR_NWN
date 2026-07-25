@@ -165,6 +165,15 @@ namespace SWLOR.Game.Server.Feature
             TryUseAbility(activator, target, feat, targetLocation, true);
         }
 
+        /// <summary>
+        /// Returns true if the given weapon-activated ability is currently queued on the
+        /// creature, waiting for its next landed hit.
+        /// </summary>
+        public static bool IsWeaponAbilityQueued(uint creature, FeatType feat)
+        {
+            return GetLocalInt(creature, ActiveAbilityFeatIdName) == (int)feat;
+        }
+
         public static bool TryUseAbility(
             uint activator,
             uint target,

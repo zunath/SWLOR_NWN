@@ -42,6 +42,26 @@ namespace SWLOR.Toolset.Domain.Workspace
         }
 
         /// <summary>
+        /// The inverse of <see cref="Extension"/>, for reading a resource type back out of a file that
+        /// keys things by extension (the category sidecar does). Case-insensitive; false when unknown,
+        /// so an unrecognised key can be skipped rather than throwing.
+        /// </summary>
+        public static bool TryFromExtension(string? extension, out ResourceType type)
+        {
+            foreach (var candidate in Enum.GetValues<ResourceType>())
+            {
+                if (string.Equals(candidate.Extension(), extension, StringComparison.OrdinalIgnoreCase))
+                {
+                    type = candidate;
+                    return true;
+                }
+            }
+
+            type = default;
+            return false;
+        }
+
+        /// <summary>
         /// The plural, human-readable name for a whole collection of this resource kind, for
         /// category lists and section headers. Player-of-the-toolset facing surfaces use these
         /// instead of the raw three-letter file extensions the enum is named after - nobody

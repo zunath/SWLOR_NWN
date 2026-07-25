@@ -7,16 +7,11 @@
 
   <!-- Field editor DataTemplates (LocString/Check/Integer/Float/Dropdown/Script/Text) are shared
        app-wide from App.axaml's Application.DataTemplates. -->
+  <!-- No per-document toolbar: File > Save (Ctrl+S) and Edit > Undo/Redo (Ctrl+Z/Ctrl+Y) act on the
+       active document tab, so a row of buttons repeating them here only costs height. The shell's
+       Undo prefers whichever of this editor's two histories (.git instances / .are properties) was
+       touched most recently, falling back to the other. -->
   <DockPanel>
-    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="8,6">
-      <Button Content="Save" Command="{Binding SaveCommand}" />
-      <Button Content="Undo" Command="{Binding UndoInstancesCommand}" ToolTip.Tip="Undo instance edit" />
-      <Button Content="Redo" Command="{Binding RedoInstancesCommand}" ToolTip.Tip="Redo instance edit" />
-      <Separator Width="12" />
-      <Button Content="Undo Props" Command="{Binding UndoAreCommand}" ToolTip.Tip="Undo area-property edit" />
-      <Button Content="Redo Props" Command="{Binding RedoAreCommand}" ToolTip.Tip="Redo area-property edit" />
-    </StackPanel>
-
     <TabControl x:Name="RootTabs" SelectionChanged="OnRootTabSelectionChanged">
       <TabItem Header="Properties">
     <ScrollViewer>

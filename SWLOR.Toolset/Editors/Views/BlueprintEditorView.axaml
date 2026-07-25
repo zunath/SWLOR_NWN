@@ -6,13 +6,9 @@
 
   <!-- Field editor DataTemplates (LocString/Check/Integer/Float/Dropdown/Script/Text) are shared
        app-wide from App.axaml's Application.DataTemplates. -->
+  <!-- No per-document toolbar: File > Save (Ctrl+S) and Edit > Undo/Redo (Ctrl+Z/Ctrl+Y) act on the
+       active document tab. -->
   <DockPanel>
-    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="8,6">
-      <Button Content="Save" Command="{Binding SaveCommand}" />
-      <Button Content="Undo" Command="{Binding UndoCommand}" />
-      <Button Content="Redo" Command="{Binding RedoCommand}" />
-    </StackPanel>
-
     <ScrollViewer>
       <StackPanel Margin="8" Spacing="4">
         <ItemsControl ItemsSource="{Binding Groups}">

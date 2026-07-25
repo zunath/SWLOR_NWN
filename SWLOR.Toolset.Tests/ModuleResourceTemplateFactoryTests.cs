@@ -8,18 +8,18 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// <see cref="ModuleResourceTemplateFactory"/>: the files Module Contents' "New Conversation..." and
+    /// <see cref="ModuleResourceTemplateFactory"/>: the files Module Contents' "New Dialog..." and
     /// "New Script..." write.
     /// </summary>
     /// <remarks>
-    /// A new conversation has to be a conversation the engine can start, which is more than valid GFF:
+    /// A new dialog has to be a dialog the engine can start, which is more than valid GFF:
     /// StartingList has to point at an entry that exists, and the entry has to carry the fields every
     /// .dlg in the corpus carries. That is what these assert, alongside the round trip.
     /// </remarks>
     [TestFixture]
     public class ModuleResourceTemplateFactoryTests
     {
-        /// <summary>Root fields every one of the module's 609 conversations carries.</summary>
+        /// <summary>Root fields every one of the module's 609 dialogs carries.</summary>
         private static readonly string[] RequiredRootFields =
         {
             "DelayEntry", "DelayReply", "EndConverAbort", "EndConversation",
@@ -34,7 +34,7 @@ namespace SWLOR.Toolset.Tests
         };
 
         [Test]
-        public void Supports_CoversExactlyConversationsAndScripts()
+        public void Supports_CoversExactlyDialogsAndScripts()
         {
             foreach (var type in Enum.GetValues<ResourceType>())
             {
@@ -58,18 +58,18 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void CreateFileContent_Conversation_RoundTripsAsADlgDocument()
+        public void CreateFileContent_Dialog_RoundTripsAsADlgDocument()
         {
-            var document = ParseConversation();
+            var document = ParseDialog();
 
             document.DataType.Should().Be("DLG ");
             document.Root.Entries.Should().NotBeEmpty();
         }
 
         [Test]
-        public void CreateFileContent_Conversation_CarriesEveryFieldTheCorpusAlwaysHas()
+        public void CreateFileContent_Dialog_CarriesEveryFieldTheCorpusAlwaysHas()
         {
-            var root = ParseConversation().Root;
+            var root = ParseDialog().Root;
 
             foreach (var field in RequiredRootFields)
                 root.Contains(field).Should().BeTrue(because: $"every .dlg carries '{field}'");
@@ -81,12 +81,12 @@ namespace SWLOR.Toolset.Tests
 
         /// <summary>
         /// The one structural rule: StartingList indexes into EntryList, so an empty EntryList would
-        /// make the conversation unstartable rather than merely blank.
+        /// make the dialog unstartable rather than merely blank.
         /// </summary>
         [Test]
-        public void CreateFileContent_Conversation_StartsAtAnEntryThatExists()
+        public void CreateFileContent_Dialog_StartsAtAnEntryThatExists()
         {
-            var root = ParseConversation().Root;
+            var root = ParseDialog().Root;
 
             var entries = root.Get("EntryList").Elements!;
             var start = root.Get("StartingList").Elements!.Single();
@@ -95,9 +95,9 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void CreateFileContent_Conversation_OpensWithThePlaceholderLine()
+        public void CreateFileContent_Dialog_OpensWithThePlaceholderLine()
         {
-            var entry = ParseConversation().Root.Get("EntryList").Elements!.Single();
+            var entry = ParseDialog().Root.Get("EntryList").Elements!.Single();
 
             entry.Get("Text").LocStringEntries!.Single(text => text.LanguageKey == "0").GetText()
                 .Should().Be(ModuleResourceTemplateFactory.PlaceholderEntryText);
@@ -108,9 +108,9 @@ namespace SWLOR.Toolset.Tests
         /// is 0xFFFFFFFF. Asserted because a plain 0 would look correct and read wrong in game.
         /// </summary>
         [Test]
-        public void CreateFileContent_Conversation_UsesTheCorpusNoDelaySentinel()
+        public void CreateFileContent_Dialog_UsesTheCorpusNoDelaySentinel()
         {
-            var entry = ParseConversation().Root.Get("EntryList").Elements!.Single();
+            var entry = ParseDialog().Root.Get("EntryList").Elements!.Single();
 
             entry.Get("Delay").GetUnsignedInteger().Should().Be(uint.MaxValue);
         }
@@ -134,7 +134,7 @@ namespace SWLOR.Toolset.Tests
             source.Should().Contain("probe_script");
         }
 
-        private static JsonGffDocument ParseConversation() =>
+        private static JsonGffDocument ParseDialog() =>
             JsonGffDocument.Parse(
                 ModuleResourceTemplateFactory.CreateFileContent(ResourceType.Dlg, "probe_talk", "Probe Talk"));
     }

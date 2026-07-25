@@ -8,13 +8,13 @@ namespace SWLOR.Toolset.Shell.Panels
     /// <summary>What a row in the Module Contents tree stands for.</summary>
     public enum ExplorerNodeKind
     {
-        /// <summary>A resource type: Areas, Conversations, Scripts. A tab rather than a row now.</summary>
+        /// <summary>A resource type: Areas, Dialogs, Scripts. A tab rather than a row now.</summary>
         Type,
 
         /// <summary>A folder from the category sidecar, or the synthetic Unsorted bucket.</summary>
         Group,
 
-        /// <summary>One area, conversation or script.</summary>
+        /// <summary>One area, dialog or script.</summary>
         Resource
     }
 

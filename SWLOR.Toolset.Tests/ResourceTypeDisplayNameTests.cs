@@ -61,10 +61,12 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void Conversations_And_Scripts_Are_Named_For_The_Module_Contents_Sections()
+        public void Dialogs_And_Scripts_Are_Named_For_The_Module_Contents_Sections()
         {
-            ResourceType.Dlg.DisplayName().Should().Be("Conversations");
-            ResourceType.Dlg.SingularDisplayName().Should().Be("Conversation");
+            // "Dialogs", not Aurora's "Conversations": dialogs is the word this team uses for them, and
+            // the panel a builder reads should use the same one.
+            ResourceType.Dlg.DisplayName().Should().Be("Dialogs");
+            ResourceType.Dlg.SingularDisplayName().Should().Be("Dialog");
             ResourceType.Nss.DisplayName().Should().Be("Scripts");
             ResourceType.Nss.SingularDisplayName().Should().Be("Script");
         }

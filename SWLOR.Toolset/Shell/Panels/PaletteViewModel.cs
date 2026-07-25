@@ -8,6 +8,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Shell.Panels
@@ -48,6 +49,15 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly Services.IEditorPromptService? _prompts;
         private readonly TilesetCatalog? _tilesets;
         private readonly Func<uint, string?>? _resolveStrRef;
+
+        /// <summary>Where the panel's own preferences live, or null in a test with none.</summary>
+        private readonly ToolsetSettings? _settings;
+
+        /// <summary>
+        /// True while the constructor is applying saved state, so restoring a preference does not
+        /// immediately write it back and does not rebuild a tree that has not been built yet.
+        /// </summary>
+        private bool _restoring;
 
         /// <summary>Every row of the current type's tree, expanded or not, so collapsing need not re-derive counts.</summary>
         private readonly List<CategoryRowViewModel> _allRows = new();
@@ -102,9 +112,6 @@ namespace SWLOR.Toolset.Shell.Panels
         private PaletteTileViewModel? _selectedTile;
 
         [ObservableProperty]
-        private bool _includeSubcategories;
-
-        [ObservableProperty]
         private string _breadcrumb = string.Empty;
 
         [ObservableProperty]
@@ -126,6 +133,52 @@ namespace SWLOR.Toolset.Shell.Panels
         {
             OnPropertyChanged(nameof(TileSizeLabel));
             OnPropertyChanged(nameof(PreviewHeight));
+
+            if (_settings != null && !_restoring)
+                _settings.PalettePreviewSize = value;
+        }
+
+        /// <summary>
+        /// Applies what the builder left set last time: preview size, which type was showing, and whether
+        /// it was the module's content or the base game's.
+        /// </summary>
+        /// <remarks>
+        /// Runs in the constructor, before any tree exists, so it only assigns fields - the first
+        /// <see cref="Refresh"/> after the module opens builds against whatever it left behind. The
+        /// <see cref="_restoring"/> flag is what stops each assignment from saving itself straight back
+        /// and from triggering a rebuild per property.
+        /// </remarks>
+        private void RestoreSettings()
+        {
+            if (_settings == null)
+                return;
+
+            _restoring = true;
+            try
+            {
+                if (_settings.PalettePreviewSize > 0)
+                    TileSize = _settings.PalettePreviewSize;
+
+                // Three outcomes, not two: nothing saved leaves the default type alone, the Tiles
+                // sentinel restores Tiles mode, and anything else is a blueprint type. Collapsing the
+                // first two is how a fresh install ended up opening in Tiles mode.
+                var selection = _settings.PaletteSelection;
+                if (string.Equals(selection, ToolsetSettings.TilesSelection, StringComparison.OrdinalIgnoreCase))
+                {
+                    IsTileMode = true;
+                }
+                else if (ResourceTypeExtensions.TryFromExtension(selection, out var type) &&
+                         OfferedTypes.Contains(type))
+                {
+                    SelectedType = type;
+                }
+
+                Source = _settings.PaletteShowsStandard ? PaletteSource.Standard : PaletteSource.Custom;
+            }
+            finally
+            {
+                _restoring = false;
+            }
         }
 
         /// <summary>
@@ -142,6 +195,13 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(CanWrite));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
+
+            if (_settings != null && !_restoring)
+                _settings.PaletteShowsStandard = IsStandardSource;
+
+            if (_restoring)
+                return;
+
             SelectedRow = null;
             SelectedTile = null;
             Refresh();
@@ -167,12 +227,6 @@ namespace SWLOR.Toolset.Shell.Panels
 
         public bool HasReadOnlyNotice => ReadOnlyNotice != null;
 
-        /// <summary>
-        /// The "incl. sub" toggle only has something to do in the blueprint tree: a tileset's categories
-        /// are flat, and a search already reaches across all of them.
-        /// </summary>
-        public bool ShowsIncludeSubcategories => IsBlueprintMode && !IsSearching;
-
         [RelayCommand]
         private void ShowCustom() => Source = PaletteSource.Custom;
 
@@ -192,7 +246,8 @@ namespace SWLOR.Toolset.Shell.Panels
             ThumbnailService? thumbnails = null,
             Services.IEditorPromptService? prompts = null,
             TilesetCatalog? tilesets = null,
-            Domain.GameData.Tlk.TlkService? tlk = null)
+            Domain.GameData.Tlk.TlkService? tlk = null,
+            ToolsetSettings? settings = null)
         {
             _thumbnails = thumbnails;
             _prompts = prompts;
@@ -207,6 +262,8 @@ namespace SWLOR.Toolset.Shell.Panels
             Id = "Palette";
             Title = "Palette";
 
+            _settings = settings;
+            RestoreSettings();
             PublishTypeChips();
 
             _categories.Changed += Refresh;
@@ -392,6 +449,12 @@ namespace SWLOR.Toolset.Shell.Panels
 
         partial void OnSelectedTypeChanged(ResourceType value)
         {
+            if (_restoring)
+                return;
+
+            if (_settings != null && !IsTileMode)
+                _settings.PaletteSelection = value.Extension();
+
             SyncChipSelection();
             OnPropertyChanged(nameof(NewBlueprintLabel));
             SelectedRow = null;
@@ -400,13 +463,18 @@ namespace SWLOR.Toolset.Shell.Panels
 
         partial void OnIsTileModeChanged(bool value)
         {
+            if (_restoring)
+                return;
+
+            if (_settings != null)
+                _settings.PaletteSelection = value ? ToolsetSettings.TilesSelection : SelectedType.Extension();
+
             SyncChipSelection();
             OnPropertyChanged(nameof(IsBlueprintMode));
             OnPropertyChanged(nameof(ShowsSourceSwitch));
             OnPropertyChanged(nameof(CanWrite));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
-            OnPropertyChanged(nameof(ShowsIncludeSubcategories));
             SelectedRow = null;
             SelectedTile = null;
             Refresh();
@@ -430,7 +498,6 @@ namespace SWLOR.Toolset.Shell.Panels
         partial void OnQueryChanged(string value)
         {
             OnPropertyChanged(nameof(IsSearching));
-            OnPropertyChanged(nameof(ShowsIncludeSubcategories));
 
             // Tiles have no cross-category search: a tileset's two categories are already both visible,
             // so the box narrows the open one rather than becoming a mode of its own.
@@ -458,8 +525,6 @@ namespace SWLOR.Toolset.Shell.Panels
 
             RebuildTileGrid();
         }
-
-        partial void OnIncludeSubcategoriesChanged(bool value) => RebuildTiles();
 
         /// <summary>Expands or collapses a branch. Rebuilds the flat list rather than nesting containers.</summary>
         [RelayCommand]
@@ -1030,9 +1095,10 @@ namespace SWLOR.Toolset.Shell.Panels
             if (SelectedRow.IsUnsorted)
                 return section.UnsortedResRefs(_existing);
 
-            var folder = SelectedRow.Folder!;
-            var members = IncludeSubcategories ? folder.MembersIncludingDescendants : folder.Members;
-            return members.Where(_existing.Contains);
+            // This category only, never its descendants. A subcategory is a row of its own in the tree
+            // above, and searching already spans every category, so folding children in here was a third
+            // way to ask a question the panel already answers twice.
+            return SelectedRow.Folder!.Members.Where(_existing.Contains);
         }
 
         private string BreadcrumbFor(CategorySection section)

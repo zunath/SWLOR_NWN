@@ -17,11 +17,42 @@ namespace SWLOR.Toolset.Settings
 
         [JsonPropertyName("recentModules")]
         public List<string> RecentModules { get; set; } = new();
+
+        [JsonPropertyName("windowWidth")]
+        public double WindowWidth { get; set; }
+
+        [JsonPropertyName("windowHeight")]
+        public double WindowHeight { get; set; }
+
+        // Nullable, not NaN: System.Text.Json refuses to serialize NaN by default, and because Save()
+        // swallows its exceptions that turned every settings write into a silent no-op. NaN stays the
+        // in-memory "no position" marker; on the wire, absent means absent.
+        [JsonPropertyName("windowLeft")]
+        public double? WindowLeft { get; set; }
+
+        [JsonPropertyName("windowTop")]
+        public double? WindowTop { get; set; }
+
+        [JsonPropertyName("windowMaximized")]
+        public bool WindowMaximized { get; set; }
+
+        [JsonPropertyName("palettePreviewSize")]
+        public double PalettePreviewSize { get; set; }
+
+        [JsonPropertyName("paletteSelection")]
+        public string PaletteSelection { get; set; } = string.Empty;
+
+        [JsonPropertyName("paletteShowsStandard")]
+        public bool PaletteShowsStandard { get; set; }
+
+        [JsonPropertyName("moduleContentsTab")]
+        public string ModuleContentsTab { get; set; } = string.Empty;
     }
 
     /// <summary>
     /// Toolset-wide persisted settings: the module root to open, an optional NWN:EE install
-    /// override, and a most-recently-used module list. Backed by a JSON file at
+    /// override, a most-recently-used module list, and the window and panel state a builder set
+    /// last time. Backed by a JSON file at
     /// <c>%LOCALAPPDATA%\SWLOR.Toolset\settings.json</c>. Loaded once at startup
     /// (<see cref="Load"/>); every property setter here saves the file immediately, so callers
     /// never need to remember to persist changes themselves.
@@ -38,12 +69,20 @@ namespace SWLOR.Toolset.Settings
         private string _moduleRoot = string.Empty;
         private string _nwnInstallOverride = string.Empty;
         private List<string> _recentModules = new();
+        private WindowPlacement _window = WindowPlacement.Unset;
+        private double _palettePreviewSize;
+        private string _paletteSelection = string.Empty;
+        private bool _paletteShowsStandard;
+        private string _moduleContentsTab = string.Empty;
         private bool _suppressSave;
 
         public static string SettingsDirectory =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SWLOR.Toolset");
 
         public static string SettingsFilePath => Path.Combine(SettingsDirectory, "settings.json");
+
+        /// <summary>Why the last save failed, or null when the last one succeeded.</summary>
+        public string? LastSaveError { get; private set; }
 
         /// <summary>
         /// The module root directory to open at startup. Empty when none has been chosen and
@@ -73,6 +112,98 @@ namespace SWLOR.Toolset.Settings
                     return;
 
                 _nwnInstallOverride = value ?? string.Empty;
+                Save();
+            }
+        }
+
+        /// <summary>
+        /// Where and how big the main window was left. <see cref="WindowPlacement.Unset"/> until a
+        /// window has reported one, which is how a first run gets the default size instead of a 0x0
+        /// window.
+        /// </summary>
+        public WindowPlacement Window
+        {
+            get => _window;
+            set
+            {
+                if (_window.Equals(value))
+                    return;
+
+                _window = value;
+                Save();
+            }
+        }
+
+        /// <summary>
+        /// Palette preview tile width in pixels, or 0 for "use the panel's own default".
+        /// </summary>
+        public double PalettePreviewSize
+        {
+            get => _palettePreviewSize;
+            set
+            {
+                if (Math.Abs(_palettePreviewSize - value) < 0.5)
+                    return;
+
+                _palettePreviewSize = value;
+                Save();
+            }
+        }
+
+        /// <summary>The value <see cref="PaletteSelection"/> carries when the palette was on Tiles.</summary>
+        public const string TilesSelection = "tiles";
+
+        /// <summary>
+        /// What the palette was last showing: a resource extension, <see cref="TilesSelection"/>, or empty
+        /// for "nothing saved".
+        /// </summary>
+        /// <remarks>
+        /// A string with three states rather than a nullable type, because Tiles is a real remembered
+        /// choice and "no setting yet" is not, and collapsing the two made a fresh install open on Tiles.
+        /// Stored by extension rather than enum name, matching the category sidecar, so reordering the enum
+        /// cannot silently change what a saved setting means.
+        /// </remarks>
+        public string PaletteSelection
+        {
+            get => _paletteSelection;
+            set
+            {
+                var normalized = value ?? string.Empty;
+                if (_paletteSelection == normalized)
+                    return;
+
+                _paletteSelection = normalized;
+                Save();
+            }
+        }
+
+        /// <summary>True when the palette was last showing base-game content rather than the module's.</summary>
+        public bool PaletteShowsStandard
+        {
+            get => _paletteShowsStandard;
+            set
+            {
+                if (_paletteShowsStandard == value)
+                    return;
+
+                _paletteShowsStandard = value;
+                Save();
+            }
+        }
+
+        /// <summary>
+        /// Which Module Contents tab was open, as a resource extension; empty when none was saved.
+        /// </summary>
+        public string ModuleContentsTab
+        {
+            get => _moduleContentsTab;
+            set
+            {
+                var normalized = value ?? string.Empty;
+                if (_moduleContentsTab == normalized)
+                    return;
+
+                _moduleContentsTab = normalized;
                 Save();
             }
         }
@@ -115,6 +246,14 @@ namespace SWLOR.Toolset.Settings
                         settings._moduleRoot = data.ModuleRoot ?? string.Empty;
                         settings._nwnInstallOverride = data.NwnInstallOverride ?? string.Empty;
                         settings._recentModules = data.RecentModules ?? new List<string>();
+                        settings._window = new WindowPlacement(
+                            data.WindowWidth, data.WindowHeight,
+                            data.WindowLeft ?? double.NaN, data.WindowTop ?? double.NaN,
+                            data.WindowMaximized);
+                        settings._palettePreviewSize = data.PalettePreviewSize;
+                        settings._paletteSelection = data.PaletteSelection ?? string.Empty;
+                        settings._paletteShowsStandard = data.PaletteShowsStandard;
+                        settings._moduleContentsTab = data.ModuleContentsTab ?? string.Empty;
                     }
                 }
             }
@@ -174,16 +313,28 @@ namespace SWLOR.Toolset.Settings
                 {
                     ModuleRoot = _moduleRoot,
                     NwnInstallOverride = _nwnInstallOverride,
-                    RecentModules = _recentModules
+                    RecentModules = _recentModules,
+                    WindowWidth = _window.Width,
+                    WindowHeight = _window.Height,
+                    WindowLeft = double.IsNaN(_window.Left) ? null : _window.Left,
+                    WindowTop = double.IsNaN(_window.Top) ? null : _window.Top,
+                    WindowMaximized = _window.IsMaximized,
+                    PalettePreviewSize = _palettePreviewSize,
+                    PaletteSelection = _paletteSelection,
+                    PaletteShowsStandard = _paletteShowsStandard,
+                    ModuleContentsTab = _moduleContentsTab
                 };
 
                 var json = JsonSerializer.Serialize(data, JsonOptions);
                 File.WriteAllText(SettingsFilePath, json);
+                LastSaveError = null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Settings persistence is best-effort - a locked/unwritable settings file should
-                // not crash the toolset.
+                // Settings persistence is best-effort - a locked/unwritable settings file should not
+                // crash the toolset. Recorded rather than dropped: a silent failure here looks exactly
+                // like "settings are not implemented", which is how a NaN serialization bug went unseen.
+                LastSaveError = ex.Message;
             }
         }
     }

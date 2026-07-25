@@ -11,14 +11,14 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
-    /// Module Contents: the module's areas, conversations and scripts, one tab each.
+    /// Module Contents: the module's areas, dialogs and scripts, one tab each.
     /// </summary>
     /// <remarks>
     /// <para>
     /// Deliberately NOT the blueprints. Creatures, placeables, items and the rest are what the Palette
     /// panel is for, and listing all 17,000 of them twice in the same window only makes the builder
     /// decide which of two trees to use. What is left is the three things the Aurora toolset kept
-    /// separate from its palette for the same reason: areas, conversations, scripts.
+    /// separate from its palette for the same reason: areas, dialogs, scripts.
     /// </para>
     /// <para>
     /// Tabs rather than three expandable roots. Only one of the three is ever being worked in, and as
@@ -33,7 +33,7 @@ namespace SWLOR.Toolset.Shell.Panels
     /// </para>
     /// <para>
     /// Rows are published as one flat, virtualized list rather than a real TreeView, and a folder builds
-    /// its children the first time it is expanded - 609 conversations would otherwise realise a
+    /// its children the first time it is expanded - 609 dialogs would otherwise realise a
     /// container each for a folder nobody opened.
     /// </para>
     /// </remarks>
@@ -46,6 +46,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly Func<Editors.EditorService>? _editorService;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly Services.IEditorPromptService? _prompts;
+        private readonly Settings.ToolsetSettings? _settings;
 
         private readonly List<ExplorerNodeViewModel> _roots = new();
         private Dictionary<ResourceType, List<CatalogEntry>>? _catalogByType;
@@ -83,7 +84,8 @@ namespace SWLOR.Toolset.Shell.Panels
             OutputLogService log,
             Func<Editors.EditorService>? editorService = null,
             TilesetCatalog? tilesetCatalog = null,
-            Services.IEditorPromptService? prompts = null)
+            Services.IEditorPromptService? prompts = null,
+            Settings.ToolsetSettings? settings = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _properties = properties ?? throw new ArgumentNullException(nameof(properties));
@@ -95,6 +97,15 @@ namespace SWLOR.Toolset.Shell.Panels
 
             Id = "ModuleExplorer";
             Title = "Module Contents";
+
+            _settings = settings;
+
+            // Assigned rather than set through the property: the tab change handler rebuilds a tree that
+            // does not exist yet, and the module is not open at construction time anyway.
+            if (settings != null &&
+                ResourceTypeExtensions.TryFromExtension(settings.ModuleContentsTab, out var tab) &&
+                Sections.Contains(tab))
+                _selectedType = tab;
 
             PublishTabs();
 
@@ -212,6 +223,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
         partial void OnSelectedTypeChanged(ResourceType value)
         {
+            if (_settings != null)
+                _settings.ModuleContentsTab = value.Extension();
+
             foreach (var tab in Tabs)
                 tab.IsSelected = tab.Type == value;
 
@@ -507,7 +521,7 @@ namespace SWLOR.Toolset.Shell.Panels
             var item = value.Item;
             _properties.ShowEntry(new CatalogEntry(value.Type, item.ResRef, item.Name, item.Tag, string.Empty));
 
-            // Nothing in this panel has a model any more - areas, conversations and scripts all have
+            // Nothing in this panel has a model any more - areas, dialogs and scripts all have
             // none - so the preview is left showing whatever the Palette last put there rather than
             // being cleared to "no preview available" on every click.
         }
@@ -569,16 +583,18 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         /// <summary>
-        /// What a row reads as. Inside a folder an area drops the prefix its folder already says -
-        /// "Veles" under Viscara, not "Viscara - Veles" - which is only right for the naming convention
-        /// areas follow, so conversations and scripts keep their whole name.
+        /// What a row reads as. Inside a folder an area drops the part its folders already say -
+        /// "North Entrance" under Tatooine/Anchorhead, not the whole "Tatooine - Anchorhead - North
+        /// Entrance". Only area names carry that structure, so dialogs and scripts keep their resref.
         /// </summary>
         private string LabelFor(ExplorerItem item, bool insideFolder)
         {
-            if (!insideFolder || SelectedType != ResourceType.Area)
+            if (!insideFolder)
                 return item.PrimaryText;
 
-            var label = AutomaticGrouping.LeafLabelFor(item.Name);
+            var label = ModuleFolderSeeder.LeafLabel(
+                SelectedType, new SeedableResource(item.ResRef, item.Name));
+
             return label.Length > 0 ? label : item.PrimaryText;
         }
 
@@ -595,50 +611,37 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         /// <summary>
-        /// Gives areas their starting folders from the "Planet - Place" naming rule.
+        /// Gives a section its starting folders - see <see cref="ModuleFolderSeeder"/> for the rules and
+        /// for why the three sections do not get the same ones.
         /// </summary>
         /// <remarks>
-        /// This grouping used to be computed on every build and was therefore not editable. Writing it
-        /// into the sidecar once turns it into a starting point: the tree opens looking exactly as it did
-        /// before, and a builder can then rename, nest and refile. Only areas are seeded - conversation
-        /// and script names carry nothing to group on, so seeding them would produce one folder per name.
-        /// Seeded from the unfiltered list, so what a search happens to be showing cannot decide it.
+        /// Written into the sidecar once rather than recomputed, which is what makes it editable: the tree
+        /// opens already organised and a builder can then rename, nest and refile. Seeded from the
+        /// unfiltered list, so what a search happens to be showing cannot decide the shape.
         /// </remarks>
         private void SeedIfNeeded(CategorySection section, IReadOnlyList<ExplorerItem> items)
         {
-            if (SelectedType != ResourceType.Area || !_seeded.Add(SelectedType))
+            if (!_seeded.Add(SelectedType) || section.Folders.Count > 0 || items.Count == 0)
                 return;
 
-            if (section.Folders.Count > 0 || items.Count == 0)
-                return;
-
-            // Names arrive with the background catalog; seeding off bare resrefs would file everything
-            // in Unsorted and then never try again.
-            if (_catalogByType == null)
+            // Areas are filed by display name, which arrives with the background catalog. Seeding off
+            // bare resrefs would put every area in Unsorted and then never try again.
+            if (SelectedType == ResourceType.Area && _catalogByType == null)
             {
                 _seeded.Remove(SelectedType);
                 return;
             }
 
-            var groups = items
-                .GroupBy(item => AutomaticGrouping.GroupNameFor(item.Name))
-                .Where(group => group.Key != null);
-
-            var seeded = 0;
-            foreach (var group in groups)
-            {
-                var folder = section.AddFolder(group.Key!);
-                foreach (var item in group)
-                    folder.AddMember(item.ResRef);
-
-                seeded++;
-            }
+            var seeded = ModuleFolderSeeder.Seed(
+                section, SelectedType, items.Select(item => new SeedableResource(item.ResRef, item.Name)));
 
             if (seeded == 0)
                 return;
 
             _categories.SaveChanges();
-            _log.AppendLine($"Seeded {seeded} area folder(s) from the '{AutomaticGrouping.Separator.Trim()}' naming rule.");
+            _log.AppendLine(
+                $"Organised {SelectedType.DisplayName().ToLowerInvariant()} into {seeded} folder(s). " +
+                "Rename, nest or refile them from the right-click menu.");
         }
 
         private IReadOnlyList<ExplorerItem> LoadItems(ResourceType type)

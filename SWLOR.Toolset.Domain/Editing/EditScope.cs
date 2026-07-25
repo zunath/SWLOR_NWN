@@ -39,6 +39,40 @@ namespace SWLOR.Toolset.Domain.Editing
             return new Releaser(() => _guardDepth.Value -= 1);
         }
 
+        /// <summary>
+        /// Suppresses the guard and edit capture for code that BUILDS a brand-new document rather than
+        /// editing an open one.
+        /// </summary>
+        /// <remarks>
+        /// Needed because the guard is ambient per call context rather than per document (see the remarks
+        /// on this type): with an editor open, its <see cref="DocumentSession"/> has raised the depth for
+        /// the whole UI context, so constructing an unrelated document on that context throws even though
+        /// nothing that construction touches is on anyone's undo stack. That is not a theoretical case -
+        /// it is what stopped the base-game palettes from loading at all once any editor was open.
+        /// <para>
+        /// Capture is suppressed as well as the guard. A freshly built document's fields are not edits to
+        /// the document a surrounding transaction is recording, so letting them accumulate there would put
+        /// another document's construction on that document's undo stack.
+        /// </para>
+        /// <para>
+        /// This is for construction only. It must never wrap a mutation of a document a session owns -
+        /// that is precisely what the guard exists to catch.
+        /// </para>
+        /// </remarks>
+        public static IDisposable EnterConstruction()
+        {
+            var guard = _guardDepth.Value;
+            var transaction = _currentTransaction.Value;
+            _guardDepth.Value = 0;
+            _currentTransaction.Value = null;
+
+            return new Releaser(() =>
+            {
+                _guardDepth.Value = guard;
+                _currentTransaction.Value = transaction;
+            });
+        }
+
         /// <summary>Entered for the lifetime of an open DocumentTransaction. Throws on nesting.</summary>
         internal static IDisposable EnterTransaction(DocumentTransaction transaction)
         {

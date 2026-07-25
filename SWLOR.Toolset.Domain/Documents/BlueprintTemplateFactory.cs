@@ -47,6 +47,10 @@ namespace SWLOR.Toolset.Domain.Documents
             if (string.IsNullOrWhiteSpace(resRef))
                 throw new ArgumentException("ResRef must be provided.", nameof(resRef));
 
+            // A brand-new blueprint is on nobody's undo stack, but the guard is ambient per call
+            // context, so with an editor open every field added below would otherwise throw.
+            using var construction = Editing.EditScope.EnterConstruction();
+
             var document = CreateDocument(type);
             var root = document.Root;
             var name = string.IsNullOrWhiteSpace(displayName) ? resRef : displayName;

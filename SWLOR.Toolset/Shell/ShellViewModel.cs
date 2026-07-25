@@ -20,6 +20,9 @@ namespace SWLOR.Toolset.Shell
     public partial class ShellViewModel : ObservableObject
     {
         private readonly ToolsetSettings _settings;
+
+        /// <summary>What service registration discovered and had nowhere to say at the time.</summary>
+        private readonly StartupNotice? _startupNotice;
         private readonly WorkspaceContext _workspaceContext;
         private readonly OutputLogService _log;
         private readonly ModuleFileWatcher _fileWatcher;
@@ -76,8 +79,10 @@ namespace SWLOR.Toolset.Shell
             PackService packService,
             OutputViewModel output,
             ValidationViewModel validation,
-            ThumbnailService thumbnails)
+            ThumbnailService thumbnails,
+            StartupNotice? startupNotice = null)
         {
+            _startupNotice = startupNotice;
             _thumbnails = thumbnails ?? throw new ArgumentNullException(nameof(thumbnails));
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
@@ -349,6 +354,9 @@ namespace SWLOR.Toolset.Shell
         public async Task InitializeAsync()
         {
             _log.AppendLine($"Settings loaded from '{ToolsetSettings.SettingsFilePath}'.");
+
+            if (_startupNotice != null)
+                _log.AppendLine(_startupNotice.Message);
 
             var moduleRoot = _settings.ModuleRoot;
             if (string.IsNullOrWhiteSpace(moduleRoot))

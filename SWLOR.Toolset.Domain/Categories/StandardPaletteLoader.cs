@@ -19,7 +19,7 @@ namespace SWLOR.Toolset.Domain.Categories
     {
         /// <summary>
         /// The base game's standard palette resref for a blueprint type, or null for the types that have
-        /// none (areas, conversations, scripts).
+        /// none (areas, dialogs, scripts).
         /// </summary>
         /// <remarks>
         /// These are the <c>*palstd</c> names, not the bare <c>*pal</c> ones, and the distinction is not

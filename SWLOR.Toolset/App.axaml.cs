@@ -32,7 +32,9 @@ namespace SWLOR.Toolset
                 ConfigureServices(services);
                 _serviceProvider = services.BuildServiceProvider();
 
-                desktop.MainWindow = new MainWindow(_serviceProvider.GetRequiredService<ShellViewModel>());
+                desktop.MainWindow = new MainWindow(
+                    _serviceProvider.GetRequiredService<ShellViewModel>(),
+                    _serviceProvider.GetRequiredService<ToolsetSettings>());
             }
 
             base.OnFrameworkInitializationCompleted();
@@ -112,7 +114,8 @@ namespace SWLOR.Toolset
                 // Optional: only registered when the repo layout resolved, and the new-area wizard
                 // degrades to "no tilesets available" without it.
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
-                sp.GetRequiredService<Services.IEditorPromptService>()));
+                sp.GetRequiredService<Services.IEditorPromptService>(),
+                sp.GetRequiredService<ToolsetSettings>()));
             services.AddSingleton(sp => new CategoryService(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),
@@ -148,7 +151,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<ThumbnailService>(),
                 sp.GetRequiredService<Services.IEditorPromptService>(),
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
-                sp.GetService<TlkService>()));
+                sp.GetService<TlkService>(),
+                sp.GetRequiredService<ToolsetSettings>()));
             services.AddSingleton<SearchViewModel>();
             services.AddSingleton<OutputViewModel>();
             services.AddSingleton(sp => new ValidationViewModel(
@@ -191,6 +195,11 @@ namespace SWLOR.Toolset
             {
                 // A broken or absent install must not stop the toolset; hak layers still work.
             }
+
+            // Reported rather than left silent. Without the base game the Standard palette is empty and
+            // base-game models and category names are missing - all of which look like bugs in this
+            // toolset unless it says so, which is exactly how it read before this line existed.
+            ReportNwnInstall(services, nwnInstallPath, settings.NwnInstallOverride);
 
             if (hasTlk)
             {
@@ -314,6 +323,23 @@ namespace SWLOR.Toolset
         /// pattern used by ResourceIndexTests/LookupServiceTests): both "Build/hakbuilder.json" and
         /// "SWLOR_Haks" must be present. Returns null (never throws) if not found.
         /// </summary>
+        /// <summary>
+        /// Queues a log line naming the NWN:EE install that was found, or listing where it looked when
+        /// there was none. Deferred onto the log service rather than written here, because logging is a
+        /// service that does not exist yet while services are still being registered.
+        /// </summary>
+        private static void ReportNwnInstall(
+            IServiceCollection services, string? resolvedPath, string? overridePath)
+        {
+            var message = resolvedPath != null
+                ? $"NWN:EE install: {resolvedPath}"
+                : "No NWN:EE install found - base-game blueprints, models and the Standard palette will be " +
+                  "unavailable. Checked: " + string.Join("; ", NwnInstallLocator.ProbedPaths(overridePath)) +
+                  ". Set an explicit path in settings.json (nwnInstallOverride) to override.";
+
+            services.AddSingleton(new StartupNotice(message));
+        }
+
         private static string? AutoDetectRepoRoot()
         {
             try

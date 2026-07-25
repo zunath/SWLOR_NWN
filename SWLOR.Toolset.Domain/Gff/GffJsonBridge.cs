@@ -143,8 +143,15 @@ namespace SWLOR.Toolset.Domain.Gff
         // GffFile -> JSON
         // ---------------------------------------------------------------
 
+        /// <summary>
+        /// Converts a parsed binary GFF into a JSON document. The result is brand new and owned by nobody,
+        /// so the conversion runs as construction - see <see cref="Editing.EditScope.EnterConstruction"/>
+        /// for why that is not merely an optimisation.
+        /// </summary>
         public static JsonGffDocument ToJsonDocument(GffFile file)
         {
+            using var construction = Editing.EditScope.EnterConstruction();
+
             var root = new JsonGffStruct();
             foreach (var field in file.RootStruct.Fields)
                 root.Add(field.Label, ConvertFieldToJson(field));

@@ -2,7 +2,7 @@ namespace SWLOR.Toolset.Domain.Workspace
 {
     /// <summary>
     /// The module resource kinds a <see cref="ModuleWorkspace"/> knows how to enumerate and load:
-    /// areas (.are, paired with .git/.gic), the blueprint types, conversations, and scripts.
+    /// areas (.are, paired with .git/.gic), the blueprint types, dialogs, and scripts.
     /// </summary>
     public enum ResourceType
     {
@@ -16,7 +16,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         Uts,
         Utw,
 
-        /// <summary>A conversation (.dlg). Stored like the blueprints - nwn_gff JSON under Module/dlg.</summary>
+        /// <summary>A dialog (.dlg). Stored like the blueprints - nwn_gff JSON under Module/dlg.</summary>
         Dlg,
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                 // a sound set is a creature's SoundSetFile, a soundset.2da row, and is not a blueprint.
                 ResourceType.Uts => "Sounds",
                 ResourceType.Utw => "Waypoints",
-                ResourceType.Dlg => "Conversations",
+                ResourceType.Dlg => "Dialogs",
                 ResourceType.Nss => "Scripts",
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.")
             };
@@ -146,7 +146,7 @@ namespace SWLOR.Toolset.Domain.Workspace
                 ResourceType.Utt => "Trigger",
                 ResourceType.Uts => "Sound",
                 ResourceType.Utw => "Waypoint",
-                ResourceType.Dlg => "Conversation",
+                ResourceType.Dlg => "Dialog",
                 ResourceType.Nss => "Script",
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.")
             };

@@ -4,7 +4,7 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Shell.Panels
 {
     /// <summary>
-    /// One tab of the Module Contents panel: Areas, Conversations or Scripts.
+    /// One tab of the Module Contents panel: Areas, Dialogs or Scripts.
     /// </summary>
     /// <remarks>
     /// The count lives on the tab rather than on a row, so the two sections a builder is not looking at

@@ -4,27 +4,27 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Domain.Documents
 {
     /// <summary>
-    /// Builds the file content of a brand-new conversation or script, for Module Contents' "New
-    /// Conversation…" / "New Script…" actions. Areas have their own writer (they also have a .git and
+    /// Builds the file content of a brand-new dialog or script, for Module Contents' "New
+    /// Dialog…" / "New Script…" actions. Areas have their own writer (they also have a .git and
     /// a .gic to produce) and blueprints have <see cref="BlueprintTemplateFactory"/>; these two are
     /// what is left.
     /// </summary>
     /// <remarks>
-    /// The conversation field set is the module corpus's minimum: the root fields every one of the 609
+    /// The dialog field set is the module corpus's minimum: the root fields every one of the 609
     /// .dlg files carries, which is exactly the shape of the smallest of them (tat_civ1) with one line
-    /// of text. A new conversation gets that one entry rather than an empty EntryList, because
-    /// StartingList has to point at something - a conversation with no entries is one the engine
+    /// of text. A new dialog gets that one entry rather than an empty EntryList, because
+    /// StartingList has to point at something - a dialog with no entries is one the engine
     /// cannot start.
     /// </remarks>
     public static class ModuleResourceTemplateFactory
     {
-        /// <summary>The line a new conversation opens with, so the file is startable as created.</summary>
+        /// <summary>The line a new dialog opens with, so the file is startable as created.</summary>
         public const string PlaceholderEntryText = "<Enter dialogue here>";
 
         public static bool Supports(ResourceType type) => type is ResourceType.Dlg or ResourceType.Nss;
 
         /// <summary>
-        /// The new file's bytes: GFF-JSON for a conversation, plain text for a script - see
+        /// The new file's bytes: GFF-JSON for a dialog, plain text for a script - see
         /// <see cref="ResourceTypeExtensions.IsJsonEncoded"/>, which .nss is the sole exception to.
         /// </summary>
         public static byte[] CreateFileContent(ResourceType type, string resRef, string displayName)
@@ -34,17 +34,21 @@ namespace SWLOR.Toolset.Domain.Documents
 
             return type switch
             {
-                ResourceType.Dlg => CreateConversation(),
+                ResourceType.Dlg => CreateDialog(),
                 ResourceType.Nss => CreateScript(resRef, displayName),
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(type), type, "There is no template for this resource type.")
             };
         }
 
-        private static byte[] CreateConversation()
+        private static byte[] CreateDialog()
         {
+            // A brand-new dialog is on nobody's undo stack, but the guard is ambient per call
+            // context, so with an editor open every field added below would otherwise throw.
+            using var construction = Editing.EditScope.EnterConstruction();
+
             // The unpack pipeline writes an LF body terminated by a single CRLF; matching that keeps a
-            // new conversation byte-shaped like every other file in Module\.
+            // new dialog byte-shaped like every other file in Module\.
             var document = new JsonGffDocument("DLG ", new JsonGffStruct())
             {
                 UsesCrLf = false,

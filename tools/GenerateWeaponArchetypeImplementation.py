@@ -958,6 +958,19 @@ def description_stat_entries(row, base):
         add_stat(stats, "RepeatedTargetDamageBonusMax", damage * (stacks or 5))
         add_stat(stats, "RepeatedTargetDamageDurationSeconds", parse_count(r"expire after (\d+) seconds", description))
 
+    if "consecutive melee attack against the same target" in lowered:
+        damage = parse_count(r"giving \+(\d+) DMG", description)
+        stacks = parse_count(r"up to (\d+) stacks", description)
+        if not stacks and "five stacks" in lowered:
+            stacks = 5
+        add_stat(stats, "MeleeRepeatedTargetDamageBonusPerHit", damage)
+        add_stat(stats, "MeleeRepeatedTargetDamageBonusMax", damage * (stacks or 5))
+        add_stat(stats, "MeleeRepeatedTargetDamageStatusEffectIcon", "(int)EffectIconType.RundownStatusEffect")
+
+    if base == "Follow-Through":
+        add_stat(stats, "MeleeAutoAttackCycleRequiredCount", 3)
+        add_stat(stats, "MeleeAutoAttackCycleDamage", parse_count(r"additional \+(\d+) Damage", description))
+
     low_hp = re.search(r"(?:below|under) (\d+)% HP", description, re.IGNORECASE)
     if base == "Deep Wound":
         add_stat(stats, "TargetLowHPStatusDamageThresholdPercent", parse_percent(r"below (\d+)% HP", description))

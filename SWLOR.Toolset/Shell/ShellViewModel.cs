@@ -29,7 +29,6 @@ namespace SWLOR.Toolset.Shell
         private readonly ModuleExplorerViewModel _explorer;
         private readonly SearchViewModel _search;
         private readonly PaletteViewModel _palette;
-        private readonly Panels.ModelPreviewViewModel _modelPreview;
         private readonly ThumbnailService _thumbnails;
         private DispatcherTimer? _progressTimer;
 
@@ -75,7 +74,6 @@ namespace SWLOR.Toolset.Shell
             ModuleExplorerViewModel explorer,
             SearchViewModel search,
             PaletteViewModel palette,
-            Panels.ModelPreviewViewModel modelPreview,
             ToolsetDockFactory factory,
             Editors.EditorService editorService,
             PackService packService,
@@ -93,7 +91,6 @@ namespace SWLOR.Toolset.Shell
             _explorer = explorer ?? throw new ArgumentNullException(nameof(explorer));
             _search = search ?? throw new ArgumentNullException(nameof(search));
             _palette = palette ?? throw new ArgumentNullException(nameof(palette));
-            _modelPreview = modelPreview ?? throw new ArgumentNullException(nameof(modelPreview));
             _editorService = editorService ?? throw new ArgumentNullException(nameof(editorService));
             _packService = packService ?? throw new ArgumentNullException(nameof(packService));
             _output = output ?? throw new ArgumentNullException(nameof(output));
@@ -195,9 +192,6 @@ namespace SWLOR.Toolset.Shell
 
         [RelayCommand]
         private void FocusPalette() => _factory.Focus(_palette);
-
-        [RelayCommand]
-        private void FocusModelPreview() => _factory.Focus(_modelPreview);
 
         [RelayCommand]
         private void FocusOutput() => _factory.Focus(_output);

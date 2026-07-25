@@ -80,7 +80,6 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<ToolsetDockFactory>(),
                 sp.GetRequiredService<Services.IEditorPromptService>(),
                 sp.GetService<IGameCodeIndex>(),
-                sp.GetRequiredService<ModelPreviewViewModel>(),
                 sp.GetService<Domain.GameData.Lookups.TilesetCatalog>(),
                 sp.GetService<Domain.Render.TileModelCache>(),
                 sp.GetService<ResourceIndex>(),
@@ -96,15 +95,6 @@ namespace SWLOR.Toolset
 
             services.AddSingleton<Services.SaveService>();
             services.AddSingleton<Services.PackService>();
-            services.AddSingleton(sp => new ModelPreviewViewModel(
-                sp.GetRequiredService<WorkspaceContext>(),
-                sp.GetRequiredService<OutputLogService>(),
-                sp.GetService<AppearanceService>(),
-                sp.GetService<ResourceIndex>(),
-                sp.GetService<TwoDaService>(),
-                sp.GetService<TlkService>(),
-                sp.GetService<PlaceableAppearanceService>(),
-                sp.GetService<DoorTypeService>()));
             services.AddSingleton<PropertiesViewModel>();
             services.AddSingleton(sp => new ModuleExplorerViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),

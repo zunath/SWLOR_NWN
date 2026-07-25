@@ -1,4 +1,3 @@
-using Avalonia.Threading;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Gff;
@@ -8,7 +7,6 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell;
-using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -28,7 +26,6 @@ namespace SWLOR.Toolset.Editors
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
         private readonly IEditorPromptService _prompts;
-        private readonly ModelPreviewViewModel? _modelPreview;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly TileModelCache? _tileModelCache;
         private readonly ResourceIndex? _resourceIndex;
@@ -37,8 +34,6 @@ namespace SWLOR.Toolset.Editors
         private readonly TileWalkmeshCache? _tileWalkmeshCache;
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<BlueprintEditorViewModel, DispatcherTimer> _previewTimers = new();
-        private readonly Dictionary<BlueprintEditorViewModel, long> _previewRevisions = new();
 
         public EditorService(
             WorkspaceContext workspaceContext,
@@ -47,7 +42,6 @@ namespace SWLOR.Toolset.Editors
             ToolsetDockFactory factory,
             IEditorPromptService prompts,
             IGameCodeIndex? gameCodeIndex = null,
-            ModelPreviewViewModel? modelPreview = null,
             TilesetCatalog? tilesetCatalog = null,
             TileModelCache? tileModelCache = null,
             ResourceIndex? resourceIndex = null,
@@ -62,7 +56,6 @@ namespace SWLOR.Toolset.Editors
             _factory = factory;
             _prompts = prompts;
             _gameCodeIndex = gameCodeIndex;
-            _modelPreview = modelPreview;
             _tilesetCatalog = tilesetCatalog;
             _tileModelCache = tileModelCache;
             _resourceIndex = resourceIndex;
@@ -70,13 +63,6 @@ namespace SWLOR.Toolset.Editors
             _doorTypes = doorTypes;
             _tileWalkmeshCache = tileWalkmeshCache;
             _tlkService = tlkService;
-            _factory.ActiveDocumentChanged += document =>
-            {
-                if (document is BlueprintEditorViewModel editor)
-                    PreviewEditorModel(editor);
-                else
-                    _modelPreview?.InvalidatePendingRefreshes();
-            };
         }
 
         public void TryOpenEditor(ResourceType type, string resRef)
@@ -108,7 +94,6 @@ namespace SWLOR.Toolset.Editors
             if (_openEditors.TryGetValue(filePath, out var existing))
             {
                 _factory.ActivateDocument(existing);
-                PreviewEditorModel(existing);
                 return;
             }
 
@@ -119,20 +104,12 @@ namespace SWLOR.Toolset.Editors
 
                 var editor = new BlueprintEditorViewModel(
                     filePath, resRef, type, schema, _lookups, _gameCodeIndex, _log, _prompts);
-                editor.Closed += closedEditor =>
-                {
-                    _openEditors.Remove(filePath);
-                    if (_previewTimers.Remove(closedEditor, out var timer))
-                        timer.Stop();
-                    _previewRevisions.Remove(closedEditor);
-                };
+                editor.Closed += _ => _openEditors.Remove(filePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
-                editor.DocumentChanged += () => SchedulePreviewEditorModel(editor);
                 editor.CatalogEntryChanged += () =>
                     _workspaceContext.RefreshCatalogEntry(editor.BlueprintType, resRef);
                 _openEditors[filePath] = editor;
                 _factory.OpenDocument(editor);
-                PreviewEditorModel(editor);
             }
             catch (Exception ex)
             {
@@ -309,40 +286,6 @@ namespace SWLOR.Toolset.Editors
                 details);
 
             return false;
-        }
-
-        /// <summary>Points the Model Preview panel at an editor's live document (creatures/placeables/doors).</summary>
-        private void PreviewEditorModel(BlueprintEditorViewModel editor)
-        {
-            _modelPreview?.ShowForDocument(editor.BlueprintType, editor.DocumentRoot, editor.Title);
-        }
-
-        /// <summary>
-        /// Coalesces rapid TwoWay-bound field edits (especially text keystrokes) into one model
-        /// rebuild after the user pauses. Non-previewable blueprint types do not need live refreshes.
-        /// </summary>
-        private void SchedulePreviewEditorModel(BlueprintEditorViewModel editor)
-        {
-            if (editor.BlueprintType is not (ResourceType.Utc or ResourceType.Utp or ResourceType.Utd))
-                return;
-
-            if (!_previewTimers.TryGetValue(editor, out var timer))
-            {
-                timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
-                timer.Tick += (_, _) =>
-                {
-                    timer.Stop();
-                    if (_openEditors.ContainsValue(editor) &&
-                        _previewRevisions.TryGetValue(editor, out var expectedRevision) &&
-                        expectedRevision == _modelPreview?.Revision)
-                        PreviewEditorModel(editor);
-                };
-                _previewTimers[editor] = timer;
-            }
-
-            _previewRevisions[editor] = _modelPreview?.Revision ?? 0;
-            timer.Stop();
-            timer.Start();
         }
 
         private static EditorSchema? GetSchema(ResourceType type)

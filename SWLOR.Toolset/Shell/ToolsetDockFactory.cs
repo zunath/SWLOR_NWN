@@ -21,7 +21,6 @@ namespace SWLOR.Toolset.Shell
         private readonly SearchViewModel _search;
         private readonly OutputViewModel _output;
         private readonly ValidationViewModel _validation;
-        private readonly ModelPreviewViewModel _modelPreview;
         private readonly PaletteViewModel _palette;
         private IRootDock? _rootDock;
         private DocumentDock? _documentDock;
@@ -34,7 +33,6 @@ namespace SWLOR.Toolset.Shell
             SearchViewModel search,
             OutputViewModel output,
             ValidationViewModel validation,
-            ModelPreviewViewModel modelPreview,
             PaletteViewModel palette)
         {
             _explorer = explorer;
@@ -42,7 +40,6 @@ namespace SWLOR.Toolset.Shell
             _search = search;
             _output = output;
             _validation = validation;
-            _modelPreview = modelPreview;
             _palette = palette;
         }
 
@@ -67,16 +64,14 @@ namespace SWLOR.Toolset.Shell
                 GripMode = GripMode.Hidden
             };
 
-            // The right side is the Palette, with Model Preview behind it as a tab. Properties is gone:
-            // for an instance the selection bar under the map says what is selected, and for a blueprint
-            // you open the thing itself. A read-only field dump docked permanently was the panel it
-            // replaced. Model Preview stays because the palette thumbnail is a fixed square - the
-            // preview is the only place a builder can turn a model and look at it.
+            // The right side is the Palette and nothing else. Properties is gone: for an instance the
+            // selection bar under the map says what is selected, and for a blueprint you open the thing
+            // itself. A read-only field dump docked permanently was the panel it replaced.
             var paletteDock = new ToolDock
             {
                 Id = "PaletteDock",
                 ActiveDockable = _palette,
-                VisibleDockables = CreateList<IDockable>(_palette, _modelPreview),
+                VisibleDockables = CreateList<IDockable>(_palette),
                 Alignment = Alignment.Right,
                 Proportion = 0.27,
                 // Each panel draws its own title; Dock's chrome adds a dotted drag grip and window
@@ -201,7 +196,6 @@ namespace SWLOR.Toolset.Shell
                 [_search.Id] = () => _search,
                 [_output.Id] = () => _output,
                 [_validation.Id] = () => _validation,
-                [_modelPreview.Id] = () => _modelPreview,
                 [_palette.Id] = () => _palette
             };
 

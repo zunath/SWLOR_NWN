@@ -2292,6 +2292,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Set to 1 on an NPC to disable the out-of-combat 10%-per-tick HP regeneration.
+        /// Engine-test fixtures deliberately wound casters to observe an ability's own
+        /// healing; a natural regen tick inside the assertion window would otherwise
+        /// satisfy a healing assertion even when the tested impact is broken.
+        /// </summary>
+        public const string SuppressNaturalHPRegenVariable = "ENGINE_TEST_SUPPRESS_NATURAL_HP_REGEN";
+
+        /// <summary>
         /// Restores an NPC's STM and FP.
         /// </summary>
         public static void RestoreNPCStats(bool outOfCombatRegen)
@@ -2315,7 +2323,8 @@ namespace SWLOR.Game.Server.Service
                 // If out of combat - restore HP at 10% per tick.
                 if (!GetIsInCombat(self) &&
                     !GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)) &&
-                    GetCurrentHitPoints(self) < GetMaxHitPoints(self))
+                    GetCurrentHitPoints(self) < GetMaxHitPoints(self) &&
+                    GetLocalInt(self, SuppressNaturalHPRegenVariable) == 0)
                 {
                     var hpToHeal = GetMaxHitPoints(self) * 0.1f;
                     ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);

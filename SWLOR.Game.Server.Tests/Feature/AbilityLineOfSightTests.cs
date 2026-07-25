@@ -24,7 +24,10 @@ public class AbilityLineOfSightTests
             source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal));
 
         validationBody.Should().Contain("!HasAbilityLineOfSight(activator, target)");
-        validationBody.Should().Contain("SendMessageToPC(activator, \"You cannot see your target.\");");
+        // Denials route through the local Deny helper (which both records the reason for the
+        // engine-test harness and sends the player-facing message).
+        validationBody.Should().Contain("return Deny(\"You cannot see your target.\");");
+        validationBody.Should().Contain("SendMessageToPC(activator, reason);");
         helperBody.Should().Contain("LineOfSightObject(activator, target)");
         helperBody.Should().Contain("LineOfSightVector(GetPosition(activator), GetPosition(target))");
     }

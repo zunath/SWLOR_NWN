@@ -1,0 +1,54 @@
+using System.Threading.Tasks;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.EngineTestService;
+
+namespace SWLOR.Game.Server.Feature.EngineTestDefinition
+{
+    /// <summary>
+    /// Exercises the status effect pipeline directly (independent of any ability) using
+    /// RegenerativeHealingStatusEffect's parameterless constructor - a simple buff with no
+    /// CanApply requirements and a no-op Tick (0% heal) - to confirm application, natural
+    /// expiration, and explicit removal all work inside the live engine.
+    /// </summary>
+    public static class StatusEffectEngineTests
+    {
+        /// <summary>
+        /// Status effects tick on the shared status-effect interval (about every 6 real seconds),
+        /// so expiration checks need generous margin past the effect's nominal duration.
+        /// </summary>
+        private const float ExpirationWaitTimeoutSeconds = 40f;
+
+        [EngineTest("A directly applied status effect appears and naturally expires", Category = "StatusEffect", TimeoutSeconds = 60f)]
+        public static async Task StatusEffectAppliesAndExpires(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("nw_rat001");
+
+            var applied = StatusEffect.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 5f);
+            ctx.Assert(applied, "ApplyStatusEffect should report success.");
+            ctx.Assert(StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc), "Status effect should be present immediately after being applied.");
+
+            await ctx.WaitUntilAsync(
+                () => !StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc),
+                ExpirationWaitTimeoutSeconds,
+                "the status effect to naturally expire past its 5s duration");
+        }
+
+        [EngineTest("RemoveStatusEffect clears an active status effect immediately", Category = "StatusEffect")]
+        public static async Task RemoveStatusEffectClearsImmediately(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("nw_rat001");
+
+            StatusEffect.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f);
+            ctx.Assert(StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc), "Status effect should be present after being applied.");
+
+            StatusEffect.RemoveStatusEffect<RegenerativeHealingStatusEffect>(npc);
+
+            // Removal is expected to be synchronous, but poll briefly in case any cleanup is
+            // deferred to a subsequent frame or interval tick.
+            await ctx.WaitUntilAsync(
+                () => !StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc),
+                5f,
+                "the status effect to be cleared immediately after RemoveStatusEffect");
+        }
+    }
+}

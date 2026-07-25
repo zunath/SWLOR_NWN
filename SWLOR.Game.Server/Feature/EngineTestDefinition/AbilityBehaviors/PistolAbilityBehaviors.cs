@@ -87,7 +87,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Two-hit impact; stamina restore only if a hit crits (conditional, not asserted)."
+                    ImpactRefundsCosts = true,
+                    Notes = "Two-hit impact; RestoreStaminaIfAnyCriticalHit refunds 2 STM when a hit crits, so only the net stamina dip is observable."
                 },
                 new AbilityBehaviorCase
                 {
@@ -97,7 +98,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Two-hit impact; stamina restore only if a hit crits (conditional, not asserted)."
+                    ImpactRefundsCosts = true,
+                    Notes = "Two-hit impact; RestoreStaminaIfAnyCriticalHit refunds 3 STM when a hit crits, so only the net stamina dip is observable."
                 },
                 new AbilityBehaviorCase
                 {

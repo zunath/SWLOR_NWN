@@ -261,9 +261,15 @@ adjustment seams the runtime cost path consults) and requires the post-deduction
 before-minus-expected. This is stable because the fixture suppresses the caster's natural
 regeneration (HP, FP, and STM - `Stat.SuppressNaturalRegenVariable`), which also prevents an
 out-of-combat regen tick from satisfying a healing assertion on a deliberately wounded caster.
-The one exception is abilities whose impact refunds part of their own cost in the same window
-(RestoreStaminaOnHit and kin, sometimes conditional on crits) - their cases set
-`ImpactRefundsCosts` naming the rider in Notes, and fall back to requiring a net dip.
+The one exception is abilities whose impact refunds part of their own cost in the same window -
+their cases set `ImpactRefundsCosts` naming the rider in Notes, and fall back to requiring a net
+dip. **The rule for new cases**: if a casted ability declares a cost and its definition carries a
+resource-restoring rider that targets the SAME pool (`RestoreStaminaOnHit`,
+`RestoreStaminaIfAnyCriticalHit`, `RestoreSecondaryTargetStamina`, a direct `Stat.RestoreStamina`
+in the impact action, and their FP equivalents), the case must set the flag. A rider on the OTHER
+pool does not need it - an FP refund cannot mask a stamina deduction. Conditional riders
+(crit-gated, all-hits-gated) matter most: they fire only sometimes, so an unflagged case fails
+intermittently rather than every run.
 
 Beyond status effects/damage, cases can assert revival of a dead target (`ExpectsTargetRevived`),
 raw temporary-HP effects on the activator (`ExpectsActivatorTemporaryHP` - for shield abilities

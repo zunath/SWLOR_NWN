@@ -160,7 +160,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Also restores stamina per secondary target hit; not asserted.",
+                    ImpactRefundsCosts = true,
+                    Notes = "RestoreSecondaryTargetStamina refunds 2 STM per secondary target hit (ImpactedTargetCount - 1), so only the net stamina dip is observable.",
                 },
                 new()
                 {
@@ -170,7 +171,8 @@ namespace SWLOR.Game.Server.Feature.EngineTestDefinition.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Also restores stamina per secondary target hit; not asserted.",
+                    ImpactRefundsCosts = true,
+                    Notes = "RestoreSecondaryTargetStamina refunds 2 STM per secondary target hit (ImpactedTargetCount - 1), so only the net stamina dip is observable.",
                 },
 
                 // ShieldBashAbilityDefinition - manually-built weapon ability, hostile.

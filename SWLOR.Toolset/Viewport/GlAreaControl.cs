@@ -223,6 +223,7 @@ void main()
 
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
+        private StaticMeshBuffer? _waypointMeshBuffer;
 
         private uint _polygonVao;
         private uint _polygonVbo;
@@ -268,7 +269,7 @@ void main()
         /// <summary>Whether this control has ever framed a scene - see the <c>Scene</c> setter.</summary>
         private bool _cameraFramed;
 
-        private enum DragMode { None, Orbit, Pan, Move, Rotate }
+        private enum DragMode { None, Orbit, Pan, Move, Rotate, Select }
         private DragMode _dragMode = DragMode.None;
         private Point _lastPointerPos;
 
@@ -618,22 +619,24 @@ void main()
                 return;
             }
 
-            // Modern-app camera convention: left-drag pans (grab-and-drag the view, like dragging a
-            // map), while the right/middle buttons orbit. Shift+left also orbits, keeping an orbit
-            // path for laptop/trackpad users without a second mouse button. This reverses the legacy
-            // Aurora toolset, where the primary button orbited.
-            if (props.IsRightButtonPressed || props.IsMiddleButtonPressed || (props.IsLeftButtonPressed && shift))
+            // Middle drags the view around; right orbits it. The left button belongs to the objects -
+            // selecting one, grabbing its gizmo, putting down what the palette armed - so it never moves
+            // the camera on its own. Shift+left still orbits, which is the path for a trackpad with no
+            // second button.
+            if (props.IsMiddleButtonPressed)
+                _dragMode = DragMode.Pan;
+            else if (props.IsRightButtonPressed || (props.IsLeftButtonPressed && shift))
                 _dragMode = DragMode.Orbit;
             else if (props.IsLeftButtonPressed)
-                _dragMode = DragMode.Pan;
+                _dragMode = DragMode.Select;
             else
                 return;
 
             _lastPointerPos = pos;
             _pressStartPos = pos;
-            // Only a plain left press (which became a pan drag) is eligible to resolve into a pick
-            // click on release; an orbit-triggering press never picks.
-            _isClickCandidate = _dragMode == DragMode.Pan;
+            // Only a plain left press is eligible to resolve into a pick click on release; a press that
+            // started a camera drag never picks.
+            _isClickCandidate = _dragMode == DragMode.Select;
             Focus();
             e.Pointer.Capture(this);
             e.Handled = true;
@@ -676,6 +679,10 @@ void main()
 
                 case DragMode.Rotate:
                     UpdateRotatePreview(dx);
+                    break;
+
+                case DragMode.Select:
+                    // Nothing follows the pointer: the press is only waiting to become a click.
                     break;
             }
 
@@ -1036,6 +1043,47 @@ void main()
             column >= 0 && row >= 0 &&
             column + _tilePlacementFootprint.Columns <= scene.Width &&
             row + _tilePlacementFootprint.Rows <= scene.Height;
+
+        // ----- Button-driven camera nudges -----
+
+        /// <summary>
+        /// One step of the on-screen camera buttons, which move the view in the same fixed increments
+        /// Aurora's arrow pad does. Sized in screen terms rather than world units so a step feels the
+        /// same whether the builder is zoomed into a doorway or looking at the whole area.
+        /// </summary>
+        private const float PanStepPixels = 90f;
+
+        private const float OrbitStepRadians = MathF.PI / 12f;
+
+        private const float ZoomStepFactor = 1.25f;
+
+        /// <summary>Slides the view across the ground plane, in units of <see cref="PanStepPixels"/>.</summary>
+        public void NudgePan(float rightSteps, float upSteps)
+        {
+            var worldPerPixel = AreaCameraMath.WorldUnitsPerPixel(_distance, VerticalFovRadians, _viewportHeight);
+            _target += AreaCameraMath.PanDelta(
+                _azimuth, rightSteps * PanStepPixels, upSteps * PanStepPixels, worldPerPixel);
+
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>Turns the view around the point it is looking at.</summary>
+        public void NudgeOrbit(float azimuthSteps, float elevationSteps)
+        {
+            _azimuth += azimuthSteps * OrbitStepRadians;
+            _elevation = AreaCameraMath.ClampElevation(_elevation + elevationSteps * OrbitStepRadians);
+
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>Moves the view closer (positive) or further away (negative).</summary>
+        public void NudgeZoom(int steps)
+        {
+            var factor = MathF.Pow(ZoomStepFactor, -steps);
+            _distance = AreaCameraMath.ClampDistance(_distance * factor, _initialDistance);
+
+            RequestNextFrameRendering();
+        }
 
         public void HandlePointerWheel(PointerWheelEventArgs e)
         {
@@ -1621,30 +1669,39 @@ void main()
                 }
             }
 
-            // Pass 2: everything else draws its kind-colored pyramid marker.
+            // Pass 2: everything else draws its kind-colored marker - the arrow for a waypoint,
+            // the pyramid for everything else.
             if (_markerMeshBuffer is not { } marker)
                 return;
 
-            _gl!.BindVertexArray(marker.Vao);
             SetUniformBool("hasTexture", false);
             SetUniformBool("unlit", true);
             SetUniformFloat("alphaCutoff", 0f);
             SetUniformFloat("flatAlpha", 1f);
 
+            var boundVao = 0u;
             foreach (var raw in scene.Instances)
             {
                 if (DrawsAsModel(raw))
                     continue;
 
                 var instance = Displayed(raw);
-                var model = AreaPicking.ComputeInstanceTransform(instance);
+                var mesh = instance.Kind == InstanceMarkerKind.Waypoint && _waypointMeshBuffer is { } arrow
+                    ? arrow
+                    : marker;
 
-                SetUniformMatrix4("model", model);
+                if (mesh.Vao != boundVao)
+                {
+                    _gl!.BindVertexArray(mesh.Vao);
+                    boundVao = mesh.Vao;
+                }
+
+                SetUniformMatrix4("model", AreaPicking.ComputeInstanceTransform(instance));
                 SetUniformVec3("flatColor", MarkerColor(instance.Kind));
 
                 unsafe
                 {
-                    _gl.DrawElements(PrimitiveType.Triangles, (uint)marker.IndexCount,
+                    _gl!.DrawElements(PrimitiveType.Triangles, (uint)mesh.IndexCount,
                         DrawElementsType.UnsignedInt, (void*)0);
                 }
             }
@@ -2141,7 +2198,10 @@ void main()
             InstanceMarkerKind.Sound => new Vector3(0.2f, 0.8f, 0.8f),
             InstanceMarkerKind.Store => new Vector3(0.2f, 0.8f, 0.3f),
             InstanceMarkerKind.Trigger => new Vector3(0.95f, 0.55f, 0.15f),
-            InstanceMarkerKind.Waypoint => new Vector3(0.9f, 0.9f, 0.9f),
+            // Aurora's waypoint yellow. A waypoint is the one marker a builder scans a map for -
+            // it is invisible in game and only ever exists to be found here - so it gets the colour
+            // nothing else uses.
+            InstanceMarkerKind.Waypoint => new Vector3(0.98f, 0.80f, 0.10f),
             _ => new Vector3(0.7f, 0.7f, 0.7f)
         };
 
@@ -2351,6 +2411,9 @@ void main()
 
             var (markerVertices, markerIndices) = BuildMarkerPyramidMesh();
             _markerMeshBuffer = UploadStaticMesh(markerVertices, markerIndices);
+
+            var (waypointVertices, waypointIndices) = BuildWaypointArrowMesh();
+            _waypointMeshBuffer = UploadStaticMesh(waypointVertices, waypointIndices);
         }
 
         private StaticMeshBuffer UploadStaticMesh(float[] vertices, uint[] indices)
@@ -2370,6 +2433,62 @@ void main()
             _gl.BindVertexArray(0);
 
             return new StaticMeshBuffer(vao, vbo, ebo, indices.Length);
+        }
+
+        /// <summary>
+        /// The waypoint marker: a flat arrow lying on the ground, pointing along local +X.
+        /// </summary>
+        /// <remarks>
+        /// A waypoint has no model and no presence in the game - it is a named spot with a facing -
+        /// so what the marker has to show is the facing, which the generic pyramid could not. Local
+        /// +X is the heading axis, so the instance transform aims the arrow with no extra work. Drawn
+        /// as a solid with a little height rather than a flat triangle so it stays readable when the
+        /// camera comes down near the ground plane.
+        /// </remarks>
+        private static (float[] Vertices, uint[] Indices) BuildWaypointArrowMesh()
+        {
+            const float length = 1.4f;
+            const float halfWidth = 0.85f;
+            const float tailHalf = 0.28f;
+            const float tailBack = 0.9f;
+            const float z = MarkerGroundOffset;
+            const float thickness = 0.12f;
+
+            // Seven points of a chevron, anticlockwise from the tip.
+            var outline = new[]
+            {
+                new Vector3(length, 0f, 0f),
+                new Vector3(-0.1f, halfWidth, 0f),
+                new Vector3(-0.1f, tailHalf, 0f),
+                new Vector3(-tailBack, tailHalf, 0f),
+                new Vector3(-tailBack, -tailHalf, 0f),
+                new Vector3(-0.1f, -tailHalf, 0f),
+                new Vector3(-0.1f, -halfWidth, 0f)
+            };
+
+            var builder = new BoxMeshBuilder();
+
+            Vector3 At(int index, float height) =>
+                outline[index] + new Vector3(0f, 0f, z + height);
+
+            // Top and bottom faces as a fan from the tip, then a skirt joining them.
+            for (var i = 1; i < outline.Length - 1; i++)
+            {
+                builder.AddTriangle(At(0, thickness), At(i, thickness), At(i + 1, thickness),
+                    new Vector3(0, 0, 1));
+                builder.AddTriangle(At(0, 0f), At(i + 1, 0f), At(i, 0f),
+                    new Vector3(0, 0, -1));
+            }
+
+            for (var i = 0; i < outline.Length; i++)
+            {
+                var next = (i + 1) % outline.Length;
+                var edge = outline[next] - outline[i];
+                var normal = Vector3.Normalize(new Vector3(edge.Y, -edge.X, 0f));
+                builder.AddQuad(At(i, 0f), At(next, 0f), At(next, thickness), At(i, thickness), normal);
+            }
+
+            return builder.Build();
         }
 
         /// <summary>

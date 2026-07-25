@@ -78,6 +78,45 @@
             </StackPanel>
           </Border>
 
+          <!-- Camera and rotate pad. A pointing device is the fast way to fly the view, but not
+               everyone has three buttons and nothing about a drag is repeatable - "nudge it one more
+               step" is a button. Floated over the map rather than given its own row so it costs no
+               height when a builder is not using it. -->
+          <Border Grid.Row="0" Background="#D00C1017" CornerRadius="4" Padding="6,4"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                  HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
+            <StackPanel Orientation="Horizontal" Spacing="3">
+              <Button Classes="pad" Content="&#x2190;" ToolTip.Tip="Pan left" Click="OnPanLeft" />
+              <Button Classes="pad" Content="&#x2192;" ToolTip.Tip="Pan right" Click="OnPanRight" />
+              <Button Classes="pad" Content="&#x2191;" ToolTip.Tip="Pan up" Click="OnPanUp" />
+              <Button Classes="pad" Content="&#x2193;" ToolTip.Tip="Pan down" Click="OnPanDown" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <Button Classes="pad" Content="&#x21BA;" ToolTip.Tip="Rotate view left" Click="OnOrbitLeft" />
+              <Button Classes="pad" Content="&#x21BB;" ToolTip.Tip="Rotate view right" Click="OnOrbitRight" />
+              <Button Classes="pad" Content="&#x2B71;" ToolTip.Tip="Raise the camera" Click="OnOrbitUp" />
+              <Button Classes="pad" Content="&#x2B73;" ToolTip.Tip="Lower the camera" Click="OnOrbitDown" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <Button Classes="pad" Content="+" ToolTip.Tip="Zoom in" Click="OnZoomIn" />
+              <Button Classes="pad" Content="&#x2212;" ToolTip.Tip="Zoom out" Click="OnZoomOut" />
+
+              <Border Width="1" Margin="4,2" Background="{DynamicResource RuleBrush}" />
+
+              <Button Classes="pad" Content="&#x27F2;" ToolTip.Tip="Turn the selection anticlockwise"
+                      Command="{Binding RotateSelectionCounterClockwiseCommand}"
+                      IsEnabled="{Binding CanRotateSelection}" />
+              <Button Classes="pad" Content="&#x27F3;" ToolTip.Tip="Turn the selection clockwise"
+                      Command="{Binding RotateSelectionClockwiseCommand}"
+                      IsEnabled="{Binding CanRotateSelection}" />
+              <Button Classes="pad" Content="&#x21AF;" ToolTip.Tip="Turn the selection to a random angle"
+                      Command="{Binding RotateSelectionRandomlyCommand}"
+                      IsEnabled="{Binding CanRotateSelection}" />
+            </StackPanel>
+          </Border>
+
           <Border Grid.Row="0" x:Name="GlStatusBorder" Background="#C0802020" CornerRadius="4" Padding="8,4"
                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="8" IsVisible="False">
             <TextBlock x:Name="GlStatusText" Foreground="White" TextWrapping="Wrap" MaxWidth="480" />

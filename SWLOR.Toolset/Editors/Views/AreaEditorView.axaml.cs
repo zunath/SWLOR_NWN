@@ -1,3 +1,4 @@
+using Avalonia.Interactivity;
 ﻿using System.ComponentModel;
 using System.Numerics;
 using Avalonia.Controls;
@@ -93,6 +94,29 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>A pending placement was cancelled (Esc or right-click in the viewport).</summary>
         private void OnPlacementCancelled() => _viewModel?.CancelPlacement();
+
+        // ----- Camera pad. The object-rotate buttons bind straight to the view model; these four
+        // groups drive the control's own camera, which the view model does not own. -----
+
+        private void OnPanLeft(object? sender, RoutedEventArgs e) => AreaView.NudgePan(-1f, 0f);
+
+        private void OnPanRight(object? sender, RoutedEventArgs e) => AreaView.NudgePan(1f, 0f);
+
+        private void OnPanUp(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, 1f);
+
+        private void OnPanDown(object? sender, RoutedEventArgs e) => AreaView.NudgePan(0f, -1f);
+
+        private void OnOrbitLeft(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(-1f, 0f);
+
+        private void OnOrbitRight(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(1f, 0f);
+
+        private void OnOrbitUp(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(0f, 1f);
+
+        private void OnOrbitDown(object? sender, RoutedEventArgs e) => AreaView.NudgeOrbit(0f, -1f);
+
+        private void OnZoomIn(object? sender, RoutedEventArgs e) => AreaView.NudgeZoom(1);
+
+        private void OnZoomOut(object? sender, RoutedEventArgs e) => AreaView.NudgeZoom(-1);
 
         /// <summary>An armed tile stamp resolved to a grid cell - the anchor is its bottom-left corner.</summary>
         private void OnTileCellPicked(int column, int row) => _viewModel?.CommitTilePlacement(column, row);

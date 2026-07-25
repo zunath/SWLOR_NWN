@@ -383,6 +383,7 @@ namespace SWLOR.Toolset.Editors
             try
             {
                 SelectedSceneInstance = instance;
+                OnPropertyChanged(nameof(CanRotateSelection));
 
                 var targetType = instance != null ? MapKindToSectionType(instance.Kind) : null;
 
@@ -846,6 +847,45 @@ namespace SWLOR.Toolset.Editors
                 return;
 
             _ = BuildSceneAsync((instance.Kind, index));
+        }
+
+        /// <summary>
+        /// How far one press of the rotate buttons turns the selection. A quarter of a right angle:
+        /// coarse enough to square something up in three presses, fine enough to angle a chair.
+        /// </summary>
+        private const float RotateStepRadians = MathF.PI / 8f;
+
+        /// <summary>True when there is a selected instance this editor can actually rotate.</summary>
+        public bool CanRotateSelection =>
+            SelectedSceneInstance is { } instance && SectionForKind(instance.Kind) != null;
+
+        [RelayCommand]
+        private void RotateSelectionClockwise() => RotateSelectionBy(-RotateStepRadians);
+
+        [RelayCommand]
+        private void RotateSelectionCounterClockwise() => RotateSelectionBy(RotateStepRadians);
+
+        /// <summary>
+        /// Turns the selection to a random heading. Aurora has this because a row of identically
+        /// angled crates reads as placed by a machine; one press per object breaks that up.
+        /// </summary>
+        [RelayCommand]
+        private void RotateSelectionRandomly()
+        {
+            if (SelectedSceneInstance is not { } instance)
+                return;
+
+            var current = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
+            RotateSelectionBy(Random.Shared.NextSingle() * MathF.Tau - current);
+        }
+
+        private void RotateSelectionBy(float deltaRadians)
+        {
+            if (SelectedSceneInstance is not { } instance)
+                return;
+
+            var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X) + deltaRadians;
+            RotateSelectedInstance(instance, new Vector2(MathF.Cos(heading), MathF.Sin(heading)));
         }
 
         // ----- Terrain paint / rotate / raise-lower tools -----
